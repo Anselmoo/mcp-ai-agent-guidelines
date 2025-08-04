@@ -1,0 +1,63 @@
+## Demos and Generated Artifacts
+
+> [!NOTE]
+> This folder contains demo scripts and generated reports produced by the MCP AI Agent Guidelines tools.
+
+---
+
+### 🚀 Recommended: Use MCP tools in Copilot Chat (VS Code)
+
+1. **Add the MCP server to your workspace or user settings:**
+	 - Create a `.vscode/mcp.json` file in your project, or use the MCP: Add Server command from the Command Palette.
+	 - Example config for this repo:
+		 ```json
+		 {
+			 "servers": {
+				 "mcp-ai-agent-guidelines": {
+					 "command": "npx",
+					 "args": ["-y", "mcp-ai-agent-guidelines"]
+				 }
+			 }
+		 }
+		 ```
+	 - For Docker, adjust the command/args as in the main README.
+
+2. **Open the Chat view in VS Code and select Agent mode.**
+	 - Click the Tools button to see available MCP tools.
+	 - Enable/disable tools as needed (max 128 per request).
+
+3. **Invoke tools in chat:**
+	 - Select code in the editor, then type a prompt like:
+		 - `Use #code-hygiene-analyzer on the selected code.`
+		 - `#mermaid-diagram-generator: Draw a flowchart for this function.`
+		 - `#hierarchical-prompt-builder: Plan a refactor for this file.`
+	 - Or just describe your goal and let Copilot suggest a tool.
+
+4. **Review and edit tool parameters before running.**
+	 - VS Code lets you edit the tool input before confirming.
+
+5. **Best practices:**
+	 - Use hierarchical prompts for complex tasks (see demo-code-analysis.hierarchical.prompt.md).
+	 - Review generated Markdown/diagrams in the preview.
+	 - Use the batch scripts below to generate full reports for sharing.
+
+---
+
+### 🛠️ Backup: Run demo scripts and batch generators (CLI)
+
+If you want to run the tools outside of Copilot Chat, you can use the provided demo scripts:
+
+```bash
+# Build the project first
+npm run build
+
+# Run everything with one command
+node demos/demo-tools
+```
+
+---
+
+Notes:
+- Reports are Markdown for easy review and sharing.
+- Mermaid diagrams render in GitHub/VS Code preview.
+- Edit the demo sources as needed and re-run the generators.

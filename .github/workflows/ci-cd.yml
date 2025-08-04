@@ -1,0 +1,319 @@
+# Comprehensive CI/CD Pipeline for MCP AI Agent Guidelines Server
+# Combines testing, linting, TypeScript building, NPM publishing, and Docker deployment
+# Based on best practices from Anselmoo's workflows adapted for Node.js/TypeScript
+
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*.*.*']
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: '22'  # Default Node.js version (LTS until April 2027)
+  NPM_CACHE_DIR: ~/.npm
+
+jobs:
+  # ============================================================================
+  # Linting and Code Quality (Node.js 22 only)
+  # ============================================================================
+  lint-and-quality:
+    name: Lint & Code Quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.NPM_CACHE_DIR }}
+          key: npm-${{ runner.os }}-${{ env.NODE_VERSION }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            npm-${{ runner.os }}-${{ env.NODE_VERSION }}-
+            npm-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Biome linting and formatting
+        run: npm run check
+
+      - name: Run TypeScript type checking
+        run: npm run type-check
+
+  # ============================================================================
+  # Testing and Quality Assurance
+  # ============================================================================
+  test-and-build:
+    name: Test & Build (Node.js ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    needs: lint-and-quality
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ['20', '22', '24', 'latest']  # Test current LTS and latest LTS
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.NPM_CACHE_DIR }}
+          key: npm-${{ runner.os }}-${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            npm-${{ runner.os }}-${{ matrix.node-version }}-
+            npm-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests with coverage
+        run: npm test --if-present
+
+      - name: Build TypeScript
+        run: npm run build
+
+      - name: Test MCP server functionality
+        run: |
+          if [ -f "scripts/test-mcp-server.sh" ]; then
+            chmod +x scripts/test-mcp-server.sh
+            scripts/test-mcp-server.sh
+          fi
+
+      - name: Upload coverage artifacts
+        if: matrix.node-version == '22'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+
+  # ============================================================================
+  # Build NPM Package
+  # ============================================================================
+  build-npm:
+    name: Build NPM Package 📦
+    runs-on: ubuntu-latest
+    needs: test-and-build
+    if: github.event_name != 'pull_request'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build package
+        run: npm run build
+
+      - name: Pack NPM package
+        run: npm pack
+
+      - name: Store NPM package
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-package
+          path: '*.tgz'
+
+  # ============================================================================
+  # Build and Push Docker Images
+  # ============================================================================
+  build-docker:
+    name: Build Docker Image 🐳
+    runs-on: ubuntu-latest
+    needs: test-and-build
+    if: github.event_name != 'pull_request'
+    permissions:
+      contents: read
+      packages: write
+      id-token: write  # for signing images with Cosign
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Cosign for image signing
+        uses: sigstore/cosign-installer@v3.7.0
+
+      - name: Build and push Docker image
+        id: build-and-push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Sign Docker images with Cosign
+        env:
+          DIGEST: ${{ steps.build-and-push.outputs.digest }}
+          TAGS: ${{ steps.meta.outputs.tags }}
+        run: |
+          images=""
+          for tag in ${TAGS}; do
+            images+="${tag}@${DIGEST} "
+          done
+          cosign sign --yes ${images}
+
+  # ============================================================================
+  # Publish to NPM Registry (production)
+  # ============================================================================
+  publish-npm:
+    name: Publish to NPM 🚀
+    runs-on: ubuntu-latest
+    needs: build-npm
+    if: startsWith(github.ref, 'refs/tags/')
+    environment:
+      name: npm
+      url: https://www.npmjs.com/package/mcp-ai-agent-guidelines
+    permissions:
+      contents: read
+      id-token: write  # for provenance
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build package
+        run: npm run build
+
+      - name: Publish to NPM
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  # ============================================================================
+  # Create GitHub Release with Signed Artifacts
+  # ============================================================================
+  github-release:
+    name: Create GitHub Release 📋
+    runs-on: ubuntu-latest
+    needs: [publish-npm, build-docker]
+    if: startsWith(github.ref, 'refs/tags/')
+    permissions:
+      contents: write
+      id-token: write  # for signing artifacts
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download NPM package
+        uses: actions/download-artifact@v4
+        with:
+          name: npm-package
+          path: dist/
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Sign artifacts with Sigstore
+        uses: sigstore/gh-action-sigstore-python@v3.0.1
+        with:
+          inputs: >-
+            ./dist/*.tgz
+
+      - name: Create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          gh release create '${{ steps.version.outputs.tag }}' \
+            --repo '${{ github.repository }}' \
+            --title 'Release ${{ steps.version.outputs.tag }}' \
+            --notes "## MCP AI Agent Guidelines Server ${{ steps.version.outputs.version }}
+
+          ### 🚀 What's New
+          - Automated release from tag ${{ steps.version.outputs.tag }}
+
+          ### 📦 Installation
+          \`\`\`bash
+          # Install via npm
+          npm install -g mcp-ai-agent-guidelines@${{ steps.version.outputs.version }}
+
+          # Install via npx
+          npx mcp-ai-agent-guidelines@${{ steps.version.outputs.version }}
+
+          # Run with Docker
+          docker run ghcr.io/${{ github.repository }}:${{ steps.version.outputs.version }}
+          \`\`\`
+
+          ### 🐳 Docker Images
+          - **Multi-arch**: \`ghcr.io/${{ github.repository }}:${{ steps.version.outputs.version }}\`
+          - **Latest**: \`ghcr.io/${{ github.repository }}:latest\`
+          - **Platforms**: linux/amd64, linux/arm64
+          - **Signed**: All images signed with Cosign for security
+
+          ### 🔐 Security
+          - All artifacts signed with Sigstore
+          - Docker images signed with Cosign
+          - Published using NPM provenance for supply chain security"
+
+      - name: Upload signed artifacts to release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload '${{ steps.version.outputs.tag }}' dist/** \
+            --repo '${{ github.repository }}'

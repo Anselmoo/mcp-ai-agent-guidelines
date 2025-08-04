@@ -1,0 +1,7 @@
+title = "MCP AI Agent Guidelines - gitleaks configuration"
+
+[allowlist]
+description = "Allow intentional secrets in demo/training files"
+paths = [
+  'demos/demo-code-analysis.py',
+]

@@ -1,0 +1,12 @@
+{
+	"servers": {
+		"ai-agent-guidelines": {
+			"command": "node",
+			"args": ["./dist/index.js"],
+			"env": {
+				"NODE_ENV": "development",
+				"DEBUG": "mcp*"
+			}
+		}
+	}
+}
