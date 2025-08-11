@@ -1,6 +1,6 @@
 {
 	"name": "mcp-ai-agent-guidelines",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"description": "A comprehensive Model Context Protocol server providing professional tools, resources, and prompts for implementing AI agent best practices",
 	"main": "dist/index.js",
 	"type": "module",
@@ -42,7 +42,7 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/Anselmoo/mcp-ai-agent-guidelines.git"
+		"url": "git+https://github.com/Anselmoo/mcp-ai-agent-guidelines.git"
 	},
 	"homepage": "https://github.com/Anselmoo/mcp-ai-agent-guidelines#readme",
 	"bugs": {

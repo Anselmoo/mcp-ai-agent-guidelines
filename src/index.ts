@@ -8,7 +8,14 @@
  * analysis, mermaid diagram generation, memory optimization, and sprint planning.
  */
 
+// Dynamic version from package.json using createRequire for ESM compatibility
+import { createRequire } from "node:module";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
+
+const require = createRequire(import.meta.url);
+// eslint-disable-next-line @typescript-eslint/no-var-requires -- acceptable for package metadata
+const pkg = require("../package.json");
+
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
 	CallToolRequestSchema,
@@ -33,8 +40,8 @@ import { sprintTimelineCalculator } from "./tools/sprint-timeline-calculator.js"
 
 const server = new Server(
 	{
-		name: "mcp-ai-agent-guidelines",
-		version: "0.1.0",
+		name: "ai-agent-guidelines",
+		version: pkg.version,
 	},
 	{
 		capabilities: {
