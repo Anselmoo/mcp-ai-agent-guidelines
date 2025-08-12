@@ -55,227 +55,280 @@ const server = new Server(
 // Register tool handlers
 server.setRequestHandler(ListToolsRequestSchema, async () => {
 	return {
-		tools: [
-			{
-				name: "hierarchical-prompt-builder",
-				description:
-					"Build structured prompts with clear hierarchies and layers of specificity",
-				inputSchema: {
-					type: "object",
-					properties: {
-						context: {
-							type: "string",
-							description: "The broad context or domain",
-						},
-						goal: {
-							type: "string",
-							description: "The specific goal or objective",
-						},
-						requirements: {
-							type: "array",
-							items: { type: "string" },
-							description: "Detailed requirements and constraints",
-						},
-						outputFormat: {
-							type: "string",
-							description: "Desired output format",
-						},
-						audience: {
-							type: "string",
-							description: "Target audience or expertise level",
-						},
-						includeDisclaimer: {
-							type: "boolean",
-							description: "Append a third-party disclaimer section",
-						},
-						includeReferences: {
-							type: "boolean",
-							description: "Append a short references list",
-						},
-					},
-					required: ["context", "goal"],
-				},
-			},
-			{
-				name: "code-hygiene-analyzer",
-				description:
-					"Analyze codebase for outdated patterns, unused dependencies, and code hygiene issues",
-				inputSchema: {
-					type: "object",
-					properties: {
-						codeContent: {
-							type: "string",
-							description: "Code content to analyze",
-						},
-						language: { type: "string", description: "Programming language" },
-						framework: {
-							type: "string",
-							description: "Framework or technology stack",
-						},
-						includeReferences: {
-							type: "boolean",
-							description: "Include external best-practice links",
-						},
-					},
-					required: ["codeContent", "language"],
-				},
-			},
-			{
-				name: "mermaid-diagram-generator",
-				description:
-					"Generate Mermaid diagrams from text descriptions following best practices",
-				inputSchema: {
-					type: "object",
-					properties: {
-						description: {
-							type: "string",
-							description: "Description of the system or process to diagram",
-						},
-						diagramType: {
-							type: "string",
-							enum: ["flowchart", "sequence", "class", "state", "gantt", "pie"],
-							description: "Type of diagram to generate",
-						},
-						theme: {
-							type: "string",
-							description: "Visual theme for the diagram",
-						},
-						accTitle: {
-							type: "string",
-							description: "Accessibility title (added as a Mermaid comment)",
-						},
-						accDescr: {
-							type: "string",
-							description:
-								"Accessibility description (added as a Mermaid comment)",
-						},
-					},
-					required: ["description", "diagramType"],
-				},
-			},
-			{
-				name: "memory-context-optimizer",
-				description:
-					"Optimize prompt caching and context window usage for AI agents",
-				inputSchema: {
-					type: "object",
-					properties: {
-						contextContent: {
-							type: "string",
-							description: "Context content to optimize",
-						},
-						maxTokens: { type: "number", description: "Maximum token limit" },
-						cacheStrategy: {
-							type: "string",
-							enum: ["aggressive", "conservative", "balanced"],
-							description: "Caching strategy",
-						},
-						includeReferences: {
-							type: "boolean",
-							description: "Include external links on caching",
-						},
-					},
-					required: ["contextContent"],
-				},
-			},
-			{
-				name: "sprint-timeline-calculator",
-				description:
-					"Calculate optimal development cycles and sprint timelines",
-				inputSchema: {
-					type: "object",
-					properties: {
-						tasks: {
-							type: "array",
-							items: { type: "object" },
-							description: "List of tasks with estimates",
-						},
-						teamSize: { type: "number", description: "Number of team members" },
-						sprintLength: {
-							type: "number",
-							description: "Sprint length in days",
-						},
-						velocity: {
-							type: "number",
-							description: "Team velocity (story points per sprint)",
-						},
-					},
-					required: ["tasks", "teamSize"],
-				},
-			},
-			{
-				name: "model-compatibility-checker",
-				description:
-					"Recommend best AI models for specific tasks and requirements",
-				inputSchema: {
-					type: "object",
-					properties: {
-						taskDescription: {
-							type: "string",
-							description: "Description of the task",
-						},
-						requirements: {
-							type: "array",
-							items: { type: "string" },
-							description:
-								"Specific requirements (context length, multimodal, etc.)",
-						},
-						budget: {
-							type: "string",
-							enum: ["low", "medium", "high"],
-							description: "Budget constraints",
-						},
-						language: {
-							type: "string",
-							description:
-								"Preferred language for example snippets (e.g., typescript, python)",
-						},
-						includeReferences: {
-							type: "boolean",
-							description: "Include external documentation links",
-						},
-						includeCodeExamples: {
-							type: "boolean",
-							description: "Include language-specific example snippets",
-						},
-						linkFiles: {
-							type: "boolean",
-							description:
-								"Include links to relevant files/resources in this repo",
-						},
-					},
-					required: ["taskDescription"],
-				},
-			},
-			{
-				name: "guidelines-validator",
-				description:
-					"Validate development practices against established AI agent guidelines",
-				inputSchema: {
-					type: "object",
-					properties: {
-						practiceDescription: {
-							type: "string",
-							description: "Description of the development practice",
-						},
-						category: {
-							type: "string",
-							enum: [
-								"prompting",
-								"code-management",
-								"architecture",
-								"visualization",
-								"memory",
-								"workflow",
-							],
-							description: "Category of practice to validate",
-						},
-					},
-					required: ["practiceDescription", "category"],
-				},
-			},
-		],
-	};
+    tools: [
+      {
+        name: "hierarchical-prompt-builder",
+        description:
+          "Build structured prompts with clear hierarchies and layers of specificity",
+        inputSchema: {
+          type: "object",
+          properties: {
+            context: {
+              type: "string",
+              description: "The broad context or domain",
+            },
+            goal: {
+              type: "string",
+              description: "The specific goal or objective",
+            },
+            requirements: {
+              type: "array",
+              items: { type: "string" },
+              description: "Detailed requirements and constraints",
+            },
+            outputFormat: {
+              type: "string",
+              description: "Desired output format",
+            },
+            audience: {
+              type: "string",
+              description: "Target audience or expertise level",
+            },
+            includeDisclaimer: {
+              type: "boolean",
+              description: "Append a third-party disclaimer section",
+            },
+            includeReferences: {
+              type: "boolean",
+              description: "Append a short references list",
+            },
+            // 2025 techniques integration
+            techniques: {
+              type: "array",
+              items: {
+                type: "string",
+                enum: [
+                  "zero-shot",
+                  "few-shot",
+                  "chain-of-thought",
+                  "self-consistency",
+                  "in-context-learning",
+                  "generate-knowledge",
+                  "prompt-chaining",
+                  "tree-of-thoughts",
+                  "meta-prompting",
+                  "rag",
+                  "react",
+                  "art",
+                ],
+              },
+              description: "Optional list of technique hints to include",
+            },
+            includeTechniqueHints: {
+              type: "boolean",
+              description: "Include a Technique Hints section",
+            },
+            includePitfalls: {
+              type: "boolean",
+              description: "Include a Pitfalls section",
+            },
+            autoSelectTechniques: {
+              type: "boolean",
+              description: "Infer techniques automatically from context/goal/requirements",
+            },
+            provider: {
+              type: "string",
+              enum: [
+                "gpt-5",
+                "gpt-4.1",
+                "claude-4",
+                "claude-3.7",
+                "gemini-2.5",
+                "o4-mini",
+                "o3-mini",
+                "other",
+              ],
+              description: "Model family for tailored tips",
+            },
+            style: {
+              type: "string",
+              enum: ["markdown", "xml"],
+              description: "Preferred prompt formatting style",
+            },
+          },
+          required: ["context", "goal"],
+        },
+      },
+      {
+        name: "code-hygiene-analyzer",
+        description:
+          "Analyze codebase for outdated patterns, unused dependencies, and code hygiene issues",
+        inputSchema: {
+          type: "object",
+          properties: {
+            codeContent: {
+              type: "string",
+              description: "Code content to analyze",
+            },
+            language: { type: "string", description: "Programming language" },
+            framework: {
+              type: "string",
+              description: "Framework or technology stack",
+            },
+            includeReferences: {
+              type: "boolean",
+              description: "Include external best-practice links",
+            },
+          },
+          required: ["codeContent", "language"],
+        },
+      },
+      {
+        name: "mermaid-diagram-generator",
+        description:
+          "Generate Mermaid diagrams from text descriptions following best practices",
+        inputSchema: {
+          type: "object",
+          properties: {
+            description: {
+              type: "string",
+              description: "Description of the system or process to diagram",
+            },
+            diagramType: {
+              type: "string",
+              enum: ["flowchart", "sequence", "class", "state", "gantt", "pie"],
+              description: "Type of diagram to generate",
+            },
+            theme: {
+              type: "string",
+              description: "Visual theme for the diagram",
+            },
+            accTitle: {
+              type: "string",
+              description: "Accessibility title (added as a Mermaid comment)",
+            },
+            accDescr: {
+              type: "string",
+              description:
+                "Accessibility description (added as a Mermaid comment)",
+            },
+          },
+          required: ["description", "diagramType"],
+        },
+      },
+      {
+        name: "memory-context-optimizer",
+        description:
+          "Optimize prompt caching and context window usage for AI agents",
+        inputSchema: {
+          type: "object",
+          properties: {
+            contextContent: {
+              type: "string",
+              description: "Context content to optimize",
+            },
+            maxTokens: { type: "number", description: "Maximum token limit" },
+            cacheStrategy: {
+              type: "string",
+              enum: ["aggressive", "conservative", "balanced"],
+              description: "Caching strategy",
+            },
+            includeReferences: {
+              type: "boolean",
+              description: "Include external links on caching",
+            },
+          },
+          required: ["contextContent"],
+        },
+      },
+      {
+        name: "sprint-timeline-calculator",
+        description:
+          "Calculate optimal development cycles and sprint timelines",
+        inputSchema: {
+          type: "object",
+          properties: {
+            tasks: {
+              type: "array",
+              items: { type: "object" },
+              description: "List of tasks with estimates",
+            },
+            teamSize: { type: "number", description: "Number of team members" },
+            sprintLength: {
+              type: "number",
+              description: "Sprint length in days",
+            },
+            velocity: {
+              type: "number",
+              description: "Team velocity (story points per sprint)",
+            },
+          },
+          required: ["tasks", "teamSize"],
+        },
+      },
+      {
+        name: "model-compatibility-checker",
+        description:
+          "Recommend best AI models for specific tasks and requirements",
+        inputSchema: {
+          type: "object",
+          properties: {
+            taskDescription: {
+              type: "string",
+              description: "Description of the task",
+            },
+            requirements: {
+              type: "array",
+              items: { type: "string" },
+              description:
+                "Specific requirements (context length, multimodal, etc.)",
+            },
+            budget: {
+              type: "string",
+              enum: ["low", "medium", "high"],
+              description: "Budget constraints",
+            },
+            language: {
+              type: "string",
+              description:
+                "Preferred language for example snippets (e.g., typescript, python)",
+            },
+            includeReferences: {
+              type: "boolean",
+              description: "Include external documentation links",
+            },
+            includeCodeExamples: {
+              type: "boolean",
+              description: "Include language-specific example snippets",
+            },
+            linkFiles: {
+              type: "boolean",
+              description:
+                "Include links to relevant files/resources in this repo",
+            },
+          },
+          required: ["taskDescription"],
+        },
+      },
+      {
+        name: "guidelines-validator",
+        description:
+          "Validate development practices against established AI agent guidelines",
+        inputSchema: {
+          type: "object",
+          properties: {
+            practiceDescription: {
+              type: "string",
+              description: "Description of the development practice",
+            },
+            category: {
+              type: "string",
+              enum: [
+                "prompting",
+                "code-management",
+                "architecture",
+                "visualization",
+                "memory",
+                "workflow",
+              ],
+              description: "Category of practice to validate",
+            },
+          },
+          required: ["practiceDescription", "category"],
+        },
+      },
+    ],
+  };
 });
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
