@@ -9,11 +9,11 @@
 
 1. **Add the MCP server to your workspace or user settings:**
 	 - Create a `.vscode/mcp.json` file in your project, or use the MCP: Add Server command from the Command Palette.
-	 - Example config for this repo:
+	- Example config for this repo:
 		 ```json
 		 {
 			 "servers": {
-				 "mcp-ai-agent-guidelines": {
+			  "ai-agent-guidelines": {
 					 "command": "npx",
 					 "args": ["-y", "mcp-ai-agent-guidelines"]
 				 }
