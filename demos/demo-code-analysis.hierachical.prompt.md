@@ -2,51 +2,32 @@
 mode: 'agent'
 model: GPT-4.1
 tools: ['githubRepo', 'codebase', 'editFiles']
-description: 'Produce a step-by-step refactor plan and a checklist'
 ---
 ## 🧭 Hierarchical Prompt Structure
 
 ### Metadata
 - Updated: 2025-08-23
 - Source tool: mcp_ai-agent-guid_hierarchical-prompt-builder
-- Input file: /Users/hahn/LocalDocuments/GitHub_Forks/mcp-ai-agent-guidelines/demos/demo-code-analysis.py
-- Suggested filename: produce-a-step-by-step-refactor-plan-and-a-checklist.prompt.md
 
 # Context
-Refactor a small Python script for clarity and safety
+We need a structured prompt to guide a thorough code hygiene assessment and remediation planning for a problematic Python file. Findings should be categorized and prioritized, with security-first focus.
 
 # Goal
-Produce a step-by-step refactor plan and a checklist
+Generate a hierarchical prompt that elicits: summary, categorized findings, prioritized risks, and a remediation plan with acceptance checks.
 
 # Requirements
-1. Keep behavior the same
-2. Reduce complexity
-3. Add docstrings and type hints
-
-# Output Format
-1. Summary
-2. Steps
-3. Checklist
+1. Security findings must come first
+2. Checklist format for actions
+3. Limit verbosity—concise bullets
+4. Accepts arbitrary language inputs
 
 # Target Audience
-Senior engineer
+Senior engineers and tech leads
 
 # Technique Hints (2025)
 
-## Zero-Shot
-Use for simple tasks or baselines. Keep instructions crisp. Example: 'Summarize the following text in 3 bullets focused on findings.'
-
 ## Few-Shot
 Provide 2–5 diverse examples that exactly match the desired output format.
-
-## Chain-of-Thought
-Ask for step-by-step reasoning on complex problems. For GPT add 'think carefully step by step'.
-
-## Prompt Chaining
-Split multi-step workflows into sequential prompts (analyze ➜ hypothesize ➜ recommend ➜ plan).
-
-## Retrieval Augmented Generation (RAG)
-Separate instructions from documents. Quote sources and include citations/anchors.
 # Model-Specific Tips
 
 - Prefer Markdown with clear headings and sections
@@ -77,6 +58,12 @@ JSON fields ...
 
 # Instructions
 Follow the structure above. If you detect additional issues in the codebase, explicitly add them under Problem Indicators, propose minimal diffs, and flag risky changes. Treat tools/models as recommendations to validate against current provider documentation.
+
+## References
+- Hierarchical Prompting overview: https://relevanceai.com/prompt-engineering/master-hierarchical-prompting-for-better-ai-interactions
+- Prompt engineering best practices: https://kanerika.com/blogs/ai-prompt-engineering-best-practices/
+- Techniques round-up (2025): https://www.dataunboxed.io/blog/the-complete-guide-to-prompt-engineering-15-essential-techniques-for-2025
+
 
 ## Disclaimer
 - References to third-party tools, models, pricing, and limits are indicative and may change.

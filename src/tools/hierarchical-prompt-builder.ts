@@ -1,4 +1,19 @@
 import { z } from "zod";
+import type { Technique } from "./shared/prompt-sections.js";
+import {
+	buildPitfallsSection as buildSharedPitfalls,
+	buildProviderTipsSection as buildSharedProviderTips,
+	buildTechniqueHintsSection as buildSharedTechniqueHints,
+	ProviderEnum,
+	StyleEnum,
+	TechniqueEnum,
+} from "./shared/prompt-sections.js";
+import {
+	buildFrontmatterWithPolicy as buildFrontmatter,
+	buildMetadataSection,
+	buildReferencesSection,
+	slugify,
+} from "./shared/prompt-utils.js";
 
 const HierarchicalPromptSchema = z.object({
 	context: z.string(),
@@ -25,64 +40,24 @@ const HierarchicalPromptSchema = z.object({
 	forcePromptMdStyle: z.boolean().optional().default(true),
 
 	// 2025 Prompting Techniques integration (optional hints)
-	techniques: z
-		.array(
-			z.enum([
-				"zero-shot",
-				"few-shot",
-				"chain-of-thought",
-				"self-consistency",
-				"in-context-learning",
-				"generate-knowledge",
-				"prompt-chaining",
-				"tree-of-thoughts",
-				"meta-prompting",
-				"rag",
-				"react",
-				"art",
-			])
-		)
-		.optional(),
+	techniques: z.array(TechniqueEnum).optional(),
 	includeTechniqueHints: z.boolean().optional().default(true),
 	includePitfalls: z.boolean().optional().default(true),
 	autoSelectTechniques: z.boolean().optional().default(false),
-	provider: z
-		.enum([
-			"gpt-5",
-			"gpt-4.1",
-			"claude-4",
-			"claude-3.7",
-			"gemini-2.5",
-			"o4-mini",
-			"o3-mini",
-			"other",
-		])
-		.optional()
-		.default("gpt-4.1"),
-	style: z.enum(["markdown", "xml"]).optional(),
+	provider: ProviderEnum.optional().default("gpt-4.1"),
+	style: StyleEnum.optional(),
 });
 
 type HierarchicalPromptInput = z.infer<typeof HierarchicalPromptSchema>;
 
-function slugify(text: string): string {
-	return text
-		.toLowerCase()
-		.replace(/[^a-z0-9\s-]/g, "")
-		.replace(/\s+/g, "-")
-		.replace(/-+/g, "-")
-		.replace(/^-|-$/g, "");
-}
-
-function buildFrontmatter(input: HierarchicalPromptInput): string {
-	const lines: string[] = ["---"];
-	if (input.mode) lines.push(`mode: '${input.mode}'`);
-	if (input.model) lines.push(`model: ${input.model}`);
-	if (input.tools?.length)
-		lines.push(`tools: [${input.tools.map((t) => `'${t}'`).join(", ")}]`);
+function buildHierarchicalFrontmatter(input: HierarchicalPromptInput): string {
 	const desc = input.description || input.goal || "Hierarchical task prompt";
-	lines.push(`description: '${desc.replace(/'/g, "''")}'`);
-	lines.push("---");
-	return lines.join("\n");
+	return buildFrontmatter({
+		mode: input.mode,
+		model: input.model,
+		tools: input.tools,
+		description: desc,
+	});
 }
 
 export async function hierarchicalPromptBuilder(args: unknown) {
@@ -95,29 +70,24 @@ export async function hierarchicalPromptBuilder(args: unknown) {
 
 	const prompt = buildHierarchicalPrompt(input);
 	const frontmatter = effectiveIncludeFrontmatter
-		? `${buildFrontmatter(input)}\n`
+		? `${buildHierarchicalFrontmatter(input)}\n`
 		: "";
 	const disclaimer = input.includeDisclaimer ? buildDisclaimer() : "";
 	const references = input.includeReferences ? buildGeneralReferences() : "";
 	const filenameHint = `${slugify(input.goal || input.description || "prompt")}.prompt.md`;
 	const metadata = effectiveIncludeMetadata
-		? [
-				"### Metadata",
-				`- Updated: ${new Date().toISOString().slice(0, 10)}`,
-				"- Source tool: mcp_ai-agent-guid_hierarchical-prompt-builder",
-				input.inputFile ? `- Input file: ${input.inputFile}` : undefined,
-				`- Suggested filename: ${filenameHint}`,
-				"",
-			]
-				.filter(Boolean)
-				.join("\n")
+		? buildMetadataSection({
+				sourceTool: "mcp_ai-agent-guid_hierarchical-prompt-builder",
+				inputFile: input.inputFile,
+				filenameHint,
+			})
 		: "";
 
 	return {
 		content: [
 			{
 				type: "text",
-				text: `${frontmatter}## 🧭 Hierarchical Prompt Structure\n\n${metadata}\n${prompt}\n\n${input.includeExplanation ? `## Explanation\nThis prompt follows hierarchical structuring principles (context → goal → requirements → format → audience) to reduce ambiguity and align responses with constraints.\n\n` : ""}${references ? `## References\n${references}\n\n` : ""}${disclaimer}`,
+				text: `${frontmatter}## 🧭 Hierarchical Prompt Structure\n\n${metadata}\n${prompt}\n\n${input.includeExplanation ? `## Explanation\nThis prompt follows hierarchical structuring principles (context → goal → requirements → format → audience) to reduce ambiguity and align responses with constraints.\n\n` : ""}${references ? `${references}\n` : ""}${disclaimer}`,
 			},
 		],
 	};
@@ -165,15 +135,25 @@ function buildHierarchicalPrompt(input: HierarchicalPromptInput): string {
 
 	// Optional: 2025 Prompting Techniques (hint sections)
 	if (input.includeTechniqueHints !== false) {
-		prompt += buildTechniqueHintsSection(input);
+		prompt += buildSharedTechniqueHints({
+			techniques: input.techniques as Technique[] | undefined,
+			autoSelectTechniques: input.autoSelectTechniques,
+			contextText: [
+				input.context,
+				input.goal,
+				(input.requirements || []).join("\n"),
+				input.outputFormat || "",
+				input.audience || "",
+			].join("\n"),
+		});
 	}
 
 	// Optional: Model-specific tips based on provider/style
-	prompt += buildProviderTipsSection(input);
+	prompt += buildSharedProviderTips(input.provider, input.style);
 
 	// Optional: Common pitfalls to avoid
 	if (input.includePitfalls !== false) {
-		prompt += buildPitfallsSection();
+		prompt += buildSharedPitfalls();
 	}
 
 	// Final instruction
@@ -207,214 +187,11 @@ function buildDisclaimer(): string {
 }
 
 function buildGeneralReferences(): string {
-	return [
-		"- Hierarchical Prompting overview: https://relevanceai.com/prompt-engineering/master-hierarchical-prompting-for-better-ai-interactions",
-		"- Prompt engineering best practices: https://kanerika.com/blogs/ai-prompt-engineering-best-practices/",
-		"- Techniques round-up (2025): https://www.dataunboxed.io/blog/the-complete-guide-to-prompt-engineering-15-essential-techniques-for-2025",
-	].join("\n");
+	return buildReferencesSection([
+		"Hierarchical Prompting overview: https://relevanceai.com/prompt-engineering/master-hierarchical-prompting-for-better-ai-interactions",
+		"Prompt engineering best practices: https://kanerika.com/blogs/ai-prompt-engineering-best-practices/",
+		"Techniques round-up (2025): https://www.dataunboxed.io/blog/the-complete-guide-to-prompt-engineering-15-essential-techniques-for-2025",
+	]);
 }
 
 // --- Section builders for 2025 techniques & model tips ---
-function buildTechniqueHintsSection(input: HierarchicalPromptInput): string {
-	const selectedList = input.techniques?.length
-		? input.techniques
-		: input.autoSelectTechniques
-			? inferTechniquesFromInput(input)
-			: [
-					"zero-shot",
-					"few-shot",
-					"chain-of-thought",
-					"prompt-chaining",
-					"rag",
-				];
-	const selected = new Set(selectedList.map((t) => t.toLowerCase()));
-
-	const lines: string[] = [];
-	lines.push(`# Technique Hints (2025)`);
-	lines.push("");
-
-	const add = (title: string, body: string) => {
-		lines.push(`## ${title}`);
-		lines.push(body);
-		lines.push("");
-	};
-
-	if (selected.has("zero-shot"))
-		add(
-			"Zero-Shot",
-			"Use for simple tasks or baselines. Keep instructions crisp. Example: 'Summarize the following text in 3 bullets focused on findings.'",
-		);
-	if (selected.has("few-shot"))
-		add(
-			"Few-Shot",
-			"Provide 2–5 diverse examples that exactly match the desired output format.",
-		);
-	if (selected.has("chain-of-thought"))
-		add(
-			"Chain-of-Thought",
-			"Ask for step-by-step reasoning on complex problems. For GPT add 'think carefully step by step'.",
-		);
-	if (selected.has("self-consistency"))
-		add(
-			"Self-Consistency",
-			"Request multiple approaches and select the consensus answer for higher reliability.",
-		);
-	if (selected.has("in-context-learning"))
-		add(
-			"In-Context Learning",
-			"Embed patterns in the prompt. Keep examples varied to avoid overfitting.",
-		);
-	if (selected.has("generate-knowledge"))
-		add(
-			"Generate Knowledge",
-			"Have the model list relevant facts first, then answer using that scratchpad.",
-		);
-	if (selected.has("prompt-chaining"))
-		add(
-			"Prompt Chaining",
-			"Split multi-step workflows into sequential prompts (analyze ➜ hypothesize ➜ recommend ➜ plan).",
-		);
-	if (selected.has("tree-of-thoughts"))
-		add(
-			"Tree of Thoughts",
-			"Explore branches with pros/cons and choose the best path for open-ended tasks.",
-		);
-	if (selected.has("meta-prompting"))
-		add(
-			"Meta Prompting",
-			"Ask the model to improve your prompt for clarity, examples, and structure.",
-		);
-	if (selected.has("rag"))
-		add(
-			"Retrieval Augmented Generation (RAG)",
-			"Separate instructions from documents. Quote sources and include citations/anchors.",
-		);
-	if (selected.has("react"))
-		add(
-			"ReAct",
-			"Interleave Thought/Action/Observation when tools are available. Prefer larger models for stability.",
-		);
-	if (selected.has("art"))
-		add(
-			"Automatic Reasoning and Tool-use (ART)",
-			"Let the model pick tools automatically; optionally add 'Only use tools when needed' to curb overuse.",
-		);
-
-	return lines.join("\n");
-}
-
-// Heuristic: infer suitable techniques from context/goal/requirements
-function inferTechniquesFromInput(input: HierarchicalPromptInput): string[] {
-	const text = [
-		input.context || "",
-		input.goal || "",
-		(input.requirements || []).join("\n"),
-		input.outputFormat || "",
-		input.audience || "",
-	].join("\n").toLowerCase();
-
-	const picks: string[] = [];
-
-	// RAG
-	if (
-		/(document|docs|policy|manual|pdf|cite|citation|reference|source|kb|dataset|quote)/.test(
-			text,
-		)
-	) {
-		picks.push("rag");
-	}
-
-	// CoT
-	if (/(reason|step|derive|calculate|proof|logic|why|explain)/.test(text)) {
-		picks.push("chain-of-thought");
-	}
-
-	// Prompt chaining
-	if (
-		/(pipeline|workflow|multi-step|then|analyze\s+then|plan\s+then|timeline)/.test(
-			text,
-		)
-	) {
-		picks.push("prompt-chaining");
-	}
-
-	// Few-shot / ICL
-	if (/(example|examples|like this|pattern|format|consistent formatting)/.test(text)) {
-		picks.push("few-shot", "in-context-learning");
-	}
-
-	// Self-consistency
-	if (/(accuracy|verify|consensus|multiple approaches|critical)/.test(text)) {
-		picks.push("self-consistency");
-	}
-
-	// Generate knowledge first
-	if (/(facts first|assumptions|prior knowledge|before answering)/.test(text)) {
-		picks.push("generate-knowledge");
-	}
-
-	// ToT
-	if (/(brainstorm|alternatives|options|pros and cons|tradeoffs)/.test(text)) {
-		picks.push("tree-of-thoughts");
-	}
-
-	// Tools (ReAct/ART)
-	if (/(use tools|search|web|browser|calculator|execute|run code|call api)/.test(text)) {
-		picks.push("react", "art");
-	}
-
-	// Fallbacks
-	if (picks.length === 0) picks.push("zero-shot");
-
-	// Deduplicate and cap to ~6 to keep prompt compact
-	const order = [
-		"rag",
-		"chain-of-thought",
-		"prompt-chaining",
-		"few-shot",
-		"in-context-learning",
-		"self-consistency",
-		"generate-knowledge",
-		"tree-of-thoughts",
-		"react",
-		"art",
-		"zero-shot",
-	];
-	const unique = Array.from(new Set(picks));
-	unique.sort((a, b) => order.indexOf(a) - order.indexOf(b));
-	return unique.slice(0, 6);
-}
-
-function buildProviderTipsSection(input: HierarchicalPromptInput): string {
-	const p = (input.provider || "gpt-4.1").toLowerCase();
-	const style = input.style || (p === "claude-4" ? "xml" : "markdown");
-	const lines: string[] = [];
-	lines.push(`# Model-Specific Tips`);
-	lines.push("");
-	if (p === "gpt-4.1") {
-		lines.push("- Prefer Markdown with clear headings and sections");
-		lines.push("- Place instructions at the beginning (and optionally re-assert at the end) in long contexts");
-		lines.push("- Use explicit step numbering for CoT where helpful");
-	} else if (p === "claude-4") {
-		lines.push("- Prefer XML-like structuring for clarity (e.g., <instructions>, <context>, <examples>)");
-		lines.push("- Be very specific about expectations and use extended thinking tags where appropriate");
-		lines.push("- Tag documents distinctly when doing RAG");
-	} else if (p === "gemini-2.5") {
-		lines.push("- Use consistent formatting throughout; keep queries at the end of long contexts");
-		lines.push("- Experiment with example quantities and placement");
-	}
-	lines.push("")
-	lines.push(`- Preferred Style: ${style.toUpperCase()}`);
-	lines.push("");
-	lines.push(
-		style === "xml"
-			? "```xml\n<instructions>...your task...</instructions>\n<context>...data...</context>\n<output_format>JSON fields ...</output_format>\n```\n"
-			: "```md\n# Instructions\n...your task...\n\n# Context\n...data...\n\n# Output Format\nJSON fields ...\n```\n",
-	);
-	lines.push("");
-	return lines.join("\n");
-}
-
-function buildPitfallsSection(): string {
-	return `# Pitfalls to Avoid\n\n- Vague instructions → replace with precise, positive directives\n- Forced behaviors (e.g., 'always use a tool') → say 'Use tools when needed'\n- Context mixing → separate Instructions vs Data clearly\n- Limited examples → vary few-shot examples to avoid overfitting\n- Repetitive sample phrases → add 'vary language naturally'\n- Negative instructions → state what to do, not just what not to do\n\n`;
-}

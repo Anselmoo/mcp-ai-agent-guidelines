@@ -74,6 +74,20 @@ async function testMCPServer() {
 			"characters",
 		);
 
+		// Test 4b: Domain-Neutral Prompt Builder
+		console.log("\n🧩 Testing: Domain-Neutral Prompt Builder");
+		const neutralResult = await client.callTool({
+			name: "domain-neutral-prompt-builder",
+			arguments: {
+				title: "Server Test",
+				summary: "Ensure the domain-neutral builder responds",
+				objectives: ["Smoke test"],
+				includeReferences: true,
+			},
+		});
+		console.log("✅ Domain-neutral tool call successful");
+		console.log("Neutral output length:", neutralResult.content[0].text.length);
+
 		// Test 5: Test resource access
 		console.log("\n📖 Testing: Resource Access");
 		const coreResource = await client.readResource({

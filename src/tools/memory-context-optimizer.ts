@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { buildReferencesSection } from "./shared/prompt-utils.js";
 
 const MemoryOptimizationSchema = z.object({
 	contextContent: z.string(),
@@ -23,11 +24,11 @@ export async function memoryContextOptimizer(args: unknown) {
 	const optimization = optimizeMemoryContext(input);
 
 	const references = input.includeReferences
-		? [
-				"- Prompt Caching overview (Anthropic): https://www.anthropic.com/news/prompt-caching",
-				"- Anthropic docs on caching: https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching",
-				"- Token usage optimization tips: https://caylent.com/blog/prompt-caching-saving-time-and-money-in-llm-applications",
-			].join("\n")
+		? buildReferencesSection([
+				"Prompt Caching overview (Anthropic): https://www.anthropic.com/news/prompt-caching",
+				"Anthropic docs on caching: https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching",
+				"Token usage optimization tips: https://caylent.com/blog/prompt-caching-saving-time-and-money-in-llm-applications",
+			])
 		: undefined;
 
 	const fence = input.language ? input.language.toLowerCase() : "";
@@ -135,7 +136,7 @@ ${optimization.cacheSegments.length ? `### 🧱 Cache Segments\n${segmentsList}\
 - Use structured data formats to reduce token overhead
 - Leverage semantic similarity to identify redundant information
 - Implement rolling window approach for conversation history
-${references ? `\n### References\n${references}\n` : ""}
+${references ? `\n${references}\n` : ""}
 
 ### 📁 Files
 - Source tool: src/tools/memory-context-optimizer.ts

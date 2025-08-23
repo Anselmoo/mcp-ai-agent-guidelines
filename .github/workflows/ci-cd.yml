@@ -86,7 +86,25 @@ jobs:
         run: npm ci
 
       - name: Run tests with coverage
-        run: npm test --if-present
+        run: |
+          npm run build
+          npx c8 -r text-summary -r lcov -r html -o coverage node tests/unit/run-unit-tests.js
+
+      - name: Publish coverage summary
+        if: always()
+        run: |
+          echo "### Coverage Summary" >> $GITHUB_STEP_SUMMARY
+          echo "\n\n\`\`\`" >> $GITHUB_STEP_SUMMARY
+          npx c8 report -r text-summary -o coverage | tee -a $GITHUB_STEP_SUMMARY || true
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload coverage to Codecov
+        if: matrix.node-version == '22'
+        uses: codecov/codecov-action@v4
+        with:
+          files: coverage/lcov.info
+          flags: unittests
+          fail_ci_if_error: false
 
       - name: Build TypeScript
         run: npm run build

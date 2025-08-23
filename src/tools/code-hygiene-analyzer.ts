@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { buildReferencesSection } from "./shared/prompt-utils.js";
 
 const CodeHygieneSchema = z.object({
 	codeContent: z.string(),
@@ -16,10 +17,10 @@ export async function codeHygieneAnalyzer(args: unknown) {
 
 	const analysis = analyzeCodeHygiene(input);
 	const references = input.includeReferences
-		? [
-				"- Refactoring legacy code best practices: https://graphite.dev/guides/refactoring-legacy-code-best-practices-techniques",
-				"- General code hygiene checklist (community resources)",
-			].join("\n")
+		? buildReferencesSection([
+				"Refactoring legacy code best practices: https://graphite.dev/guides/refactoring-legacy-code-best-practices-techniques",
+				"General code hygiene checklist (community resources)",
+			])
 		: undefined;
 
 	const metadata = input.includeMetadata
@@ -69,7 +70,7 @@ ${analysis.recommendations.map((rec, index) => `${index + 1}. ${rec}`).join("\n"
 
 ### ▶️ Next Steps
 ${analysis.nextSteps.map((step, index) => `${index + 1}. ${step}`).join("\n")}
-${references ? `\n### 🔗 References\n${references}\n` : ""}
+${references ? `\n${references}\n` : ""}
 \n### ⚠️ Disclaimer\n- Findings are heuristic and may not capture project-specific conventions. Validate changes via code review and tests.
 `,
 			},
