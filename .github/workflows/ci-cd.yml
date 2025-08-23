@@ -58,6 +58,9 @@ jobs:
     name: Test & Build (Node.js ${{ matrix.node-version }})
     runs-on: ubuntu-latest
     needs: lint-and-quality
+    permissions:
+      contents: read
+      id-token: write  # required for Codecov OIDC uploads
     strategy:
       fail-fast: false
       matrix:
@@ -66,6 +69,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 2  # helps Codecov infer base commit context
 
       - name: Set up Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
@@ -102,8 +107,12 @@ jobs:
         if: matrix.node-version == '22'
         uses: codecov/codecov-action@v5
         with:
+          use_oidc: true
           files: coverage/lcov.info
           flags: unittests
+          # Optional: set slug explicitly for forks uploading to upstream project
+          slug: Anselmoo/mcp-ai-agent-guidelines
+          verbose: true
           fail_ci_if_error: false
 
       - name: Build TypeScript
