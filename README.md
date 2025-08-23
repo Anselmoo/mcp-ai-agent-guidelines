@@ -4,7 +4,6 @@
 > **Disclaimer -- Experimental / Early Stage:** This project references third‑party models, tools, pricing, and docs that evolve quickly. Treat outputs as recommendations and verify against official docs and your own benchmarks before production use.
 
 [![CI/CD Pipeline](https://github.com/Anselmoo/mcp-ai-agent-guidelines/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/Anselmoo/mcp-ai-agent-guidelines/actions/workflows/ci-cd.yml)
-[![codecov](https://codecov.io/gh/Anselmoo/mcp-ai-agent-guidelines/branch/main/graph/badge.svg)](https://codecov.io/gh/Anselmoo/mcp-ai-agent-guidelines)
 [![Coverage Status](https://img.shields.io/codecov/c/github/Anselmoo/mcp-ai-agent-guidelines/main?label=coverage&logo=codecov)](https://codecov.io/gh/Anselmoo/mcp-ai-agent-guidelines)
 [![NPM version](https://badge.fury.io/js/mcp-ai-agent-guidelines.svg)](https://badge.fury.io/js/mcp-ai-agent-guidelines)
 [![Node.js 20+](https://img.shields.io/badge/node-20%2B-green.svg)](https://nodejs.org/en/download/)
