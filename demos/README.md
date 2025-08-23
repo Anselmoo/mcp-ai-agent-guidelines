@@ -61,3 +61,15 @@ Notes:
 - Reports are Markdown for easy review and sharing.
 - Mermaid diagrams render in GitHub/VS Code preview.
 - Edit the demo sources as needed and re-run the generators.
+
+### Generated Artifacts (examples)
+
+- demo-code-analysis.hygiene.md — Code hygiene report
+- demo-code-analysis.guidelines.md — Guidelines validator report
+- demo-code-analysis.hierarchical.prompt.md — Hierarchical prompt output
+- demo-code-analysis.domain-neutral.prompt.md — Domain-neutral prompt template
+- demo-code-analysis.spark.prompt.md — Spark prompt card output
+- demo-code-analysis.memory.md — Memory optimization notes
+- demo-code-analysis.diagram.md — Mermaid diagram (flowchart)
+- demo-code-analysis.model-compat.md — Model compatibility guidance
+- demo-code-analysis.sprint.md — Sprint planning output

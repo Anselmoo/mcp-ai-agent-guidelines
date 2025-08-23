@@ -22,6 +22,33 @@ const prompts = [
 		],
 	},
 	{
+		name: "spark-ui-prompt",
+		description:
+			"Spark UI prompt template for designing developer-centric experiences",
+		arguments: [
+			{
+				name: "title",
+				description: "Prompt title",
+				required: true,
+			},
+			{
+				name: "summary",
+				description: "Short summary of the Spark prompt",
+				required: true,
+			},
+			{
+				name: "design_direction",
+				description: "Design direction statement",
+				required: true,
+			},
+			{
+				name: "color_scheme",
+				description: "Color scheme type (light/dark) and purpose",
+				required: false,
+			},
+		],
+	},
+	{
 		name: "hierarchical-task-prompt",
 		description: "Structured prompt template for complex task breakdown",
 		arguments: [
@@ -150,6 +177,9 @@ export async function getPrompt(name: string, args: PromptArgs) {
 			break;
 		case "documentation-generator-prompt":
 			content = generateDocumentationGeneratorPrompt(args);
+			break;
+		case "spark-ui-prompt":
+			content = generateSparkUiPrompt(args);
 			break;
 		default:
 			throw new Error(`Unknown prompt: ${name}`);
@@ -502,7 +532,7 @@ ${
 }
 
 ### 2. Audience Considerations
-${
+$	{
 	target_audience === "developers"
 		? "- Technical depth and accuracy\n- Code examples and implementations\n- Integration patterns\n- Best practices and gotchas"
 		: target_audience === "end-users"
@@ -527,7 +557,7 @@ ${
    - Document organization
 
 2. **Main Content**
-   ${
+   $
 			content_type === "API"
 				? "- Quick start guide\n   - Detailed endpoint documentation\n   - Authentication and authorization\n   - Error handling\n   - Examples and use cases"
 				: content_type === "user guide"
@@ -563,4 +593,20 @@ ${
 - [ ] All links and references work correctly
 - [ ] Document meets accessibility standards
 `;
+}
+
+function generateSparkUiPrompt(args: PromptArgs): string {
+	const {
+		title,
+		summary,
+		design_direction,
+		color_scheme = "dark for contrast and readability",
+	} = args as {
+		title: string;
+		summary: string;
+		design_direction: string;
+		color_scheme?: string;
+	};
+
+	return `---\nmode: 'agent'\nmodel: GPT-4.1\ntools: ['githubRepo', 'codebase', 'editFiles']\ndescription: '${(summary as string).replace(/'/g, "''")}'\n---\n## ⚡ Spark Prompt Template\n\n# ${title}\n\n${summary}\n\n## Design Direction\n${design_direction}\n\n## Color Scheme\n${color_scheme}\n`;
 }

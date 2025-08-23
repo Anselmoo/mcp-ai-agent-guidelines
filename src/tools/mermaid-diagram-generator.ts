@@ -8,7 +8,7 @@ async function validateDiagram(code: string): Promise<ValidateResult> {
 		const mermaid = await import("mermaid");
 		// mermaid.parse will throw on error
 		// Some versions expose parse async; wrap in Promise.resolve
-		// @ts-ignore
+		// @ts-expect-error
 		await Promise.resolve(mermaid.parse(code));
 		return { valid: true };
 	} catch (err) {

@@ -1,7 +1,7 @@
 ## Generated Mermaid Diagram
 
 ### Description
-User submits data -> Validate -> Process -> Save -> Return summary
+Start -> Ingest code -> Parse & categorize issues (Security, Reliability, Maintainability, Performance, Style) -> Prioritize risks -> Generate checklist & plan -> Output reports (markdown) -> End
 
 ### Diagram Code
 ```mermaid
@@ -11,10 +11,11 @@ B --> C([End])
 ```
 
 ### Accessibility
-- You can provide accTitle and accDescr to improve screen reader context.
+- Title: Code Hygiene Analyzer Flow
+- Description: Flow showing analysis steps from code intake to categorized issues and remediation output
 
 ### Validation
-❌ Diagram invalid even after attempts: mermaid.parse is not a function
+✖ Diagram invalid even after attempts: mermaid.parse is not a function
 ### Feedback Loop
 - Try simplifying node labels (avoid punctuation that Mermaid may misparse)
 - Ensure a single diagram header (e.g., 'flowchart TD')

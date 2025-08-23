@@ -4,6 +4,8 @@
 > **Disclaimer -- Experimental / Early Stage:** This project references third‑party models, tools, pricing, and docs that evolve quickly. Treat outputs as recommendations and verify against official docs and your own benchmarks before production use.
 
 [![CI/CD Pipeline](https://github.com/Anselmoo/mcp-ai-agent-guidelines/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/Anselmoo/mcp-ai-agent-guidelines/actions/workflows/ci-cd.yml)
+[![codecov](https://codecov.io/gh/Anselmoo/mcp-ai-agent-guidelines/branch/main/graph/badge.svg)](https://codecov.io/gh/Anselmoo/mcp-ai-agent-guidelines)
+[![Coverage Status](https://img.shields.io/codecov/c/github/Anselmoo/mcp-ai-agent-guidelines/main?label=coverage&logo=codecov)](https://codecov.io/gh/Anselmoo/mcp-ai-agent-guidelines)
 [![NPM version](https://badge.fury.io/js/mcp-ai-agent-guidelines.svg)](https://badge.fury.io/js/mcp-ai-agent-guidelines)
 [![Node.js 20+](https://img.shields.io/badge/node-20%2B-green.svg)](https://nodejs.org/en/download/)
 [![Docker](https://img.shields.io/badge/docker-available-blue.svg)](https://github.com/Anselmoo/mcp-ai-agent-guidelines/pkgs/container/mcp-ai-agent-guidelines)
@@ -32,6 +34,7 @@ npm ci && npm run build && npm start
 npm run build      # TypeScript build
 npm run start      # Build and start server
 npm run test:all   # Unit + integration + demos + MCP smoke
+npm run test:coverage:unit # Unit test coverage (c8) -> coverage/ + summary
 npm run quality    # Type-check + Biome checks
 ```
 
@@ -42,6 +45,8 @@ Explore generated demo reports in the repository:
 - Code Hygiene Report: [demos/demo-code-analysis.hygiene.md](./demos/demo-code-analysis.hygiene.md)
 - Guidelines Validation: [demos/demo-code-analysis.guidelines.md](./demos/demo-code-analysis.guidelines.md)
 - Hierarchical Prompt (Refactor plan): [demos/demo-code-analysis.hierarchical.prompt.md](./demos/demo-code-analysis.hierarchical.prompt.md)
+- Domain-neutral Prompt Template: [demos/demo-code-analysis.domain-neutral.prompt.md](./demos/demo-code-analysis.domain-neutral.prompt.md)
+- Spark Prompt Card: [demos/demo-code-analysis.spark.prompt.md](./demos/demo-code-analysis.spark.prompt.md)
 - Memory Context Optimization: [demos/demo-code-analysis.memory.md](./demos/demo-code-analysis.memory.md)
 - Architecture Diagram (Mermaid): [demos/demo-code-analysis.diagram.md](./demos/demo-code-analysis.diagram.md)
 - Model Compatibility Analysis: [demos/demo-code-analysis.model-compat.md](./demos/demo-code-analysis.model-compat.md)
@@ -60,11 +65,8 @@ npm run build
 # Run sample tool calls
 node demos/demo-tools.js
 
-# Generate all demo reports
-node demos/generate-demo-reports.js
-node demos/generate-hygiene-reports.js
-# Or run everything with one command
-node demos/generate-demos.js
+# Generate demo reports
+node demos/demo-tools.js
 ```
 
 Scripts:
@@ -275,8 +277,14 @@ npm run test:unit        # Unit tests
 npm run test:integration # Integration tests
 npm run test:demo        # Demo runner
 npm run test:mcp         # MCP smoke script
+npm run test:coverage:unit # Unit test coverage (text-summary, lcov, html)
 npm run quality          # Type-check + Biome check
 ```
+
+### Coverage reporting
+
+- CI publishes a coverage summary in the job’s Summary and uploads `coverage/` as an artifact.
+- Coverage is also uploaded to Codecov on Node 22 runs; see the badge above for status.
 
 ## Docker
 

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { buildReferencesSection } from "./shared/prompt-utils.js";
 
 const SprintTimelineSchema = z.object({
 	tasks: z.array(
@@ -135,9 +136,10 @@ ${calculation.sprints
 	.join("\n")}
 \`\`\`
 
-### References
-- ZenHub — AI-assisted sprint planning (2025): https://www.zenhub.com/blog-posts/the-7-best-ai-assisted-sprint-planning-tools-for-agile-teams-in-2025
-- Nitor Infotech — AI in project delivery: https://www.nitorinfotech.com/blog/ai-in-software-project-delivery-smarter-planning-and-execution/
+${buildReferencesSection([
+	"ZenHub — AI-assisted sprint planning (2025): https://www.zenhub.com/blog-posts/the-7-best-ai-assisted-sprint-planning-tools-for-agile-teams-in-2025",
+	"Nitor Infotech — AI in project delivery: https://www.nitorinfotech.com/blog/ai-in-software-project-delivery-smarter-planning-and-execution/",
+])}
 `,
 			},
 		],

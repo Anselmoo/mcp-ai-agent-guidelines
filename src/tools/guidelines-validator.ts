@@ -3,6 +3,7 @@ import {
 	CATEGORY_CONFIG,
 	type CategoryConfig,
 } from "./config/guidelines-config.js";
+import { buildReferencesSection } from "./shared/prompt-utils.js";
 
 const GuidelinesValidationSchema = z.object({
 	practiceDescription: z.string(),
@@ -35,7 +36,9 @@ export async function guidelinesValidator(args: unknown) {
 
 	const validation = validateAgainstGuidelines(input);
 	const references = input.includeReferences
-		? buildCategoryReferences(input.category)
+		? buildReferencesSection(
+				buildCategoryReferences(input.category, true) as string[],
+			)
 		: undefined;
 	const metadata = input.includeMetadata
 		? [
@@ -112,7 +115,7 @@ For detailed information on AI agent development best practices, refer to:
 - Peer review of development practices
 - Monitoring of industry best practices evolution
 - Iterative refinement based on project outcomes
-${references ? `\n### 🔗 References\n${references}\n` : ""}
+${references ? `\n${references}\n` : ""}
 \n### ⚠️ Disclaimer\n- These are recommendations, not guarantees. Validate with your context and current provider documentation.
 `,
 			},
@@ -166,34 +169,35 @@ function validateAgainstGuidelines(
 	};
 }
 
-function buildCategoryReferences(category: string): string {
+function buildCategoryReferences(
+	category: string,
+	asList = false,
+): string[] | string {
 	const common = [
-		"- Prompt caching (Anthropic): https://www.anthropic.com/news/prompt-caching",
-		"- Mermaid.js: https://github.com/mermaid-js/mermaid",
+		"Prompt caching (Anthropic): https://www.anthropic.com/news/prompt-caching",
+		"Mermaid.js: https://github.com/mermaid-js/mermaid",
 	];
 	const byCat: Record<string, string[]> = {
 		prompting: [
-			"- Hierarchical Prompting: https://relevanceai.com/prompt-engineering/master-hierarchical-prompting-for-better-ai-interactions",
-			"- Best Practices (2025): https://www.dataunboxed.io/blog/the-complete-guide-to-prompt-engineering-15-essential-techniques-for-2025",
+			"Hierarchical Prompting: https://relevanceai.com/prompt-engineering/master-hierarchical-prompting-for-better-ai-interactions",
+			"Best Practices (2025): https://www.dataunboxed.io/blog/the-complete-guide-to-prompt-engineering-15-essential-techniques-for-2025",
 		],
 		"code-management": [
-			"- Refactoring legacy code: https://graphite.dev/guides/refactoring-legacy-code-best-practices-techniques",
+			"Refactoring legacy code: https://graphite.dev/guides/refactoring-legacy-code-best-practices-techniques",
 		],
-		architecture: [
-			"- Event-driven, microservices patterns (general references)",
-		],
+		architecture: ["Event-driven, microservices patterns (general references)"],
 		visualization: [
-			"- Kubernetes diagram guide: https://kubernetes.io/docs/contribute/style/diagram-guide/",
+			"Kubernetes diagram guide: https://kubernetes.io/docs/contribute/style/diagram-guide/",
 		],
 		memory: [
-			"- Prompt caching docs: https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching",
+			"Prompt caching docs: https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching",
 		],
 		workflow: [
-			"- Sprint planning tools overview (ZenHub 2025): https://www.zenhub.com/blog-posts/the-7-best-ai-assisted-sprint-planning-tools-for-agile-teams-in-2025",
+			"Sprint planning tools overview (ZenHub 2025): https://www.zenhub.com/blog-posts/the-7-best-ai-assisted-sprint-planning-tools-for-agile-teams-in-2025",
 		],
 	} as const;
 	const set = [...(byCat[category as keyof typeof byCat] || []), ...common];
-	return set.join("\n");
+	return asList ? set : set.join("\n");
 }
 
 // Legacy per-category validators replaced by config-driven approach above.

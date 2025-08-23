@@ -5,11 +5,13 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { codeHygieneAnalyzer } from "../dist/tools/code-hygiene-analyzer.js";
+import { domainNeutralPromptBuilder } from "../dist/tools/domain-neutral-prompt-builder.js";
 import { guidelinesValidator } from "../dist/tools/guidelines-validator.js";
 import { hierarchicalPromptBuilder } from "../dist/tools/hierarchical-prompt-builder.js";
 import { memoryContextOptimizer } from "../dist/tools/memory-context-optimizer.js";
 import { mermaidDiagramGenerator } from "../dist/tools/mermaid-diagram-generator.js";
 import { modelCompatibilityChecker } from "../dist/tools/model-compatibility-checker.js";
+import { sparkPromptBuilder } from "../dist/tools/spark-prompt-builder.js";
 import { sprintTimelineCalculator } from "../dist/tools/sprint-timeline-calculator.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -54,6 +56,98 @@ async function main() {
 		inputFile: demoPyPath,
 	});
 	await writeReport("demo-code-analysis.hygiene.md", getText(hygiene));
+
+	// Domain-neutral prompt template
+	const domainNeutral = await domainNeutralPromptBuilder({
+		title: "Domain-Neutral Code Hygiene Review Prompt",
+		summary:
+			"Template to run consistent, security-first code hygiene reviews across languages",
+		objectives: [
+			"Identify hygiene, security, maintainability issues",
+			"Prioritize risks (High/Med/Low)",
+			"Output a crisp, language-agnostic checklist",
+		],
+		background:
+			"Analyze arbitrary code snippets; produce a summary and prioritized checklist",
+		inputs: "Code snippet(s) or diffs",
+		outputs: "Summary + prioritized checklist + acceptance criteria",
+		workflow: [
+			"Summarize code purpose",
+			"Identify issues by category",
+			"Prioritize by risk",
+			"Produce fixes and acceptance criteria",
+		],
+		includeReferences: true,
+		inputFile: demoPyPath,
+	});
+	await writeReport(
+		"demo-code-analysis.domain-neutral.prompt.md",
+		getText(domainNeutral),
+	);
+
+	// Spark prompt card
+	const spark = await sparkPromptBuilder({
+		title: "Spark Prompt — Code Hygiene Review Card",
+		summary:
+			"A compact, skimmable card with risk badges, prioritized checklist, and a tiny plan",
+		complexityLevel: "compact",
+		designDirection: "Clean, minimal, accessible",
+		colorSchemeType: "light",
+		colorPurpose: "Improve scan-ability",
+		primaryColor: "#111111",
+		primaryColorPurpose: "Body text",
+		accentColor: "#6E56CF",
+		accentColorPurpose: "Highlight section headers and key calls to action.",
+		fontFamily:
+			"Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif",
+		fontIntention: "Legible at small sizes",
+		fontReasoning: "System-default stack ensures availability",
+		typography: [
+			{
+				usage: "body",
+				font: "Inter",
+				weight: "400",
+				size: "14px",
+				spacing: "1.4",
+			},
+			{
+				usage: "heading",
+				font: "Inter",
+				weight: "600",
+				size: "16px",
+				spacing: "1.3",
+			},
+		],
+		animationPhilosophy: "Subtle emphasis only",
+		animationRestraint: "Avoid distracting motion",
+		animationPurpose: "Draw attention to the most important recommendations",
+		animationHierarchy: "minimal",
+		spacingRule: "tight",
+		spacingContext: "dense",
+		mobileLayout: "single-column",
+		experienceQualities: [
+			{ quality: "clarity", detail: "Fast to scan" },
+			{ quality: "responsiveness", detail: "Works on small screens" },
+		],
+		features: [
+			{
+				name: "Code Hygiene Review Card",
+				functionality:
+					"Intro summary + risk badges + prioritized checklist + short plan",
+				purpose: "Present a compact actionable review",
+				trigger: "User submits code snippet",
+				progression: ["summary", "risks", "checklist", "plan"],
+				successCriteria: "Easy to skim, actionable, no fluff",
+			},
+		],
+		states: [{ component: "risk-badge", states: ["high", "medium", "low"] }],
+		icons: ["⚠️", "✅", "🔒", "⚙️", "🧹"],
+		customizations:
+			"Use compact sections, bold category labels, and checklist bullets.",
+		includeFrontmatter: false,
+		model: "gpt-4.1",
+	});
+	await writeReport("demo-code-analysis.spark.prompt.md", getText(spark));
 
 	const diagram = await mermaidDiagramGenerator({
 		description:
