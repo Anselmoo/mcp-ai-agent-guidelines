@@ -30,14 +30,14 @@ import { getPrompt, listPrompts } from "./prompts/index.js";
 // Import resources
 import { getResource, listResources } from "./resources/index.js";
 import { codeHygieneAnalyzer } from "./tools/code-hygiene-analyzer.js";
-import { domainNeutralPromptBuilder } from "./tools/domain-neutral-prompt-builder.js";
 import { guidelinesValidator } from "./tools/guidelines-validator.js";
-// Import tool implementations
-import { hierarchicalPromptBuilder } from "./tools/hierarchical-prompt-builder.js";
 import { memoryContextOptimizer } from "./tools/memory-context-optimizer.js";
 import { mermaidDiagramGenerator } from "./tools/mermaid-diagram-generator.js";
 import { modelCompatibilityChecker } from "./tools/model-compatibility-checker.js";
-import { sparkPromptBuilder } from "./tools/spark-prompt-builder.js";
+import { domainNeutralPromptBuilder } from "./tools/prompt/domain-neutral-prompt-builder.js";
+// Import tool implementations
+import { hierarchicalPromptBuilder } from "./tools/prompt/hierarchical-prompt-builder.js";
+import { sparkPromptBuilder } from "./tools/prompt/spark-prompt-builder.js";
 import { sprintTimelineCalculator } from "./tools/sprint-timeline-calculator.js";
 
 const server = new Server(
