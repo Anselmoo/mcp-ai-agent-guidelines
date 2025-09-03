@@ -29,6 +29,7 @@ import {
 import { getPrompt, listPrompts } from "./prompts/index.js";
 // Import resources
 import { getResource, listResources } from "./resources/index.js";
+import { strategyFrameworksBuilder } from "./tools/analysis/strategy-frameworks-builder.js";
 import { codeHygieneAnalyzer } from "./tools/code-hygiene-analyzer.js";
 import { guidelinesValidator } from "./tools/guidelines-validator.js";
 import { memoryContextOptimizer } from "./tools/memory-context-optimizer.js";
@@ -150,6 +151,55 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						},
 					},
 					required: ["context", "goal"],
+				},
+			},
+			{
+				name: "strategy-frameworks-builder",
+				description:
+					"Compose strategy analysis sections from selected frameworks (SWOT, BSC, VRIO, etc.) with compliant aliases for certain trademarks",
+				inputSchema: {
+					type: "object",
+					properties: {
+						frameworks: {
+							type: "array",
+							items: {
+								type: "string",
+								enum: [
+									"asIsToBe",
+									"whereToPlayHowToWin",
+									"balancedScorecard",
+									"swot",
+									"objectives",
+									"portersFiveForces",
+									"mckinsey7S",
+									"marketAnalysis",
+									"strategyMap",
+									"visionToMission",
+									"stakeholderTheory",
+									"values",
+									"gapAnalysis",
+									"ansoffMatrix",
+									"pest",
+									"bcgMatrix",
+									"blueOcean",
+									"scenarioPlanning",
+									"vrio",
+									"goalBasedPlanning",
+									"gartnerQuadrant",
+								],
+							},
+							description: "Framework identifiers to include",
+						},
+						context: { type: "string", description: "Business context" },
+						objectives: { type: "array", items: { type: "string" } },
+						market: { type: "string" },
+						stakeholders: { type: "array", items: { type: "string" } },
+						constraints: { type: "array", items: { type: "string" } },
+						includeReferences: { type: "boolean" },
+						includeMetadata: { type: "boolean" },
+						inputFile: { type: "string" },
+					},
+					required: ["frameworks", "context"],
 				},
 			},
 			{
@@ -645,6 +695,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 		switch (name) {
 			case "hierarchical-prompt-builder":
 				return hierarchicalPromptBuilder(args);
+			case "strategy-frameworks-builder":
+				return strategyFrameworksBuilder(args);
 			case "spark-prompt-builder":
 				return sparkPromptBuilder(args);
 			case "domain-neutral-prompt-builder":

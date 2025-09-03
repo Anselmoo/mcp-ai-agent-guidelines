@@ -7,7 +7,7 @@ description: 'Template to run consistent, security-first code hygiene reviews ac
 ## 🧩 Domain-Neutral Prompt Template
 
 ### Metadata
-- Updated: 2025-08-23
+- Updated: 2025-09-03
 - Source tool: mcp_ai-agent-guid_domain-neutral-prompt-builder
 - Input file: /Users/hahn/LocalDocuments/GitHub_Forks/mcp-ai-agent-guidelines/demos/demo-code-analysis.py
 - Suggested filename: domain-neutral-code-hygiene-review-prompt.prompt.md

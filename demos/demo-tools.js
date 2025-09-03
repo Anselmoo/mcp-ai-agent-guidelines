@@ -4,6 +4,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { strategyFrameworksBuilder } from "../dist/tool/analysis/strategy-frameworks-builder.js";
 import { codeHygieneAnalyzer } from "../dist/tools/code-hygiene-analyzer.js";
 import { domainNeutralPromptBuilder } from "../dist/tools/domain-neutral-prompt-builder.js";
 import { guidelinesValidator } from "../dist/tools/guidelines-validator.js";
@@ -191,6 +192,32 @@ async function main() {
 		sprintLength: 14,
 	});
 	await writeReport("demo-code-analysis.sprint.md", getText(sprint));
+
+	// Strategy frameworks demo
+	const strategy = await strategyFrameworksBuilder({
+		frameworks: [
+			"swot",
+			"whereToPlayHowToWin",
+			"balancedScorecard",
+			"mckinsey7S",
+			"bcgMatrix",
+			"ansoffMatrix",
+			"strategyMap",
+			"pest",
+			"vrio",
+		],
+		context: "AI DevTools SaaS expanding in EU/US mid-market",
+		objectives: [
+			"Grow ARR 30%",
+			"Expand to two new segments",
+			"Improve NRR 5pp",
+		],
+		stakeholders: ["Buyers", "Users", "Partners"],
+		includeReferences: true,
+		includeMetadata: true,
+		includeDiagrams: true,
+	});
+	await writeReport("demo-strategy-frameworks.md", getText(strategy));
 }
 
 main().catch((err) => {
