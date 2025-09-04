@@ -8,12 +8,12 @@ import {
 	ProviderEnum,
 	StyleEnum,
 	TechniqueEnum,
-} from "./shared/prompt-sections.js";
+} from "../shared/prompt-sections.js";
 import {
 	buildFrontmatterWithPolicy as buildFrontmatter,
 	buildMetadataSection,
 	slugify,
-} from "./shared/prompt-utils.js";
+} from "../shared/prompt-utils.js";
 
 const DomainNeutralSchema = z.object({
 	// Header

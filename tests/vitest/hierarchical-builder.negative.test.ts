@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { hierarchicalPromptBuilder } from "../../src/tools/hierarchical-prompt-builder";
+import { hierarchicalPromptBuilder } from "../../src/tools/prompt/hierarchical-prompt-builder";
 
 describe("hierarchicalPromptBuilder (negative)", () => {
 	it("rejects when context is missing", async () => {

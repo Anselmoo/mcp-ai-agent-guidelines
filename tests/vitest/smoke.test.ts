@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { domainNeutralPromptBuilder } from "../../src/tools/domain-neutral-prompt-builder";
+import { domainNeutralPromptBuilder } from "../../src/tools/prompt/domain-neutral-prompt-builder";
 
 // Tiny smoke test to ensure Vitest can import TS and run
 

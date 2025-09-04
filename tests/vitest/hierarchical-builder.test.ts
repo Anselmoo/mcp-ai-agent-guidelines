@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { hierarchicalPromptBuilder } from "../../src/tools/hierarchical-prompt-builder";
+import { hierarchicalPromptBuilder } from "../../src/tools/prompt/hierarchical-prompt-builder";
 
 describe("hierarchical-prompt-builder", () => {
 	it("generates a well-structured prompt with optional sections", async () => {

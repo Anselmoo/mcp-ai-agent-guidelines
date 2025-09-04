@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { Technique } from "./shared/prompt-sections.js";
+import type { Technique } from "../shared/prompt-sections.js";
 import {
 	buildPitfallsSection as buildSharedPitfalls,
 	buildProviderTipsSection as buildSharedProviderTips,
@@ -7,13 +7,13 @@ import {
 	ProviderEnum,
 	StyleEnum,
 	TechniqueEnum,
-} from "./shared/prompt-sections.js";
+} from "../shared/prompt-sections.js";
 import {
 	buildFrontmatterWithPolicy as buildFrontmatter,
 	buildMetadataSection,
 	buildReferencesSection,
 	slugify,
-} from "./shared/prompt-utils.js";
+} from "../shared/prompt-utils.js";
 
 const HierarchicalPromptSchema = z.object({
 	context: z.string(),

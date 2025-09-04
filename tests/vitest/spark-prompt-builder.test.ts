@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { sparkPromptBuilder } from "../../src/tools/spark-prompt-builder";
+import { sparkPromptBuilder } from "../../src/tools/prompt/spark-prompt-builder";
 
 describe("spark-prompt-builder", () => {
 	it("renders a comprehensive spark prompt with design and animation details", async () => {
