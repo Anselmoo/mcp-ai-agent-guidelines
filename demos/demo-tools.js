@@ -4,15 +4,15 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { strategyFrameworksBuilder } from "../dist/tool/analysis/strategy-frameworks-builder.js";
+import { strategyFrameworksBuilder } from "../dist/tools/analysis/strategy-frameworks-builder.js";
 import { codeHygieneAnalyzer } from "../dist/tools/code-hygiene-analyzer.js";
-import { domainNeutralPromptBuilder } from "../dist/tools/domain-neutral-prompt-builder.js";
 import { guidelinesValidator } from "../dist/tools/guidelines-validator.js";
-import { hierarchicalPromptBuilder } from "../dist/tools/hierarchical-prompt-builder.js";
 import { memoryContextOptimizer } from "../dist/tools/memory-context-optimizer.js";
 import { mermaidDiagramGenerator } from "../dist/tools/mermaid-diagram-generator.js";
 import { modelCompatibilityChecker } from "../dist/tools/model-compatibility-checker.js";
-import { sparkPromptBuilder } from "../dist/tools/spark-prompt-builder.js";
+import { domainNeutralPromptBuilder } from "../dist/tools/prompt/domain-neutral-prompt-builder.js";
+import { hierarchicalPromptBuilder } from "../dist/tools/prompt/hierarchical-prompt-builder.js";
+import { sparkPromptBuilder } from "../dist/tools/prompt/spark-prompt-builder.js";
 import { sprintTimelineCalculator } from "../dist/tools/sprint-timeline-calculator.js";
 
 const __filename = fileURLToPath(import.meta.url);
