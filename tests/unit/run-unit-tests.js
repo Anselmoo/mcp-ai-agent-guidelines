@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 import assert from "node:assert";
-import { domainNeutralPromptBuilder } from "../../dist/tools/domain-neutral-prompt-builder.js";
+import { domainNeutralPromptBuilder } from "../../dist/tools/prompt/domain-neutral-prompt-builder.js";
 import { guidelinesValidator } from "../../dist/tools/guidelines-validator.js";
-import { hierarchicalPromptBuilder } from "../../dist/tools/hierarchical-prompt-builder.js";
+import { hierarchicalPromptBuilder } from "../../dist/tools/prompt/hierarchical-prompt-builder.js";
 import { modelCompatibilityChecker } from "../../dist/tools/model-compatibility-checker.js";
 import { buildDisclaimer as sharedBuildDisclaimer } from "../../dist/tools/shared/prompt-sections.js";
-import { sparkPromptBuilder } from "../../dist/tools/spark-prompt-builder.js";
+import { sparkPromptBuilder } from "../../dist/tools/prompt/spark-prompt-builder.js";
 
 async function testModelCompatibility() {
 	const result = await modelCompatibilityChecker({
