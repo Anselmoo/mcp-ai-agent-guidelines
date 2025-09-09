@@ -113,13 +113,17 @@ Heuristic fit against requirement keywords; qualitative only. Validate with quic
 
 ${codeExamples ? `### Code Examples\n${codeExamples}\n` : ""}
 ${fileLinks ? `### Configuration & Files\n${fileLinks}\n` : ""}
-${input.includeReferences ? `### References
+${
+	input.includeReferences
+		? `### References
 - GitHub Copilot model comparison (task-based): https://docs.github.com/en/copilot/reference/ai-models/model-comparison#recommended-models-by-task
 - OpenAI models overview: https://platform.openai.com/docs/models
 - Anthropic Claude models: https://docs.anthropic.com/en/docs/about-claude/models
 - Google Gemini models: https://ai.google.dev/gemini-api/docs/models
 
-` : ""}### Disclaimer
+`
+		: ""
+}### Disclaimer
 - This tool provides qualitative recommendations and links to official docs.
 - Capabilities evolve; verify with provider docs and test in your environment before adoption.
 `,
