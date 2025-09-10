@@ -231,8 +231,14 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 							},
 							description: "Gap analysis framework types to include",
 						},
-						currentState: { type: "string", description: "Current state description" },
-						desiredState: { type: "string", description: "Desired state description" },
+						currentState: {
+							type: "string",
+							description: "Current state description",
+						},
+						desiredState: {
+							type: "string",
+							description: "Desired state description",
+						},
 						context: { type: "string", description: "Analysis context" },
 						objectives: { type: "array", items: { type: "string" } },
 						timeframe: { type: "string" },

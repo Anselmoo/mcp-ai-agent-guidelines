@@ -26,7 +26,12 @@ type GapFrameworkId = (typeof SUPPORTED_GAP_FRAMEWORKS)[number];
 const GapFrameworkSchema = z.object({
 	// Analysis configuration
 	frameworks: z.array(
-		z.enum(SUPPORTED_GAP_FRAMEWORKS as unknown as [GapFrameworkId, ...GapFrameworkId[]]),
+		z.enum(
+			SUPPORTED_GAP_FRAMEWORKS as unknown as [
+				GapFrameworkId,
+				...GapFrameworkId[],
+			],
+		),
 	),
 	// Current and desired states
 	currentState: z.string(),
@@ -54,11 +59,10 @@ export async function gapFrameworksAnalyzers(args: unknown) {
 	sections.push(`Context: ${input.context}`);
 	sections.push(`Current State: ${input.currentState}`);
 	sections.push(`Desired State: ${input.desiredState}`);
-	
+
 	if (input.objectives?.length)
 		sections.push(`Objectives:\n- ${input.objectives.join("\n- ")}`);
-	if (input.timeframe) 
-		sections.push(`Timeframe: ${input.timeframe}`);
+	if (input.timeframe) sections.push(`Timeframe: ${input.timeframe}`);
 	if (input.stakeholders?.length)
 		sections.push(`Stakeholders:\n- ${input.stakeholders.join("\n- ")}`);
 	if (input.constraints?.length)
@@ -116,7 +120,7 @@ function renderGapFramework(framework: GapFrameworkId): string {
 			]);
 		case "performance":
 			return section("Performance Gap Analysis", [
-				"Define current performance metrics and benchmarks", 
+				"Define current performance metrics and benchmarks",
 				"Establish target performance indicators",
 				"Identify root causes of performance gaps",
 				"Assess impact on business objectives",
@@ -225,7 +229,7 @@ function renderActionPlan(): string {
 }
 
 function section(title: string, bullets: string[]): string {
-	return `## ${title}\n\n${bullets.map(b => `- ${b}`).join("\n")}`;
+	return `## ${title}\n\n${bullets.map((b) => `- ${b}`).join("\n")}`;
 }
 
 const REFERENCE_LINKS = [
