@@ -5,6 +5,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { strategyFrameworksBuilder } from "../dist/tools/analysis/strategy-frameworks-builder.js";
+import { gapFrameworksAnalyzers } from "../dist/tools/analysis/gap-frameworks-analyzers.js";
 import { codeHygieneAnalyzer } from "../dist/tools/code-hygiene-analyzer.js";
 import { guidelinesValidator } from "../dist/tools/guidelines-validator.js";
 import { memoryContextOptimizer } from "../dist/tools/memory-context-optimizer.js";
@@ -218,6 +219,27 @@ async function main() {
 		includeDiagrams: true,
 	});
 	await writeReport("demo-strategy-frameworks.md", getText(strategy));
+
+	// Gap analysis demo
+	const gapAnalysis = await gapFrameworksAnalyzers({
+		frameworks: ["capability", "performance", "maturity", "technology"],
+		currentState: "Manual deployment processes with limited monitoring and basic CI/CD pipeline",
+		desiredState: "Fully automated deployment with comprehensive monitoring, security scanning, and zero-downtime deployments",
+		context: "DevOps transformation initiative to improve deployment reliability and speed",
+		objectives: [
+			"Reduce deployment time from 4 hours to 30 minutes",
+			"Achieve 99.9% uptime",
+			"Implement automated security scanning",
+			"Enable multiple deployments per day"
+		],
+		timeframe: "12 months",
+		stakeholders: ["Development Team", "Operations Team", "Security Team", "Product Management"],
+		constraints: ["Limited downtime windows", "Compliance requirements", "Budget constraints"],
+		includeReferences: true,
+		includeMetadata: true,
+		includeActionPlan: true,
+	});
+	await writeReport("demo-gap-analysis.md", getText(gapAnalysis));
 }
 
 main().catch((err) => {

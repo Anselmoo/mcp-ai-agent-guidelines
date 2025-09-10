@@ -32,7 +32,7 @@ const GapFrameworkSchema = z.object({
 				...GapFrameworkId[],
 			],
 		),
-	),
+	).min(1, "At least one framework must be specified"),
 	// Current and desired states
 	currentState: z.string(),
 	desiredState: z.string(),
