@@ -239,9 +239,20 @@ Usage: `guidelines-validator`
 
 ## Versioning
 
-- Package version: `0.1.0` (matches internal resource versions).
+- Package version: `0.6.0` (matches internal resource versions).
 - Tags `vX.Y.Z` trigger CI for NPM and Docker releases.
 - Pin exact versions for production stability.
+
+### Release Setup
+
+Use the [Release Setup Issue Form](.github/ISSUE_TEMPLATE/release-setup.yml) to streamline the release process:
+
+- **Automated version management**: Update version numbers across the codebase
+- **GitHub Copilot compatible**: Structured form enables bot automation
+- **Quality gates**: Pre-release checklist ensures reliability
+- **CI/CD integration**: Supports existing NPM and Docker publishing workflow
+
+To create a new release, [open a release setup issue](../../issues/new?template=release-setup.yml) with the target version and release details.
 
 ## Development
 
