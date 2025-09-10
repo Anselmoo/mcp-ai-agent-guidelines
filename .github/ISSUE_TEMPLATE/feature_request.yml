@@ -1,0 +1,275 @@
+name: ✨ Feature Request
+description: Suggest a new feature or enhancement for the project
+title: "✨ [FEATURE] - [Brief description]"
+labels: ["enhancement", "needs-review"]
+projects: []
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Feature Request Form
+        
+        Thank you for suggesting a new feature! Please fill out this form to help us understand your idea and its potential impact.
+
+  - type: dropdown
+    id: feature_type
+    attributes:
+      label: 🏷️ Feature Type
+      description: "What type of feature are you requesting?"
+      options:
+        - 🆕 New Tool/Command
+        - 🔧 Enhancement to Existing Tool
+        - 🎨 UI/UX Improvement
+        - 📚 Documentation Enhancement
+        - 🚀 Performance Improvement
+        - 🔌 New Integration/API
+        - 🛠️ Developer Experience (DX) Improvement
+        - 📦 Package/Distribution Enhancement
+        - 🔒 Security Feature
+        - 🎯 Workflow/Automation Improvement
+        - 🌐 Platform Support (OS, environment)
+        - 📊 Analytics/Reporting Feature
+        - 🎨 Template/Prompt Enhancement
+        - 🔍 Other (please specify)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority_level
+    attributes:
+      label: 🚨 Priority Level
+      description: "How important is this feature to you and the community?"
+      options:
+        - 🔴 Critical - Essential for core functionality
+        - 🟠 High - Significantly improves user experience
+        - 🟡 Medium - Nice to have, moderate impact
+        - 🟢 Low - Minor improvement or convenience
+        - 🔵 Future - Long-term consideration
+    validations:
+      required: true
+
+  - type: dropdown
+    id: user_type
+    attributes:
+      label: 👤 User Type
+      description: "Who would primarily benefit from this feature?"
+      options:
+        - 👨‍💻 Developers using MCP tools
+        - 🤖 AI Agents/Copilot users
+        - 📝 Prompt engineers
+        - 🏢 Enterprise/Team users
+        - 🎓 Educators/Students
+        - 📚 Documentation users
+        - 🔧 Package maintainers
+        - 🌍 All users
+        - 🎯 Specific use case (describe below)
+    validations:
+      required: true
+
+  - type: textarea
+    id: feature_summary
+    attributes:
+      label: 📝 Feature Summary
+      description: "A clear and concise description of the feature you'd like to see"
+      placeholder: |
+        Provide a one-paragraph explanation of the feature.
+        
+        Example: "Add a new tool that can generate Mermaid sequence diagrams from natural language descriptions, similar to the existing flowchart generator but focused on interaction flows."
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem_motivation
+    attributes:
+      label: 🎯 Problem & Motivation
+      description: "What problem does this feature solve? Why is it needed?"
+      placeholder: |
+        Describe:
+        - What pain point or limitation does this address?
+        - What use cases would this enable?
+        - How would this improve the user experience?
+        
+        Example: "Currently, users have to manually create sequence diagrams which is time-consuming and requires knowledge of Mermaid syntax. This feature would make it accessible to non-technical users and speed up documentation workflows."
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed_solution
+    attributes:
+      label: 💡 Proposed Solution
+      description: "Describe your preferred solution or approach"
+      placeholder: |
+        Describe your high-level approach:
+        - How should this feature work?
+        - What would the user interface look like?
+        - What would be the key components?
+        
+        Example: "Add a new MCP tool called 'sequence-diagram-generator' that accepts natural language input and outputs Mermaid sequence diagram code. It should integrate with existing prompt patterns and support VS Code integration."
+    validations:
+      required: true
+
+  - type: textarea
+    id: use_cases
+    attributes:
+      label: 🎯 Use Cases & Examples
+      description: "Provide specific examples of how this feature would be used"
+      placeholder: |
+        List 2-3 concrete use cases:
+        
+        1. **Use Case 1**: [Describe scenario]
+           - Input: [What user provides]
+           - Output: [What feature produces]
+           - Benefit: [Why this helps]
+        
+        2. **Use Case 2**: [Another scenario]
+           - Input: [What user provides] 
+           - Output: [What feature produces]
+           - Benefit: [Why this helps]
+    validations:
+      required: true
+
+  - type: dropdown
+    id: complexity_estimate
+    attributes:
+      label: ⚙️ Implementation Complexity
+      description: "How complex do you think this feature would be to implement?"
+      options:
+        - 🟢 Simple - Minor changes, existing patterns
+        - 🟡 Moderate - New components, some complexity
+        - 🟠 Complex - Significant development effort
+        - 🔴 Very Complex - Major architectural changes
+        - ❓ Unknown - Not sure about complexity
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: related_areas
+    attributes:
+      label: 🔗 Related Areas
+      description: "Which parts of the project would this feature touch? (Check all that apply)"
+      options:
+        - label: "🛠️ Core MCP tools (src/tools/)"
+          required: false
+        - label: "📝 Prompt builders and templates"
+          required: false
+        - label: "🎨 UI/UX components or interfaces"
+          required: false
+        - label: "📚 Documentation and guides"
+          required: false
+        - label: "🔧 Build/development tooling"
+          required: false
+        - label: "📦 Package distribution (NPM, Docker)"
+          required: false
+        - label: "🤝 VS Code/IDE integration"
+          required: false
+        - label: "🧪 Testing infrastructure"
+          required: false
+        - label: "🔄 CI/CD pipelines"
+          required: false
+        - label: "🌐 External integrations/APIs"
+          required: false
+
+  - type: textarea
+    id: alternatives_considered
+    attributes:
+      label: 🔄 Alternatives Considered
+      description: "What alternative solutions have you considered?"
+      placeholder: |
+        Describe other approaches you've thought about:
+        - Why weren't these alternatives suitable?
+        - What are the trade-offs?
+        - Are there existing tools that partially solve this?
+        
+        Example: "Considered using external diagram tools, but they don't integrate with the MCP workflow. Also looked at manual Mermaid creation, but it's too technical for most users."
+    validations:
+      required: false
+
+  - type: textarea
+    id: technical_considerations
+    attributes:
+      label: 🔬 Technical Considerations
+      description: "Any technical requirements, constraints, or implementation ideas?"
+      placeholder: |
+        Consider:
+        - Dependencies or libraries needed
+        - Performance implications
+        - Backward compatibility concerns
+        - Security considerations
+        - Integration points with existing code
+        
+        Example: "Would need to integrate with existing prompt validation system. Should reuse the current Mermaid rendering approach. Need to consider rate limiting for AI-generated content."
+    validations:
+      required: false
+
+  - type: textarea
+    id: success_criteria
+    attributes:
+      label: ✅ Success Criteria
+      description: "How would we know this feature is successful?"
+      placeholder: |
+        Define what success looks like:
+        - User adoption metrics
+        - Performance benchmarks
+        - Quality measures
+        - User feedback indicators
+        
+        Example: "Users can generate sequence diagrams 5x faster than manual creation. 90% of generated diagrams require minimal editing. Positive user feedback on ease of use."
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: 📎 Additional Context
+      description: "Links, references, mockups, or any other relevant information"
+      placeholder: |
+        Add any other context:
+        - Links to similar features in other tools
+        - Mockups or wireframes
+        - Research or reference materials
+        - Community discussions
+        - Related issues or PRs
+        
+        Example: "Similar to PlantUML's text-to-diagram approach: https://plantuml.com/sequence-diagram"
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: contribution_interest
+    attributes:
+      label: 🤝 Contribution Interest
+      description: "Are you interested in contributing to this feature?"
+      options:
+        - label: "💡 I can help with design and planning"
+          required: false
+        - label: "💻 I'm willing to contribute code"
+          required: false
+        - label: "🧪 I can help with testing"
+          required: false
+        - label: "📚 I can help with documentation"
+          required: false
+        - label: "🎨 I can help with UI/UX design"
+          required: false
+        - label: "💬 I can provide ongoing feedback during development"
+          required: false
+        - label: "❌ I'm not able to contribute directly but would love to see this implemented"
+          required: false
+
+  - type: checkboxes
+    id: submission_checklist
+    attributes:
+      label: 📋 Final Checklist
+      description: "Before submitting, please confirm:"
+      options:
+        - label: "I have searched existing issues and feature requests for duplicates"
+          required: true
+        - label: "I have provided clear use cases and examples"
+          required: true
+        - label: "I have considered alternative approaches"
+          required: false
+        - label: "I understand this is a public repository and my submission is visible to everyone"
+          required: true
+        - label: "I'm willing to participate in discussions about this feature"
+          required: true

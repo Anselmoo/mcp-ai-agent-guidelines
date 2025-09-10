@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 GitHub Discussions
+    url: https://github.com/Anselmoo/mcp-ai-agent-guidelines/discussions
+    about: Ask questions, share ideas, or discuss the project with the community
+  - name: 📚 Documentation
+    url: https://github.com/Anselmoo/mcp-ai-agent-guidelines/blob/main/README.md
+    about: Check the README and documentation for setup instructions and examples
+  - name: 🛡️ Security Issues
+    url: https://github.com/Anselmoo/mcp-ai-agent-guidelines/security/advisories/new
+    about: Report security vulnerabilities privately through GitHub Security Advisories
+  - name: 🤝 Contributing Guide
+    url: https://github.com/Anselmoo/mcp-ai-agent-guidelines/blob/main/CONTRIBUTING.md
+    about: Learn how to contribute to the project, development setup, and guidelines
