@@ -1,0 +1,172 @@
+name: 🚀 Release Setup
+description: Create a new release and automate version updates
+title: "Release v[VERSION] - [RELEASE_TYPE]"
+labels: ["release", "automation"]
+projects: []
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Release Setup Form
+        
+        Use this form to set up a new release and automate version updates in the repository. This form is designed to work with GitHub Copilot and automation tools to streamline the release process.
+
+  - type: input
+    id: version
+    attributes:
+      label: Version Number
+      description: "Semantic version for the new release (e.g., 1.2.3)"
+      placeholder: "0.7.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: release_type
+    attributes:
+      label: Release Type
+      description: "Type of release based on semantic versioning"
+      options:
+        - patch (bug fixes)
+        - minor (new features, backwards compatible)
+        - major (breaking changes)
+        - prerelease (alpha/beta/rc)
+    validations:
+      required: true
+
+  - type: textarea
+    id: release_notes
+    attributes:
+      label: Release Notes
+      description: "What's new in this release? Include key features, bug fixes, and breaking changes."
+      placeholder: |
+        ## What's New
+        - New feature: Enhanced prompt building capabilities
+        - Bug fix: Resolved memory optimization issues
+        - Breaking change: Updated API structure
+        
+        ## Migration Guide
+        - Steps to upgrade from previous version
+        
+        ## Dependencies
+        - Updated dependencies and their versions
+      value: |
+        ## What's New
+        - 
+        
+        ## Bug Fixes
+        - 
+        
+        ## Dependencies
+        - 
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: version_updates
+    attributes:
+      label: Version Update Checklist
+      description: "Select which version references should be updated"
+      options:
+        - label: "Update package.json version"
+          required: true
+        - label: "Update version references in src/ folder"
+          required: false
+        - label: "Update README.md version references"
+          required: false
+        - label: "Update CHANGELOG.md (if exists)"
+          required: false
+        - label: "Update Docker image tags"
+          required: false
+        - label: "Update documentation version references"
+          required: false
+
+  - type: checkboxes
+    id: automation_options
+    attributes:
+      label: Automation Options
+      description: "Select automation actions to perform"
+      options:
+        - label: "Create git tag (v[VERSION])"
+          required: false
+        - label: "Trigger CI/CD pipeline"
+          required: false
+        - label: "Create GitHub release draft"
+          required: false
+        - label: "Update NPM package version"
+          required: false
+        - label: "Rebuild and test before release"
+          required: true
+
+  - type: dropdown
+    id: target_branch
+    attributes:
+      label: Target Branch
+      description: "Branch to create the release from"
+      options:
+        - main
+        - develop
+        - release/*
+        - other (specify in notes)
+      default: 0
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: pre_release_checks
+    attributes:
+      label: Pre-Release Quality Checks
+      description: "Ensure these checks pass before release"
+      options:
+        - label: "All tests passing"
+          required: true
+        - label: "TypeScript compilation successful"
+          required: true
+        - label: "Linting and formatting checks pass"
+          required: true
+        - label: "Documentation is up to date"
+          required: false
+        - label: "Security scan completed"
+          required: false
+        - label: "Performance benchmarks within acceptable range"
+          required: false
+
+  - type: textarea
+    id: migration_notes
+    attributes:
+      label: Migration Notes
+      description: "Any special migration steps or breaking changes users should be aware of"
+      placeholder: |
+        ### Breaking Changes
+        - List any breaking changes
+        
+        ### Migration Steps
+        1. Step one
+        2. Step two
+        
+        ### Compatibility
+        - Node.js version requirements
+        - Dependency updates
+
+  - type: textarea
+    id: automation_context
+    attributes:
+      label: Additional Context for Automation
+      description: "Any additional information that automation tools (like Copilot) should consider"
+      placeholder: |
+        - Special deployment considerations
+        - Dependencies that need manual updates
+        - Post-release verification steps
+        - Rollback plan if issues occur
+
+  - type: checkboxes
+    id: final_confirmation
+    attributes:
+      label: Final Confirmation
+      description: "Confirm you've reviewed all details"
+      options:
+        - label: "I have reviewed all the information above and it is accurate"
+          required: true
+        - label: "I confirm this release is ready to proceed"
+          required: true
