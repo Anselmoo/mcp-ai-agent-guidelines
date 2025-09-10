@@ -25,14 +25,16 @@ type GapFrameworkId = (typeof SUPPORTED_GAP_FRAMEWORKS)[number];
 
 const GapFrameworkSchema = z.object({
 	// Analysis configuration
-	frameworks: z.array(
-		z.enum(
-			SUPPORTED_GAP_FRAMEWORKS as unknown as [
-				GapFrameworkId,
-				...GapFrameworkId[],
-			],
-		),
-	).min(1, "At least one framework must be specified"),
+	frameworks: z
+		.array(
+			z.enum(
+				SUPPORTED_GAP_FRAMEWORKS as unknown as [
+					GapFrameworkId,
+					...GapFrameworkId[],
+				],
+			),
+		)
+		.min(1, "At least one framework must be specified"),
 	// Current and desired states
 	currentState: z.string(),
 	desiredState: z.string(),
