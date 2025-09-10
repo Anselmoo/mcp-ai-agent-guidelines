@@ -1,9 +1,9 @@
 ## 🧹 Code Hygiene Analysis Report
 
 ### Metadata
-- Updated: 2025-09-03
+- Updated: 2025-09-10
 - Source tool: mcp_ai-agent-guid_code-hygiene-analyzer
-- Input file: /Users/hahn/LocalDocuments/GitHub_Forks/mcp-ai-agent-guidelines/demos/demo-code-analysis.py
+- Input file: /home/runner/work/mcp-ai-agent-guidelines/mcp-ai-agent-guidelines/demos/demo-code-analysis.py
 
 ### 📋 Summary
 | Key | Value |
