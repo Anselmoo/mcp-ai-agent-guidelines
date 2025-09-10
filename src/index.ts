@@ -29,6 +29,7 @@ import {
 import { getPrompt, listPrompts } from "./prompts/index.js";
 // Import resources
 import { getResource, listResources } from "./resources/index.js";
+import { gapFrameworksAnalyzers } from "./tools/analysis/gap-frameworks-analyzers.js";
 import { strategyFrameworksBuilder } from "./tools/analysis/strategy-frameworks-builder.js";
 import { codeHygieneAnalyzer } from "./tools/code-hygiene-analyzer.js";
 import { guidelinesValidator } from "./tools/guidelines-validator.js";
@@ -200,6 +201,49 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						inputFile: { type: "string" },
 					},
 					required: ["frameworks", "context"],
+				},
+			},
+			{
+				name: "gap-frameworks-analyzers",
+				description:
+					"Analyze gaps between current and desired states using various frameworks (capability, performance, maturity, etc.)",
+				inputSchema: {
+					type: "object",
+					properties: {
+						frameworks: {
+							type: "array",
+							items: {
+								type: "string",
+								enum: [
+									"capability",
+									"performance",
+									"maturity",
+									"skills",
+									"technology",
+									"process",
+									"market",
+									"strategic",
+									"operational",
+									"cultural",
+									"security",
+									"compliance",
+								],
+							},
+							description: "Gap analysis framework types to include",
+						},
+						currentState: { type: "string", description: "Current state description" },
+						desiredState: { type: "string", description: "Desired state description" },
+						context: { type: "string", description: "Analysis context" },
+						objectives: { type: "array", items: { type: "string" } },
+						timeframe: { type: "string" },
+						stakeholders: { type: "array", items: { type: "string" } },
+						constraints: { type: "array", items: { type: "string" } },
+						includeReferences: { type: "boolean" },
+						includeMetadata: { type: "boolean" },
+						includeActionPlan: { type: "boolean" },
+						inputFile: { type: "string" },
+					},
+					required: ["frameworks", "currentState", "desiredState", "context"],
 				},
 			},
 			{
@@ -697,6 +741,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 				return hierarchicalPromptBuilder(args);
 			case "strategy-frameworks-builder":
 				return strategyFrameworksBuilder(args);
+			case "gap-frameworks-analyzers":
+				return gapFrameworksAnalyzers(args);
 			case "spark-prompt-builder":
 				return sparkPromptBuilder(args);
 			case "domain-neutral-prompt-builder":
