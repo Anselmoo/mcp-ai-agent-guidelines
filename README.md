@@ -1,7 +1,7 @@
 ## MCP AI Agent Guidelines Server
 
 > [!CAUTION]
-> **Disclaimer -- Experimental / Early Stage:** This project references third‑party models, tools, pricing, and docs that evolve quickly. Treat outputs as recommendations and verify against official docs and your own benchmarks before production use.
+> **Disclaimer -- Experimental / Early Stage:** This _research demonstrator_ project references third‑party models, tools, pricing, and docs that evolve quickly. Treat outputs as recommendations and verify against official docs and your own benchmarks before production use.
 
 [![CI/CD Pipeline](https://github.com/Anselmoo/mcp-ai-agent-guidelines/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/Anselmoo/mcp-ai-agent-guidelines/actions/workflows/ci-cd.yml)
 [![Coverage Status](https://img.shields.io/codecov/c/github/Anselmoo/mcp-ai-agent-guidelines/main?label=coverage&logo=codecov)](https://codecov.io/gh/Anselmoo/mcp-ai-agent-guidelines)
