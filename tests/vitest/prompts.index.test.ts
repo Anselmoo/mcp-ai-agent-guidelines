@@ -12,6 +12,10 @@ describe("prompts API", () => {
 		expect(names).toContain("code-analysis-prompt");
 		expect(names).toContain("hierarchical-task-prompt");
 		expect(names).toContain("spark-ui-prompt");
+		expect(names).toContain("security-analysis-prompt");
+		expect(names).toContain("architecture-design-prompt");
+		expect(names).toContain("debugging-assistant-prompt");
+		expect(names).toContain("documentation-generator-prompt");
 	});
 
 	it("generates code-analysis prompt", async () => {
@@ -60,5 +64,60 @@ describe("prompts API", () => {
 		await expect(getPrompt("non-existent", {})).rejects.toThrow(
 			/Prompt not found/i,
 		);
+	});
+
+	it("generates security-analysis prompt", async () => {
+		const res = (await getPrompt("security-analysis-prompt", {
+			codebase: "function login(user,pass){return db.query('SELECT * FROM users WHERE user='+user)}",
+			security_focus: "vulnerability-analysis",
+			language: "javascript",
+			compliance_standards: "OWASP-Top-10",
+		})) as unknown as PromptResponse;
+		const text = res.messages[0].content.text;
+		expect(text).toMatch(/Security Analysis Request/);
+		expect(text).toMatch(/vulnerability analysis/i);
+		expect(text).toMatch(/OWASP-Top-10/);
+		expect(text).toMatch(/```javascript/);
+		expect(text).toMatch(/Risk Assessment/);
+		expect(text).toMatch(/Likelihood.*Impact/);
+	});
+
+	it("generates architecture-design prompt", async () => {
+		const res = (await getPrompt("architecture-design-prompt", {
+			system_requirements: "E-commerce platform with microservices. High availability, scalability, security",
+			scale: "medium",
+			technology_stack: "Node.js, React, MongoDB",
+		})) as unknown as PromptResponse;
+		const text = res.messages[0].content.text;
+		expect(text).toMatch(/Architecture Design/);
+		expect(text).toMatch(/E-commerce platform/);
+		expect(text).toMatch(/microservices/);
+		expect(text).toMatch(/scalability/);
+	});
+
+	it("generates debugging-assistant prompt", async () => {
+		const res = (await getPrompt("debugging-assistant-prompt", {
+			error_description: "Memory leak in Node.js application",
+			context: "Express server with MongoDB connections",
+			attempted_solutions: "Tried restarting server, checked for event listeners",
+		})) as unknown as PromptResponse;
+		const text = res.messages[0].content.text;
+		expect(text).toMatch(/Debugging Assistant/);
+		expect(text).toMatch(/Memory leak/);
+		expect(text).toMatch(/Node\.js/);
+		expect(text).toMatch(/Express server/);
+	});
+
+	it("generates documentation-generator prompt", async () => {
+		const res = (await getPrompt("documentation-generator-prompt", {
+			content_type: "API documentation",
+			target_audience: "API consumers",
+			existing_content: "Basic API reference exists",
+		})) as unknown as PromptResponse;
+		const text = res.messages[0].content.text;
+		expect(text).toMatch(/Documentation Generation/);
+		expect(text).toMatch(/API documentation/);
+		expect(text).toMatch(/API consumers/);
+		expect(text).toMatch(/Basic API reference/);
 	});
 });
