@@ -1,0 +1,221 @@
+name: 📚 Documentation Issue
+description: Report issues with documentation, guides, or examples
+title: "📚 [DOCS] - [Brief description]"
+labels: ["documentation", "needs-review"]
+projects: []
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Documentation Issue Form
+        
+        Help us improve our documentation! This form is for reporting issues with existing documentation or requesting new documentation.
+
+  - type: dropdown
+    id: documentation_type
+    attributes:
+      label: 📖 Documentation Type
+      description: "What type of documentation needs attention?"
+      options:
+        - 📋 README.md
+        - 🚀 Getting Started Guide
+        - 🛠️ API Documentation
+        - 💻 Code Examples
+        - 🎯 Tool Usage Guides
+        - 🔧 Setup/Installation Instructions
+        - 🏗️ Contributing Guidelines
+        - 🎓 Tutorials/Walkthroughs
+        - 📝 Code Comments
+        - 🎨 Prompt Templates/Examples
+        - 🔗 External Links/References
+        - 📊 Demo/Example Reports
+        - 🐳 Docker Documentation
+        - 🎪 Other (specify below)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: issue_type
+    attributes:
+      label: 🏷️ Issue Type
+      description: "What kind of documentation issue is this?"
+      options:
+        - ❌ Incorrect Information
+        - 📝 Missing Information
+        - 🔗 Broken Links
+        - 📸 Outdated Screenshots/Examples
+        - 🔄 Needs Update (version changes)
+        - 😕 Unclear/Confusing Content
+        - 🔍 Missing Examples
+        - 🌍 Translation/Language Issue
+        - 🎨 Formatting Problems
+        - ♿ Accessibility Issues
+        - 📱 Mobile/Responsive Issues
+        - 💡 Improvement Suggestion
+        - 🆕 New Documentation Request
+    validations:
+      required: true
+
+  - type: input
+    id: documentation_location
+    attributes:
+      label: 📍 Location
+      description: "Where is the documentation issue located?"
+      placeholder: "e.g., README.md line 45, /docs/api.md, https://github.com/user/repo/blob/main/file.md#section"
+    validations:
+      required: true
+
+  - type: textarea
+    id: issue_description
+    attributes:
+      label: 📝 Issue Description
+      description: "Describe the documentation issue in detail"
+      placeholder: |
+        Clearly describe what's wrong or missing:
+        - What did you expect to find?
+        - What actually happened or what's incorrect?
+        - How does this impact users?
+        
+        Example: "The installation instructions in README.md mention Node.js 18+, but package.json requires Node.js 20+. This causes confusion for users trying to install."
+    validations:
+      required: true
+
+  - type: textarea
+    id: current_content
+    attributes:
+      label: 📄 Current Content (if applicable)
+      description: "Copy the current documentation content that needs attention"
+      placeholder: |
+        Paste the current text that has issues:
+        ```
+        Current documentation text here...
+        ```
+      render: markdown
+    validations:
+      required: false
+
+  - type: textarea
+    id: suggested_improvement
+    attributes:
+      label: ✨ Suggested Improvement
+      description: "How would you improve or fix this documentation?"
+      placeholder: |
+        Provide your suggestion for improvement:
+        - What should the corrected version say?
+        - What additional information should be included?
+        - How would you restructure or clarify the content?
+        
+        Example:
+        ```
+        Update the installation requirements to:
+        "Node.js 20+ required (see engines in package.json)"
+        
+        Add a troubleshooting section for common Node version issues.
+        ```
+      render: markdown
+    validations:
+      required: false
+
+  - type: dropdown
+    id: user_impact
+    attributes:
+      label: 👥 User Impact
+      description: "How does this documentation issue affect users?"
+      options:
+        - 🔴 Critical - Blocks users from getting started
+        - 🟠 High - Causes significant confusion or errors
+        - 🟡 Medium - Minor confusion, but has workarounds
+        - 🟢 Low - Small improvement that would help
+        - 🔵 Enhancement - Nice to have addition
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: affected_audiences
+    attributes:
+      label: 🎯 Affected Audiences
+      description: "Who would be most impacted by this documentation issue? (Check all that apply)"
+      options:
+        - label: "🆕 New users/first-time installers"
+          required: false
+        - label: "👨‍💻 Developers integrating the package"
+          required: false
+        - label: "🤖 AI agents/Copilot users"
+          required: false
+        - label: "📝 Prompt engineers"
+          required: false
+        - label: "🏢 Enterprise/team users"
+          required: false
+        - label: "🔧 Package maintainers"
+          required: false
+        - label: "🤝 Contributors"
+          required: false
+        - label: "🌍 All users"
+          required: false
+
+  - type: textarea
+    id: context_environment
+    attributes:
+      label: 🌐 Context & Environment
+      description: "Additional context about where/how you encountered this issue"
+      placeholder: |
+        Provide context:
+        - How did you discover this issue?
+        - What were you trying to accomplish?
+        - What environment were you using? (OS, browser, IDE, etc.)
+        - Are there related issues or dependencies?
+        
+        Example: "I was following the VS Code setup guide on macOS and the configuration example didn't work with the latest version."
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional_resources
+    attributes:
+      label: 📎 Additional Resources
+      description: "Links, references, or examples that might help"
+      placeholder: |
+        Include any helpful resources:
+        - Links to correct/updated information
+        - Screenshots or recordings showing the issue
+        - Examples from other projects
+        - Related GitHub issues or discussions
+        - Official documentation that conflicts
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: contribution_offer
+    attributes:
+      label: 🤝 Contribution Offer
+      description: "Are you willing to help improve this documentation?"
+      options:
+        - label: "✍️ I can write the corrected content"
+          required: false
+        - label: "🔍 I can review and test the fix"
+          required: false
+        - label: "📸 I can provide screenshots/examples"
+          required: false
+        - label: "🔗 I can help find and fix related issues"
+          required: false
+        - label: "💬 I can provide feedback on the improvements"
+          required: false
+        - label: "❌ I can't contribute directly but would like to see this fixed"
+          required: false
+
+  - type: checkboxes
+    id: submission_checklist
+    attributes:
+      label: 📋 Final Checklist
+      description: "Before submitting, please confirm:"
+      options:
+        - label: "I have checked that this documentation issue hasn't been reported already"
+          required: true
+        - label: "I have provided a clear description of the issue"
+          required: true
+        - label: "I have indicated the specific location of the documentation problem"
+          required: true
+        - label: "I understand this is a public repository and my submission is visible to everyone"
+          required: true
