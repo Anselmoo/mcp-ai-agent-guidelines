@@ -173,7 +173,7 @@ function buildSecurityHardeningPrompt(input: SecurityHardeningInput): string {
 	if (input.complianceStandards && input.complianceStandards.length > 0) {
 		prompt += `## Compliance Standards\nEvaluate against:\n`;
 		input.complianceStandards.forEach((standard) => {
-			prompt += `- ${standard.replace("-", " ")}\n`;
+			prompt += `- ${standard.replaceAll("-", " ")}\n`;
 		});
 		prompt += "\n";
 	}
