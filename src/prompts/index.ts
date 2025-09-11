@@ -666,7 +666,7 @@ function generateSecurityAnalysisPrompt(args: PromptArgs): string {
 	return `# Security Analysis Request
 
 ## Context
-You are a security expert analyzing ${language} code with focus on ${security_focus.replace("-", " ")}. Apply ${risk_tolerance} risk tolerance and check against ${compliance_standards} standards.
+You are a security expert analyzing ${language} code with focus on ${security_focus.replaceAll("-", " ")}. Apply ${risk_tolerance} risk tolerance and check against ${compliance_standards} standards.
 
 ## Code to Analyze
 \`\`\`${language}
