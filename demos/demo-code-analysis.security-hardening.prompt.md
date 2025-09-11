@@ -71,9 +71,11 @@ Focus on these security areas:
 
 ### 2. Risk Assessment
 - Rate findings by severity (Critical/High/Medium/Low)
-- Assess exploitability and business impact
+- Assess likelihood of exploitation (Very High/High/Medium/Low/Very Low)
+- Evaluate impact on confidentiality, integrity, and availability
 - Consider attack vectors and threat scenarios
 - Document risk exposure and likelihood
+- Apply OWASP Risk Rating methodology (Impact × Likelihood)
 
 ### 3. Security Controls Evaluation
 - Review authentication mechanisms
@@ -91,17 +93,46 @@ Focus on these security areas:
 
 Provide a comprehensive security assessment report including:
 - **Executive Summary**: High-level security posture overview
-- **Findings**: Detailed vulnerability descriptions with severity ratings
-- **Risk Analysis**: Impact assessment and exploitability analysis
+- **Findings**: Detailed vulnerability descriptions with severity and likelihood ratings
+- **Risk Analysis**: OWASP-based impact × likelihood assessment with risk matrix position
 - **Recommendations**: Prioritized remediation steps with implementation guidance
 - **Code Examples**: Before/after code snippets showing secure implementations
 - **Test Cases**: Security test scenarios to validate fixes
 
+## OWASP Risk Assessment Framework
+Follow OWASP Risk Rating Methodology using Impact vs Likelihood matrix:
+
+### Risk Calculation: Overall Risk = Likelihood × Impact
+
+**Likelihood Factors:**
+- Threat Agent (skill level, motive, opportunity, population size)
+- Vulnerability (ease of discovery, exploit, awareness, intrusion detection)
+
+**Impact Factors:**
+- Technical Impact (loss of confidentiality, integrity, availability, accountability)
+- Business Impact (financial damage, reputation damage, non-compliance, privacy violation)
+
+### Risk Matrix Visualization
+
+```mermaid
+quadrantChart
+    title Security Risk Assessment Matrix
+    x-axis Low Impact --> High Impact
+    y-axis Low Likelihood --> High Likelihood
+    quadrant-1 Monitor & Review (High Impact, Low Likelihood)
+    quadrant-2 Immediate Action Required (High Impact, High Likelihood)
+    quadrant-3 Accept Risk (Low Impact, Low Likelihood)
+    quadrant-4 Mitigate When Possible (Low Impact, High Likelihood)
+```
+
+
 ## Risk Tolerance
 Apply low risk tolerance:
+- Accept minimal risk only (Low Impact × Low Likelihood)
 - Flag all potential security issues, even minor ones
 - Recommend defense-in-depth approaches
 - Prioritize security over convenience
+- Require mitigation for Medium+ risk findings
 
 ## Prioritization Criteria
 1. **Critical**: Immediate threats with high exploitability

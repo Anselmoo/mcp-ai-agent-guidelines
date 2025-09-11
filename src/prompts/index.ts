@@ -700,9 +700,11 @@ ${
 
 ### 2. Risk Assessment
    - Rate findings by severity (Critical/High/Medium/Low)
-   - Assess exploitability and business impact
+   - Assess likelihood of exploitation (Very High/High/Medium/Low/Very Low)
+   - Evaluate impact on confidentiality, integrity, and availability
    - Consider attack complexity and prerequisites
    - Document potential for privilege escalation
+   - Apply OWASP Risk Rating methodology (Impact × Likelihood)
 
 ### 3. Security Controls Review
    - Authentication mechanisms and strength
@@ -719,19 +721,51 @@ ${
    - Implementation guidance and testing approaches
    - Preventive measures for similar vulnerabilities
 
+## Risk Assessment Framework
+Follow OWASP Risk Rating Methodology using Impact vs Likelihood matrix:
+
+### Risk Calculation: Overall Risk = Likelihood × Impact
+
+**Likelihood Factors:**
+- Threat Agent (skill level, motive, opportunity, population size)
+- Vulnerability (ease of discovery, exploit, awareness, intrusion detection)
+
+**Impact Factors:**  
+- Technical Impact (loss of confidentiality, integrity, availability, accountability)
+- Business Impact (financial damage, reputation damage, non-compliance, privacy violation)
+
+### Risk Matrix Visualization
+
+\`\`\`mermaid
+quadrantChart
+    title Security Risk Assessment Matrix
+    x-axis Low Impact --> High Impact
+    y-axis Low Likelihood --> High Likelihood
+    quadrant-1 Monitor & Review (High Impact, Low Likelihood)
+    quadrant-2 Immediate Action Required (High Impact, High Likelihood)
+    quadrant-3 Accept Risk (Low Impact, Low Likelihood)
+    quadrant-4 Mitigate When Possible (Low Impact, High Likelihood)
+\`\`\`
+
 ## Risk Tolerance: ${risk_tolerance.toUpperCase()}
 ${
 	risk_tolerance === "low"
-		? `- Flag all potential security issues, including minor ones
+		? `- Accept minimal risk only (Low Impact × Low Likelihood)
+- Flag all potential security issues, including minor ones
 - Recommend defense-in-depth approaches
-- Prioritize security over convenience and performance`
+- Prioritize security over convenience and performance
+- Require mitigation for Medium+ risk findings`
 		: risk_tolerance === "medium"
-			? `- Focus on medium to critical severity issues
+			? `- Accept Low to Medium risk findings with proper justification
+- Focus on medium to critical severity issues
 - Balance security with usability and performance
-- Recommend practical, cost-effective solutions`
-			: `- Focus only on critical and high severity issues
+- Recommend practical, cost-effective solutions
+- Require immediate action for High+ risk findings`
+			: `- Accept Low to High risk findings with business justification
+- Focus only on critical and high severity issues
 - Consider business context and implementation cost
-- Provide flexible security recommendations`
+- Provide flexible security recommendations
+- Require immediate action only for Critical risk findings`
 }
 
 ## Output Format
@@ -741,8 +775,11 @@ Provide a structured security assessment including:
 - **Vulnerability Details**: 
   * Vulnerability description and location
   * Severity rating (Critical/High/Medium/Low)
+  * Likelihood assessment (Very High/High/Medium/Low/Very Low)
+  * Overall risk score (Severity × Likelihood)
   * Exploitation scenario and impact
-  * Risk assessment and CVSS score if applicable
+  * CVSS score if applicable
+  * Reference to OWASP risk matrix position
 - **Security Recommendations**:
   * Immediate actions for critical issues
   * Short-term improvements for high/medium issues

@@ -197,9 +197,11 @@ function buildSecurityHardeningPrompt(input: SecurityHardeningInput): string {
 
 	prompt += `### 2. Risk Assessment\n`;
 	prompt += `- Rate findings by severity (Critical/High/Medium/Low)\n`;
-	prompt += `- Assess exploitability and business impact\n`;
+	prompt += `- Assess likelihood of exploitation (Very High/High/Medium/Low/Very Low)\n`;
+	prompt += `- Evaluate impact on confidentiality, integrity, and availability\n`;
 	prompt += `- Consider attack vectors and threat scenarios\n`;
-	prompt += `- Document risk exposure and likelihood\n\n`;
+	prompt += `- Document risk exposure and likelihood\n`;
+	prompt += `- Apply OWASP Risk Rating methodology (Impact × Likelihood)\n\n`;
 
 	prompt += `### 3. Security Controls Evaluation\n`;
 	prompt += `- Review authentication mechanisms\n`;
@@ -220,8 +222,8 @@ function buildSecurityHardeningPrompt(input: SecurityHardeningInput): string {
 	if (input.outputFormat === "detailed") {
 		prompt += `Provide a comprehensive security assessment report including:\n`;
 		prompt += `- **Executive Summary**: High-level security posture overview\n`;
-		prompt += `- **Findings**: Detailed vulnerability descriptions with severity ratings\n`;
-		prompt += `- **Risk Analysis**: Impact assessment and exploitability analysis\n`;
+		prompt += `- **Findings**: Detailed vulnerability descriptions with severity and likelihood ratings\n`;
+		prompt += `- **Risk Analysis**: OWASP-based impact × likelihood assessment with risk matrix position\n`;
 		prompt += `- **Recommendations**: Prioritized remediation steps with implementation guidance\n`;
 		if (input.includeCodeExamples) {
 			prompt += `- **Code Examples**: Before/after code snippets showing secure implementations\n`;
@@ -243,20 +245,47 @@ function buildSecurityHardeningPrompt(input: SecurityHardeningInput): string {
 		prompt += `- **Test Cases**: Security test scenarios to validate fixes\n`;
 	}
 
+	prompt += `\n## OWASP Risk Assessment Framework\n`;
+	prompt += `Follow OWASP Risk Rating Methodology using Impact vs Likelihood matrix:\n\n`;
+	prompt += `### Risk Calculation: Overall Risk = Likelihood × Impact\n\n`;
+	prompt += `**Likelihood Factors:**\n`;
+	prompt += `- Threat Agent (skill level, motive, opportunity, population size)\n`;
+	prompt += `- Vulnerability (ease of discovery, exploit, awareness, intrusion detection)\n\n`;
+	prompt += `**Impact Factors:**\n`;
+	prompt += `- Technical Impact (loss of confidentiality, integrity, availability, accountability)\n`;
+	prompt += `- Business Impact (financial damage, reputation damage, non-compliance, privacy violation)\n\n`;
+	prompt += `### Risk Matrix Visualization\n\n`;
+	prompt += `\`\`\`mermaid\n`;
+	prompt += `quadrantChart\n`;
+	prompt += `    title Security Risk Assessment Matrix\n`;
+	prompt += `    x-axis Low Impact --> High Impact\n`;
+	prompt += `    y-axis Low Likelihood --> High Likelihood\n`;
+	prompt += `    quadrant-1 Monitor & Review (High Impact, Low Likelihood)\n`;
+	prompt += `    quadrant-2 Immediate Action Required (High Impact, High Likelihood)\n`;
+	prompt += `    quadrant-3 Accept Risk (Low Impact, Low Likelihood)\n`;
+	prompt += `    quadrant-4 Mitigate When Possible (Low Impact, High Likelihood)\n`;
+	prompt += `\`\`\`\n\n`;
+
 	prompt += `\n## Risk Tolerance\n`;
 	prompt += `Apply ${input.riskTolerance} risk tolerance:\n`;
 	if (input.riskTolerance === "low") {
+		prompt += `- Accept minimal risk only (Low Impact × Low Likelihood)\n`;
 		prompt += `- Flag all potential security issues, even minor ones\n`;
 		prompt += `- Recommend defense-in-depth approaches\n`;
 		prompt += `- Prioritize security over convenience\n`;
+		prompt += `- Require mitigation for Medium+ risk findings\n`;
 	} else if (input.riskTolerance === "medium") {
+		prompt += `- Accept Low to Medium risk findings with proper justification\n`;
 		prompt += `- Focus on medium to critical severity issues\n`;
 		prompt += `- Balance security with usability\n`;
 		prompt += `- Recommend practical, implementable solutions\n`;
+		prompt += `- Require immediate action for High+ risk findings\n`;
 	} else {
+		prompt += `- Accept Low to High risk findings with business justification\n`;
 		prompt += `- Focus only on critical and high severity issues\n`;
 		prompt += `- Consider business context and implementation cost\n`;
 		prompt += `- Provide flexible security recommendations\n`;
+		prompt += `- Require immediate action only for Critical risk findings\n`;
 	}
 
 	if (input.prioritizeFindings) {
