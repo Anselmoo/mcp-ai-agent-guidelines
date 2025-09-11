@@ -39,6 +39,7 @@ import { modelCompatibilityChecker } from "./tools/model-compatibility-checker.j
 import { domainNeutralPromptBuilder } from "./tools/prompt/domain-neutral-prompt-builder.js";
 // Import tool implementations
 import { hierarchicalPromptBuilder } from "./tools/prompt/hierarchical-prompt-builder.js";
+import { securityHardeningPromptBuilder } from "./tools/prompt/security-hardening-prompt-builder.js";
 import { sparkPromptBuilder } from "./tools/prompt/spark-prompt-builder.js";
 import { sprintTimelineCalculator } from "./tools/sprint-timeline-calculator.js";
 
@@ -639,6 +640,161 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 				},
 			},
 			{
+				name: "security-hardening-prompt-builder",
+				description:
+					"Build specialized security hardening and vulnerability analysis prompts for AI-guided security assessment",
+				inputSchema: {
+					type: "object",
+					properties: {
+						codeContext: {
+							type: "string",
+							description: "The code context or description to analyze for security",
+						},
+						securityFocus: {
+							type: "string",
+							enum: [
+								"vulnerability-analysis",
+								"security-hardening",
+								"compliance-check",
+								"threat-modeling",
+								"penetration-testing",
+							],
+							description: "Primary security analysis focus",
+						},
+						securityRequirements: {
+							type: "array",
+							items: { type: "string" },
+							description: "Specific security requirements to check",
+						},
+						complianceStandards: {
+							type: "array",
+							items: {
+								type: "string",
+								enum: [
+									"OWASP-Top-10",
+									"NIST-Cybersecurity-Framework",
+									"ISO-27001",
+									"SOC-2",
+									"GDPR",
+									"HIPAA",
+									"PCI-DSS",
+								],
+							},
+							description: "Compliance standards to evaluate against",
+						},
+						language: {
+							type: "string",
+							description: "Programming language of the code",
+						},
+						framework: {
+							type: "string",
+							description: "Framework or technology stack",
+						},
+						riskTolerance: {
+							type: "string",
+							enum: ["low", "medium", "high"],
+							description: "Risk tolerance level for security assessment",
+						},
+						analysisScope: {
+							type: "array",
+							items: {
+								type: "string",
+								enum: [
+									"input-validation",
+									"authentication",
+									"authorization",
+									"data-encryption",
+									"session-management",
+									"error-handling",
+									"logging-monitoring",
+									"dependency-security",
+									"configuration-security",
+									"api-security",
+								],
+							},
+							description: "Specific security areas to focus analysis on",
+						},
+						includeCodeExamples: {
+							type: "boolean",
+							description: "Include secure code examples in output",
+						},
+						includeMitigations: {
+							type: "boolean",
+							description: "Include specific mitigation recommendations",
+						},
+						includeTestCases: {
+							type: "boolean",
+							description: "Include security test cases",
+						},
+						prioritizeFindings: {
+							type: "boolean",
+							description: "Prioritize findings by severity",
+						},
+						outputFormat: {
+							type: "string",
+							enum: ["detailed", "checklist", "annotated-code"],
+							description: "Preferred output format for security assessment",
+						},
+						mode: { type: "string" },
+						model: { type: "string" },
+						tools: { type: "array", items: { type: "string" } },
+						includeFrontmatter: { type: "boolean" },
+						includeDisclaimer: { type: "boolean" },
+						includeReferences: { type: "boolean" },
+						includeTechniqueHints: { type: "boolean" },
+						includePitfalls: { type: "boolean" },
+						includeMetadata: { type: "boolean" },
+						inputFile: { type: "string" },
+						forcePromptMdStyle: { type: "boolean" },
+						techniques: {
+							type: "array",
+							items: {
+								type: "string",
+								enum: [
+									"zero-shot",
+									"few-shot",
+									"chain-of-thought",
+									"self-consistency",
+									"in-context-learning",
+									"generate-knowledge",
+									"prompt-chaining",
+									"tree-of-thoughts",
+									"meta-prompting",
+									"rag",
+									"react",
+									"art",
+								],
+							},
+							description: "Optional list of technique hints to include",
+						},
+						autoSelectTechniques: {
+							type: "boolean",
+							description: "Automatically select appropriate techniques",
+						},
+						provider: {
+							type: "string",
+							enum: [
+								"gpt-5",
+								"gpt-4.1",
+								"claude-4",
+								"claude-3.7",
+								"gemini-2.5",
+								"o4-mini",
+								"o3-mini",
+								"other",
+							],
+							description: "Model family for tailored tips",
+						},
+						style: {
+							type: "string",
+							enum: ["markdown", "xml"],
+							description: "Preferred prompt formatting style",
+						},
+					},
+					required: ["codeContext"],
+				},
+			},
+			{
 				name: "sprint-timeline-calculator",
 				description:
 					"Calculate optimal development cycles and sprint timelines",
@@ -753,6 +909,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 				return sparkPromptBuilder(args);
 			case "domain-neutral-prompt-builder":
 				return domainNeutralPromptBuilder(args);
+			case "security-hardening-prompt-builder":
+				return securityHardeningPromptBuilder(args);
 			case "code-hygiene-analyzer":
 				return codeHygieneAnalyzer(args);
 			case "mermaid-diagram-generator":

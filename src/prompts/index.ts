@@ -132,6 +132,37 @@ const prompts = [
 			},
 		],
 	},
+	{
+		name: "security-analysis-prompt",
+		description: "Security-focused code analysis prompt template with vulnerability assessment",
+		arguments: [
+			{
+				name: "codebase",
+				description: "The codebase or code snippet to analyze for security",
+				required: true,
+			},
+			{
+				name: "security_focus",
+				description: "Specific security focus area (vulnerability-analysis, compliance-check, threat-modeling)",
+				required: false,
+			},
+			{
+				name: "language",
+				description: "Programming language of the code",
+				required: false,
+			},
+			{
+				name: "compliance_standards",
+				description: "Compliance standards to check against (OWASP-Top-10, NIST, etc.)",
+				required: false,
+			},
+			{
+				name: "risk_tolerance",
+				description: "Risk tolerance level (low, medium, high)",
+				required: false,
+			},
+		],
+	},
 ];
 
 export async function listPrompts() {
@@ -180,6 +211,9 @@ export async function getPrompt(name: string, args: PromptArgs) {
 			break;
 		case "spark-ui-prompt":
 			content = generateSparkUiPrompt(args);
+			break;
+		case "security-analysis-prompt":
+			content = generateSecurityAnalysisPrompt(args);
 			break;
 		default:
 			throw new Error(`Unknown prompt: ${name}`);
@@ -609,4 +643,111 @@ function generateSparkUiPrompt(args: PromptArgs): string {
 	};
 
 	return `---\nmode: 'agent'\nmodel: GPT-4.1\ntools: ['githubRepo', 'codebase', 'editFiles']\ndescription: '${(summary as string).replace(/'/g, "''")}'\n---\n## ⚡ Spark Prompt Template\n\n# ${title}\n\n${summary}\n\n## Design Direction\n${design_direction}\n\n## Color Scheme\n${color_scheme}\n`;
+}
+
+function generateSecurityAnalysisPrompt(args: PromptArgs): string {
+	const {
+		codebase,
+		security_focus = "vulnerability-analysis",
+		language = "auto-detect",
+		compliance_standards = "OWASP-Top-10",
+		risk_tolerance = "medium",
+	} = args as {
+		codebase: string;
+		security_focus?: string;
+		language?: string;
+		compliance_standards?: string;
+		risk_tolerance?: string;
+	};
+
+	return `# Security Analysis Request
+
+## Context
+You are a security expert analyzing ${language} code with focus on ${security_focus.replace("-", " ")}. Apply ${risk_tolerance} risk tolerance and check against ${compliance_standards} standards.
+
+## Code to Analyze
+\`\`\`${language}
+${codebase}
+\`\`\`
+
+## Security Analysis Requirements
+
+### 1. Vulnerability Assessment
+${security_focus === "vulnerability-analysis" ? 
+`   - Identify security vulnerabilities and weaknesses
+   - Check for common attack vectors (injection, XSS, CSRF)
+   - Analyze input validation and sanitization
+   - Review authentication and authorization mechanisms` :
+security_focus === "compliance-check" ?
+`   - Verify compliance with ${compliance_standards} requirements
+   - Check adherence to security policies and standards
+   - Validate implementation of required security controls
+   - Assess documentation and audit trail completeness` :
+security_focus === "threat-modeling" ?
+`   - Identify potential threat vectors and attack surfaces
+   - Analyze security boundaries and trust zones
+   - Evaluate data flow security implications
+   - Assess impact and likelihood of potential threats` :
+`   - Implement security hardening measures
+   - Apply defense-in-depth principles
+   - Strengthen existing security controls
+   - Minimize attack surface and exposure`}
+
+### 2. Risk Assessment
+   - Rate findings by severity (Critical/High/Medium/Low)
+   - Assess exploitability and business impact
+   - Consider attack complexity and prerequisites
+   - Document potential for privilege escalation
+
+### 3. Security Controls Review
+   - Authentication mechanisms and strength
+   - Authorization and access control implementation
+   - Data encryption in transit and at rest
+   - Input validation and output encoding
+   - Error handling and information disclosure
+   - Session management security
+   - Logging and monitoring coverage
+
+### 4. Remediation Guidance
+   - Specific fix recommendations with code examples
+   - Security best practices for the identified issues
+   - Implementation guidance and testing approaches
+   - Preventive measures for similar vulnerabilities
+
+## Risk Tolerance: ${risk_tolerance.toUpperCase()}
+${risk_tolerance === "low" ? 
+`- Flag all potential security issues, including minor ones
+- Recommend defense-in-depth approaches
+- Prioritize security over convenience and performance` :
+risk_tolerance === "medium" ?
+`- Focus on medium to critical severity issues
+- Balance security with usability and performance
+- Recommend practical, cost-effective solutions` :
+`- Focus only on critical and high severity issues
+- Consider business context and implementation cost
+- Provide flexible security recommendations`}
+
+## Output Format
+Provide a structured security assessment including:
+
+- **Executive Summary**: High-level security posture and critical findings
+- **Vulnerability Details**: 
+  * Vulnerability description and location
+  * Severity rating (Critical/High/Medium/Low)
+  * Exploitation scenario and impact
+  * Risk assessment and CVSS score if applicable
+- **Security Recommendations**:
+  * Immediate actions for critical issues
+  * Short-term improvements for high/medium issues
+  * Long-term security enhancements
+  * Code examples demonstrating secure implementations
+- **Compliance Assessment**: Alignment with ${compliance_standards} requirements
+- **Testing Recommendations**: Security test cases to validate fixes
+
+## Scoring
+Provide an overall security score from 1-10 for:
+- Security Posture
+- ${security_focus.replace("-", " ").replace(/\b\w/g, l => l.toUpperCase())}
+- Compliance Readiness
+`;
 }
