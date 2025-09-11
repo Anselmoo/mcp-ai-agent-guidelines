@@ -134,7 +134,8 @@ const prompts = [
 	},
 	{
 		name: "security-analysis-prompt",
-		description: "Security-focused code analysis prompt template with vulnerability assessment",
+		description:
+			"Security-focused code analysis prompt template with vulnerability assessment",
 		arguments: [
 			{
 				name: "codebase",
@@ -143,7 +144,8 @@ const prompts = [
 			},
 			{
 				name: "security_focus",
-				description: "Specific security focus area (vulnerability-analysis, compliance-check, threat-modeling)",
+				description:
+					"Specific security focus area (vulnerability-analysis, compliance-check, threat-modeling)",
 				required: false,
 			},
 			{
@@ -153,7 +155,8 @@ const prompts = [
 			},
 			{
 				name: "compliance_standards",
-				description: "Compliance standards to check against (OWASP-Top-10, NIST, etc.)",
+				description:
+					"Compliance standards to check against (OWASP-Top-10, NIST, etc.)",
 				required: false,
 			},
 			{
@@ -673,25 +676,27 @@ ${codebase}
 ## Security Analysis Requirements
 
 ### 1. Vulnerability Assessment
-${security_focus === "vulnerability-analysis" ? 
-`   - Identify security vulnerabilities and weaknesses
+${
+	security_focus === "vulnerability-analysis"
+		? `   - Identify security vulnerabilities and weaknesses
    - Check for common attack vectors (injection, XSS, CSRF)
    - Analyze input validation and sanitization
-   - Review authentication and authorization mechanisms` :
-security_focus === "compliance-check" ?
-`   - Verify compliance with ${compliance_standards} requirements
+   - Review authentication and authorization mechanisms`
+		: security_focus === "compliance-check"
+			? `   - Verify compliance with ${compliance_standards} requirements
    - Check adherence to security policies and standards
    - Validate implementation of required security controls
-   - Assess documentation and audit trail completeness` :
-security_focus === "threat-modeling" ?
-`   - Identify potential threat vectors and attack surfaces
+   - Assess documentation and audit trail completeness`
+			: security_focus === "threat-modeling"
+				? `   - Identify potential threat vectors and attack surfaces
    - Analyze security boundaries and trust zones
    - Evaluate data flow security implications
-   - Assess impact and likelihood of potential threats` :
-`   - Implement security hardening measures
+   - Assess impact and likelihood of potential threats`
+				: `   - Implement security hardening measures
    - Apply defense-in-depth principles
    - Strengthen existing security controls
-   - Minimize attack surface and exposure`}
+   - Minimize attack surface and exposure`
+}
 
 ### 2. Risk Assessment
    - Rate findings by severity (Critical/High/Medium/Low)
@@ -715,17 +720,19 @@ security_focus === "threat-modeling" ?
    - Preventive measures for similar vulnerabilities
 
 ## Risk Tolerance: ${risk_tolerance.toUpperCase()}
-${risk_tolerance === "low" ? 
-`- Flag all potential security issues, including minor ones
+${
+	risk_tolerance === "low"
+		? `- Flag all potential security issues, including minor ones
 - Recommend defense-in-depth approaches
-- Prioritize security over convenience and performance` :
-risk_tolerance === "medium" ?
-`- Focus on medium to critical severity issues
+- Prioritize security over convenience and performance`
+		: risk_tolerance === "medium"
+			? `- Focus on medium to critical severity issues
 - Balance security with usability and performance
-- Recommend practical, cost-effective solutions` :
-`- Focus only on critical and high severity issues
+- Recommend practical, cost-effective solutions`
+			: `- Focus only on critical and high severity issues
 - Consider business context and implementation cost
-- Provide flexible security recommendations`}
+- Provide flexible security recommendations`
+}
 
 ## Output Format
 Provide a structured security assessment including:
@@ -747,7 +754,7 @@ Provide a structured security assessment including:
 ## Scoring
 Provide an overall security score from 1-10 for:
 - Security Posture
-- ${security_focus.replace("-", " ").replace(/\b\w/g, l => l.toUpperCase())}
+- ${security_focus.replace("-", " ").replace(/\b\w/g, (l) => l.toUpperCase())}
 - Compliance Readiness
 `;
 }

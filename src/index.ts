@@ -648,7 +648,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 					properties: {
 						codeContext: {
 							type: "string",
-							description: "The code context or description to analyze for security",
+							description:
+								"The code context or description to analyze for security",
 						},
 						securityFocus: {
 							type: "string",

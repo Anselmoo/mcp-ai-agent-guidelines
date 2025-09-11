@@ -18,52 +18,66 @@ import {
 const SecurityHardeningSchema = z.object({
 	// Core context
 	codeContext: z.string(),
-	securityFocus: z.enum([
-		"vulnerability-analysis",
-		"security-hardening", 
-		"compliance-check",
-		"threat-modeling",
-		"penetration-testing"
-	]).optional().default("security-hardening"),
-	
+	securityFocus: z
+		.enum([
+			"vulnerability-analysis",
+			"security-hardening",
+			"compliance-check",
+			"threat-modeling",
+			"penetration-testing",
+		])
+		.optional()
+		.default("security-hardening"),
+
 	// Security requirements
 	securityRequirements: z.array(z.string()).optional(),
-	complianceStandards: z.array(z.enum([
-		"OWASP-Top-10",
-		"NIST-Cybersecurity-Framework", 
-		"ISO-27001",
-		"SOC-2",
-		"GDPR",
-		"HIPAA",
-		"PCI-DSS"
-	])).optional(),
-	
+	complianceStandards: z
+		.array(
+			z.enum([
+				"OWASP-Top-10",
+				"NIST-Cybersecurity-Framework",
+				"ISO-27001",
+				"SOC-2",
+				"GDPR",
+				"HIPAA",
+				"PCI-DSS",
+			]),
+		)
+		.optional(),
+
 	// Technical parameters
 	language: z.string().optional().default("auto-detect"),
 	framework: z.string().optional(),
 	riskTolerance: z.enum(["low", "medium", "high"]).optional().default("medium"),
-	
+
 	// Analysis scope
-	analysisScope: z.array(z.enum([
-		"input-validation",
-		"authentication",
-		"authorization", 
-		"data-encryption",
-		"session-management",
-		"error-handling",
-		"logging-monitoring",
-		"dependency-security",
-		"configuration-security",
-		"api-security"
-	])).optional(),
-	
+	analysisScope: z
+		.array(
+			z.enum([
+				"input-validation",
+				"authentication",
+				"authorization",
+				"data-encryption",
+				"session-management",
+				"error-handling",
+				"logging-monitoring",
+				"dependency-security",
+				"configuration-security",
+				"api-security",
+			]),
+		)
+		.optional(),
+
 	// Output preferences
 	includeCodeExamples: z.boolean().optional().default(true),
 	includeMitigations: z.boolean().optional().default(true),
 	includeTestCases: z.boolean().optional().default(false),
 	prioritizeFindings: z.boolean().optional().default(true),
-	outputFormat: z.enum(["detailed", "checklist", "annotated-code"]).optional().default("detailed"),
-	
+	outputFormat: z
+		.enum(["detailed", "checklist", "annotated-code"])
+		.optional()
+		.default("detailed"),
+
 	// YAML prompt frontmatter
 	mode: z.string().optional().default("agent"),
 	model: z.string().optional().default("GPT-4.1"),
@@ -92,26 +106,26 @@ type SecurityHardeningInput = z.infer<typeof SecurityHardeningSchema>;
 
 export async function securityHardeningPromptBuilder(args: unknown) {
 	const input = SecurityHardeningSchema.parse(args);
-	
-	const frontmatter = input.includeFrontmatter 
-		? buildSecurityHardeningFrontmatter(input) + "\n"
+
+	const frontmatter = input.includeFrontmatter
+		? `${buildSecurityHardeningFrontmatter(input)}\n`
 		: "";
-		
+
 	const metadata = input.includeMetadata
-		? buildMetadataSection({
-			sourceTool: "mcp_ai-agent-guid_security-hardening-prompt-builder",
-			inputFile: input.inputFile,
-			filenameHint: `security-hardening-${slugify(input.securityFocus)}-prompt.prompt.md`,
-		}) + "\n"
+		? `${buildMetadataSection({
+				sourceTool: "mcp_ai-agent-guid_security-hardening-prompt-builder",
+				inputFile: input.inputFile,
+				filenameHint: `security-hardening-${slugify(input.securityFocus)}-prompt.prompt.md`,
+			})}\n`
 		: "";
 
 	const prompt = buildSecurityHardeningPrompt(input);
-	
-	const references = input.includeReferences 
-		? buildSecurityReferencesSection() + "\n"
+
+	const references = input.includeReferences
+		? `${buildSecurityReferencesSection()}\n`
 		: "";
-		
-	const disclaimer = input.includeDisclaimer 
+
+	const disclaimer = input.includeDisclaimer
 		? `\n## Disclaimer\n- Security recommendations are based on common best practices and may need customization for your specific environment\n- Always validate security measures with penetration testing and security audits\n- Compliance requirements may vary by jurisdiction and industry\n- Keep security tools and dependencies up to date\n`
 		: "";
 
@@ -129,17 +143,23 @@ function buildSecurityHardeningPrompt(input: SecurityHardeningInput): string {
 	let prompt = "";
 
 	// Header and Context
-	prompt += `# Security ${input.securityFocus === "vulnerability-analysis" ? "Vulnerability Analysis" : 
-		input.securityFocus === "security-hardening" ? "Hardening Assessment" :
-		input.securityFocus === "compliance-check" ? "Compliance Review" :
-		input.securityFocus === "threat-modeling" ? "Threat Model Analysis" :
-		"Penetration Testing Review"} Prompt\n\n`;
-	
+	prompt += `# Security ${
+		input.securityFocus === "vulnerability-analysis"
+			? "Vulnerability Analysis"
+			: input.securityFocus === "security-hardening"
+				? "Hardening Assessment"
+				: input.securityFocus === "compliance-check"
+					? "Compliance Review"
+					: input.securityFocus === "threat-modeling"
+						? "Threat Model Analysis"
+						: "Penetration Testing Review"
+	} Prompt\n\n`;
+
 	prompt += `Perform comprehensive security analysis of ${input.language} code with focus on ${input.securityFocus.replace("-", " ")}\n\n`;
-	
+
 	// Code Context
 	prompt += `## Code Context\n${input.codeContext}\n\n`;
-	
+
 	// Security Requirements
 	if (input.securityRequirements && input.securityRequirements.length > 0) {
 		prompt += `## Security Requirements\n`;
@@ -152,7 +172,7 @@ function buildSecurityHardeningPrompt(input: SecurityHardeningInput): string {
 	// Compliance Standards
 	if (input.complianceStandards && input.complianceStandards.length > 0) {
 		prompt += `## Compliance Standards\nEvaluate against:\n`;
-		input.complianceStandards.forEach(standard => {
+		input.complianceStandards.forEach((standard) => {
 			prompt += `- ${standard.replace("-", " ")}\n`;
 		});
 		prompt += "\n";
@@ -161,8 +181,8 @@ function buildSecurityHardeningPrompt(input: SecurityHardeningInput): string {
 	// Analysis Scope
 	if (input.analysisScope && input.analysisScope.length > 0) {
 		prompt += `## Analysis Scope\nFocus on these security areas:\n`;
-		input.analysisScope.forEach(area => {
-			prompt += `- ${area.replace("-", " ").replace(/\b\w/g, l => l.toUpperCase())}\n`;
+		input.analysisScope.forEach((area) => {
+			prompt += `- ${area.replace("-", " ").replace(/\b\w/g, (l) => l.toUpperCase())}\n`;
 		});
 		prompt += "\n";
 	}
@@ -281,8 +301,12 @@ function buildSecurityHardeningPrompt(input: SecurityHardeningInput): string {
 	return prompt;
 }
 
-function buildSecurityHardeningFrontmatter(input: SecurityHardeningInput): string {
-	const desc = input.description || `Security ${input.securityFocus.replace("-", " ")} analysis and hardening recommendations`;
+function buildSecurityHardeningFrontmatter(
+	input: SecurityHardeningInput,
+): string {
+	const desc =
+		input.description ||
+		`Security ${input.securityFocus.replace("-", " ")} analysis and hardening recommendations`;
 	return buildFrontmatter({
 		mode: input.mode,
 		model: input.model,
@@ -302,11 +326,13 @@ function buildSecurityReferencesSection(): string {
 }
 
 function buildSecuritySpecificPitfalls(): string {
-	return `\n## Security-Specific Pitfalls to Avoid\n\n` +
+	return (
+		`\n## Security-Specific Pitfalls to Avoid\n\n` +
 		`- Over-relying on client-side validation → implement server-side validation\n` +
 		`- Ignoring principle of least privilege → restrict access to minimum required\n` +
 		`- Using deprecated cryptographic algorithms → use current security standards\n` +
 		`- Hardcoding sensitive configuration → use secure configuration management\n` +
 		`- Insufficient logging of security events → implement comprehensive audit trails\n` +
-		`- Assuming internal networks are secure → implement zero-trust principles\n\n`;
+		`- Assuming internal networks are secure → implement zero-trust principles\n\n`
+	);
 }
