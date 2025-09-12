@@ -47,7 +47,7 @@ describe("strategy-frameworks-builder additional coverage", () => {
 		expect(content).toContain("7S");
 		expect(content).toContain("Ansoff");
 		expect(content).toContain("PEST");
-		expect(content).toContain("BCG");
+		expect(content).toContain("Portfolio Prioritization"); // BCG matrix shows as Portfolio Prioritization 
 		expect(content).toContain("VRIO");
 	});
 

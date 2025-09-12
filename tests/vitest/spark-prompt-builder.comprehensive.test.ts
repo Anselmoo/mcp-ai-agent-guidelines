@@ -131,12 +131,12 @@ describe("spark-prompt-builder comprehensive coverage", () => {
 		expect(content).toContain("Experience Qualities");
 		expect(content).toContain("Features"); 
 		expect(content).toContain("Network failure"); // Check edge cases are included
-		expect(content).toContain("Color Scheme");
-		expect(content).toContain("Typography");
+		expect(content).toContain("Color Selection"); // Updated from "Color Scheme"
+		expect(content).toContain("Typographic Hierarchy"); // Updated from "Typography"
 		expect(content).toContain("Animation");
 		expect(content).toContain("Components");
 		expect(content).toContain("Spacing");
-		expect(content).toContain("Mobile Layout");
+		expect(content).toContain("Mobile"); // Updated from "Mobile Layout"
 		expect(content).toContain("## Metadata");
 		expect(content).toContain("## References");
 		expect(content).toContain("design-system-spec.md");

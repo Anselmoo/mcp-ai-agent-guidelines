@@ -25,7 +25,7 @@ describe("MCP Server Basic Coverage", () => {
 
 	it("should test package.json version access", () => {
 		const { createRequire } = require("node:module");
-		const mockRequire = createRequire("test");
+		const mockRequire = createRequire(import.meta.url);
 		
 		// This tests the createRequire functionality used in the main server
 		expect(mockRequire).toBeDefined();
