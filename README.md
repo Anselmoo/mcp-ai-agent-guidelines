@@ -51,6 +51,7 @@ Explore generated demo reports in the repository:
 - Guidelines Validation: [demos/demo-code-analysis.guidelines.md](./demos/demo-code-analysis.guidelines.md)
 - Hierarchical Prompt (Refactor plan): [demos/demo-code-analysis.hierarchical.prompt.md](./demos/demo-code-analysis.hierarchical.prompt.md)
 - Domain-neutral Prompt Template: [demos/demo-code-analysis.domain-neutral.prompt.md](./demos/demo-code-analysis.domain-neutral.prompt.md)
+- Security Hardening Prompt: [demos/demo-code-analysis.security-hardening.prompt.md](./demos/demo-code-analysis.security-hardening.prompt.md)
 - Spark Prompt Card: [demos/demo-code-analysis.spark.prompt.md](./demos/demo-code-analysis.spark.prompt.md)
 - Memory Context Optimization: [demos/demo-code-analysis.memory.md](./demos/demo-code-analysis.memory.md)
 - Architecture Diagram (Mermaid): [demos/demo-code-analysis.diagram.md](./demos/demo-code-analysis.diagram.md)
@@ -169,6 +170,33 @@ Usage: `code-hygiene-analyzer`
 | `codeContent` | ✅        | Code content to analyze       |
 | `language`    | ✅        | Programming language          |
 | `framework`   | ❌        | Framework or technology stack |
+
+</details>
+
+<details>
+<summary><strong>Security Hardening Prompt Builder</strong> — Build specialized security analysis and vulnerability assessment prompts</summary>
+
+Usage: `security-hardening-prompt-builder`
+
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| `codeContext` | ✅ | Code context or description to analyze for security |
+| `securityFocus` | ❌ | Security analysis focus (vulnerability-analysis, security-hardening, compliance-check, threat-modeling, penetration-testing) |
+| `securityRequirements` | ❌ | Specific security requirements to check |
+| `complianceStandards` | ❌ | Compliance standards (OWASP-Top-10, NIST-Cybersecurity-Framework, ISO-27001, SOC-2, GDPR, HIPAA, PCI-DSS) |
+| `language` | ❌ | Programming language of the code |
+| `riskTolerance` | ❌ | Risk tolerance level (low, medium, high) |
+| `analysisScope` | ❌ | Security areas to focus on (input-validation, authentication, authorization, etc.) |
+| `outputFormat` | ❌ | Output format (detailed, checklist, annotated-code) |
+
+**Security Focus Areas:**
+- 🔍 Vulnerability analysis with OWASP Top 10 coverage
+- 🛡️ Security hardening recommendations
+- 📋 Compliance checking against industry standards
+- ⚠️ Threat modeling and risk assessment
+- 🧪 Penetration testing guidance
+
+**Compliance Standards:** OWASP Top 10, NIST Cybersecurity Framework, ISO 27001, SOC 2, GDPR, HIPAA, PCI-DSS
 
 </details>
 

@@ -5,6 +5,7 @@ import { guidelinesValidator } from "../../dist/tools/guidelines-validator.js";
 import { hierarchicalPromptBuilder } from "../../dist/tools/prompt/hierarchical-prompt-builder.js";
 import { modelCompatibilityChecker } from "../../dist/tools/model-compatibility-checker.js";
 import { buildDisclaimer as sharedBuildDisclaimer } from "../../dist/tools/shared/prompt-sections.js";
+import { securityHardeningPromptBuilder } from "../../dist/tools/prompt/security-hardening-prompt-builder.js";
 import { sparkPromptBuilder } from "../../dist/tools/prompt/spark-prompt-builder.js";
 
 async function testModelCompatibility() {
@@ -390,6 +391,39 @@ async function run() {
 		assert.ok(issues, "Expected issues to be reported for sparse description");
 	}
 
+	async function testSecurityHardeningPromptBuilder() {
+		const result = await securityHardeningPromptBuilder({
+			codeContext: "Express.js API endpoint that handles user authentication",
+			securityFocus: "vulnerability-analysis",
+			language: "javascript",
+			securityRequirements: ["Input validation", "SQL injection prevention"],
+			complianceStandards: ["OWASP-Top-10"],
+			riskTolerance: "medium",
+			analysisScope: ["input-validation", "authentication", "authorization"],
+		});
+		const text = result.content[0].text;
+		assert.ok(
+			/Security.*Prompt Template/i.test(text),
+			"Missing security prompt template header",
+		);
+		assert.ok(
+			/Vulnerability Analysis/i.test(text),
+			"Missing vulnerability analysis section",
+		);
+		assert.ok(
+			/OWASP/i.test(text),
+			"Missing OWASP compliance reference",
+		);
+		assert.ok(
+			/Input validation|Authentication|Authorization/i.test(text),
+			"Missing analysis scope sections",
+		);
+		assert.ok(
+			/Critical\/High\/Medium\/Low/i.test(text),
+			"Missing severity rating guidance",
+		);
+	}
+
 	const tests = [
 		["Domain Neutral Minimal", testDomainNeutralMinimal],
 		["Spark Minimal", testSparkMinimal],
@@ -409,6 +443,7 @@ async function run() {
 		["Normalize Output Format Paths", testNormalizeOutputFormatPaths],
 		["Technique Auto-Select", testTechniqueAutoSelect],
 		["Shared Disclaimer Export", testSharedDisclaimerExport],
+		["Security Hardening Prompt Builder", testSecurityHardeningPromptBuilder],
 	];
 	for (const [name, fn] of tests) {
 		try {

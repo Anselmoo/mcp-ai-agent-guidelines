@@ -13,6 +13,7 @@ import { mermaidDiagramGenerator } from "../dist/tools/mermaid-diagram-generator
 import { modelCompatibilityChecker } from "../dist/tools/model-compatibility-checker.js";
 import { domainNeutralPromptBuilder } from "../dist/tools/prompt/domain-neutral-prompt-builder.js";
 import { hierarchicalPromptBuilder } from "../dist/tools/prompt/hierarchical-prompt-builder.js";
+import { securityHardeningPromptBuilder } from "../dist/tools/prompt/security-hardening-prompt-builder.js";
 import { sparkPromptBuilder } from "../dist/tools/prompt/spark-prompt-builder.js";
 import { sprintTimelineCalculator } from "../dist/tools/sprint-timeline-calculator.js";
 
@@ -240,6 +241,58 @@ async function main() {
 		includeActionPlan: true,
 	});
 	await writeReport("demo-gap-analysis.md", getText(gapAnalysis));
+
+	// Security Hardening Demo
+	const securityHardening = await securityHardeningPromptBuilder({
+		codeContext: `Express.js API endpoint handling user authentication and payment processing:
+
+\`\`\`javascript
+app.post('/api/login', (req, res) => {
+	const { username, password } = req.body;
+	const query = \`SELECT * FROM users WHERE username = '\${username}' AND password = '\${password}'\`;
+	db.query(query, (err, result) => {
+		if (result.length > 0) {
+			req.session.user = result[0];
+			res.json({ success: true, token: result[0].id });
+		} else {
+			res.json({ success: false });
+		}
+	});
+});
+
+app.post('/api/payment', (req, res) => {
+	const { amount, cardNumber, cvv } = req.body;
+	// Process payment without validation
+	processPayment(amount, cardNumber, cvv);
+	res.json({ status: 'processed' });
+});
+\`\`\``,
+		securityFocus: "vulnerability-analysis",
+		language: "javascript",
+		securityRequirements: [
+			"Prevent SQL injection attacks",
+			"Implement secure session management",
+			"Validate all user inputs",
+			"Protect sensitive payment data"
+		],
+		complianceStandards: ["OWASP-Top-10", "PCI-DSS"],
+		riskTolerance: "low",
+		analysisScope: [
+			"input-validation",
+			"authentication", 
+			"authorization",
+			"data-encryption",
+			"session-management"
+		],
+		includeCodeExamples: true,
+		includeMitigations: true,
+		includeTestCases: true,
+		prioritizeFindings: true,
+		outputFormat: "detailed",
+		includeReferences: true,
+		includeMetadata: true,
+	});
+	await writeReport("demo-code-analysis.security-hardening.prompt.md", getText(securityHardening));
 }
 
 main().catch((err) => {
