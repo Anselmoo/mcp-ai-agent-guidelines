@@ -8,7 +8,7 @@ description: 'Security vulnerability analysis analysis and hardening recommendat
 ## 🛡️ Security Hardening Prompt Template
 
 ### Metadata
-- Updated: 2025-09-11
+- Updated: 2025-09-12
 - Source tool: mcp_ai-agent-guid_security-hardening-prompt-builder
 - Suggested filename: security-hardening-vulnerability-analysis-prompt.prompt.md
 
@@ -50,7 +50,7 @@ app.post('/api/payment', (req, res) => {
 
 ## Compliance Standards
 Evaluate against:
-- OWASP Top-10
+- OWASP Top 10
 - PCI DSS
 
 ## Analysis Scope
