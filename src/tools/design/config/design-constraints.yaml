@@ -1,0 +1,229 @@
+# Design Assistant Constraint Configuration
+# This file defines the rules and constraints for the deterministic design framework
+
+meta:
+  version: "1.0.0"
+  updated: "2024-01-10"
+  source: "Space 7 General Instructions & MCP Guidelines"
+  coverage_threshold: 85
+
+# Core design phases with required coverage and criteria
+phases:
+  discovery:
+    name: "Discovery & Context"
+    description: "Establish context, stakeholders, and high-level objectives"
+    min_coverage: 90
+    required_outputs:
+      - "stakeholder-analysis"
+      - "context-mapping"
+      - "problem-statement"
+    criteria:
+      - "Clear problem definition"
+      - "Stakeholder identification"
+      - "Context boundaries established"
+      - "Success metrics defined"
+    
+  requirements:
+    name: "Requirements Analysis"
+    description: "Define functional and non-functional requirements"
+    min_coverage: 85
+    required_outputs:
+      - "functional-requirements"
+      - "non-functional-requirements"
+      - "acceptance-criteria"
+    criteria:
+      - "Requirements are testable"
+      - "Priority levels assigned"
+      - "Dependencies identified"
+      - "Constraints documented"
+    
+  architecture:
+    name: "Architecture Design"
+    description: "Design system architecture and components"
+    min_coverage: 88
+    required_outputs:
+      - "architecture-diagram"
+      - "component-specifications"
+      - "interface-definitions"
+    criteria:
+      - "Scalability considerations"
+      - "Security by design"
+      - "Technology decisions justified"
+      - "Quality attributes addressed"
+    
+  specification:
+    name: "Detailed Specification"
+    description: "Create detailed technical specifications"
+    min_coverage: 85
+    required_outputs:
+      - "api-specifications"
+      - "data-models"
+      - "deployment-specs"
+    criteria:
+      - "Implementation guidance clear"
+      - "Testing strategy defined"
+      - "Error handling specified"
+      - "Performance targets set"
+    
+  planning:
+    name: "Implementation Planning"
+    description: "Create implementation roadmap and timeline"
+    min_coverage: 80
+    required_outputs:
+      - "roadmap"
+      - "milestone-plan"
+      - "risk-assessment"
+    criteria:
+      - "Timeline is realistic"
+      - "Dependencies mapped"
+      - "Risks identified and mitigated"
+      - "Resource requirements defined"
+
+# Constraint rules organized by category
+constraints:
+  architectural:
+    modularity:
+      name: "Modular Design"
+      description: "System must follow modular architecture principles"
+      keywords: ["modular", "component", "separation", "cohesion"]
+      weight: 15
+      mandatory: true
+      validation:
+        min_coverage: 85
+        keywords: ["module", "component", "interface", "decoupled"]
+      source: "Space 7 Architecture Guidelines"
+    
+    scalability:
+      name: "Scalability Design"
+      description: "Architecture must address scalability requirements"
+      keywords: ["scale", "performance", "load", "growth"]
+      weight: 12
+      mandatory: true
+      validation:
+        min_coverage: 80
+        keywords: ["horizontal", "vertical", "performance", "throughput"]
+      source: "Architecture Templates"
+    
+    security:
+      name: "Security by Design"
+      description: "Security considerations must be built into architecture"
+      keywords: ["security", "authentication", "authorization", "encryption"]
+      weight: 15
+      mandatory: true
+      validation:
+        min_coverage: 90
+        keywords: ["secure", "auth", "privacy", "compliance"]
+      source: "Security Guidelines"
+
+  technical:
+    testing:
+      name: "Testing Strategy"
+      description: "Comprehensive testing approach required"
+      keywords: ["test", "testing", "validation", "verification"]
+      weight: 10
+      mandatory: true
+      validation:
+        min_coverage: 85
+        keywords: ["unit", "integration", "e2e", "coverage"]
+      source: "Testing Best Practices"
+    
+    documentation:
+      name: "Documentation Standards"
+      description: "All components must be properly documented"
+      keywords: ["documentation", "docs", "readme", "guide"]
+      weight: 8
+      mandatory: true
+      validation:
+        min_coverage: 80
+        keywords: ["documented", "explained", "guide", "instructions"]
+      source: "Documentation Standards"
+
+  process:
+    agile:
+      name: "Agile Methodology"
+      description: "Development process should follow agile principles"
+      keywords: ["agile", "sprint", "iterative", "scrum"]
+      weight: 10
+      mandatory: false
+      validation:
+        min_coverage: 70
+        keywords: ["sprint", "iteration", "backlog", "retrospective"]
+      source: "Agile Guidelines"
+    
+    continuous_integration:
+      name: "CI/CD Pipeline"
+      description: "Automated build and deployment pipeline required"
+      keywords: ["ci", "cd", "pipeline", "automation"]
+      weight: 12
+      mandatory: true
+      validation:
+        min_coverage: 85
+        keywords: ["automated", "build", "deploy", "pipeline"]
+      source: "DevOps Guidelines"
+
+# Coverage enforcement rules
+coverage_rules:
+  overall_minimum: 85
+  phase_minimum: 80
+  constraint_minimum: 70
+  documentation_minimum: 75
+  test_minimum: 80
+  
+  # Pivot triggers - when to suggest strategic changes
+  pivot_thresholds:
+    complexity_threshold: 85  # If complexity score > 85, suggest pivot
+    entropy_threshold: 75     # If entropy (uncertainty) > 75, suggest pivot
+    coverage_drop_threshold: 20  # If coverage drops by more than 20%, suggest pivot
+
+# Template references for constraint validation
+template_references:
+  space7_instructions: "reference/space7-general-instructions.md"
+  design_process: "reference/DESIGN_PROCESS_TEMPLATE.md"
+  architecture_templates: "reference/ARCHITECTURE_TEMPLATES.md"
+  conversation_starter: "reference/CONVERSATION_STARTER.md"
+  project_context: "reference/PROJECT_CONTEXT.md"
+  example_dialogue: "reference/EXAMPLE_DIALOGUE.md"
+
+# Micro-method keynames for deterministic operations
+micro_methods:
+  confirmation:
+    - "validate_phase_completion"
+    - "check_coverage_threshold"
+    - "verify_constraint_compliance"
+    - "assess_output_quality"
+    - "confirm_stakeholder_approval"
+  
+  pivot:
+    - "calculate_complexity_score"
+    - "measure_entropy_level"
+    - "identify_bottlenecks"
+    - "suggest_alternatives"
+    - "recommend_simplification"
+  
+  coverage:
+    - "calculate_phase_coverage"
+    - "assess_constraint_coverage" 
+    - "measure_documentation_coverage"
+    - "check_test_coverage"
+    - "generate_coverage_report"
+
+# Output format specifications
+output_formats:
+  adr:
+    format: "markdown"
+    template: "adr-template.md"
+    sections: ["Status", "Context", "Decision", "Consequences"]
+  
+  specification:
+    format: "markdown"
+    template: "spec-template.md"
+    sections: ["Overview", "Requirements", "Architecture", "Implementation"]
+  
+  roadmap:
+    format: "markdown"
+    template: "roadmap-template.md"
+    sections: ["Vision", "Milestones", "Timeline", "Dependencies"]
+  
+  diagram:
+    format: "mermaid"
+    types: ["flowchart", "sequence", "class", "state", "architecture"]
