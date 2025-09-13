@@ -1,22 +1,24 @@
 // Design Assistant Framework - Main entry point
-export { designAssistant } from './design-assistant.js';
-export { designPhaseWorkflow } from './design-phase-workflow.js';
-export { confirmationModule } from './confirmation-module.js';
-export { pivotModule } from './pivot-module.js';
-export { constraintManager } from './constraint-manager.js';
-export { coverageEnforcer } from './coverage-enforcer.js';
-export { adrGenerator } from './adr-generator.js';
-export { specGenerator } from './spec-generator.js';
-export { roadmapGenerator } from './roadmap-generator.js';
+
+export { adrGenerator } from "./adr-generator.js";
+export { confirmationModule } from "./confirmation-module.js";
+export { constraintManager } from "./constraint-manager.js";
+export { coverageEnforcer } from "./coverage-enforcer.js";
+export { designAssistant } from "./design-assistant.js";
+export { designPhaseWorkflow } from "./design-phase-workflow.js";
+export { pivotModule } from "./pivot-module.js";
+export { roadmapGenerator } from "./roadmap-generator.js";
+export { specGenerator } from "./spec-generator.js";
 
 // Export types
 export type {
-	DesignSessionConfig,
-	DesignPhase,
+	Artifact,
+	ConfirmationResult,
 	ConstraintRule,
 	CoverageReport,
-	ConfirmationResult,
-	PivotDecision,
-	Artifact,
+	DesignPhase,
+	DesignSessionConfig,
 	DesignSessionState,
-} from './types.js';
+	PivotDecision,
+} from "./types.js";
+export type { DesignAssistantRequest } from "./design-assistant.js";

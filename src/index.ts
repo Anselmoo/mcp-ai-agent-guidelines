@@ -32,6 +32,7 @@ import { getResource, listResources } from "./resources/index.js";
 import { gapFrameworksAnalyzers } from "./tools/analysis/gap-frameworks-analyzers.js";
 import { strategyFrameworksBuilder } from "./tools/analysis/strategy-frameworks-builder.js";
 import { codeHygieneAnalyzer } from "./tools/code-hygiene-analyzer.js";
+import { designAssistant, type DesignAssistantRequest } from "./tools/design/index.js";
 import { guidelinesValidator } from "./tools/guidelines-validator.js";
 import { memoryContextOptimizer } from "./tools/memory-context-optimizer.js";
 import { mermaidDiagramGenerator } from "./tools/mermaid-diagram-generator.js";
@@ -42,7 +43,6 @@ import { hierarchicalPromptBuilder } from "./tools/prompt/hierarchical-prompt-bu
 import { securityHardeningPromptBuilder } from "./tools/prompt/security-hardening-prompt-builder.js";
 import { sparkPromptBuilder } from "./tools/prompt/spark-prompt-builder.js";
 import { sprintTimelineCalculator } from "./tools/sprint-timeline-calculator.js";
-import { designAssistant } from "./tools/design/index.js";
 
 const server = new Server(
 	{
@@ -894,7 +894,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			},
 			{
 				name: "design-assistant",
-				description: "Deterministic, context-driven design assistant with constraint framework for structured design sessions",
+				description:
+					"Deterministic, context-driven design assistant with constraint framework for structured design sessions",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -908,7 +909,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 								"generate-artifacts",
 								"enforce-coverage",
 								"get-status",
-								"load-constraints"
+								"load-constraints",
 							],
 							description: "Action to perform",
 						},
@@ -918,7 +919,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						},
 						config: {
 							type: "object",
-							description: "Design session configuration (required for start-session)",
+							description:
+								"Design session configuration (required for start-session)",
 							properties: {
 								sessionId: { type: "string" },
 								context: { type: "string" },
@@ -940,16 +942,17 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						},
 						constraintConfig: {
 							type: "object",
-							description: "Custom constraint configuration in YAML/JSON format",
+							description:
+								"Custom constraint configuration in YAML/JSON format",
 						},
 						artifactTypes: {
 							type: "array",
 							items: {
 								type: "string",
-								enum: ["adr", "specification", "roadmap"]
+								enum: ["adr", "specification", "roadmap"],
 							},
 							description: "Types of artifacts to generate",
-							default: ["adr", "specification", "roadmap"]
+							default: ["adr", "specification", "roadmap"],
 						},
 					},
 					required: ["action", "sessionId"],
@@ -988,18 +991,17 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 				return modelCompatibilityChecker(args);
 			case "guidelines-validator":
 				return guidelinesValidator(args);
-			case "design-assistant":
-				{
-					const result = await designAssistant.processRequest(args as any);
-					return {
-						content: [
-							{
-								type: "text",
-								text: JSON.stringify(result, null, 2),
-							},
-						],
-					};
-				}
+			case "design-assistant": {
+				const result = await designAssistant.processRequest(args as unknown as DesignAssistantRequest);
+				return {
+					content: [
+						{
+							type: "text",
+							text: JSON.stringify(result, null, 2),
+						},
+					],
+				};
+			}
 			default:
 				throw new Error(`Unknown tool: ${name}`);
 		}
