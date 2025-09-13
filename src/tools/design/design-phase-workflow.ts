@@ -62,13 +62,11 @@ class DesignPhaseWorkflowImpl {
 				return this.advancePhase(sessionId, request.phaseId, request.content);
 			case "complete":
 				if (!request.phaseId || !request.content) {
-					throw new Error("Phase ID and content are required for complete action");
+					throw new Error(
+						"Phase ID and content are required for complete action",
+					);
 				}
-				return this.completePhase(
-					sessionId,
-					request.phaseId,
-					request.content,
-				);
+				return this.completePhase(sessionId, request.phaseId, request.content);
 			case "reset":
 				return this.resetSession(sessionId);
 			case "status":

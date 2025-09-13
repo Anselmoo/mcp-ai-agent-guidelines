@@ -11,7 +11,12 @@ import { designPhaseWorkflow } from "./design-phase-workflow.js";
 import { pivotModule } from "./pivot-module.js";
 import { roadmapGenerator } from "./roadmap-generator.js";
 import { specGenerator } from "./spec-generator.js";
-import type { Artifact, ConfirmationResult, DesignSessionConfig, PivotDecision } from "./types.js";
+import type {
+	Artifact,
+	ConfirmationResult,
+	DesignSessionConfig,
+	PivotDecision,
+} from "./types.js";
 
 const _DesignAssistantRequestSchema = z.object({
 	action: z.enum([
@@ -106,7 +111,9 @@ class DesignAssistantImpl {
 			switch (action) {
 				case "start-session":
 					if (!request.config) {
-						throw new Error("Configuration is required for start-session action");
+						throw new Error(
+							"Configuration is required for start-session action",
+						);
 					}
 					return this.startDesignSession(
 						sessionId,
@@ -117,7 +124,9 @@ class DesignAssistantImpl {
 					return this.advancePhase(sessionId, request.content, request.phaseId);
 				case "validate-phase":
 					if (!request.phaseId || !request.content) {
-						throw new Error("Phase ID and content are required for validate-phase action");
+						throw new Error(
+							"Phase ID and content are required for validate-phase action",
+						);
 					}
 					return this.validatePhase(
 						sessionId,
@@ -143,7 +152,9 @@ class DesignAssistantImpl {
 					return this.getSessionStatus(sessionId);
 				case "load-constraints":
 					if (!request.constraintConfig) {
-						throw new Error("Constraint configuration is required for load-constraints action");
+						throw new Error(
+							"Constraint configuration is required for load-constraints action",
+						);
 					}
 					return this.loadConstraints(request.constraintConfig);
 				default:

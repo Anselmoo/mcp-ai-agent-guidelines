@@ -1,7 +1,11 @@
 // Coverage Enforcer - Monitors and enforces coverage thresholds across design sessions
 import { z } from "zod";
 import { constraintManager } from "./constraint-manager.js";
-import type { CoverageReport, DesignPhase, DesignSessionState } from "./types.js";
+import type {
+	CoverageReport,
+	DesignPhase,
+	DesignSessionState,
+} from "./types.js";
 
 const _CoverageRequestSchema = z.object({
 	sessionState: z.any(), // DesignSessionState
@@ -622,7 +626,10 @@ ${
 		return 40;
 	}
 
-	private assessContentCompleteness(content: string, phase: DesignPhase): number {
+	private assessContentCompleteness(
+		content: string,
+		phase: DesignPhase,
+	): number {
 		const contentLower = content.toLowerCase();
 		let coverage = 0;
 

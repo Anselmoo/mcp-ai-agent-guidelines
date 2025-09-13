@@ -1,6 +1,10 @@
 // Constraint Manager - Loads and validates design constraints from YAML/JSON config
 import { z } from "zod";
-import type { ConstraintRule, ConstraintType, DesignSessionConfig } from "./types.js";
+import type {
+	ConstraintRule,
+	ConstraintType,
+	DesignSessionConfig,
+} from "./types.js";
 
 // Validation schemas for constraint configuration
 const ValidationRuleSchema = z.object({

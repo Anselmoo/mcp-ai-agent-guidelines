@@ -32,7 +32,10 @@ import { getResource, listResources } from "./resources/index.js";
 import { gapFrameworksAnalyzers } from "./tools/analysis/gap-frameworks-analyzers.js";
 import { strategyFrameworksBuilder } from "./tools/analysis/strategy-frameworks-builder.js";
 import { codeHygieneAnalyzer } from "./tools/code-hygiene-analyzer.js";
-import { designAssistant, type DesignAssistantRequest } from "./tools/design/index.js";
+import {
+	type DesignAssistantRequest,
+	designAssistant,
+} from "./tools/design/index.js";
 import { guidelinesValidator } from "./tools/guidelines-validator.js";
 import { memoryContextOptimizer } from "./tools/memory-context-optimizer.js";
 import { mermaidDiagramGenerator } from "./tools/mermaid-diagram-generator.js";
@@ -992,7 +995,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 			case "guidelines-validator":
 				return guidelinesValidator(args);
 			case "design-assistant": {
-				const result = await designAssistant.processRequest(args as unknown as DesignAssistantRequest);
+				const result = await designAssistant.processRequest(
+					args as unknown as DesignAssistantRequest,
+				);
 				return {
 					content: [
 						{
