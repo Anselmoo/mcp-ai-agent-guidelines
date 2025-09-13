@@ -34,10 +34,12 @@ export interface EntropyFactors {
 }
 
 class PivotModuleImpl {
-	private microMethods: string[] = [];
+	// Note: microMethods reserved for future complexity analysis features
+	// private microMethods: string[] = [];
 
 	async initialize(): Promise<void> {
-		this.microMethods = constraintManager.getMicroMethods("pivot");
+		// this.microMethods = constraintManager.getMicroMethods("pivot");
+		// Note: microMethods initialization reserved for future complexity analysis features
 	}
 
 	async evaluatePivotNeed(request: PivotRequest): Promise<PivotDecision> {

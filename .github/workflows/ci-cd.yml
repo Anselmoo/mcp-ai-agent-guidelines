@@ -17,10 +17,10 @@ env:
 
 jobs:
   # ============================================================================
-  # Linting and Code Quality (Node.js 22 only)
+  # Linting and Code Quality (Node.js 22 only) - Using Lefthook
   # ============================================================================
   lint-and-quality:
-    name: Lint & Code Quality
+    name: Lint & Code Quality (Lefthook)
     runs-on: ubuntu-latest
 
     steps:
@@ -45,11 +45,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run Biome linting and formatting
-        run: npm run check
+      - name: Install lefthook
+        run: npm run hooks:install
 
-      - name: Run TypeScript type checking
-        run: npm run type-check
+      - name: Run lefthook quality checks
+        run: npx lefthook run pre-commit --verbose
 
   # ============================================================================
   # Testing and Quality Assurance

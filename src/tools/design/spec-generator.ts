@@ -76,11 +76,11 @@ class SpecGeneratorImpl {
 		// Extract information from session state
 		const sections = await this.generateSpecSections(
 			sessionState,
-			type!,
-			includeExamples!,
+			type || "technical",
+			includeExamples || false,
 		);
 		const metrics = includeMetrics
-			? this.generateSpecMetrics(sessionState, type!)
+			? this.generateSpecMetrics(sessionState, type || "technical")
 			: [];
 		const diagrams = includeDiagrams
 			? this.generateDiagramReferences(sessionState)
@@ -95,9 +95,7 @@ class SpecGeneratorImpl {
 					title,
 					sections,
 					metrics,
-					diagrams,
 					sessionState,
-					metadata,
 				});
 				break;
 			case "json":
@@ -106,9 +104,8 @@ class SpecGeneratorImpl {
 					title,
 					sections,
 					metrics,
-					diagrams,
 					sessionState,
-					metadata,
+					metadata: metadata || {},
 				});
 				break;
 			default:
@@ -129,7 +126,7 @@ class SpecGeneratorImpl {
 			name: `SPEC-${specNumber}: ${title}`,
 			type: "specification",
 			content,
-			format: format!,
+			format: format || "markdown",
 			timestamp,
 			metadata: {
 				specNumber,
@@ -527,7 +524,13 @@ ${JSON.stringify(metadata, null, 2)}
 }`;
 	}
 
-	private generateYAMLSpec(spec: any): string {
+	private generateYAMLSpec(spec: {
+		specNumber: string;
+		title: string;
+		sections: SpecSection[];
+		metrics: SpecMetric[];
+		sessionState: DesignSessionState;
+	}): string {
 		const { specNumber, title, sections, metrics, sessionState } = spec;
 
 		return `# SPEC-${specNumber}: ${title}
@@ -544,7 +547,7 @@ overview:
 sections:
 ${sections
 	.map(
-		(s: any) => `  - id: "${s.id}"
+		(s: SpecSection) => `  - id: "${s.id}"
     title: "${s.title}"
     completeness: ${s.completeness}
     content: |
@@ -555,7 +558,7 @@ ${sections
 metrics:
 ${metrics
 	.map(
-		(m: any) => `  - name: "${m.name}"
+		(m: SpecMetric) => `  - name: "${m.name}"
     value: "${m.value}"
     target: "${m.target}"
     priority: "${m.priority}"`,
@@ -565,14 +568,25 @@ ${metrics
 constraints:
 ${sessionState.config.constraints
 	.map(
-		(c: any) => `  - name: "${c.name}"
+		(c: {
+			name: string;
+			description: string;
+			mandatory: boolean;
+		}) => `  - name: "${c.name}"
     description: "${c.description}"
     mandatory: ${c.mandatory}`,
 	)
 	.join("\n")}`;
 	}
 
-	private generateJSONSpec(spec: any): string {
+	private generateJSONSpec(spec: {
+		specNumber: string;
+		title: string;
+		sections: SpecSection[];
+		metrics: SpecMetric[];
+		sessionState: DesignSessionState;
+		metadata?: Record<string, unknown>;
+	}): string {
 		const { specNumber, title, sections, metrics, sessionState, metadata } =
 			spec;
 
@@ -590,24 +604,31 @@ ${sessionState.config.constraints
 					context: sessionState.config.context,
 					goal: sessionState.config.goal,
 				},
-				sections: sections.map((s: any) => ({
+				sections: sections.map((s: SpecSection) => ({
 					id: s.id,
 					title: s.title,
 					completeness: s.completeness,
 					content: s.content,
 				})),
-				metrics: metrics.map((m: any) => ({
+				metrics: metrics.map((m: SpecMetric) => ({
 					name: m.name,
 					value: m.value,
 					target: m.target,
 					priority: m.priority,
 				})),
-				constraints: sessionState.config.constraints.map((c: any) => ({
-					id: c.id,
-					name: c.name,
-					description: c.description,
-					mandatory: c.mandatory,
-				})),
+				constraints: sessionState.config.constraints.map(
+					(c: {
+						id?: string;
+						name: string;
+						description: string;
+						mandatory: boolean;
+					}) => ({
+						id: c.id,
+						name: c.name,
+						description: c.description,
+						mandatory: c.mandatory,
+					}),
+				),
 				metadata,
 			},
 			null,

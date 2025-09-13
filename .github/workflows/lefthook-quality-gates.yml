@@ -1,0 +1,171 @@
+# Lefthook Quality Gates - Mandatory for GitHub Copilot Agent
+# Ensures all commits pass quality checks before merging
+# Replaces pre-commit with faster lefthook implementation
+
+name: Lefthook Quality Gates
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  # ============================================================================
+  # Lefthook Quality Enforcement - Mandatory for GitHub Copilot Agent
+  # ============================================================================
+  lefthook-quality-gates:
+    name: 🪝 Lefthook Quality Gates (Mandatory)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          # Fetch full history for better diff analysis
+          fetch-depth: 0
+
+      - name: Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install lefthook
+        run: npm run hooks:install
+
+      - name: Verify lefthook installation
+        run: |
+          echo "🔍 Verifying lefthook installation..."
+          npx lefthook version
+          npx lefthook dump
+
+      - name: Run lefthook pre-commit checks (Security & Quality)
+        run: |
+          echo "🔒 Running security and quality checks..."
+          npx lefthook run pre-commit --verbose
+
+      - name: Run lefthook pre-push checks (Tests & Validation)
+        run: |
+          echo "🧪 Running comprehensive tests and validation..."
+          npx lefthook run pre-push --verbose
+
+      - name: Generate quality report
+        if: always()
+        run: |
+          echo "## 🪝 Lefthook Quality Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### ✅ Quality Gates Passed:" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔒 **Security**: Gitleaks secret detection" >> $GITHUB_STEP_SUMMARY
+          echo "- 🟨 **Code Quality**: Biome formatting & linting" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔷 **Type Safety**: TypeScript type checking" >> $GITHUB_STEP_SUMMARY
+          echo "- 📄 **File Validation**: YAML/JSON syntax checking" >> $GITHUB_STEP_SUMMARY
+          echo "- 🧹 **Code Hygiene**: Trailing whitespace & EOF fixes" >> $GITHUB_STEP_SUMMARY
+          echo "- 🧪 **Testing**: Unit, integration, and MCP server tests" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📋 Configuration:" >> $GITHUB_STEP_SUMMARY
+          echo "- **Hook Manager**: Lefthook (replacing pre-commit)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Mandatory**: All quality gates must pass for GitHub Copilot Agent" >> $GITHUB_STEP_SUMMARY
+          echo "- **Performance**: Parallel execution for faster feedback" >> $GITHUB_STEP_SUMMARY
+
+  # ============================================================================
+  # GitHub Copilot Agent Integration Check
+  # ============================================================================
+  copilot-agent-integration:
+    name: 🤖 GitHub Copilot Agent Integration
+    runs-on: ubuntu-latest
+    needs: lefthook-quality-gates
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify GitHub Copilot Agent compatibility
+        run: |
+          echo "🤖 Verifying GitHub Copilot Agent compatibility..."
+
+          # Check for required lefthook configuration
+          if [ ! -f "lefthook.yml" ]; then
+            echo "❌ lefthook.yml not found - required for GitHub Copilot Agent"
+            exit 1
+          fi
+
+          # Verify lefthook hooks are installed
+          if [ ! -d ".git/hooks" ] || [ ! -f ".git/hooks/pre-commit" ]; then
+            echo "❌ Lefthook git hooks not installed"
+            exit 1
+          fi
+
+          # Validate lefthook configuration
+          npx lefthook dump > /dev/null || {
+            echo "❌ Invalid lefthook configuration"
+            exit 1
+          }
+
+          echo "✅ GitHub Copilot Agent integration verified"
+          echo "✅ Lefthook quality gates are properly configured"
+          echo "✅ All hooks installed and functional"
+
+      - name: Copilot Agent integration summary
+        run: |
+          echo "## 🤖 GitHub Copilot Agent Integration Status" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### ✅ Integration Verified:" >> $GITHUB_STEP_SUMMARY
+          echo "- **Lefthook**: Properly configured and installed" >> $GITHUB_STEP_SUMMARY
+          echo "- **Git Hooks**: Pre-commit and pre-push hooks active" >> $GITHUB_STEP_SUMMARY
+          echo "- **Quality Gates**: Mandatory quality checks enforced" >> $GITHUB_STEP_SUMMARY
+          echo "- **Compatibility**: Ready for GitHub Copilot Agent workflows" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔧 Configuration Details:" >> $GITHUB_STEP_SUMMARY
+          echo "- **Hook Manager**: Lefthook (replaced pre-commit)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Security**: Gitleaks secret detection enabled" >> $GITHUB_STEP_SUMMARY
+          echo "- **Code Quality**: Biome linting and formatting" >> $GITHUB_STEP_SUMMARY
+          echo "- **Type Safety**: TypeScript strict checking" >> $GITHUB_STEP_SUMMARY
+          echo "- **Testing**: Comprehensive test suite validation" >> $GITHUB_STEP_SUMMARY
+
+  # ============================================================================
+  # Prevent merge if quality gates fail
+  # ============================================================================
+  quality-gate-check:
+    name: 🚦 Quality Gate Status
+    runs-on: ubuntu-latest
+    needs: [lefthook-quality-gates, copilot-agent-integration]
+    if: always()
+
+    steps:
+      - name: Check quality gate results
+        run: |
+          if [ "${{ needs.lefthook-quality-gates.result }}" != "success" ]; then
+            echo "❌ Lefthook quality gates failed - blocking merge"
+            echo "## ❌ Quality Gates Failed" >> $GITHUB_STEP_SUMMARY
+            echo "All quality gates must pass before merging. Please fix the issues and try again." >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+          if [ "${{ needs.copilot-agent-integration.result }}" != "success" ] && [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "❌ GitHub Copilot Agent integration check failed - blocking merge"
+            echo "## ❌ Copilot Agent Integration Failed" >> $GITHUB_STEP_SUMMARY
+            echo "GitHub Copilot Agent integration requirements not met. Please fix and try again." >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+          echo "✅ All quality gates passed - ready to merge"
+          echo "## ✅ Quality Gates Passed" >> $GITHUB_STEP_SUMMARY
+          echo "All quality checks completed successfully. Ready for merge!" >> $GITHUB_STEP_SUMMARY

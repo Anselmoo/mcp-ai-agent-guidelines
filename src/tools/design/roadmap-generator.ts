@@ -116,8 +116,8 @@ class RoadmapGeneratorImpl {
 		// Generate roadmap components
 		const milestones = this.generateMilestones(
 			sessionState,
-			timeframe!,
-			granularity!,
+			timeframe || "3 months",
+			granularity || "weekly",
 		);
 		const timeline = this.generateTimeline(milestones, sessionState);
 		const risks = includeRisks
@@ -181,7 +181,7 @@ class RoadmapGeneratorImpl {
 			name: `ROADMAP-${paddedRoadmapNumber}: ${title}`,
 			type: "roadmap",
 			content,
-			format: format!,
+			format: format || "markdown",
 			timestamp,
 			metadata: {
 				roadmapNumber,
@@ -717,7 +717,7 @@ ${JSON.stringify(metadata, null, 2)}
     title ${roadmap.title}
     dateFormat YYYY-MM-DD
     axisFormat %m/%d
-    
+
 `;
 
 		// Group milestones by type
