@@ -7,6 +7,7 @@ export { coverageEnforcer } from "./coverage-enforcer.js";
 export type { DesignAssistantRequest } from "./design-assistant.js";
 export { designAssistant } from "./design-assistant.js";
 export { designPhaseWorkflow } from "./design-phase-workflow.js";
+export { methodologySelector } from "./methodology-selector.js";
 export { pivotModule } from "./pivot-module.js";
 export { roadmapGenerator } from "./roadmap-generator.js";
 export { specGenerator } from "./spec-generator.js";
@@ -19,5 +20,8 @@ export type {
 	DesignPhase,
 	DesignSessionConfig,
 	DesignSessionState,
+	MethodologyProfile,
+	MethodologySelection,
+	MethodologySignals,
 	PivotDecision,
 } from "./types.js";

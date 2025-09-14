@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 import assert from "node:assert";
-import { domainNeutralPromptBuilder } from "../../dist/tools/prompt/domain-neutral-prompt-builder.js";
 import { guidelinesValidator } from "../../dist/tools/guidelines-validator.js";
-import { hierarchicalPromptBuilder } from "../../dist/tools/prompt/hierarchical-prompt-builder.js";
 import { modelCompatibilityChecker } from "../../dist/tools/model-compatibility-checker.js";
-import { buildDisclaimer as sharedBuildDisclaimer } from "../../dist/tools/shared/prompt-sections.js";
+import { domainNeutralPromptBuilder } from "../../dist/tools/prompt/domain-neutral-prompt-builder.js";
+import { hierarchicalPromptBuilder } from "../../dist/tools/prompt/hierarchical-prompt-builder.js";
 import { securityHardeningPromptBuilder } from "../../dist/tools/prompt/security-hardening-prompt-builder.js";
 import { sparkPromptBuilder } from "../../dist/tools/prompt/spark-prompt-builder.js";
+import { buildDisclaimer as sharedBuildDisclaimer } from "../../dist/tools/shared/prompt-sections.js";
+import { testMethodologySelector } from "./test-methodology-selector.js";
 
 async function testModelCompatibility() {
 	const result = await modelCompatibilityChecker({
@@ -366,9 +367,9 @@ async function run() {
 			/Self-Consistency/i,
 			/Generate Knowledge/i,
 		];
-		expected.forEach((re) =>
-			assert.ok(re.test(text), `Missing technique section: ${re}`),
-		);
+		for (const re of expected) {
+			assert.ok(re.test(text), `Missing technique section: ${re}`);
+		}
 	}
 
 	// Additional branch coverage: shared disclaimer export
@@ -410,10 +411,7 @@ async function run() {
 			/Vulnerability Analysis/i.test(text),
 			"Missing vulnerability analysis section",
 		);
-		assert.ok(
-			/OWASP/i.test(text),
-			"Missing OWASP compliance reference",
-		);
+		assert.ok(/OWASP/i.test(text), "Missing OWASP compliance reference");
 		assert.ok(
 			/Input validation|Authentication|Authorization/i.test(text),
 			"Missing analysis scope sections",
@@ -444,6 +442,7 @@ async function run() {
 		["Technique Auto-Select", testTechniqueAutoSelect],
 		["Shared Disclaimer Export", testSharedDisclaimerExport],
 		["Security Hardening Prompt Builder", testSecurityHardeningPromptBuilder],
+		["Methodology Selector", testMethodologySelector],
 	];
 	for (const [name, fn] of tests) {
 		try {
