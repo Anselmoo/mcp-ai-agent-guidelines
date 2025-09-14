@@ -176,6 +176,19 @@ class ConstraintManagerImpl {
 		let totalCoverage = 0;
 		let _coveredConstraints = 0;
 
+		// Handle case where no constraints are available
+		if (constraintsToCheck.length === 0) {
+			// Provide basic content coverage based on content length and structure
+			const basicCoverage = this.calculateBasicContentCoverage(content);
+			return {
+				passed: true,
+				coverage: basicCoverage,
+				violations: [],
+				recommendations:
+					basicCoverage < 50 ? ["Consider adding more detailed content"] : [],
+			};
+		}
+
 		for (const constraint of constraintsToCheck) {
 			const coverage = this.calculateConstraintCoverage(content, constraint);
 			const minCoverage = constraint.validation.minCoverage || 70;
@@ -284,13 +297,74 @@ class ConstraintManagerImpl {
 		let coverage = 0;
 		const totalCriteria = phase.criteria.length;
 
+		// If no criteria defined, use basic content assessment
+		if (totalCriteria === 0) {
+			return this.calculateBasicContentCoverage(content);
+		}
+
 		for (const criterion of phase.criteria) {
-			if (contentLower.includes(criterion.toLowerCase())) {
+			// More flexible matching - look for key words within the criterion
+			const criterionWords = criterion.toLowerCase().split(/\s+/);
+			let matchCount = 0;
+
+			for (const word of criterionWords) {
+				if (word.length > 3 && contentLower.includes(word)) {
+					matchCount++;
+				}
+			}
+
+			// Consider it a match if at least half the key words are found
+			if (matchCount >= Math.ceil(criterionWords.length / 2)) {
 				coverage++;
 			}
 		}
 
 		return totalCriteria > 0 ? (coverage / totalCriteria) * 100 : 0;
+	}
+
+	private calculateBasicContentCoverage(content: string): number {
+		if (!content || content.trim().length === 0) {
+			return 0;
+		}
+
+		// Basic heuristic coverage based on content quality indicators
+		let score = 0;
+		const contentLower = content.toLowerCase();
+
+		// Length scoring (0-30 points)
+		const words = content.trim().split(/\s+/).length;
+		score += Math.min(30, words / 3); // 1 point per 3 words, max 30
+
+		// Structure indicators (0-40 points)
+		const hasHeaders = /^#{1,6}\s+/.test(content);
+		const hasBullets = /^\s*[-*+]\s+/m.test(content);
+		const hasNumbers = /^\s*\d+\.\s+/m.test(content);
+		const hasBlocks = /```|`/.test(content);
+
+		if (hasHeaders) score += 10;
+		if (hasBullets || hasNumbers) score += 10;
+		if (hasBlocks) score += 10;
+		if (content.includes("\n\n")) score += 10; // Paragraphs
+
+		// Content quality indicators (0-30 points)
+		const qualityWords = [
+			"requirement",
+			"analysis",
+			"design",
+			"implementation",
+			"user",
+			"system",
+			"interface",
+			"component",
+			"process",
+		];
+		let qualityCount = 0;
+		for (const word of qualityWords) {
+			if (contentLower.includes(word)) qualityCount++;
+		}
+		score += Math.min(30, qualityCount * 3);
+
+		return Math.min(100, score);
 	}
 }
 
