@@ -32,6 +32,10 @@ import { getResource, listResources } from "./resources/index.js";
 import { gapFrameworksAnalyzers } from "./tools/analysis/gap-frameworks-analyzers.js";
 import { strategyFrameworksBuilder } from "./tools/analysis/strategy-frameworks-builder.js";
 import { codeHygieneAnalyzer } from "./tools/code-hygiene-analyzer.js";
+import {
+	type DesignAssistantRequest,
+	designAssistant,
+} from "./tools/design/index.js";
 import { guidelinesValidator } from "./tools/guidelines-validator.js";
 import { memoryContextOptimizer } from "./tools/memory-context-optimizer.js";
 import { mermaidDiagramGenerator } from "./tools/mermaid-diagram-generator.js";
@@ -891,6 +895,72 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 					required: ["practiceDescription", "category"],
 				},
 			},
+			{
+				name: "design-assistant",
+				description:
+					"Deterministic, context-driven design assistant with constraint framework for structured design sessions",
+				inputSchema: {
+					type: "object",
+					properties: {
+						action: {
+							type: "string",
+							enum: [
+								"start-session",
+								"advance-phase",
+								"validate-phase",
+								"evaluate-pivot",
+								"generate-artifacts",
+								"enforce-coverage",
+								"get-status",
+								"load-constraints",
+							],
+							description: "Action to perform",
+						},
+						sessionId: {
+							type: "string",
+							description: "Unique session identifier",
+						},
+						config: {
+							type: "object",
+							description:
+								"Design session configuration (required for start-session)",
+							properties: {
+								sessionId: { type: "string" },
+								context: { type: "string" },
+								goal: { type: "string" },
+								requirements: { type: "array", items: { type: "string" } },
+								coverageThreshold: { type: "number", default: 85 },
+								enablePivots: { type: "boolean", default: true },
+								templateRefs: { type: "array", items: { type: "string" } },
+								outputFormats: { type: "array", items: { type: "string" } },
+							},
+						},
+						content: {
+							type: "string",
+							description: "Content to validate or analyze",
+						},
+						phaseId: {
+							type: "string",
+							description: "Target phase ID for advance or validate actions",
+						},
+						constraintConfig: {
+							type: "object",
+							description:
+								"Custom constraint configuration in YAML/JSON format",
+						},
+						artifactTypes: {
+							type: "array",
+							items: {
+								type: "string",
+								enum: ["adr", "specification", "roadmap"],
+							},
+							description: "Types of artifacts to generate",
+							default: ["adr", "specification", "roadmap"],
+						},
+					},
+					required: ["action", "sessionId"],
+				},
+			},
 		],
 	};
 });
@@ -924,6 +994,19 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 				return modelCompatibilityChecker(args);
 			case "guidelines-validator":
 				return guidelinesValidator(args);
+			case "design-assistant": {
+				const result = await designAssistant.processRequest(
+					args as unknown as DesignAssistantRequest,
+				);
+				return {
+					content: [
+						{
+							type: "text",
+							text: JSON.stringify(result, null, 2),
+						},
+					],
+				};
+			}
 			default:
 				throw new Error(`Unknown tool: ${name}`);
 		}

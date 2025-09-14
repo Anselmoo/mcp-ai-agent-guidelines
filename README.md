@@ -325,6 +325,38 @@ npm run test:coverage:unit # Unit test coverage (text-summary, lcov, html)
 npm run quality          # Type-check + Biome check
 ```
 
+### Git Hooks with Lefthook 🪝
+
+This project uses [Lefthook](https://github.com/evilmartians/lefthook) for fast, reliable Git hooks that enforce code quality and security standards.
+
+**Mandatory for GitHub Copilot Agent**: All quality gates must pass before commits and pushes.
+
+Setup (automatic via `npm install`):
+```bash
+npm run hooks:install    # Install lefthook git hooks
+npm run hooks:uninstall  # Remove lefthook git hooks
+npx lefthook run pre-commit  # Run pre-commit checks manually
+npx lefthook run pre-push    # Run pre-push checks manually
+```
+
+**Pre-commit hooks** (fast, parallel execution):
+- 🔒 **Security**: Gitleaks secret detection
+- 🟨 **Code Quality**: Biome formatting & linting
+- 🔷 **Type Safety**: TypeScript type checking
+- 🧹 **Code Hygiene**: Trailing whitespace & EOF fixes
+
+**Pre-push hooks** (comprehensive validation):
+- 🧪 **Testing**: Full test suite (unit, integration, demo, MCP)
+- ⚡ **Quality**: Type checking + Biome validation
+
+**Why Lefthook?**
+- ⚡ **Fast**: Written in Go, parallel execution
+- 🔄 **Reliable**: Better error handling than pre-commit
+- 🤖 **CI Integration**: Mandatory quality gates for GitHub Copilot Agent
+- 📝 **Simple**: Single YAML configuration file
+
+Configuration: [`lefthook.yml`](./lefthook.yml)
+
 ### Coverage reporting
 
 - CI publishes a coverage summary in the job’s Summary and uploads `coverage/` as an artifact.

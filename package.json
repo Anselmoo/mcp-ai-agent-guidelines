@@ -25,7 +25,11 @@
 		"check:fix": "biome check --write src/",
 		"type-check": "tsc --noEmit",
 		"quality": "npm run type-check && npm run check",
-		"validate": "npm run lint && npm run type-check && npm run test:all"
+		"validate": "npm run lint && npm run type-check && npm run test:all",
+		"hooks:install": "lefthook install",
+		"hooks:uninstall": "lefthook uninstall",
+		"hooks:run": "lefthook run",
+		"prepare": "lefthook install"
 	},
 	"keywords": [
 		"mcp",
@@ -70,6 +74,7 @@
 		"@types/node": "^24.3.1",
 		"@vitest/coverage-v8": "^3.2.4",
 		"c8": "^10.0.0",
+		"lefthook": "^1.13.0",
 		"typescript": "^5.9.2",
 		"vitest": "^3.2.4"
 	},

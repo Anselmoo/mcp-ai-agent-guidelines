@@ -1,0 +1,67 @@
+# Lefthook Git hooks configuration
+# Fast Git hooks manager for maintaining code quality and security
+
+# Global settings
+min_version: 1.5.0
+
+# Pre-commit hooks - run before commit is created
+pre-commit:
+  parallel: true
+  commands:
+    # ----------------------------- 🔒 Security Tools ---------------------------- #
+    gitleaks:
+      tags: [security]
+      run: gitleaks detect --verbose --redact --config=.gitleaks.toml --source="."
+      fail_text: "🔒 Gitleaks detected secrets in staged files"
+
+    # --------------------------- 🔍 Code Quality Tools -------------------------- #
+    biome-check:
+      tags: [format, lint]
+      glob: "*.{js,jsx,ts,tsx,cjs,cts,mjs,mts,json,jsonc}"
+      run: npx biome check --write --files-ignore-unknown=true --no-errors-on-unmatched {staged_files}
+      stage_fixed: true
+      fail_text: "🟨 Biome formatting/linting issues found"
+
+    typescript-check:
+      tags: [types]
+      glob: "*.{ts,tsx}"
+      run: npx tsc --noEmit
+      fail_text: "🔷 TypeScript type checking failed"
+
+    # ----------------------------- 📝 File Quality ---------------------------- #
+    trailing-whitespace:
+      tags: [format]
+      glob: "*.{js,jsx,ts,tsx,py,md,yml,yaml,json,txt}"
+      run: sed -i 's/[[:space:]]*$//' {staged_files}
+      stage_fixed: true
+      fail_text: "🧹 Trailing whitespace removed"
+
+    end-of-file-fixer:
+      tags: [format]
+      glob: "*.{js,jsx,ts,tsx,py,md,yml,yaml,json,txt}"
+      run: |
+        for file in {staged_files}; do
+          if [ -f "$file" ] && [ -s "$file" ] && [ "$(tail -c1 "$file")" != "" ]; then
+            echo "" >> "$file"
+          fi
+        done
+      stage_fixed: true
+      fail_text: "🧹 End-of-file issues fixed"
+
+# Pre-push hooks - run before push to remote
+pre-push:
+  commands:
+    test-all:
+      tags: [test]
+      run: npm run test:all
+      fail_text: "🧪 Tests failed - push aborted"
+
+    quality-check:
+      tags: [quality]
+      run: npm run quality
+      fail_text: "⚡ Quality checks failed - push aborted"
+
+# Output settings
+output:
+  - execution
+  - success
