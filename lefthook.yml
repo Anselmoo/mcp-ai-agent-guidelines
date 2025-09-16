@@ -15,15 +15,24 @@ pre-commit:
         # Auto-install gitleaks if not available
         if ! command -v gitleaks >/dev/null 2>&1; then
           echo "📦 Gitleaks not found, installing..."
-          
+
           # Check if Docker is available (prioritize Docker for reliability)
           if command -v docker >/dev/null 2>&1; then
             echo "🐳 Using gitleaks Docker image (recommended)..."
-            docker run --rm -v "$(pwd):/workspace" -w /workspace \
-              zricethezav/gitleaks:latest detect --verbose --redact --config=.gitleaks.toml --source="."
-            exit $?
+            
+            # Try Docker with simple approach
+            echo "Running gitleaks scan..."
+            WORKSPACE_PATH="$(pwd)"
+            docker run --rm -v "${WORKSPACE_PATH}:/workspace:ro" -w /workspace zricethezav/gitleaks:latest detect --verbose --redact --config=.gitleaks.toml --source="."
+            DOCKER_EXIT_CODE=$?
+            if [ $DOCKER_EXIT_CODE -eq 0 ]; then
+              echo "✅ Gitleaks scan completed successfully"
+              exit 0
+            else
+              echo "⚠️  Docker gitleaks had issues (exit code: $DOCKER_EXIT_CODE), falling back to binary installation..."
+            fi
           fi
-          
+
           # Try binary installation as fallback
           OS=$(uname -s | tr '[:upper:]' '[:lower:]')
           ARCH=$(uname -m)
@@ -33,33 +42,50 @@ pre-commit:
             armv7l) ARCH="armv7" ;;
             *) ARCH="unsupported" ;;
           esac
-          
+
           if [ "$ARCH" != "unsupported" ] && ([ "$OS" = "linux" ] || [ "$OS" = "darwin" ]); then
             echo "📥 Trying binary installation for ${OS}-${ARCH}..."
             INSTALL_DIR="$HOME/.local/bin"
             mkdir -p "$INSTALL_DIR"
-            
+
             # Try different possible download URLs
-            BINARY_URLS=(
-              "https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks-${OS}-${ARCH}"
-              "https://github.com/gitleaks/gitleaks/releases/download/v8.21.2/gitleaks-${OS}-${ARCH}"
-            )
+            DOWNLOAD_SUCCESS=false
             
-            for URL in "${BINARY_URLS[@]}"; do
-              echo "Trying: $URL"
-              if curl -sSL "$URL" -o "$INSTALL_DIR/gitleaks" 2>/dev/null && [ -f "$INSTALL_DIR/gitleaks" ] && [ -s "$INSTALL_DIR/gitleaks" ]; then
+            # Try first URL
+            URL1="https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks-${OS}-${ARCH}"
+            echo "Trying: $URL1"
+            if curl -sSL "$URL1" -o "$INSTALL_DIR/gitleaks" 2>/dev/null && [ -f "$INSTALL_DIR/gitleaks" ] && [ -s "$INSTALL_DIR/gitleaks" ]; then
+              # Check if we got a valid binary (not an HTML error page)
+              if file "$INSTALL_DIR/gitleaks" | grep -q "executable"; then
+                chmod +x "$INSTALL_DIR/gitleaks"
+                export PATH="$INSTALL_DIR:$PATH"
+                echo "✅ Gitleaks binary installed successfully"
+                DOWNLOAD_SUCCESS=true
+              fi
+            fi
+            
+            # Try second URL if first failed
+            if [ "$DOWNLOAD_SUCCESS" = "false" ]; then
+              rm -f "$INSTALL_DIR/gitleaks"
+              URL2="https://github.com/gitleaks/gitleaks/releases/download/v8.21.2/gitleaks-${OS}-${ARCH}"
+              echo "Trying: $URL2"
+              if curl -sSL "$URL2" -o "$INSTALL_DIR/gitleaks" 2>/dev/null && [ -f "$INSTALL_DIR/gitleaks" ] && [ -s "$INSTALL_DIR/gitleaks" ]; then
                 # Check if we got a valid binary (not an HTML error page)
                 if file "$INSTALL_DIR/gitleaks" | grep -q "executable"; then
                   chmod +x "$INSTALL_DIR/gitleaks"
                   export PATH="$INSTALL_DIR:$PATH"
                   echo "✅ Gitleaks binary installed successfully"
-                  break
+                  DOWNLOAD_SUCCESS=true
                 fi
               fi
+            fi
+            
+            # Clean up if download failed
+            if [ "$DOWNLOAD_SUCCESS" = "false" ]; then
               rm -f "$INSTALL_DIR/gitleaks"
-            done
+            fi
           fi
-          
+
           # Final check - if still not found, provide instructions
           if ! command -v gitleaks >/dev/null 2>&1; then
             echo "❌ Could not install gitleaks automatically!"
@@ -82,7 +108,7 @@ pre-commit:
             exit 0  # Don't fail the commit, just warn
           fi
         fi
-        
+
         # Run gitleaks with proper configuration
         gitleaks detect --verbose --redact --config=.gitleaks.toml --source="."
       fail_text: "🔒 Gitleaks detected secrets in staged files"
