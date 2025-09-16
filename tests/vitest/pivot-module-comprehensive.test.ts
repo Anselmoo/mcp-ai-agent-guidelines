@@ -146,14 +146,9 @@ describe("Pivot Module Comprehensive Function Coverage", () => {
 
 		const request: PivotRequest = {
 			sessionState,
-			trigger: "complexity",
-			context: "High complexity system with performance issues",
-			urgency: "high",
-			metadata: {
-				performanceIssues: true,
-				scalabilityProblems: true,
-				userExperience: "degraded",
-			},
+			currentContent: "High complexity system with performance issues. Microservices architecture with multiple database integrations and complex user workflows requiring significant maintenance overhead.",
+			triggerReason: "complexity",
+			forceEvaluation: false,
 		};
 
 		const result = await pivotModule.evaluatePivotNeed(request);
@@ -173,14 +168,9 @@ describe("Pivot Module Comprehensive Function Coverage", () => {
 
 		const request: PivotRequest = {
 			sessionState,
-			trigger: "entropy",
-			context: "System showing high entropy and unpredictable behavior",
-			urgency: "medium",
-			metadata: {
-				entropyLevel: "high",
-				unpredictability: true,
-				dataVariability: "extreme",
-			},
+			currentContent: "System showing high entropy and unpredictable behavior. Requirements are constantly changing with unclear technical specifications and evolving user needs.",
+			triggerReason: "entropy",
+			forceEvaluation: false,
 		};
 
 		const result = await pivotModule.evaluatePivotNeed(request);
@@ -195,14 +185,10 @@ describe("Pivot Module Comprehensive Function Coverage", () => {
 
 		const request: PivotRequest = {
 			sessionState,
-			trigger: "coverage",
-			context: "Coverage dropped significantly below threshold",
-			urgency: "critical",
-			metadata: {
-				targetCoverage: 85,
-				currentCoverage: 40,
-				trend: "declining",
-			},
+			currentContent: "Coverage dropped significantly below threshold. Critical functionality is missing test coverage and code quality checks.",
+			triggerReason: "coverage",
+			forceEvaluation: false,
+		};
 		};
 
 		const result = await pivotModule.evaluatePivotNeed(request);
@@ -222,14 +208,9 @@ describe("Pivot Module Comprehensive Function Coverage", () => {
 
 		const request: PivotRequest = {
 			sessionState,
-			trigger: "performance",
-			context: "System performance degraded significantly",
-			urgency: "high",
-			metadata: {
-				responseTime: "slow",
-				throughput: "degraded",
-				errorRate: "increasing",
-			},
+			currentContent: "System performance degraded significantly. Response times are slow, throughput is reduced, and error rates are increasing.",
+			triggerReason: "performance",
+			forceEvaluation: false,
 		};
 
 		const result = await pivotModule.evaluatePivotNeed(request);
@@ -298,13 +279,9 @@ describe("Pivot Module Comprehensive Function Coverage", () => {
 
 		const request: PivotRequest = {
 			sessionState,
-			trigger: "complexity",
-			context: "Minor complexity concerns",
-			urgency: "low",
-			metadata: {
-				impactLevel: "minor",
-				riskLevel: "low",
-			},
+			currentContent: "Minor complexity concerns in the system architecture. Some optimization opportunities identified but not critical.",
+			triggerReason: "complexity",
+			forceEvaluation: false,
 		};
 
 		const result = await pivotModule.evaluatePivotNeed(request);
@@ -320,14 +297,9 @@ describe("Pivot Module Comprehensive Function Coverage", () => {
 
 		const criticalRequest: PivotRequest = {
 			sessionState,
-			trigger: "coverage",
-			context: "Critical system failure requiring immediate pivot",
-			urgency: "critical",
-			metadata: {
-				systemStatus: "failing",
-				userImpact: "severe",
-				businessImpact: "critical",
-			},
+			currentContent: "Critical system failure requiring immediate pivot. System is failing with severe user impact and critical business implications.",
+			triggerReason: "coverage",
+			forceEvaluation: true,
 		};
 
 		const result = await pivotModule.evaluatePivotNeed(criticalRequest);
@@ -368,9 +340,9 @@ describe("Pivot Module Comprehensive Function Coverage", () => {
 
 		const request: PivotRequest = {
 			sessionState: highComplexityState,
-			trigger: "complexity",
-			context: "Multiple complexity factors overwhelming system",
-			urgency: "high",
+			currentContent: "Multiple complexity factors overwhelming system. Algorithmic complexity, integration complexity, data complexity, and operational complexity with machine learning models and real-time processing requirements.",
+			triggerReason: "complexity",
+			forceEvaluation: false,
 		};
 
 		const result = await pivotModule.evaluatePivotNeed(request);
@@ -389,14 +361,9 @@ describe("Pivot Module Comprehensive Function Coverage", () => {
 
 		const request: PivotRequest = {
 			sessionState: highEntropyState,
-			trigger: "entropy",
-			context: "System entropy reaching critical levels",
-			urgency: "high",
-			metadata: {
-				entropyMeasurement: "critical",
-				predictability: "none",
-				stabilityTrend: "deteriorating",
-			},
+			currentContent: "System entropy reaching critical levels. Extremely variable system behavior with unpredictable patterns, inconsistent performance metrics, and random failure modes that defy traditional analysis methods.",
+			triggerReason: "entropy",
+			forceEvaluation: false,
 		};
 
 		const result = await pivotModule.evaluatePivotNeed(request);

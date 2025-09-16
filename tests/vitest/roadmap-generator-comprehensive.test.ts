@@ -74,7 +74,7 @@ describe("Roadmap Generator Comprehensive Function Coverage", () => {
 						content: "Detailed project plan with timelines",
 						format: "markdown",
 						timestamp: "2024-01-01T10:00:00Z",
-						metadata: { priority: "high", complexity: "medium" },
+						metadata: {  complexity: "medium" },
 					},
 				],
 				dependencies: [],
@@ -142,11 +142,11 @@ describe("Roadmap Generator Comprehensive Function Coverage", () => {
 			sessionState,
 			title: "Mobile App Development Roadmap",
 			timeframe: "6 months",
-			priority: "high",
 			includeRisks: true,
 			includeDependencies: true,
-			includeTimeline: true,
+			includeResources: true,
 			format: "markdown",
+			granularity: "high",
 			metadata: { team: "mobile-dev", budget: "$500k" },
 		});
 
@@ -167,11 +167,12 @@ describe("Roadmap Generator Comprehensive Function Coverage", () => {
 			sessionState,
 			title: "Strategic Platform Roadmap",
 			timeframe: "12 months",
-			priority: "strategic",
 			includeRisks: true,
 			includeDependencies: false,
-			includeTimeline: true,
+			includeResources: true,
 			format: "markdown",
+			granularity: "medium",
+			metadata: { type: "strategic" },
 		});
 
 		expect(result.artifact.type).toBe("roadmap");
@@ -187,11 +188,12 @@ describe("Roadmap Generator Comprehensive Function Coverage", () => {
 			sessionState,
 			title: "Tactical Implementation Roadmap",
 			timeframe: "3 months",
-			priority: "tactical",
 			includeRisks: false,
 			includeDependencies: true,
-			includeTimeline: false,
+			includeResources: false,
 			format: "mermaid",
+			granularity: "high",
+			metadata: { type: "tactical" },
 		});
 
 		expect(result.content).toContain("gantt");
@@ -208,12 +210,13 @@ describe("Roadmap Generator Comprehensive Function Coverage", () => {
 			sessionState,
 			title: "Operational Roadmap",
 			timeframe: "1 month",
-			priority: "operational",
 			includeRisks: true,
 			includeDependencies: true,
-			includeTimeline: true,
+			includeResources: true,
 			format: "json",
+			granularity: "high",
 			metadata: {
+				type: "operational",
 				environment: "production",
 				criticality: "high",
 				owner: "ops-team",
@@ -234,22 +237,22 @@ describe("Roadmap Generator Comprehensive Function Coverage", () => {
 			sessionState,
 			title: "Short Term Roadmap",
 			timeframe: "2 weeks",
-			priority: "high",
 			includeRisks: true,
 			includeDependencies: true,
-			includeTimeline: true,
+			includeResources: true,
 			format: "markdown",
+			granularity: "high",
 		});
 
 		const longTermResult = await roadmapGenerator.generateRoadmap({
 			sessionState,
 			title: "Long Term Roadmap",
 			timeframe: "24 months",
-			priority: "strategic",
 			includeRisks: true,
 			includeDependencies: true,
-			includeTimeline: true,
+			includeResources: true,
 			format: "markdown",
+			granularity: "low",
 		});
 
 		expect(shortTermResult.milestones.length).toBeGreaterThan(0);
@@ -290,11 +293,11 @@ describe("Roadmap Generator Comprehensive Function Coverage", () => {
 			sessionState: complexSessionState,
 			title: "Complex Dependencies Roadmap",
 			timeframe: "12 months",
-			priority: "high",
 			includeRisks: true,
 			includeDependencies: true,
-			includeTimeline: true,
+			includeResources: true,
 			format: "markdown",
+			granularity: "medium",
 		});
 
 		expect(result.dependencies.length).toBeGreaterThan(2);
@@ -310,11 +313,11 @@ describe("Roadmap Generator Comprehensive Function Coverage", () => {
 			sessionState,
 			title: "Implementation Focused Roadmap",
 			timeframe: "6 months",
-			priority: "high",
 			includeRisks: true,
 			includeDependencies: true,
-			includeTimeline: true,
+			includeResources: true,
 			format: "markdown",
+			granularity: "medium",
 			metadata: { focus: "implementation", track: "fast" },
 		});
 
@@ -336,11 +339,11 @@ describe("Roadmap Generator Comprehensive Function Coverage", () => {
 			sessionState: highRiskSessionState,
 			title: "High Risk Project Roadmap",
 			timeframe: "9 months",
-			priority: "high",
 			includeRisks: true,
 			includeDependencies: true,
-			includeTimeline: true,
+			includeResources: true,
 			format: "markdown",
+			granularity: "high",
 		});
 
 		expect(result.risks.some((r) => r.probability === "high")).toBe(true);
@@ -358,11 +361,11 @@ describe("Roadmap Generator Comprehensive Function Coverage", () => {
 			sessionState,
 			title: "Needs Improvement Roadmap",
 			timeframe: "4 months",
-			priority: "medium",
 			includeRisks: true,
 			includeDependencies: true,
-			includeTimeline: true,
+			includeResources: true,
 			format: "markdown",
+			granularity: "medium",
 		});
 
 		expect(result.recommendations.length).toBeGreaterThan(2);
