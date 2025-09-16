@@ -1,5 +1,5 @@
 // Comprehensive test suite for pivot-module.ts to maximize function coverage
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { pivotModule } from "../../dist/tools/design/pivot-module.js";
 import type {
 	DesignSessionState,
