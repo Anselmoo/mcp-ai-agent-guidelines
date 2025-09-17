@@ -470,4 +470,266 @@ describe("Constraint Consistency Enforcer Integration", () => {
 		expect(result.enforcementActions).toBeInstanceOf(Array);
 		expect(result.recommendations).toBeInstanceOf(Array);
 	});
+
+	// Additional tests to increase function coverage
+	it("should handle edge case: empty session state", async () => {
+		const emptySessionState = {
+			config: {
+				sessionId: "empty-session",
+				context: "",
+				goal: "",
+				requirements: [],
+				constraints: [],
+				coverageThreshold: 50,
+				enablePivots: false,
+				templateRefs: [],
+				outputFormats: [],
+				metadata: {},
+			},
+			currentPhase: "discovery",
+			phases: {},
+			coverage: {
+				overall: 0,
+				phases: {},
+				constraints: {},
+				assumptions: {},
+				documentation: {},
+				testCoverage: 0,
+			},
+			artifacts: [],
+			history: [],
+			status: "pending",
+		};
+
+		const request: ConsistencyEnforcementRequest = {
+			sessionState: emptySessionState,
+			context: "Testing empty session handling",
+		};
+
+		const result =
+			await constraintConsistencyEnforcer.enforceConsistency(request);
+		expect(result).toBeDefined();
+		expect(result.success).toBe(true);
+	});
+
+	it("should validate cross-session consistency with multiple constraints", async () => {
+		const sessionState = createTestSessionState("multi-constraint-session");
+		sessionState.config.constraints.push({
+			id: "security.authentication",
+			name: "Authentication Required",
+			type: "security",
+			category: "security",
+			description: "All endpoints must require authentication",
+			validation: { minCoverage: 95, keywords: ["auth", "security"] },
+			weight: 20,
+			mandatory: true,
+			source: "Security Guidelines",
+		});
+
+		const validationResult =
+			await constraintConsistencyEnforcer.validateCrossSessionConsistency(
+				sessionState,
+			);
+
+		expect(validationResult).toBeDefined();
+		expect(validationResult.passed).toBeDefined();
+		expect(validationResult.violations).toBeInstanceOf(Array);
+		expect(validationResult.enforcementActions).toBeInstanceOf(Array);
+	});
+
+	it("should enforce consistency with artifact generation enabled", async () => {
+		const sessionState = createTestSessionState("artifact-generation-session");
+		const request: ConsistencyEnforcementRequest = {
+			sessionState,
+			constraintId: "architectural.modularity",
+			context: "Testing artifact generation flow",
+			generateArtifacts: true,
+		};
+
+		const result =
+			await constraintConsistencyEnforcer.enforceConsistency(request);
+
+		expect(result).toBeDefined();
+		expect(result.success).toBe(true);
+		expect(result.generatedArtifacts).toBeInstanceOf(Array);
+	});
+
+	it("should handle constraint validation with low coverage", async () => {
+		const sessionState = createTestSessionState("low-coverage-session");
+		sessionState.coverage.overall = 30;
+		sessionState.coverage.constraints = {
+			"architectural.modularity": 25,
+			"technical.testing": 35,
+		};
+
+		const validationResult =
+			await constraintConsistencyEnforcer.validateCrossSessionConsistency(
+				sessionState,
+				"architectural.modularity",
+			);
+
+		expect(validationResult).toBeDefined();
+		expect(validationResult.passed).toBeDefined();
+		expect(validationResult.consistencyScore).toBeGreaterThanOrEqual(0);
+	});
+
+	it("should generate enforcement actions for violation scenarios", async () => {
+		const sessionState = createTestSessionState("violation-scenario-session");
+		// Simulate a scenario with potential violations
+		sessionState.config.constraints[0].mandatory = false;
+		sessionState.config.constraints[1].mandatory = false;
+
+		const request: ConsistencyEnforcementRequest = {
+			sessionState,
+			context: "Testing violation scenario handling",
+			strictMode: true,
+		};
+
+		const result =
+			await constraintConsistencyEnforcer.enforceConsistency(request);
+
+		expect(result).toBeDefined();
+		expect(result.success).toBe(true);
+		expect(result.enforcementActions).toBeInstanceOf(Array);
+	});
+
+	it("should validate consistency across different phases", async () => {
+		const sessionState = createTestSessionState("phase-transition-session");
+		sessionState.currentPhase = "architecture";
+		sessionState.phases.architecture = {
+			id: "architecture",
+			name: "Architecture",
+			description: "Architecture design phase",
+			inputs: ["requirements"],
+			outputs: ["architecture"],
+			criteria: ["Scalable design"],
+			coverage: 75,
+			status: "in-progress",
+			artifacts: [],
+			dependencies: ["requirements"],
+		};
+
+		const validationResult =
+			await constraintConsistencyEnforcer.validateCrossSessionConsistency(
+				sessionState,
+				"architectural.modularity",
+			);
+
+		expect(validationResult).toBeDefined();
+		expect(validationResult.passed).toBeDefined();
+	});
+
+	it("should handle reinitialization gracefully", async () => {
+		// Test multiple initializations
+		await constraintConsistencyEnforcer.initialize();
+		await constraintConsistencyEnforcer.initialize();
+
+		const sessionState = createTestSessionState("reinit-test-session");
+		const request: ConsistencyEnforcementRequest = {
+			sessionState,
+			context: "Testing after reinitialization",
+		};
+
+		const result =
+			await constraintConsistencyEnforcer.enforceConsistency(request);
+		expect(result).toBeDefined();
+		expect(result.success).toBe(true);
+	});
+
+	it("should process complex enforcement scenarios", async () => {
+		const sessionState = createTestSessionState("complex-scenario-session");
+
+		// Add more complex scenario data
+		sessionState.config.constraints.push({
+			id: "performance.optimization",
+			name: "Performance Optimization",
+			type: "performance",
+			category: "performance",
+			description: "System must meet performance benchmarks",
+			validation: {
+				minCoverage: 85,
+				keywords: ["performance", "optimization"],
+			},
+			weight: 15,
+			mandatory: true,
+			source: "Performance Guidelines",
+		});
+
+		sessionState.phases.implementation = {
+			id: "implementation",
+			name: "Implementation",
+			description: "Implementation phase",
+			inputs: ["architecture"],
+			outputs: ["code"],
+			criteria: ["Clean code"],
+			coverage: 70,
+			status: "pending",
+			artifacts: [],
+			dependencies: ["architecture"],
+		};
+
+		const request: ConsistencyEnforcementRequest = {
+			sessionState,
+			phaseId: "implementation",
+			context: "Complex enforcement scenario",
+			generateArtifacts: true,
+			strictMode: false,
+		};
+
+		const result =
+			await constraintConsistencyEnforcer.enforceConsistency(request);
+
+		expect(result).toBeDefined();
+		expect(result.success).toBe(true);
+		expect(result.enforcementActions).toBeInstanceOf(Array);
+		expect(result.generatedArtifacts).toBeInstanceOf(Array);
+		expect(result.interactivePrompts).toBeInstanceOf(Array);
+	});
+
+	it("should handle missing constraint in validation", async () => {
+		const sessionState = createTestSessionState(
+			"missing-constraint-validation",
+		);
+
+		const validationResult =
+			await constraintConsistencyEnforcer.validateCrossSessionConsistency(
+				sessionState,
+				"nonexistent.constraint.id",
+			);
+
+		expect(validationResult).toBeDefined();
+		expect(validationResult.passed).toBeDefined();
+		expect(validationResult.consistencyScore).toBeGreaterThanOrEqual(0);
+	});
+
+	it("should test private method coverage through public APIs", async () => {
+		// Test internal functions through public methods
+		const sessionStates = [];
+
+		// Create multiple sessions to test history tracking
+		for (let i = 1; i <= 5; i++) {
+			const sessionState = createTestSessionState(`history-session-${i}`);
+			sessionStates.push(sessionState);
+
+			const request: ConsistencyEnforcementRequest = {
+				sessionState,
+				constraintId: "architectural.modularity",
+				context: `Building history pattern ${i}`,
+			};
+
+			await constraintConsistencyEnforcer.enforceConsistency(request);
+		}
+
+		// Now test cross-session validation that uses the history
+		const finalSessionState = createTestSessionState("final-history-session");
+		const validationResult =
+			await constraintConsistencyEnforcer.validateCrossSessionConsistency(
+				finalSessionState,
+				"architectural.modularity",
+			);
+
+		expect(validationResult).toBeDefined();
+		expect(validationResult.historicalContext).toBeInstanceOf(Array);
+		expect(validationResult.historicalContext.length).toBeGreaterThan(0);
+	});
 });

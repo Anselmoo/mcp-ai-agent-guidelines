@@ -18,6 +18,7 @@ import { strategicPivotPromptBuilder } from "./strategic-pivot-prompt-builder.js
 import type {
 	Artifact,
 	ConfirmationResult,
+	ConsistencyEnforcementResult,
 	CrossSessionConsistencyReport,
 	DesignSessionConfig,
 	EnforcementPrompt,

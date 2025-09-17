@@ -465,12 +465,12 @@ export interface EnforcementOption {
 	impact: "breaking" | "moderate" | "minimal";
 	consequences: string[];
 	recommended: boolean;
-	decision: string;
-	rationale: string;
-	enforcement: boolean;
+	decision?: string;
+	rationale?: string;
+	enforcement?: boolean;
 	violation?: string;
 	resolution?: string;
-	context: string;
+	context?: string;
 }
 
 export interface CrossSessionValidationResult {
@@ -480,6 +480,19 @@ export interface CrossSessionValidationResult {
 	recommendations: string[];
 	enforcementActions: EnforcementAction[];
 	historicalContext: ConstraintEnforcementHistory[];
+}
+
+export interface ConstraintEnforcementHistory {
+	constraintId: string;
+	sessionId: string;
+	timestamp: string;
+	phase: string;
+	decision: string;
+	rationale: string;
+	enforcement: boolean;
+	violation?: string;
+	resolution?: string;
+	context: string;
 }
 
 export interface ConstraintConsistencyViolation {
