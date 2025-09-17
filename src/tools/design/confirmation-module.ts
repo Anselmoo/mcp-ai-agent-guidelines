@@ -1,5 +1,6 @@
 // Confirmation Module - Deterministic validation of phase completion and coverage
 import { z } from "zod";
+import { confirmationPromptBuilder } from "./confirmation-prompt-builder.js";
 import { constraintManager } from "./constraint-manager.js";
 import type {
 	ArtifactQualityResult,
@@ -17,6 +18,8 @@ const _ConfirmationRequestSchema = z.object({
 	content: z.string(),
 	autoAdvance: z.boolean().optional().default(false),
 	strictMode: z.boolean().optional().default(true),
+	captureRationale: z.boolean().optional().default(true),
+	generatePrompt: z.boolean().optional().default(false),
 });
 
 export interface ConfirmationRequest {
@@ -25,13 +28,64 @@ export interface ConfirmationRequest {
 	content: string;
 	autoAdvance?: boolean;
 	strictMode?: boolean;
+	captureRationale?: boolean;
+	generatePrompt?: boolean;
+}
+
+// Enhanced confirmation result with rationale and prompts
+export interface EnhancedConfirmationResult extends ConfirmationResult {
+	rationale?: ConfirmationRationale;
+	prompt?: string;
+	templateRecommendations?: string[];
+}
+
+export interface ConfirmationRationale {
+	decisions: DecisionRecord[];
+	assumptions: string[];
+	alternatives: AlternativeAnalysis[];
+	risks: RiskAssessment[];
+	timestamp: string;
+	phaseId: string;
+	sessionId: string;
+}
+
+export interface DecisionRecord {
+	id: string;
+	title: string;
+	description: string;
+	rationale: string;
+	alternatives: string[];
+	impact: string;
+	confidence: number;
+	stakeholders: string[];
+	timestamp: string;
+}
+
+export interface AlternativeAnalysis {
+	id: string;
+	alternative: string;
+	pros: string[];
+	cons: string[];
+	reasoning: string;
+	feasibility: number;
+}
+
+export interface RiskAssessment {
+	id: string;
+	risk: string;
+	likelihood: number;
+	impact: number;
+	mitigation: string;
+	owner: string;
 }
 
 class ConfirmationModuleImpl {
 	private microMethods: string[] = [];
+	private rationaleHistory: Map<string, ConfirmationRationale[]> = new Map();
 
 	async initialize(): Promise<void> {
 		this.microMethods = constraintManager.getMicroMethods("confirmation");
+		await confirmationPromptBuilder.initialize();
 	}
 
 	async confirmPhaseCompletion(
@@ -44,6 +98,8 @@ class ConfirmationModuleImpl {
 		let actualPhaseId: string;
 		let actualContent: string;
 		let actualStrictMode: boolean;
+		let captureRationale: boolean = true;
+		let generatePrompt: boolean = false;
 
 		// Handle both call signatures for backward compatibility
 		if (typeof phaseId === "string") {
@@ -59,6 +115,8 @@ class ConfirmationModuleImpl {
 			actualPhaseId = request.phaseId;
 			actualContent = request.content;
 			actualStrictMode = request.strictMode ?? true;
+			captureRationale = request.captureRationale ?? true;
+			generatePrompt = request.generatePrompt ?? false;
 		}
 
 		const phase = sessionState.phases[actualPhaseId];
@@ -177,7 +235,8 @@ class ConfirmationModuleImpl {
 			}
 		}
 
-		return {
+		// Enhanced result with rationale and prompt support
+		const result: EnhancedConfirmationResult = {
 			passed: canProceed && (isMinimalSession || issues.length === 0),
 			coverage: Math.max(phaseCoverage, coverageReport.overall),
 			issues,
@@ -185,6 +244,162 @@ class ConfirmationModuleImpl {
 			nextSteps,
 			canProceed,
 		};
+
+		// Capture rationale if requested
+		if (captureRationale) {
+			result.rationale = await this.captureConfirmationRationale(
+				sessionState,
+				actualPhaseId,
+				actualContent,
+				result,
+			);
+		}
+
+		// Generate prompt if requested
+		if (generatePrompt) {
+			result.prompt =
+				await confirmationPromptBuilder.generatePhaseCompletionPrompt(
+					sessionState,
+					actualPhaseId,
+				);
+		}
+
+		return result;
+	}
+
+	// New method for enhanced confirmation with full prompt generation
+	async confirmPhaseCompletionWithPrompt(
+		request: ConfirmationRequest,
+	): Promise<EnhancedConfirmationResult> {
+		const enhancedRequest = {
+			...request,
+			captureRationale: true,
+			generatePrompt: true,
+		};
+
+		return (await this.confirmPhaseCompletion(
+			enhancedRequest,
+		)) as EnhancedConfirmationResult;
+	}
+
+	// Generate confirmation prompt without performing validation
+	async generateConfirmationPrompt(
+		sessionState: DesignSessionState,
+		phaseId: string,
+		contextualContent?: string,
+	): Promise<string> {
+		return await confirmationPromptBuilder.generatePhaseCompletionPrompt(
+			sessionState,
+			phaseId,
+		);
+	}
+
+	// Capture and store rationale for confirmation decisions
+	private async captureConfirmationRationale(
+		sessionState: DesignSessionState,
+		phaseId: string,
+		content: string,
+		confirmationResult: ConfirmationResult,
+	): Promise<ConfirmationRationale> {
+		const timestamp = new Date().toISOString();
+		const sessionId = sessionState.config.sessionId;
+
+		// Extract decisions from content and context
+		const decisions = this.extractDecisions(content, phaseId);
+		const assumptions = this.extractAssumptions(content, sessionState);
+		const alternatives = this.extractAlternatives(content);
+		const risks = this.extractRisks(content, confirmationResult);
+
+		const rationale: ConfirmationRationale = {
+			decisions,
+			assumptions,
+			alternatives,
+			risks,
+			timestamp,
+			phaseId,
+			sessionId,
+		};
+
+		// Store rationale in history
+		const sessionHistory = this.rationaleHistory.get(sessionId) || [];
+		sessionHistory.push(rationale);
+		this.rationaleHistory.set(sessionId, sessionHistory);
+
+		return rationale;
+	}
+
+	// Get rationale history for a session
+	async getSessionRationaleHistory(
+		sessionId: string,
+	): Promise<ConfirmationRationale[]> {
+		return this.rationaleHistory.get(sessionId) || [];
+	}
+
+	// Export rationale as structured documentation
+	async exportRationaleDocumentation(
+		sessionId: string,
+		format: "markdown" | "json" | "yaml" = "markdown",
+	): Promise<string> {
+		const history = await this.getSessionRationaleHistory(sessionId);
+
+		if (format === "json") {
+			return JSON.stringify(history, null, 2);
+		}
+
+		if (format === "yaml") {
+			// Simple YAML-like structure
+			let yaml = "rationale_history:\n";
+			for (const rationale of history) {
+				yaml += `  - phase: ${rationale.phaseId}\n`;
+				yaml += `    timestamp: ${rationale.timestamp}\n`;
+				yaml += `    decisions: ${rationale.decisions.length}\n`;
+				yaml += `    assumptions: ${rationale.assumptions.length}\n`;
+				yaml += `    alternatives: ${rationale.alternatives.length}\n`;
+				yaml += `    risks: ${rationale.risks.length}\n`;
+			}
+			return yaml;
+		}
+
+		// Default to markdown
+		let markdown = `# Confirmation Rationale Documentation\n\n`;
+		markdown += `**Session**: ${sessionId}\n`;
+		markdown += `**Generated**: ${new Date().toISOString()}\n\n`;
+
+		for (const rationale of history) {
+			markdown += `## ${rationale.phaseId} Phase\n\n`;
+			markdown += `**Confirmed**: ${new Date(rationale.timestamp).toLocaleString()}\n\n`;
+
+			if (rationale.decisions.length > 0) {
+				markdown += `### Key Decisions\n\n`;
+				for (const decision of rationale.decisions) {
+					markdown += `- **${decision.title}**: ${decision.description}\n`;
+					markdown += `  - *Rationale*: ${decision.rationale}\n`;
+					if (decision.alternatives.length > 0) {
+						markdown += `  - *Alternatives*: ${decision.alternatives.join(", ")}\n`;
+					}
+					markdown += `  - *Confidence*: ${(decision.confidence * 100).toFixed(0)}%\n\n`;
+				}
+			}
+
+			if (rationale.assumptions.length > 0) {
+				markdown += `### Assumptions\n\n`;
+				for (const assumption of rationale.assumptions) {
+					markdown += `- ${assumption}\n`;
+				}
+				markdown += "\n";
+			}
+
+			if (rationale.risks.length > 0) {
+				markdown += `### Risk Assessment\n\n`;
+				for (const risk of rationale.risks) {
+					markdown += `- **${risk.risk}**: ${risk.mitigation}\n`;
+					markdown += `  - *Likelihood*: ${(risk.likelihood * 100).toFixed(0)}%\n`;
+					markdown += `  - *Impact*: ${(risk.impact * 100).toFixed(0)}%\n\n`;
+				}
+			}
+		}
+
+		return markdown;
 	}
 
 	private async executeMicroMethods(
@@ -639,6 +854,166 @@ class ConfirmationModuleImpl {
 			errors,
 			warnings,
 		};
+	}
+
+	// Helper methods for extracting rationale information
+	private extractDecisions(content: string, phaseId: string): DecisionRecord[] {
+		const decisions: DecisionRecord[] = [];
+		const timestamp = new Date().toISOString();
+
+		// Simple pattern matching for decision-like content
+		// In a real implementation, this could be more sophisticated
+		const decisionPatterns = [
+			/decided?\s+to\s+([^.]+)/gi,
+			/chose\s+([^.]+)/gi,
+			/selected\s+([^.]+)/gi,
+			/opted\s+for\s+([^.]+)/gi,
+		];
+
+		let decisionCount = 0;
+		for (const pattern of decisionPatterns) {
+			const matches = content.matchAll(pattern);
+			for (const match of matches) {
+				decisions.push({
+					id: `decision-${phaseId}-${++decisionCount}`,
+					title: `Decision ${decisionCount}`,
+					description: match[1].trim(),
+					rationale: "Extracted from phase completion content",
+					alternatives: [],
+					impact: "Medium",
+					confidence: 0.7,
+					stakeholders: ["development-team"],
+					timestamp,
+				});
+			}
+		}
+
+		// If no decisions found, create a generic one
+		if (decisions.length === 0) {
+			decisions.push({
+				id: `decision-${phaseId}-1`,
+				title: `${phaseId} Phase Completion`,
+				description: `Completed ${phaseId} phase with documented outcomes`,
+				rationale: "Phase completion validated through confirmation process",
+				alternatives: [
+					"Continue with current approach",
+					"Revisit phase requirements",
+				],
+				impact: "Medium",
+				confidence: 0.8,
+				stakeholders: ["development-team"],
+				timestamp,
+			});
+		}
+
+		return decisions;
+	}
+
+	private extractAssumptions(
+		content: string,
+		sessionState: DesignSessionState,
+	): string[] {
+		const assumptions: string[] = [];
+
+		// Pattern matching for assumption-like content
+		const assumptionPatterns = [
+			/assum[ei]\w*\s+([^.]+)/gi,
+			/expect\w*\s+that\s+([^.]+)/gi,
+			/should\s+be\s+([^.]+)/gi,
+		];
+
+		for (const pattern of assumptionPatterns) {
+			const matches = content.matchAll(pattern);
+			for (const match of matches) {
+				assumptions.push(match[1].trim());
+			}
+		}
+
+		// Add some default assumptions based on session context
+		if (sessionState.config.context) {
+			assumptions.push(
+				`Working within the context of: ${sessionState.config.context}`,
+			);
+		}
+
+		if (sessionState.config.constraints.length > 0) {
+			assumptions.push(
+				`All defined constraints will be maintained throughout implementation`,
+			);
+		}
+
+		return assumptions;
+	}
+
+	private extractAlternatives(content: string): AlternativeAnalysis[] {
+		const alternatives: AlternativeAnalysis[] = [];
+
+		// Simple pattern matching for alternatives
+		const alternativePatterns = [
+			/alternative[ly]?\s+([^.]+)/gi,
+			/could\s+(?:also\s+)?([^.]+)/gi,
+			/option\s+to\s+([^.]+)/gi,
+		];
+
+		let altCount = 0;
+		for (const pattern of alternativePatterns) {
+			const matches = content.matchAll(pattern);
+			for (const match of matches) {
+				alternatives.push({
+					id: `alt-${++altCount}`,
+					alternative: match[1].trim(),
+					pros: ["Potential benefits to be analyzed"],
+					cons: ["Potential drawbacks to be analyzed"],
+					reasoning: "Identified during phase completion analysis",
+					feasibility: 0.6,
+				});
+			}
+		}
+
+		return alternatives;
+	}
+
+	private extractRisks(
+		content: string,
+		confirmationResult: ConfirmationResult,
+	): RiskAssessment[] {
+		const risks: RiskAssessment[] = [];
+
+		// Extract risks from issues and content
+		let riskCount = 0;
+		for (const issue of confirmationResult.issues) {
+			risks.push({
+				id: `risk-${++riskCount}`,
+				risk: issue,
+				likelihood: 0.6,
+				impact: 0.7,
+				mitigation: "Address through recommended actions",
+				owner: "development-team",
+			});
+		}
+
+		// Pattern matching for risk-like content
+		const riskPatterns = [
+			/risk\s+of\s+([^.]+)/gi,
+			/concern\s+about\s+([^.]+)/gi,
+			/potential\s+issue\s+([^.]+)/gi,
+		];
+
+		for (const pattern of riskPatterns) {
+			const matches = content.matchAll(pattern);
+			for (const match of matches) {
+				risks.push({
+					id: `risk-${++riskCount}`,
+					risk: match[1].trim(),
+					likelihood: 0.5,
+					impact: 0.6,
+					mitigation: "Monitor and address as needed",
+					owner: "development-team",
+				});
+			}
+		}
+
+		return risks;
 	}
 }
 
