@@ -1,7 +1,6 @@
 // Constraint Manager - Loads and validates design constraints from YAML/JSON config
 import { z } from "zod";
 import type {
-	ComplianceReport,
 	ConstraintRule,
 	ConstraintType,
 	DesignSessionConfig,

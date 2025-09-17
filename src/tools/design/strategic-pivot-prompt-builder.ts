@@ -4,7 +4,6 @@ import { constraintManager } from "./constraint-manager.js";
 import type {
 	ArtifactType,
 	DesignSessionState,
-	OutputFormat,
 	PivotDecision,
 	PivotGuidance,
 	PivotImpact,
@@ -490,7 +489,7 @@ The confidence level for this recommendation is ${impact.confidenceLevel}% based
 	}
 
 	private generateTradeOffs(
-		pivotDecision: PivotDecision,
+		_pivotDecision: PivotDecision,
 		impact: PivotImpact,
 	): PivotGuidance["tradeoffs"] {
 		const pros = [
@@ -521,8 +520,8 @@ The confidence level for this recommendation is ${impact.confidenceLevel}% based
 	}
 
 	private generateImplementationSteps(
-		pivotDecision: PivotDecision,
-		sessionState: DesignSessionState,
+		_pivotDecision: PivotDecision,
+		_sessionState: DesignSessionState,
 		impact: PivotImpact,
 	): string[] {
 		const steps = [
@@ -550,8 +549,8 @@ The confidence level for this recommendation is ${impact.confidenceLevel}% based
 	}
 
 	private generateRollbackPlan(
-		pivotDecision: PivotDecision,
-		sessionState: DesignSessionState,
+		_pivotDecision: PivotDecision,
+		_sessionState: DesignSessionState,
 	): string[] {
 		return [
 			"Assess pivot execution progress and blockers",
@@ -599,8 +598,8 @@ The confidence level for this recommendation is ${impact.confidenceLevel}% based
 	}
 
 	private generateConversationStartersList(
-		pivotDecision: PivotDecision,
-		sessionState: DesignSessionState,
+		_pivotDecision: PivotDecision,
+		_sessionState: DesignSessionState,
 	): string[] {
 		return [
 			"Pivot Necessity: What specific indicators suggest we need to change direction now?",
@@ -629,7 +628,7 @@ The confidence level for this recommendation is ${impact.confidenceLevel}% based
 		return "Low - Uncertainty is within acceptable bounds";
 	}
 
-	private async getSpace7Guidance(guidance: PivotGuidance): Promise<string> {
+	private async getSpace7Guidance(_guidance: PivotGuidance): Promise<string> {
 		return `Based on Space 7 General Instructions:
 - Prioritize modular architecture and clear separation of concerns
 - Ensure security considerations are built into the pivot decision

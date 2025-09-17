@@ -21,7 +21,6 @@ import type {
 	MethodologySelection,
 	MethodologySignals,
 	PivotDecision,
-	StrategicPivotPromptRequest,
 	StrategicPivotPromptResult,
 } from "./types.js";
 

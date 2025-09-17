@@ -2,12 +2,10 @@
 import { z } from "zod";
 import { constraintManager } from "./constraint-manager.js";
 import type {
-	CoverageCheckResult,
 	CoverageGap,
 	CoverageReport,
 	DesignPhase,
 	DesignSessionState,
-	DetailedCoverage,
 } from "./types.js";
 
 const _CoverageRequestSchema = z.object({
