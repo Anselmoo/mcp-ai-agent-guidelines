@@ -286,7 +286,7 @@ class ConfirmationModuleImpl {
 	async generateConfirmationPrompt(
 		sessionState: DesignSessionState,
 		phaseId: string,
-		contextualContent?: string,
+		_contextualContent?: string,
 	): Promise<string> {
 		return await confirmationPromptBuilder.generatePhaseCompletionPrompt(
 			sessionState,

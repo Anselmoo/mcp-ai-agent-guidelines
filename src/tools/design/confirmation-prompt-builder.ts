@@ -527,26 +527,33 @@ class ConfirmationPromptBuilderImpl {
 
 	// Helper methods
 	private identifyCoverageGaps(
-		coverageReport: any,
+		coverageReport: Record<string, unknown>,
 		phase?: DesignPhase | null,
 		targetCoverage: number = 85,
 	): string[] {
 		const gaps: string[] = [];
 
-		if (coverageReport.overall < targetCoverage) {
+		if (
+			coverageReport.overall &&
+			typeof coverageReport.overall === "number" &&
+			coverageReport.overall < targetCoverage
+		) {
 			gaps.push(
-				`Overall coverage (${coverageReport.overall.toFixed(1)}%) below target (${targetCoverage}%)`,
+				`Overall coverage (${(coverageReport.overall as number).toFixed(1)}%) below target (${targetCoverage}%)`,
 			);
 		}
 
 		if (
 			phase &&
 			coverageReport.phases &&
-			coverageReport.phases[phase.id] < targetCoverage
+			typeof coverageReport.phases === "object"
 		) {
-			gaps.push(
-				`Phase coverage (${coverageReport.phases[phase.id].toFixed(1)}%) below target`,
-			);
+			const phases = coverageReport.phases as Record<string, number>;
+			if (phases[phase.id] && phases[phase.id] < targetCoverage) {
+				gaps.push(
+					`Phase coverage (${phases[phase.id].toFixed(1)}%) below target`,
+				);
+			}
 		}
 
 		// Check constraint coverage
@@ -566,7 +573,7 @@ class ConfirmationPromptBuilderImpl {
 	private identifyCriticalIssues(
 		sessionState: DesignSessionState,
 		phase: DesignPhase,
-		coverageReport: any,
+		coverageReport: Record<string, unknown>,
 	): string[] {
 		const issues: string[] = [];
 
@@ -577,9 +584,13 @@ class ConfirmationPromptBuilderImpl {
 
 		// Check for unmet mandatory constraints
 		for (const constraint of sessionState.config.constraints) {
+			const constraintCoverage = coverageReport.constraints as
+				| Record<string, number>
+				| undefined;
 			if (
 				constraint.mandatory &&
-				coverageReport.constraints[constraint.id] < 90
+				constraintCoverage &&
+				constraintCoverage[constraint.id] < 90
 			) {
 				issues.push(`Mandatory constraint '${constraint.name}' not satisfied`);
 			}
