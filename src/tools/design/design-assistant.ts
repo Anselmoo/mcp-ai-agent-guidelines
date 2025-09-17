@@ -2,6 +2,7 @@
 import { z } from "zod";
 import { type ADRGenerationResult, adrGenerator } from "./adr-generator.js";
 import { confirmationModule } from "./confirmation-module.js";
+import { constraintConsistencyEnforcer } from "./constraint-consistency-enforcer.js";
 import {
 	constraintManager,
 	DEFAULT_CONSTRAINT_CONFIG,
@@ -36,6 +37,7 @@ const _DesignAssistantRequestSchema = z.object({
 		"generate-strategic-pivot-prompt",
 		"generate-artifacts",
 		"enforce-coverage",
+		"enforce-consistency",
 		"get-status",
 		"load-constraints",
 		"select-methodology",
@@ -47,6 +49,7 @@ const _DesignAssistantRequestSchema = z.object({
 	config: z.any().optional(), // DesignSessionConfig
 	content: z.string().optional(),
 	phaseId: z.string().optional(),
+	constraintId: z.string().optional(),
 	constraintConfig: z.any().optional(),
 	methodologySignals: z.any().optional(), // MethodologySignals
 	artifactTypes: z
@@ -67,6 +70,7 @@ export interface DesignAssistantRequest {
 		| "generate-strategic-pivot-prompt"
 		| "generate-artifacts"
 		| "enforce-coverage"
+		| "enforce-consistency"
 		| "get-status"
 		| "load-constraints"
 		| "select-methodology"
@@ -77,6 +81,7 @@ export interface DesignAssistantRequest {
 	config?: DesignSessionConfig;
 	content?: string;
 	phaseId?: string;
+	constraintId?: string;
 	constraintConfig?: unknown;
 	methodologySignals?: MethodologySignals;
 	artifactTypes?: ("adr" | "specification" | "roadmap")[];
@@ -100,6 +105,7 @@ export interface DesignAssistantResponse {
 	pivotDecision?: unknown;
 	strategicPivotPrompt?: StrategicPivotPromptResult;
 	coverageReport?: unknown;
+	consistencyEnforcement?: ConsistencyEnforcementResult;
 	data?: Record<string, unknown>;
 }
 
@@ -191,6 +197,13 @@ class DesignAssistantImpl {
 						throw new Error("Content is required for enforce-coverage action");
 					}
 					return this.enforceCoverage(sessionId, request.content);
+				case "enforce-consistency":
+					return this.enforceConsistency(
+						sessionId,
+						request.constraintId,
+						request.phaseId,
+						request.content,
+					);
 				case "get-status":
 					return this.getSessionStatus(sessionId);
 				case "load-constraints":
@@ -717,6 +730,52 @@ class DesignAssistantImpl {
 			recommendations: coverageResult.recommendations,
 			artifacts: [],
 			coverageReport: coverageResult,
+		};
+	}
+
+	private async enforceConsistency(
+		sessionId: string,
+		constraintId?: string,
+		phaseId?: string,
+		content?: string,
+	): Promise<DesignAssistantResponse> {
+		const sessionState = designPhaseWorkflow.getSession(sessionId);
+		if (!sessionState) {
+			return {
+				success: false,
+				sessionId,
+				status: "error",
+				message: `Session ${sessionId} not found`,
+				recommendations: ["Start a new session"],
+				artifacts: [],
+			};
+		}
+
+		const consistencyResult =
+			await constraintConsistencyEnforcer.enforceConsistency({
+				sessionState,
+				constraintId,
+				phaseId: phaseId || sessionState.currentPhase,
+				context:
+					content ||
+					`Cross-session consistency enforcement for ${sessionState.config.context}`,
+				strictMode: false,
+			});
+
+		return {
+			success: consistencyResult.success,
+			sessionId,
+			currentPhase: sessionState.currentPhase,
+			coverage: consistencyResult.consistencyScore,
+			status: consistencyResult.success
+				? "consistency-enforced"
+				: "consistency-violations",
+			message: consistencyResult.success
+				? `Cross-session constraint consistency enforced (${consistencyResult.consistencyScore}% consistency)`
+				: `Constraint consistency violations detected (${consistencyResult.consistencyScore}% consistency)`,
+			recommendations: consistencyResult.recommendations,
+			artifacts: consistencyResult.generatedArtifacts,
+			consistencyEnforcement: consistencyResult,
 		};
 	}
 

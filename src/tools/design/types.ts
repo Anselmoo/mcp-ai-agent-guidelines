@@ -465,4 +465,60 @@ export interface EnforcementOption {
 	impact: "breaking" | "moderate" | "minimal";
 	consequences: string[];
 	recommended: boolean;
+	decision: string;
+	rationale: string;
+	enforcement: boolean;
+	violation?: string;
+	resolution?: string;
+	context: string;
+}
+
+export interface CrossSessionValidationResult {
+	passed: boolean;
+	consistencyScore: number;
+	violations: ConstraintConsistencyViolation[];
+	recommendations: string[];
+	enforcementActions: EnforcementAction[];
+	historicalContext: ConstraintEnforcementHistory[];
+}
+
+export interface ConstraintConsistencyViolation {
+	constraintId: string;
+	currentSessionId: string;
+	conflictingSessionId: string;
+	violationType:
+		| "decision_conflict"
+		| "rationale_inconsistency"
+		| "enforcement_mismatch";
+	description: string;
+	severity: "critical" | "warning" | "info";
+	suggestedResolution: string;
+}
+
+export interface EnforcementAction {
+	id: string;
+	type: "prompt_for_clarification" | "auto_align" | "generate_adr" | "escalate";
+	constraintId: string;
+	description: string;
+	interactive: boolean;
+	prompt?: string;
+	expectedOutcome?: string;
+}
+
+export interface ConsistencyEnforcementRequest {
+	sessionState: DesignSessionState;
+	constraintId?: string;
+	phaseId?: string;
+	context?: string;
+	strictMode?: boolean;
+}
+
+export interface ConsistencyEnforcementResult {
+	success: boolean;
+	consistencyScore: number;
+	enforcementActions: EnforcementAction[];
+	generatedArtifacts: Artifact[];
+	interactivePrompts: string[];
+	recommendations: string[];
+	historicalAlignments: string[];
 }

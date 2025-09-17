@@ -19,6 +19,7 @@ export type {
 	ValidationCheckpoint,
 } from "./confirmation-prompt-builder.js";
 export { confirmationPromptBuilder } from "./confirmation-prompt-builder.js";
+export { constraintConsistencyEnforcer } from "./constraint-consistency-enforcer.js";
 export { constraintManager } from "./constraint-manager.js";
 export { coverageEnforcer } from "./coverage-enforcer.js";
 export { crossSessionConsistencyEnforcer } from "./cross-session-consistency-enforcer.js";
@@ -50,6 +51,17 @@ export type {
 	EnforcementOption,
 	EnforcementPrompt,
 	HistoricalPattern,
+	ConsistencyEnforcementRequest,
+	ConsistencyEnforcementResult,
+	ConstraintConsistencyViolation,
+	ConstraintEnforcementHistory,
+	ConstraintRule,
+	CoverageReport,
+	CrossSessionValidationResult,
+	DesignPhase,
+	DesignSessionConfig,
+	DesignSessionState,
+	EnforcementAction,
 	MethodologyProfile,
 	MethodologySelection,
 	MethodologySignals,
