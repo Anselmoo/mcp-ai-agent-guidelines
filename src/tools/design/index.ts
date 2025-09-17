@@ -21,6 +21,7 @@ export type {
 export { confirmationPromptBuilder } from "./confirmation-prompt-builder.js";
 export { constraintManager } from "./constraint-manager.js";
 export { coverageEnforcer } from "./coverage-enforcer.js";
+export { crossSessionConsistencyEnforcer } from "./cross-session-consistency-enforcer.js";
 export type { DesignAssistantRequest } from "./design-assistant.js";
 export { designAssistant } from "./design-assistant.js";
 export { designPhaseWorkflow } from "./design-phase-workflow.js";
@@ -33,11 +34,22 @@ export { strategicPivotPromptBuilder } from "./strategic-pivot-prompt-builder.js
 export type {
 	Artifact,
 	ConfirmationResult,
+	ConsistencyRecommendation,
+	ConsistencyResult,
+	ConsistencyViolation,
+	ConstraintDecision,
 	ConstraintRule,
 	CoverageReport,
+	CrossSessionConsistencyReport,
+	// Cross-session consistency types
+	CrossSessionConstraintHistory,
+	CrossSessionEnforcementConfig,
 	DesignPhase,
 	DesignSessionConfig,
 	DesignSessionState,
+	EnforcementOption,
+	EnforcementPrompt,
+	HistoricalPattern,
 	MethodologyProfile,
 	MethodologySelection,
 	MethodologySignals,
