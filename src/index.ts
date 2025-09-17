@@ -911,6 +911,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 								"evaluate-pivot",
 								"generate-artifacts",
 								"enforce-coverage",
+								"enforce-consistency",
 								"get-status",
 								"load-constraints",
 							],
@@ -942,6 +943,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						phaseId: {
 							type: "string",
 							description: "Target phase ID for advance or validate actions",
+						},
+						constraintId: {
+							type: "string",
+							description: "Specific constraint ID for consistency enforcement",
 						},
 						constraintConfig: {
 							type: "object",
