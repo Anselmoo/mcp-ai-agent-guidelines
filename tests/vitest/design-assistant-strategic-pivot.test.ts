@@ -1,10 +1,10 @@
 // Test for design assistant integration with strategic pivot prompt builder
 import { beforeEach, describe, expect, it } from "vitest";
-import { designAssistant } from "../../dist/tools/design/design-assistant.js";
+import { designAssistant } from "../../tools/design/design-assistant";
 import type {
 	DesignAssistantRequest,
 	DesignSessionConfig,
-} from "../../dist/tools/design/types.js";
+} from "../../tools/design/types";
 
 describe("Design Assistant Strategic Pivot Integration", () => {
 	beforeEach(async () => {
