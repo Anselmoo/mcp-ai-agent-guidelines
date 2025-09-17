@@ -2,9 +2,9 @@
 // Validates constraint usage and documentation across design sessions for alignment with Space 7 Instructions and templates
 import { z } from "zod";
 import { adrGenerator } from "./adr-generator.js";
-import { confirmationModule } from "./confirmation-module.js";
 import {
 	type ConstraintValidationResult,
+	type ConstraintViolation,
 	constraintManager,
 } from "./constraint-manager.js";
 import type { Artifact, ConstraintRule, DesignSessionState } from "./types.js";
@@ -597,7 +597,9 @@ Your decision and rationale:`;
 	/**
 	 * Generate violation resolution prompts
 	 */
-	private generateViolationResolutionPrompt(violation: any): string {
+	private generateViolationResolutionPrompt(
+		violation: ConstraintViolation,
+	): string {
 		return `## Constraint Violation Resolution
 
 **Constraint**: ${violation.constraintId}
