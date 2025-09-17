@@ -8,6 +8,8 @@ import type {
 	DesignPhase,
 	DesignSessionConfig,
 	DesignSessionState,
+	MethodologyProfile,
+	MethodologySignals,
 	SessionEvent,
 } from "./types.js";
 
@@ -17,6 +19,7 @@ const _WorkflowRequestSchema = z.object({
 	phaseId: z.string().optional(),
 	content: z.string().optional(),
 	config: z.any().optional(), // DesignSessionConfig for start action
+	methodologyProfile: z.any().optional(), // MethodologyProfile for methodology-driven sessions
 });
 
 export interface WorkflowRequest {
@@ -25,6 +28,7 @@ export interface WorkflowRequest {
 	phaseId?: string;
 	content?: string;
 	config?: DesignSessionConfig;
+	methodologyProfile?: MethodologyProfile;
 }
 
 export interface WorkflowResponse {
@@ -57,7 +61,11 @@ class DesignPhaseWorkflowImpl {
 				if (!request.config) {
 					throw new Error("Configuration is required for start action");
 				}
-				return this.startSession(sessionId, request.config);
+				return this.startSession(
+					sessionId,
+					request.config,
+					request.methodologyProfile,
+				);
 			case "advance":
 				return this.advancePhase(sessionId, request.phaseId, request.content);
 			case "complete":
@@ -79,30 +87,47 @@ class DesignPhaseWorkflowImpl {
 	private async startSession(
 		sessionId: string,
 		config: DesignSessionConfig,
+		methodologyProfile?: MethodologyProfile,
 	): Promise<WorkflowResponse> {
-		// Initialize phases based on configuration
+		// Determine phase sequence: use methodology-specific phases if available, otherwise default
+		const phaseSequence =
+			methodologyProfile?.methodology.phases ||
+			(config.metadata?.customPhaseSequence as string[]) ||
+			this.PHASE_SEQUENCE;
+
+		// Initialize phases based on methodology profile or default configuration
 		const phases: Record<string, DesignPhase> = {};
 
-		for (const phaseId of this.PHASE_SEQUENCE) {
-			const phaseReq = constraintManager.getPhaseRequirements(phaseId);
-
-			phases[phaseId] = {
-				id: phaseId,
-				name: phaseReq?.name || phaseId,
-				description: phaseReq?.description || `${phaseId} phase`,
-				inputs: [],
-				outputs: phaseReq?.required_outputs || [],
-				criteria: phaseReq?.criteria || [],
-				coverage: 0,
-				status: phaseId === this.PHASE_SEQUENCE[0] ? "in-progress" : "pending",
-				artifacts: [],
-				dependencies: this.getPhaseDepedencies(phaseId),
-			};
+		for (const phaseId of phaseSequence) {
+			// Use methodology profile phase mapping if available
+			if (methodologyProfile?.phaseMapping[phaseId]) {
+				phases[phaseId] = {
+					...methodologyProfile.phaseMapping[phaseId],
+					status: phaseId === phaseSequence[0] ? "in-progress" : "pending",
+					coverage: 0,
+					artifacts: [],
+				};
+			} else {
+				// Fallback to constraint manager or default phase
+				const phaseReq = constraintManager.getPhaseRequirements(phaseId);
+				phases[phaseId] = {
+					id: phaseId,
+					name: phaseReq?.name || phaseId,
+					description: phaseReq?.description || `${phaseId} phase`,
+					inputs: [],
+					outputs: phaseReq?.required_outputs || [],
+					criteria: phaseReq?.criteria || [],
+					coverage: 0,
+					status: phaseId === phaseSequence[0] ? "in-progress" : "pending",
+					artifacts: [],
+					dependencies: this.getPhaseDepedencies(phaseId),
+				};
+			}
 		}
 
 		const sessionState: DesignSessionState = {
 			config,
-			currentPhase: this.PHASE_SEQUENCE[0],
+			currentPhase: phaseSequence[0],
 			phases,
 			coverage: {
 				overall: 0,
@@ -116,13 +141,30 @@ class DesignPhaseWorkflowImpl {
 			history: [
 				{
 					timestamp: new Date().toISOString(),
-					type: "phase-start",
-					phase: this.PHASE_SEQUENCE[0],
-					description: "Design session started",
-					data: { sessionId, config },
+					type: methodologyProfile ? "methodology-selected" : "phase-start",
+					phase: phaseSequence[0],
+					description: methodologyProfile
+						? `Design session started with ${methodologyProfile.methodology.name} methodology`
+						: "Design session started",
+					data: {
+						sessionId,
+						config,
+						methodology: methodologyProfile?.methodology.id,
+					},
 				},
 			],
 			status: "active",
+			// Add methodology information to session state
+			methodologySelection: methodologyProfile
+				? {
+						selected: methodologyProfile.methodology,
+						alternatives: [],
+						signals: config.methodologySignals || ({} as MethodologySignals),
+						timestamp: new Date().toISOString(),
+						selectionRationale: `Using ${methodologyProfile.methodology.name} methodology`,
+					}
+				: undefined,
+			methodologyProfile,
 		};
 
 		this.sessions.set(sessionId, sessionState);
@@ -131,7 +173,7 @@ class DesignPhaseWorkflowImpl {
 			success: true,
 			sessionState,
 			currentPhase: sessionState.currentPhase,
-			nextPhase: this.getNextPhase(sessionState.currentPhase),
+			nextPhase: this.getNextPhase(sessionState.currentPhase, sessionState),
 			recommendations: [
 				`Started design session in ${phases[sessionState.currentPhase].name} phase`,
 				"Begin by establishing clear context and stakeholder analysis",
@@ -154,7 +196,8 @@ class DesignPhaseWorkflowImpl {
 
 		const currentPhase = sessionState.phases[sessionState.currentPhase];
 		const nextPhaseId =
-			targetPhaseId || this.getNextPhase(sessionState.currentPhase);
+			targetPhaseId ||
+			this.getNextPhase(sessionState.currentPhase, sessionState);
 
 		if (!nextPhaseId) {
 			return {
@@ -234,7 +277,7 @@ class DesignPhaseWorkflowImpl {
 			success: true,
 			sessionState,
 			currentPhase: nextPhaseId,
-			nextPhase: this.getNextPhase(nextPhaseId),
+			nextPhase: this.getNextPhase(nextPhaseId, sessionState),
 			recommendations,
 			artifacts: [],
 			message: `Advanced to ${nextPhase.name} phase`,
@@ -311,7 +354,7 @@ class DesignPhaseWorkflowImpl {
 			success: true,
 			sessionState,
 			currentPhase: sessionState.currentPhase,
-			nextPhase: this.getNextPhase(sessionState.currentPhase),
+			nextPhase: this.getNextPhase(sessionState.currentPhase, sessionState),
 			recommendations,
 			artifacts: phase.artifacts,
 			message: `${phase.name} phase completed successfully`,
@@ -346,7 +389,7 @@ class DesignPhaseWorkflowImpl {
 			success: true,
 			sessionState,
 			currentPhase: sessionState.currentPhase,
-			nextPhase: this.getNextPhase(sessionState.currentPhase),
+			nextPhase: this.getNextPhase(sessionState.currentPhase, sessionState),
 			recommendations: [
 				"Session reset successfully",
 				"Starting from discovery phase",
@@ -381,23 +424,34 @@ class DesignPhaseWorkflowImpl {
 			success: true,
 			sessionState,
 			currentPhase: sessionState.currentPhase,
-			nextPhase: this.getNextPhase(sessionState.currentPhase),
+			nextPhase: this.getNextPhase(sessionState.currentPhase, sessionState),
 			recommendations,
 			artifacts: sessionState.artifacts,
 			message: `Session status: ${sessionState.status}`,
 		};
 	}
 
-	private getNextPhase(currentPhaseId: string): string | undefined {
-		const currentIndex = this.PHASE_SEQUENCE.indexOf(currentPhaseId);
-		return currentIndex >= 0 && currentIndex < this.PHASE_SEQUENCE.length - 1
-			? this.PHASE_SEQUENCE[currentIndex + 1]
+	private getNextPhase(
+		currentPhaseId: string,
+		sessionState?: DesignSessionState,
+	): string | undefined {
+		// Get phase sequence from session state (methodology-specific) or use default
+		const phaseSequence = sessionState
+			? Object.keys(sessionState.phases)
+			: this.PHASE_SEQUENCE;
+		const currentIndex = phaseSequence.indexOf(currentPhaseId);
+		return currentIndex >= 0 && currentIndex < phaseSequence.length - 1
+			? phaseSequence[currentIndex + 1]
 			: undefined;
 	}
 
-	private getPhaseDepedencies(phaseId: string): string[] {
-		const index = this.PHASE_SEQUENCE.indexOf(phaseId);
-		return index > 0 ? [this.PHASE_SEQUENCE[index - 1]] : [];
+	private getPhaseDepedencies(
+		phaseId: string,
+		phaseSequence?: string[],
+	): string[] {
+		const sequence = phaseSequence || this.PHASE_SEQUENCE;
+		const index = sequence.indexOf(phaseId);
+		return index > 0 ? [sequence[index - 1]] : [];
 	}
 
 	private updateSessionCoverage(

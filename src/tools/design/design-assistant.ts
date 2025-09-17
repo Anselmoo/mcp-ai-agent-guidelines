@@ -1,6 +1,6 @@
 // Design Assistant - Main orchestrator for the deterministic design framework
 import { z } from "zod";
-import { adrGenerator } from "./adr-generator.js";
+import { type ADRGenerationResult, adrGenerator } from "./adr-generator.js";
 import { confirmationModule } from "./confirmation-module.js";
 import {
 	constraintManager,
@@ -8,6 +8,7 @@ import {
 } from "./constraint-manager.js";
 import { coverageEnforcer } from "./coverage-enforcer.js";
 import { designPhaseWorkflow } from "./design-phase-workflow.js";
+import { methodologySelector } from "./methodology-selector.js";
 import { pivotModule } from "./pivot-module.js";
 import { roadmapGenerator } from "./roadmap-generator.js";
 import { specGenerator } from "./spec-generator.js";
@@ -15,6 +16,9 @@ import type {
 	Artifact,
 	ConfirmationResult,
 	DesignSessionConfig,
+	MethodologyProfile,
+	MethodologySelection,
+	MethodologySignals,
 	PivotDecision,
 } from "./types.js";
 
@@ -28,12 +32,14 @@ const _DesignAssistantRequestSchema = z.object({
 		"enforce-coverage",
 		"get-status",
 		"load-constraints",
+		"select-methodology",
 	]),
 	sessionId: z.string(),
 	config: z.any().optional(), // DesignSessionConfig
 	content: z.string().optional(),
 	phaseId: z.string().optional(),
 	constraintConfig: z.any().optional(),
+	methodologySignals: z.any().optional(), // MethodologySignals
 	artifactTypes: z
 		.array(z.enum(["adr", "specification", "roadmap"]))
 		.optional(),
@@ -49,12 +55,14 @@ export interface DesignAssistantRequest {
 		| "generate-artifacts"
 		| "enforce-coverage"
 		| "get-status"
-		| "load-constraints";
+		| "load-constraints"
+		| "select-methodology";
 	sessionId: string;
 	config?: DesignSessionConfig;
 	content?: string;
 	phaseId?: string;
 	constraintConfig?: unknown;
+	methodologySignals?: MethodologySignals;
 	artifactTypes?: ("adr" | "specification" | "roadmap")[];
 	metadata?: Record<string, unknown>;
 }
@@ -91,6 +99,7 @@ class DesignAssistantImpl {
 			await confirmationModule.initialize();
 			await pivotModule.initialize();
 			await coverageEnforcer.initialize();
+			await methodologySelector.initialize();
 
 			this.initialized = true;
 		} catch (error) {
@@ -157,6 +166,13 @@ class DesignAssistantImpl {
 						);
 					}
 					return this.loadConstraints(request.constraintConfig);
+				case "select-methodology":
+					if (!request.methodologySignals) {
+						throw new Error(
+							"Methodology signals are required for select-methodology action",
+						);
+					}
+					return this.selectMethodology(sessionId, request.methodologySignals);
 				default:
 					throw new Error(`Unknown action: ${action}`);
 			}
@@ -194,11 +210,47 @@ class DesignAssistantImpl {
 			}
 		}
 
-		// Start workflow session
+		// Perform methodology selection if signals are provided
+		let methodologySelection: MethodologySelection | undefined;
+		let methodologyProfile: MethodologyProfile | undefined;
+
+		if (config.methodologySignals) {
+			try {
+				methodologySelection = await methodologySelector.selectMethodology(
+					config.methodologySignals,
+				);
+				methodologyProfile =
+					await methodologySelector.generateMethodologyProfile(
+						methodologySelection,
+					);
+
+				// Update config with selected methodology's phase sequence
+				config.metadata = {
+					...config.metadata,
+					selectedMethodology: methodologySelection.selected.id,
+					customPhaseSequence: methodologySelection.selected.phases,
+				};
+			} catch (error) {
+				return {
+					success: false,
+					sessionId,
+					status: "error",
+					message: `Failed to select methodology: ${error instanceof Error ? error.message : "Unknown error"}`,
+					recommendations: [
+						"Check methodology signals format",
+						"Verify methodology configuration",
+					],
+					artifacts: [],
+				};
+			}
+		}
+
+		// Start workflow session with methodology-specific configuration
 		const workflowResult = await designPhaseWorkflow.executeWorkflow({
 			action: "start",
 			sessionId,
 			config,
+			methodologyProfile, // Pass methodology profile for custom phase setup
 		});
 
 		if (!workflowResult.success) {
@@ -212,12 +264,44 @@ class DesignAssistantImpl {
 			};
 		}
 
+		// Generate ADR for methodology decision after workflow is started
+		let methodologyADR: ADRGenerationResult | undefined;
+		if (methodologySelection) {
+			try {
+				methodologyADR = await adrGenerator.generateADR({
+					sessionState: workflowResult.sessionState,
+					title: `Methodology Selection: ${methodologySelection.selected.name}`,
+					context: `Selected methodology for ${config.methodologySignals?.projectType} project with ${config.methodologySignals?.problemFraming} framing`,
+					decision: methodologySelection.selectionRationale,
+					consequences: methodologySelection.selected.strengths.join("; "),
+					alternatives: methodologySelection.alternatives.map(
+						(alt) => alt.name,
+					),
+					metadata: {
+						confidenceScore: methodologySelection.selected.confidenceScore,
+						signals: config.methodologySignals,
+					},
+				});
+			} catch (error) {
+				// Log error but don't fail the session start
+				console.warn("Failed to generate methodology ADR:", error);
+			}
+		}
+
+		// Update session state with methodology information
+		if (methodologySelection && methodologyProfile) {
+			workflowResult.sessionState.methodologySelection = methodologySelection;
+			workflowResult.sessionState.methodologyProfile = methodologyProfile;
+		}
+
 		// Initial coverage enforcement
 		const coverageResult = await coverageEnforcer.enforceCoverage({
 			sessionState: workflowResult.sessionState,
 			content: `${config.context} ${config.goal}`,
 			enforceThresholds: false, // Don't enforce at start
 		});
+
+		const artifacts = methodologyADR ? [methodologyADR.artifact] : [];
 
 		return {
 			success: true,
@@ -226,13 +310,25 @@ class DesignAssistantImpl {
 			nextPhase: workflowResult.nextPhase,
 			coverage: coverageResult.coverage.overall,
 			status: "active",
-			message: `Design session started successfully in ${workflowResult.currentPhase} phase`,
+			message: methodologySelection
+				? `Design session started with ${methodologySelection.selected.name} methodology in ${workflowResult.currentPhase} phase`
+				: `Design session started successfully in ${workflowResult.currentPhase} phase`,
 			recommendations: [
 				...workflowResult.recommendations,
 				...coverageResult.recommendations.slice(0, 2),
+				...(methodologySelection
+					? [
+							`Using ${methodologySelection.selected.name} methodology (${methodologySelection.selected.confidenceScore}% confidence)`,
+							`Follow ${methodologySelection.selected.phases.length} phases: ${methodologySelection.selected.phases.join(" → ")}`,
+						]
+					: []),
 			],
-			artifacts: [],
+			artifacts,
 			coverageReport: coverageResult,
+			data: {
+				methodologySelection,
+				methodologyProfile,
+			},
 		};
 	}
 
@@ -607,6 +703,95 @@ class DesignAssistantImpl {
 				message: `Failed to load constraints: ${error instanceof Error ? error.message : "Unknown error"}`,
 				recommendations: [
 					"Check constraint configuration format and try again",
+				],
+				artifacts: [],
+			};
+		}
+	}
+
+	private async selectMethodology(
+		sessionId: string,
+		methodologySignals: MethodologySignals,
+	): Promise<DesignAssistantResponse> {
+		try {
+			const methodologySelection =
+				await methodologySelector.selectMethodology(methodologySignals);
+			const methodologyProfile =
+				await methodologySelector.generateMethodologyProfile(
+					methodologySelection,
+				);
+
+			// Generate ADR for methodology decision
+			const methodologyADR = await adrGenerator.generateADR({
+				sessionState: {
+					config: {
+						sessionId,
+						context: "",
+						goal: "",
+						requirements: [],
+						constraints: [],
+						coverageThreshold: 85,
+						enablePivots: true,
+						templateRefs: [],
+						outputFormats: [],
+						metadata: {},
+					},
+					currentPhase: "discovery",
+					phases: {},
+					coverage: {
+						overall: 0,
+						phases: {},
+						constraints: {},
+						assumptions: {},
+						documentation: {},
+						testCoverage: 0,
+					},
+					artifacts: [],
+					history: [],
+					status: "initializing",
+				},
+				title: `Methodology Selection: ${methodologySelection.selected.name}`,
+				context: `Selected methodology for ${methodologySignals.projectType} project with ${methodologySignals.problemFraming} framing`,
+				decision: methodologySelection.selectionRationale,
+				consequences: methodologySelection.selected.strengths.join("; "),
+				alternatives: methodologySelection.alternatives.map((alt) => alt.name),
+				metadata: {
+					confidenceScore: methodologySelection.selected.confidenceScore,
+					signals: methodologySignals,
+				},
+			});
+
+			return {
+				success: true,
+				sessionId: sessionId,
+				status: "methodology-selected",
+				message: `Selected ${methodologySelection.selected.name} methodology with ${methodologySelection.selected.confidenceScore}% confidence`,
+				recommendations: [
+					`Methodology selected: ${methodologySelection.selected.name}`,
+					`Confidence score: ${methodologySelection.selected.confidenceScore}%`,
+					`Phase sequence: ${methodologySelection.selected.phases.join(" → ")}`,
+					`Consider alternatives: ${methodologySelection.alternatives
+						.slice(0, 2)
+						.map((alt) => alt.name)
+						.join(", ")}`,
+				],
+				artifacts: [methodologyADR.artifact],
+				data: {
+					methodologySelection,
+					methodologyProfile,
+					alternatives: methodologySelection.alternatives,
+				},
+			};
+		} catch (error) {
+			return {
+				success: false,
+				sessionId: sessionId,
+				status: "selection-failed",
+				message: `Failed to select methodology: ${error instanceof Error ? error.message : "Unknown error"}`,
+				recommendations: [
+					"Check methodology signals format",
+					"Verify all required signal fields are provided",
+					"Review methodology configuration",
 				],
 				artifacts: [],
 			};

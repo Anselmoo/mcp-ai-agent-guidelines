@@ -106,6 +106,7 @@ class SpecGeneratorImpl {
 					metrics,
 					sessionState,
 					metadata: metadata || {},
+					type: type || "specification",
 				});
 				break;
 			default:
@@ -141,6 +142,7 @@ class SpecGeneratorImpl {
 			sessionState,
 			sections,
 			metrics,
+			metadata,
 		);
 
 		return {
@@ -250,6 +252,34 @@ class SpecGeneratorImpl {
 						level: 2,
 						completeness: 75,
 					},
+					{
+						id: "api-components",
+						title: "API Components",
+						content: this.generateAPIComponentsSection(sessionState),
+						level: 2,
+						completeness: 70,
+					},
+					{
+						id: "api-interfaces",
+						title: "Service Interfaces",
+						content: this.generateAPIInterfacesSection(sessionState),
+						level: 2,
+						completeness: 75,
+					},
+					{
+						id: "authentication",
+						title: "Authentication & Security",
+						content: this.generateAuthenticationSection(sessionState),
+						level: 2,
+						completeness: 70,
+					},
+					{
+						id: "error-handling",
+						title: "Error Handling",
+						content: this.generateErrorHandlingSection(sessionState),
+						level: 2,
+						completeness: 75,
+					},
 				);
 				break;
 
@@ -268,6 +298,20 @@ class SpecGeneratorImpl {
 						content: this.generateInterfacesSection(sessionState),
 						level: 2,
 						completeness: 70,
+					},
+					{
+						id: "deployment-architecture",
+						title: "Deployment Architecture",
+						content: this.generateDeploymentArchitectureSection(sessionState),
+						level: 2,
+						completeness: 80,
+					},
+					{
+						id: "data-architecture",
+						title: "Data Architecture",
+						content: this.generateDataArchitectureSection(sessionState),
+						level: 2,
+						completeness: 75,
 					},
 				);
 				break;
@@ -288,6 +332,21 @@ class SpecGeneratorImpl {
 						level: 2,
 						completeness: 80,
 					},
+					{
+						id: "deployment-strategy",
+						title: "Deployment Strategy",
+						content: this.generateDeploymentStrategySection(sessionState),
+						level: 2,
+						completeness: 85,
+					},
+					{
+						id: "performance-considerations",
+						title: "Performance Considerations",
+						content:
+							this.generatePerformanceConsiderationsSection(sessionState),
+						level: 2,
+						completeness: 75,
+					},
 				);
 				break;
 
@@ -306,6 +365,20 @@ class SpecGeneratorImpl {
 						content: this.generateConstraintsSection(sessionState),
 						level: 2,
 						completeness: 80,
+					},
+					{
+						id: "components",
+						title: "System Components",
+						content: this.generateComponentsSection(sessionState),
+						level: 2,
+						completeness: 75,
+					},
+					{
+						id: "quality-attributes",
+						title: "Quality Attributes",
+						content: this.generateQualityAttributesSection(sessionState),
+						level: 2,
+						completeness: 70,
 					},
 				);
 		}
@@ -534,6 +607,7 @@ ${JSON.stringify(metadata, null, 2)}
 		const { specNumber, title, sections, metrics, sessionState } = spec;
 
 		return `# SPEC-${specNumber}: ${title}
+title: ${title}
 version: "1.0"
 date: "${new Date().toISOString()}"
 session: "${sessionState.config.sessionId}"
@@ -586,12 +660,22 @@ ${sessionState.config.constraints
 		metrics: SpecMetric[];
 		sessionState: DesignSessionState;
 		metadata?: Record<string, unknown>;
+		type?: string;
 	}): string {
-		const { specNumber, title, sections, metrics, sessionState, metadata } =
-			spec;
+		const {
+			specNumber,
+			title,
+			sections,
+			metrics,
+			sessionState,
+			metadata,
+			type,
+		} = spec;
 
 		return JSON.stringify(
 			{
+				title,
+				type: type || "specification",
 				spec: {
 					number: specNumber,
 					title,
@@ -880,10 +964,317 @@ ${
 		return "To be defined during implementation";
 	}
 
+	private generateQualityAttributesSection(
+		_sessionState: DesignSessionState,
+	): string {
+		return `Quality attributes and non-functional requirements:
+
+**Reliability:**
+- System availability: 99.9% uptime
+- Mean time to recovery (MTTR): < 4 hours
+- Fault tolerance and graceful degradation
+- Automated failure detection and recovery
+
+**Performance:**
+- Response time requirements
+- Throughput targets
+- Resource utilization limits
+- Scalability requirements
+
+**Security:**
+- Authentication and authorization
+- Data encryption and protection
+- Compliance requirements
+- Security testing and auditing
+
+**Maintainability:**
+- Code quality standards
+- Documentation requirements
+- Testing coverage targets
+- Refactoring and technical debt management
+
+**Usability:**
+- User experience requirements
+- Accessibility standards
+- Internationalization support
+- Error handling and user feedback`;
+	}
+
+	private generateAPIComponentsSection(
+		_sessionState: DesignSessionState,
+	): string {
+		return `API architecture components and services:
+
+**Core API Components:**
+- API Gateway: Entry point for all requests
+- Authentication Service: OAuth2/JWT token validation
+- Rate Limiting Service: Request throttling and quota management
+- Request Router: Route requests to appropriate services
+
+**Business Logic Components:**
+- Session Management Service: User session handling
+- Data Processing Service: Core business logic
+- Validation Service: Input validation and sanitization
+- Notification Service: Event-driven notifications
+
+**Data Layer Components:**
+- Database Abstraction Layer: ORM and query optimization
+- Cache Management: Redis/Memcached integration
+- File Storage Service: Document and media handling
+- Search Service: Full-text search capabilities
+
+**Infrastructure Components:**
+- Health Check Service: System monitoring endpoints
+- Logging Service: Centralized log collection
+- Metrics Collection: Performance and usage analytics
+- Configuration Service: Environment-specific settings`;
+	}
+
+	private generateAPIInterfacesSection(
+		_sessionState: DesignSessionState,
+	): string {
+		return `Service interfaces and API contracts:
+
+**REST API Interfaces:**
+\`\`\`
+GET    /api/v1/health              - System health check
+GET    /api/v1/sessions            - List user sessions
+POST   /api/v1/sessions            - Create new session
+GET    /api/v1/sessions/{id}       - Get session details
+PUT    /api/v1/sessions/{id}       - Update session
+DELETE /api/v1/sessions/{id}       - Delete session
+\`\`\`
+
+**Authentication Interfaces:**
+\`\`\`
+POST   /api/v1/auth/login          - User authentication
+POST   /api/v1/auth/refresh        - Token refresh
+POST   /api/v1/auth/logout         - User logout
+GET    /api/v1/auth/me             - Get current user
+\`\`\`
+
+**Data Transfer Objects:**
+\`\`\`typescript
+interface SessionDTO {
+  id: string;
+  userId: string;
+  status: 'active' | 'completed' | 'paused';
+  metadata: Record<string, any>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface ErrorResponseDTO {
+  error: {
+    code: string;
+    message: string;
+    details?: any;
+    timestamp: string;
+  };
+}
+\`\`\`
+
+**Service Communication:**
+- Synchronous: REST API calls for real-time operations
+- Asynchronous: Message queues for background processing
+- Event-driven: Pub/sub for loose coupling
+- Circuit breakers: Fault tolerance mechanisms`;
+	}
+
+	private generateAuthenticationSection(
+		_sessionState: DesignSessionState,
+	): string {
+		return `Authentication and security implementation:
+
+**Authentication Methods:**
+- OAuth 2.0 with PKCE for web applications
+- JWT tokens for API access
+- Multi-factor authentication (MFA) support
+- Single Sign-On (SSO) integration
+
+**Authorization Framework:**
+- Role-based access control (RBAC)
+- Permission-based authorization
+- Resource-level access controls
+- API key management for external integrations
+
+**Security Measures:**
+- TLS 1.3 encryption for all communications
+- Input validation and sanitization
+- Rate limiting and DDoS protection
+- Security headers (CORS, CSP, HSTS)
+
+**Compliance & Auditing:**
+- GDPR compliance for data handling
+- Audit logging for security events
+- Regular security assessments
+- Vulnerability scanning and remediation`;
+	}
+
+	private generateErrorHandlingSection(
+		_sessionState: DesignSessionState,
+	): string {
+		return `Error handling and response strategies:
+
+**Error Response Format:**
+\`\`\`json
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid input provided",
+    "details": {
+      "field": "email",
+      "reason": "Invalid email format"
+    },
+    "timestamp": "2023-09-16T10:30:00Z",
+    "requestId": "req_123456789"
+  }
+}
+\`\`\`
+
+**Error Categories:**
+- 4xx Client Errors: Invalid requests, authentication failures
+- 5xx Server Errors: Internal server issues, service unavailable
+- Custom Business Errors: Domain-specific error conditions
+
+**Error Handling Strategies:**
+- Graceful degradation for non-critical failures
+- Circuit breaker pattern for external service calls
+- Retry mechanisms with exponential backoff
+- Dead letter queues for failed async operations
+
+**Monitoring & Alerting:**
+- Error rate monitoring and alerting
+- Error aggregation and analysis
+- Performance impact assessment
+- Automated incident response`;
+	}
+
+	private generateDeploymentArchitectureSection(
+		_sessionState: DesignSessionState,
+	): string {
+		return `Deployment architecture and infrastructure:
+
+**Container Architecture:**
+- Docker containers for application components
+- Kubernetes orchestration for scalability
+- Helm charts for deployment management
+- Service mesh for inter-service communication
+
+**Environment Strategy:**
+- Development: Local and shared development environments
+- Staging: Production-like environment for testing
+- Production: High-availability multi-region deployment
+- Disaster Recovery: Backup region with automated failover
+
+**Infrastructure Components:**
+- Load balancers for traffic distribution
+- Auto-scaling groups for demand handling
+- Monitoring and logging infrastructure
+- Backup and disaster recovery systems
+
+**Security & Compliance:**
+- Network security groups and firewalls
+- Encryption at rest and in transit
+- Access control and identity management
+- Compliance monitoring and reporting`;
+	}
+
+	private generateDataArchitectureSection(
+		_sessionState: DesignSessionState,
+	): string {
+		return `Data architecture and management strategy:
+
+**Data Storage Strategy:**
+- Primary Database: PostgreSQL for transactional data
+- Cache Layer: Redis for session and frequently accessed data
+- Object Storage: S3-compatible storage for files and media
+- Analytics Store: Data warehouse for reporting and analytics
+
+**Data Models:**
+- Normalized relational models for core business data
+- Denormalized views for read-heavy operations
+- Event sourcing for audit trails and state reconstruction
+- CQRS pattern for command and query separation
+
+**Data Flow & Integration:**
+- ETL pipelines for data processing and transformation
+- Real-time streaming for event processing
+- API-first approach for data access
+- Data synchronization between services
+
+**Data Governance:**
+- Data classification and sensitivity labeling
+- Retention policies and automated cleanup
+- Privacy compliance (GDPR, CCPA)
+- Data quality monitoring and validation`;
+	}
+
+	private generateDeploymentStrategySection(
+		_sessionState: DesignSessionState,
+	): string {
+		return `Deployment strategy and release management:
+
+**Deployment Patterns:**
+- Blue-Green Deployment: Zero-downtime releases
+- Canary Releases: Gradual rollout to subset of users
+- Rolling Updates: Progressive replacement of instances
+- Feature Flags: Runtime feature enablement/disablement
+
+**CI/CD Pipeline:**
+- Automated testing on every commit
+- Code quality gates and security scanning
+- Automated deployment to staging environment
+- Manual approval for production releases
+
+**Release Management:**
+- Semantic versioning for all components
+- Release notes and change documentation
+- Rollback procedures for failed deployments
+- Post-deployment monitoring and validation
+
+**Infrastructure as Code:**
+- Terraform for infrastructure provisioning
+- Ansible for configuration management
+- GitOps workflow for deployment automation
+- Infrastructure versioning and change tracking`;
+	}
+
+	private generatePerformanceConsiderationsSection(
+		_sessionState: DesignSessionState,
+	): string {
+		return `Performance optimization and scalability considerations:
+
+**Performance Targets:**
+- Response Time: < 200ms for 95% of requests
+- Throughput: 1000+ requests per second
+- Availability: 99.9% uptime SLA
+- Error Rate: < 0.1% of all requests
+
+**Optimization Strategies:**
+- Database query optimization and indexing
+- Application-level caching strategies
+- CDN for static asset delivery
+- Connection pooling and resource management
+
+**Scalability Design:**
+- Horizontal scaling with load balancing
+- Microservices architecture for independent scaling
+- Event-driven architecture for loose coupling
+- Auto-scaling based on metrics and demand
+
+**Monitoring & Observability:**
+- Application performance monitoring (APM)
+- Real-time metrics and alerting
+- Distributed tracing for request flow
+- Performance regression testing in CI/CD`;
+	}
+
 	private generateSpecRecommendations(
 		_sessionState: DesignSessionState,
 		sections: SpecSection[],
 		metrics: SpecMetric[],
+		metadata?: Record<string, unknown>,
 	): string[] {
 		const recommendations: string[] = [];
 
@@ -906,6 +1297,30 @@ ${
 			recommendations.push(
 				`Address metric gaps: ${missedTargets.map((m) => m.name).join(", ")}`,
 			);
+		}
+
+		// Metadata-based recommendations
+		if (metadata) {
+			if (metadata.performance === "critical") {
+				recommendations.push(
+					"Implement comprehensive performance monitoring and optimization strategies for critical performance requirements",
+				);
+			}
+			if (metadata.scalability === "high") {
+				recommendations.push(
+					"Design for horizontal scalability with load balancing and auto-scaling capabilities",
+				);
+			}
+			if (metadata.security === "strict") {
+				recommendations.push(
+					"Implement strict security measures including encryption, authentication, and regular security audits",
+				);
+			}
+			if (metadata.compliance === "required") {
+				recommendations.push(
+					"Ensure compliance documentation and regular compliance audits are in place",
+				);
+			}
 		}
 
 		// General recommendations

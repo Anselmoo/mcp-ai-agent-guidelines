@@ -11,6 +11,9 @@ export interface DesignSessionConfig {
 	templateRefs: string[];
 	outputFormats: OutputFormat[];
 	metadata: Record<string, unknown>;
+	// Methodology selection inputs
+	methodologySignals?: MethodologySignals;
+	forcedMethodology?: string; // Override automatic selection
 }
 
 export interface DesignPhase {
@@ -61,6 +64,62 @@ export interface ConfirmationResult {
 	recommendations: string[];
 	nextSteps: string[];
 	canProceed: boolean;
+}
+
+export interface ConstraintSatisfactionResult {
+	passed: boolean;
+	violations: number;
+	warnings: number;
+}
+
+export interface ArtifactQualityResult {
+	passed: boolean;
+	issues: string[];
+	recommendations: string[];
+}
+
+export interface ConfirmationReport {
+	overall: boolean;
+	phases: Record<string, boolean>;
+	constraints: Record<string, boolean>;
+	artifacts: Record<string, boolean>;
+	recommendations: string[];
+}
+
+export interface SessionValidationResult {
+	valid: boolean;
+	errors: string[];
+	warnings: string[];
+}
+
+export interface ComplianceReport {
+	overall: boolean;
+	coverage: number;
+	constraints: Record<string, { passed: boolean; coverage: number }>;
+	violations: string[];
+	recommendations: string[];
+}
+
+export interface CoverageCheckResult {
+	passed: boolean;
+	current: number;
+	threshold: number;
+	gaps: string[];
+}
+
+export interface CoverageGap {
+	area: string;
+	current: number;
+	target: number;
+	severity: "high" | "medium" | "low";
+}
+
+export interface DetailedCoverage {
+	overall: number;
+	phases: Record<string, number>;
+	constraints: Record<string, number>;
+	artifacts: Record<string, number>;
+	breakdown: Record<string, number>;
 }
 
 export interface PivotDecision {
@@ -123,6 +182,9 @@ export interface DesignSessionState {
 	artifacts: Artifact[];
 	history: SessionEvent[];
 	status: SessionStatus;
+	// Methodology selection state
+	methodologySelection?: MethodologySelection;
+	methodologyProfile?: MethodologyProfile;
 }
 
 export interface SessionEvent {
@@ -148,4 +210,92 @@ export type EventType =
 	| "pivot"
 	| "constraint-violation"
 	| "coverage-update"
-	| "artifact-generated";
+	| "artifact-generated"
+	| "methodology-selected"
+	| "methodology-changed";
+
+// Methodology Selection Types
+export interface MethodologySignals {
+	projectType: ProjectType;
+	problemFraming: ProblemFraming;
+	riskLevel: RiskLevel;
+	timelinePressure: TimelinePressure;
+	stakeholderMode: StakeholderMode;
+	domainContext?: string;
+	additionalContext?: Record<string, unknown>;
+}
+
+export interface MethodologyCandidate {
+	id: string;
+	name: string;
+	description: string;
+	phases: string[];
+	confidenceScore: number;
+	rationale: string;
+	strengths: string[];
+	considerations: string[];
+	suitableFor: ProjectType[];
+	source: string;
+}
+
+export interface MethodologySelection {
+	selected: MethodologyCandidate;
+	alternatives: MethodologyCandidate[];
+	signals: MethodologySignals;
+	timestamp: string;
+	selectionRationale: string;
+}
+
+export interface MethodologyProfile {
+	methodology: MethodologyCandidate;
+	phaseMapping: Record<string, DesignPhase>;
+	milestones: Milestone[];
+	successMetrics: string[];
+	dialoguePrompts: string[];
+	artifacts: Artifact[];
+}
+
+export interface Milestone {
+	id: string;
+	name: string;
+	description: string;
+	phaseId: string;
+	deliverables: string[];
+	criteria: string[];
+	estimatedDuration: string;
+}
+
+export type ProjectType =
+	| "analytics-overhaul"
+	| "safety-protocol"
+	| "interactive-feature"
+	| "large-refactor"
+	| "new-application"
+	| "integration-project"
+	| "optimization-project"
+	| "compliance-initiative"
+	| "research-exploration"
+	| "platform-migration";
+
+export type ProblemFraming =
+	| "uncertain-modeling"
+	| "policy-first"
+	| "empathy-focused"
+	| "performance-first"
+	| "security-focused"
+	| "scalability-focused"
+	| "user-experience"
+	| "technical-debt"
+	| "innovation-driven"
+	| "compliance-driven";
+
+export type RiskLevel = "low" | "medium" | "high" | "critical";
+
+export type TimelinePressure = "urgent" | "normal" | "relaxed" | "flexible";
+
+export type StakeholderMode =
+	| "technical"
+	| "business"
+	| "mixed"
+	| "external"
+	| "regulatory";
