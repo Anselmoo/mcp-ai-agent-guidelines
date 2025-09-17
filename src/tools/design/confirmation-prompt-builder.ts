@@ -1,15 +1,10 @@
 // Confirmation Prompt Builder - Generates context-aware, deterministic confirmation prompts
 import { z } from "zod";
 import { constraintManager } from "./constraint-manager.js";
-import type {
-	ConfirmationResult,
-	DesignPhase,
-	DesignSessionState,
-	OutputFormat,
-} from "./types.js";
+import type { DesignPhase, DesignSessionState, OutputFormat } from "./types.js";
 
 // Schema for confirmation prompt configuration
-const ConfirmationPromptConfigSchema = z.object({
+const _ConfirmationPromptConfigSchema = z.object({
 	phaseConfigs: z.record(
 		z.object({
 			name: z.string(),
@@ -94,12 +89,10 @@ export interface ConfirmationPromptRequest {
 
 class ConfirmationPromptBuilderImpl {
 	private config: Record<string, unknown> = {};
-	private templates: Record<string, string> = {};
 
 	async initialize(): Promise<void> {
 		// Load default configuration
 		this.config = this.getDefaultConfig();
-		this.templates = this.getDefaultTemplates();
 	}
 
 	async generateConfirmationPrompt(
@@ -305,7 +298,7 @@ class ConfirmationPromptBuilderImpl {
 	private generateValidationChecklist(
 		sessionState: DesignSessionState,
 		phase: DesignPhase,
-		coverageGaps: string[],
+		_coverageGaps: string[],
 	): ValidationCheckpoint[] {
 		const checkpoints: ValidationCheckpoint[] = [];
 
@@ -346,8 +339,8 @@ class ConfirmationPromptBuilderImpl {
 	}
 
 	private generateRationaleQuestions(
-		sessionState: DesignSessionState,
-		phase: DesignPhase,
+		_sessionState: DesignSessionState,
+		_phase: DesignPhase,
 		criticalIssues: string[],
 	): RationaleQuestion[] {
 		const questions: RationaleQuestion[] = [];
@@ -608,7 +601,7 @@ class ConfirmationPromptBuilderImpl {
 	}
 
 	private generateOverviewContent(
-		sessionState: DesignSessionState,
+		_sessionState: DesignSessionState,
 		phase: DesignPhase,
 	): string {
 		let content = `**Phase**: ${phase.name}\n`;
@@ -662,7 +655,7 @@ class ConfirmationPromptBuilderImpl {
 	}
 
 	private generateRationaleContent(
-		sessionState: DesignSessionState,
+		_sessionState: DesignSessionState,
 		phase: DesignPhase,
 	): string {
 		let content =

@@ -12,6 +12,7 @@ import { methodologySelector } from "./methodology-selector.js";
 import { pivotModule } from "./pivot-module.js";
 import { roadmapGenerator } from "./roadmap-generator.js";
 import { specGenerator } from "./spec-generator.js";
+import { strategicPivotPromptBuilder } from "./strategic-pivot-prompt-builder.js";
 import type {
 	Artifact,
 	ConfirmationResult,
@@ -20,6 +21,7 @@ import type {
 	MethodologySelection,
 	MethodologySignals,
 	PivotDecision,
+	StrategicPivotPromptResult,
 } from "./types.js";
 
 const _DesignAssistantRequestSchema = z.object({
@@ -28,6 +30,7 @@ const _DesignAssistantRequestSchema = z.object({
 		"advance-phase",
 		"validate-phase",
 		"evaluate-pivot",
+		"generate-strategic-pivot-prompt",
 		"generate-artifacts",
 		"enforce-coverage",
 		"get-status",
@@ -43,6 +46,9 @@ const _DesignAssistantRequestSchema = z.object({
 	artifactTypes: z
 		.array(z.enum(["adr", "specification", "roadmap"]))
 		.optional(),
+	includeTemplates: z.boolean().optional(),
+	includeSpace7Instructions: z.boolean().optional(),
+	customInstructions: z.array(z.string()).optional(),
 	metadata: z.record(z.unknown()).optional().default({}),
 });
 
@@ -52,6 +58,7 @@ export interface DesignAssistantRequest {
 		| "advance-phase"
 		| "validate-phase"
 		| "evaluate-pivot"
+		| "generate-strategic-pivot-prompt"
 		| "generate-artifacts"
 		| "enforce-coverage"
 		| "get-status"
@@ -64,6 +71,9 @@ export interface DesignAssistantRequest {
 	constraintConfig?: unknown;
 	methodologySignals?: MethodologySignals;
 	artifactTypes?: ("adr" | "specification" | "roadmap")[];
+	includeTemplates?: boolean;
+	includeSpace7Instructions?: boolean;
+	customInstructions?: string[];
 	metadata?: Record<string, unknown>;
 }
 
@@ -79,6 +89,7 @@ export interface DesignAssistantResponse {
 	artifacts: Artifact[];
 	validationResults?: unknown;
 	pivotDecision?: unknown;
+	strategicPivotPrompt?: StrategicPivotPromptResult;
 	coverageReport?: unknown;
 	data?: Record<string, unknown>;
 }
@@ -147,6 +158,19 @@ class DesignAssistantImpl {
 						throw new Error("Content is required for evaluate-pivot action");
 					}
 					return this.evaluatePivot(sessionId, request.content);
+				case "generate-strategic-pivot-prompt":
+					if (!request.content) {
+						throw new Error(
+							"Content is required for generate-strategic-pivot-prompt action",
+						);
+					}
+					return this.generateStrategicPivotPrompt(
+						sessionId,
+						request.content,
+						request.includeTemplates,
+						request.includeSpace7Instructions,
+						request.customInstructions,
+					);
 				case "generate-artifacts":
 					return this.generateArtifacts(
 						sessionId,
@@ -500,6 +524,74 @@ class DesignAssistantImpl {
 			recommendations,
 			artifacts: [],
 			pivotDecision,
+		};
+	}
+
+	private async generateStrategicPivotPrompt(
+		sessionId: string,
+		content: string,
+		includeTemplates = true,
+		includeSpace7Instructions = true,
+		customInstructions?: string[],
+	): Promise<DesignAssistantResponse> {
+		const sessionState = designPhaseWorkflow.getSession(sessionId);
+		if (!sessionState) {
+			return {
+				success: false,
+				sessionId,
+				status: "error",
+				message: `Session ${sessionId} not found`,
+				recommendations: ["Start a new session"],
+				artifacts: [],
+			};
+		}
+
+		// First evaluate if a pivot is needed
+		const pivotDecision = await pivotModule.evaluatePivotNeed({
+			sessionState,
+			currentContent: content,
+			forceEvaluation: true,
+		});
+
+		// Generate strategic pivot prompt using the prompt builder
+		const strategicPivotPromptResult =
+			await strategicPivotPromptBuilder.generateStrategicPivotPrompt({
+				sessionState,
+				pivotDecision,
+				context: content,
+				includeTemplates,
+				includeSpace7Instructions,
+				customInstructions,
+			});
+
+		// If pivot is triggered and has high impact, suggest generating artifacts
+		const shouldGenerateArtifacts =
+			pivotDecision.triggered &&
+			(pivotDecision.complexity > 75 || pivotDecision.entropy > 70);
+
+		const additionalRecommendations = shouldGenerateArtifacts
+			? [
+					"Consider generating ADR to document pivot decision",
+					"Update project roadmap based on pivot direction",
+					"Review and update technical specifications",
+				]
+			: ["Monitor session progress and validate assumptions"];
+
+		return {
+			success: true,
+			sessionId,
+			currentPhase: sessionState.currentPhase,
+			status: pivotDecision.triggered
+				? "strategic-pivot-prompt-generated"
+				: "monitoring",
+			message: `Strategic pivot guidance generated for session ${sessionId}`,
+			recommendations: [
+				...strategicPivotPromptResult.nextSteps.slice(0, 3),
+				...additionalRecommendations,
+			],
+			artifacts: [],
+			pivotDecision,
+			strategicPivotPrompt: strategicPivotPromptResult,
 		};
 	}
 

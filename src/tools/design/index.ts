@@ -28,6 +28,7 @@ export { methodologySelector } from "./methodology-selector.js";
 export { pivotModule } from "./pivot-module.js";
 export { roadmapGenerator } from "./roadmap-generator.js";
 export { specGenerator } from "./spec-generator.js";
+export { strategicPivotPromptBuilder } from "./strategic-pivot-prompt-builder.js";
 // Export types
 export type {
 	Artifact,
@@ -41,4 +42,8 @@ export type {
 	MethodologySelection,
 	MethodologySignals,
 	PivotDecision,
+	PivotGuidance,
+	PivotImpact,
+	StrategicPivotPromptRequest,
+	StrategicPivotPromptResult,
 } from "./types.js";
