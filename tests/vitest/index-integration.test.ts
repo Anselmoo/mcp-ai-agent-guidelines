@@ -185,10 +185,11 @@ function testFunction() {
 
 	it("should test security hardening prompt builder", async () => {
 		const result = await securityHardeningPromptBuilder({
+			codeContext: "Web application security analysis",
 			system: "web application",
 			scope: ["authentication", "authorization"],
-			complianceStandards: ["OWASP"],
-			analysisScope: ["code-review"],
+			complianceStandards: ["OWASP-Top-10"],
+			analysisScope: ["input-validation", "authentication", "authorization"],
 		});
 
 		expect(result).toBeDefined();

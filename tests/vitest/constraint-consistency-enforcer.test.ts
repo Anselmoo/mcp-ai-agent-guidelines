@@ -8,6 +8,84 @@ import type {
 	DesignSessionState,
 } from "../../dist/tools/design/types.js";
 
+// Shared helper function for creating test session states
+const createTestSessionState = (sessionId: string): DesignSessionState => ({
+	config: {
+		sessionId,
+		context: `Test session ${sessionId} for cross-session consistency`,
+		goal: "Test constraint consistency enforcement",
+		requirements: [
+			"Ensure constraint consistency across sessions",
+			"Validate Space 7 alignment",
+			"Generate enforcement documentation",
+		],
+		constraints: [
+			{
+				id: "architectural.modularity",
+				name: "Modular Design",
+				type: "architectural",
+				category: "architectural",
+				description: "System must follow modular architecture",
+				validation: { minCoverage: 85, keywords: ["module", "component"] },
+				weight: 15,
+				mandatory: true,
+				source: "Architecture Guidelines",
+			},
+			{
+				id: "technical.testing",
+				name: "Testing Strategy",
+				type: "technical",
+				category: "technical",
+				description: "Comprehensive testing required",
+				validation: { minCoverage: 80, keywords: ["unit", "integration"] },
+				weight: 10,
+				mandatory: false,
+				source: "Technical Guidelines",
+			},
+		],
+		coverageThreshold: 85,
+		enablePivots: true,
+		templateRefs: ["DESIGN_PROCESS_TEMPLATE.md"],
+		outputFormats: ["markdown", "mermaid"],
+		metadata: {
+			testMode: true,
+			created: new Date().toISOString(),
+		},
+	},
+	currentPhase: "discovery",
+	phases: {
+		discovery: {
+			id: "discovery",
+			name: "Discovery",
+			description: "Discovery phase",
+			inputs: [],
+			outputs: ["context"],
+			criteria: ["Clear objectives"],
+			coverage: 90,
+			status: "completed",
+			artifacts: [],
+			dependencies: [],
+		},
+	},
+	coverage: {
+		overall: 88,
+		phases: { discovery: 90 },
+		constraints: { "architectural.modularity": 85, "technical.testing": 80 },
+		assumptions: {},
+		documentation: { overall: 85 },
+		testCoverage: 75,
+	},
+	artifacts: [],
+	history: [
+		{
+			action: "session-start",
+			timestamp: new Date().toISOString(),
+			data: { sessionId },
+		},
+	],
+	status: "active",
+});
+
 describe("Constraint Consistency Enforcer", () => {
 	beforeEach(async () => {
 		await constraintConsistencyEnforcer.initialize();
@@ -86,86 +164,6 @@ describe("Constraint Consistency Enforcer", () => {
 				},
 			},
 		});
-	});
-
-	const createTestSessionState = (sessionId: string): DesignSessionState => ({
-		config: {
-			sessionId,
-			context: `Test session ${sessionId} for cross-session consistency`,
-			goal: "Test constraint consistency enforcement",
-			requirements: [
-				"Ensure constraint consistency across sessions",
-				"Validate Space 7 alignment",
-				"Generate enforcement documentation",
-			],
-			constraints: [
-				{
-					id: "architectural.modularity",
-					name: "Modular Design",
-					type: "architectural",
-					category: "architectural",
-					description: "System must follow modular architecture",
-					validation: { minCoverage: 85, keywords: ["module", "component"] },
-					weight: 15,
-					mandatory: true,
-					source: "Architecture Guidelines",
-				},
-				{
-					id: "technical.testing",
-					name: "Testing Strategy",
-					type: "technical",
-					category: "technical",
-					description: "Comprehensive testing required",
-					validation: { minCoverage: 80, keywords: ["unit", "integration"] },
-					weight: 10,
-					mandatory: true,
-					source: "Testing Guidelines",
-				},
-			],
-			coverageThreshold: 85,
-			enablePivots: true,
-			templateRefs: ["Space 7 General Instructions"],
-			outputFormats: ["markdown"],
-			metadata: {},
-		},
-		currentPhase: "requirements",
-		phases: {
-			discovery: {
-				id: "discovery",
-				name: "Discovery",
-				description: "Discovery phase",
-				inputs: ["context"],
-				outputs: ["objectives"],
-				criteria: ["Clear objectives"],
-				coverage: 90,
-				status: "completed",
-				artifacts: [],
-				dependencies: [],
-			},
-			requirements: {
-				id: "requirements",
-				name: "Requirements",
-				description: "Requirements phase",
-				inputs: ["objectives"],
-				outputs: ["requirements"],
-				criteria: ["Testable requirements"],
-				coverage: 85,
-				status: "in-progress",
-				artifacts: [],
-				dependencies: ["discovery"],
-			},
-		},
-		coverage: {
-			overall: 87,
-			phases: { discovery: 90, requirements: 85 },
-			constraints: { "architectural.modularity": 90, "technical.testing": 85 },
-			assumptions: {},
-			documentation: { overall: 80 },
-			testCoverage: 85,
-		},
-		artifacts: [],
-		history: [],
-		status: "active",
 	});
 
 	it("should initialize successfully", async () => {
