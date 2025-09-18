@@ -13,10 +13,7 @@ export default defineConfig({
 			thresholds: {
 				statements: 40,
 				lines: 40,
-				functions: 27, // Set to current coverage level (27.2%) to pass tests
-				// Note: Moving from 27.2% to 70% would require testing ~161 additional functions
-				// Many of these are internal utilities, getters, or design tool functions that
-				// may not provide meaningful test value. A gradual approach is more sustainable.
+				functions: 70,
 				branches: 45,
 				// perFile off initially to avoid noisy CI on new files
 				perFile: false,
