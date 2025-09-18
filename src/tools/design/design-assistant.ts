@@ -8,6 +8,7 @@ import {
 	DEFAULT_CONSTRAINT_CONFIG,
 } from "./constraint-manager.js";
 import { coverageEnforcer } from "./coverage-enforcer.js";
+import { crossSessionConsistencyEnforcer } from "./cross-session-consistency-enforcer.js";
 import { designPhaseWorkflow } from "./design-phase-workflow.js";
 import { methodologySelector } from "./methodology-selector.js";
 import { pivotModule } from "./pivot-module.js";
@@ -18,7 +19,9 @@ import type {
 	Artifact,
 	ConfirmationResult,
 	ConsistencyEnforcementResult,
+	CrossSessionConsistencyReport,
 	DesignSessionConfig,
+	EnforcementPrompt,
 	MethodologyProfile,
 	MethodologySelection,
 	MethodologySignals,
@@ -39,6 +42,9 @@ const _DesignAssistantRequestSchema = z.object({
 		"get-status",
 		"load-constraints",
 		"select-methodology",
+		"enforce-cross-session-consistency",
+		"generate-enforcement-prompts",
+		"generate-constraint-documentation",
 	]),
 	sessionId: z.string(),
 	config: z.any().optional(), // DesignSessionConfig
@@ -68,7 +74,10 @@ export interface DesignAssistantRequest {
 		| "enforce-consistency"
 		| "get-status"
 		| "load-constraints"
-		| "select-methodology";
+		| "select-methodology"
+		| "enforce-cross-session-consistency"
+		| "generate-enforcement-prompts"
+		| "generate-constraint-documentation";
 	sessionId: string;
 	config?: DesignSessionConfig;
 	content?: string;
@@ -118,7 +127,7 @@ class DesignAssistantImpl {
 			await pivotModule.initialize();
 			await coverageEnforcer.initialize();
 			await methodologySelector.initialize();
-			await constraintConsistencyEnforcer.initialize();
+			await crossSessionConsistencyEnforcer.initialize();
 
 			this.initialized = true;
 		} catch (error) {
@@ -212,6 +221,12 @@ class DesignAssistantImpl {
 						);
 					}
 					return this.selectMethodology(sessionId, request.methodologySignals);
+				case "enforce-cross-session-consistency":
+					return this.enforceCrossSessionConsistency(sessionId);
+				case "generate-enforcement-prompts":
+					return this.generateEnforcementPrompts(sessionId);
+				case "generate-constraint-documentation":
+					return this.generateConstraintDocumentation(sessionId);
 				default:
 					throw new Error(`Unknown action: ${action}`);
 			}
@@ -954,6 +969,230 @@ class DesignAssistantImpl {
 	// Utility methods
 	async getActiveSessions(): Promise<string[]> {
 		return designPhaseWorkflow.listSessions();
+	}
+
+	private async enforceCrossSessionConsistency(
+		sessionId: string,
+	): Promise<DesignAssistantResponse> {
+		await this.initialize();
+
+		// Get current session state (would be loaded from storage in real implementation)
+		const mockSessionState = {
+			config: {
+				sessionId,
+				context: "Cross-session consistency check",
+				goal: "Ensure constraint consistency across sessions",
+				requirements: [],
+				constraints: constraintManager.getConstraints(),
+				coverageThreshold: 85,
+				enablePivots: false,
+				templateRefs: [],
+				outputFormats: ["markdown"],
+				metadata: {},
+			},
+			currentPhase: "requirements",
+			phases: {},
+			artifacts: [],
+			metadata: {},
+			events: [],
+			status: "active",
+			createdAt: new Date().toISOString(),
+			updatedAt: new Date().toISOString(),
+		} as any;
+
+		try {
+			const consistencyReport =
+				await crossSessionConsistencyEnforcer.enforceConsistency(
+					mockSessionState,
+				);
+
+			return {
+				success: true,
+				sessionId,
+				status: "consistency-checked",
+				message: `Cross-session consistency enforced. Overall score: ${consistencyReport.overallConsistency}%`,
+				recommendations: consistencyReport.recommendations.map((r) => r.title),
+				artifacts: [],
+				data: {
+					consistencyReport,
+					violationsCount: consistencyReport.violations.length,
+					space7Alignment: consistencyReport.space7Alignment,
+				},
+			};
+		} catch (error) {
+			return {
+				success: false,
+				sessionId,
+				status: "consistency-check-failed",
+				message: `Failed to enforce cross-session consistency: ${error instanceof Error ? error.message : "Unknown error"}`,
+				recommendations: ["Check session state and try again"],
+				artifacts: [],
+			};
+		}
+	}
+
+	private async generateEnforcementPrompts(
+		sessionId: string,
+	): Promise<DesignAssistantResponse> {
+		await this.initialize();
+
+		// Get current session state and generate consistency report
+		const mockSessionState = {
+			config: {
+				sessionId,
+				context: "Enforcement prompt generation",
+				goal: "Generate interactive validation prompts",
+				requirements: [],
+				constraints: constraintManager.getConstraints(),
+				coverageThreshold: 85,
+				enablePivots: false,
+				templateRefs: [],
+				outputFormats: ["markdown"],
+				metadata: {},
+			},
+			currentPhase: "requirements",
+			phases: {},
+			artifacts: [],
+			metadata: {},
+			events: [],
+			status: "active",
+			createdAt: new Date().toISOString(),
+			updatedAt: new Date().toISOString(),
+		} as any;
+
+		try {
+			const consistencyReport =
+				await crossSessionConsistencyEnforcer.enforceConsistency(
+					mockSessionState,
+				);
+			const prompts =
+				await crossSessionConsistencyEnforcer.generateEnforcementPrompts(
+					mockSessionState,
+					consistencyReport,
+				);
+
+			return {
+				success: true,
+				sessionId,
+				status: "prompts-generated",
+				message: `Generated ${prompts.length} enforcement prompts`,
+				recommendations: prompts.map(
+					(p) => `${p.severity.toUpperCase()}: ${p.title}`,
+				),
+				artifacts: [],
+				data: {
+					prompts,
+					consistencyReport,
+				},
+			};
+		} catch (error) {
+			return {
+				success: false,
+				sessionId,
+				status: "prompt-generation-failed",
+				message: `Failed to generate enforcement prompts: ${error instanceof Error ? error.message : "Unknown error"}`,
+				recommendations: ["Check session state and try again"],
+				artifacts: [],
+			};
+		}
+	}
+
+	private async generateConstraintDocumentation(
+		sessionId: string,
+	): Promise<DesignAssistantResponse> {
+		await this.initialize();
+
+		// Get current session state and generate consistency report
+		const mockSessionState = {
+			config: {
+				sessionId,
+				context: "Constraint documentation generation",
+				goal: "Generate automated documentation for constraint decisions",
+				requirements: [],
+				constraints: constraintManager.getConstraints(),
+				coverageThreshold: 85,
+				enablePivots: false,
+				templateRefs: [],
+				outputFormats: ["markdown"],
+				metadata: {},
+			},
+			currentPhase: "requirements",
+			phases: {},
+			artifacts: [],
+			metadata: {},
+			events: [],
+			status: "active",
+			createdAt: new Date().toISOString(),
+			updatedAt: new Date().toISOString(),
+		} as any;
+
+		try {
+			const consistencyReport =
+				await crossSessionConsistencyEnforcer.enforceConsistency(
+					mockSessionState,
+				);
+			const documentation =
+				await crossSessionConsistencyEnforcer.generateConstraintDocumentation(
+					mockSessionState,
+					consistencyReport,
+				);
+
+			const artifacts = [
+				{
+					id: `adr-${sessionId}-${Date.now()}`,
+					name: "Cross-Session Constraint Consistency ADR",
+					type: "adr" as const,
+					content: documentation.adr,
+					format: "markdown" as const,
+					metadata: { generated: new Date().toISOString() },
+					timestamp: new Date().toISOString(),
+				},
+				{
+					id: `spec-${sessionId}-${Date.now()}`,
+					name: "Cross-Session Constraint Specification",
+					type: "specification" as const,
+					content: documentation.specification,
+					format: "markdown" as const,
+					metadata: { generated: new Date().toISOString() },
+					timestamp: new Date().toISOString(),
+				},
+				{
+					id: `roadmap-${sessionId}-${Date.now()}`,
+					name: "Cross-Session Consistency Roadmap",
+					type: "roadmap" as const,
+					content: documentation.roadmap,
+					format: "markdown" as const,
+					metadata: { generated: new Date().toISOString() },
+					timestamp: new Date().toISOString(),
+				},
+			];
+
+			return {
+				success: true,
+				sessionId,
+				status: "documentation-generated",
+				message: `Generated ${artifacts.length} constraint documentation artifacts`,
+				recommendations: [
+					"Review generated ADR for constraint decisions",
+					"Use specification for implementation guidance",
+					"Follow roadmap for consistency improvements",
+				],
+				artifacts,
+				data: {
+					consistencyReport,
+					documentation,
+				},
+			};
+		} catch (error) {
+			return {
+				success: false,
+				sessionId,
+				status: "documentation-generation-failed",
+				message: `Failed to generate constraint documentation: ${error instanceof Error ? error.message : "Unknown error"}`,
+				recommendations: ["Check session state and try again"],
+				artifacts: [],
+			};
+		}
 	}
 
 	async getConstraintSummary(): Promise<{

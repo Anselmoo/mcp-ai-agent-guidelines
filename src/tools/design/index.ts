@@ -22,6 +22,7 @@ export { confirmationPromptBuilder } from "./confirmation-prompt-builder.js";
 export { constraintConsistencyEnforcer } from "./constraint-consistency-enforcer.js";
 export { constraintManager } from "./constraint-manager.js";
 export { coverageEnforcer } from "./coverage-enforcer.js";
+export { crossSessionConsistencyEnforcer } from "./cross-session-consistency-enforcer.js";
 export type { DesignAssistantRequest } from "./design-assistant.js";
 export { designAssistant } from "./design-assistant.js";
 export { designPhaseWorkflow } from "./design-phase-workflow.js";
@@ -36,15 +37,25 @@ export type {
 	ConfirmationResult,
 	ConsistencyEnforcementRequest,
 	ConsistencyEnforcementResult,
+	ConsistencyRecommendation,
+	ConsistencyResult,
+	ConsistencyViolation,
 	ConstraintConsistencyViolation,
+	ConstraintDecision,
 	ConstraintEnforcementHistory,
 	ConstraintRule,
 	CoverageReport,
+	CrossSessionConsistencyReport,
+	CrossSessionConstraintHistory,
+	CrossSessionEnforcementConfig,
 	CrossSessionValidationResult,
 	DesignPhase,
 	DesignSessionConfig,
 	DesignSessionState,
 	EnforcementAction,
+	EnforcementOption,
+	EnforcementPrompt,
+	HistoricalPattern,
 	MethodologyProfile,
 	MethodologySelection,
 	MethodologySignals,
