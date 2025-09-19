@@ -1,11 +1,7 @@
-// Comprehensive test suite for spec-generator.ts to maximize function coverage
-import { describe, expect, it } from "vitest";
-import { specGenerator } from "../../dist/tools/design/spec-generator.js";
-import type {
-	Artifact,
-	DesignPhase,
-	DesignSessionState,
-} from "../../dist/tools/design/types.js";
+// Comprehensive test coverage for spec-generator.ts
+// Target: 29/30 uncovered functions
+import { beforeEach, describe, expect, it } from "vitest";
+import type { DesignSessionState } from "../../dist/tools/design/types.js";
 
 describe("Spec Generator Comprehensive Function Coverage", () => {
 	// Create comprehensive test session state
