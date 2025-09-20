@@ -100,6 +100,28 @@ class PivotModuleImpl {
 		};
 	}
 
+	// Backwards-compatible helper expected by tests
+	async generateRecommendations(
+		sessionState: DesignSessionState,
+	): Promise<string[]> {
+		await this.initialize();
+		const sampleContent = `${sessionState.config.context} ${sessionState.config.goal}`;
+		const complexity = await this.calculateComplexityScore(
+			sessionState,
+			sampleContent,
+		);
+		const entropy = await this.measureEntropyLevel(
+			sessionState,
+			sampleContent,
+		);
+		const alts = await this.generateAlternatives(
+			sessionState,
+			complexity,
+			entropy,
+		);
+		return [this.generateRecommendation(complexity, entropy, alts), ...alts];
+	}
+
 	private async calculateComplexityScore(
 		sessionState: DesignSessionState,
 		content: string,

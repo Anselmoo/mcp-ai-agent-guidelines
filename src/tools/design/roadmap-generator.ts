@@ -96,7 +96,11 @@ export interface RoadmapData {
 class RoadmapGeneratorImpl {
 	private roadmapCounter = 1;
 
-	async generateRoadmap(request: RoadmapRequest): Promise<RoadmapResult> {
+	async initialize(): Promise<void> {
+		// No-op initializer for API surface compatibility
+	}
+
+	async generateRoadmap(request: RoadmapRequest | (Omit<Partial<RoadmapRequest>, "sessionState"> & { sessionState: DesignSessionState })): Promise<RoadmapResult> {
 		const {
 			sessionState,
 			title,
@@ -109,17 +113,19 @@ class RoadmapGeneratorImpl {
 			metadata,
 		} = request;
 
+		const effectiveTitle = title || sessionState?.config?.goal || "Generated Roadmap";
+
 		// Generate roadmap number
 		const roadmapNumber = this.roadmapCounter++;
 		const timestamp = new Date().toISOString();
 
 		// Generate roadmap components
-		const milestones = this.generateMilestones(
+		const milestones = this.internalGenerateMilestones(
 			sessionState,
 			timeframe || "3 months",
 			granularity || "weekly",
 		);
-		const timeline = this.generateTimeline(milestones, sessionState);
+		const timeline = this.internalGenerateTimeline(milestones, sessionState);
 		const risks = includeRisks
 			? this.generateRisks(sessionState, milestones)
 			: [];
@@ -140,7 +146,7 @@ class RoadmapGeneratorImpl {
 			case "mermaid":
 				content = this.generateMermaidRoadmap({
 					roadmapNumber,
-					title,
+					title: effectiveTitle,
 					milestones,
 					timeline,
 					sessionState,
@@ -149,7 +155,7 @@ class RoadmapGeneratorImpl {
 			case "json":
 				content = this.generateJSONRoadmap({
 					roadmapNumber,
-					title,
+					title: effectiveTitle,
 					milestones,
 					timeline,
 					risks,
@@ -162,7 +168,7 @@ class RoadmapGeneratorImpl {
 			default:
 				content = this.generateMarkdownRoadmap({
 					roadmapNumber,
-					title,
+					title: effectiveTitle,
 					milestones,
 					timeline,
 					risks,
@@ -178,7 +184,7 @@ class RoadmapGeneratorImpl {
 		const paddedRoadmapNumber = String(roadmapNumber).padStart(3, "0");
 		const artifact: Artifact = {
 			id: `roadmap-${paddedRoadmapNumber}`,
-			name: `ROADMAP-${paddedRoadmapNumber}: ${title}`,
+			name: `ROADMAP-${paddedRoadmapNumber}: ${effectiveTitle}`,
 			type: "roadmap",
 			content,
 			format: format || "markdown",
@@ -202,7 +208,28 @@ class RoadmapGeneratorImpl {
 		};
 	}
 
-	private generateMilestones(
+	// Public wrapper expected by tests
+	async generateMilestones(
+		sessionState: DesignSessionState,
+	): Promise<Milestone[]> {
+		return this.internalGenerateMilestones(sessionState, "6 months", "medium");
+	}
+
+	// Public wrapper expected by tests
+	async generateTimeline(
+		sessionState: DesignSessionState,
+		timeframe: string = "6 months",
+	): Promise<TimelineEvent[]> {
+		const milestones = this.internalGenerateMilestones(
+			sessionState,
+			timeframe,
+			"medium",
+		);
+		return this.internalGenerateTimeline(milestones, sessionState);
+	}
+
+	// Internal implementation retained for existing usage
+	private internalGenerateMilestones(
 		sessionState: DesignSessionState,
 		timeframe: string,
 		granularity: string,
@@ -212,7 +239,7 @@ class RoadmapGeneratorImpl {
 		const timeframMonths = this.parseTimeframe(timeframe);
 
 		// Generate milestones based on design phases
-		const phases = Object.values(sessionState.phases);
+		const phases = sessionState.phases ? Object.values(sessionState.phases) : [];
 		const phaseCount = phases.length;
 		const monthsPerPhase = Math.max(1, Math.floor(timeframMonths / phaseCount));
 
@@ -268,7 +295,10 @@ class RoadmapGeneratorImpl {
 				name: "Foundation Setup",
 				description: "Core infrastructure and basic functionality",
 			},
-			{ name: "Core Features", description: "Primary feature implementation" },
+			{
+				name: "Core Features",
+				description: "Primary feature implementation",
+			},
 			{
 				name: "Integration & Testing",
 				description: "System integration and comprehensive testing",
@@ -303,7 +333,7 @@ class RoadmapGeneratorImpl {
 		return implMilestones;
 	}
 
-	private generateTimeline(
+	private internalGenerateTimeline(
 		milestones: Milestone[],
 		_sessionState: DesignSessionState,
 	): TimelineEvent[] {

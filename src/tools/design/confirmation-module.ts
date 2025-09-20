@@ -88,6 +88,15 @@ class ConfirmationModuleImpl {
 		await confirmationPromptBuilder.initialize();
 	}
 
+	// Backwards-compatible alias expected by tests
+	async confirmPhase(
+		sessionState: DesignSessionState,
+		phaseId: string,
+		content: string = "Mock content for phase completion check",
+	): Promise<ConfirmationResult> {
+		return this.confirmPhaseCompletion(sessionState, phaseId, content);
+	}
+
 	async confirmPhaseCompletion(
 		sessionStateOrRequest: DesignSessionState | ConfirmationRequest,
 		phaseId?: string,
@@ -119,7 +128,7 @@ class ConfirmationModuleImpl {
 			generatePrompt = request.generatePrompt ?? false;
 		}
 
-		const phase = sessionState.phases[actualPhaseId];
+		const phase = sessionState.phases ? sessionState.phases[actualPhaseId] : undefined;
 		if (!phase) {
 			return {
 				passed: false,
@@ -670,6 +679,13 @@ class ConfirmationModuleImpl {
 			nextSteps,
 			canProceed: isReady,
 		};
+	}
+
+	// Backwards-compatible alias expected by tests
+	async confirmOverallReadiness(
+		sessionState: DesignSessionState,
+	): Promise<ConfirmationResult> {
+		return this.confirmSessionReadiness(sessionState);
 	}
 
 	async confirmConstraintSatisfaction(
