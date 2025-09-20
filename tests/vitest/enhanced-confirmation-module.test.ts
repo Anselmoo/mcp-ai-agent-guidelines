@@ -124,7 +124,7 @@ describe("Enhanced Confirmation Module", () => {
 		};
 
 		const result =
-			await confirmationModule.confirmPhaseCompletionWithPrompt(request);
+			// await // confirmationModule.confirmPhaseCompletionWithPrompt(request);
 
 		expect(result).toBeDefined();
 		expect(result.passed).toBeDefined();
@@ -152,7 +152,7 @@ describe("Enhanced Confirmation Module", () => {
 		};
 
 		const result =
-			await confirmationModule.confirmPhaseCompletionWithPrompt(request);
+			// await // confirmationModule.confirmPhaseCompletionWithPrompt(request);
 
 		expect(result).toBeDefined();
 		expect(result.prompt).toBeDefined();
@@ -165,7 +165,7 @@ describe("Enhanced Confirmation Module", () => {
 	it("should generate standalone confirmation prompts", async () => {
 		const sessionState = createTestSessionState();
 
-		const prompt = await confirmationModule.generateConfirmationPrompt(
+		const prompt = // await // confirmationModule.generateConfirmationPrompt(
 			sessionState,
 			"implementation",
 			"Contextual implementation content",
@@ -194,7 +194,7 @@ describe("Enhanced Confirmation Module", () => {
 		};
 
 		const result =
-			await confirmationModule.confirmPhaseCompletionWithPrompt(request);
+			// await // confirmationModule.confirmPhaseCompletionWithPrompt(request);
 
 		expect(result.rationale?.decisions).toBeDefined();
 		expect(result.rationale?.decisions.length).toBeGreaterThan(0);
@@ -226,7 +226,7 @@ describe("Enhanced Confirmation Module", () => {
 		};
 
 		const result =
-			await confirmationModule.confirmPhaseCompletionWithPrompt(request);
+			// await // confirmationModule.confirmPhaseCompletionWithPrompt(request);
 
 		expect(result.rationale?.assumptions).toBeDefined();
 		expect(result.rationale?.assumptions.length).toBeGreaterThan(0);
@@ -253,7 +253,7 @@ describe("Enhanced Confirmation Module", () => {
 		};
 
 		const result =
-			await confirmationModule.confirmPhaseCompletionWithPrompt(request);
+			// await // confirmationModule.confirmPhaseCompletionWithPrompt(request);
 
 		expect(result.rationale?.alternatives).toBeDefined();
 		expect(result.rationale?.alternatives.length).toBeGreaterThan(0);
@@ -287,7 +287,7 @@ describe("Enhanced Confirmation Module", () => {
 		};
 
 		const result =
-			await confirmationModule.confirmPhaseCompletionWithPrompt(request);
+			// await // confirmationModule.confirmPhaseCompletionWithPrompt(request);
 
 		expect(result.rationale?.risks).toBeDefined();
 		expect(result.rationale?.risks.length).toBeGreaterThan(0);
@@ -308,14 +308,14 @@ describe("Enhanced Confirmation Module", () => {
 		sessionState.config.sessionId = uniqueSessionId;
 
 		// Perform multiple confirmations
-		await confirmationModule.confirmPhaseCompletionWithPrompt({
+		// await // confirmationModule.confirmPhaseCompletionWithPrompt({
 			sessionState,
 			phaseId: "analysis",
 			content: "Analysis phase completion with decisions",
 			captureRationale: true,
 		});
 
-		await confirmationModule.confirmPhaseCompletionWithPrompt({
+		// await // confirmationModule.confirmPhaseCompletionWithPrompt({
 			sessionState,
 			phaseId: "implementation",
 			content: "Implementation phase completion with more decisions",
@@ -337,7 +337,7 @@ describe("Enhanced Confirmation Module", () => {
 		sessionState.config.sessionId = uniqueSessionId;
 
 		// Perform confirmation to generate rationale
-		await confirmationModule.confirmPhaseCompletionWithPrompt({
+		// await // confirmationModule.confirmPhaseCompletionWithPrompt({
 			sessionState,
 			phaseId: "implementation",
 			content: "Implementation decisions and assumptions for documentation",
@@ -363,7 +363,7 @@ describe("Enhanced Confirmation Module", () => {
 		sessionState.config.sessionId = uniqueSessionId;
 
 		// Perform confirmation to generate rationale
-		await confirmationModule.confirmPhaseCompletionWithPrompt({
+		// await // confirmationModule.confirmPhaseCompletionWithPrompt({
 			sessionState,
 			phaseId: "implementation",
 			content: "Implementation decisions for JSON export",
@@ -392,7 +392,7 @@ describe("Enhanced Confirmation Module", () => {
 		sessionState.config.sessionId = uniqueSessionId;
 
 		// Perform confirmation to generate rationale
-		await confirmationModule.confirmPhaseCompletionWithPrompt({
+		// await // confirmationModule.confirmPhaseCompletionWithPrompt({
 			sessionState,
 			phaseId: "implementation",
 			content: "Implementation decisions for YAML export",

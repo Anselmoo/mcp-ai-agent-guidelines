@@ -542,7 +542,13 @@ ${
 		content: string,
 		sessionState: DesignSessionState,
 	): number {
+		if (!sessionState.currentPhase || !sessionState.phases) {
+			return 75; // Default completeness score
+		}
 		const currentPhase = sessionState.phases[sessionState.currentPhase];
+		if (!currentPhase) {
+			return 75; // Default completeness score
+		}
 		return this.assessContentCompleteness(content, currentPhase);
 	}
 
