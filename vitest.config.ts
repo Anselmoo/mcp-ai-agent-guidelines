@@ -10,12 +10,12 @@ export default defineConfig({
 			reportsDirectory: "coverage",
 			include: ["src/**/*.{ts,tsx}"],
 			exclude: ["**/*.d.ts", "dist/**", "node_modules/**", "coverage/**"],
-			// Modest initial thresholds; ratchet up as coverage improves
+			// Updated thresholds targeting Q1 goals: Functions 40%, Statements/Lines 50%
 			thresholds: {
-				statements: 40,
-				lines: 40,
-				functions: 25,
-				branches: 45,
+				statements: 50, // Increased from 40 to target 50%
+				lines: 50, // Increased from 40 to target 50%
+				functions: 40, // Increased from 25 to target 40%
+				branches: 45, // Keep current as it's already good at 87%
 				// perFile off initially to avoid noisy CI on new files
 				perFile: false,
 			},
