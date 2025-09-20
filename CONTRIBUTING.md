@@ -2,6 +2,12 @@
 
 Thanks for your interest!
 
+## 🤖 GitHub Copilot & AI Assistants
+
+For comprehensive development guidelines when using GitHub Copilot or other AI coding assistants, see **[copilot-instructions.md](./copilot-instructions.md)**. This document contains detailed instructions for maintaining code quality and following project standards.
+
+## Quick Start
+
 - Open an issue to discuss large changes.
 - Use Node.js 20+, run `npm ci` before development.
 - Ensure quality gates pass:
