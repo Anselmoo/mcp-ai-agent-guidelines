@@ -1,13 +1,31 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { hierarchicalPromptBuilder } from "../../src/tools/prompt/hierarchical-prompt-builder.js";
 
 describe("hierarchical-prompt-builder comprehensive coverage", () => {
 	it("should handle all provider variants and techniques", async () => {
-		const providers = ["gpt-5", "gpt-4.1", "claude-4", "claude-3.7", "gemini-2.5", "o4-mini", "o3-mini", "other"];
+		const providers = [
+			"gpt-5",
+			"gpt-4.1",
+			"claude-4",
+			"claude-3.7",
+			"gemini-2.5",
+			"o4-mini",
+			"o3-mini",
+			"other",
+		];
 		const techniques = [
-			"zero-shot", "few-shot", "chain-of-thought", "self-consistency", 
-			"in-context-learning", "generate-knowledge", "prompt-chaining", 
-			"tree-of-thoughts", "meta-prompting", "rag", "react", "art"
+			"zero-shot",
+			"few-shot",
+			"chain-of-thought",
+			"self-consistency",
+			"in-context-learning",
+			"generate-knowledge",
+			"prompt-chaining",
+			"tree-of-thoughts",
+			"meta-prompting",
+			"rag",
+			"react",
+			"art",
 		];
 
 		for (const provider of providers) {
@@ -22,7 +40,7 @@ describe("hierarchical-prompt-builder comprehensive coverage", () => {
 				includeReferences: true,
 				includeDisclaimer: true,
 				includePitfalls: true,
-				style: "markdown"
+				style: "markdown",
 			});
 
 			expect(result).toHaveProperty("content");
@@ -49,7 +67,7 @@ describe("hierarchical-prompt-builder comprehensive coverage", () => {
 			requirements: ["Well-formed XML", "Clear structure"],
 			style: "xml",
 			techniques: ["chain-of-thought", "few-shot"],
-			includeTechniqueHints: true
+			includeTechniqueHints: true,
 		});
 
 		const content = result.content[0].text;
@@ -62,21 +80,22 @@ describe("hierarchical-prompt-builder comprehensive coverage", () => {
 
 	it("should handle automatic technique selection", async () => {
 		const result = await hierarchicalPromptBuilder({
-			context: "Machine learning model evaluation with complex reasoning chains",
+			context:
+				"Machine learning model evaluation with complex reasoning chains",
 			goal: "Analyze multiple models using systematic thinking and generate comprehensive knowledge",
 			requirements: [
 				"Chain of thought reasoning",
-				"Few examples needed", 
+				"Few examples needed",
 				"Knowledge generation required",
-				"Multiple consistency checks"
+				"Multiple consistency checks",
 			],
 			autoSelectTechniques: true,
-			includeTechniqueHints: true
+			includeTechniqueHints: true,
 		});
 
 		const content = result.content[0].text;
 		expect(content).toContain("Technique Hints");
-		
+
 		// Should automatically detect relevant techniques from keywords (check what was actually selected)
 		expect(content).toContain("Chain-of-Thought");
 		expect(content).toContain("Few-Shot");
@@ -92,7 +111,7 @@ describe("hierarchical-prompt-builder comprehensive coverage", () => {
 			includeReferences: false,
 			includeTechniqueHints: false,
 			includePitfalls: false,
-			autoSelectTechniques: false
+			autoSelectTechniques: false,
 		});
 
 		const content = result.content[0].text;
@@ -110,13 +129,13 @@ describe("hierarchical-prompt-builder comprehensive coverage", () => {
 			goal: "Create comprehensive API documentation",
 			requirements: [
 				"Technical accuracy for developers",
-				"Business value explanation for managers", 
+				"Business value explanation for managers",
 				"Implementation timelines",
 				"Security considerations",
 				"Performance benchmarks",
 				"Integration examples",
 				"Error handling scenarios",
-				"Testing strategies"
+				"Testing strategies",
 			],
 			audience: "Mixed technical and business stakeholders",
 			outputFormat: "Multi-section technical document with executive summary",
@@ -125,7 +144,7 @@ describe("hierarchical-prompt-builder comprehensive coverage", () => {
 			includeReferences: true,
 			includePitfalls: true,
 			provider: "claude-4",
-			style: "markdown"
+			style: "markdown",
 		});
 
 		const content = result.content[0].text;
@@ -135,7 +154,7 @@ describe("hierarchical-prompt-builder comprehensive coverage", () => {
 		expect(content).toContain("RAG"); // Changed from "rag" to match formatted title "Retrieval Augmented Generation (RAG)"
 		expect(content).toContain("Meta Prompting"); // Changed from "meta-prompting"
 		expect(content).toContain("Prompt Chaining"); // Changed from "prompt-chaining"
-		
+
 		// Check all requirements are included
 		expect(content).toContain("Technical accuracy");
 		expect(content).toContain("Business value");
@@ -149,7 +168,7 @@ describe("hierarchical-prompt-builder comprehensive coverage", () => {
 			goal: "Simple goal",
 			requirements: [],
 			outputFormat: "Plain text",
-			audience: "General audience"
+			audience: "General audience",
 		});
 
 		expect(result).toHaveProperty("content");
@@ -162,9 +181,18 @@ describe("hierarchical-prompt-builder comprehensive coverage", () => {
 	it("should handle technique combination edge cases", async () => {
 		// Test with all techniques enabled
 		const allTechniques = [
-			"zero-shot", "few-shot", "chain-of-thought", "self-consistency", 
-			"in-context-learning", "generate-knowledge", "prompt-chaining", 
-			"tree-of-thoughts", "meta-prompting", "rag", "react", "art"
+			"zero-shot",
+			"few-shot",
+			"chain-of-thought",
+			"self-consistency",
+			"in-context-learning",
+			"generate-knowledge",
+			"prompt-chaining",
+			"tree-of-thoughts",
+			"meta-prompting",
+			"rag",
+			"react",
+			"art",
 		];
 
 		const result = await hierarchicalPromptBuilder({
@@ -173,12 +201,12 @@ describe("hierarchical-prompt-builder comprehensive coverage", () => {
 			requirements: ["Demonstrate technique variety", "Show technique synergy"],
 			techniques: allTechniques,
 			includeTechniqueHints: true,
-			autoSelectTechniques: false // Explicit technique selection
+			autoSelectTechniques: false, // Explicit technique selection
 		});
 
 		const content = result.content[0].text;
 		expect(content).toContain("Technique Hints");
-		
+
 		// Verify some key techniques are mentioned with their formatted titles
 		expect(content).toContain("Zero-Shot");
 		expect(content).toContain("Few-Shot");
@@ -192,7 +220,7 @@ describe("hierarchical-prompt-builder comprehensive coverage", () => {
 			{ provider: "gpt-5", expectedOptimization: "advanced reasoning" },
 			{ provider: "claude-4", expectedOptimization: "detailed analysis" },
 			{ provider: "gemini-2.5", expectedOptimization: "multimodal" },
-			{ provider: "o4-mini", expectedOptimization: "efficient" }
+			{ provider: "o4-mini", expectedOptimization: "efficient" },
 		];
 
 		for (const testCase of testCases) {
@@ -201,7 +229,7 @@ describe("hierarchical-prompt-builder comprehensive coverage", () => {
 				goal: "Test provider-specific features",
 				requirements: ["Optimize for provider capabilities"],
 				provider: testCase.provider as any,
-				includeTechniqueHints: true
+				includeTechniqueHints: true,
 			});
 
 			const content = result.content[0].text;

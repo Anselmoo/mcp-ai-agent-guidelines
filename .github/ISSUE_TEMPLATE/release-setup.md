@@ -29,7 +29,7 @@ The following files typically contain version references that may need updating:
 ### GitHub Copilot/Bots
 The form is structured to enable programmatic parsing:
 - Consistent field IDs for reliable automation
-- Dropdowns with predefined options to avoid ambiguity  
+- Dropdowns with predefined options to avoid ambiguity
 - Checkboxes for multi-select automation options
 - Clear validation requirements
 

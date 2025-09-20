@@ -10,7 +10,7 @@ body:
     attributes:
       value: |
         ## Documentation Issue Form
-        
+
         Help us improve our documentation! This form is for reporting issues with existing documentation or requesting new documentation.
 
   - type: dropdown
@@ -77,7 +77,7 @@ body:
         - What did you expect to find?
         - What actually happened or what's incorrect?
         - How does this impact users?
-        
+
         Example: "The installation instructions in README.md mention Node.js 18+, but package.json requires Node.js 20+. This causes confusion for users trying to install."
     validations:
       required: true
@@ -106,12 +106,12 @@ body:
         - What should the corrected version say?
         - What additional information should be included?
         - How would you restructure or clarify the content?
-        
+
         Example:
         ```
         Update the installation requirements to:
         "Node.js 20+ required (see engines in package.json)"
-        
+
         Add a troubleshooting section for common Node version issues.
         ```
       render: markdown
@@ -166,7 +166,7 @@ body:
         - What were you trying to accomplish?
         - What environment were you using? (OS, browser, IDE, etc.)
         - Are there related issues or dependencies?
-        
+
         Example: "I was following the VS Code setup guide on macOS and the configuration example didn't work with the latest version."
     validations:
       required: false

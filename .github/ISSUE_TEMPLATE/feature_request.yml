@@ -10,7 +10,7 @@ body:
     attributes:
       value: |
         ## Feature Request Form
-        
+
         Thank you for suggesting a new feature! Please fill out this form to help us understand your idea and its potential impact.
 
   - type: dropdown
@@ -75,7 +75,7 @@ body:
       description: "A clear and concise description of the feature you'd like to see"
       placeholder: |
         Provide a one-paragraph explanation of the feature.
-        
+
         Example: "Add a new tool that can generate Mermaid sequence diagrams from natural language descriptions, similar to the existing flowchart generator but focused on interaction flows."
     validations:
       required: true
@@ -90,7 +90,7 @@ body:
         - What pain point or limitation does this address?
         - What use cases would this enable?
         - How would this improve the user experience?
-        
+
         Example: "Currently, users have to manually create sequence diagrams which is time-consuming and requires knowledge of Mermaid syntax. This feature would make it accessible to non-technical users and speed up documentation workflows."
     validations:
       required: true
@@ -105,7 +105,7 @@ body:
         - How should this feature work?
         - What would the user interface look like?
         - What would be the key components?
-        
+
         Example: "Add a new MCP tool called 'sequence-diagram-generator' that accepts natural language input and outputs Mermaid sequence diagram code. It should integrate with existing prompt patterns and support VS Code integration."
     validations:
       required: true
@@ -117,14 +117,14 @@ body:
       description: "Provide specific examples of how this feature would be used"
       placeholder: |
         List 2-3 concrete use cases:
-        
+
         1. **Use Case 1**: [Describe scenario]
            - Input: [What user provides]
            - Output: [What feature produces]
            - Benefit: [Why this helps]
-        
+
         2. **Use Case 2**: [Another scenario]
-           - Input: [What user provides] 
+           - Input: [What user provides]
            - Output: [What feature produces]
            - Benefit: [Why this helps]
     validations:
@@ -181,7 +181,7 @@ body:
         - Why weren't these alternatives suitable?
         - What are the trade-offs?
         - Are there existing tools that partially solve this?
-        
+
         Example: "Considered using external diagram tools, but they don't integrate with the MCP workflow. Also looked at manual Mermaid creation, but it's too technical for most users."
     validations:
       required: false
@@ -198,7 +198,7 @@ body:
         - Backward compatibility concerns
         - Security considerations
         - Integration points with existing code
-        
+
         Example: "Would need to integrate with existing prompt validation system. Should reuse the current Mermaid rendering approach. Need to consider rate limiting for AI-generated content."
     validations:
       required: false
@@ -214,7 +214,7 @@ body:
         - Performance benchmarks
         - Quality measures
         - User feedback indicators
-        
+
         Example: "Users can generate sequence diagrams 5x faster than manual creation. 90% of generated diagrams require minimal editing. Positive user feedback on ease of use."
     validations:
       required: false
@@ -231,7 +231,7 @@ body:
         - Research or reference materials
         - Community discussions
         - Related issues or PRs
-        
+
         Example: "Similar to PlantUML's text-to-diagram approach: https://plantuml.com/sequence-diagram"
     validations:
       required: false

@@ -10,7 +10,7 @@ body:
     attributes:
       value: |
         ## Bug Report Form
-        
+
         Thank you for taking the time to report a bug! Please fill out this form to help us understand and reproduce the issue.
 
   - type: dropdown
@@ -54,7 +54,7 @@ body:
       description: "A clear and concise description of what the bug is"
       placeholder: |
         Describe what happened and what you expected to happen.
-        
+
         Example: "When I run the command 'npm run build', it fails with a TypeScript error, but I expected it to compile successfully."
     validations:
       required: true
@@ -69,7 +69,7 @@ body:
         2. Run command '...'
         3. Click on '...'
         4. See error
-        
+
         Please be as specific as possible - include exact commands, file paths, and inputs.
     validations:
       required: true
@@ -86,7 +86,7 @@ body:
   - type: textarea
     id: actual_behavior
     attributes:
-      label: ❌ Actual Behavior  
+      label: ❌ Actual Behavior
       description: "What actually happened"
       placeholder: "Describe what actually happened, including any error messages."
     validations:
@@ -118,7 +118,7 @@ body:
       description: "Which version of Node.js are you using?"
       options:
         - 18.x (LTS)
-        - 20.x (LTS) 
+        - 20.x (LTS)
         - 22.x (Current)
         - 23.x (Current)
         - Other (specify in additional context)
@@ -163,7 +163,7 @@ body:
         - Browser console errors
         - Application logs
         - Stack traces
-        
+
         Use triple backticks (```) to format code blocks.
       render: text
     validations:

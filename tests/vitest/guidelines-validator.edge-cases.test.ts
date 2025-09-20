@@ -19,7 +19,8 @@ describe("guidelines-validator edge cases and branches", () => {
 
 	it("exercises excellent compliance path (score >= 85)", async () => {
 		const res = await guidelinesValidator({
-			practiceDescription: "We apply modular component architecture with separation of concerns and scalable maintainable design patterns",
+			practiceDescription:
+				"We apply modular component architecture with separation of concerns and scalable maintainable design patterns",
 			category: "architecture",
 		});
 		const text = res.content[0]?.type === "text" ? res.content[0].text : "";
@@ -29,7 +30,8 @@ describe("guidelines-validator edge cases and branches", () => {
 
 	it("exercises good compliance path (70 <= score < 85)", async () => {
 		const res = await guidelinesValidator({
-			practiceDescription: "We use modular component design with scalable maintainable patterns",
+			practiceDescription:
+				"We use modular component design with scalable maintainable patterns",
 			category: "architecture",
 		});
 		const text = res.content[0]?.type === "text" ? res.content[0].text : "";
@@ -60,7 +62,8 @@ describe("guidelines-validator edge cases and branches", () => {
 
 	it("handles case with no issues found", async () => {
 		const res = await guidelinesValidator({
-			practiceDescription: "We apply modular component architecture with separation of concerns and scalable maintainable design",
+			practiceDescription:
+				"We apply modular component architecture with separation of concerns and scalable maintainable design",
 			category: "architecture",
 		});
 		const text = res.content[0]?.type === "text" ? res.content[0].text : "";
@@ -103,7 +106,8 @@ describe("guidelines-validator edge cases and branches", () => {
 
 	it("exercises prompting category with all criteria", async () => {
 		const res = await guidelinesValidator({
-			practiceDescription: "We use hierarchical prompt structure with clear layered context and background, specific detailed requirements, and iterative refinement processes to improve results",
+			practiceDescription:
+				"We use hierarchical prompt structure with clear layered context and background, specific detailed requirements, and iterative refinement processes to improve results",
 			category: "prompting",
 		});
 		const text = res.content[0]?.type === "text" ? res.content[0].text : "";
@@ -115,7 +119,8 @@ describe("guidelines-validator edge cases and branches", () => {
 
 	it("exercises code-management category", async () => {
 		const res = await guidelinesValidator({
-			practiceDescription: "We maintain clean code hygiene practices, refactor legacy systems, manage dependencies and outdated components, and provide comprehensive documentation with detailed comments",
+			practiceDescription:
+				"We maintain clean code hygiene practices, refactor legacy systems, manage dependencies and outdated components, and provide comprehensive documentation with detailed comments",
 			category: "code-management",
 		});
 		const text = res.content[0]?.type === "text" ? res.content[0].text : "";
@@ -127,7 +132,8 @@ describe("guidelines-validator edge cases and branches", () => {
 
 	it("exercises visualization category", async () => {
 		const res = await guidelinesValidator({
-			practiceDescription: "We create clear visual diagrams and mermaid charts for system architecture documentation",
+			practiceDescription:
+				"We create clear visual diagrams and mermaid charts for system architecture documentation",
 			category: "visualization",
 		});
 		const text = res.content[0]?.type === "text" ? res.content[0].text : "";
@@ -136,7 +142,8 @@ describe("guidelines-validator edge cases and branches", () => {
 
 	it("exercises memory category", async () => {
 		const res = await guidelinesValidator({
-			practiceDescription: "We implement efficient caching strategies and context optimization for memory management",
+			practiceDescription:
+				"We implement efficient caching strategies and context optimization for memory management",
 			category: "memory",
 		});
 		const text = res.content[0]?.type === "text" ? res.content[0].text : "";
@@ -145,7 +152,8 @@ describe("guidelines-validator edge cases and branches", () => {
 
 	it("exercises workflow category", async () => {
 		const res = await guidelinesValidator({
-			practiceDescription: "We follow sprint planning methodologies and timeline estimation for project workflow",
+			practiceDescription:
+				"We follow sprint planning methodologies and timeline estimation for project workflow",
 			category: "workflow",
 		});
 		const text = res.content[0]?.type === "text" ? res.content[0].text : "";
@@ -154,7 +162,8 @@ describe("guidelines-validator edge cases and branches", () => {
 
 	it("handles optional criteria correctly", async () => {
 		const res = await guidelinesValidator({
-			practiceDescription: "We use hierarchical structure with context and specific requirements but no iterative process",
+			practiceDescription:
+				"We use hierarchical structure with context and specific requirements but no iterative process",
 			category: "prompting",
 		});
 		const text = res.content[0]?.type === "text" ? res.content[0].text : "";
@@ -167,7 +176,8 @@ describe("guidelines-validator edge cases and branches", () => {
 	it("exercises score clamping at max possible", async () => {
 		// Architecture category max is 50 + 15 + 10 + 10 = 85
 		const res = await guidelinesValidator({
-			practiceDescription: "We implement modular component-based architecture with separation of concerns and scalable maintainable design patterns",
+			practiceDescription:
+				"We implement modular component-based architecture with separation of concerns and scalable maintainable design patterns",
 			category: "architecture",
 		});
 		const text = res.content[0]?.type === "text" ? res.content[0].text : "";

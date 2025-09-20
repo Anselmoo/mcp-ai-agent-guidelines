@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { gapFrameworksAnalyzers } from "../../src/tools/analysis/gap-frameworks-analyzers.js";
 
 describe("gap-frameworks-analyzers edge cases", () => {
@@ -31,7 +31,8 @@ describe("gap-frameworks-analyzers edge cases", () => {
 	});
 
 	it("should handle special characters in inputs", async () => {
-		const specialText = "Test with special chars: @#$%^&*()[]{}|\\:;\"'<>,.?/~`";
+		const specialText =
+			"Test with special chars: @#$%^&*()[]{}|\\:;\"'<>,.?/~`";
 		const result = await gapFrameworksAnalyzers({
 			frameworks: ["process"],
 			currentState: specialText,
@@ -59,9 +60,18 @@ describe("gap-frameworks-analyzers edge cases", () => {
 	});
 
 	it("should handle large arrays of objectives and stakeholders", async () => {
-		const manyObjectives = Array.from({ length: 50 }, (_, i) => `Objective ${i + 1}`);
-		const manyStakeholders = Array.from({ length: 30 }, (_, i) => `Stakeholder ${i + 1}`);
-		const manyConstraints = Array.from({ length: 20 }, (_, i) => `Constraint ${i + 1}`);
+		const manyObjectives = Array.from(
+			{ length: 50 },
+			(_, i) => `Objective ${i + 1}`,
+		);
+		const manyStakeholders = Array.from(
+			{ length: 30 },
+			(_, i) => `Stakeholder ${i + 1}`,
+		);
+		const manyConstraints = Array.from(
+			{ length: 20 },
+			(_, i) => `Constraint ${i + 1}`,
+		);
 
 		const result = await gapFrameworksAnalyzers({
 			frameworks: ["operational"],
@@ -86,8 +96,14 @@ describe("gap-frameworks-analyzers edge cases", () => {
 	it("should generate appropriate content for each framework type", async () => {
 		// Test each framework individually to ensure content is specific
 		const frameworkTests = [
-			{ framework: "capability", expectedContent: "capability maturity levels" },
-			{ framework: "performance", expectedContent: "performance metrics and benchmarks" },
+			{
+				framework: "capability",
+				expectedContent: "capability maturity levels",
+			},
+			{
+				framework: "performance",
+				expectedContent: "performance metrics and benchmarks",
+			},
 			{ framework: "maturity", expectedContent: "maturity level" },
 			{ framework: "skills", expectedContent: "team skills and competencies" },
 			{ framework: "technology", expectedContent: "technology stack" },
@@ -136,6 +152,8 @@ describe("gap-frameworks-analyzers edge cases", () => {
 		});
 
 		const text = result.content[0].text;
-		expect(text).toContain("gap-analysis-capability-performance-maturity-skills.md");
+		expect(text).toContain(
+			"gap-analysis-capability-performance-maturity-skills.md",
+		);
 	});
 });

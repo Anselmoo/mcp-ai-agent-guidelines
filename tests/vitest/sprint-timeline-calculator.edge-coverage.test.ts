@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { sprintTimelineCalculator } from "../../src/tools/sprint-timeline-calculator";
 
 describe("Sprint Timeline Calculator - Additional Coverage", () => {
@@ -9,21 +9,23 @@ describe("Sprint Timeline Calculator - Additional Coverage", () => {
 				{
 					name: "Small task 1",
 					estimate: 1,
-					priority: "low"
+					priority: "low",
 				},
 				{
-					name: "Small task 2", 
+					name: "Small task 2",
 					estimate: 2,
-					priority: "low"
-				}
+					priority: "low",
+				},
 			],
 			teamSize: 5, // Medium team size (>= 3, <= 8, velocity won't be too high)
 			sprintLength: 14,
-			velocity: 50 // High velocity to keep utilization low
+			velocity: 50, // High velocity to keep utilization low
 		});
 
 		const text = result.content[0].text;
-		expect(text).toContain("Timeline appears achievable with current team configuration");
+		expect(text).toContain(
+			"Timeline appears achievable with current team configuration",
+		);
 		expect(text).toContain("Low"); // Should show low risk level
 	});
 
@@ -34,17 +36,17 @@ describe("Sprint Timeline Calculator - Additional Coverage", () => {
 				{
 					name: "Large task 1",
 					estimate: 20,
-					priority: "high"
+					priority: "high",
 				},
 				{
 					name: "Large task 2",
 					estimate: 25,
-					priority: "high"  
-				}
+					priority: "high",
+				},
 			],
 			teamSize: 2, // Small team
 			sprintLength: 7, // Short sprint
-			velocity: 20 // Low velocity to create high utilization
+			velocity: 20, // Low velocity to create high utilization
 		});
 
 		const text = result.content[0].text;
@@ -59,15 +61,17 @@ describe("Sprint Timeline Calculator - Additional Coverage", () => {
 			tasks: Array.from({ length: 20 }, (_, i) => ({
 				name: `Task ${i + 1}`,
 				estimate: 5,
-				priority: "medium"
+				priority: "medium",
 			})),
 			teamSize: 3,
 			sprintLength: 7,
-			velocity: 10 // Low velocity to create many sprints
+			velocity: 10, // Low velocity to create many sprints
 		});
 
 		const text = result.content[0].text;
-		expect(text).toContain("Long timeline detected - consider breaking into smaller releases");
+		expect(text).toContain(
+			"Long timeline detected - consider breaking into smaller releases",
+		);
 	});
 
 	it("should handle edge case: large team recommendation", async () => {
@@ -77,15 +81,17 @@ describe("Sprint Timeline Calculator - Additional Coverage", () => {
 				{
 					name: "Team task",
 					estimate: 10,
-					priority: "medium"
-				}
+					priority: "medium",
+				},
 			],
 			teamSize: 10, // Large team > 8
-			sprintLength: 14
+			sprintLength: 14,
 		});
 
 		const text = result.content[0].text;
-		expect(text).toContain("Large team size - ensure clear communication channels and role definitions");
+		expect(text).toContain(
+			"Large team size - ensure clear communication channels and role definitions",
+		);
 	});
 
 	it("should always include default recommendations", async () => {
@@ -95,17 +101,23 @@ describe("Sprint Timeline Calculator - Additional Coverage", () => {
 				{
 					name: "Simple task",
 					estimate: 3,
-					priority: "low"
-				}
+					priority: "low",
+				},
 			],
 			teamSize: 4,
-			sprintLength: 14
+			sprintLength: 14,
 		});
 
 		const text = result.content[0].text;
-		expect(text).toContain("Implement daily standups to track progress and identify blockers early");
-		expect(text).toContain("Plan for 20% buffer time to handle unexpected issues");
-		expect(text).toContain("Review and adjust velocity after each sprint based on actual completion");
+		expect(text).toContain(
+			"Implement daily standups to track progress and identify blockers early",
+		);
+		expect(text).toContain(
+			"Plan for 20% buffer time to handle unexpected issues",
+		);
+		expect(text).toContain(
+			"Review and adjust velocity after each sprint based on actual completion",
+		);
 	});
 
 	it("should handle tasks with dependencies risk assessment", async () => {
@@ -116,20 +128,22 @@ describe("Sprint Timeline Calculator - Additional Coverage", () => {
 					name: "Task with dependencies",
 					estimate: 5,
 					priority: "high",
-					dependencies: ["other-task", "another-dependency"]
+					dependencies: ["other-task", "another-dependency"],
 				},
 				{
 					name: "Independent task",
 					estimate: 3,
-					priority: "medium"
-				}
+					priority: "medium",
+				},
 			],
 			teamSize: 4,
-			sprintLength: 14
+			sprintLength: 14,
 		});
 
 		const text = result.content[0].text;
-		expect(text).toContain("Task dependencies may cause delays if not properly managed");
+		expect(text).toContain(
+			"Task dependencies may cause delays if not properly managed",
+		);
 		expect(text).toContain("Medium"); // Should have medium-level risk
 	});
 
@@ -140,11 +154,11 @@ describe("Sprint Timeline Calculator - Additional Coverage", () => {
 				name: `Complex task ${i + 1}`,
 				estimate: 8,
 				priority: "high",
-				dependencies: i % 3 === 0 ? ["dep1", "dep2"] : undefined
+				dependencies: i % 3 === 0 ? ["dep1", "dep2"] : undefined,
 			})),
 			teamSize: 2, // Small team (< 3)
 			sprintLength: 7,
-			velocity: 15 // This should create high utilization and large scope
+			velocity: 15, // This should create high utilization and large scope
 		});
 
 		const text = result.content[0].text;
@@ -159,11 +173,11 @@ describe("Sprint Timeline Calculator - Additional Coverage", () => {
 			tasks: [
 				{
 					name: "Only task",
-					estimate: 1
-				}
+					estimate: 1,
+				},
 			],
 			teamSize: 1,
-			sprintLength: 14
+			sprintLength: 14,
 		});
 
 		const text = result.content[0].text;

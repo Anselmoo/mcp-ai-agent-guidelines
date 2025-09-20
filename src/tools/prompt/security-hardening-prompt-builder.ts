@@ -105,7 +105,16 @@ const SecurityHardeningSchema = z.object({
 type SecurityHardeningInput = z.infer<typeof SecurityHardeningSchema>;
 
 export async function securityHardeningPromptBuilder(args: unknown) {
-	const input = SecurityHardeningSchema.parse(args);
+	const normalized = ((): unknown => {
+		if (args && typeof args === "object") {
+			const obj = args as Record<string, unknown>;
+			if (!("codeContext" in obj) && typeof obj.codeContent === "string") {
+				return { ...obj, codeContext: obj.codeContent };
+			}
+		}
+		return args;
+	})();
+	const input = SecurityHardeningSchema.parse(normalized);
 
 	const frontmatter = input.includeFrontmatter
 		? `${buildSecurityHardeningFrontmatter(input)}\n`

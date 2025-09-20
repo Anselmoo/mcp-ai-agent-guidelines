@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { 
-	slugify, 
-	buildFrontmatter, 
-	validateAndNormalizeFrontmatter,
+import {
+	buildFrontmatter,
 	buildFrontmatterWithPolicy,
 	buildMetadataSection,
-	buildReferencesSection
+	buildReferencesSection,
+	slugify,
+	validateAndNormalizeFrontmatter,
 } from "../../src/tools/shared/prompt-utils";
 
 describe("prompt-utils edge cases and branches", () => {
@@ -19,7 +19,9 @@ describe("prompt-utils edge cases and branches", () => {
 		});
 
 		it("handles multiple spaces and dashes", () => {
-			expect(slugify("  multiple   spaces  --  dashes  ")).toBe("multiple-spaces-dashes");
+			expect(slugify("  multiple   spaces  --  dashes  ")).toBe(
+				"multiple-spaces-dashes",
+			);
 		});
 
 		it("handles numbers and letters", () => {
@@ -34,7 +36,7 @@ describe("prompt-utils edge cases and branches", () => {
 	describe("buildFrontmatter", () => {
 		it("handles minimal options", () => {
 			const result = buildFrontmatter({
-				description: "Test description"
+				description: "Test description",
 			});
 			expect(result).toMatch(/---/);
 			expect(result).toMatch(/description: 'Test description'/);
@@ -45,7 +47,7 @@ describe("prompt-utils edge cases and branches", () => {
 				mode: "agent",
 				model: "gpt-4.1",
 				tools: ["githubRepo", "codebase"],
-				description: "Full test"
+				description: "Full test",
 			});
 			expect(result).toMatch(/mode: 'agent'/);
 			expect(result).toMatch(/model: gpt-4.1/);
@@ -55,7 +57,7 @@ describe("prompt-utils edge cases and branches", () => {
 
 		it("escapes single quotes in description", () => {
 			const result = buildFrontmatter({
-				description: "Test with 'quotes' inside"
+				description: "Test with 'quotes' inside",
 			});
 			expect(result).toMatch(/description: 'Test with ''quotes'' inside'/);
 		});
@@ -63,7 +65,7 @@ describe("prompt-utils edge cases and branches", () => {
 		it("handles empty tools array", () => {
 			const result = buildFrontmatter({
 				description: "Test",
-				tools: []
+				tools: [],
 			});
 			expect(result).not.toMatch(/tools:/);
 		});
@@ -73,7 +75,7 @@ describe("prompt-utils edge cases and branches", () => {
 		it("normalizes valid model aliases", () => {
 			const result = validateAndNormalizeFrontmatter({
 				description: "Test",
-				model: "gpt-4.1"
+				model: "gpt-4.1",
 			});
 			expect(result.model).toBe("GPT-4.1");
 		});
@@ -81,37 +83,45 @@ describe("prompt-utils edge cases and branches", () => {
 		it("handles invalid mode by defaulting to agent", () => {
 			const result = validateAndNormalizeFrontmatter({
 				description: "Test",
-				mode: "invalid-mode"
+				mode: "invalid-mode",
 			});
 			expect(result.mode).toBe("agent");
-			expect(result.comments).toContain("# Note: Unrecognized mode 'invalid-mode', defaulting to 'agent'");
+			expect(result.comments).toContain(
+				"# Note: Unrecognized mode 'invalid-mode', defaulting to 'agent'",
+			);
 		});
 
 		it("handles unrecognized model", () => {
 			const result = validateAndNormalizeFrontmatter({
 				description: "Test",
-				model: "unknown-model"
+				model: "unknown-model",
 			});
 			expect(result.model).toBe("unknown-model");
-			expect(result.comments).toContain("# Note: Unrecognized model 'unknown-model'.");
+			expect(result.comments).toContain(
+				"# Note: Unrecognized model 'unknown-model'.",
+			);
 		});
 
 		it("filters invalid tools", () => {
 			const result = validateAndNormalizeFrontmatter({
 				description: "Test",
-				tools: ["githubRepo", "invalid-tool", "codebase"]
+				tools: ["githubRepo", "invalid-tool", "codebase"],
 			});
 			expect(result.tools).toEqual(["githubRepo", "codebase"]);
-			expect(result.comments).toContain("# Note: Dropped unknown tools: invalid-tool");
+			expect(result.comments).toContain(
+				"# Note: Dropped unknown tools: invalid-tool",
+			);
 		});
 
 		it("handles all invalid tools", () => {
 			const result = validateAndNormalizeFrontmatter({
 				description: "Test",
-				tools: ["invalid1", "invalid2"]
+				tools: ["invalid1", "invalid2"],
 			});
 			expect(result.tools).toEqual([]);
-			expect(result.comments).toContain("# Note: Dropped unknown tools: invalid1, invalid2");
+			expect(result.comments).toContain(
+				"# Note: Dropped unknown tools: invalid1, invalid2",
+			);
 		});
 
 		it("returns no comments when all inputs are valid", () => {
@@ -119,7 +129,7 @@ describe("prompt-utils edge cases and branches", () => {
 				description: "Test",
 				mode: "agent",
 				model: "gpt-4.1",
-				tools: ["githubRepo"]
+				tools: ["githubRepo"],
 			});
 			expect(result.comments).toBeUndefined();
 		});
@@ -130,7 +140,7 @@ describe("prompt-utils edge cases and branches", () => {
 			const result = buildFrontmatterWithPolicy({
 				description: "Test",
 				mode: "invalid-mode",
-				model: "unknown-model"
+				model: "unknown-model",
 			});
 			expect(result).toMatch(/# Note: Unrecognized mode/);
 			expect(result).toMatch(/# Note: Unrecognized model/);
@@ -140,7 +150,7 @@ describe("prompt-utils edge cases and branches", () => {
 			const result = buildFrontmatterWithPolicy({
 				description: "Test",
 				mode: "agent",
-				model: "gpt-4.1"
+				model: "gpt-4.1",
 			});
 			expect(result).not.toMatch(/# Note:/);
 			expect(result).toMatch(/---/);
@@ -151,7 +161,7 @@ describe("prompt-utils edge cases and branches", () => {
 	describe("buildMetadataSection", () => {
 		it("builds basic metadata", () => {
 			const result = buildMetadataSection({
-				sourceTool: "test-tool"
+				sourceTool: "test-tool",
 			});
 			expect(result).toMatch(/### Metadata/);
 			expect(result).toMatch(/Source tool: test-tool/);
@@ -161,7 +171,7 @@ describe("prompt-utils edge cases and branches", () => {
 		it("includes input file when provided", () => {
 			const result = buildMetadataSection({
 				sourceTool: "test-tool",
-				inputFile: "test.md"
+				inputFile: "test.md",
 			});
 			expect(result).toMatch(/Input file: test\.md/);
 		});
@@ -169,7 +179,7 @@ describe("prompt-utils edge cases and branches", () => {
 		it("includes filename hint when provided", () => {
 			const result = buildMetadataSection({
 				sourceTool: "test-tool",
-				filenameHint: "output.md"
+				filenameHint: "output.md",
 			});
 			expect(result).toMatch(/Suggested filename: output\.md/);
 		});
@@ -178,7 +188,7 @@ describe("prompt-utils edge cases and branches", () => {
 			const customDate = new Date("2023-01-01");
 			const result = buildMetadataSection({
 				sourceTool: "test-tool",
-				updatedDate: customDate
+				updatedDate: customDate,
 			});
 			expect(result).toMatch(/Updated: 2023-01-01/);
 		});
@@ -198,7 +208,7 @@ describe("prompt-utils edge cases and branches", () => {
 		it("builds references section with multiple links", () => {
 			const result = buildReferencesSection([
 				"Link 1: https://example.com",
-				"Link 2: https://test.com"
+				"Link 2: https://test.com",
 			]);
 			expect(result).toMatch(/## References/);
 			expect(result).toMatch(/- Link 1: https:\/\/example\.com/);

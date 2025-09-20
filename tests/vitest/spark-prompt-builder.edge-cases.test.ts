@@ -42,7 +42,8 @@ describe("spark-prompt-builder edge cases", () => {
 			],
 			fontFamily: "Inter, system-ui, sans-serif",
 			fontIntention: "Modern, highly readable typeface for complex data",
-			fontReasoning: "Inter provides excellent readability at various sizes and weights",
+			fontReasoning:
+				"Inter provides excellent readability at various sizes and weights",
 			typography: [
 				{
 					usage: "Hero headings",
@@ -60,7 +61,8 @@ describe("spark-prompt-builder edge cases", () => {
 				},
 			],
 			animationPhilosophy: "Purposeful motion that enhances user understanding",
-			animationRestraint: "Subtle transitions under 300ms, respect reduced motion",
+			animationRestraint:
+				"Subtle transitions under 300ms, respect reduced motion",
 			animationPurpose: "Guide attention and provide feedback on interactions",
 			animationHierarchy: "Critical feedback > navigation > decorative",
 			spacingRule: "8px base unit with 1.5x scaling factor",

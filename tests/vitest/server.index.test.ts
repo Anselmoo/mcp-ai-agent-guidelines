@@ -6,7 +6,13 @@ vi.mock("@modelcontextprotocol/sdk/server/stdio.js", () => {
 	return { StdioServerTransport };
 });
 
-const calls = { set: 0, connect: 0, tools: [] as unknown[], resources: [] as unknown[], prompts: [] as unknown[] };
+const calls = {
+	set: 0,
+	connect: 0,
+	tools: [] as unknown[],
+	resources: [] as unknown[],
+	prompts: [] as unknown[],
+};
 
 vi.mock("@modelcontextprotocol/sdk/server/index.js", () => {
 	class Server {
@@ -50,7 +56,9 @@ describe("server index boot", () => {
 		const mockExit = vi.spyOn(process, "exit").mockImplementation(() => {
 			throw new Error("process.exit called");
 		});
-		const mockConsoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+		const mockConsoleError = vi
+			.spyOn(console, "error")
+			.mockImplementation(() => {});
 
 		// Mock server.connect to throw an error
 		vi.doMock("@modelcontextprotocol/sdk/server/index.js", () => {
@@ -72,7 +80,10 @@ describe("server index boot", () => {
 		} catch (e) {
 			// Expect the process.exit to be called
 			expect(mockExit).toHaveBeenCalledWith(1);
-			expect(mockConsoleError).toHaveBeenCalledWith("Server error:", expect.any(Error));
+			expect(mockConsoleError).toHaveBeenCalledWith(
+				"Server error:",
+				expect.any(Error),
+			);
 		}
 
 		mockExit.mockRestore();

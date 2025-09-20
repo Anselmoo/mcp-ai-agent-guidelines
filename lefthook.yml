@@ -19,7 +19,7 @@ pre-commit:
           # Check if Docker is available (prioritize Docker for reliability)
           if command -v docker >/dev/null 2>&1; then
             echo "🐳 Using gitleaks Docker image (recommended)..."
-            
+
             # Try Docker with simple approach
             echo "Running gitleaks scan..."
             WORKSPACE_PATH="$(pwd)"
@@ -50,7 +50,7 @@ pre-commit:
 
             # Try different possible download URLs
             DOWNLOAD_SUCCESS=false
-            
+
             # Try first URL
             URL1="https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks-${OS}-${ARCH}"
             echo "Trying: $URL1"
@@ -63,7 +63,7 @@ pre-commit:
                 DOWNLOAD_SUCCESS=true
               fi
             fi
-            
+
             # Try second URL if first failed
             if [ "$DOWNLOAD_SUCCESS" = "false" ]; then
               rm -f "$INSTALL_DIR/gitleaks"
@@ -79,7 +79,7 @@ pre-commit:
                 fi
               fi
             fi
-            
+
             # Clean up if download failed
             if [ "$DOWNLOAD_SUCCESS" = "false" ]; then
               rm -f "$INSTALL_DIR/gitleaks"
@@ -131,7 +131,12 @@ pre-commit:
     trailing-whitespace:
       tags: [format]
       glob: "*.{js,jsx,ts,tsx,py,md,yml,yaml,json,txt}"
-      run: sed -i 's/[[:space:]]*$//' {staged_files}
+      run: |
+        for file in {staged_files}; do
+          if [ -f "$file" ]; then
+            perl -i -pe 's/[ \t]+$//' "$file"
+          fi
+        done
       stage_fixed: true
       fail_text: "🧹 Trailing whitespace removed"
 

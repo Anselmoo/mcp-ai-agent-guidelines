@@ -1,43 +1,25 @@
 {
 	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
-	"extends": [
-		"config:recommended",
-		":dependencyDashboard"
-	],
-	"schedule": [
-		"every weekend"
-	],
+	"extends": ["config:recommended", ":dependencyDashboard"],
+	"schedule": ["every weekend"],
 	"packageRules": [
 		{
-			"matchUpdateTypes": [
-				"minor",
-				"patch"
-			],
+			"matchUpdateTypes": ["minor", "patch"],
 			"matchCurrentVersion": "!/^0/",
 			"automerge": true
 		},
 		{
-			"matchDepTypes": [
-				"devDependencies"
-			],
+			"matchDepTypes": ["devDependencies"],
 			"automerge": true
 		},
 		{
-			"matchManagers": [
-				"dockerfile",
-				"github-actions"
-			],
-			"matchUpdateTypes": [
-				"minor",
-				"patch"
-			],
+			"matchManagers": ["dockerfile", "github-actions"],
+			"matchUpdateTypes": ["minor", "patch"],
 			"automerge": true
 		}
 	],
 	"vulnerabilityAlerts": {
 		"enabled": true,
-		"labels": [
-			"security"
-		]
+		"labels": ["security"]
 	}
 }

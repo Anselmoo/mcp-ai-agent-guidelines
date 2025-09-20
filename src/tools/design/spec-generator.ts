@@ -55,8 +55,25 @@ export interface SpecMetric {
 class SpecGeneratorImpl {
 	private specCounter = 1;
 
+	async initialize(): Promise<void> {
+		// No-op initializer for API surface compatibility
+	}
+
+	async validateSpecification(
+		sessionState: DesignSessionState,
+		content: string,
+	): Promise<{ valid: boolean; issues: string[] }> {
+		void sessionState;
+		void content;
+		return { valid: true, issues: [] };
+	}
+
 	async generateSpecification(
-		request: SpecRequest,
+		request:
+			| SpecRequest
+			| (Omit<Partial<SpecRequest>, "sessionState"> & {
+					sessionState: DesignSessionState;
+			  }),
 	): Promise<SpecificationResult> {
 		const {
 			sessionState,
@@ -68,6 +85,9 @@ class SpecGeneratorImpl {
 			format,
 			metadata,
 		} = request;
+
+		const effectiveTitle =
+			title || sessionState?.config?.goal || "Generated Specification";
 
 		// Generate specification number
 		const specNumber = String(this.specCounter++).padStart(3, "0");
@@ -92,7 +112,7 @@ class SpecGeneratorImpl {
 			case "yaml":
 				content = this.generateYAMLSpec({
 					specNumber,
-					title,
+					title: effectiveTitle,
 					sections,
 					metrics,
 					sessionState,
@@ -101,7 +121,7 @@ class SpecGeneratorImpl {
 			case "json":
 				content = this.generateJSONSpec({
 					specNumber,
-					title,
+					title: effectiveTitle,
 					sections,
 					metrics,
 					sessionState,
@@ -112,7 +132,7 @@ class SpecGeneratorImpl {
 			default:
 				content = this.generateMarkdownSpec({
 					specNumber,
-					title,
+					title: effectiveTitle,
 					sections,
 					metrics,
 					diagrams,
@@ -124,7 +144,7 @@ class SpecGeneratorImpl {
 		// Create artifact
 		const artifact: Artifact = {
 			id: `spec-${specNumber}`,
-			name: `SPEC-${specNumber}: ${title}`,
+			name: `SPEC-${specNumber}: ${effectiveTitle}`,
 			type: "specification",
 			content,
 			format: format || "markdown",
@@ -162,8 +182,11 @@ class SpecGeneratorImpl {
 	): Promise<SpecSection[]> {
 		const sections: SpecSection[] = [];
 
-		// Generate sections based on completed phases
-		for (const [phaseId, phase] of Object.entries(sessionState.phases)) {
+		// Generate sections based on completed phases (handle missing phases)
+		const phaseEntries = sessionState.phases
+			? Object.entries(sessionState.phases)
+			: [];
+		for (const [phaseId, phase] of phaseEntries) {
 			if (phase.status === "completed" || phase.status === "in-progress") {
 				const sectionContent = this.generateSectionContent(
 					phase,
@@ -402,10 +425,12 @@ class SpecGeneratorImpl {
 		});
 
 		// Phase completion metrics
-		const completedPhases = Object.values(sessionState.phases).filter(
-			(p) => p.status === "completed",
-		).length;
-		const totalPhases = Object.keys(sessionState.phases).length;
+		const completedPhases = (
+			sessionState.phases ? Object.values(sessionState.phases) : []
+		).filter((p) => p.status === "completed").length;
+		const totalPhases = sessionState.phases
+			? Object.keys(sessionState.phases).length
+			: 0;
 
 		metrics.push({
 			name: "Phase Completion",
@@ -475,11 +500,17 @@ class SpecGeneratorImpl {
 		diagrams.push("Component Interaction Diagram");
 		diagrams.push("Data Flow Diagram");
 
-		if (sessionState.phases.architecture?.status === "completed") {
+		if (
+			sessionState.phases &&
+			sessionState.phases.architecture?.status === "completed"
+		) {
 			diagrams.push("Deployment Architecture Diagram");
 		}
 
-		if (sessionState.phases.requirements?.status === "completed") {
+		if (
+			sessionState.phases &&
+			sessionState.phases.requirements?.status === "completed"
+		) {
 			diagrams.push("Requirements Traceability Diagram");
 		}
 

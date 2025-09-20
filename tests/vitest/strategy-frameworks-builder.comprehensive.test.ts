@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { strategyFrameworksBuilder } from "../../src/tools/analysis/strategy-frameworks-builder.js";
 
 describe("strategy-frameworks-builder additional coverage", () => {
@@ -6,7 +6,7 @@ describe("strategy-frameworks-builder additional coverage", () => {
 		const result = await strategyFrameworksBuilder({
 			frameworks: [
 				"asIsToBe",
-				"whereToPlayHowToWin", 
+				"whereToPlayHowToWin",
 				"balancedScorecard",
 				"swot",
 				"objectives",
@@ -25,36 +25,40 @@ describe("strategy-frameworks-builder additional coverage", () => {
 				"scenarioPlanning",
 				"vrio",
 				"goalBasedPlanning",
-				"gartnerQuadrant"
+				"gartnerQuadrant",
 			],
 			context: "Comprehensive strategic analysis for tech startup",
 			objectives: ["Market penetration", "Product development", "Team scaling"],
 			market: "SaaS B2B market",
 			stakeholders: ["Investors", "Customers", "Employees", "Partners"],
-			constraints: ["Limited funding", "Regulatory compliance", "Time to market"],
+			constraints: [
+				"Limited funding",
+				"Regulatory compliance",
+				"Time to market",
+			],
 			includeReferences: true,
 			includeMetadata: true,
-			inputFile: "strategy-analysis.md"
+			inputFile: "strategy-analysis.md",
 		});
 
 		expect(result).toHaveProperty("content");
 		const content = result.content[0].text;
 		expect(content).toContain("Strategy Toolkit"); // Check actual header
-		
+
 		// Check that some frameworks are mentioned (not all need exact text)
 		expect(content).toContain("SWOT");
 		expect(content).toContain("Five Forces");
 		expect(content).toContain("7S");
 		expect(content).toContain("Ansoff");
 		expect(content).toContain("PEST");
-		expect(content).toContain("Portfolio Prioritization"); // BCG matrix shows as Portfolio Prioritization 
+		expect(content).toContain("Portfolio Prioritization"); // BCG matrix shows as Portfolio Prioritization
 		expect(content).toContain("VRIO");
 	});
 
 	it("should handle minimal configuration", async () => {
 		const result = await strategyFrameworksBuilder({
 			frameworks: ["swot"],
-			context: "Basic analysis"
+			context: "Basic analysis",
 		});
 
 		expect(result).toHaveProperty("content");
@@ -66,7 +70,7 @@ describe("strategy-frameworks-builder additional coverage", () => {
 			frameworks: ["swot", "pest"],
 			context: "Analysis with metadata",
 			includeMetadata: true,
-			inputFile: "test-file.md"
+			inputFile: "test-file.md",
 		});
 
 		const content = result.content[0].text;
@@ -78,7 +82,7 @@ describe("strategy-frameworks-builder additional coverage", () => {
 		const result = await strategyFrameworksBuilder({
 			frameworks: ["swot"],
 			context: "Analysis with references",
-			includeReferences: true
+			includeReferences: true,
 		});
 
 		const content = result.content[0].text;
@@ -91,7 +95,7 @@ describe("strategy-frameworks-builder additional coverage", () => {
 			context: "Analysis with empty arrays",
 			objectives: [],
 			stakeholders: [],
-			constraints: []
+			constraints: [],
 		});
 
 		expect(result).toHaveProperty("content");
@@ -101,11 +105,27 @@ describe("strategy-frameworks-builder additional coverage", () => {
 	it("should handle all strategic frameworks comprehensively", async () => {
 		// Test each framework individually to ensure coverage
 		const frameworks = [
-			"asIsToBe", "whereToPlayHowToWin", "balancedScorecard", "swot",
-			"objectives", "portersFiveForces", "mckinsey7S", "marketAnalysis",
-			"strategyMap", "visionToMission", "stakeholderTheory", "values",
-			"gapAnalysis", "ansoffMatrix", "pest", "bcgMatrix", "blueOcean",
-			"scenarioPlanning", "vrio", "goalBasedPlanning", "gartnerQuadrant"
+			"asIsToBe",
+			"whereToPlayHowToWin",
+			"balancedScorecard",
+			"swot",
+			"objectives",
+			"portersFiveForces",
+			"mckinsey7S",
+			"marketAnalysis",
+			"strategyMap",
+			"visionToMission",
+			"stakeholderTheory",
+			"values",
+			"gapAnalysis",
+			"ansoffMatrix",
+			"pest",
+			"bcgMatrix",
+			"blueOcean",
+			"scenarioPlanning",
+			"vrio",
+			"goalBasedPlanning",
+			"gartnerQuadrant",
 		];
 
 		for (const framework of frameworks) {
@@ -115,7 +135,7 @@ describe("strategy-frameworks-builder additional coverage", () => {
 				objectives: ["Test objective"],
 				market: "Test market",
 				stakeholders: ["Test stakeholder"],
-				constraints: ["Test constraint"]
+				constraints: ["Test constraint"],
 			});
 
 			expect(result).toHaveProperty("content");

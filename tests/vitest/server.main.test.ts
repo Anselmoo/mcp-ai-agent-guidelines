@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock the Node.js createRequire function
 vi.mock("node:module", () => ({
-	createRequire: vi.fn(() => vi.fn(() => ({ version: "1.0.0" })))
+	createRequire: vi.fn(() => vi.fn(() => ({ version: "1.0.0" }))),
 }));
 
 // Simple server functionality test
@@ -26,7 +26,7 @@ describe("MCP Server Basic Coverage", () => {
 	it("should test package.json version access", () => {
 		const { createRequire } = require("node:module");
 		const mockRequire = createRequire(import.meta.url);
-		
+
 		// This tests the createRequire functionality used in the main server
 		expect(mockRequire).toBeDefined();
 		expect(typeof mockRequire).toBe("function");
@@ -36,7 +36,7 @@ describe("MCP Server Basic Coverage", () => {
 		// Test that the tool schemas are well-defined
 		const toolSchemas = [
 			"hierarchical-prompt-builder",
-			"strategy-frameworks-builder", 
+			"strategy-frameworks-builder",
 			"gap-frameworks-analyzers",
 			"spark-prompt-builder",
 			"domain-neutral-prompt-builder",
@@ -46,14 +46,14 @@ describe("MCP Server Basic Coverage", () => {
 			"memory-context-optimizer",
 			"sprint-timeline-calculator",
 			"model-compatibility-checker",
-			"guidelines-validator"
+			"guidelines-validator",
 		];
 
 		// Verify we have the expected number of tools
 		expect(toolSchemas).toHaveLength(12);
-		
+
 		// Verify each tool name follows naming convention
-		toolSchemas.forEach(toolName => {
+		toolSchemas.forEach((toolName) => {
 			expect(toolName).toMatch(/^[a-z-]+$/);
 			expect(toolName).not.toContain("_");
 			expect(toolName).not.toContain(" ");
@@ -64,10 +64,12 @@ describe("MCP Server Basic Coverage", () => {
 		// Test error handling patterns used in the server
 		const testError = new Error("Test error");
 		const errorResponse = {
-			content: [{
-				type: "text",
-				text: `Error executing tool test-tool: ${testError.message}`
-			}]
+			content: [
+				{
+					type: "text",
+					text: `Error executing tool test-tool: ${testError.message}`,
+				},
+			],
 		};
 
 		expect(errorResponse.content[0].text).toContain("Error executing tool");
@@ -76,12 +78,16 @@ describe("MCP Server Basic Coverage", () => {
 
 	it("should test main function error handling", async () => {
 		// Test the error handling pattern used in main()
-		const mockConsoleError = vi.spyOn(console, "error").mockImplementation(() => {});
-		const mockProcessExit = vi.spyOn(process, "exit").mockImplementation(() => undefined as never);
+		const mockConsoleError = vi
+			.spyOn(console, "error")
+			.mockImplementation(() => {});
+		const mockProcessExit = vi
+			.spyOn(process, "exit")
+			.mockImplementation(() => undefined as never);
 
 		// Simulate an error condition
 		const testError = new Error("Connection failed");
-		
+
 		// This would be the error handling in main()
 		console.error("Server error:", testError);
 		process.exit(1);

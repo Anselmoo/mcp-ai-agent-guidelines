@@ -4,7 +4,8 @@ import { securityHardeningPromptBuilder } from "../../src/tools/prompt/security-
 describe("security-hardening-prompt-builder", () => {
 	it("should generate comprehensive security analysis prompt with OWASP risk framework", async () => {
 		const result = await securityHardeningPromptBuilder({
-			codeContext: "Express.js API endpoint with authentication vulnerabilities",
+			codeContext:
+				"Express.js API endpoint with authentication vulnerabilities",
 			securityFocus: "vulnerability-analysis",
 			language: "javascript",
 			securityRequirements: ["Input validation", "SQL injection prevention"],
@@ -24,7 +25,9 @@ describe("security-hardening-prompt-builder", () => {
 
 		// Check for OWASP risk framework
 		expect(text).toContain("OWASP Risk Assessment Framework");
-		expect(text).toContain("Risk Calculation: Overall Risk = Likelihood × Impact");
+		expect(text).toContain(
+			"Risk Calculation: Overall Risk = Likelihood × Impact",
+		);
 		expect(text).toContain("Likelihood Factors");
 		expect(text).toContain("Impact Factors");
 
@@ -89,7 +92,9 @@ describe("security-hardening-prompt-builder", () => {
 		expect(text).toContain("Configuration Security");
 		expect(text).toContain("Test Cases");
 		expect(text).toContain("Accept Low to High risk findings");
-		expect(text).toContain("Require immediate action only for Critical risk findings");
+		expect(text).toContain(
+			"Require immediate action only for Critical risk findings",
+		);
 	});
 
 	it("should generate penetration testing prompt with annotated code output", async () => {
