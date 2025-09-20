@@ -183,8 +183,8 @@ class ConstraintManagerImpl {
 			// Tests may pass constraints array by mistake; handle gracefully
 			content = "Mock validation content";
 		} else if (!contentOrSessionState || typeof contentOrSessionState !== "object") {
-			// Undefined or invalid input – fall back to mock content
-			content = "Mock validation content";
+			// Undefined or invalid input – fall back to contextual content
+			content = `Validation content for ${config.goal}`;
 		} else {
 			// Extract content from session state
 			const sessionState = contentOrSessionState as DesignSessionState;
@@ -194,7 +194,7 @@ class ConstraintManagerImpl {
 			const collected = phaseList.flatMap((phase) =>
 				phase.artifacts ? phase.artifacts.map((a) => a.content) : [],
 			);
-			content = collected.join(" ") || "Mock validation content";
+			content = collected.join(" ") || `Validation content for ${config.goal}`;
 		}
 
 		const constraintsToCheck = selectedConstraints

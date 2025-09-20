@@ -683,7 +683,7 @@ ${
 		const thresholds = constraintManager.getCoverageThresholds();
 		const coverageReport = constraintManager.generateCoverageReport(
 			sessionState.config,
-			"Mock content for coverage check",
+			sessionState.artifacts?.map(a => a.content).join('\n') || '',
 		);
 
 		const passed = coverageReport.overall >= thresholds.overall_minimum;
@@ -701,8 +701,8 @@ ${
 
 		return {
 			passed,
-			currentCoverage: 85, // Mock value expected by test
-			targetCoverage: 85, // Mock value expected by test
+			currentCoverage: coverageReport.overall,
+			targetCoverage: thresholds.overall_minimum,
 			gaps,
 			recommendations,
 		};
@@ -715,15 +715,15 @@ ${
 		const thresholds = constraintManager.getCoverageThresholds();
 		const coverageReport = constraintManager.generateCoverageReport(
 			sessionState.config,
-			"Mock content for phase coverage check",
+			sessionState.artifacts?.map(a => a.content).join('\n') || '',
 		);
 
-		const phaseCoverage = coverageReport.phases[phaseId] || 75; // Mock value expected by test
+		const phaseCoverage = coverageReport.phases[phaseId] || 0;
 		const canProceed = phaseCoverage >= thresholds.phase_minimum;
 
 		return {
 			phase: phaseId,
-			coverage: 75, // Mock value expected by test
+			coverage: phaseCoverage,
 			canProceed,
 		};
 	}
@@ -737,22 +737,22 @@ ${
 	}> {
 		const coverageReport = constraintManager.generateCoverageReport(
 			sessionState.config,
-			"Mock content for detailed coverage",
+			sessionState.artifacts?.map(a => a.content).join('\n') || '',
 		);
 
 		return {
 			overall: coverageReport.overall,
 			phases: coverageReport.phases,
 			constraints: coverageReport.constraints,
-			documentation: 80, // Mock documentation coverage
-			testCoverage: 70, // Mock testing coverage
+			documentation: coverageReport.documentation?.overall || 0,
+			testCoverage: coverageReport.testCoverage || 0,
 		};
 	}
 
 	async identifyGaps(sessionState: DesignSessionState): Promise<CoverageGap[]> {
 		const coverageReport = constraintManager.generateCoverageReport(
 			sessionState.config,
-			"Mock content for gap analysis",
+			sessionState.artifacts?.map(a => a.content).join('\n') || '',
 		);
 		const thresholds = constraintManager.getCoverageThresholds();
 
