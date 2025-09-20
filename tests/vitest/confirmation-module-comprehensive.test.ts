@@ -547,9 +547,6 @@ All prerequisites for design phase have been met:
 			const sessionState = createComprehensiveSessionState();
 
 			const prompt = // REMOVED: await confirmationModule.generateConfirmationPrompt(
-				sessionState,
-				"design",
-			);
 
 			expect(prompt).toBeDefined();
 			expect(typeof prompt).toBe("string");
@@ -699,9 +696,6 @@ All prerequisites for design phase have been met:
 			const sessionState = createComprehensiveSessionState();
 
 			const result = // REMOVED: await confirmationModule.confirmConstraintSatisfaction(
-				sessionState,
-				"security-compliance",
-			);
 
 			expect(result).toBeDefined();
 			expect(result.passed).toBeDefined();
@@ -713,9 +707,6 @@ All prerequisites for design phase have been met:
 			const sessionState = createComprehensiveSessionState();
 
 			const result = // REMOVED: await confirmationModule.confirmArtifactQuality(
-				sessionState,
-				"req-spec",
-			);
 
 			expect(result).toBeDefined();
 			expect(result.passed).toBeDefined();

@@ -136,9 +136,6 @@ describe("Confirmation Prompt Builder", () => {
 
 		const markdown =
 			await confirmationPromptBuilder.generatePhaseCompletionPrompt(
-				sessionState,
-				"requirements",
-			);
 
 		expect(markdown).toBeDefined();
 		expect(typeof markdown).toBe("string");

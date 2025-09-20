@@ -526,8 +526,6 @@ describe("Constraint Consistency Enforcer Integration", () => {
 
 		const validationResult =
 			await constraintConsistencyEnforcer.validateCrossSessionConsistency(
-				sessionState,
-			);
 
 		expect(validationResult).toBeDefined();
 		expect(validationResult.passed).toBeDefined();
@@ -562,9 +560,6 @@ describe("Constraint Consistency Enforcer Integration", () => {
 
 		const validationResult =
 			await constraintConsistencyEnforcer.validateCrossSessionConsistency(
-				sessionState,
-				"architectural.modularity",
-			);
 
 		expect(validationResult).toBeDefined();
 		expect(validationResult.passed).toBeDefined();
@@ -609,9 +604,6 @@ describe("Constraint Consistency Enforcer Integration", () => {
 
 		const validationResult =
 			await constraintConsistencyEnforcer.validateCrossSessionConsistency(
-				sessionState,
-				"architectural.modularity",
-			);
 
 		expect(validationResult).toBeDefined();
 		expect(validationResult.passed).toBeDefined();
@@ -691,9 +683,6 @@ describe("Constraint Consistency Enforcer Integration", () => {
 
 		const validationResult =
 			await constraintConsistencyEnforcer.validateCrossSessionConsistency(
-				sessionState,
-				"nonexistent.constraint.id",
-			);
 
 		expect(validationResult).toBeDefined();
 		expect(validationResult.passed).toBeDefined();
