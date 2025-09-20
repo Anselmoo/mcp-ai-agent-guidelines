@@ -34,6 +34,29 @@ All contributions should actively seek to **increase** test coverage by:
 - Adding tests for uncovered existing code when possible
 - Improving test quality and edge case coverage
 
+### Readiness Gate (Must Pass Before Commit/PR)
+- You may only mark a task as "ready" or open a PR when coverage thresholds are met locally and in CI.
+- Run `npm run test:all` and ensure coverage is ≥ baselines above. If coverage drops or does not meet targets, add tests before proceeding.
+- Treat failures as blocking: do not push or request review until coverage is compliant.
+
+### Parameterized Tests (Quick Wins)
+- Prefer parameterized tests to cover multiple input combinations succinctly and raise branch/function coverage.
+- Vitest examples:
+```ts
+// Using test.each
+import { describe, test, expect } from "vitest";
+
+describe("domain-neutral-prompt-builder", () => {
+	test.each([
+		{ name: "enforced", opts: { includeFrontmatter: false, includeMetadata: false, includeReferences: true } },
+		{ name: "no-enforce", opts: { forcePromptMdStyle: false, includeFrontmatter: false, includeMetadata: false } },
+	])("%s", async (_case) => {
+		// call builder with _case.opts and assert sections
+	});
+});
+```
+- Use tables to vary flags like `includeFrontmatter`, `includeMetadata`, `includeReferences`, `includeTechniqueHints`, `includePitfalls`, and inputs like `tools`, `model`, `provider`, and invalid `mode` to exercise normalization paths.
+
 ## 🏗️ Code Structure and Architecture
 
 ### Project Organization
