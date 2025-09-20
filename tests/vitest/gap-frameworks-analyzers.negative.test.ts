@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { gapFrameworksAnalyzers } from "../../src/tools/analysis/gap-frameworks-analyzers.js";
 
 describe("gap-frameworks-analyzers negative cases", () => {
@@ -9,7 +9,7 @@ describe("gap-frameworks-analyzers negative cases", () => {
 				currentState: "Current state",
 				desiredState: "Desired state",
 				context: "Test context",
-			})
+			}),
 		).rejects.toThrow();
 	});
 
@@ -18,7 +18,7 @@ describe("gap-frameworks-analyzers negative cases", () => {
 			gapFrameworksAnalyzers({
 				frameworks: ["capability"],
 				// Missing currentState, desiredState, context
-			})
+			}),
 		).rejects.toThrow();
 	});
 
@@ -29,7 +29,7 @@ describe("gap-frameworks-analyzers negative cases", () => {
 				currentState: "Current state",
 				desiredState: "Desired state",
 				context: "Test context",
-			})
+			}),
 		).rejects.toThrow();
 	});
 
@@ -40,7 +40,7 @@ describe("gap-frameworks-analyzers negative cases", () => {
 				currentState: 123,
 				desiredState: "Desired state",
 				context: "Test context",
-			})
+			}),
 		).rejects.toThrow();
 	});
 
@@ -52,7 +52,7 @@ describe("gap-frameworks-analyzers negative cases", () => {
 				desiredState: "Desired state",
 				context: "Test context",
 				objectives: "Should be array",
-			})
+			}),
 		).rejects.toThrow();
 	});
 

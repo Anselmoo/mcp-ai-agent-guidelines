@@ -730,7 +730,7 @@ Follow OWASP Risk Rating Methodology using Impact vs Likelihood matrix:
 - Threat Agent (skill level, motive, opportunity, population size)
 - Vulnerability (ease of discovery, exploit, awareness, intrusion detection)
 
-**Impact Factors:**  
+**Impact Factors:**
 - Technical Impact (loss of confidentiality, integrity, availability, accountability)
 - Business Impact (financial damage, reputation damage, non-compliance, privacy violation)
 
@@ -772,7 +772,7 @@ ${
 Provide a structured security assessment including:
 
 - **Executive Summary**: High-level security posture and critical findings
-- **Vulnerability Details**: 
+- **Vulnerability Details**:
   * Vulnerability description and location
   * Severity rating (Critical/High/Medium/Low)
   * Likelihood assessment (Very High/High/Medium/Low/Very Low)

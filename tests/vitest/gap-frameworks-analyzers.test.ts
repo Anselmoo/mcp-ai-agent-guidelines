@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { gapFrameworksAnalyzers } from "../../src/tools/analysis/gap-frameworks-analyzers.js";
 
 describe("gap-frameworks-analyzers", () => {
@@ -15,7 +15,9 @@ describe("gap-frameworks-analyzers", () => {
 		expect(result.content[0].text).toContain("Gap Analysis Framework");
 		expect(result.content[0].text).toContain("Capability Gap Analysis");
 		expect(result.content[0].text).toContain("Performance Gap Analysis");
-		expect(result.content[0].text).toContain("DevOps transformation for faster deployment cycles");
+		expect(result.content[0].text).toContain(
+			"DevOps transformation for faster deployment cycles",
+		);
 	});
 
 	it("should generate analysis with all optional fields", async () => {
@@ -51,9 +53,18 @@ describe("gap-frameworks-analyzers", () => {
 
 	it("should handle all supported framework types", async () => {
 		const frameworks = [
-			"capability", "performance", "maturity", "skills", "technology",
-			"process", "market", "strategic", "operational", "cultural", 
-			"security", "compliance"
+			"capability",
+			"performance",
+			"maturity",
+			"skills",
+			"technology",
+			"process",
+			"market",
+			"strategic",
+			"operational",
+			"cultural",
+			"security",
+			"compliance",
 		];
 
 		const result = await gapFrameworksAnalyzers({

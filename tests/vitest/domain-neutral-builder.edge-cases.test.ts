@@ -132,7 +132,8 @@ describe("domain-neutral-prompt-builder edge cases", () => {
 		const result = await domainNeutralPromptBuilder({
 			title: "System with **Bold** and `Code`",
 			summary: "A system that handles *special* characters & symbols #test",
-			background: "Legacy system had <script>alert('xss')</script> vulnerabilities",
+			background:
+				"Legacy system had <script>alert('xss')</script> vulnerabilities",
 			constraints: "Must escape | pipes | and & ampersands",
 		});
 
@@ -166,14 +167,14 @@ describe("domain-neutral-prompt-builder edge cases", () => {
 		});
 
 		const standardResult = await domainNeutralPromptBuilder({
-			title: "Standard System", 
+			title: "Standard System",
 			summary: "System for standard testing",
 			forcePromptMdStyle: false,
 		});
 
 		const markdownText = markdownResult.content[0].text;
 		const standardText = standardResult.content[0].text;
-		
+
 		expect(markdownText).toMatch(/Markdown System/);
 		expect(standardText).toMatch(/Standard System/);
 		// Both should be valid but may have different formatting

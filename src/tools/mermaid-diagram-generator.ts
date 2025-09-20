@@ -46,7 +46,19 @@ const MermaidDiagramSchema = z.object({
 type MermaidDiagramInput = z.infer<typeof MermaidDiagramSchema>;
 
 export async function mermaidDiagramGenerator(args: unknown) {
-	const input = MermaidDiagramSchema.parse(args);
+	const normalized = ((): unknown => {
+		if (args && typeof args === "object" && args !== null) {
+			const obj = args as Record<string, unknown>;
+			if (obj.diagramType === "erDiagram") {
+				return { ...obj, diagramType: "class" };
+			}
+			if (obj.diagramType === "graph") {
+				return { ...obj, diagramType: "flowchart" };
+			}
+		}
+		return args;
+	})();
+	const input = MermaidDiagramSchema.parse(normalized);
 	let diagram = generateMermaidDiagram(input);
 	// Prepend accessibility comments if provided
 	const accLines: string[] = [];

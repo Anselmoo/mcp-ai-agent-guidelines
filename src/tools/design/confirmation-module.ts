@@ -128,7 +128,9 @@ class ConfirmationModuleImpl {
 			generatePrompt = request.generatePrompt ?? false;
 		}
 
-		const phase = sessionState.phases ? sessionState.phases[actualPhaseId] : undefined;
+		const phase = sessionState.phases
+			? sessionState.phases[actualPhaseId]
+			: undefined;
 		if (!phase) {
 			return {
 				passed: false,

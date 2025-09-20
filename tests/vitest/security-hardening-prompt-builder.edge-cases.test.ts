@@ -38,7 +38,7 @@ describe("security-hardening-prompt-builder edge cases", () => {
 	it("should generate different headers for each security focus", async () => {
 		const focuses = [
 			"vulnerability-analysis",
-			"security-hardening", 
+			"security-hardening",
 			"compliance-check",
 			"threat-modeling",
 			"penetration-testing",
@@ -47,7 +47,7 @@ describe("security-hardening-prompt-builder edge cases", () => {
 		const expectedHeaders = [
 			"Security Vulnerability Analysis Prompt",
 			"Security Hardening Assessment Prompt",
-			"Security Compliance Review Prompt", 
+			"Security Compliance Review Prompt",
 			"Security Threat Model Analysis Prompt",
 			"Security Penetration Testing Review Prompt",
 		];
@@ -57,7 +57,7 @@ describe("security-hardening-prompt-builder edge cases", () => {
 				codeContext: "Test application",
 				securityFocus: focuses[i],
 			});
-			
+
 			const text = result.content[0].text;
 			expect(text).toContain(expectedHeaders[i]);
 		}
@@ -68,7 +68,7 @@ describe("security-hardening-prompt-builder edge cases", () => {
 			codeContext: "Test application",
 			securityRequirements: [
 				"First requirement",
-				"Second requirement", 
+				"Second requirement",
 				"Third requirement",
 			],
 		});
@@ -87,10 +87,18 @@ describe("security-hardening-prompt-builder edge cases", () => {
 
 		const text = result.content[0].text;
 		expect(text).toContain("## Prioritization Criteria");
-		expect(text).toContain("1. **Critical**: Immediate threats with high exploitability");
-		expect(text).toContain("2. **High**: Significant security risks requiring prompt attention");
-		expect(text).toContain("3. **Medium**: Important improvements with moderate risk");
-		expect(text).toContain("4. **Low**: Best practice recommendations with minimal risk");
+		expect(text).toContain(
+			"1. **Critical**: Immediate threats with high exploitability",
+		);
+		expect(text).toContain(
+			"2. **High**: Significant security risks requiring prompt attention",
+		);
+		expect(text).toContain(
+			"3. **Medium**: Important improvements with moderate risk",
+		);
+		expect(text).toContain(
+			"4. **Low**: Best practice recommendations with minimal risk",
+		);
 	});
 
 	it("should exclude prioritization criteria when disabled", async () => {
@@ -125,44 +133,56 @@ describe("security-hardening-prompt-builder edge cases", () => {
 	});
 
 	it("should validate invalid security focus", async () => {
-		await expect(securityHardeningPromptBuilder({
-			codeContext: "Test application",
-			securityFocus: "invalid-focus" as any,
-		})).rejects.toThrow();
+		await expect(
+			securityHardeningPromptBuilder({
+				codeContext: "Test application",
+				securityFocus: "invalid-focus" as any,
+			}),
+		).rejects.toThrow();
 	});
 
 	it("should validate invalid risk tolerance", async () => {
-		await expect(securityHardeningPromptBuilder({
-			codeContext: "Test application",
-			riskTolerance: "invalid-tolerance" as any,
-		})).rejects.toThrow();
+		await expect(
+			securityHardeningPromptBuilder({
+				codeContext: "Test application",
+				riskTolerance: "invalid-tolerance" as any,
+			}),
+		).rejects.toThrow();
 	});
 
 	it("should validate invalid compliance standard", async () => {
-		await expect(securityHardeningPromptBuilder({
-			codeContext: "Test application",
-			complianceStandards: ["INVALID-STANDARD"] as any,
-		})).rejects.toThrow();
+		await expect(
+			securityHardeningPromptBuilder({
+				codeContext: "Test application",
+				complianceStandards: ["INVALID-STANDARD"] as any,
+			}),
+		).rejects.toThrow();
 	});
 
 	it("should validate invalid analysis scope", async () => {
-		await expect(securityHardeningPromptBuilder({
-			codeContext: "Test application",
-			analysisScope: ["invalid-scope"] as any,
-		})).rejects.toThrow();
+		await expect(
+			securityHardeningPromptBuilder({
+				codeContext: "Test application",
+				analysisScope: ["invalid-scope"] as any,
+			}),
+		).rejects.toThrow();
 	});
 
 	it("should validate invalid output format", async () => {
-		await expect(securityHardeningPromptBuilder({
-			codeContext: "Test application",
-			outputFormat: "invalid-format" as any,
-		})).rejects.toThrow();
+		await expect(
+			securityHardeningPromptBuilder({
+				codeContext: "Test application",
+				outputFormat: "invalid-format" as any,
+			}),
+		).rejects.toThrow();
 	});
 
 	it("should require codeContext parameter", async () => {
-		await expect(securityHardeningPromptBuilder({
-			// missing codeContext
-		})).rejects.toThrow();
+		await expect(
+			securityHardeningPromptBuilder({
+				// missing codeContext
+			}),
+		).rejects.toThrow();
 	});
 
 	it("should handle provider-specific tips", async () => {
@@ -213,6 +233,8 @@ describe("security-hardening-prompt-builder edge cases", () => {
 		expect(text).toContain(`description: '${customDescription}'`);
 		expect(text).toContain("mode: 'agent'"); // Normalized from invalid 'analysis'
 		expect(text).toContain("model: GPT-4o"); // Shows warning about unrecognized model
-		expect(text).toContain("# Note: Dropped unknown tools: security-scanner, code-analyzer");
+		expect(text).toContain(
+			"# Note: Dropped unknown tools: security-scanner, code-analyzer",
+		);
 	});
 });

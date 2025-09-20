@@ -4,35 +4,36 @@
  * Design Assistant Demo - Demonstrates the deterministic design framework
  */
 
-import { designAssistant } from '../dist/tools/design/index.js';
+import { designAssistant } from "../dist/tools/design/index.js";
 
 // Demo configuration for a real-world project
 const demoConfig = {
-	sessionId: 'demo-ecommerce-platform',
-	context: 'Building a modern e-commerce platform for small to medium businesses',
-	goal: 'Create a scalable, secure, and user-friendly e-commerce solution with multi-tenant support',
+	sessionId: "demo-ecommerce-platform",
+	context:
+		"Building a modern e-commerce platform for small to medium businesses",
+	goal: "Create a scalable, secure, and user-friendly e-commerce solution with multi-tenant support",
 	requirements: [
-		'Multi-tenant architecture for different business clients',
-		'Product catalog management with categories and variants',
-		'Shopping cart and checkout process with multiple payment options',
-		'User authentication and authorization (customers and merchants)',
-		'Order management and fulfillment tracking',
-		'Admin dashboard for business owners',
-		'Mobile-responsive design',
-		'SEO optimization features',
-		'Integration with third-party services (payment, shipping, analytics)',
-		'Performance optimization for high traffic loads'
+		"Multi-tenant architecture for different business clients",
+		"Product catalog management with categories and variants",
+		"Shopping cart and checkout process with multiple payment options",
+		"User authentication and authorization (customers and merchants)",
+		"Order management and fulfillment tracking",
+		"Admin dashboard for business owners",
+		"Mobile-responsive design",
+		"SEO optimization features",
+		"Integration with third-party services (payment, shipping, analytics)",
+		"Performance optimization for high traffic loads",
 	],
 	constraints: [],
 	coverageThreshold: 85,
 	enablePivots: true,
-	templateRefs: ['ARCHITECTURE_TEMPLATES.md', 'DESIGN_PROCESS_TEMPLATE.md'],
-	outputFormats: ['markdown', 'mermaid'],
+	templateRefs: ["ARCHITECTURE_TEMPLATES.md", "DESIGN_PROCESS_TEMPLATE.md"],
+	outputFormats: ["markdown", "mermaid"],
 	metadata: {
 		demo: true,
 		timestamp: new Date().toISOString(),
-		complexity: 'high'
-	}
+		complexity: "high",
+	},
 };
 
 // Sample content for each phase
@@ -44,7 +45,7 @@ Small and medium businesses struggle with expensive, complex e-commerce solution
 
 ## Stakeholder Analysis
 - **Primary Users**: Small business owners (10-50 employees)
-- **Secondary Users**: Medium businesses (50-200 employees)  
+- **Secondary Users**: Medium businesses (50-200 employees)
 - **End Customers**: Online shoppers across demographics
 - **Technical Team**: Development, DevOps, and support staff
 - **Business Stakeholders**: Sales, marketing, and customer success teams
@@ -148,178 +149,189 @@ The platform follows a microservices architecture with clear service boundaries 
 - **Maintainability**: Clear service boundaries, comprehensive documentation
 - **Testability**: Unit, integration, and end-to-end testing strategies
 - **Observability**: Distributed tracing, metrics, and centralized logging
-- **Portability**: Container-based deployment, cloud-agnostic design`
+- **Portability**: Container-based deployment, cloud-agnostic design`,
 };
 
 async function runDemo() {
-	console.log('🚀 Design Assistant Framework Demo\n');
-	console.log('=' .repeat(60));
-	
+	console.log("🚀 Design Assistant Framework Demo\n");
+	console.log("=".repeat(60));
+
 	try {
 		// Initialize the design assistant
-		console.log('🔧 Initializing Design Assistant...');
+		console.log("🔧 Initializing Design Assistant...");
 		await designAssistant.initialize();
-		console.log('✅ Design Assistant initialized\n');
+		console.log("✅ Design Assistant initialized\n");
 
 		// 1. Start a new design session
-		console.log('📋 1. Starting Design Session');
-		console.log('-'.repeat(30));
+		console.log("📋 1. Starting Design Session");
+		console.log("-".repeat(30));
 		const startResult = await designAssistant.processRequest({
-			action: 'start-session',
+			action: "start-session",
 			sessionId: demoConfig.sessionId,
-			config: demoConfig
+			config: demoConfig,
 		});
-		
+
 		console.log(`Session Status: ${startResult.status}`);
 		console.log(`Current Phase: ${startResult.currentPhase}`);
 		console.log(`Coverage: ${startResult.coverage?.toFixed(1)}%`);
-		console.log(`Recommendations: ${startResult.recommendations.slice(0, 2).join(', ')}\n`);
+		console.log(
+			`Recommendations: ${startResult.recommendations.slice(0, 2).join(", ")}\n`,
+		);
 
 		// 2. Validate discovery phase
-		console.log('🔍 2. Discovery Phase Validation');
-		console.log('-'.repeat(30));
+		console.log("🔍 2. Discovery Phase Validation");
+		console.log("-".repeat(30));
 		const discoveryResult = await designAssistant.processRequest({
-			action: 'validate-phase',
+			action: "validate-phase",
 			sessionId: demoConfig.sessionId,
-			phaseId: 'discovery',
-			content: phaseContent.discovery
+			phaseId: "discovery",
+			content: phaseContent.discovery,
 		});
-		
+
 		console.log(`Validation Status: ${discoveryResult.status}`);
 		console.log(`Coverage: ${discoveryResult.coverage?.toFixed(1)}%`);
-		console.log(`Issues: ${discoveryResult.validationResults?.issues?.length || 0}`);
-		console.log(`Can Proceed: ${discoveryResult.validationResults?.canProceed}\n`);
+		console.log(
+			`Issues: ${discoveryResult.validationResults?.issues?.length || 0}`,
+		);
+		console.log(
+			`Can Proceed: ${discoveryResult.validationResults?.canProceed}\n`,
+		);
 
 		// 3. Advance to requirements phase
-		console.log('➡️  3. Advancing to Requirements Phase');
-		console.log('-'.repeat(30));
+		console.log("➡️  3. Advancing to Requirements Phase");
+		console.log("-".repeat(30));
 		const advanceResult = await designAssistant.processRequest({
-			action: 'advance-phase',
+			action: "advance-phase",
 			sessionId: demoConfig.sessionId,
-			content: phaseContent.discovery
+			content: phaseContent.discovery,
 		});
-		
+
 		console.log(`Advance Status: ${advanceResult.status}`);
 		console.log(`New Phase: ${advanceResult.currentPhase}`);
 		console.log(`Next Phase: ${advanceResult.nextPhase}`);
 		if (advanceResult.pivotDecision?.triggered) {
 			console.log(`⚠️  Pivot Alert: ${advanceResult.pivotDecision.reason}`);
 		}
-		console.log('');
+		console.log("");
 
 		// 4. Validate requirements phase
-		console.log('📝 4. Requirements Phase Validation');
-		console.log('-'.repeat(30));
+		console.log("📝 4. Requirements Phase Validation");
+		console.log("-".repeat(30));
 		const requirementsResult = await designAssistant.processRequest({
-			action: 'validate-phase',
+			action: "validate-phase",
 			sessionId: demoConfig.sessionId,
-			phaseId: 'requirements',
-			content: phaseContent.requirements
+			phaseId: "requirements",
+			content: phaseContent.requirements,
 		});
-		
+
 		console.log(`Validation Status: ${requirementsResult.status}`);
 		console.log(`Coverage: ${requirementsResult.coverage?.toFixed(1)}%`);
-		console.log('');
+		console.log("");
 
-		// 5. Advance to architecture phase  
-		console.log('🏗️  5. Advancing to Architecture Phase');
-		console.log('-'.repeat(30));
+		// 5. Advance to architecture phase
+		console.log("🏗️  5. Advancing to Architecture Phase");
+		console.log("-".repeat(30));
 		await designAssistant.processRequest({
-			action: 'advance-phase',
+			action: "advance-phase",
 			sessionId: demoConfig.sessionId,
-			content: phaseContent.requirements
+			content: phaseContent.requirements,
 		});
 
 		// 6. Evaluate pivot need with complex architecture
-		console.log('🔄 6. Pivot Evaluation');
-		console.log('-'.repeat(30));
+		console.log("🔄 6. Pivot Evaluation");
+		console.log("-".repeat(30));
 		const pivotResult = await designAssistant.processRequest({
-			action: 'evaluate-pivot',
+			action: "evaluate-pivot",
 			sessionId: demoConfig.sessionId,
-			content: phaseContent.architecture
+			content: phaseContent.architecture,
 		});
-		
+
 		console.log(`Pivot Triggered: ${pivotResult.pivotDecision?.triggered}`);
-		console.log(`Complexity Score: ${pivotResult.pivotDecision?.complexity?.toFixed(1)}`);
-		console.log(`Entropy Level: ${pivotResult.pivotDecision?.entropy?.toFixed(1)}`);
+		console.log(
+			`Complexity Score: ${pivotResult.pivotDecision?.complexity?.toFixed(1)}`,
+		);
+		console.log(
+			`Entropy Level: ${pivotResult.pivotDecision?.entropy?.toFixed(1)}`,
+		);
 		console.log(`Recommendation: ${pivotResult.pivotDecision?.recommendation}`);
-		console.log('');
+		console.log("");
 
 		// 7. Enforce coverage across all content
-		console.log('📊 7. Coverage Enforcement');
-		console.log('-'.repeat(30));
-		const allContent = Object.values(phaseContent).join('\n\n');
+		console.log("📊 7. Coverage Enforcement");
+		console.log("-".repeat(30));
+		const allContent = Object.values(phaseContent).join("\n\n");
 		const coverageResult = await designAssistant.processRequest({
-			action: 'enforce-coverage',
+			action: "enforce-coverage",
 			sessionId: demoConfig.sessionId,
-			content: allContent
+			content: allContent,
 		});
-		
+
 		console.log(`Coverage Status: ${coverageResult.status}`);
 		console.log(`Overall Coverage: ${coverageResult.coverage?.toFixed(1)}%`);
-		console.log(`Violations: ${coverageResult.coverageReport?.violations?.length || 0}`);
-		console.log('');
+		console.log(
+			`Violations: ${coverageResult.coverageReport?.violations?.length || 0}`,
+		);
+		console.log("");
 
 		// 8. Generate artifacts
-		console.log('📄 8. Artifact Generation');
-		console.log('-'.repeat(30));
+		console.log("📄 8. Artifact Generation");
+		console.log("-".repeat(30));
 		const artifactsResult = await designAssistant.processRequest({
-			action: 'generate-artifacts',
+			action: "generate-artifacts",
 			sessionId: demoConfig.sessionId,
-			artifactTypes: ['adr', 'specification', 'roadmap']
+			artifactTypes: ["adr", "specification", "roadmap"],
 		});
-		
+
 		console.log(`Generation Status: ${artifactsResult.status}`);
 		console.log(`Artifacts Created: ${artifactsResult.artifacts.length}`);
 		for (const artifact of artifactsResult.artifacts) {
 			console.log(`  - ${artifact.name} (${artifact.format})`);
 		}
-		console.log('');
+		console.log("");
 
 		// 9. Final session status
-		console.log('📈 9. Final Session Status');
-		console.log('-'.repeat(30));
+		console.log("📈 9. Final Session Status");
+		console.log("-".repeat(30));
 		const statusResult = await designAssistant.processRequest({
-			action: 'get-status',
-			sessionId: demoConfig.sessionId
+			action: "get-status",
+			sessionId: demoConfig.sessionId,
 		});
-		
+
 		console.log(`Session Status: ${statusResult.status}`);
 		console.log(`Current Phase: ${statusResult.currentPhase}`);
 		console.log(`Overall Coverage: ${statusResult.coverage?.toFixed(1)}%`);
 		console.log(`Total Artifacts: ${statusResult.artifacts.length}`);
 		console.log(`Session Progress: ${statusResult.message}`);
-		console.log('');
+		console.log("");
 
 		// 10. Display sample artifact content
 		if (artifactsResult.artifacts.length > 0) {
-			console.log('📋 10. Sample Artifact Content');
-			console.log('-'.repeat(30));
+			console.log("📋 10. Sample Artifact Content");
+			console.log("-".repeat(30));
 			const sampleArtifact = artifactsResult.artifacts[0];
 			console.log(`Artifact: ${sampleArtifact.name}`);
 			console.log(`Type: ${sampleArtifact.type}`);
 			console.log(`Format: ${sampleArtifact.format}`);
-			console.log('\nContent Preview:');
-			console.log(sampleArtifact.content.substring(0, 500) + '...');
-			console.log('');
+			console.log("\nContent Preview:");
+			console.log(sampleArtifact.content.substring(0, 500) + "...");
+			console.log("");
 		}
 
-		console.log('=' .repeat(60));
-		console.log('🎉 Design Assistant Demo Completed Successfully!');
-		console.log('');
-		console.log('Key Features Demonstrated:');
-		console.log('✅ Deterministic design phase workflow');
-		console.log('✅ Context-driven constraint validation');
-		console.log('✅ Coverage enforcement (≥85% threshold)');
-		console.log('✅ Automated pivot recommendations');
-		console.log('✅ ADR, specification, and roadmap generation');
-		console.log('✅ Comprehensive session tracking and reporting');
-		console.log('');
-		console.log('The framework provides structured, reproducible design');
-		console.log('sessions with built-in quality gates and documentation.');
-
+		console.log("=".repeat(60));
+		console.log("🎉 Design Assistant Demo Completed Successfully!");
+		console.log("");
+		console.log("Key Features Demonstrated:");
+		console.log("✅ Deterministic design phase workflow");
+		console.log("✅ Context-driven constraint validation");
+		console.log("✅ Coverage enforcement (≥85% threshold)");
+		console.log("✅ Automated pivot recommendations");
+		console.log("✅ ADR, specification, and roadmap generation");
+		console.log("✅ Comprehensive session tracking and reporting");
+		console.log("");
+		console.log("The framework provides structured, reproducible design");
+		console.log("sessions with built-in quality gates and documentation.");
 	} catch (error) {
-		console.error('❌ Demo failed:', error);
+		console.error("❌ Demo failed:", error);
 		process.exit(1);
 	}
 }

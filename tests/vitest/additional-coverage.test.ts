@@ -1,36 +1,44 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 
 describe("Additional coverage for uncovered lines", () => {
 	it("should test prompt sections edge cases", async () => {
-		const { inferTechniquesFromText, buildTechniqueHintsSection } = await import("../../src/tools/shared/prompt-sections.js");
+		const { inferTechniquesFromText, buildTechniqueHintsSection } =
+			await import("../../src/tools/shared/prompt-sections.js");
 
 		// Test edge cases in technique inference
 		const result1 = inferTechniquesFromText("no matching keywords here");
 		expect(Array.isArray(result1)).toBe(true);
 
-		const result2 = inferTechniquesFromText("chain of thought reasoning with few examples for facts first approach");
+		const result2 = inferTechniquesFromText(
+			"chain of thought reasoning with few examples for facts first approach",
+		);
 		expect(result2).toContain("chain-of-thought");
 		expect(result2).toContain("few-shot");
 		expect(result2).toContain("generate-knowledge");
 
 		// Test technique hints section
-		const hints = buildTechniqueHintsSection(["zero-shot", "few-shot"], "markdown");
+		const hints = buildTechniqueHintsSection(
+			["zero-shot", "few-shot"],
+			"markdown",
+		);
 		expect(hints).toContain("Technique Hints"); // Updated to match actual output "# Technique Hints (2025)"
 		expect(hints).toContain("Zero-Shot"); // Check formatted titles
 		expect(hints).toContain("Few-Shot");
 	});
 
 	it("should test hierarchical prompt builder edge cases", async () => {
-		const { hierarchicalPromptBuilder } = await import("../../src/tools/prompt/hierarchical-prompt-builder.js");
+		const { hierarchicalPromptBuilder } = await import(
+			"../../src/tools/prompt/hierarchical-prompt-builder.js"
+		);
 
 		// Test with XML style
 		const result = await hierarchicalPromptBuilder({
 			context: "Test context",
-			goal: "Test goal", 
+			goal: "Test goal",
 			style: "xml",
 			techniques: ["chain-of-thought"],
 			includeTechniqueHints: true,
-			provider: "claude-4"
+			provider: "claude-4",
 		});
 
 		const content = result.content[0].text;
@@ -39,7 +47,9 @@ describe("Additional coverage for uncovered lines", () => {
 	});
 
 	it("should test spark prompt builder edge cases", async () => {
-		const { sparkPromptBuilder } = await import("../../src/tools/prompt/spark-prompt-builder.js");
+		const { sparkPromptBuilder } = await import(
+			"../../src/tools/prompt/spark-prompt-builder.js"
+		);
 
 		// Test edge cases for better coverage
 		const result = await sparkPromptBuilder({
@@ -76,7 +86,7 @@ describe("Additional coverage for uncovered lines", () => {
 			// Test metadata and references
 			includeMetadata: true,
 			includeReferences: true,
-			inputFile: "test.md"
+			inputFile: "test.md",
 		});
 
 		expect(result).toHaveProperty("content");
@@ -84,7 +94,9 @@ describe("Additional coverage for uncovered lines", () => {
 	});
 
 	it("should test domain neutral builder edge cases", async () => {
-		const { domainNeutralPromptBuilder } = await import("../../src/tools/prompt/domain-neutral-prompt-builder.js");
+		const { domainNeutralPromptBuilder } = await import(
+			"../../src/tools/prompt/domain-neutral-prompt-builder.js"
+		);
 
 		// Test with comprehensive configuration to hit more branches
 		const result = await domainNeutralPromptBuilder({
@@ -101,7 +113,7 @@ describe("Additional coverage for uncovered lines", () => {
 			includeReferences: true,
 			includeTechniqueHints: true,
 			includePitfalls: true,
-			inputFile: "test.md"
+			inputFile: "test.md",
 		});
 
 		expect(result).toHaveProperty("content");
@@ -109,7 +121,9 @@ describe("Additional coverage for uncovered lines", () => {
 	});
 
 	it("should test structured resources edge cases", async () => {
-		const { renderStructuredToMarkdown } = await import("../../src/resources/structured.js");
+		const { renderStructuredToMarkdown } = await import(
+			"../../src/resources/structured.js"
+		);
 
 		// Test with empty segments
 		const result = renderStructuredToMarkdown({
@@ -122,18 +136,18 @@ describe("Additional coverage for uncovered lines", () => {
 				{
 					type: "heading",
 					level: 2,
-					text: "Empty Section"
+					text: "Empty Section",
 				},
 				{
 					type: "paragraph",
-					text: "Test paragraph content"
+					text: "Test paragraph content",
 				},
 				{
 					type: "list",
 					ordered: false,
-					items: ["Item 1", "Item 2"]
-				}
-			]
+					items: ["Item 1", "Item 2"],
+				},
+			],
 		});
 
 		expect(result).toContain("Test Resource");
@@ -143,11 +157,11 @@ describe("Additional coverage for uncovered lines", () => {
 	});
 
 	it("should test prompt utils edge cases", async () => {
-		const { 
-			validateAndNormalizeFrontmatter, 
-			buildFrontmatterWithPolicy, 
+		const {
+			validateAndNormalizeFrontmatter,
+			buildFrontmatterWithPolicy,
 			buildMetadataSection,
-			buildReferencesSection 
+			buildReferencesSection,
 		} = await import("../../src/tools/shared/prompt-utils.js");
 
 		// Test frontmatter validation
@@ -156,7 +170,7 @@ describe("Additional coverage for uncovered lines", () => {
 			model: "test-model",
 			tools: ["tool1", "tool2"],
 			description: "Test description", // Add missing description
-			unknownField: "should be filtered"
+			unknownField: "should be filtered",
 		});
 
 		expect(frontmatter.mode).toBe("agent");
@@ -170,7 +184,7 @@ describe("Additional coverage for uncovered lines", () => {
 		const metadata = buildMetadataSection({
 			sourceTool: "test-tool",
 			inputFile: "test.md",
-			updatedDate: new Date("2025-01-01")
+			updatedDate: new Date("2025-01-01"),
 		});
 		expect(metadata).toContain("### Metadata"); // Updated from "## Metadata"
 		expect(metadata).toContain("test.md");
@@ -182,18 +196,27 @@ describe("Additional coverage for uncovered lines", () => {
 	});
 
 	it("should test mermaid generator edge cases", async () => {
-		const { mermaidDiagramGenerator } = await import("../../src/tools/mermaid-diagram-generator.js");
+		const { mermaidDiagramGenerator } = await import(
+			"../../src/tools/mermaid-diagram-generator.js"
+		);
 
 		// Test different diagram types
-		const diagramTypes = ["flowchart", "sequence", "class", "state", "gantt", "pie"];
-		
+		const diagramTypes = [
+			"flowchart",
+			"sequence",
+			"class",
+			"state",
+			"gantt",
+			"pie",
+		];
+
 		for (const type of diagramTypes) {
 			const result = await mermaidDiagramGenerator({
 				description: `Test ${type} diagram`,
 				diagramType: type as any,
 				theme: "dark",
 				accTitle: "Accessibility title",
-				accDescr: "Accessibility description"
+				accDescr: "Accessibility description",
 			});
 
 			expect(result).toHaveProperty("content");
@@ -202,17 +225,19 @@ describe("Additional coverage for uncovered lines", () => {
 	});
 
 	it("should test memory optimizer edge cases", async () => {
-		const { memoryContextOptimizer } = await import("../../src/tools/memory-context-optimizer.js");
+		const { memoryContextOptimizer } = await import(
+			"../../src/tools/memory-context-optimizer.js"
+		);
 
 		// Test different cache strategies
 		const strategies = ["aggressive", "conservative", "balanced"];
-		
+
 		for (const strategy of strategies) {
 			const result = await memoryContextOptimizer({
 				contextContent: "Test content for memory optimization",
 				maxTokens: 1000,
 				cacheStrategy: strategy as any,
-				includeReferences: true
+				includeReferences: true,
 			});
 
 			expect(result).toHaveProperty("content");
@@ -221,14 +246,16 @@ describe("Additional coverage for uncovered lines", () => {
 	});
 
 	it("should test code hygiene analyzer edge cases", async () => {
-		const { codeHygieneAnalyzer } = await import("../../src/tools/code-hygiene-analyzer.js");
+		const { codeHygieneAnalyzer } = await import(
+			"../../src/tools/code-hygiene-analyzer.js"
+		);
 
 		// Test with different languages
 		const result1 = await codeHygieneAnalyzer({
 			codeContent: "console.log('test'); var x = 1; // TODO: fix this",
 			language: "javascript",
 			framework: "express",
-			includeReferences: true
+			includeReferences: true,
 		});
 
 		expect(result1).toHaveProperty("content");
@@ -237,7 +264,7 @@ describe("Additional coverage for uncovered lines", () => {
 		const result2 = await codeHygieneAnalyzer({
 			codeContent: "print('debug message')",
 			language: "python",
-			includeReferences: false
+			includeReferences: false,
 		});
 
 		expect(result2).toHaveProperty("content");
@@ -245,18 +272,20 @@ describe("Additional coverage for uncovered lines", () => {
 	});
 
 	it("should test sprint timeline calculator edge cases", async () => {
-		const { sprintTimelineCalculator } = await import("../../src/tools/sprint-timeline-calculator.js");
+		const { sprintTimelineCalculator } = await import(
+			"../../src/tools/sprint-timeline-calculator.js"
+		);
 
 		// Test with complex task structure
 		const result = await sprintTimelineCalculator({
 			tasks: [
 				{ name: "Task 1", estimate: 5, priority: "high" },
 				{ name: "Task 2", estimate: 3, priority: "medium" },
-				{ name: "Task 3", estimate: 8, priority: "low" }
+				{ name: "Task 3", estimate: 8, priority: "low" },
 			],
 			teamSize: 4,
 			sprintLength: 14,
-			velocity: 25
+			velocity: 25,
 		});
 
 		expect(result).toHaveProperty("content");
@@ -264,11 +293,13 @@ describe("Additional coverage for uncovered lines", () => {
 	});
 
 	it("should test model compatibility checker edge cases", async () => {
-		const { modelCompatibilityChecker } = await import("../../src/tools/model-compatibility-checker.js");
+		const { modelCompatibilityChecker } = await import(
+			"../../src/tools/model-compatibility-checker.js"
+		);
 
 		// Test with different budget levels and requirements
 		const budgets = ["low", "medium", "high"];
-		
+
 		for (const budget of budgets) {
 			const result = await modelCompatibilityChecker({
 				taskDescription: "Complex AI task requiring reasoning",
@@ -277,7 +308,7 @@ describe("Additional coverage for uncovered lines", () => {
 				language: "typescript",
 				includeReferences: true,
 				includeCodeExamples: true,
-				linkFiles: true
+				linkFiles: true,
 			});
 
 			expect(result).toHaveProperty("content");
@@ -286,15 +317,24 @@ describe("Additional coverage for uncovered lines", () => {
 	});
 
 	it("should test guidelines validator edge cases", async () => {
-		const { guidelinesValidator } = await import("../../src/tools/guidelines-validator.js");
+		const { guidelinesValidator } = await import(
+			"../../src/tools/guidelines-validator.js"
+		);
 
 		// Test different categories
-		const categories = ["prompting", "code-management", "architecture", "visualization", "memory", "workflow"];
-		
+		const categories = [
+			"prompting",
+			"code-management",
+			"architecture",
+			"visualization",
+			"memory",
+			"workflow",
+		];
+
 		for (const category of categories) {
 			const result = await guidelinesValidator({
 				practiceDescription: `Testing ${category} practice validation`,
-				category: category as any
+				category: category as any,
 			});
 
 			expect(result).toHaveProperty("content");

@@ -22,7 +22,7 @@ phases:
       - "Stakeholder identification"
       - "Context boundaries established"
       - "Success metrics defined"
-    
+
   requirements:
     name: "Requirements Analysis"
     description: "Define functional and non-functional requirements"
@@ -36,7 +36,7 @@ phases:
       - "Priority levels assigned"
       - "Dependencies identified"
       - "Constraints documented"
-    
+
   architecture:
     name: "Architecture Design"
     description: "Design system architecture and components"
@@ -50,7 +50,7 @@ phases:
       - "Security by design"
       - "Technology decisions justified"
       - "Quality attributes addressed"
-    
+
   specification:
     name: "Detailed Specification"
     description: "Create detailed technical specifications"
@@ -64,7 +64,7 @@ phases:
       - "Testing strategy defined"
       - "Error handling specified"
       - "Performance targets set"
-    
+
   planning:
     name: "Implementation Planning"
     description: "Create implementation roadmap and timeline"
@@ -92,7 +92,7 @@ constraints:
         min_coverage: 85
         keywords: ["module", "component", "interface", "decoupled"]
       source: "Space 7 Architecture Guidelines"
-    
+
     scalability:
       name: "Scalability Design"
       description: "Architecture must address scalability requirements"
@@ -103,7 +103,7 @@ constraints:
         min_coverage: 80
         keywords: ["horizontal", "vertical", "performance", "throughput"]
       source: "Architecture Templates"
-    
+
     security:
       name: "Security by Design"
       description: "Security considerations must be built into architecture"
@@ -126,7 +126,7 @@ constraints:
         min_coverage: 85
         keywords: ["unit", "integration", "e2e", "coverage"]
       source: "Testing Best Practices"
-    
+
     documentation:
       name: "Documentation Standards"
       description: "All components must be properly documented"
@@ -149,7 +149,7 @@ constraints:
         min_coverage: 70
         keywords: ["sprint", "iteration", "backlog", "retrospective"]
       source: "Agile Guidelines"
-    
+
     continuous_integration:
       name: "CI/CD Pipeline"
       description: "Automated build and deployment pipeline required"
@@ -168,7 +168,7 @@ coverage_rules:
   constraint_minimum: 70
   documentation_minimum: 75
   test_minimum: 80
-  
+
   # Pivot triggers - when to suggest strategic changes
   pivot_thresholds:
     complexity_threshold: 85  # If complexity score > 85, suggest pivot
@@ -192,17 +192,17 @@ micro_methods:
     - "verify_constraint_compliance"
     - "assess_output_quality"
     - "confirm_stakeholder_approval"
-  
+
   pivot:
     - "calculate_complexity_score"
     - "measure_entropy_level"
     - "identify_bottlenecks"
     - "suggest_alternatives"
     - "recommend_simplification"
-  
+
   coverage:
     - "calculate_phase_coverage"
-    - "assess_constraint_coverage" 
+    - "assess_constraint_coverage"
     - "measure_documentation_coverage"
     - "check_test_coverage"
     - "generate_coverage_report"
@@ -213,17 +213,17 @@ output_formats:
     format: "markdown"
     template: "adr-template.md"
     sections: ["Status", "Context", "Decision", "Consequences"]
-  
+
   specification:
     format: "markdown"
     template: "spec-template.md"
     sections: ["Overview", "Requirements", "Architecture", "Implementation"]
-  
+
   roadmap:
     format: "markdown"
     template: "roadmap-template.md"
     sections: ["Vision", "Milestones", "Timeline", "Dependencies"]
-  
+
   diagram:
     format: "mermaid"
     types: ["flowchart", "sequence", "class", "state", "architecture"]

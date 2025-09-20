@@ -1,25 +1,28 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { memoryContextOptimizer } from "../../src/tools/memory-context-optimizer";
 
 describe("Memory Context Optimizer - Additional Coverage", () => {
 	it("should handle aggressive caching strategy", async () => {
 		const result = await memoryContextOptimizer({
-			contextContent: "System: You are a helpful assistant.\nUser: Hello\nAssistant: Hi there!",
+			contextContent:
+				"System: You are a helpful assistant.\nUser: Hello\nAssistant: Hi there!",
 			cacheStrategy: "aggressive",
 			language: "typescript",
-			includeReferences: true
+			includeReferences: true,
 		});
 
 		const text = result.content[0].text;
 		expect(text).toContain("Aggressive Caching");
-		expect(text).toContain("Maximizes cache usage, suitable for repetitive contexts");
+		expect(text).toContain(
+			"Maximizes cache usage, suitable for repetitive contexts",
+		);
 	});
 
 	it("should handle conservative caching strategy", async () => {
 		const result = await memoryContextOptimizer({
 			contextContent: "function test() { return 42; }",
 			cacheStrategy: "conservative",
-			language: "javascript"
+			language: "javascript",
 		});
 
 		const text = result.content[0].text;
@@ -31,22 +34,24 @@ describe("Memory Context Optimizer - Additional Coverage", () => {
 		const result = await memoryContextOptimizer({
 			contextContent: "Some content here",
 			// No cacheStrategy specified, should default to balanced
-			language: "python"
+			language: "python",
 		});
 
 		const text = result.content[0].text;
 		expect(text).toContain("Balanced Caching");
-		expect(text).toContain("Optimizes between cache efficiency and context freshness");
+		expect(text).toContain(
+			"Optimizes between cache efficiency and context freshness",
+		);
 	});
 
 	it("should handle maxTokens truncation", async () => {
 		const longContent = "This is a very long piece of content. ".repeat(100);
-		
+
 		const result = await memoryContextOptimizer({
 			contextContent: longContent,
 			maxTokens: 50,
 			cacheStrategy: "balanced",
-			language: "markdown"
+			language: "markdown",
 		});
 
 		const text = result.content[0].text;
@@ -71,7 +76,7 @@ Description: Validates user input
 			contextContent: codeContent,
 			cacheStrategy: "balanced",
 			language: "javascript",
-			includeReferences: false
+			includeReferences: false,
 		});
 
 		const text = result.content[0].text;
@@ -80,12 +85,13 @@ Description: Validates user input
 	});
 
 	it("should handle content without cache segments", async () => {
-		const simpleContent = "Just some regular text without any special patterns.";
-		
+		const simpleContent =
+			"Just some regular text without any special patterns.";
+
 		const result = await memoryContextOptimizer({
 			contextContent: simpleContent,
 			cacheStrategy: "balanced",
-			language: "text"
+			language: "text",
 		});
 
 		const text = result.content[0].text;
@@ -97,7 +103,7 @@ Description: Validates user input
 	it("should handle no language specified", async () => {
 		const result = await memoryContextOptimizer({
 			contextContent: "Some content without language",
-			cacheStrategy: "balanced"
+			cacheStrategy: "balanced",
 			// No language specified
 		});
 
@@ -110,7 +116,7 @@ Description: Validates user input
 		const result = await memoryContextOptimizer({
 			contextContent: "def hello(): print('world')",
 			language: "python",
-			cacheStrategy: "aggressive"
+			cacheStrategy: "aggressive",
 		});
 
 		const text = result.content[0].text;
@@ -124,7 +130,7 @@ Description: Validates user input
 			contextContent: "File content here",
 			inputFile: "test-file.ts",
 			language: "typescript",
-			cacheStrategy: "balanced"
+			cacheStrategy: "balanced",
 		});
 
 		const text = result.content[0].text;
@@ -134,7 +140,7 @@ Description: Validates user input
 	it("should handle maxTokens not specified", async () => {
 		const result = await memoryContextOptimizer({
 			contextContent: "Content without max tokens",
-			cacheStrategy: "balanced"
+			cacheStrategy: "balanced",
 		});
 
 		const text = result.content[0].text;
@@ -153,7 +159,7 @@ Tool: fetchData
 Description: Fetches data from external APIs
 Parameters: url, headers
 
-Tool: processResult  
+Tool: processResult
 Description: Processes API results
 Parameters: data, format
 
@@ -178,7 +184,7 @@ function processUserData(userData) {
 			cacheStrategy: "balanced",
 			language: "javascript",
 			maxTokens: 200,
-			includeReferences: true
+			includeReferences: true,
 		});
 
 		const text = result.content[0].text;

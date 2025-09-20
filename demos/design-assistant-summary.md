@@ -241,7 +241,7 @@ micro_methods:
 
 The Design Assistant Framework successfully delivers on all requirements specified in issue #42:
 - Deterministic, context-driven design guidance ✅
-- Rule-based confirmation and pivot modules ✅  
+- Rule-based confirmation and pivot modules ✅
 - Coverage enforcement ≥85% ✅
 - Space 7 template integration ✅
 - Modular constraint storage and validation ✅

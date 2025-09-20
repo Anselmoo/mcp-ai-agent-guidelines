@@ -4,8 +4,8 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { strategyFrameworksBuilder } from "../dist/tools/analysis/strategy-frameworks-builder.js";
 import { gapFrameworksAnalyzers } from "../dist/tools/analysis/gap-frameworks-analyzers.js";
+import { strategyFrameworksBuilder } from "../dist/tools/analysis/strategy-frameworks-builder.js";
 import { codeHygieneAnalyzer } from "../dist/tools/code-hygiene-analyzer.js";
 import { guidelinesValidator } from "../dist/tools/guidelines-validator.js";
 import { memoryContextOptimizer } from "../dist/tools/memory-context-optimizer.js";
@@ -224,18 +224,30 @@ async function main() {
 	// Gap analysis demo
 	const gapAnalysis = await gapFrameworksAnalyzers({
 		frameworks: ["capability", "performance", "maturity", "technology"],
-		currentState: "Manual deployment processes with limited monitoring and basic CI/CD pipeline",
-		desiredState: "Fully automated deployment with comprehensive monitoring, security scanning, and zero-downtime deployments",
-		context: "DevOps transformation initiative to improve deployment reliability and speed",
+		currentState:
+			"Manual deployment processes with limited monitoring and basic CI/CD pipeline",
+		desiredState:
+			"Fully automated deployment with comprehensive monitoring, security scanning, and zero-downtime deployments",
+		context:
+			"DevOps transformation initiative to improve deployment reliability and speed",
 		objectives: [
 			"Reduce deployment time from 4 hours to 30 minutes",
 			"Achieve 99.9% uptime",
 			"Implement automated security scanning",
-			"Enable multiple deployments per day"
+			"Enable multiple deployments per day",
 		],
 		timeframe: "12 months",
-		stakeholders: ["Development Team", "Operations Team", "Security Team", "Product Management"],
-		constraints: ["Limited downtime windows", "Compliance requirements", "Budget constraints"],
+		stakeholders: [
+			"Development Team",
+			"Operations Team",
+			"Security Team",
+			"Product Management",
+		],
+		constraints: [
+			"Limited downtime windows",
+			"Compliance requirements",
+			"Budget constraints",
+		],
 		includeReferences: true,
 		includeMetadata: true,
 		includeActionPlan: true,
@@ -273,16 +285,16 @@ app.post('/api/payment', (req, res) => {
 			"Prevent SQL injection attacks",
 			"Implement secure session management",
 			"Validate all user inputs",
-			"Protect sensitive payment data"
+			"Protect sensitive payment data",
 		],
 		complianceStandards: ["OWASP-Top-10", "PCI-DSS"],
 		riskTolerance: "low",
 		analysisScope: [
 			"input-validation",
-			"authentication", 
+			"authentication",
 			"authorization",
 			"data-encryption",
-			"session-management"
+			"session-management",
 		],
 		includeCodeExamples: true,
 		includeMitigations: true,
@@ -292,7 +304,10 @@ app.post('/api/payment', (req, res) => {
 		includeReferences: true,
 		includeMetadata: true,
 	});
-	await writeReport("demo-code-analysis.security-hardening.prompt.md", getText(securityHardening));
+	await writeReport(
+		"demo-code-analysis.security-hardening.prompt.md",
+		getText(securityHardening),
+	);
 }
 
 main().catch((err) => {

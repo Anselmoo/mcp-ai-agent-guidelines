@@ -33,7 +33,9 @@ describe("security-analysis-prompt", () => {
 		expect(text).toContain("Apply OWASP Risk Rating methodology");
 
 		// Check for enhanced vulnerability details
-		expect(text).toContain("Likelihood assessment (Very High/High/Medium/Low/Very Low)");
+		expect(text).toContain(
+			"Likelihood assessment (Very High/High/Medium/Low/Very Low)",
+		);
 		expect(text).toContain("Overall risk score (Severity × Likelihood)");
 		expect(text).toContain("Reference to OWASP risk matrix position");
 
@@ -70,7 +72,9 @@ describe("security-analysis-prompt", () => {
 		expect(text).toContain("Verify compliance with HIPAA,GDPR requirements");
 		expect(text).toContain("Check adherence to security policies");
 		expect(text).toContain("Accept Low to High risk findings");
-		expect(text).toContain("Require immediate action only for Critical risk findings");
+		expect(text).toContain(
+			"Require immediate action only for Critical risk findings",
+		);
 	});
 
 	it("should generate threat modeling prompt", async () => {
@@ -128,16 +132,18 @@ describe("security-analysis-prompt", () => {
 
 	it("should validate required parameters", async () => {
 		// Should require code_context
-		await expect(getPrompt("security-analysis-prompt", {
-			// missing code_context
-			security_focus: "vulnerability-analysis",
-		})).rejects.toThrow();
+		await expect(
+			getPrompt("security-analysis-prompt", {
+				// missing code_context
+				security_focus: "vulnerability-analysis",
+			}),
+		).rejects.toThrow();
 	});
 
 	it("should validate security focus options", async () => {
 		const validFocuses = [
 			"vulnerability-analysis",
-			"security-hardening", 
+			"security-hardening",
 			"compliance-check",
 			"threat-modeling",
 		];
@@ -148,7 +154,9 @@ describe("security-analysis-prompt", () => {
 				security_focus: focus,
 			});
 
-			expect(result.messages[0].content.text).toContain("Risk Assessment Framework");
+			expect(result.messages[0].content.text).toContain(
+				"Risk Assessment Framework",
+			);
 		}
 
 		// Note: This prompt template doesn't validate input values
@@ -184,10 +192,18 @@ describe("security-analysis-prompt", () => {
 
 		const text = result.messages[0].content.text;
 
-		expect(text).toContain("quadrant-1 Monitor & Review (High Impact, Low Likelihood)");
-		expect(text).toContain("quadrant-2 Immediate Action Required (High Impact, High Likelihood)");
-		expect(text).toContain("quadrant-3 Accept Risk (Low Impact, Low Likelihood)");
-		expect(text).toContain("quadrant-4 Mitigate When Possible (Low Impact, High Likelihood)");
+		expect(text).toContain(
+			"quadrant-1 Monitor & Review (High Impact, Low Likelihood)",
+		);
+		expect(text).toContain(
+			"quadrant-2 Immediate Action Required (High Impact, High Likelihood)",
+		);
+		expect(text).toContain(
+			"quadrant-3 Accept Risk (Low Impact, Low Likelihood)",
+		);
+		expect(text).toContain(
+			"quadrant-4 Mitigate When Possible (Low Impact, High Likelihood)",
+		);
 	});
 
 	it("should include technical and business impact factors", async () => {
@@ -198,10 +214,14 @@ describe("security-analysis-prompt", () => {
 		const text = result.messages[0].content.text;
 
 		// Technical impact factors
-		expect(text).toContain("loss of confidentiality, integrity, availability, accountability");
-		
-		// Business impact factors  
-		expect(text).toContain("financial damage, reputation damage, non-compliance, privacy violation");
+		expect(text).toContain(
+			"loss of confidentiality, integrity, availability, accountability",
+		);
+
+		// Business impact factors
+		expect(text).toContain(
+			"financial damage, reputation damage, non-compliance, privacy violation",
+		);
 	});
 
 	it("should include threat agent and vulnerability factors", async () => {
@@ -213,8 +233,10 @@ describe("security-analysis-prompt", () => {
 
 		// Threat agent factors
 		expect(text).toContain("skill level, motive, opportunity, population size");
-		
+
 		// Vulnerability factors
-		expect(text).toContain("ease of discovery, exploit, awareness, intrusion detection");
+		expect(text).toContain(
+			"ease of discovery, exploit, awareness, intrusion detection",
+		);
 	});
 });

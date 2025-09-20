@@ -90,7 +90,9 @@ class ConstraintManagerImpl {
 	async initialize(): Promise<void> {
 		// For compatibility with tests that call initialize(); ensure default config is present
 		if (!this.config) {
-			await this.loadConstraintsFromConfig(DEFAULT_CONSTRAINT_CONFIG as unknown);
+			await this.loadConstraintsFromConfig(
+				DEFAULT_CONSTRAINT_CONFIG as unknown,
+			);
 		}
 	}
 
@@ -182,9 +184,12 @@ class ConstraintManagerImpl {
 		} else if (Array.isArray(contentOrSessionState)) {
 			// Tests may pass constraints array by mistake; handle gracefully
 			content = "Mock validation content";
-		} else if (!contentOrSessionState || typeof contentOrSessionState !== "object") {
-			// Undefined or invalid input – fall back to contextual content
-			content = `Validation content for ${config.goal}`;
+		} else if (
+			!contentOrSessionState ||
+			typeof contentOrSessionState !== "object"
+		) {
+			// Undefined or invalid input – fall back to generic contextual content
+			content = "Validation content for project";
 		} else {
 			// Extract content from session state
 			const sessionState = contentOrSessionState as DesignSessionState;
@@ -194,7 +199,8 @@ class ConstraintManagerImpl {
 			const collected = phaseList.flatMap((phase) =>
 				phase.artifacts ? phase.artifacts.map((a) => a.content) : [],
 			);
-			content = collected.join(" ") || `Validation content for ${config.goal}`;
+			const goal = sessionState?.config?.goal || "project";
+			content = collected.join(" ") || `Validation content for ${goal}`;
 		}
 
 		const constraintsToCheck = selectedConstraints

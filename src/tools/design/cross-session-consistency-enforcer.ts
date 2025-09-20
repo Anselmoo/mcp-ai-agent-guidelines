@@ -144,13 +144,18 @@ class CrossSessionConsistencyEnforcerImpl {
 	}
 
 	// Backwards-compatible helper expected by tests
-	recordConstraintDecisions(decisions: Record<string, {
-		sessionId: string;
-		constraintId: string;
-		decision: string;
-		rationale: string;
-		timestamp?: string;
-	}>): void {
+	recordConstraintDecisions(
+		decisions: Record<
+			string,
+			{
+				sessionId: string;
+				constraintId: string;
+				decision: string;
+				rationale: string;
+				timestamp?: string;
+			}
+		>,
+	): void {
 		for (const [, d] of Object.entries(decisions)) {
 			this.history.set(d.constraintId, [
 				...(this.history.get(d.constraintId) || []),

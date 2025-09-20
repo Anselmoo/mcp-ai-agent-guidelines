@@ -447,7 +447,9 @@ class DesignPhaseWorkflowImpl {
 			(sessionState as any)?.methodologySelection?.phases &&
 			Array.isArray((sessionState as any).methodologySelection.phases)
 		) {
-			phaseSequence = ((sessionState as any).methodologySelection.phases as string[]).slice();
+			phaseSequence = (
+				(sessionState as any).methodologySelection.phases as string[]
+			).slice();
 		} else {
 			phaseSequence = this.PHASE_SEQUENCE;
 		}
@@ -475,8 +477,7 @@ class DesignPhaseWorkflowImpl {
 
 	async generateWorkflowGuide(
 		sessionState: DesignSessionState,
-	): Promise<{ currentPhase: string; nextPhase?: string; steps: string[] }>
-	{
+	): Promise<{ currentPhase: string; nextPhase?: string; steps: string[] }> {
 		const current = sessionState.currentPhase;
 		const next = this.computeNextPhase(current, sessionState);
 		const steps = [
@@ -500,10 +501,12 @@ class DesignPhaseWorkflowImpl {
 		targetPhaseId: string,
 	): Promise<{ success: boolean; from: string; to?: string }> {
 		const can = await this.canTransitionToPhase(sessionState, targetPhaseId);
-		return { success: can, from: sessionState.currentPhase, to: can ? targetPhaseId : undefined };
+		return {
+			success: can,
+			from: sessionState.currentPhase,
+			to: can ? targetPhaseId : undefined,
+		};
 	}
-
-
 
 	private updateSessionCoverage(
 		sessionState: DesignSessionState,

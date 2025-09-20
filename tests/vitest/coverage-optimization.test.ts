@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 // Import main tools that users interact with directly - using src imports for reliability
 import { codeHygieneAnalyzer } from "../../src/tools/code-hygiene-analyzer";
 import { guidelinesValidator } from "../../src/tools/guidelines-validator";
-import { hierarchicalPromptBuilder } from "../../src/tools/prompt/hierarchical-prompt-builder";
 import { memoryContextOptimizer } from "../../src/tools/memory-context-optimizer";
 import { mermaidDiagramGenerator } from "../../src/tools/mermaid-diagram-generator";
 import { modelCompatibilityChecker } from "../../src/tools/model-compatibility-checker";
+import { hierarchicalPromptBuilder } from "../../src/tools/prompt/hierarchical-prompt-builder";
 import { sprintTimelineCalculator } from "../../src/tools/sprint-timeline-calculator";
 
 describe("Coverage Optimization - Core Tool Functions", () => {
@@ -297,7 +297,9 @@ The content should be condensed while maintaining essential information.
 			});
 
 			const timeline = await sprintTimelineCalculator({
-				tasks: [{ name: "Code review implementation", estimate: 5, priority: "high" }],
+				tasks: [
+					{ name: "Code review implementation", estimate: 5, priority: "high" },
+				],
 				sprintLength: 14,
 				teamSize: 3,
 			});

@@ -20,13 +20,13 @@ import type {
 	ConfirmationResult,
 	ConsistencyEnforcementResult,
 	DesignSessionConfig,
+	DesignSessionState,
 	MethodologyProfile,
 	MethodologySelection,
 	MethodologySignals,
 	PivotDecision,
 	StrategicPivotPromptResult,
 } from "./types.js";
-import type { DesignSessionState } from "./types.js";
 
 const _DesignAssistantRequestSchema = z.object({
 	action: z.enum([
@@ -175,14 +175,14 @@ class DesignAssistantImpl {
 		];
 	}
 
-	async validateConstraints(_sessionState: unknown): Promise<{ passed: boolean }>
-	{
+	async validateConstraints(
+		_sessionState: unknown,
+	): Promise<{ passed: boolean }> {
 		await this.initialize();
 		return { passed: true };
 	}
 
-	async generateWorkflow(_sessionState: unknown): Promise<{ steps: string[] }>
-	{
+	async generateWorkflow(_sessionState: unknown): Promise<{ steps: string[] }> {
 		await this.initialize();
 		return { steps: ["discovery", "requirements", "architecture"] };
 	}

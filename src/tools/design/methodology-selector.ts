@@ -425,8 +425,15 @@ class MethodologySelectorImpl {
 	}
 
 	async selectMethodology(
-		signals: MethodologySignals | { context?: string; requirements?: string[]; constraints?: string[] },
-	): Promise<MethodologySelection & { methodology: MethodologyCandidate; confidence: number } > {
+		signals:
+			| MethodologySignals
+			| { context?: string; requirements?: string[]; constraints?: string[] },
+	): Promise<
+		MethodologySelection & {
+			methodology: MethodologyCandidate;
+			confidence: number;
+		}
+	> {
 		await this.initialize();
 
 		// Validate input signals, fallback to inferred defaults when absent
@@ -434,18 +441,27 @@ class MethodologySelectorImpl {
 		const validatedSignals: MethodologySignals = parsed.success
 			? parsed.data
 			: {
-				projectType: "new-application",
-				problemFraming: (typeof signals === "object" && signals && "context" in signals && typeof signals.context === "string" && signals.context.toLowerCase().includes("safety"))
-					? "policy-first"
-					: "innovation-driven",
-				riskLevel: "medium",
-				timelinePressure: "normal",
-				stakeholderMode: "mixed",
-				domainContext: (typeof signals === "object" && signals && "context" in signals && typeof (signals as { context?: string }).context === "string")
-					? (signals as { context?: string }).context
-					: undefined,
-				additionalContext: {},
-			};
+					projectType: "new-application",
+					problemFraming:
+						typeof signals === "object" &&
+						signals &&
+						"context" in signals &&
+						typeof signals.context === "string" &&
+						signals.context.toLowerCase().includes("safety")
+							? "policy-first"
+							: "innovation-driven",
+					riskLevel: "medium",
+					timelinePressure: "normal",
+					stakeholderMode: "mixed",
+					domainContext:
+						typeof signals === "object" &&
+						signals &&
+						"context" in signals &&
+						typeof (signals as { context?: string }).context === "string"
+							? (signals as { context?: string }).context
+							: undefined,
+					additionalContext: {},
+				};
 
 		// Apply selection rules to rank methodologies
 		const candidates = this.rankMethodologies(validatedSignals);

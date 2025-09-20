@@ -681,18 +681,19 @@ ${
 		recommendations: string[];
 	}> {
 		const thresholds = constraintManager.getCoverageThresholds();
-		const coverageReport = constraintManager.generateCoverageReport(
+		const computed = constraintManager.generateCoverageReport(
 			sessionState.config,
-			sessionState.artifacts?.map(a => a.content).join('\n') || '',
+			sessionState.artifacts?.map((a) => a.content).join("\n") || "",
 		);
 
-		const passed = coverageReport.overall >= thresholds.overall_minimum;
+		const overall = sessionState.coverage?.overall ?? computed.overall ?? 0;
+		const passed = overall >= thresholds.overall_minimum;
 		const gaps: string[] = [];
 		const recommendations: string[] = [];
 
 		if (!passed) {
 			gaps.push(
-				`Overall coverage ${coverageReport.overall.toFixed(1)}% below threshold ${thresholds.overall_minimum}%`,
+				`Overall coverage ${overall.toFixed(1)}% below threshold ${thresholds.overall_minimum}%`,
 			);
 			recommendations.push(
 				"Increase overall coverage to meet minimum threshold",
@@ -701,7 +702,7 @@ ${
 
 		return {
 			passed,
-			currentCoverage: coverageReport.overall,
+			currentCoverage: overall,
 			targetCoverage: thresholds.overall_minimum,
 			gaps,
 			recommendations,
@@ -713,12 +714,13 @@ ${
 		phaseId: string,
 	): Promise<{ phase: string; coverage: number; canProceed: boolean }> {
 		const thresholds = constraintManager.getCoverageThresholds();
-		const coverageReport = constraintManager.generateCoverageReport(
+		const computed = constraintManager.generateCoverageReport(
 			sessionState.config,
-			sessionState.artifacts?.map(a => a.content).join('\n') || '',
+			sessionState.artifacts?.map((a) => a.content).join("\n") || "",
 		);
 
-		const phaseCoverage = coverageReport.phases[phaseId] || 0;
+		const phaseCoverage =
+			sessionState.coverage?.phases?.[phaseId] ?? computed.phases[phaseId] ?? 0;
 		const canProceed = phaseCoverage >= thresholds.phase_minimum;
 
 		return {
@@ -735,24 +737,41 @@ ${
 		documentation: number;
 		testCoverage: number;
 	}> {
-		const coverageReport = constraintManager.generateCoverageReport(
+		const computed = constraintManager.generateCoverageReport(
 			sessionState.config,
-			sessionState.artifacts?.map(a => a.content).join('\n') || '',
+			sessionState.artifacts?.map((a) => a.content).join("\n") || "",
 		);
 
+		const content =
+			sessionState.artifacts?.map((a) => a.content).join("\n") || "";
+		const docOverall = this.calculateDocumentationCoverage(content);
+		const testOverall = this.calculateTestCoverage(content);
+
 		return {
-			overall: coverageReport.overall,
-			phases: coverageReport.phases,
-			constraints: coverageReport.constraints,
-			documentation: coverageReport.documentation?.overall || 0,
-			testCoverage: coverageReport.testCoverage || 0,
+			overall: sessionState.coverage?.overall ?? computed.overall ?? 0,
+			phases: sessionState.coverage?.phases ?? computed.phases ?? {},
+			constraints:
+				sessionState.coverage?.constraints ?? computed.constraints ?? {},
+			documentation: (() => {
+				const doc = sessionState.coverage?.documentation as unknown;
+				if (
+					doc &&
+					typeof doc === "object" &&
+					"overall" in doc &&
+					typeof (doc as { overall?: unknown }).overall === "number"
+				) {
+					return (doc as { overall: number }).overall;
+				}
+				return docOverall;
+			})(),
+			testCoverage: sessionState.coverage?.testCoverage ?? testOverall,
 		};
 	}
 
 	async identifyGaps(sessionState: DesignSessionState): Promise<CoverageGap[]> {
 		const coverageReport = constraintManager.generateCoverageReport(
 			sessionState.config,
-			sessionState.artifacts?.map(a => a.content).join('\n') || '',
+			sessionState.artifacts?.map((a) => a.content).join("\n") || "",
 		);
 		const thresholds = constraintManager.getCoverageThresholds();
 

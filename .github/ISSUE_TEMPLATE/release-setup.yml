@@ -10,7 +10,7 @@ body:
     attributes:
       value: |
         ## Release Setup Form
-        
+
         Use this form to set up a new release and automate version updates in the repository. This form is designed to work with GitHub Copilot and automation tools to streamline the release process.
 
   - type: input
@@ -45,21 +45,21 @@ body:
         - New feature: Enhanced prompt building capabilities
         - Bug fix: Resolved memory optimization issues
         - Breaking change: Updated API structure
-        
+
         ## Migration Guide
         - Steps to upgrade from previous version
-        
+
         ## Dependencies
         - Updated dependencies and their versions
       value: |
         ## What's New
-        - 
-        
+        -
+
         ## Bug Fixes
-        - 
-        
+        -
+
         ## Dependencies
-        - 
+        -
     validations:
       required: true
 
@@ -140,11 +140,11 @@ body:
       placeholder: |
         ### Breaking Changes
         - List any breaking changes
-        
+
         ### Migration Steps
         1. Step one
         2. Step two
-        
+
         ### Compatibility
         - Node.js version requirements
         - Dependency updates

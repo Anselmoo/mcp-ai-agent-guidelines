@@ -62,15 +62,18 @@ class SpecGeneratorImpl {
 	async validateSpecification(
 		sessionState: DesignSessionState,
 		content: string,
-	): Promise<{ valid: boolean; issues: string[] }>
-	{
+	): Promise<{ valid: boolean; issues: string[] }> {
 		void sessionState;
 		void content;
 		return { valid: true, issues: [] };
 	}
 
 	async generateSpecification(
-		request: SpecRequest | (Omit<Partial<SpecRequest>, "sessionState"> & { sessionState: DesignSessionState }),
+		request:
+			| SpecRequest
+			| (Omit<Partial<SpecRequest>, "sessionState"> & {
+					sessionState: DesignSessionState;
+			  }),
 	): Promise<SpecificationResult> {
 		const {
 			sessionState,
@@ -83,7 +86,8 @@ class SpecGeneratorImpl {
 			metadata,
 		} = request;
 
-		const effectiveTitle = title || sessionState?.config?.goal || "Generated Specification";
+		const effectiveTitle =
+			title || sessionState?.config?.goal || "Generated Specification";
 
 		// Generate specification number
 		const specNumber = String(this.specCounter++).padStart(3, "0");
@@ -421,12 +425,9 @@ class SpecGeneratorImpl {
 		});
 
 		// Phase completion metrics
-		const completedPhases = (sessionState.phases
-			? Object.values(sessionState.phases)
-			: []
-		).filter(
-			(p) => p.status === "completed",
-		).length;
+		const completedPhases = (
+			sessionState.phases ? Object.values(sessionState.phases) : []
+		).filter((p) => p.status === "completed").length;
 		const totalPhases = sessionState.phases
 			? Object.keys(sessionState.phases).length
 			: 0;
@@ -499,11 +500,17 @@ class SpecGeneratorImpl {
 		diagrams.push("Component Interaction Diagram");
 		diagrams.push("Data Flow Diagram");
 
-		if (sessionState.phases && sessionState.phases.architecture?.status === "completed") {
+		if (
+			sessionState.phases &&
+			sessionState.phases.architecture?.status === "completed"
+		) {
 			diagrams.push("Deployment Architecture Diagram");
 		}
 
-		if (sessionState.phases && sessionState.phases.requirements?.status === "completed") {
+		if (
+			sessionState.phases &&
+			sessionState.phases.requirements?.status === "completed"
+		) {
 			diagrams.push("Requirements Traceability Diagram");
 		}
 

@@ -93,6 +93,8 @@ class ConstraintConsistencyEnforcerImpl {
 	private initialized = false;
 
 	async initialize(): Promise<void> {
+		// Always reset in-memory history to avoid cross-test leakage
+		this.enforcementHistory = new Map();
 		if (this.initialized) return;
 
 		try {
@@ -109,33 +111,36 @@ class ConstraintConsistencyEnforcerImpl {
 	/**
 	 * Enforce cross-session constraint consistency
 	 */
-		async enforceConsistency(
-			request: ConsistencyEnforcementRequest | DesignSessionState,
-		): Promise<ConsistencyEnforcementResult> {
-			await this.initialize();
+	async enforceConsistency(
+		request: ConsistencyEnforcementRequest | DesignSessionState,
+	): Promise<ConsistencyEnforcementResult> {
+		await this.initialize();
 
-			// Backwards-compat: allow passing sessionState directly
-				const reqObj = request as unknown as Record<string, unknown>;
-				const isSessionOnly =
-					request && typeof request === "object" &&
-					!("sessionState" in reqObj) &&
-					("config" in reqObj || "currentPhase" in reqObj);
+		// Backwards-compat: allow passing sessionState directly
+		const reqObj = request as unknown as Record<string, unknown>;
+		const isSessionOnly =
+			request &&
+			typeof request === "object" &&
+			!("sessionState" in reqObj) &&
+			("config" in reqObj || "currentPhase" in reqObj);
 
-			const sessionState = (isSessionOnly
+		const sessionState = (
+			isSessionOnly
 				? (request as DesignSessionState)
-				: (request as ConsistencyEnforcementRequest).sessionState) as DesignSessionState;
-				const constraintId = isSessionOnly
-				? undefined
-				: (request as ConsistencyEnforcementRequest).constraintId;
-				const phaseId = isSessionOnly
-				? undefined
-				: (request as ConsistencyEnforcementRequest).phaseId;
-				const context = isSessionOnly
-				? ""
-				: (request as ConsistencyEnforcementRequest).context ?? "";
-				const strictMode = isSessionOnly
-				? false
-				: (request as ConsistencyEnforcementRequest).strictMode ?? false;
+				: (request as ConsistencyEnforcementRequest).sessionState
+		) as DesignSessionState;
+		const constraintId = isSessionOnly
+			? undefined
+			: (request as ConsistencyEnforcementRequest).constraintId;
+		const phaseId = isSessionOnly
+			? undefined
+			: (request as ConsistencyEnforcementRequest).phaseId;
+		const context = isSessionOnly
+			? ""
+			: ((request as ConsistencyEnforcementRequest).context ?? "");
+		const strictMode = isSessionOnly
+			? false
+			: ((request as ConsistencyEnforcementRequest).strictMode ?? false);
 
 		// Validate constraints for current session
 		const currentValidation = constraintManager.validateConstraints(
@@ -197,56 +202,74 @@ class ConstraintConsistencyEnforcerImpl {
 		};
 	}
 
-		/**
-		 * Backwards-compatible wrapper: detect violations for a session
-		 */
-		async detectViolations(
-			request: { sessionState: DesignSessionState; constraintId?: string } | DesignSessionState,
-		): Promise<ConstraintConsistencyViolation[]> {
-			await this.initialize();
-			const reqObj = request as unknown as Record<string, unknown>;
-			const isSessionOnly = request && typeof request === "object" && !("sessionState" in reqObj);
-			const sessionState = (isSessionOnly
+	/**
+	 * Backwards-compatible wrapper: detect violations for a session
+	 */
+	async detectViolations(
+		request:
+			| { sessionState: DesignSessionState; constraintId?: string }
+			| DesignSessionState,
+	): Promise<ConstraintConsistencyViolation[]> {
+		await this.initialize();
+		const reqObj = request as unknown as Record<string, unknown>;
+		const isSessionOnly =
+			request && typeof request === "object" && !("sessionState" in reqObj);
+		const sessionState = (
+			isSessionOnly
 				? (request as DesignSessionState)
-				: (request as { sessionState: DesignSessionState }).sessionState) as DesignSessionState;
-			const constraintId = isSessionOnly
-				? undefined
-				: (request as { sessionState: DesignSessionState; constraintId?: string }).constraintId;
+				: (request as { sessionState: DesignSessionState }).sessionState
+		) as DesignSessionState;
+		const constraintId = isSessionOnly
+			? undefined
+			: (request as { sessionState: DesignSessionState; constraintId?: string })
+					.constraintId;
 
-			const result = await this.validateCrossSessionConsistency(sessionState, constraintId);
-			return result.violations;
-		}
+		const result = await this.validateCrossSessionConsistency(
+			sessionState,
+			constraintId,
+		);
+		return result.violations;
+	}
 
-		/**
-		 * Backwards-compatible wrapper: generate a simple string report
-		 */
-		async generateReport(
-			request: { sessionState: DesignSessionState; constraintId?: string } | DesignSessionState,
-		): Promise<string> {
-			await this.initialize();
-			const reqObj = request as unknown as Record<string, unknown>;
-			const isSessionOnly = request && typeof request === "object" && !("sessionState" in reqObj);
-			const sessionState = (isSessionOnly
+	/**
+	 * Backwards-compatible wrapper: generate a simple string report
+	 */
+	async generateReport(
+		request:
+			| { sessionState: DesignSessionState; constraintId?: string }
+			| DesignSessionState,
+	): Promise<string> {
+		await this.initialize();
+		const reqObj = request as unknown as Record<string, unknown>;
+		const isSessionOnly =
+			request && typeof request === "object" && !("sessionState" in reqObj);
+		const sessionState = (
+			isSessionOnly
 				? (request as DesignSessionState)
-				: (request as { sessionState: DesignSessionState }).sessionState) as DesignSessionState;
-			const constraintId = isSessionOnly
-				? undefined
-				: (request as { sessionState: DesignSessionState; constraintId?: string }).constraintId;
+				: (request as { sessionState: DesignSessionState }).sessionState
+		) as DesignSessionState;
+		const constraintId = isSessionOnly
+			? undefined
+			: (request as { sessionState: DesignSessionState; constraintId?: string })
+					.constraintId;
 
-			const validation = await this.validateCrossSessionConsistency(sessionState, constraintId);
-			const lines = [
-				`Cross-Session Constraint Consistency Report for ${sessionState?.config?.sessionId || "unknown-session"}`,
-				`Consistency Score: ${validation.consistencyScore}%`,
-				`Violations: ${validation.violations.length}`,
-			];
-			if (validation.violations.length > 0) {
-				lines.push("Details:");
-				for (const v of validation.violations.slice(0, 5)) {
-					lines.push(`- [${v.severity}] ${v.constraintId}: ${v.description}`);
-				}
+		const validation = await this.validateCrossSessionConsistency(
+			sessionState,
+			constraintId,
+		);
+		const lines = [
+			`Cross-Session Constraint Consistency Report for ${sessionState?.config?.sessionId || "unknown-session"}`,
+			`Consistency Score: ${validation.consistencyScore}%`,
+			`Violations: ${validation.violations.length}`,
+		];
+		if (validation.violations.length > 0) {
+			lines.push("Details:");
+			for (const v of validation.violations.slice(0, 5)) {
+				lines.push(`- [${v.severity}] ${v.constraintId}: ${v.description}`);
 			}
-			return lines.join("\n");
 		}
+		return lines.join("\n");
+	}
 
 	/**
 	 * Validate constraint consistency across previous sessions
@@ -700,7 +723,7 @@ Your resolution:`;
 		);
 	}
 
-		private getRelevantTemplateReferences(_phaseId: string): string[] {
+	private getRelevantTemplateReferences(_phaseId: string): string[] {
 		const templateRefs = constraintManager.getTemplateReferences();
 		return Object.values(templateRefs).slice(0, 3); // Return first 3 relevant templates
 	}

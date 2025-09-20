@@ -1,24 +1,28 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { guidelinesValidator } from "../../src/tools/guidelines-validator";
 
 describe("Guidelines Validator - Additional Coverage", () => {
 	it("should handle excellent compliance (score >= 85)", async () => {
 		const result = await guidelinesValidator({
-			practiceDescription: "We implement comprehensive hierarchical prompting with clear goal specification, structured requirements, and detailed audience targeting. Our prompts include proper context setting, step-by-step instructions, and clear success criteria. We regularly validate outputs and maintain consistency across all AI interactions.",
+			practiceDescription:
+				"We implement comprehensive hierarchical prompting with clear goal specification, structured requirements, and detailed audience targeting. Our prompts include proper context setting, step-by-step instructions, and clear success criteria. We regularly validate outputs and maintain consistency across all AI interactions.",
 			category: "prompting",
-			includeReferences: true
+			includeReferences: true,
 		});
 
 		const text = result.content[0].text;
 		expect(text).toContain("Excellent compliance");
 		expect(text).toContain("🟢");
-		expect(text).toContain("Your practice aligns very well with established guidelines");
+		expect(text).toContain(
+			"Your practice aligns very well with established guidelines",
+		);
 	});
 
 	it("should handle poor compliance (score < 50)", async () => {
 		const result = await guidelinesValidator({
-			practiceDescription: "We just ask AI questions without any structure or planning.",
-			category: "prompting"
+			practiceDescription:
+				"We just ask AI questions without any structure or planning.",
+			category: "prompting",
 		});
 
 		const text = result.content[0].text;
@@ -30,8 +34,9 @@ describe("Guidelines Validator - Additional Coverage", () => {
 
 	it("should handle good compliance (score 70-84)", async () => {
 		const result = await guidelinesValidator({
-			practiceDescription: "We structure our prompts with clear goals and provide context. We define audience and requirements. Sometimes we validate outputs but not consistently.",
-			category: "prompting"
+			practiceDescription:
+				"We structure our prompts with clear goals and provide context. We define audience and requirements. Sometimes we validate outputs but not consistently.",
+			category: "prompting",
 		});
 
 		const text = result.content[0].text;
@@ -42,12 +47,13 @@ describe("Guidelines Validator - Additional Coverage", () => {
 
 	it("should handle fair compliance (score 50-69)", async () => {
 		const result = await guidelinesValidator({
-			practiceDescription: "We try to structure prompts and sometimes provide context. Basic goal setting is present but not comprehensive.",
-			category: "prompting"
+			practiceDescription:
+				"We try to structure prompts and sometimes provide context. Basic goal setting is present but not comprehensive.",
+			category: "prompting",
 		});
 
 		const text = result.content[0].text;
-		// Just check that it produces a valid compliance assessment  
+		// Just check that it produces a valid compliance assessment
 		expect(text).toMatch(/🔴|🟠|🟡|🟢/); // Should have some status emoji
 		expect(text).toContain("compliance");
 		expect(text).toContain("Overall Score");
@@ -56,8 +62,9 @@ describe("Guidelines Validator - Additional Coverage", () => {
 	it("should handle no issues identified scenario", async () => {
 		// Test with a very comprehensive description that should have no issues
 		const result = await guidelinesValidator({
-			practiceDescription: "Comprehensive AI agent development with hierarchical prompting, clear goal specification, structured requirements, audience targeting, context setting, step-by-step instructions, success criteria validation, output verification, consistency maintenance, error handling, iterative improvement, documentation, monitoring, and best practices implementation.",
-			category: "architecture"
+			practiceDescription:
+				"Comprehensive AI agent development with hierarchical prompting, clear goal specification, structured requirements, audience targeting, context setting, step-by-step instructions, success criteria validation, output verification, consistency maintenance, error handling, iterative improvement, documentation, monitoring, and best practices implementation.",
+			category: "architecture",
 		});
 
 		const text = result.content[0].text;
@@ -69,8 +76,9 @@ describe("Guidelines Validator - Additional Coverage", () => {
 
 	it("should handle memory-optimization category", async () => {
 		const result = await guidelinesValidator({
-			practiceDescription: "We implement token optimization and context management",
-			category: "memory"
+			practiceDescription:
+				"We implement token optimization and context management",
+			category: "memory",
 		});
 
 		const text = result.content[0].text;
@@ -80,8 +88,9 @@ describe("Guidelines Validator - Additional Coverage", () => {
 
 	it("should handle code-hygiene category", async () => {
 		const result = await guidelinesValidator({
-			practiceDescription: "We follow clean code principles and maintain good documentation",
-			category: "code-management"
+			practiceDescription:
+				"We follow clean code principles and maintain good documentation",
+			category: "code-management",
 		});
 
 		const text = result.content[0].text;
@@ -91,8 +100,9 @@ describe("Guidelines Validator - Additional Coverage", () => {
 
 	it("should handle sprint-planning category", async () => {
 		const result = await guidelinesValidator({
-			practiceDescription: "We plan sprints with proper estimation and risk assessment",
-			category: "workflow"
+			practiceDescription:
+				"We plan sprints with proper estimation and risk assessment",
+			category: "workflow",
 		});
 
 		const text = result.content[0].text;
@@ -104,7 +114,7 @@ describe("Guidelines Validator - Additional Coverage", () => {
 		const result = await guidelinesValidator({
 			practiceDescription: "Basic prompt structure implementation",
 			category: "prompting",
-			inputFile: "prompt-guidelines.md"
+			inputFile: "prompt-guidelines.md",
 		});
 
 		const text = result.content[0].text;
@@ -115,7 +125,7 @@ describe("Guidelines Validator - Additional Coverage", () => {
 		const result = await guidelinesValidator({
 			practiceDescription: "Standard AI development practices",
 			category: "architecture",
-			includeReferences: false
+			includeReferences: false,
 		});
 
 		const text = result.content[0].text;
@@ -129,15 +139,16 @@ describe("Guidelines Validator - Additional Coverage", () => {
 		await expect(async () => {
 			await guidelinesValidator({
 				practiceDescription: "Some practice description",
-				category: "unknown-category" as any
+				category: "unknown-category" as any,
 			});
 		}).rejects.toThrow();
 	});
 
 	it("should detect multiple specific guideline violations", async () => {
 		const result = await guidelinesValidator({
-			practiceDescription: "We use simple prompts without structure, goals, or validation.",
-			category: "prompting"
+			practiceDescription:
+				"We use simple prompts without structure, goals, or validation.",
+			category: "prompting",
 		});
 
 		const text = result.content[0].text;
@@ -149,7 +160,7 @@ describe("Guidelines Validator - Additional Coverage", () => {
 	it("should handle very minimal description", async () => {
 		const result = await guidelinesValidator({
 			practiceDescription: "Basic approach",
-			category: "architecture"
+			category: "architecture",
 		});
 
 		const text = result.content[0].text;
@@ -161,7 +172,7 @@ describe("Guidelines Validator - Additional Coverage", () => {
 	it("should include best practices section", async () => {
 		const result = await guidelinesValidator({
 			practiceDescription: "Standard development process",
-			category: "architecture"
+			category: "architecture",
 		});
 
 		const text = result.content[0].text;

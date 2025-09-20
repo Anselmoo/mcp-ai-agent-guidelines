@@ -110,10 +110,7 @@ class PivotModuleImpl {
 			sessionState,
 			sampleContent,
 		);
-		const entropy = await this.measureEntropyLevel(
-			sessionState,
-			sampleContent,
-		);
+		const entropy = await this.measureEntropyLevel(sessionState, sampleContent);
 		const alts = await this.generateAlternatives(
 			sessionState,
 			complexity,

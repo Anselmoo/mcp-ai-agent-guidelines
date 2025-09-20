@@ -100,7 +100,13 @@ class RoadmapGeneratorImpl {
 		// No-op initializer for API surface compatibility
 	}
 
-	async generateRoadmap(request: RoadmapRequest | (Omit<Partial<RoadmapRequest>, "sessionState"> & { sessionState: DesignSessionState })): Promise<RoadmapResult> {
+	async generateRoadmap(
+		request:
+			| RoadmapRequest
+			| (Omit<Partial<RoadmapRequest>, "sessionState"> & {
+					sessionState: DesignSessionState;
+			  }),
+	): Promise<RoadmapResult> {
 		const {
 			sessionState,
 			title,
@@ -113,7 +119,8 @@ class RoadmapGeneratorImpl {
 			metadata,
 		} = request;
 
-		const effectiveTitle = title || sessionState?.config?.goal || "Generated Roadmap";
+		const effectiveTitle =
+			title || sessionState?.config?.goal || "Generated Roadmap";
 
 		// Generate roadmap number
 		const roadmapNumber = this.roadmapCounter++;
@@ -239,7 +246,9 @@ class RoadmapGeneratorImpl {
 		const timeframMonths = this.parseTimeframe(timeframe);
 
 		// Generate milestones based on design phases
-		const phases = sessionState.phases ? Object.values(sessionState.phases) : [];
+		const phases = sessionState.phases
+			? Object.values(sessionState.phases)
+			: [];
 		const phaseCount = phases.length;
 		const monthsPerPhase = Math.max(1, Math.floor(timeframMonths / phaseCount));
 

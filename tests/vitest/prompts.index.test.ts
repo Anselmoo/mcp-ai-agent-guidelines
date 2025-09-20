@@ -68,7 +68,8 @@ describe("prompts API", () => {
 
 	it("generates security-analysis prompt", async () => {
 		const res = (await getPrompt("security-analysis-prompt", {
-			codebase: "function login(user,pass){return db.query('SELECT * FROM users WHERE user='+user)}",
+			codebase:
+				"function login(user,pass){return db.query('SELECT * FROM users WHERE user='+user)}",
 			security_focus: "vulnerability-analysis",
 			language: "javascript",
 			compliance_standards: "OWASP-Top-10",
@@ -84,7 +85,8 @@ describe("prompts API", () => {
 
 	it("generates architecture-design prompt", async () => {
 		const res = (await getPrompt("architecture-design-prompt", {
-			system_requirements: "E-commerce platform with microservices. High availability, scalability, security",
+			system_requirements:
+				"E-commerce platform with microservices. High availability, scalability, security",
 			scale: "medium",
 			technology_stack: "Node.js, React, MongoDB",
 		})) as unknown as PromptResponse;
@@ -99,7 +101,8 @@ describe("prompts API", () => {
 		const res = (await getPrompt("debugging-assistant-prompt", {
 			error_description: "Memory leak in Node.js application",
 			context: "Express server with MongoDB connections",
-			attempted_solutions: "Tried restarting server, checked for event listeners",
+			attempted_solutions:
+				"Tried restarting server, checked for event listeners",
 		})) as unknown as PromptResponse;
 		const text = res.messages[0].content.text;
 		expect(text).toMatch(/Debugging Assistant/);

@@ -125,10 +125,19 @@ describe("model-compatibility-checker edge cases and branches", () => {
 
 	it("exercises maximum capability scoring", async () => {
 		const res = await modelCompatibilityChecker({
-			taskDescription: "Complex reasoning code generation with large context, multimodal, safety-critical, cost-sensitive",
+			taskDescription:
+				"Complex reasoning code generation with large context, multimodal, safety-critical, cost-sensitive",
 			requirements: [
-				"reasoning", "code", "large context", "speed", "multimodal", 
-				"safety", "cost", "visual", "production", "cheap"
+				"reasoning",
+				"code",
+				"large context",
+				"speed",
+				"multimodal",
+				"safety",
+				"cost",
+				"visual",
+				"production",
+				"cheap",
 			],
 			budget: "low",
 		});
@@ -151,8 +160,16 @@ describe("model-compatibility-checker edge cases and branches", () => {
 		const res = await modelCompatibilityChecker({
 			taskDescription: "Task that should generate very high scores",
 			requirements: [
-				"reasoning", "code", "large context", "speed", "multimodal", 
-				"safety", "cost", "analysis", "large-context", "fast"
+				"reasoning",
+				"code",
+				"large context",
+				"speed",
+				"multimodal",
+				"safety",
+				"cost",
+				"analysis",
+				"large-context",
+				"fast",
 			],
 			budget: "high",
 		});

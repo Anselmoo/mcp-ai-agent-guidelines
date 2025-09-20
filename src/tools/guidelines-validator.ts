@@ -32,7 +32,20 @@ interface ValidationResult {
 }
 
 export async function guidelinesValidator(args: unknown) {
-	const input = GuidelinesValidationSchema.parse(args);
+	// Accept alias 'description' for practiceDescription for broader compatibility
+	const pre = ((): unknown => {
+		if (args && typeof args === "object" && args !== null) {
+			const obj = args as Record<string, unknown>;
+			if (
+				obj.practiceDescription === undefined &&
+				typeof obj.description === "string"
+			) {
+				return { ...obj, practiceDescription: obj.description };
+			}
+		}
+		return args;
+	})();
+	const input = GuidelinesValidationSchema.parse(pre);
 
 	const validation = validateAgainstGuidelines(input);
 	const references = input.includeReferences
