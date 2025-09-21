@@ -29,7 +29,7 @@
 		"hooks:install": "lefthook install",
 		"hooks:uninstall": "lefthook uninstall",
 		"hooks:run": "lefthook run",
-		"prepare": "lefthook install"
+		"prepare": "if [ -d .git ]; then lefthook install; else echo 'Skipping lefthook install (no Git repository)'; fi"
 	},
 	"keywords": [
 		"mcp",
