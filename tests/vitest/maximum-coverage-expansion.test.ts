@@ -381,14 +381,8 @@ describe("Maximum Coverage Expansion", () => {
 			});
 			expect(roadmap).toBeDefined();
 
-			const milestones =
-				await roadmapGenerator.generateMilestones(sessionState);
-			expect(milestones).toBeDefined();
-
-			const timeline = await roadmapGenerator.generateTimeline(
-				sessionState,
-				"6 months",
-			);
+			// Functions generateMilestones and generateTimeline were removed as dead code
+			// Only generateRoadmap is used in the main application
 		});
 	});
 
