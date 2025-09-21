@@ -37,6 +37,7 @@ import {
 	designAssistant,
 } from "./tools/design/index.js";
 import { guidelinesValidator } from "./tools/guidelines-validator.js";
+import { iterativeCoverageEnhancer } from "./tools/iterative-coverage-enhancer.js";
 import { memoryContextOptimizer } from "./tools/memory-context-optimizer.js";
 import { mermaidDiagramGenerator } from "./tools/mermaid-diagram-generator.js";
 import { modelCompatibilityChecker } from "./tools/model-compatibility-checker.js";
@@ -457,6 +458,82 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						},
 					},
 					required: ["codeContent", "language"],
+				},
+			},
+			{
+				name: "iterative-coverage-enhancer",
+				description:
+					"Iteratively analyze code coverage, detect dead code, generate test suggestions, and adapt coverage thresholds for continuous improvement",
+				inputSchema: {
+					type: "object",
+					properties: {
+						projectPath: {
+							type: "string",
+							description: "Path to the project root directory",
+						},
+						language: {
+							type: "string",
+							description: "Primary programming language",
+						},
+						framework: {
+							type: "string",
+							description: "Framework or technology stack",
+						},
+						analyzeCoverageGaps: {
+							type: "boolean",
+							description: "Analyze and identify coverage gaps",
+						},
+						detectDeadCode: {
+							type: "boolean",
+							description: "Detect unused code for elimination",
+						},
+						generateTestSuggestions: {
+							type: "boolean",
+							description: "Generate test suggestions for uncovered code",
+						},
+						adaptThresholds: {
+							type: "boolean",
+							description: "Recommend adaptive coverage threshold adjustments",
+						},
+						currentCoverage: {
+							type: "object",
+							description: "Current coverage metrics",
+							properties: {
+								statements: { type: "number", minimum: 0, maximum: 100 },
+								functions: { type: "number", minimum: 0, maximum: 100 },
+								lines: { type: "number", minimum: 0, maximum: 100 },
+								branches: { type: "number", minimum: 0, maximum: 100 },
+							},
+						},
+						targetCoverage: {
+							type: "object",
+							description: "Target coverage goals",
+							properties: {
+								statements: { type: "number", minimum: 0, maximum: 100 },
+								functions: { type: "number", minimum: 0, maximum: 100 },
+								lines: { type: "number", minimum: 0, maximum: 100 },
+								branches: { type: "number", minimum: 0, maximum: 100 },
+							},
+						},
+						outputFormat: {
+							type: "string",
+							enum: ["markdown", "json", "text"],
+							description: "Output format for the report",
+						},
+						includeReferences: {
+							type: "boolean",
+							description: "Include references and best practice links",
+						},
+						includeCodeExamples: {
+							type: "boolean",
+							description: "Include code examples in suggestions",
+						},
+						generateCIActions: {
+							type: "boolean",
+							description: "Generate CI/CD integration actions",
+						},
+					},
+					required: [],
 				},
 			},
 			{
@@ -989,6 +1066,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 				return securityHardeningPromptBuilder(args);
 			case "code-hygiene-analyzer":
 				return codeHygieneAnalyzer(args);
+			case "iterative-coverage-enhancer":
+				return iterativeCoverageEnhancer(args);
 			case "mermaid-diagram-generator":
 				return mermaidDiagramGenerator(args);
 			case "memory-context-optimizer":
