@@ -128,6 +128,9 @@ describe("Final Coverage Push - 70% Target", () => {
 			expect(session).toBeDefined();
 
 			const guidance = await designAssistant.getPhaseGuidance(
+				sessionState,
+				"implementation",
+			);
 			expect(guidance).toBeDefined();
 
 			const constraints =

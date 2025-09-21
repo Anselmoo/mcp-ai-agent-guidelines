@@ -525,7 +525,9 @@ describe("Constraint Consistency Enforcer Integration", () => {
 		});
 
 		const validationResult =
-			await constraintConsistencyEnforcer.validateCrossSessionConsistency(
+			await constraintConsistencyEnforcer.validateCrossSessionConsistency([
+				sessionState,
+			]);
 
 		expect(validationResult).toBeDefined();
 		expect(validationResult.passed).toBeDefined();
@@ -559,8 +561,7 @@ describe("Constraint Consistency Enforcer Integration", () => {
 		};
 
 		const validationResult =
-			await constraintConsistencyEnforcer.validateCrossSessionConsistency(
-
+			await constraintConsistencyEnforcer.validateCrossSessionConsistency();
 		expect(validationResult).toBeDefined();
 		expect(validationResult.passed).toBeDefined();
 		expect(validationResult.consistencyScore).toBeGreaterThanOrEqual(0);
@@ -603,8 +604,7 @@ describe("Constraint Consistency Enforcer Integration", () => {
 		};
 
 		const validationResult =
-			await constraintConsistencyEnforcer.validateCrossSessionConsistency(
-
+			await constraintConsistencyEnforcer.validateCrossSessionConsistency();
 		expect(validationResult).toBeDefined();
 		expect(validationResult.passed).toBeDefined();
 	});
@@ -682,8 +682,7 @@ describe("Constraint Consistency Enforcer Integration", () => {
 		);
 
 		const validationResult =
-			await constraintConsistencyEnforcer.validateCrossSessionConsistency(
-
+			await constraintConsistencyEnforcer.validateCrossSessionConsistency();
 		expect(validationResult).toBeDefined();
 		expect(validationResult.passed).toBeDefined();
 		expect(validationResult.consistencyScore).toBeGreaterThanOrEqual(0);
