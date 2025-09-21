@@ -2,7 +2,6 @@
 import { z } from "zod";
 import { constraintManager } from "./constraint-manager.js";
 import type {
-	CoverageGap,
 	CoverageReport,
 	DesignPhase,
 	DesignSessionState,
@@ -543,7 +542,13 @@ ${
 		content: string,
 		sessionState: DesignSessionState,
 	): number {
+		if (!sessionState.currentPhase || !sessionState.phases) {
+			return 75; // Default completeness score
+		}
 		const currentPhase = sessionState.phases[sessionState.currentPhase];
+		if (!currentPhase) {
+			return 75; // Default completeness score
+		}
 		return this.assessContentCompleteness(content, currentPhase);
 	}
 
@@ -670,212 +675,6 @@ ${
 		}
 
 		return criteria.length > 0 ? (met / criteria.length) * 100 : 100;
-	}
-
-	// Missing methods expected by tests
-	async checkCoverage(sessionState: DesignSessionState): Promise<{
-		passed: boolean;
-		currentCoverage: number;
-		targetCoverage: number;
-		gaps: string[];
-		recommendations: string[];
-	}> {
-		const thresholds = constraintManager.getCoverageThresholds();
-		const computed = constraintManager.generateCoverageReport(
-			sessionState.config,
-			sessionState.artifacts?.map((a) => a.content).join("\n") || "",
-		);
-
-		const overall = sessionState.coverage?.overall ?? computed.overall ?? 0;
-		const passed = overall >= thresholds.overall_minimum;
-		const gaps: string[] = [];
-		const recommendations: string[] = [];
-
-		if (!passed) {
-			gaps.push(
-				`Overall coverage ${overall.toFixed(1)}% below threshold ${thresholds.overall_minimum}%`,
-			);
-			recommendations.push(
-				"Increase overall coverage to meet minimum threshold",
-			);
-		}
-
-		return {
-			passed,
-			currentCoverage: overall,
-			targetCoverage: thresholds.overall_minimum,
-			gaps,
-			recommendations,
-		};
-	}
-
-	async enforcePhaseCoverage(
-		sessionState: DesignSessionState,
-		phaseId: string,
-	): Promise<{ phase: string; coverage: number; canProceed: boolean }> {
-		const thresholds = constraintManager.getCoverageThresholds();
-		const computed = constraintManager.generateCoverageReport(
-			sessionState.config,
-			sessionState.artifacts?.map((a) => a.content).join("\n") || "",
-		);
-
-		const phaseCoverage =
-			sessionState.coverage?.phases?.[phaseId] ?? computed.phases[phaseId] ?? 0;
-		const canProceed = phaseCoverage >= thresholds.phase_minimum;
-
-		return {
-			phase: phaseId,
-			coverage: phaseCoverage,
-			canProceed,
-		};
-	}
-
-	async calculateDetailedCoverage(sessionState: DesignSessionState): Promise<{
-		overall: number;
-		phases: Record<string, number>;
-		constraints: Record<string, number>;
-		documentation: number;
-		testCoverage: number;
-	}> {
-		const computed = constraintManager.generateCoverageReport(
-			sessionState.config,
-			sessionState.artifacts?.map((a) => a.content).join("\n") || "",
-		);
-
-		const content =
-			sessionState.artifacts?.map((a) => a.content).join("\n") || "";
-		const docOverall = this.calculateDocumentationCoverage(content);
-		const testOverall = this.calculateTestCoverage(content);
-
-		return {
-			overall: sessionState.coverage?.overall ?? computed.overall ?? 0,
-			phases: sessionState.coverage?.phases ?? computed.phases ?? {},
-			constraints:
-				sessionState.coverage?.constraints ?? computed.constraints ?? {},
-			documentation: (() => {
-				const doc = sessionState.coverage?.documentation as unknown;
-				if (
-					doc &&
-					typeof doc === "object" &&
-					"overall" in doc &&
-					typeof (doc as { overall?: unknown }).overall === "number"
-				) {
-					return (doc as { overall: number }).overall;
-				}
-				return docOverall;
-			})(),
-			testCoverage: sessionState.coverage?.testCoverage ?? testOverall,
-		};
-	}
-
-	async identifyGaps(sessionState: DesignSessionState): Promise<CoverageGap[]> {
-		const coverageReport = constraintManager.generateCoverageReport(
-			sessionState.config,
-			sessionState.artifacts?.map((a) => a.content).join("\n") || "",
-		);
-		const thresholds = constraintManager.getCoverageThresholds();
-
-		const gaps: CoverageGap[] = [];
-
-		// Check overall gap
-		if (coverageReport.overall < thresholds.overall_minimum) {
-			gaps.push({
-				area: "overall",
-				current: coverageReport.overall,
-				target: thresholds.overall_minimum,
-				severity:
-					coverageReport.overall < 50
-						? "high"
-						: coverageReport.overall < 70
-							? "medium"
-							: "low",
-			});
-		}
-
-		// Check phase gaps
-		for (const [phaseId, phaseCoverage] of Object.entries(
-			coverageReport.phases,
-		)) {
-			if (phaseCoverage < thresholds.phase_minimum) {
-				gaps.push({
-					area: `phase:${phaseId}`,
-					current: phaseCoverage,
-					target: thresholds.phase_minimum,
-					severity:
-						phaseCoverage < 50 ? "high" : phaseCoverage < 70 ? "medium" : "low",
-				});
-			}
-		}
-
-		return gaps;
-	}
-
-	async generateRecommendations(
-		sessionState: DesignSessionState,
-	): Promise<string[]> {
-		const gaps = await this.identifyGaps(sessionState);
-		const recommendations: string[] = [];
-
-		for (const gap of gaps) {
-			switch (gap.severity) {
-				case "high":
-					recommendations.push(
-						`URGENT: Improve ${gap.area} coverage from ${gap.current.toFixed(1)}% to ${gap.target}%`,
-					);
-					break;
-				case "medium":
-					recommendations.push(
-						`Improve ${gap.area} coverage from ${gap.current.toFixed(1)}% to ${gap.target}%`,
-					);
-					break;
-				case "low":
-					recommendations.push(
-						`Consider improving ${gap.area} coverage from ${gap.current.toFixed(1)}% to ${gap.target}%`,
-					);
-					break;
-			}
-		}
-
-		if (recommendations.length === 0) {
-			recommendations.push("Coverage levels are meeting all thresholds");
-		}
-
-		return recommendations;
-	}
-
-	async validateMinimumCoverage(
-		sessionState: DesignSessionState,
-	): Promise<{ passed: boolean; violations: string[] }> {
-		const coverageReport = constraintManager.generateCoverageReport(
-			sessionState.config,
-			"Mock content for minimum coverage validation",
-		);
-		const thresholds = constraintManager.getCoverageThresholds();
-
-		const violations: string[] = [];
-
-		const meetsMinimum = coverageReport.overall >= thresholds.overall_minimum;
-		if (!meetsMinimum) {
-			violations.push(
-				`Overall coverage ${coverageReport.overall.toFixed(1)}% does not meet minimum threshold ${thresholds.overall_minimum}%`,
-			);
-		}
-
-		// Check each constraint minimum
-		for (const [constraintId, coverage] of Object.entries(
-			coverageReport.constraints,
-		)) {
-			if (coverage < thresholds.constraint_minimum) {
-				violations.push(
-					`Constraint ${constraintId} coverage ${coverage.toFixed(1)}% below minimum ${thresholds.constraint_minimum}%`,
-				);
-			}
-		}
-
-		return {
-			passed: violations.length === 0,
-			violations,
-		};
 	}
 }
 

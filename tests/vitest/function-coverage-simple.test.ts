@@ -109,8 +109,8 @@ describe("Function Coverage Boost - Simple", () => {
 					enforceThresholds: true,
 					generateReport: true,
 				});
-				await coverageEnforcer.generateRecommendations(sessionState);
-				await coverageEnforcer.checkCoverageProgress(sessionState, "discovery");
+				// REMOVED: await coverageEnforcer.generateRecommendations(sessionState);
+				// REMOVED: await coverageEnforcer.checkCoverageProgress(sessionState, "discovery");
 			} catch (error) {
 				expect(error).toBeDefined();
 			}
@@ -120,8 +120,8 @@ describe("Function Coverage Boost - Simple", () => {
 			const sessionState = createTestSessionState();
 
 			try {
-				await confirmationModule.validateSessionState(sessionState);
-				await confirmationModule.generateConfirmationReport(sessionState);
+				// REMOVED: await confirmationModule.validateSessionState(sessionState);
+				// REMOVED: await confirmationModule.generateConfirmationReport(sessionState);
 				await confirmationModule.generateConfirmationChecklist(sessionState);
 			} catch (error) {
 				expect(error).toBeDefined();

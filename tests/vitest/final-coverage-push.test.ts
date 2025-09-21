@@ -94,25 +94,26 @@ describe("Final Coverage Push - 70% Target", () => {
 			const sessionState = createSessionState();
 
 			await coverageEnforcer.initialize();
-			const coverage = await coverageEnforcer.checkCoverage(sessionState);
-			expect(coverage).toBeDefined();
 
-			const detailed =
-				await coverageEnforcer.calculateDetailedCoverage(sessionState);
-			expect(detailed).toBeDefined();
-
-			const gaps = await coverageEnforcer.identifyGaps(sessionState);
-			expect(gaps).toBeDefined();
-
-			const recommendations =
-				await coverageEnforcer.generateRecommendations(sessionState);
-			expect(recommendations).toBeDefined();
-
-			const phaseCoverage = await coverageEnforcer.enforcePhaseCoverage(
+			// Test the main enforceCoverage method with different configurations
+			const coverage1 = await coverageEnforcer.enforceCoverage({
 				sessionState,
-				"implementation",
-			);
-			expect(phaseCoverage).toBeDefined();
+				content: "Test content for coverage enforcement",
+				enforceThresholds: true,
+				generateReport: true,
+			});
+			expect(coverage1).toBeDefined();
+			expect(coverage1.passed).toBeDefined();
+			expect(coverage1.coverage).toBeDefined();
+
+			const coverage2 = await coverageEnforcer.enforceCoverage({
+				sessionState,
+				content: "Test content for coverage enforcement",
+				enforceThresholds: false,
+				generateReport: false,
+			});
+			expect(coverage2).toBeDefined();
+			expect(coverage2.reportMarkdown).toBeUndefined();
 		});
 
 		it("should test design assistant all methods", async () => {
@@ -128,7 +129,7 @@ describe("Final Coverage Push - 70% Target", () => {
 
 			const guidance = await designAssistant.getPhaseGuidance(
 				sessionState,
-				"design",
+				"implementation",
 			);
 			expect(guidance).toBeDefined();
 
@@ -161,19 +162,30 @@ describe("Final Coverage Push - 70% Target", () => {
 			const sessionState = createSessionState();
 
 			await specGenerator.initialize();
-			const spec = await specGenerator.generateSpecification({
-				sessionState,
-				specType: "technical",
-				includeConstraints: true,
-				includeValidation: true,
-			});
-			expect(spec).toBeDefined();
 
-			const validation = await specGenerator.validateSpecification(
+			// Test generateSpecification with different options
+			const spec1 = await specGenerator.generateSpecification({
 				sessionState,
-				"test spec",
-			);
-			expect(validation).toBeDefined();
+				title: "Technical Specification",
+				type: "technical",
+				includeMetrics: true,
+				includeExamples: true,
+				includeDiagrams: true,
+			});
+			expect(spec1).toBeDefined();
+			expect(spec1.artifact).toBeDefined();
+			expect(spec1.content).toBeDefined();
+
+			const spec2 = await specGenerator.generateSpecification({
+				sessionState,
+				title: "Functional Specification",
+				type: "functional",
+				includeMetrics: false,
+				includeExamples: false,
+				includeDiagrams: false,
+			});
+			expect(spec2).toBeDefined();
+			expect(spec2.artifact).toBeDefined();
 		});
 	});
 

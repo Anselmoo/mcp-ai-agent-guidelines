@@ -59,15 +59,6 @@ class SpecGeneratorImpl {
 		// No-op initializer for API surface compatibility
 	}
 
-	async validateSpecification(
-		sessionState: DesignSessionState,
-		content: string,
-	): Promise<{ valid: boolean; issues: string[] }> {
-		void sessionState;
-		void content;
-		return { valid: true, issues: [] };
-	}
-
 	async generateSpecification(
 		request:
 			| SpecRequest

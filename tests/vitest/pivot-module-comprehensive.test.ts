@@ -219,40 +219,20 @@ describe("Pivot Module Comprehensive Function Coverage", () => {
 		expect(result.reason).toBeDefined();
 	});
 
-	it("should identify bottlenecks in system architecture", async () => {
+	it.skip("should identify bottlenecks in system architecture", async () => {
+		// Function identifyBottlenecks was removed as dead code - not used in main application
 		const sessionState = createTestSessionState(70);
 
-		const bottlenecks = await pivotModule.identifyBottlenecks(sessionState);
-
-		expect(bottlenecks).toBeDefined();
-		expect(Array.isArray(bottlenecks)).toBe(true);
-		expect(bottlenecks.length).toBeGreaterThanOrEqual(0);
+		// Test skipped - function removed during dead code cleanup
+		expect(true).toBe(true);
 	});
 
-	it("should recommend simplification strategies", async () => {
+	it.skip("should recommend simplification strategies", async () => {
+		// Function recommendSimplification was removed as dead code - not used in main application
 		const complexSessionState = createTestSessionState(55);
-		// Add more complexity indicators
-		complexSessionState.artifacts.push({
-			id: "complex-001",
-			name: "Complex Architecture",
-			type: "architecture",
-			content:
-				"Highly complex distributed system with multiple microservices, event sourcing, CQRS patterns, and complex data flows requiring significant computational resources",
-			format: "markdown",
-			timestamp: "2024-01-23T10:00:00Z",
-			metadata: {
-				complexity: "extreme",
-				dependencies: "high",
-				maintenance: "difficult",
-			},
-		});
 
-		const recommendations =
-			await pivotModule.recommendSimplification(complexSessionState);
-
-		expect(recommendations).toBeDefined();
-		expect(Array.isArray(recommendations)).toBe(true);
-		expect(recommendations.length).toBeGreaterThanOrEqual(0);
+		// Test skipped - function removed during dead code cleanup
+		expect(true).toBe(true);
 	});
 
 	it("should handle low urgency pivot evaluation", async () => {
