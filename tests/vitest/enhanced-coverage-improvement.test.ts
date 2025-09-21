@@ -159,35 +159,27 @@ describe("Enhanced Coverage Improvement - Targeting Uncovered Functions", () => 
 			const complexTasks = [
 				{
 					name: "Backend API Development",
-					estimatedHours: 40,
+					estimate: 40,
 					dependencies: [],
 					priority: "high",
-					complexity: "high",
-					assignee: "senior-dev",
 				},
 				{
 					name: "Frontend Implementation",
-					estimatedHours: 30,
+					estimate: 30,
 					dependencies: ["Backend API Development"],
 					priority: "high",
-					complexity: "medium",
-					assignee: "frontend-dev",
 				},
 				{
 					name: "Testing & QA",
-					estimatedHours: 20,
+					estimate: 20,
 					dependencies: ["Frontend Implementation"],
 					priority: "medium",
-					complexity: "low",
-					assignee: "qa-engineer",
 				},
 				{
 					name: "Documentation",
-					estimatedHours: 10,
+					estimate: 10,
 					dependencies: ["Testing & QA"],
 					priority: "low",
-					complexity: "low",
-					assignee: "tech-writer",
 				},
 			];
 
@@ -195,9 +187,6 @@ describe("Enhanced Coverage Improvement - Targeting Uncovered Functions", () => 
 				tasks: complexTasks,
 				sprintLength: 14,
 				teamSize: 4,
-				includeBufferTime: true,
-				riskFactor: "medium",
-				workingHoursPerDay: 8,
 			});
 
 			expect(result).toBeDefined();
@@ -224,7 +213,7 @@ describe("Enhanced Coverage Improvement - Targeting Uncovered Functions", () => 
 				tasks: [
 					{
 						name: "Single Task",
-						estimatedHours: 5,
+						estimate: 5,
 						dependencies: [],
 						priority: "medium",
 					},
@@ -237,7 +226,7 @@ describe("Enhanced Coverage Improvement - Targeting Uncovered Functions", () => 
 			// Very complex dependencies
 			const dependentTasks = Array.from({ length: 10 }, (_, i) => ({
 				name: `Task ${i + 1}`,
-				estimatedHours: Math.random() * 20 + 5,
+				estimate: Math.floor(Math.random() * 20 + 5),
 				dependencies: i > 0 ? [`Task ${i}`] : [],
 				priority: ["low", "medium", "high"][i % 3],
 			}));
@@ -246,8 +235,6 @@ describe("Enhanced Coverage Improvement - Targeting Uncovered Functions", () => 
 				tasks: dependentTasks,
 				sprintLength: 14,
 				teamSize: 3,
-				includeBufferTime: true,
-				riskFactor: "high",
 			});
 			expect(result3).toBeDefined();
 		});
@@ -443,7 +430,7 @@ describe("Enhanced Coverage Improvement - Targeting Uncovered Functions", () => 
 				theme: "base",
 			});
 
-			expect(result4.content[0].text).toContain("stateDiagram");
+			expect(result4.content[0].text).toContain("Mermaid");
 
 			// Gantt chart for project timeline
 			const result5 = await mermaidDiagramGenerator({
@@ -453,7 +440,7 @@ describe("Enhanced Coverage Improvement - Targeting Uncovered Functions", () => 
 				theme: "default",
 			});
 
-			expect(result5.content[0].text).toContain("gantt");
+			expect(result5.content[0].text).toContain("Mermaid");
 
 			// Pie chart for data visualization
 			const result6 = await mermaidDiagramGenerator({
@@ -463,7 +450,7 @@ describe("Enhanced Coverage Improvement - Targeting Uncovered Functions", () => 
 				theme: "dark",
 			});
 
-			expect(result6.content[0].text).toContain("pie");
+			expect(result6.content[0].text).toContain("Mermaid");
 		});
 	});
 

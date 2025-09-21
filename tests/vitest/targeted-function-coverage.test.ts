@@ -102,6 +102,10 @@ describe("Targeted Function Coverage Improvement", () => {
 			expect(hintsMarkdown).toContain("Few-Shot");
 			expect(hintsMarkdown).toContain("Chain-of-Thought");
 
+			const hintsXml = buildTechniqueHintsSection(
+				["self-consistency", "tree-of-thoughts"],
+				"xml",
+			);
 			// Check that the XML output is different from markdown
 			expect(hintsXml).toContain("Technique Hints");
 			// Just check it's different content format, not specific techniques
@@ -178,15 +182,23 @@ describe("Targeted Function Coverage Improvement", () => {
 				"../../src/prompts/index.js"
 			);
 
-			// Test listing prompts
-			const prompts = listPrompts();
+			// Test listing prompts - it returns a Promise
+			const prompts = await listPrompts();
 			expect(prompts).toBeDefined();
 			expect(prompts).toBeInstanceOf(Array);
 			expect(prompts.length).toBeGreaterThan(0);
 
 			// Test getting specific prompts (they return promises)
 			for (const prompt of prompts.slice(0, 3)) {
-				const content = await getPrompt(prompt.name, {});
+				// Create mock arguments for required parameters
+				const mockArgs: Record<string, unknown> = {};
+				for (const arg of prompt.arguments) {
+					if (arg.required) {
+						mockArgs[arg.name] = `mock-${arg.name}`;
+					}
+				}
+
+				const content = await getPrompt(prompt.name, mockArgs);
 				expect(content).toBeDefined();
 				expect(content.messages).toBeInstanceOf(Array);
 			}
