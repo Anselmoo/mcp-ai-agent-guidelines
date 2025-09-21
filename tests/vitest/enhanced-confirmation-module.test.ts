@@ -126,7 +126,7 @@ describe("Enhanced Confirmation Module", () => {
 		const result =
 			// await // confirmationModule.confirmPhaseCompletionWithPrompt(request);
 
-		expect(result).toBeDefined();
+			expect(result).toBeDefined();
 		expect(result.passed).toBeDefined();
 		expect(result.coverage).toBeGreaterThan(0);
 		expect(result.rationale).toBeDefined();
@@ -154,7 +154,7 @@ describe("Enhanced Confirmation Module", () => {
 		const result =
 			// await // confirmationModule.confirmPhaseCompletionWithPrompt(request);
 
-		expect(result).toBeDefined();
+			expect(result).toBeDefined();
 		expect(result.prompt).toBeDefined();
 		expect(typeof result.prompt).toBe("string");
 		expect(result.prompt).toContain("Implementation Phase Confirmation");
@@ -165,7 +165,8 @@ describe("Enhanced Confirmation Module", () => {
 	it.skip("should generate standalone confirmation prompts", async () => {
 		const sessionState = createTestSessionState();
 
-		const prompt = "Implementation Phase Confirmation - Deterministic confirmation prompt"; // REMOVED: await confirmationModule.generateConfirmationPrompt(sessionState, "implementation", "Contextual implementation content");
+		const prompt =
+			"Implementation Phase Confirmation - Deterministic confirmation prompt"; // REMOVED: await confirmationModule.generateConfirmationPrompt(sessionState, "implementation", "Contextual implementation content");
 
 		expect(prompt).toBeDefined();
 		expect(typeof prompt).toBe("string");
@@ -192,7 +193,7 @@ describe("Enhanced Confirmation Module", () => {
 		const result =
 			// await // confirmationModule.confirmPhaseCompletionWithPrompt(request);
 
-		expect(result.rationale?.decisions).toBeDefined();
+			expect(result.rationale?.decisions).toBeDefined();
 		expect(result.rationale?.decisions.length).toBeGreaterThan(0);
 
 		// Check decision structure
@@ -224,7 +225,7 @@ describe("Enhanced Confirmation Module", () => {
 		const result =
 			// await // confirmationModule.confirmPhaseCompletionWithPrompt(request);
 
-		expect(result.rationale?.assumptions).toBeDefined();
+			expect(result.rationale?.assumptions).toBeDefined();
 		expect(result.rationale?.assumptions.length).toBeGreaterThan(0);
 
 		// Should include extracted assumptions plus defaults
@@ -251,7 +252,7 @@ describe("Enhanced Confirmation Module", () => {
 		const result =
 			// await // confirmationModule.confirmPhaseCompletionWithPrompt(request);
 
-		expect(result.rationale?.alternatives).toBeDefined();
+			expect(result.rationale?.alternatives).toBeDefined();
 		expect(result.rationale?.alternatives.length).toBeGreaterThan(0);
 
 		// Check alternative structure
@@ -285,7 +286,7 @@ describe("Enhanced Confirmation Module", () => {
 		const result =
 			// await // confirmationModule.confirmPhaseCompletionWithPrompt(request);
 
-		expect(result.rationale?.risks).toBeDefined();
+			expect(result.rationale?.risks).toBeDefined();
 		expect(result.rationale?.risks.length).toBeGreaterThan(0);
 
 		// Check risk structure
@@ -389,11 +390,11 @@ describe("Enhanced Confirmation Module", () => {
 
 		// Perform confirmation to generate rationale
 		// REMOVED: await confirmationModule.confirmPhaseCompletionWithPrompt({
-//			sessionState,
-//			phaseId: "implementation",
-			content: "Implementation decisions for YAML export",
-			captureRationale: true,
-		});
+		//	sessionState,
+		//	phaseId: "implementation",
+		//	content: "Implementation decisions for YAML export",
+		//	captureRationale: true,
+		// });
 
 		const documentation = await confirmationModule.exportRationaleDocumentation(
 			uniqueSessionId,
