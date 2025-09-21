@@ -457,67 +457,9 @@ class PivotModuleImpl {
 		return "CONTINUE: Complexity and uncertainty are within acceptable ranges.";
 	}
 
-	async identifyBottlenecks(
-		sessionState: DesignSessionState,
-	): Promise<string[]> {
-		const bottlenecks: string[] = [];
-
-		// Analyze session state for bottlenecks
-		const blockedPhases = Object.values(sessionState.phases).filter(
-			(p) => p.status === "blocked",
-		);
-		if (blockedPhases.length > 0) {
-			bottlenecks.push(
-				`Blocked phases: ${blockedPhases.map((p) => p.name).join(", ")}`,
-			);
-		}
-
-		const overduePhasesCount = Object.values(sessionState.phases).filter(
-			(p) => p.status === "in-progress" && p.coverage < 50,
-		).length;
-		if (overduePhasesCount > 0) {
-			bottlenecks.push(`${overduePhasesCount} phases with low progress`);
-		}
-
-		const violationCount = sessionState.coverage.overall < 70 ? 1 : 0;
-		if (violationCount > 0) {
-			bottlenecks.push("Overall coverage below acceptable threshold");
-		}
-
-		return bottlenecks;
-	}
-
-	async recommendSimplification(
-		_sessionState: DesignSessionState,
-		complexity: number,
-	): Promise<string[]> {
-		const recommendations: string[] = [];
-
-		if (complexity > 90) {
-			recommendations.push(
-				"Consider a radical simplification - reduce to core MVP features only",
-			);
-			recommendations.push(
-				"Replace complex custom solutions with proven third-party tools",
-			);
-		}
-
-		if (complexity > 80) {
-			recommendations.push(
-				"Break the system into smaller, independent modules",
-			);
-			recommendations.push("Defer advanced features to future phases");
-			recommendations.push("Use simpler, more mature technology choices");
-		}
-
-		if (complexity > 70) {
-			recommendations.push("Review and eliminate unnecessary requirements");
-			recommendations.push("Simplify user interfaces and workflows");
-			recommendations.push("Reduce the number of external integrations");
-		}
-
-		return recommendations;
-	}
+	// Removed unused methods: identifyBottlenecks() and recommendSimplification()
+	// These methods were not used anywhere in the main application
+	// Only test-specific methods that don't provide real business value
 }
 
 // Export singleton instance

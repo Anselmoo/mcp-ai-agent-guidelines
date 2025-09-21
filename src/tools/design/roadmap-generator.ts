@@ -215,25 +215,9 @@ class RoadmapGeneratorImpl {
 		};
 	}
 
-	// Public wrapper expected by tests
-	async generateMilestones(
-		sessionState: DesignSessionState,
-	): Promise<Milestone[]> {
-		return this.internalGenerateMilestones(sessionState, "6 months", "medium");
-	}
-
-	// Public wrapper expected by tests
-	async generateTimeline(
-		sessionState: DesignSessionState,
-		timeframe: string = "6 months",
-	): Promise<TimelineEvent[]> {
-		const milestones = this.internalGenerateMilestones(
-			sessionState,
-			timeframe,
-			"medium",
-		);
-		return this.internalGenerateTimeline(milestones, sessionState);
-	}
+	// Removed unused public wrappers: generateMilestones() and generateTimeline()
+	// These methods were only used in tests, not in the main application
+	// Internal implementation methods are retained for existing usage
 
 	// Internal implementation retained for existing usage
 	private internalGenerateMilestones(
