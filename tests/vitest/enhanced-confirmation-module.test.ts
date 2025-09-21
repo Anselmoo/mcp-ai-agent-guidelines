@@ -360,11 +360,11 @@ describe("Enhanced Confirmation Module", () => {
 
 		// Perform confirmation to generate rationale
 		// REMOVED: await confirmationModule.confirmPhaseCompletionWithPrompt({
-//			sessionState,
-//			phaseId: "implementation",
-			content: "Implementation decisions for JSON export",
-			captureRationale: true,
-		});
+		//	sessionState,
+		//	phaseId: "implementation",
+		//	content: "Implementation decisions for JSON export",
+		//	captureRationale: true,
+		// });
 
 		const documentation = await confirmationModule.exportRationaleDocumentation(
 			uniqueSessionId,

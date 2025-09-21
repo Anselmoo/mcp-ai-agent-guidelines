@@ -385,7 +385,10 @@ describe("Maximum Coverage Expansion", () => {
 				await roadmapGenerator.generateMilestones(sessionState);
 			expect(milestones).toBeDefined();
 
-			const timeline = await roadmapGenerator.generateTimeline();
+			const timeline = await roadmapGenerator.generateTimeline(
+				sessionState,
+				"6 months",
+			);
 		});
 	});
 
