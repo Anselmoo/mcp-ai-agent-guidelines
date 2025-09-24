@@ -131,7 +131,7 @@ body:
     attributes:
       label: 📦 Package Version
       description: "Which version of mcp-ai-agent-guidelines are you using?"
-      placeholder: "e.g., 0.6.0, latest, or commit hash"
+      placeholder: "e.g., 0.7.0, latest, or commit hash"
     validations:
       required: true
 

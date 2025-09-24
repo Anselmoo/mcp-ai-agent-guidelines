@@ -1,6 +1,6 @@
 {
 	"name": "mcp-ai-agent-guidelines",
-	"version": "0.6.0",
+	"version": "0.7.0",
 	"description": "A comprehensive Model Context Protocol server providing professional tools, resources, and prompts for implementing AI agent best practices",
 	"main": "dist/index.js",
 	"type": "module",
