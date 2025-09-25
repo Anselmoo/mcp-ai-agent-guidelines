@@ -117,9 +117,11 @@ export async function iterativeCoverageEnhancer(args: unknown) {
 
 	const references = input.includeReferences
 		? buildReferencesSection([
-				"Coverage-driven development best practices: https://martinfowler.com/articles/coverage.html",
+				"Coverage-driven development best practices: https://martinfowler.com/bliki/TestCoverage.html",
 				"Dead code elimination techniques: https://refactoring.guru/smells/dead-code",
 				"Test-driven development guide: https://testdriven.io/",
+			    "The benefits of consistent testing: https://abseil.io/resources/swe-book/html/ch11.html#benefits_of_testing_code",
+				"GitHub’s Engineering System Success Playbook: https://resources.github.com/engineering-system-success-playbook/",
 				"Automated testing strategies: https://testing.googleblog.com/",
 				"Code coverage analysis: https://docs.github.com/en/actions/automating-builds-and-tests/about-continuous-integration",
 			])
@@ -449,7 +451,7 @@ ${phase.actions.map((a) => `- ${a}`).join("\n")}
 function generateCIActionsSection(): string {
 	return `## 🔄 CI/CD Integration Actions
 
-### GitHub Actions Workflow Example
+### GitHub Actions Workflow Example 
 
 \`\`\`yaml
 name: Iterative Coverage Enhancement
@@ -490,8 +492,14 @@ The system can automatically adjust coverage thresholds based on:
 
 ### Integration with Existing Tools
 
-- **Coverage Reports**: Integrates with vitest, jest, nyc, c8
+- **Coverage Reports**: Integrates with vitest, jest, nyc, c8, pytest-cov, coverage
 - **Dead Code Detection**: AST analysis, dependency graph analysis
 - **Test Generation**: Template-based test stub creation
-- **Threshold Management**: Dynamic adjustment based on project metrics`;
+- **Threshold Management**: Dynamic adjustment based on project metrics
+
+### Further Information ℹ️
+
+- [GitHub’s Engineering System Success Playbook](https://resources.github.com/engineering-system-success-playbook/)
+- [GitHub Workflow Syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax?search-overlay-input=coverage&search-overlay-ask-ai=true)
+- [GitHub Copilot for Coverage](https://docs.github.com/en/copilot/tutorials/roll-out-at-scale/drive-downstream-impact/increase-test-coverage)`;
 }
