@@ -120,7 +120,7 @@ export async function iterativeCoverageEnhancer(args: unknown) {
 				"Coverage-driven development best practices: https://martinfowler.com/bliki/TestCoverage.html",
 				"Dead code elimination techniques: https://refactoring.guru/smells/dead-code",
 				"Test-driven development guide: https://testdriven.io/",
-			    "The benefits of consistent testing: https://abseil.io/resources/swe-book/html/ch11.html#benefits_of_testing_code",
+				"The benefits of consistent testing: https://abseil.io/resources/swe-book/html/ch11.html#benefits_of_testing_code",
 				"GitHub’s Engineering System Success Playbook: https://resources.github.com/engineering-system-success-playbook/",
 				"Automated testing strategies: https://testing.googleblog.com/",
 				"Code coverage analysis: https://docs.github.com/en/actions/automating-builds-and-tests/about-continuous-integration",
@@ -451,7 +451,7 @@ ${phase.actions.map((a) => `- ${a}`).join("\n")}
 function generateCIActionsSection(): string {
 	return `## 🔄 CI/CD Integration Actions
 
-### GitHub Actions Workflow Example 
+### GitHub Actions Workflow Example
 
 \`\`\`yaml
 name: Iterative Coverage Enhancement
