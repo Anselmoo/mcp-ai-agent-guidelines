@@ -7,12 +7,14 @@ Successfully implemented a deterministic, context-driven Design Assistant & Cons
 ## Core Framework Components
 
 ### 1. Design Assistant (`design-assistant.ts`)
+
 - **Main orchestrator** for the entire design workflow
 - Handles 8 different actions: start-session, advance-phase, validate-phase, evaluate-pivot, generate-artifacts, enforce-coverage, get-status, load-constraints
 - Provides deterministic responses with consistent structure
 - Integrates all sub-modules for comprehensive design support
 
 ### 2. Constraint Manager (`constraint-manager.ts`)
+
 - **YAML/JSON configuration loader** with Zod schema validation
 - Manages design constraints organized by category (architectural, technical, process)
 - Provides coverage calculation and validation against constraints
@@ -20,30 +22,35 @@ Successfully implemented a deterministic, context-driven Design Assistant & Cons
 - Includes default constraint configuration as fallback
 
 ### 3. Design Phase Workflow (`design-phase-workflow.ts`)
+
 - **Structured 5-phase design process**: discovery → requirements → architecture → specification → planning
 - Automatic phase progression with validation gates
 - Session state management and history tracking
 - Phase dependency management and validation
 
 ### 4. Confirmation Module (`confirmation-module.ts`)
+
 - **Deterministic validation** using micro-method keynames
 - Phase completion validation with coverage thresholds
 - Quality assessment with multiple factors (length, structure, clarity, completeness)
 - Configurable strict/lenient validation modes
 
 ### 5. Pivot Module (`pivot-module.ts`)
+
 - **Complexity and entropy analysis** with configurable thresholds
 - Strategic pivot recommendations when thresholds are exceeded
 - Alternative suggestion generation based on analysis results
 - Bottleneck identification and simplification recommendations
 
 ### 6. Coverage Enforcer (`coverage-enforcer.ts`)
+
 - **≥85% coverage enforcement** across phases, constraints, and documentation
 - Comprehensive coverage reporting with markdown generation
 - Violation tracking with severity levels (critical, warning, info)
 - Action item generation for addressing coverage gaps
 
 ### 7. Artifact Generators
+
 - **ADR Generator** (`adr-generator.ts`): Automated Architecture Decision Records
 - **Specification Generator** (`spec-generator.ts`): Technical specifications with multiple output formats
 - **Roadmap Generator** (`roadmap-generator.ts`): Implementation roadmaps with timeline and risk analysis
@@ -51,37 +58,44 @@ Successfully implemented a deterministic, context-driven Design Assistant & Cons
 ## Key Features Delivered
 
 ### ✅ Deterministic Design Workflow
+
 - Reproducible design sessions with consistent outcomes
 - Phase-based progression with clear entry/exit criteria
 - Automated validation and quality gates
 
 ### ✅ Context-Driven Constraint Framework
+
 - YAML/JSON configuration for flexible rule management
 - Schema validation for configuration integrity
 - Category-based constraint organization (architectural, technical, business, process)
 
 ### ✅ Coverage Enforcement (≥85%)
+
 - Multi-dimensional coverage calculation (phases, constraints, documentation, tests)
 - Automated violation detection and reporting
 - Actionable recommendations for improvement
 
 ### ✅ Deterministic Confirmation & Pivot Modules
+
 - Micro-method keynames for consistent validation operations
 - Complexity/entropy scoring with threshold-based pivot triggers
 - Alternative generation for strategic direction changes
 
 ### ✅ Space 7 Template Integration
+
 - Template reference configuration in YAML
 - Constraint mapping to external design guidelines
 - Extensible template system for different domains
 
 ### ✅ Automated Artifact Generation
+
 - Architecture Decision Records (ADR) with proper formatting
 - Technical specifications with comprehensive sections
 - Implementation roadmaps with timeline and risk analysis
 - Multiple output formats (Markdown, Mermaid, JSON, YAML)
 
 ### ✅ Modular Architecture
+
 - Clear separation of concerns across modules
 - TypeScript type safety throughout
 - Singleton pattern for consistent state management
@@ -124,29 +138,29 @@ coverage_rules:
 ```typescript
 // Start a design session
 const result = await designAssistant.processRequest({
-  action: 'start-session',
-  sessionId: 'my-project',
+  action: "start-session",
+  sessionId: "my-project",
   config: {
-    context: 'Building a task management system',
-    goal: 'Create scalable, user-friendly platform',
-    requirements: ['User auth', 'Task creation', 'Real-time features'],
-    coverageThreshold: 85
-  }
+    context: "Building a task management system",
+    goal: "Create scalable, user-friendly platform",
+    requirements: ["User auth", "Task creation", "Real-time features"],
+    coverageThreshold: 85,
+  },
 });
 
 // Validate phase content
 const validation = await designAssistant.processRequest({
-  action: 'validate-phase',
-  sessionId: 'my-project',
-  phaseId: 'discovery',
-  content: '# Discovery Results...'
+  action: "validate-phase",
+  sessionId: "my-project",
+  phaseId: "discovery",
+  content: "# Discovery Results...",
 });
 
 // Generate artifacts
 const artifacts = await designAssistant.processRequest({
-  action: 'generate-artifacts',
-  sessionId: 'my-project',
-  artifactTypes: ['adr', 'specification', 'roadmap']
+  action: "generate-artifacts",
+  sessionId: "my-project",
+  artifactTypes: ["adr", "specification", "roadmap"],
 });
 ```
 
@@ -172,16 +186,19 @@ The Design Assistant is fully integrated into the MCP server as a new tool:
 ## Testing & Validation
 
 ### Demo Script
+
 - **Comprehensive demo** (`demos/demo-design-assistant.js`) showing all features
 - Real-world e-commerce platform example with detailed content
 - Demonstrates complete workflow from session start to artifact generation
 
 ### Test Suite
+
 - **Unit tests** for individual components
 - **Integration tests** for workflow validation
 - **Vitest framework** integration for modern testing
 
 ### Build Validation
+
 - **TypeScript compilation** without errors
 - **All existing tests** continue to pass
 - **ESM module compatibility** maintained
@@ -196,7 +213,9 @@ The Design Assistant is fully integrated into the MCP server as a new tool:
 ## Extensibility Points
 
 ### Custom Constraint Categories
+
 Add new constraint types by extending the configuration schema:
+
 ```yaml
 constraints:
   compliance:
@@ -206,13 +225,22 @@ constraints:
 ```
 
 ### Additional Artifact Types
+
 Implement new generators by extending the artifact type system:
+
 ```typescript
-export type ArtifactType = 'adr' | 'specification' | 'roadmap' | 'test-plan' | 'security-review';
+export type ArtifactType =
+  | "adr"
+  | "specification"
+  | "roadmap"
+  | "test-plan"
+  | "security-review";
 ```
 
 ### Custom Validation Logic
+
 Add domain-specific validators through the micro-method system:
+
 ```yaml
 micro_methods:
   confirmation:
@@ -240,6 +268,7 @@ micro_methods:
 ## Conclusion
 
 The Design Assistant Framework successfully delivers on all requirements specified in issue #42:
+
 - Deterministic, context-driven design guidance ✅
 - Rule-based confirmation and pivot modules ✅
 - Coverage enforcement ≥85% ✅

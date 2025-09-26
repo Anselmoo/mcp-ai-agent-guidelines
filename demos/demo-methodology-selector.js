@@ -230,10 +230,14 @@ async function demoMethodologySelector() {
 					`📊 Confidence Score: ${methodologySelection.selected.confidenceScore}%`,
 				);
 				console.log(
-					`🔗 Phase Sequence: ${methodologySelection.selected.phases.join(" → ")}`,
+					`🔗 Phase Sequence: ${methodologySelection.selected.phases.join(
+						" → ",
+					)}`,
 				);
 				console.log(
-					`💪 Key Strengths: ${methodologySelection.selected.strengths.join(", ")}`,
+					`💪 Key Strengths: ${methodologySelection.selected.strengths.join(
+						", ",
+					)}`,
 				);
 			}
 			if (alternatives && alternatives.length > 0) {
