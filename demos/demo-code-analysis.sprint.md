@@ -1,44 +1,52 @@
 ## 🗓️ Sprint Timeline Calculation
 
 ### Metadata
+
 - **Updated:** 2025-09-21
 - **Source tool:** mcp_ai-agent-guid_sprint-timeline-calculator
 
-
 ### Team Configuration
+
 - **Team Size**: 3 members
 - **Sprint Length**: 14 days
 - **Team Velocity**: 19 story points per sprint
 - **Total Tasks**: 4
 
 ### Capacity Analysis
+
 - **Total Story Points**: 18
 - **Required Sprints**: 1
 - **Timeline**: 14 days (2 weeks)
 - **Capacity Utilization**: 95%
 
 ### Sprint Summary
-| Sprint | Planned Points | Tasks |
-|-------:|----------------:|-------|
-| 1 | 18 | Refactor functions, Add tests, Improve logging, Docs |
+
+| Sprint | Planned Points | Tasks                                                |
+| -----: | -------------: | ---------------------------------------------------- |
+|      1 |             18 | Refactor functions, Add tests, Improve logging, Docs |
 
 ### Sprint Breakdown
+
 **Sprint 1** (18 points):
-  - Refactor functions (5 pts) - Priority: high
-  - Add tests (8 pts) - Priority: high
-  - Improve logging (3 pts) - Priority: medium
-  - Docs (2 pts) - Priority: low
+
+- Refactor functions (5 pts) - Priority: high
+- Add tests (8 pts) - Priority: high
+- Improve logging (3 pts) - Priority: medium
+- Docs (2 pts) - Priority: low
 
 ### Risk Assessment
+
 1. **High**: Over 90% capacity utilization may lead to burnout and missed deadlines
 
 ### Recommendations
+
 1. Consider reducing scope or adding team members to avoid overcommitment
 2. Implement daily standups to track progress and identify blockers early
 3. Plan for 20% buffer time to handle unexpected issues
 4. Review and adjust velocity after each sprint based on actual completion
 
 ### Timeline Optimization Tips
+
 - **Prioritize high-value tasks** early in the timeline
 - **Address dependencies** before dependent tasks
 - **Plan for 80% capacity** to account for meetings, code reviews, and unexpected issues
@@ -47,14 +55,17 @@
 - **Consider skill distribution** when assigning tasks
 
 ### Velocity Tracking Formula
+
 `Velocity = Completed Story Points / Sprint Duration`
 
 Current calculations based on:
+
 - Industry average: 8-10 story points per developer per sprint
 - Adjusted for team size and sprint length
 - Factoring in 20% overhead for meetings and coordination
 
 ### Gantt (Mermaid)
+
 ```mermaid
 gantt
 	dateFormat  YYYY-MM-DD
@@ -68,7 +79,6 @@ gantt
 ```
 
 ## References
+
 - ZenHub — AI-assisted sprint planning (2025): https://www.zenhub.com/blog-posts/the-7-best-ai-assisted-sprint-planning-tools-for-agile-teams-in-2025
 - Nitor Infotech — AI in project delivery: https://www.nitorinfotech.com/blog/ai-in-software-project-delivery-smarter-planning-and-execution/
-
-

@@ -1,44 +1,49 @@
 ## 🧠 Memory Context Optimization Report
 
 ### Metadata
+
 - Updated: 2025-09-21
 - Source tool: mcp_ai-agent-guid_memory-context-optimizer
 
 ### 🔎 Input Analysis
+
 - **Original Length**: 105 characters
 - **Estimated Tokens**: ~27
 - **Max Tokens Limit**: Not specified
 - **Cache Strategy**: balanced
 
 ### ✅ Optimization Results
+
 - **Optimized Length**: 105 characters
 - **Estimated Tokens**: ~27
 - **Reduction**: 0%
 - **Cache Segments**: 0
 
 ### 📊 Summary
-| Metric | Value |
-|---|---|
-| Original Length | 105 chars |
-| Original Tokens (est.) | ~27 |
-| Optimized Length | 105 chars |
-| Optimized Tokens (est.) | ~27 |
-| Reduction | 0% |
-| Cache Strategy | balanced |
-| Max Tokens | Not specified |
-| Cache Segments | 0 |
+
+| Metric                  | Value         |
+| ----------------------- | ------------- |
+| Original Length         | 105 chars     |
+| Original Tokens (est.)  | ~27           |
+| Optimized Length        | 105 chars     |
+| Optimized Tokens (est.) | ~27           |
+| Reduction               | 0%            |
+| Cache Strategy          | balanced      |
+| Max Tokens              | Not specified |
+| Cache Segments          | 0             |
 
 ### ✂️ Optimized Content
+
 ```markdown
 Python repo. Fix security issues; add validation and logging. Key: calculate_discount, process_user_data.
 ```
 
 ### 🧩 Caching Strategy
+
 **Balanced Caching**: Optimizes between cache efficiency and context freshness
 
-
-
 ### 🔧 Implementation Tips
+
 1. **Use prompt caching** for repeated system messages and tool definitions
 2. **Implement conversation summarization** for long sessions
 3. **Clear unnecessary context** periodically to reduce token usage
@@ -46,6 +51,7 @@ Python repo. Fix security issues; add validation and logging. Key: calculate_dis
 5. **Cache static resources** like guidelines and templates
 
 ### 🧭 Memory Management Best Practices
+
 - Monitor token usage in real-time
 - Implement automatic context compression when approaching limits
 - Use structured data formats to reduce token overhead
@@ -53,24 +59,26 @@ Python repo. Fix security issues; add validation and logging. Key: calculate_dis
 - Implement rolling window approach for conversation history
 
 ## References
+
 - Prompt Caching overview (Anthropic): https://www.anthropic.com/news/prompt-caching
 - Anthropic docs on caching: https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching
 - Token usage optimization tips: https://caylent.com/blog/prompt-caching-saving-time-and-money-in-llm-applications
 
-
-
-
 ### 📁 Files
+
 - Source tool: src/tools/memory-context-optimizer.ts
 - Demo output: demos/demo-code-analysis.memory-optimizer.md
 
 ### 🚀 Quick Usage Example
+
 ```ts
 // Example: prepare concise context and request optimization
-const context = "Python repo. Fix security issues; add validation and logging. Key: UserManager, calculate_discount, process_user_data.";
+const context =
+  "Python repo. Fix security issues; add validation and logging. Key: UserManager, calculate_discount, process_user_data.";
 // In an MCP call, pass as { contextContent: context, cacheStrategy: 'balanced', language: 'typescript' }
 // This tool returns a Markdown report with an optimized context block.
 ```
 
 ### ⚠️ Disclaimer
+
 - Caching effectiveness and token estimates vary by provider and model. Validate in your environment.

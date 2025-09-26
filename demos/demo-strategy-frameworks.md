@@ -1,26 +1,27 @@
 ### Metadata
+
 - Updated: 2025-09-21
 - Source tool: mcp_ai-agent-guid_strategy-frameworks-builder
 - Suggested filename: strategy-swot-wheretoplayhowtowin-balancedscorecard-mckinsey7s-bcgmatrix-ansoffmatrix-strategymap-pest-vrio.md
-
 
 # Strategy Toolkit Overview
 
 Context: AI DevTools SaaS expanding in EU/US mid-market
 
 Objectives:
+
 - Grow ARR 30%
 - Expand to two new segments
 - Improve NRR 5pp
 
 Stakeholders:
+
 - Buyers
 - Users
 - Partners
 
-
-
 ## SWOT Analysis
+
 - Strengths (internal)
 - Weaknesses (internal)
 - Opportunities (external)
@@ -41,23 +42,27 @@ flowchart TB
 ```
 
 ## Where to Play / How to Win
+
 - Define arenas (segments, geos, channels)
 - Define unique value proposition and differentiators
 - Specify capabilities and systems required
 - List management systems/metrics to sustain advantage
 
 ## Balanced Scorecard
+
 - Objectives across Financial, Customer, Internal, Learning & Growth
 - Measures/KPIs for each objective
 - Initiatives mapped to objectives
 - RAG status and owners
 
 ## 7S Organizational Alignment (consulting-7s)
+
 - Strategy, Structure, Systems
 - Shared Values, Skills, Style, Staff
 - Identify misalignments and actions
 
 ## Portfolio Prioritization (portfolio-gsm)
+
 - Classify units: Stars, Cash Cows, Question Marks, Dogs
 - Investment/divestment policy
 
@@ -73,6 +78,7 @@ quadrantChart
 ```
 
 ## Growth Options (Ansoff)
+
 - Market Penetration, Market Development
 - Product Development, Diversification
 - Risk/return summary per option
@@ -89,6 +95,7 @@ quadrantChart
 ```
 
 ## Strategy Map
+
 - Link objectives cause→effect (Learning→Internal→Customer→Financial)
 - Show dependencies and leading/lagging indicators
 
@@ -98,6 +105,7 @@ flowchart TB
 ```
 
 ## PEST Analysis
+
 - Political
 - Economic
 - Social
@@ -113,13 +121,14 @@ mindmap
 ```
 
 ## VRIO Assessment
+
 - List resources/capabilities
 - Evaluate: Valuable, Rare, Inimitable, Organized
 - Implication: Competitive disadvantage→Parity→Advantage→Sustained
 
 ## References
+
 - Atlassian strategy frameworks: https://www.atlassian.com/work-management/strategic-planning/framework
 - ClearPoint 20 frameworks: https://www.clearpointstrategy.com/blog/strategic-planning-models
 - Quantive top frameworks: https://quantive.com/resources/articles/top-strategic-frameworks
 - HBS strategy tools overview: https://online.hbs.edu/blog/post/strategy-frameworks-and-tools
-

@@ -69,16 +69,25 @@ async function testConstraintConsistencyEnforcement() {
 			`   📊 Consistency score: ${firstConsistencyResponse.coverage || "N/A"}%`,
 		);
 		console.log(
-			`   🔧 Enforcement actions: ${firstConsistencyResponse.consistencyEnforcement?.enforcementActions?.length || 0}`,
+			`   🔧 Enforcement actions: ${
+				firstConsistencyResponse.consistencyEnforcement?.enforcementActions
+					?.length || 0
+			}`,
 		);
 		console.log(
 			`   📋 Recommendations: ${firstConsistencyResponse.recommendations.length}`,
 		);
 		console.log(
-			`   🎨 Interactive prompts: ${firstConsistencyResponse.consistencyEnforcement?.interactivePrompts?.length || 0}`,
+			`   🎨 Interactive prompts: ${
+				firstConsistencyResponse.consistencyEnforcement?.interactivePrompts
+					?.length || 0
+			}`,
 		);
 		console.log(
-			`   📄 Generated artifacts: ${firstConsistencyResponse.consistencyEnforcement?.generatedArtifacts?.length || 0}\n`,
+			`   📄 Generated artifacts: ${
+				firstConsistencyResponse.consistencyEnforcement?.generatedArtifacts
+					?.length || 0
+			}\n`,
 		);
 
 		// Test 3: Start second session with related context
@@ -134,19 +143,31 @@ async function testConstraintConsistencyEnforcement() {
 			`   📊 Consistency score: ${secondConsistencyResponse.coverage || "N/A"}%`,
 		);
 		console.log(
-			`   🔧 Enforcement actions: ${secondConsistencyResponse.consistencyEnforcement?.enforcementActions?.length || 0}`,
+			`   🔧 Enforcement actions: ${
+				secondConsistencyResponse.consistencyEnforcement?.enforcementActions
+					?.length || 0
+			}`,
 		);
 		console.log(
 			`   📋 Recommendations: ${secondConsistencyResponse.recommendations.length}`,
 		);
 		console.log(
-			`   🎨 Interactive prompts: ${secondConsistencyResponse.consistencyEnforcement?.interactivePrompts?.length || 0}`,
+			`   🎨 Interactive prompts: ${
+				secondConsistencyResponse.consistencyEnforcement?.interactivePrompts
+					?.length || 0
+			}`,
 		);
 		console.log(
-			`   📄 Generated artifacts: ${secondConsistencyResponse.consistencyEnforcement?.generatedArtifacts?.length || 0}`,
+			`   📄 Generated artifacts: ${
+				secondConsistencyResponse.consistencyEnforcement?.generatedArtifacts
+					?.length || 0
+			}`,
 		);
 		console.log(
-			`   🔗 Historical alignments: ${secondConsistencyResponse.consistencyEnforcement?.historicalAlignments?.length || 0}\n`,
+			`   🔗 Historical alignments: ${
+				secondConsistencyResponse.consistencyEnforcement?.historicalAlignments
+					?.length || 0
+			}\n`,
 		);
 
 		// Test 5: Test constraint-specific enforcement
@@ -163,7 +184,9 @@ async function testConstraintConsistencyEnforcement() {
 			`   ✅ Constraint-specific enforcement: ${constraintSpecificResponse.success}`,
 		);
 		console.log(
-			`   📊 Consistency score: ${constraintSpecificResponse.coverage || "N/A"}%\n`,
+			`   📊 Consistency score: ${
+				constraintSpecificResponse.coverage || "N/A"
+			}%\n`,
 		);
 
 		// Test 6: Test phase-specific enforcement
