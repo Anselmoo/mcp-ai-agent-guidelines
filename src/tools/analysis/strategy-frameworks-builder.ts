@@ -38,6 +38,16 @@ const SUPPORTED = [
 
 type FrameworkId = (typeof SUPPORTED)[number];
 
+const PointSchema = z.object({
+	label: z.string(),
+	x: z.number().min(0).max(1),
+	y: z.number().min(0).max(1),
+	radius: z.number().optional(),
+	color: z.string().optional(),
+});
+
+type Point = z.infer<typeof PointSchema>;
+
 const StrategyFrameworkSchema = z.object({
 	// One or more frameworks to include in the analysis builder
 	frameworks: z.array(
@@ -54,6 +64,9 @@ const StrategyFrameworkSchema = z.object({
 	includeMetadata: z.boolean().optional().default(true),
 	includeDiagrams: z.boolean().optional().default(false),
 	inputFile: z.string().optional(),
+	// Optional structured points keyed by framework id. Each entry is an array of points
+	// with x/y values in the 0..1 range (Mermaid quadrantChart requirement).
+	points: z.record(z.array(PointSchema)).optional(),
 });
 
 export async function strategyFrameworksBuilder(args: unknown) {
@@ -78,13 +91,15 @@ export async function strategyFrameworksBuilder(args: unknown) {
 		const txt = renderFramework(fw);
 		sections.push(txt);
 		if (input.includeDiagrams) {
-			const diag = renderDiagram(fw);
+			const diag = renderDiagram(fw, input.points);
 			if (diag) sections.push(diag);
 		}
 	}
 
 	// Metadata and references
-	const filenameHint = `${slugify(`strategy-${input.frameworks.join("-")}`)}.md`;
+	const filenameHint = `${slugify(
+		`strategy-${input.frameworks.join("-")}`,
+	)}.md`;
 	const metadata = input.includeMetadata
 		? buildMetadataSection({
 				sourceTool: "mcp_ai-agent-guid_strategy-frameworks-builder",
@@ -128,12 +143,23 @@ function renderFramework(fw: FrameworkId): string {
 				"List management systems/metrics to sustain advantage",
 			]);
 		case "balancedScorecard":
-			return section("Balanced Scorecard", [
-				"Objectives across Financial, Customer, Internal, Learning & Growth",
-				"Measures/KPIs for each objective",
-				"Initiatives mapped to objectives",
-				"RAG status and owners",
-			]);
+			return section(
+				"Balanced Scorecard",
+				withArtifacts(
+					[
+						"Objectives across Financial, Customer, Internal, Learning & Growth",
+						"Measures/KPIs for each objective",
+						"Initiatives mapped to objectives",
+						"RAG status and owners",
+					],
+					{
+						deliverable:
+							"Deliverable: Balanced Scorecard matrix with metrics & owners",
+						owner: "Owner: Strategy/Finance lead",
+						kpis: "Financial: revenue growth %, Customer: NPS, Internal: cycle time",
+					},
+				),
+			);
 		case "swot":
 			return section("SWOT Analysis", [
 				"Strengths (internal)",
@@ -142,12 +168,23 @@ function renderFramework(fw: FrameworkId): string {
 				"Threats (external)",
 			]);
 		case "objectives":
-			return section("Objectives & Key Results (OKR-compatible)", [
-				"Define 3-5 Objectives (qualitative)",
-				"Attach 2-4 Key Results per Objective (quantitative)",
-				"Define initiatives and owners",
-				"Set review cadence",
-			]);
+			return section(
+				"Objectives & Key Results (OKR-compatible)",
+				withArtifacts(
+					[
+						"Define 3-5 Objectives (qualitative)",
+						"Attach 2-4 Key Results per Objective (quantitative)",
+						"Define initiatives and owners",
+						"Set review cadence",
+					],
+					{
+						deliverable:
+							"Deliverable: OKR tracker (sheet/board) and quarterly review notes",
+						owner: "Owner: Product/Strategy lead",
+						kpis: "KR examples: +20% ARR, reduce churn to 5%",
+					},
+				),
+			);
 		case "portersFiveForces":
 			return section("Industry Forces (Five Forces)", [
 				"Competitive Rivalry",
@@ -163,12 +200,22 @@ function renderFramework(fw: FrameworkId): string {
 				"Identify misalignments and actions",
 			]);
 		case "marketAnalysis":
-			return section("Market Analysis", [
-				"Market size, growth, segmentation",
-				"Customer needs and jobs-to-be-done",
-				"Competitor landscape and positioning",
-				"Regulatory/tech trends",
-			]);
+			return section(
+				"Market Analysis",
+				withArtifacts(
+					[
+						"Market size, growth, segmentation",
+						"Customer needs and jobs-to-be-done",
+						"Competitor landscape and positioning",
+						"Regulatory/tech trends",
+					],
+					{
+						deliverable: "Deliverable: TAM/SAM/TOM estimates + competitor map",
+						owner: "Owner: Market/Strategy analyst",
+						kpis: "Market: CAGR, Share %, conversion rates",
+					},
+				),
+			);
 		case "strategyMap":
 			return section("Strategy Map", [
 				"Link objectives cause→effect (Learning→Internal→Customer→Financial)",
@@ -181,17 +228,38 @@ function renderFramework(fw: FrameworkId): string {
 				"Values: behaviors and decision principles",
 			]);
 		case "stakeholderTheory":
-			return section("Stakeholder Mapping", [
-				"Identify stakeholders by influence/interest",
-				"Map expectations, value exchanges, risks",
-				"Engagement plan and communications",
-			]);
+			return section(
+				"Stakeholder Mapping",
+				withArtifacts(
+					[
+						"Identify stakeholders by influence/interest",
+						"Map expectations, value exchanges, risks",
+						"Engagement plan and communications",
+					],
+					{
+						deliverable:
+							"Deliverable: Stakeholder map (matrix) and engagement plan",
+						owner: "Owner: Program/PM lead",
+						kpis: "Engagement: response rate, satisfaction score",
+					},
+				),
+			);
 		case "values":
-			return section("Values & Principles", [
-				"Define core values",
-				"Decision guardrails and trade-off rules",
-				"Principles for product, go-to-market, and operations",
-			]);
+			return section(
+				"Values & Principles",
+				withArtifacts(
+					[
+						"Define core values",
+						"Decision guardrails and trade-off rules",
+						"Principles for product, go-to-market, and operations",
+					],
+					{
+						deliverable: "Deliverable: Values doc with behavioral examples",
+						owner: "Owner: People/HR or Exec sponsor",
+						kpis: "Culture: eNPS, value adoption indicators",
+					},
+				),
+			);
 		case "gapAnalysis":
 			return section("Gap Analysis", [
 				"Baseline vs target for key capabilities",
@@ -199,18 +267,30 @@ function renderFramework(fw: FrameworkId): string {
 				"Remediation initiatives and sequencing",
 			]);
 		case "ansoffMatrix":
-			return section("Growth Options (Ansoff)", [
-				"Market Penetration, Market Development",
-				"Product Development, Diversification",
-				"Risk/return summary per option",
-			]);
+			return section(
+				"Growth Options (Ansoff)",
+				withArtifacts(
+					[
+						"Market Penetration, Market Development",
+						"Product Development, Diversification",
+						"Risk/return summary per option",
+					],
+					{
+						deliverable: "Deliverable: Ansoff map with candidate initiatives",
+						owner: "Owner: Growth/Product lead",
+						kpis: "Candidate metrics: revenue impact, time to market",
+					},
+				),
+			);
 		case "pest":
-			return section("PEST Analysis", [
-				"Political",
-				"Economic",
-				"Social",
-				"Technological",
-			]);
+			return section(
+				"PEST Analysis",
+				withArtifacts(["Political", "Economic", "Social", "Technological"], {
+					deliverable: "Deliverable: PEST register with time horizons",
+					owner: "Owner: Strategy/Policy analyst",
+					kpis: "Indicators: regulatory changes count, macro economic signals",
+				}),
+			);
 		case "bcgMatrix":
 			return aliasSection("Portfolio Prioritization", ALIASES.bcgMatrix, [
 				"Classify units: Stars, Cash Cows, Question Marks, Dogs",
@@ -258,6 +338,27 @@ function aliasSection(title: string, alias: string, bullets: string[]): string {
 	return [`## ${title} (${alias})`, ...bullets.map((b) => `- ${b}`)].join("\n");
 }
 
+// Small enrichment helper: append common artifacts to make sections actionable.
+function withArtifacts(
+	bullets: string[],
+	opts?: { deliverable?: string; owner?: string; kpis?: string },
+): string[] {
+	const out = [...bullets];
+	out.push(
+		opts?.deliverable ??
+			"Suggested deliverable: Strategy artifact (doc/board) with owners & timeline",
+	);
+	out.push(
+		opts?.owner ??
+			"Suggested owner(s): Product/Strategy lead (assign an owner)",
+	);
+	out.push(
+		opts?.kpis ??
+			"Suggested KPIs: define 2-3 measurable indicators (examples below)",
+	);
+	return out;
+}
+
 const REFERENCE_LINKS = [
 	"Atlassian strategy frameworks: https://www.atlassian.com/work-management/strategic-planning/framework",
 	"ClearPoint 20 frameworks: https://www.clearpointstrategy.com/blog/strategic-planning-models",
@@ -266,7 +367,16 @@ const REFERENCE_LINKS = [
 ];
 
 // Mermaid helpers (keep neutral, no trademarks spelled out in titles)
-function renderDiagram(fw: FrameworkId): string | undefined {
+function formatPointLine(p: Point): string {
+	// Mermaid quadrantChart accepts lines like: Label: [x, y]
+	return `${p.label}: [${p.x}, ${p.y}]`;
+}
+
+function renderDiagram(
+	fw: FrameworkId,
+	pointsRecord?: Record<string, Point[]>,
+): string | undefined {
+	const provided = pointsRecord?.[fw];
 	switch (fw) {
 		case "swot":
 			return [
@@ -295,6 +405,15 @@ function renderDiagram(fw: FrameworkId): string | undefined {
 				"  quadrant-2 Product Development",
 				"  quadrant-3 Market Development",
 				"  quadrant-4 Market Penetration",
+				// sample placeholder points (id: [x, y]) - values 0..1 range
+				// use provided structured points if present, otherwise fall back to placeholders
+				...(provided?.length
+					? provided.map((p) => formatPointLine(p))
+					: [
+							"Example A: [0.25, 0.75]",
+							"Example B: [0.6, 0.35]",
+							"Example C: [0.85, 0.15]",
+						]),
 				"```",
 			].join("\n");
 		case "bcgMatrix":
@@ -308,6 +427,14 @@ function renderDiagram(fw: FrameworkId): string | undefined {
 				"  quadrant-2 Question Marks",
 				"  quadrant-3 Dogs",
 				"  quadrant-4 Cash Cows",
+				// example product positions (id: [share, growth])
+				...(provided?.length
+					? provided.map((p) => formatPointLine(p))
+					: [
+							"Example A: [0.78, 0.9]",
+							"Example B: [0.45, 0.3]",
+							"Example C: [0.15, 0.2]",
+						]),
 				"```",
 			].join("\n");
 		case "pest":
@@ -339,6 +466,38 @@ function renderDiagram(fw: FrameworkId): string | undefined {
 				"  quadrant-2 Visionaries",
 				"  quadrant-3 Niche Players",
 				"  quadrant-4 Challengers",
+				// sample vendor positions (id: [execute, vision])
+				...(provided?.length
+					? provided.map((p) => `  ${formatPointLine(p)}`)
+					: [
+							"  Example A: [0.3, 0.6]",
+							"  Example B: [0.45, 0.23]",
+							"  Example C: [0.57, 0.69]",
+						]),
+				"```",
+			].join("\n");
+		case "balancedScorecard":
+			return [
+				"```mermaid",
+				"flowchart TB",
+				"  Financial[Financial]\n  Customer[Customer]\n  Internal[Internal Processes]\n  Learning[Learning & Growth]",
+				"  Learning --> Internal",
+				"  Internal --> Customer",
+				"  Customer --> Financial",
+				"  classDef perf fill:#e6fffa,stroke:#0f766e;",
+				"  classDef goal fill:#fff7ed,stroke:#92400e;",
+				"```",
+			].join("\n");
+		case "visionToMission":
+			return [
+				"```mermaid",
+				"flowchart LR",
+				"  V[Vision]\n  M[Mission]\n  P[Principles/Values]\n  O[Objectives]",
+				"  V --> M",
+				"  M --> P",
+				"  P --> O",
+				"  style V fill:#c7d2fe,stroke:#4338ca;",
+				"  style M fill:#bfdbfe,stroke:#1e40af;",
 				"```",
 			].join("\n");
 		default:
