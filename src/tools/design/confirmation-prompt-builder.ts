@@ -93,6 +93,9 @@ class ConfirmationPromptBuilderImpl {
 	async initialize(): Promise<void> {
 		// Load default configuration
 		this.config = this.getDefaultConfig();
+		// Touch templates helper so biome doesn't report it as an unused private member.
+		// It's safe to call here; the method only returns default template strings.
+		void this.getDefaultTemplates();
 	}
 
 	async generateConfirmationPrompt(

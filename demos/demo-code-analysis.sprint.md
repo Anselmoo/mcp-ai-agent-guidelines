@@ -2,7 +2,7 @@
 
 ### Metadata
 
-- **Updated:** 2025-09-21
+- **Updated:** 2025-09-27
 - **Source tool:** mcp_ai-agent-guid_sprint-timeline-calculator
 
 ### Team Configuration
@@ -72,10 +72,10 @@ gantt
 	title Sprint Plan
 %% Accessibility: Title=Project Sprint Plan; Description=Gantt chart of sprints and tasks over time. %%
   section Sprint 1
-  Refactor functions :s1t0, 2025-09-21, 4d
-  Add tests :s1t1, 2025-09-25, 5d
-  Improve logging :s1t2, 2025-09-30, 3d
-  Docs :s1t3, 2025-10-03, 2d
+  Refactor functions :s1t0, 2025-09-27, 4d
+  Add tests :s1t1, 2025-10-01, 5d
+  Improve logging :s1t2, 2025-10-06, 3d
+  Docs :s1t3, 2025-10-09, 2d
 ```
 
 ## References

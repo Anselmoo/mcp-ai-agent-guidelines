@@ -1,15 +1,13 @@
 ---
-mode: "agent"
+mode: 'agent'
 model: GPT-4.1
-tools: ["githubRepo", "codebase", "editFiles"]
-description: "A compact, skimmable card with risk badges, prioritized checklist, and a tiny plan"
+tools: ['githubRepo', 'codebase', 'editFiles']
+description: 'A compact, skimmable card with risk badges, prioritized checklist, and a tiny plan'
 ---
-
 ## ⚡ Spark Prompt Template
 
 ### Metadata
-
-- Updated: 2025-09-21
+- Updated: 2025-09-27
 - Source tool: mcp_ai-agent-guid_spark-prompt-builder
 - Suggested filename: spark-prompt-code-hygiene-review-card.prompt.md
 
@@ -18,7 +16,6 @@ description: "A compact, skimmable card with risk badges, prioritized checklist,
 A compact, skimmable card with risk badges, prioritized checklist, and a tiny plan
 
 **Experience Qualities**:
-
 1. **clarity** - Fast to scan
 2. **responsiveness** - Works on small screens
 
@@ -27,7 +24,6 @@ A compact, skimmable card with risk badges, prioritized checklist, and a tiny pl
 ## Essential Features
 
 ### Code Hygiene Review Card
-
 - **Functionality**: Intro summary + risk badges + prioritized checklist + short plan
 - **Purpose**: Present a compact actionable review
 - **Trigger**: User submits code snippet
@@ -37,11 +33,9 @@ A compact, skimmable card with risk badges, prioritized checklist, and a tiny pl
 ## Edge Case Handling
 
 ## Design Direction
-
 Clean, minimal, accessible
 
 ## Color Selection
-
 light to Improve scan-ability.
 
 - **Primary Color**: #111111 - Body text
@@ -49,7 +43,6 @@ light to Improve scan-ability.
 - **Foreground/Background Pairings**:
 
 ## Font Selection
-
 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif to convey Legible at small sizes - System-default stack ensures availability.
 
 - **Typographic Hierarchy**:
@@ -57,14 +50,12 @@ Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif to convey L
   - heading: Inter 600/16pxpx/1.3
 
 ## Animations
-
 Subtle emphasis only and Avoid distracting motion.
 
 - **Purposeful Meaning**: Draw attention to the most important recommendations
 - **Hierarchy of Movement**: minimal
 
 ## Component Selection
-
 - **Components**:
 - **Customizations**: Use compact sections, bold category labels, and checklist bullets.
 - **States**:
@@ -83,19 +74,16 @@ Subtle emphasis only and Avoid distracting motion.
 
 ```md
 # Instructions
-
 ...your task...
 
 # Context
-
 ...data...
 
 # Output Format
-
 JSON fields ...
 ```
 
-## Disclaimer
 
+## Disclaimer
 - References to third-party tools, models, pricing, and limits are indicative and may change.
 - Validate choices with official docs and run a quick benchmark before production use.

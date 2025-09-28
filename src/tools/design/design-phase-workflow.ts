@@ -443,15 +443,17 @@ class DesignPhaseWorkflowImpl {
 		let phaseSequence: string[];
 		if (sessionState?.phases && Object.keys(sessionState.phases).length > 0) {
 			phaseSequence = Object.keys(sessionState.phases);
-		} else if (
-			(sessionState as any)?.methodologySelection?.phases &&
-			Array.isArray((sessionState as any).methodologySelection.phases)
-		) {
-			phaseSequence = (
-				(sessionState as any).methodologySelection.phases as string[]
-			).slice();
 		} else {
-			phaseSequence = this.PHASE_SEQUENCE;
+			// Safe extraction of methodologySelection phases when present
+			const maybeMethodology = sessionState as unknown as {
+				methodologySelection?: { phases?: unknown };
+			};
+			const phasesCandidate = maybeMethodology.methodologySelection?.phases;
+			if (phasesCandidate && Array.isArray(phasesCandidate)) {
+				phaseSequence = (phasesCandidate as string[]).slice();
+			} else {
+				phaseSequence = this.PHASE_SEQUENCE;
+			}
 		}
 
 		const effectiveCurrent = currentPhaseId || phaseSequence[0];
