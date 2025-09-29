@@ -74,7 +74,7 @@ ${analysis.recommendations
 **Notes**: ${model.limitations[0] || "No major caveats documented"}
 
 **Highlights**:
-${model.specialFeatures.map((f) => `- ${f}`).join("\n")}
+${(model.specialFeatures || []).map((f) => `- ${f}`).join("\n")}
 `,
 	)
 	.join("\n")}
@@ -83,7 +83,7 @@ ${model.specialFeatures.map((f) => `- ${f}`).join("\n")}
 
 | Model | Provider | Best For |
 |-------|----------|----------|
-${analysis.recommendations
+${(analysis.recommendations || [])
 	.map(
 		(model) =>
 			`| ${model.name} | ${model.provider} | ${model.strengths[0] || "General use"} |`,
