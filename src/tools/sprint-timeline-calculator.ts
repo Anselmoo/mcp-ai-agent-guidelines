@@ -147,30 +147,46 @@ ${buildReferencesSection([
 }
 
 function calculateSprintTimeline(input: SprintTimelineInput) {
-	const { tasks, teamSize, sprintLength = 14, velocity: inputVelocity } = input;
+	const {
+		tasks,
+		teamSize = 1,
+		sprintLength = 14,
+		velocity: inputVelocity,
+	} = input;
 
 	// Calculate total story points
-	const totalPoints = tasks.reduce((sum, task) => sum + task.estimate, 0);
+	const totalPoints = Array.isArray(tasks)
+		? tasks.reduce((sum, task) => sum + (task?.estimate || 0), 0)
+		: 0;
 
 	// Calculate team velocity if not provided
 	// Industry standard: ~8-10 story points per developer per 2-week sprint
 	const baseVelocityPerDev = 8;
-	const sprintFactor = sprintLength / 14; // Adjust for sprint length
-	const calculatedVelocity = Math.round(
-		teamSize * baseVelocityPerDev * sprintFactor * 0.8,
-	); // 80% capacity
-	const velocity = inputVelocity || calculatedVelocity;
+	const sprintFactor = Math.max(0.5, sprintLength / 14); // keep a reasonable lower bound
+	const calculatedVelocity = Math.max(
+		1,
+		Math.round(teamSize * baseVelocityPerDev * sprintFactor * 0.8),
+	); // ensure at least 1
 
-	// Calculate required sprints
-	const requiredSprints = Math.ceil(totalPoints / velocity);
+	const velocity =
+		typeof inputVelocity === "number" &&
+		isFinite(inputVelocity) &&
+		inputVelocity > 0
+			? Math.max(1, Math.round(inputVelocity))
+			: calculatedVelocity;
+
+	// Calculate required sprints (guard against division by zero and non-finite values)
+	const requiredSprints =
+		totalPoints > 0 ? Math.max(1, Math.ceil(totalPoints / velocity)) : 0;
 	const timelineDays = requiredSprints * sprintLength;
 
 	// Calculate capacity utilization
-	const utilizationPercentage = Math.round(
-		(totalPoints / (velocity * requiredSprints)) * 100,
-	);
+	const utilizationPercentage =
+		requiredSprints > 0
+			? Math.round((totalPoints / (velocity * requiredSprints)) * 100)
+			: 0;
 
-	// Organize tasks into sprints
+	// Organize tasks into sprints (organizeTasks must handle requiredSprints === 0)
 	const sprints = organizeTasks(tasks, velocity, requiredSprints);
 
 	// Risk assessment
