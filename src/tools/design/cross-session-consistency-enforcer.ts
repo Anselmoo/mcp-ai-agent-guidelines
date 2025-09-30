@@ -769,7 +769,7 @@ ${
 }
 
 ## Consequences
-${report.recommendations.map((r) => `- ${r.title}: ${r.expectedImpact}`).join("\n")}
+${(report.recommendations || []).map((r) => `- ${r.title}: ${r.expectedImpact}`).join("\n")}
 
 ## Compliance
 - Space 7 Alignment: ${report.space7Alignment >= this.config.consistencyThreshold ? "✅ Compliant" : "❌ Non-compliant"}
@@ -798,7 +798,7 @@ ${Object.entries(report.constraintConsistency)
 	.join("\n")}
 
 ## Historical Patterns
-${report.historicalPatterns
+${(report.historicalPatterns || [])
 	.map(
 		(p) =>
 			`- **${p.description}:** ${p.confidence}% confidence (${p.frequency} occurrences)`,
@@ -806,7 +806,7 @@ ${report.historicalPatterns
 	.join("\n")}
 
 ## Recommendations
-${report.recommendations
+${(report.recommendations || [])
 	.map(
 		(r, i) =>
 			`${i + 1}. **${r.title}** (${r.priority} priority)\n   ${r.description}`,
@@ -827,7 +827,7 @@ ${report.recommendations
 - Space 7 Alignment: ${report.space7Alignment}%
 
 ## Immediate Actions (Sprint 1)
-${report.recommendations
+${(report.recommendations || [])
 	.filter((r) => r.priority === "high")
 	.map(
 		(r) =>
@@ -836,7 +836,7 @@ ${report.recommendations
 	.join("\n\n")}
 
 ## Medium-term Actions (Sprint 2-3)
-${report.recommendations
+${(report.recommendations || [])
 	.filter((r) => r.priority === "medium")
 	.map(
 		(r) =>
@@ -845,7 +845,7 @@ ${report.recommendations
 	.join("\n\n")}
 
 ## Long-term Improvements
-${report.recommendations
+${(report.recommendations || [])
 	.filter((r) => r.priority === "low")
 	.map(
 		(r) =>

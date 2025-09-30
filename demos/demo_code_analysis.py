@@ -1,4 +1,4 @@
-"""demo-code-analysis.py
+"""demo_code_analysis.py
 
 Conservative remediation of the original demo sample to make it safer and more
 maintainable while keeping the teaching/demo intent. Changes applied:

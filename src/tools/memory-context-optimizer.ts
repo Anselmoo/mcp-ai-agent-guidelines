@@ -33,8 +33,8 @@ export async function memoryContextOptimizer(args: unknown) {
 
 	const fence = input.language ? input.language.toLowerCase() : "";
 
-	const segmentsList = optimization.cacheSegments.length
-		? optimization.cacheSegments
+	const segmentsList = (optimization.cacheSegments || []).length
+		? (optimization.cacheSegments || [])
 				.map(
 					(s, i) =>
 						`${i + 1}. **${s.type}** (${s.tokens} tokens): ${s.description}`,
@@ -42,21 +42,23 @@ export async function memoryContextOptimizer(args: unknown) {
 				.join("\n")
 		: "";
 
-	const segmentsTable = optimization.cacheSegments.length
-		? `\n#### Cache Segment Table\n| # | Type | Tokens | Purpose |\n|---:|---|---:|---|\n${optimization.cacheSegments
+	const segmentsTable = (optimization.cacheSegments || []).length
+		? `\n#### Cache Segment Table\n| # | Type | Tokens | Purpose |\n|---:|---|---:|---|\n${(
+				optimization.cacheSegments || []
+			)
 				.map(
 					(s, i) => `| ${i + 1} | ${s.type} | ${s.tokens} | ${s.description} |`,
 				)
-				.join("\n")}`
+				.join("\\n")}`
 		: "";
 
 	const pie = (() => {
-		const total = optimization.cacheSegments.reduce(
+		const total = (optimization.cacheSegments || []).reduce(
 			(acc, s) => acc + (s.tokens || 0),
 			0,
 		);
 		if (!total) return "";
-		const lines = optimization.cacheSegments
+		const lines = (optimization.cacheSegments || [])
 			.map((s) => `  "${s.type}" : ${Math.max(0, s.tokens || 0)}`)
 			.join("\n");
 		return `\n#### Mermaid: Cache Tokens by Segment\n\n\`\`\`mermaid\npie showData\n  title Cache Tokens by Segment\n${lines}\n\`\`\``;

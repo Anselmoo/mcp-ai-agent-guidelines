@@ -74,7 +74,7 @@ export interface ConsistencyEnforcementResult {
 }
 
 // Schema for persistence
-const ConstraintEnforcementHistorySchema = z.object({
+const _ConstraintEnforcementHistorySchema = z.object({
 	constraintId: z.string(),
 	sessionId: z.string(),
 	timestamp: z.string(),

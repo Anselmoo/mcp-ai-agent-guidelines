@@ -1,3 +1,36 @@
+# Demo Code Analysis — Remediation Example
+
+This folder contains a conservative remediation of `demo-code-analysis.py`, an educational demo originally containing many code-quality and security anti-patterns.
+
+What changed
+
+- Uses `httpx.AsyncClient` for async HTTP calls (non-blocking)
+- Reads API key and endpoint from environment variables (no hardcoded secrets)
+- Uses parameterized SQL queries and context managers
+- Replaces `eval()` with `ast.literal_eval` for safe literal parsing
+- Fixes mutable default arguments
+- Adds a lock to protect a shared counter
+- Uses structured logging instead of prints
+
+How to run the small test harness
+
+Requirements:
+
+- Python 3.10+
+- `httpx` package (install with `pip install httpx`)
+
+Run tests:
+
+```shell
+# from repository root
+python3 demos/test_demo_analysis.py
+```
+
+Notes
+
+- This is intentionally conservative: it keeps the demo's educational purpose while removing dangerous constructs.
+- For production code, consider using an ORM (e.g., SQLAlchemy), a secret manager, and more robust error handling and tests.
+
 ## Demos and Generated Artifacts
 
 > [!NOTE]

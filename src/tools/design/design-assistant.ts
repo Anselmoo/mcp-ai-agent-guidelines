@@ -372,15 +372,16 @@ class DesignAssistantImpl {
 		let methodologyADR: ADRGenerationResult | undefined;
 		if (methodologySelection) {
 			try {
+				const methodologyAlternativeNames = (
+					methodologySelection.alternatives || []
+				).map((alt) => alt.name);
 				methodologyADR = await adrGenerator.generateADR({
 					sessionState: workflowResult.sessionState,
 					title: `Methodology Selection: ${methodologySelection.selected.name}`,
 					context: `Selected methodology for ${config.methodologySignals?.projectType} project with ${config.methodologySignals?.problemFraming} framing`,
 					decision: methodologySelection.selectionRationale,
 					consequences: methodologySelection.selected.strengths.join("; "),
-					alternatives: methodologySelection.alternatives.map(
-						(alt) => alt.name,
-					),
+					alternatives: methodologyAlternativeNames,
 					metadata: {
 						confidenceScore: methodologySelection.selected.confidenceScore,
 						signals: config.methodologySignals,
@@ -910,7 +911,7 @@ class DesignAssistantImpl {
 				data: {
 					constraintCount: constraints.length,
 					mandatoryCount,
-					categories: [...new Set(constraints.map((c) => c.category))],
+					categories: [...new Set((constraints || []).map((c) => c.category))],
 				},
 			};
 		} catch (error) {
@@ -940,6 +941,7 @@ class DesignAssistantImpl {
 				);
 
 			// Generate ADR for methodology decision
+			const alternativesList = methodologySelection.alternatives || [];
 			const methodologyADR = await adrGenerator.generateADR({
 				sessionState: {
 					config: {
@@ -972,7 +974,7 @@ class DesignAssistantImpl {
 				context: `Selected methodology for ${methodologySignals.projectType} project with ${methodologySignals.problemFraming} framing`,
 				decision: methodologySelection.selectionRationale,
 				consequences: methodologySelection.selected.strengths.join("; "),
-				alternatives: methodologySelection.alternatives.map((alt) => alt.name),
+				alternatives: alternativesList.map((alt) => alt.name),
 				metadata: {
 					confidenceScore: methodologySelection.selected.confidenceScore,
 					signals: methodologySignals,
@@ -997,7 +999,7 @@ class DesignAssistantImpl {
 				data: {
 					methodologySelection,
 					methodologyProfile,
-					alternatives: methodologySelection.alternatives,
+					alternatives: methodologySelection.alternatives || [],
 				},
 			};
 		} catch (error) {
@@ -1066,7 +1068,9 @@ class DesignAssistantImpl {
 				sessionId,
 				status: "consistency-checked",
 				message: `Cross-session consistency enforced. Overall score: ${consistencyReport.overallConsistency}%`,
-				recommendations: consistencyReport.recommendations.map((r) => r.title),
+				recommendations: (consistencyReport.recommendations || []).map(
+					(r) => r.title,
+				),
 				artifacts: [],
 				data: {
 					consistencyReport,
@@ -1136,7 +1140,7 @@ class DesignAssistantImpl {
 				sessionId,
 				status: "prompts-generated",
 				message: `Generated ${prompts.length} enforcement prompts`,
-				recommendations: prompts.map(
+				recommendations: (prompts || []).map(
 					(p) => `${p.severity.toUpperCase()}: ${p.title}`,
 				),
 				artifacts: [],
@@ -1270,7 +1274,7 @@ class DesignAssistantImpl {
 
 		const constraints = constraintManager.getConstraints();
 		const mandatory = constraintManager.getMandatoryConstraints();
-		const categories = [...new Set(constraints.map((c) => c.category))];
+		const categories = [...new Set((constraints || []).map((c) => c.category))];
 		const thresholds = constraintManager.getCoverageThresholds();
 
 		return {

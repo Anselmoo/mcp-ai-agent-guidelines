@@ -43,7 +43,6 @@ class StrategicPivotPromptBuilderImpl {
 			context,
 			includeTemplates,
 			includeSpace7Instructions,
-			outputFormat,
 		} = validatedRequest;
 
 		// Analyze pivot context and generate impact assessment
