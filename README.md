@@ -418,4 +418,3 @@ MIT © Anselmoo — see [LICENSE](./LICENSE).
 - Model Context Protocol team for the spec
 - Anthropic for prompt caching research
 - Mermaid community for diagram tooling
-# Test change for Docker fix
