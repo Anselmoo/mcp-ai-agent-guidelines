@@ -172,21 +172,85 @@ function buildHierarchicalPrompt(input: HierarchicalPromptInput): string {
 /**
  * Normalize enumerated list styles in free-form text:
  * - Converts patterns like "1) Item" to "1. Item" to align with Markdown ordered lists.
+ * - Preserves content inside fenced code blocks (```...```) unchanged.
  *   This is intentionally limited to simple numeric list markers to avoid unintended changes.
  */
 function normalizeOutputFormat(text: string): string {
-	// First, convert list markers like "1) " to "1. "
-	let t = text.replace(/(\d+)\)\s/g, "$1. ");
-	// If content is a single line with inline enumerations separated by commas,
-	// split them into lines when they look like "1. ... , 2. ... , 3. ..."
-	// This keeps any existing line breaks intact otherwise.
-	if (!t.includes("\n") && /(\d+)\.\s/.test(t) && /,\s*\d+\.\s/.test(t)) {
-		// Split on comma followed by a list index pattern
-		const parts = t.split(/,\s*(?=\d+\.\s)/);
-		// Ensure they are trimmed and each on its own line
-		t = parts.map((p) => p.trim()).join("\n");
+	// Split text into segments: code blocks and non-code text
+	const segments = splitByFencedBlocks(text);
+
+	// Apply normalization only to non-code segments
+	const normalized = segments.map((segment) => {
+		if (segment.isCode) {
+			// Preserve code blocks unchanged
+			return segment.raw;
+		}
+
+		// Normalize non-code text
+		let t = segment.raw;
+		// First, convert list markers like "1) " to "1. "
+		t = t.replace(/(\d+)\)\s/g, "$1. ");
+		// If content is a single line with inline enumerations separated by commas,
+		// split them into lines when they look like "1. ... , 2. ... , 3. ..."
+		// This keeps any existing line breaks intact otherwise.
+		if (!t.includes("\n") && /(\d+)\.\s/.test(t) && /,\s*\d+\.\s/.test(t)) {
+			// Split on comma followed by a list index pattern
+			const parts = t.split(/,\s*(?=\d+\.\s)/);
+			// Ensure they are trimmed and each on its own line
+			t = parts.map((p) => p.trim()).join("\n");
+		}
+		return t;
+	});
+
+	return normalized.join("");
+}
+
+/**
+ * Split text into segments of code blocks and non-code text.
+ * Handles fenced code blocks (``` ... ```) with optional language specifiers.
+ */
+function splitByFencedBlocks(
+	text: string,
+): Array<{ raw: string; isCode: boolean }> {
+	const segments: Array<{ raw: string; isCode: boolean }> = [];
+	// Match fenced code blocks: ``` followed by optional language, content, and closing ```
+	// Use multiline and dotall flags to match across lines
+	const fenceRegex = /^```[^\n]*\n([\s\S]*?)^```$/gm;
+
+	let lastIndex = 0;
+	let match = fenceRegex.exec(text);
+
+	while (match !== null) {
+		// Add non-code text before this code block
+		if (match.index > lastIndex) {
+			const nonCode = text.slice(lastIndex, match.index);
+			if (nonCode) {
+				segments.push({ raw: nonCode, isCode: false });
+			}
+		}
+
+		// Add the entire code block (including fences)
+		segments.push({ raw: match[0], isCode: true });
+		lastIndex = fenceRegex.lastIndex;
+
+		// Get next match
+		match = fenceRegex.exec(text);
 	}
-	return t;
+
+	// Add any remaining non-code text after the last code block
+	if (lastIndex < text.length) {
+		const remaining = text.slice(lastIndex);
+		if (remaining) {
+			segments.push({ raw: remaining, isCode: false });
+		}
+	}
+
+	// If no segments were found (no code blocks), return the entire text as non-code
+	if (segments.length === 0) {
+		return [{ raw: text, isCode: false }];
+	}
+
+	return segments;
 }
 
 function buildDisclaimer(): string {
