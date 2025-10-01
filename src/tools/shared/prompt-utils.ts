@@ -5,13 +5,62 @@ export type FrontmatterOptions = {
 	description: string;
 };
 
-export function slugify(text: string): string {
-	return text
+/**
+ * Escape a string value for safe use in YAML frontmatter.
+ * Handles special YAML characters, multiline strings, and YAML terminators.
+ */
+export function escapeYamlValue(value: string): string {
+	// Handle empty strings
+	if (!value) return "''";
+
+	// Check if the value contains characters that need escaping
+	const needsEscaping =
+		value.includes("'") ||
+		value.includes('"') ||
+		value.includes("\n") ||
+		value.includes("\r") ||
+		value.includes("---") ||
+		value.includes(":") ||
+		value.includes("[") ||
+		value.includes("]") ||
+		value.includes("{") ||
+		value.includes("}") ||
+		value.includes("#") ||
+		value.includes("&") ||
+		value.includes("*") ||
+		value.includes("!") ||
+		value.includes("|") ||
+		value.includes(">") ||
+		value.includes("@") ||
+		value.includes("`") ||
+		value.trim() !== value; // Leading/trailing whitespace
+
+	if (!needsEscaping) {
+		return `'${value}'`;
+	}
+
+	// For multiline strings or strings with YAML terminators, use literal block scalar
+	if (value.includes("\n") || value.includes("---")) {
+		// Use literal block scalar (|) for multiline strings
+		// Indent each line by 2 spaces
+		const lines = value.split("\n");
+		return `|\n  ${lines.join("\n  ")}`;
+	}
+
+	// For single-line strings with quotes, escape single quotes by doubling them
+	return `'${value.replace(/'/g, "''")}'`;
+}
+
+export function slugify(text: string, maxLength = 80): string {
+	const slug = text
 		.toLowerCase()
 		.replace(/[^a-z0-9\s-]/g, "")
 		.replace(/\s+/g, "-")
 		.replace(/-+/g, "-")
 		.replace(/^-|-$/g, "");
+
+	// Truncate to maxLength if necessary
+	return slug.length > maxLength ? slug.slice(0, maxLength) : slug;
 }
 
 export function buildFrontmatter({
@@ -21,11 +70,18 @@ export function buildFrontmatter({
 	description,
 }: FrontmatterOptions): string {
 	const lines: string[] = ["---"];
-	if (mode) lines.push(`mode: '${mode}'`);
+	if (mode) lines.push(`mode: ${escapeYamlValue(mode)}`);
 	if (model) lines.push(`model: ${model}`);
 	if (tools?.length)
-		lines.push(`tools: [${tools.map((t) => `'${t}'`).join(", ")}]`);
-	lines.push(`description: '${description.replace(/'/g, "''")}'`);
+		lines.push(`tools: [${tools.map((t) => escapeYamlValue(t)).join(", ")}]`);
+
+	// Handle multiline descriptions specially
+	if (description.includes("\n") || description.includes("---")) {
+		lines.push(`description: ${escapeYamlValue(description)}`);
+	} else {
+		lines.push(`description: ${escapeYamlValue(description)}`);
+	}
+
 	lines.push("---");
 	return lines.join("\n");
 }
