@@ -15,6 +15,9 @@ import {
 	slugify,
 } from "../shared/prompt-utils.js";
 
+// Strict mode enum for YAML frontmatter
+const ModeEnum = z.enum(["agent", "tool", "workflow"]);
+
 const HierarchicalPromptSchema = z.object({
 	context: z.string(),
 	goal: z.string(),
@@ -22,7 +25,7 @@ const HierarchicalPromptSchema = z.object({
 	outputFormat: z.string().optional(),
 	audience: z.string().optional(),
 	// YAML prompt frontmatter (experimental prompt file support)
-	mode: z.string().optional().default("agent"),
+	mode: ModeEnum.optional().default("agent"),
 	model: z.string().optional().default("GPT-4.1"),
 	tools: z
 		.array(z.string())
@@ -40,7 +43,11 @@ const HierarchicalPromptSchema = z.object({
 	forcePromptMdStyle: z.boolean().optional().default(true),
 
 	// 2025 Prompting Techniques integration (optional hints)
-	techniques: z.array(TechniqueEnum).optional(),
+	// Support both single string and array of strings, coerce to array
+	techniques: z.preprocess((val) => {
+		if (typeof val === "string") return [val];
+		return val;
+	}, z.array(TechniqueEnum).optional()),
 	includeTechniqueHints: z.boolean().optional().default(true),
 	includePitfalls: z.boolean().optional().default(true),
 	autoSelectTechniques: z.boolean().optional().default(false),
@@ -195,3 +202,9 @@ function buildGeneralReferences(): string {
 }
 
 // --- Section builders for 2025 techniques & model tips ---
+
+// Test-only exports (marked as internal)
+/** @internal - For testing purposes only */
+export { normalizeOutputFormat as _normalizeOutputFormat };
+/** @internal - For testing purposes only */
+export { buildHierarchicalFrontmatter as _buildHierarchicalFrontmatter };
