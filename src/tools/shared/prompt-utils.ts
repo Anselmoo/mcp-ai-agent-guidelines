@@ -75,12 +75,8 @@ export function buildFrontmatter({
 	if (tools?.length)
 		lines.push(`tools: [${tools.map((t) => escapeYamlValue(t)).join(", ")}]`);
 
-	// Handle multiline descriptions specially
-	if (description.includes("\n") || description.includes("---")) {
-		lines.push(`description: ${escapeYamlValue(description)}`);
-	} else {
-		lines.push(`description: ${escapeYamlValue(description)}`);
-	}
+	// Escape and add description
+	lines.push(`description: ${escapeYamlValue(description)}`);
 
 	lines.push("---");
 	return lines.join("\n");
