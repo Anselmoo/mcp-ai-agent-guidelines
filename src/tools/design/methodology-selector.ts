@@ -829,3 +829,6 @@ class MethodologySelectorImpl {
 
 // Export singleton instance
 export const methodologySelector = new MethodologySelectorImpl();
+
+// Module Implementation Status Sentinel
+export const IMPLEMENTATION_STATUS = "IMPLEMENTED" as const;

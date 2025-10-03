@@ -491,3 +491,6 @@ ${JSON.stringify(adr.metadata, null, 2)}
 
 // Export singleton instance
 export const adrGenerator = new ADRGeneratorImpl();
+
+// Module Implementation Status Sentinel
+export const IMPLEMENTATION_STATUS = "IMPLEMENTED" as const;
