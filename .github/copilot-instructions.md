@@ -10,7 +10,7 @@
 - Source: `mcp-ai-agent-guidelines`
 - Runtime: Node 20+
 - Primary tools: TypeScript 5 · Biome · Vitest (v8 coverage) · Lefthook
-- Coverage Status: Statements 41.23% | Functions 25.69% | Lines 41.23% | Branches 88.29%
+- Coverage Status: Statements 48.24% | Functions 37.85% | Lines 48.24% | Branches 82.3%
 
 ---
 
@@ -18,17 +18,17 @@
 
 ### 2.1 · Absolute Minimum Thresholds (ENFORCED)
 **FAILURE MODE**: If ANY threshold drops below these values, the build FAILS immediately:
-- **Statements**: ≥ 41.23% (current baseline - cannot decrease)
-- **Lines**: ≥ 41.23% (current baseline - cannot decrease)
-- **Functions**: ≥ 25.69% (current baseline - cannot decrease)
-- **Branches**: ≥ 88.29% (current baseline - cannot decrease)
+- **Statements**: ≥ 48.24% (current baseline - cannot decrease)
+- **Lines**: ≥ 48.24% (current baseline - cannot decrease)
+- **Functions**: ≥ 37.85% (current baseline - cannot decrease)
+- **Branches**: ≥ 82.3% (current baseline - cannot decrease)
 
 ### 2.2 · Target Improvement Thresholds (ENCOURAGED)
 **IMPROVEMENT MODE**: Every PR should actively work toward these targets:
-- **Statements**: Target 50% (+8.77% improvement needed)
-- **Lines**: Target 50% (+8.77% improvement needed)
-- **Functions**: Target 40% (+14.31% improvement needed)
-- **Branches**: Maintain >88% (already excellent)
+- **Statements**: Target 50% (+1.76% improvement needed)
+- **Lines**: Target 50% (+1.76% improvement needed)
+- **Functions**: Target 40% (+2.15% improvement needed)
+- **Branches**: Maintain >80% (currently excellent at 82.3%)
 
 ### 2.3 · Coverage Quality Requirements
 - **Meaningful Tests**: Tests must exercise real business logic, not just import statements
