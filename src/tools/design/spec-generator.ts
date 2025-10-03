@@ -1360,3 +1360,6 @@ interface ErrorResponseDTO {
 
 // Export singleton instance
 export const specGenerator = new SpecGeneratorImpl();
+
+// Module Implementation Status Sentinel
+export const IMPLEMENTATION_STATUS = "IMPLEMENTED" as const;

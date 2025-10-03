@@ -651,3 +651,6 @@ export const DEFAULT_CONSTRAINT_CONFIG = {
 		mermaid: { format: "mermaid", types: ["flowchart", "sequence"] },
 	},
 };
+
+// Module Implementation Status Sentinel
+export const IMPLEMENTATION_STATUS = "IMPLEMENTED" as const;
