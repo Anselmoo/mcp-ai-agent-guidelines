@@ -201,7 +201,7 @@ describe("Design Module Smoke Tests - Implementation Detection", () => {
 	describe("Module Functional Tests", () => {
 		it("should successfully initialize all implemented modules", async () => {
 			// Test initialization of all modules
-			await expect(adrGenerator).toBeDefined();
+			expect(adrGenerator).toBeDefined();
 			await expect(confirmationModule.initialize()).resolves.toBeUndefined();
 			await expect(
 				confirmationPromptBuilder.initialize(),
@@ -296,11 +296,12 @@ describe("Design Module Smoke Tests - Implementation Detection", () => {
 			expect(moduleStatus.implemented.length).toBeGreaterThan(0);
 			expect(moduleStatus.stub.length).toBe(0);
 
-			console.log("Design Module Implementation Status:");
-			console.log(`  Implemented: ${moduleStatus.implemented.length} modules`);
-			console.log(`  Partial: ${moduleStatus.partial.length} modules`);
-			console.log(`  Stub: ${moduleStatus.stub.length} modules`);
-			console.log("\nAll modules are fully implemented and usable.");
+			// Implementation status summary (disabled for cleaner test output)
+			// console.log("Design Module Implementation Status:");
+			// console.log(`  Implemented: ${moduleStatus.implemented.length} modules`);
+			// console.log(`  Partial: ${moduleStatus.partial.length} modules`);
+			// console.log(`  Stub: ${moduleStatus.stub.length} modules`);
+			// console.log("\nAll modules are fully implemented and usable.");
 		});
 	});
 });
