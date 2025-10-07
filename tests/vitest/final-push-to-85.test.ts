@@ -133,12 +133,12 @@ describe("Final Coverage Push - Core Tools", () => {
 			"visualization",
 			"memory",
 			"workflow",
-		];
+		] as const;
 
 		for (const category of categories) {
 			const result = await guidelinesValidator({
 				practiceDescription: `Testing ${category} best practices`,
-				category: category as any,
+				category,
 			});
 
 			expect(result).toBeDefined();
