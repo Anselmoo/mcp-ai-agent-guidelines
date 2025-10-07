@@ -1,38 +1,48 @@
 # Copilot Project Instructions
 
-## Overview & architecture
+## 1. Overview & Architecture
 
-- `src/index.ts` hosts the MCP server, wiring `@modelcontextprotocol/sdk` handlers for tools, prompts, and resources; keep it declarative and free of business logic.
-- Tool families live under `src/tools/analysis`, `src/tools/design`, `src/tools/prompt`, and `src/tools/config`; prompts/resources sit in `src/prompts` and `src/resources`, with barrel files exporting deterministically.
-- Design orchestration centers on `src/tools/design/design-assistant.ts`, which coordinates `confirmation-module.ts`, `constraint-manager.ts`, `cross-session-consistency-enforcer.ts`, `methodology-selector.ts`, and shared `types.ts` data shapes.
-- Demos in `demos/` showcase tool outputs and double as regression artifacts; regenerate via `node demos/demo-tools.js` after a build.
+- **Entry Point**: `src/index.ts` is the declarative entry point, wiring up the MCP server and its tool handlers. Avoid putting business logic here.
+- **Tool Structure**: All tools are located in `src/tools/` and organized by category (e.g., `design`, `analysis`, `prompt`). Each tool is a self-contained module.
+- **Central Orchestrator**: The `design-assistant.ts` in `src/tools/design/` is a critical component that coordinates many other services like `constraint-manager.ts` and `methodology-selector.ts`. When working on design-related features, start by understanding its role as a facade.
+- **Deterministic Exports**: The project uses barrel files (`index.ts` in subdirectories) to aggregate and export modules. When adding a new tool, prompt, or resource, ensure it is exported from the appropriate barrel file.
+- **Demos**: The `demos/` directory contains scripts (`*.js`) that demonstrate tool functionality and act as regression tests. After making changes to a tool, consider updating or regenerating the corresponding demo by running `node demos/demo-tools.js`.
 
-## Coding conventions
+## 2. Coding Conventions & Patterns
 
-- TypeScript is strict: rely on `zod` schemas for input parsing, avoid `any`, and return typed objects that match the schemas configured in `listTools`.
-- The project targets Node 20+ with pure ESM; relative imports end in `.js` after build, so adjust import paths accordingly when moving files.
-- Modules should stay functional/pure; singletons (e.g., `constraintManager`, `crossSessionConsistencyEnforcer`) manage shared state—reuse them instead of instantiating new objects.
-- When touching design files, mirror existing patterns for session objects and constraint structures (see `src/tools/design/constraint-manager.ts`).
+- **Strict TypeScript & ESM**: The project uses strict TypeScript and pure ES Modules. All relative imports **must** end with `.js` as per ESM requirements (e.g., `import { a } from './b.js';`).
+- **Input Validation**: All tool inputs are strictly parsed using `zod` schemas. When adding or modifying a tool, ensure its input schema is robust.
+- **State Management**: Shared state is managed by singletons (e.g., `constraintManager`, `crossSessionConsistencyEnforcer`). Always reuse these existing instances instead of creating new ones.
+- **Immutability**: Strive for functional purity in modules. Avoid direct state mutations where possible.
 
-## Build, test, and quality workflow
+## 3. Build, Test, and Quality Workflow
 
-- Core scripts (see `package.json`): `npm run build`, `npm run test:unit` (Node harness in `tests/unit`), `npm run test:all` (build + unit + integration + demo + MCP smoke), and `npm run quality` (TypeScript `--noEmit` plus Biome check).
-- Vitest suites reside in `tests/vitest/**`; for coverage runs use `npx vitest run --coverage --maxWorkers=1` and, if memory is tight, prefix with `NODE_OPTIONS=--max-old-space-size=8192`.
-- Lefthook (configured in `lefthook.yml`) executes formatting, type-checks, and the full `test:all` pipeline before pushes—expect these gates to run in CI as well.
-- Coverage artifacts land in `coverage/` and feed the Codecov badge; keep high-signal tests near their target modules to maintain per-file coverage.
+- **Primary Scripts** (from `package.json`):
+  - `npm run build`: Compiles TypeScript to `dist/`.
+  - `npm run test:vitest`: Runs the primary test suite using Vitest.
+  - `npm run test:coverage:vitest`: Runs tests and generates a coverage report in `coverage/`.
+  - `npm run quality`: Performs a full quality check (TypeScript type-check + Biome linter/formatter).
+- **Git Hooks (Lefthook)**: The project uses `lefthook` (configured in `lefthook.yml`) to enforce quality gates.
+  - **`pre-commit`**: Runs fast checks like formatting (Biome) and type-checking (`tsc --noEmit`).
+  - **`pre-push`**: Runs the full quality and test pipeline (`npm run quality` and `npm run test:all`).
+  - **Your changes must pass these hooks to be committed and pushed.** You can run them manually with `npx lefthook run pre-commit`.
 
-## Testing patterns
+## 4. Testing Patterns
 
-- Favor public APIs in specs: call `designAssistant.createSession`, `constraintManager.addConstraint`, or tool exports as the tests in `tests/vitest/unit/design-*.spec.ts` do.
-- Build minimal `DesignSessionState` fixtures inline following the shapes in existing specs; accessing internals breaks future refactors.
-- Use Vitest spies (`vi.spyOn`) when stubbing heavy collaborators—examples live in `tests/vitest/design-assistant-consistency-integration.test.ts`.
-- Snapshot folders exist but are rarely used; prefer explicit assertions for deterministic text outputs (e.g., mermaid generator tests).
+- **Target Public APIs**: Write tests against the exported functions and classes, not internal implementation details. See `tests/vitest/unit/design-*.spec.ts` for examples.
+- **Fixtures**: Create minimal, inline test fixtures. Do not rely on large, shared fixture files.
+- **Spies and Mocks**: Use Vitest's `vi.spyOn()` to mock dependencies and observe function calls, as shown in `tests/vitest/design-assistant-consistency-integration.test.ts`.
+- **Test Location**: Test files in `tests/vitest/` should mirror the `src/` directory structure to make them easy to find.
 
-## Extending tools & prompts
+## 5. Extending the Project
 
-- Adding a tool: place the implementation under `src/tools/<category>/`, export a typed handler, register it in `src/index.ts`, and cover it with a Vitest spec plus (if needed) a demo invocation.
-- Adding a prompt/resource: create a deterministic module under `src/prompts` or `src/resources` and add it to the respective `index.ts` aggregator; avoid dynamic imports so the MCP manifest stays static.
-- When amending `package.json` scripts or metadata, review Lefthook and CI expectations so automation stays in sync.
-- Keep generated demos and documentation (`demos/*.md`, `coverage/index.html`) up to date when behavior changes—they are often inspected during reviews.
+- **Adding a Tool**:
+  1. Create the new tool file under the appropriate category in `src/tools/`.
+  2. Export the tool's handler from the category's `index.ts` barrel file.
+  3. Register the tool handler in `src/index.ts`.
+  4. Add a corresponding `.spec.ts` file in `tests/vitest/tools/` following the same directory structure.
+- **Adding a Prompt or Resource**:
+  1. Create the file in `src/prompts` or `src/resources`.
+  2. Add it to the aggregator in `src/prompts/index.ts` or `src/resources/index.ts`. This ensures it's included in the static MCP manifest.
 
-_Questions or unclear areas? Flag them so we can extend these instructions for future agents._
+_If any of these instructions are unclear or seem incomplete, please ask for clarification!_
