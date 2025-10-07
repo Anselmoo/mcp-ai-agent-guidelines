@@ -10,12 +10,12 @@ export default defineConfig({
 			reportsDirectory: "coverage",
 			include: ["src/**/*.{ts,tsx}"],
 			exclude: ["**/*.d.ts", "dist/**", "node_modules/**", "coverage/**"],
-			// Target Q1 goals after dead code cleanup
+			// Progressive coverage improvement: 60% -> 68% -> 70% -> 85%
 			thresholds: {
-				statements: 41, // Baseline level (keep current ~42%)
-				lines: 41, // Baseline level (keep current ~42%)
-				functions: 26, // Improved from 25.69% to 26.7% - allow this progress
-				branches: 45, // Keep current high level
+				statements: 68, // Improved from 42% baseline
+				lines: 68, // Improved from 42% baseline
+				functions: 70, // Improved from 26.98% baseline
+				branches: 75, // Maintained high level
 				// perFile off initially to avoid noisy CI on new files
 				perFile: false,
 			},

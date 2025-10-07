@@ -4,9 +4,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { adrGenerator } from "../../src/tools/design/adr-generator.js";
 import { confirmationPromptBuilder } from "../../src/tools/design/confirmation-prompt-builder.js";
-import { crossSessionConsistencyEnforcer } from "../../src/tools/design/cross-session-consistency-enforcer.js";
 import { designAssistant } from "../../src/tools/design/design-assistant.js";
-import { designPhaseWorkflow } from "../../src/tools/design/design-phase-workflow.js";
 import { pivotModule } from "../../src/tools/design/pivot-module.js";
 import type { DesignSessionState } from "../../src/tools/design/types.js";
 
