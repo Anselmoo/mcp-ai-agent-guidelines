@@ -293,7 +293,7 @@ Fix the token expiration logic to ensure tokens last for the configured duration
 				/Predicted Effectiveness[:\s]+(\d+)\/100/,
 			);
 			if (effectivenessMatch) {
-				const score = Number.parseInt(effectivenessMatch[1]);
+				const score = Number.parseInt(effectivenessMatch[1], 10);
 				expect(score).toBeGreaterThanOrEqual(60); // Should have decent effectiveness
 			}
 		});
