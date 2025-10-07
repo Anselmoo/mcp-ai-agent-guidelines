@@ -16,26 +16,26 @@ export const IMPLEMENTATION_STATUS = "IMPLEMENTED" as const;
 
 ### Available Status Values
 
-- `"IMPLEMENTED"` - Fully functional with core business logic
-- `"PARTIAL"` - Has some implementation but incomplete (currently no modules)
-- `"STUB"` - Minimal or placeholder implementation (currently no modules)
+- "IMPLEMENTED" - Fully functional with core business logic
+- "PARTIAL" - Has some implementation but incomplete (currently no modules)
+- "STUB" - Minimal or placeholder implementation (currently no modules)
 
 ## Usage Examples
 
 ### 1. Check Individual Module Status
 
 ```typescript
-import { ADR_GENERATOR_STATUS } from './src/tools/design/index.js';
+import { ADR_GENERATOR_STATUS } from "./src/tools/design/index.js";
 
 if (ADR_GENERATOR_STATUS === "IMPLEMENTED") {
-  console.log('✅ ADR Generator is ready to use');
+  console.log("✅ ADR Generator is ready to use");
 }
 ```
 
 ### 2. Check All Module Status
 
 ```typescript
-import { DESIGN_MODULE_STATUS } from './src/tools/design/index.js';
+import { DESIGN_MODULE_STATUS } from "./src/tools/design/index.js";
 
 // View all statuses
 console.log(DESIGN_MODULE_STATUS);
@@ -49,26 +49,28 @@ console.log(DESIGN_MODULE_STATUS);
 ### 3. Filter Ready Modules
 
 ```typescript
-import { DESIGN_MODULE_STATUS } from './src/tools/design/index.js';
+import { DESIGN_MODULE_STATUS } from "./src/tools/design/index.js";
 
 const readyModules = Object.entries(DESIGN_MODULE_STATUS)
-  .filter(([_, status]) => status === 'IMPLEMENTED')
+  .filter(([_, status]) => status === "IMPLEMENTED")
   .map(([name]) => name);
 
-console.log('Ready modules:', readyModules);
+console.log("Ready modules:", readyModules);
 ```
 
 ### 4. Conditional Import Safety
 
 ```typescript
-import { DESIGN_MODULE_STATUS } from './src/tools/design/index.js';
+import { DESIGN_MODULE_STATUS } from "./src/tools/design/index.js";
 
-function canImportModule(moduleName: keyof typeof DESIGN_MODULE_STATUS): boolean {
-  return DESIGN_MODULE_STATUS[moduleName] === 'IMPLEMENTED';
+function canImportModule(
+  moduleName: keyof typeof DESIGN_MODULE_STATUS
+): boolean {
+  return DESIGN_MODULE_STATUS[moduleName] === "IMPLEMENTED";
 }
 
-if (canImportModule('adrGenerator')) {
-  const { adrGenerator } = await import('./src/tools/design/index.js');
+if (canImportModule("adrGenerator")) {
+  const { adrGenerator } = await import("./src/tools/design/index.js");
   // Safely use adrGenerator
 }
 ```
@@ -124,6 +126,7 @@ npm run test:unit -- tests/vitest/unit/design/smoke-implemented-detection.test.t
 ```
 
 Tests verify:
+
 - ✅ Each module exports `IMPLEMENTATION_STATUS`
 - ✅ All statuses are set correctly
 - ✅ `DESIGN_MODULE_STATUS` aggregation object is exported
@@ -139,7 +142,7 @@ import('./dist/tools/design/index.js').then(({ DESIGN_MODULE_STATUS }) => {
   const implemented = Object.entries(DESIGN_MODULE_STATUS)
     .filter(([_, status]) => status === 'IMPLEMENTED')
     .length;
-  console.log(\`✅ \${implemented} modules fully implemented\`);
+  console.log(`✅ ${implemented} modules fully implemented`);
 });
 "
 ```
@@ -151,11 +154,11 @@ import('./dist/tools/design/index.js').then(({ DESIGN_MODULE_STATUS }) => {
 Tests can programmatically detect stubs and skip them:
 
 ```typescript
-import { DESIGN_MODULE_STATUS } from './src/tools/design/index.js';
+import { DESIGN_MODULE_STATUS } from "./src/tools/design/index.js";
 
-describe('Module Tests', () => {
+describe("Module Tests", () => {
   for (const [moduleName, status] of Object.entries(DESIGN_MODULE_STATUS)) {
-    if (status === 'IMPLEMENTED') {
+    if (status === "IMPLEMENTED") {
       it(`should test ${moduleName}`, () => {
         // Run tests
       });
@@ -171,13 +174,13 @@ describe('Module Tests', () => {
 Tools can avoid using partial modules:
 
 ```typescript
-import { DESIGN_MODULE_STATUS } from 'mcp-ai-agent-guidelines/design';
+import { DESIGN_MODULE_STATUS } from "mcp-ai-agent-guidelines/design";
 
 const availableTools = Object.entries(DESIGN_MODULE_STATUS)
-  .filter(([_, status]) => status === 'IMPLEMENTED')
+  .filter(([_, status]) => status === "IMPLEMENTED")
   .map(([name]) => name);
 
-console.log('Available design tools:', availableTools);
+console.log("Available design tools:", availableTools);
 ```
 
 ### 3. Build-Time Filtering
@@ -185,10 +188,10 @@ console.log('Available design tools:', availableTools);
 Build tools can filter exports:
 
 ```typescript
-import { DESIGN_MODULE_STATUS } from './src/tools/design/index.js';
+import { DESIGN_MODULE_STATUS } from "./src/tools/design/index.js";
 
 const productionModules = Object.entries(DESIGN_MODULE_STATUS)
-  .filter(([_, status]) => status === 'IMPLEMENTED')
+  .filter(([_, status]) => status === "IMPLEMENTED")
   .reduce((acc, [name]) => ({ ...acc, [name]: true }), {});
 
 // Use for conditional bundling
@@ -201,20 +204,23 @@ const productionModules = Object.entries(DESIGN_MODULE_STATUS)
 When creating a new design module:
 
 1. **Add the export** at the end of your module:
+
    ```typescript
    export const IMPLEMENTATION_STATUS = "STUB" as const;
    // Update to "PARTIAL" or "IMPLEMENTED" as you progress
    ```
 
 2. **Export from index.ts**:
+
    ```typescript
    export {
      newModule,
-     IMPLEMENTATION_STATUS as NEW_MODULE_STATUS
+     IMPLEMENTATION_STATUS as NEW_MODULE_STATUS,
    } from "./new-module.js";
    ```
 
 3. **Update DESIGN_MODULE_STATUS**:
+
    ```typescript
    export const DESIGN_MODULE_STATUS = {
      // ... existing modules
@@ -223,10 +229,11 @@ When creating a new design module:
    ```
 
 4. **Add smoke tests**:
-   ```typescript
-   import { IMPLEMENTATION_STATUS as NEW_MODULE_STATUS } from '...';
 
-   it('should verify newModule status', () => {
+   ```typescript
+   import { IMPLEMENTATION_STATUS as NEW_MODULE_STATUS } from "...";
+
+   it("should verify newModule status", () => {
      expect(NEW_MODULE_STATUS).toBeDefined();
    });
    ```
@@ -267,6 +274,7 @@ All quality gates pass:
 - ✅ **Coverage**: Exceeds baseline thresholds
 
 ### Coverage Metrics
+
 - Statements: 48.24% (baseline: 41.23%) ✅
 - Functions: 37.85% (baseline: 25.69%) ✅
 - Lines: 48.24% (baseline: 41.23%) ✅
