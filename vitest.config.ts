@@ -10,13 +10,14 @@ export default defineConfig({
 			reportsDirectory: "coverage",
 			include: ["src/**/*.{ts,tsx}"],
 			exclude: ["**/*.d.ts", "dist/**", "node_modules/**", "coverage/**"],
-			// Progressive coverage improvement: 60% -> 68% -> 70% -> 85%
+			// Progressive coverage improvement: 60% -> 68% -> 75% -> 85%
+			// Current: 68.88% (up from 60% baseline)
+			// Next milestone: 75%, Final goal: 85%
 			thresholds: {
-				statements: 68, // Improved from 42% baseline
-				lines: 68, // Improved from 42% baseline
-				functions: 70, // Improved from 26.98% baseline
-				branches: 75, // Maintained high level
-				// perFile off initially to avoid noisy CI on new files
+				statements: 68, // Current: 68.88%
+				lines: 68, // Current: 68.88%
+				functions: 74, // Current: 74.16%
+				branches: 77, // Current: 77.17%
 				perFile: false,
 			},
 		},
