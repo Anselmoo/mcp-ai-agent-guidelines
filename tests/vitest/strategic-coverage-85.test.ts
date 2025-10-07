@@ -7,8 +7,6 @@ import { constraintManager } from "../../src/tools/design/constraint-manager.js"
 import { designAssistant } from "../../src/tools/design/design-assistant.js";
 import { methodologySelector } from "../../src/tools/design/methodology-selector.js";
 import { pivotModule } from "../../src/tools/design/pivot-module.js";
-import { roadmapGenerator } from "../../src/tools/design/roadmap-generator.js";
-import { specGenerator } from "../../src/tools/design/spec-generator.js";
 import type { DesignSessionState } from "../../src/tools/design/types.js";
 
 describe("Strategic Coverage - Confirmation Module Diverse Inputs", () => {
@@ -179,9 +177,9 @@ describe("Strategic Coverage - Design Assistant Request Types", () => {
 
 	it("should handle invalid action gracefully", async () => {
 		const result = await designAssistant.processRequest({
-			action: "invalid-action",
+			action: "invalid-action" as "get-status",
 			sessionId: "test",
-		} as any);
+		});
 
 		expect(result).toBeDefined();
 	});

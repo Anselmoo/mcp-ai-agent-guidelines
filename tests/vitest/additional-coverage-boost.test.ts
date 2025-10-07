@@ -145,7 +145,11 @@ describe("Additional Coverage - Confirmation Module", () => {
 				id: "validation",
 				name: "Validation",
 				description: "Validation",
-				status: phaseStatus as any,
+				status: phaseStatus as
+					| "active"
+					| "completed"
+					| "pending"
+					| "in-progress",
 				inputs: [],
 				outputs: [],
 				criteria: ["Criteria 1", "Criteria 2"],
