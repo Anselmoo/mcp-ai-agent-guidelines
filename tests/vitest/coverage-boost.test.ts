@@ -2,13 +2,13 @@
 // This test exercises untested code paths in design modules
 
 import { beforeAll, describe, expect, it } from "vitest";
-import { confirmationModule } from "../../dist/tools/design/confirmation-module.js";
-import { constraintConsistencyEnforcer } from "../../dist/tools/design/constraint-consistency-enforcer.js";
-import { coverageEnforcer } from "../../dist/tools/design/coverage-enforcer.js";
-import { roadmapGenerator } from "../../dist/tools/design/roadmap-generator.js";
-import { specGenerator } from "../../dist/tools/design/spec-generator.js";
-import { strategicPivotPromptBuilder } from "../../dist/tools/design/strategic-pivot-prompt-builder.js";
-import type { DesignSessionState } from "../../dist/tools/design/types.js";
+import { confirmationModule } from "../../src/tools/design/confirmation-module.js";
+import { constraintConsistencyEnforcer } from "../../src/tools/design/constraint-consistency-enforcer.js";
+import { coverageEnforcer } from "../../src/tools/design/coverage-enforcer.js";
+import { roadmapGenerator } from "../../src/tools/design/roadmap-generator.js";
+import { specGenerator } from "../../src/tools/design/spec-generator.js";
+import { strategicPivotPromptBuilder } from "../../src/tools/design/strategic-pivot-prompt-builder.js";
+import type { DesignSessionState } from "../../src/tools/design/types.js";
 
 describe("Coverage Boost - Exercise Untested Paths", () => {
 	beforeAll(async () => {
