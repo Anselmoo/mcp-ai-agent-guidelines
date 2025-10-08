@@ -137,7 +137,9 @@ After adding the server, open your chat client (e.g., Cline in VS Code). The too
 Example prompts:
 - "Use hierarchical-prompt-builder to create a refactor plan for src/index.ts with outputFormat markdown."
 - "Analyze this Python file with code-hygiene-analyzer; highlight security issues."
-- "Generate a Mermaid diagram for our pipeline using mermaid-diagram-generator (flowchart)."
+- "Generate a Mermaid sequence diagram showing: User sends request to API, API queries Database, Database returns data, API responds to User."
+- "Create an ER diagram for: Customer has Orders, Order contains LineItems, Product referenced in LineItems."
+- "Build a user journey map for our checkout flow using mermaid-diagram-generator."
 
 Tip: Most clients can pass file content automatically when you select a file and invoke a tool.
 
@@ -205,11 +207,75 @@ Usage: `security-hardening-prompt-builder`
 
 Usage: `mermaid-diagram-generator`
 
-| Parameter     | Required | Description                                                      |
-| ------------- | -------- | ---------------------------------------------------------------- |
-| `description` | ✅        | Description of the system or process to diagram                  |
-| `diagramType` | ✅        | Type: `flowchart`, `sequence`, `class`, `state`, `gantt`, `pie` |
-| `theme`       | ❌        | Visual theme for the diagram                                     |
+Generates Mermaid diagrams with intelligent parsing of descriptions for rich, customizable visualizations.
+
+| Parameter          | Required | Description                                                                                                                                          |
+| ------------------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `description`      | ✅        | Description of the system or process to diagram. Be detailed and specific for better diagram generation.                                            |
+| `diagramType`      | ✅        | Type: `flowchart`, `sequence`, `class`, `state`, `gantt`, `pie`, `er`, `journey`, `quadrant`, `git-graph`, `mindmap`, `timeline`                   |
+| `theme`            | ❌        | Visual theme: `default`, `dark`, `forest`, `neutral`                                                                                                 |
+| `direction`        | ❌        | Flowchart direction: `TD`/`TB` (top-down), `BT` (bottom-top), `LR` (left-right), `RL` (right-left)                                                  |
+| `strict`           | ❌        | If true, never emit invalid diagram; use fallback if needed (default: true)                                                                          |
+| `repair`           | ❌        | Attempt auto-repair on validation failure (default: true)                                                                                            |
+| `accTitle`         | ❌        | Accessibility title (added as Mermaid comment)                                                                                                       |
+| `accDescr`         | ❌        | Accessibility description (added as Mermaid comment)                                                                                                 |
+| `customStyles`     | ❌        | Custom CSS/styling directives for advanced customization                                                                                             |
+| `advancedFeatures` | ❌        | Type-specific advanced features (e.g., `{autonumber: true}` for sequence diagrams)                                                                   |
+
+**Enhanced Features:**
+
+- **Intelligent Description Parsing**: All diagram types now parse descriptions to extract relevant entities, relationships, and structures
+- **New Diagram Types**:
+  - `er` - Entity Relationship diagrams for database schemas
+  - `journey` - User journey maps for UX workflows
+  - `quadrant` - Quadrant/priority charts for decision matrices
+  - `git-graph` - Git commit history visualization
+  - `mindmap` - Hierarchical concept maps
+  - `timeline` - Event timelines and roadmaps
+- **Advanced Customization**: Direction control, themes, custom styles, and type-specific features
+- **Smart Fallbacks**: Generates sensible default diagrams when description parsing is ambiguous
+
+**Examples:**
+
+```bash
+# Sequence diagram with participants auto-detected from description
+{
+  "description": "User sends login request to API. API queries Database for credentials. Database returns user data. API responds to User with token.",
+  "diagramType": "sequence",
+  "advancedFeatures": {"autonumber": true}
+}
+
+# Class diagram with relationships extracted
+{
+  "description": "User has id and email. Order contains Product items. User places Order. Product has price and name.",
+  "diagramType": "class"
+}
+
+# ER diagram for database schema
+{
+  "description": "Customer places Order. Order contains LineItem. Product is referenced in LineItem.",
+  "diagramType": "er"
+}
+
+# User journey map
+{
+  "description": "Shopping Journey. Section Discovery: User finds product. User reads reviews. Section Purchase: User adds to cart. User completes checkout.",
+  "diagramType": "journey"
+}
+
+# Gantt chart with tasks from description
+{
+  "description": "Project: Feature Development. Phase Planning: Research requirements. Design architecture. Phase Development: Implement backend. Create frontend. Phase Testing: QA validation.",
+  "diagramType": "gantt"
+}
+
+# Flowchart with custom direction
+{
+  "description": "Receive request. Validate input. Process data. Return response.",
+  "diagramType": "flowchart",
+  "direction": "LR"
+}
+```
 
 </details>
 
