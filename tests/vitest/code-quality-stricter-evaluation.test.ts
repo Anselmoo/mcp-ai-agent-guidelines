@@ -89,6 +89,83 @@ describe("Stricter Code Quality Evaluation", () => {
 
 			expect(text).toMatch(/critical issue\(s\) immediately/i);
 		});
+
+		it("should detect Python commented code", async () => {
+			const code = `
+def main():
+    print("active")
+# old_var = 1
+# def old_func():
+#     return 2
+# unused = 3
+			`;
+			const res = await codeHygieneAnalyzer({
+				codeContent: code,
+				language: "python",
+				includeReferences: false,
+				includeMetadata: false,
+			});
+			const text = res.content[0].type === "text" ? res.content[0].text : "";
+
+			expect(text).toMatch(/Dead Code/);
+			expect(text).toMatch(/commented code/);
+		});
+
+		it("should give excellent score for clean code", async () => {
+			const code = `
+const add = (a, b) => a + b;
+export default add;
+			`;
+			const res = await codeHygieneAnalyzer({
+				codeContent: code,
+				language: "javascript",
+				includeReferences: false,
+				includeMetadata: false,
+			});
+			const text = res.content[0].type === "text" ? res.content[0].text : "";
+
+			expect(text).toMatch(/100\/100|Excellent/);
+		});
+
+		it("should give poor score for severe issues", async () => {
+			const code = `
+const apiKey = 'key1';
+const password = 'pass1';
+const secret = 'secret1';
+async function test1() { await fetch('/'); }
+async function test2() { await fetch('/'); }
+			`;
+			const res = await codeHygieneAnalyzer({
+				codeContent: code,
+				language: "javascript",
+				includeReferences: false,
+				includeMetadata: false,
+			});
+			const text = res.content[0].type === "text" ? res.content[0].text : "";
+
+			// Credentials detected in one match + 2 async without error handling = 2 critical issues
+			// Score: 100 - 40 = 60 (Fair)
+			expect(text).toMatch(/Fair/);
+			expect(text).toMatch(/critical issue\(s\)/);
+		});
+
+		it("should show major issues in next steps without critical issues", async () => {
+			const code = `
+console.log('debug1');
+console.log('debug2');
+const x = 1;
+			`;
+			const res = await codeHygieneAnalyzer({
+				codeContent: code,
+				language: "javascript",
+				includeReferences: false,
+				includeMetadata: false,
+			});
+			const text = res.content[0].type === "text" ? res.content[0].text : "";
+
+			expect(text).toMatch(/Fix \d+ major issue\(s\) before merging/);
+			expect(text).not.toMatch(/critical issue\(s\) immediately/);
+		});
 	});
 
 	describe("Guidelines Validator with Lower Base Scores", () => {
