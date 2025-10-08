@@ -1059,6 +1059,18 @@ export const structuredResources: StructuredResource[] = [
 						source: "arXiv",
 					},
 					{
+						title: "HPT: Hierarchical Prompting Taxonomy Implementation",
+						url: "https://github.com/devichand579/HPT",
+						source: "GitHub",
+						note: "Reference implementation and research code for HPT framework",
+					},
+					{
+						title: "ACL Anthology: Computational Linguistics Research",
+						url: "https://github.com/acl-org/acl-anthology",
+						source: "GitHub",
+						note: "ACL papers and resources on prompt engineering and evaluation",
+					},
+					{
 						title: "Master Hierarchical Prompting for Better AI Interactions",
 						url: "https://relevanceai.com/prompt-engineering/master-hierarchical-prompting-for-better-ai-interactions",
 						source: "RelevanceAI",

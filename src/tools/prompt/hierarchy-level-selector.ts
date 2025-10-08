@@ -5,6 +5,21 @@ import {
 	type PromptingHierarchyLevel,
 } from "./prompting-hierarchy-evaluator.js";
 
+/**
+ * Hierarchy Level Selector
+ *
+ * Selects the most appropriate prompting hierarchy level based on task characteristics,
+ * agent capability, and autonomy preferences.
+ *
+ * Based on research from:
+ * - Hierarchical Prompting Taxonomy (HPT): https://arxiv.org/abs/2406.12644
+ * - HPT Implementation: https://github.com/devichand579/HPT
+ * - ACL Anthology research: https://github.com/acl-org/acl-anthology
+ *
+ * @see https://github.com/devichand579/HPT - Reference implementation
+ * @see https://github.com/acl-org/acl-anthology - Research papers on prompt engineering
+ */
+
 const HierarchyLevelSelectorSchema = z.object({
 	taskDescription: z
 		.string()
