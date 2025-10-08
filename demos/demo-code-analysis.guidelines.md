@@ -15,10 +15,10 @@
 ### 📊 Compliance Assessment
 | Metric | Value |
 |---|---|
-| Overall Score | 50/100 |
-| Compliance Level | FAIR |
+| Overall Score | 30/100 |
+| Compliance Level | POOR |
 
-🟠 **Fair compliance** - Several areas need attention
+🔴 **Poor compliance** - Significant improvements needed
 
 ### ⭐ Strengths Identified
 
