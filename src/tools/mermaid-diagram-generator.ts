@@ -358,7 +358,7 @@ function generateSequenceDiagram(
 function generateClassDiagram(
 	description: string,
 	theme?: string,
-	advancedFeatures?: Record<string, unknown>,
+	_advancedFeatures?: Record<string, unknown>,
 ): string {
 	const lines: string[] = ["classDiagram"];
 	if (theme) lines.unshift(`%%{init: {'theme':'${theme}'}}%%`);
@@ -410,7 +410,7 @@ function generateClassDiagram(
 function generateStateDiagram(
 	description: string,
 	theme?: string,
-	advancedFeatures?: Record<string, unknown>,
+	_advancedFeatures?: Record<string, unknown>,
 ): string {
 	const lines: string[] = ["stateDiagram-v2"];
 	if (theme) lines.unshift(`%%{init: {'theme':'${theme}'}}%%`);
@@ -440,7 +440,7 @@ function generateStateDiagram(
 function generateGanttChart(
 	description: string,
 	theme?: string,
-	advancedFeatures?: Record<string, unknown>,
+	_advancedFeatures?: Record<string, unknown>,
 ): string {
 	const lines: string[] = ["gantt"];
 	if (theme) lines.unshift(`%%{init: {'theme':'${theme}'}}%%`);
@@ -885,7 +885,8 @@ function generateERDiagram(description: string, theme?: string): string {
 	if (theme) lines.unshift(`%%{init: {'theme':'${theme}'}}%%`);
 
 	// Extract entities and relationships
-	const { entities, relationships } = parseERDescription(description);
+	const { entities: _entities, relationships } =
+		parseERDescription(description);
 
 	if (relationships.length > 0) {
 		for (const rel of relationships) {
@@ -966,7 +967,7 @@ function generateGitGraph(description: string, theme?: string): string {
 	if (theme) lines.unshift(`%%{init: {'theme':'${theme}'}}%%`);
 
 	// Extract branch and commit info from description
-	const { commits, branches } = parseGitDescription(description);
+	const { commits, branches: _branches } = parseGitDescription(description);
 
 	if (commits.length > 0) {
 		for (const commit of commits) {
