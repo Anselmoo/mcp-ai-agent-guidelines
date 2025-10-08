@@ -881,7 +881,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "sprint-timeline-calculator",
 				description:
-					"Calculate optimal development cycles and sprint timelines",
+					"Calculate optimal development cycles and sprint timelines with dependency-aware scheduling",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -898,6 +898,20 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						velocity: {
 							type: "number",
 							description: "Team velocity (story points per sprint)",
+						},
+						optimizationStrategy: {
+							type: "string",
+							enum: ["greedy", "linear-programming"],
+							description:
+								"Optimization strategy: 'greedy' (default, deterministic bin-packing) or 'linear-programming' (future MILP optimization)",
+						},
+						includeMetadata: {
+							type: "boolean",
+							description: "Include metadata in output",
+						},
+						inputFile: {
+							type: "string",
+							description: "Input file reference",
 						},
 					},
 					required: ["tasks", "teamSize"],

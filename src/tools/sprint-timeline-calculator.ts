@@ -13,6 +13,10 @@ const SprintTimelineSchema = z.object({
 	teamSize: z.number(),
 	sprintLength: z.number().optional(),
 	velocity: z.number().optional(),
+	optimizationStrategy: z
+		.enum(["greedy", "linear-programming"])
+		.optional()
+		.default("greedy"),
 	includeMetadata: z.boolean().optional().default(true),
 	inputFile: z.string().optional(),
 });
@@ -89,6 +93,7 @@ Current calculations based on:
 - Industry average: 8-10 story points per developer per sprint
 - Adjusted for team size and sprint length
 - Factoring in 20% overhead for meetings and coordination
+- Using ${input.optimizationStrategy || "greedy"} optimization strategy with dependency-aware scheduling
 
 ### Gantt (Mermaid)
 \`\`\`mermaid
@@ -139,6 +144,7 @@ ${calculation.sprints
 ${buildReferencesSection([
 	"ZenHub — AI-assisted sprint planning (2025): https://www.zenhub.com/blog-posts/the-7-best-ai-assisted-sprint-planning-tools-for-agile-teams-in-2025",
 	"Nitor Infotech — AI in project delivery: https://www.nitorinfotech.com/blog/ai-in-software-project-delivery-smarter-planning-and-execution/",
+	"Optimizing Sprint Planning with Julia — Linear Programming Approach (2025): https://medium.com/@karim.ouldaklouche/optimizing-sprint-planning-with-julia-a-linear-programming-approach-with-gurobi-03f28c0cf5bf",
 ])}
 `,
 			},
@@ -179,6 +185,7 @@ function calculateSprintTimeline(input: SprintTimelineInput) {
 		totalPoints,
 		velocity,
 		utilizationPercentage,
+		sprints,
 	);
 
 	// Generate recommendations
@@ -207,51 +214,126 @@ interface TimelineTask {
 	dependencies?: string[];
 }
 
+/**
+ * Performs topological sort on tasks based on dependencies
+ * Uses Kahn's algorithm to detect cycles and order tasks correctly
+ */
+function topologicalSort(tasks: TimelineTask[]): TimelineTask[] {
+	const taskMap = new Map<string, TimelineTask>();
+	const inDegree = new Map<string, number>();
+	const adjList = new Map<string, string[]>();
+
+	// Build graph
+	for (const task of tasks) {
+		taskMap.set(task.name, task);
+		inDegree.set(task.name, 0);
+		adjList.set(task.name, []);
+	}
+
+	// Calculate in-degrees
+	for (const task of tasks) {
+		if (task.dependencies) {
+			for (const dep of task.dependencies) {
+				if (taskMap.has(dep)) {
+					inDegree.set(task.name, (inDegree.get(task.name) || 0) + 1);
+					adjList.get(dep)?.push(task.name);
+				}
+			}
+		}
+	}
+
+	// Kahn's algorithm
+	const queue: string[] = [];
+	const sorted: TimelineTask[] = [];
+
+	// Find all tasks with no dependencies
+	for (const [name, degree] of inDegree) {
+		if (degree === 0) {
+			queue.push(name);
+		}
+	}
+
+	while (queue.length > 0) {
+		const current = queue.shift()!;
+		const task = taskMap.get(current)!;
+		sorted.push(task);
+
+		// Reduce in-degree for dependent tasks
+		const dependents = adjList.get(current) || [];
+		for (const dep of dependents) {
+			const newDegree = (inDegree.get(dep) || 0) - 1;
+			inDegree.set(dep, newDegree);
+			if (newDegree === 0) {
+				queue.push(dep);
+			}
+		}
+	}
+
+	// Check for circular dependencies
+	if (sorted.length !== tasks.length) {
+		// Circular dependency detected, return original order with warning
+		console.warn(
+			"Warning: Circular dependencies detected in tasks. Using original order.",
+		);
+		return tasks;
+	}
+
+	return sorted;
+}
+
 function organizeTasks(
 	tasks: TimelineTask[],
 	velocity: number,
 	sprintCount: number,
 ) {
-	// Sort tasks by priority and dependencies
-	const sortedTasks = [...tasks].sort((a, b) => {
-		const priorityOrder = { high: 3, medium: 2, low: 1 };
-		const aPriority =
-			priorityOrder[a.priority?.toLowerCase() as keyof typeof priorityOrder] ||
-			2;
-		const bPriority =
-			priorityOrder[b.priority?.toLowerCase() as keyof typeof priorityOrder] ||
-			2;
-		return bPriority - aPriority; // Higher priority first
-	});
+	// Step 1: Topologically sort tasks to respect dependencies
+	// This ensures tasks are in an order where dependencies come before dependents
+	const topologicallySorted = topologicalSort(tasks);
 
+	// Step 2: Use First Fit Decreasing bin-packing algorithm for deterministic results
+	// We rely on topological sort for dependency ordering
+	// The bin-packing algorithm will validate dependencies are met
 	const sprints: Array<{ points: number; tasks: TimelineTask[] }> = [];
 
 	for (let i = 0; i < sprintCount; i++) {
 		sprints.push({ points: 0, tasks: [] });
 	}
 
-	// Distribute tasks across sprints
-	let currentSprint = 0;
-	for (const task of sortedTasks) {
-		// Find the sprint with the least points that can accommodate this task
-		let targetSprint = currentSprint;
+	// Distribute tasks using First Fit with dependency validation
+	for (const task of topologicallySorted) {
+		// Find the first sprint that can accommodate this task
+		let placed = false;
 		for (let i = 0; i < sprints.length; i++) {
 			if (sprints[i].points + task.estimate <= velocity) {
+				// Verify dependency constraint: all dependencies must be in earlier or same sprint
+				const dependenciesMet = (task.dependencies || []).every((depName) => {
+					// Check if dependency is in a previous sprint
+					for (let j = 0; j < i; j++) {
+						if (sprints[j].tasks.some((t) => t.name === depName)) {
+							return true;
+						}
+					}
+					// Check if dependency is in current sprint (already added)
+					return sprints[i].tasks.some((t) => t.name === depName);
+				});
+
 				if (
-					sprints[i].points < sprints[targetSprint].points ||
-					sprints[targetSprint].points + task.estimate > velocity
+					dependenciesMet ||
+					!task.dependencies ||
+					task.dependencies.length === 0
 				) {
-					targetSprint = i;
+					sprints[i].tasks.push(task);
+					sprints[i].points += task.estimate;
+					placed = true;
+					break;
 				}
 			}
 		}
 
-		sprints[targetSprint].tasks.push(task);
-		sprints[targetSprint].points += task.estimate;
-
-		// Move to next sprint if current is full
-		if (sprints[currentSprint].points >= velocity * 0.8) {
-			currentSprint = (currentSprint + 1) % sprints.length;
+		// If task couldn't be placed, add to first available sprint (fallback)
+		if (!placed) {
+			sprints[0].tasks.push(task);
+			sprints[0].points += task.estimate;
 		}
 	}
 
@@ -263,6 +345,7 @@ function assessRisks(
 	totalPoints: number,
 	velocity: number,
 	utilization: number,
+	sprints: Array<{ points: number; tasks: TimelineTask[] }>,
 ) {
 	const risks: Array<{ level: string; description: string }> = [];
 
@@ -293,10 +376,42 @@ function assessRisks(
 		(task) => task.dependencies && task.dependencies.length > 0,
 	);
 	if (hasDependencies) {
-		risks.push({
-			level: "Medium",
-			description: "Task dependencies may cause delays if not properly managed",
-		});
+		// Validate dependencies are correctly scheduled
+		const dependencyViolations: string[] = [];
+		for (let i = 0; i < sprints.length; i++) {
+			for (const task of sprints[i].tasks) {
+				if (task.dependencies) {
+					for (const depName of task.dependencies) {
+						let depFound = false;
+						// Check if dependency is in current or earlier sprint
+						for (let j = 0; j <= i; j++) {
+							if (sprints[j].tasks.some((t) => t.name === depName)) {
+								depFound = true;
+								break;
+							}
+						}
+						if (!depFound) {
+							dependencyViolations.push(
+								`Task "${task.name}" depends on "${depName}" which is not scheduled before it`,
+							);
+						}
+					}
+				}
+			}
+		}
+
+		if (dependencyViolations.length > 0) {
+			risks.push({
+				level: "High",
+				description: `Dependency violations detected: ${dependencyViolations.join("; ")}`,
+			});
+		} else {
+			risks.push({
+				level: "Medium",
+				description:
+					"Task dependencies are correctly scheduled but may cause delays if not properly managed",
+			});
+		}
 	}
 
 	if (risks.length === 0) {

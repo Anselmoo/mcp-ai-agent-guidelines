@@ -53,6 +53,7 @@ Current calculations based on:
 - Industry average: 8-10 story points per developer per sprint
 - Adjusted for team size and sprint length
 - Factoring in 20% overhead for meetings and coordination
+- Using greedy optimization strategy with dependency-aware scheduling
 
 ### Gantt (Mermaid)
 ```mermaid
@@ -70,5 +71,6 @@ gantt
 ## References
 - ZenHub — AI-assisted sprint planning (2025): https://www.zenhub.com/blog-posts/the-7-best-ai-assisted-sprint-planning-tools-for-agile-teams-in-2025
 - Nitor Infotech — AI in project delivery: https://www.nitorinfotech.com/blog/ai-in-software-project-delivery-smarter-planning-and-execution/
+- Optimizing Sprint Planning with Julia — Linear Programming Approach (2025): https://medium.com/@karim.ouldaklouche/optimizing-sprint-planning-with-julia-a-linear-programming-approach-with-gurobi-03f28c0cf5bf
 
 
