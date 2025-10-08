@@ -141,10 +141,9 @@ describe("Sprint Timeline Calculator - Additional Coverage", () => {
 		});
 
 		const text = result.content[0].text;
-		expect(text).toContain(
-			"Task dependencies may cause delays if not properly managed",
-		);
-		expect(text).toContain("Medium"); // Should have medium-level risk
+		// Should detect dependency violations since dependencies don't exist
+		expect(text).toContain("Dependency violations detected");
+		expect(text).toContain("High"); // Should have high-level risk for violations
 	});
 
 	it("should handle multiple risk factors simultaneously", async () => {
