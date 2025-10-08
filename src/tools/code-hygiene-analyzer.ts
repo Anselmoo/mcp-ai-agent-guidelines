@@ -79,7 +79,11 @@ ${references ? `\n${references}\n` : ""}
 }
 
 function analyzeCodeHygiene(input: CodeHygieneInput) {
-	const issues: Array<{ type: string; description: string }> = [];
+	const issues: Array<{
+		type: string;
+		description: string;
+		severity: "critical" | "major" | "minor";
+	}> = [];
 	const recommendations: string[] = [];
 	const nextSteps: string[] = [];
 
@@ -91,6 +95,7 @@ function analyzeCodeHygiene(input: CodeHygieneInput) {
 		issues.push({
 			type: "Technical Debt",
 			description: "Found TODO or FIXME comments indicating incomplete work",
+			severity: "minor",
 		});
 		recommendations.push(
 			"Address pending TODO and FIXME items before production",
@@ -105,6 +110,7 @@ function analyzeCodeHygiene(input: CodeHygieneInput) {
 			type: "Debug Code",
 			description:
 				"Found console.log statements that should be removed in production",
+			severity: "major",
 		});
 		recommendations.push("Remove debug console.log statements");
 	}
@@ -113,6 +119,7 @@ function analyzeCodeHygiene(input: CodeHygieneInput) {
 		issues.push({
 			type: "Debug Code",
 			description: "Found print statements that should use proper logging",
+			severity: "major",
 		});
 		recommendations.push("Replace print statements with proper logging");
 	}
@@ -140,6 +147,7 @@ function analyzeCodeHygiene(input: CodeHygieneInput) {
 					issues.push({
 						type: "Code Complexity",
 						description: `Found function with ${functionLines} lines - consider breaking into smaller functions`,
+						severity: "major",
 					});
 				}
 				inFunction = false;
@@ -153,6 +161,7 @@ function analyzeCodeHygiene(input: CodeHygieneInput) {
 			issues.push({
 				type: "Outdated Pattern",
 				description: "Using var instead of let/const",
+				severity: "minor",
 			});
 			recommendations.push("Replace var declarations with let or const");
 		}
@@ -167,20 +176,65 @@ function analyzeCodeHygiene(input: CodeHygieneInput) {
 		issues.push({
 			type: "Error Handling",
 			description: "Async code without proper error handling",
+			severity: "critical",
 		});
 		recommendations.push("Add try-catch blocks around async operations");
 	}
 
-	// Calculate score
+	// Check for hardcoded credentials or sensitive data
+	if (
+		/password\s*=\s*["']|api[_-]?key\s*=\s*["']|secret\s*=\s*["']/i.test(code)
+	) {
+		issues.push({
+			type: "Security Risk",
+			description: "Potential hardcoded credentials or API keys detected",
+			severity: "critical",
+		});
+		recommendations.push(
+			"Move sensitive data to environment variables or secure configuration",
+		);
+	}
+
+	// Check for commented out code
+	const commentedLines = lines.filter((line) => {
+		const trimmed = line.trim();
+		return (
+			(trimmed.startsWith("//") && /[a-zA-Z0-9()]/.test(trimmed.slice(2))) ||
+			(trimmed.startsWith("#") &&
+				language === "python" &&
+				/[a-zA-Z0-9()]/.test(trimmed.slice(1)))
+		);
+	}).length;
+
+	if (commentedLines > 3) {
+		issues.push({
+			type: "Dead Code",
+			description: `Found ${commentedLines} lines of commented code - consider removing`,
+			severity: "minor",
+		});
+		recommendations.push(
+			"Remove commented out code or move to version control history",
+		);
+	}
+
+	// Calculate score with severity-based penalties
 	let score = 100;
-	score -= issues.length * 10;
+	for (const issue of issues) {
+		if (issue.severity === "critical") {
+			score -= 20;
+		} else if (issue.severity === "major") {
+			score -= 12;
+		} else {
+			score -= 5;
+		}
+	}
 	score = Math.max(0, score);
 
 	let scoreDescription = "";
-	if (score >= 90) scoreDescription = "Excellent";
-	else if (score >= 80) scoreDescription = "Good";
-	else if (score >= 70) scoreDescription = "Fair";
-	else if (score >= 60) scoreDescription = "Needs Improvement";
+	if (score >= 85) scoreDescription = "Excellent";
+	else if (score >= 70) scoreDescription = "Good";
+	else if (score >= 50) scoreDescription = "Fair";
+	else if (score >= 30) scoreDescription = "Needs Improvement";
 	else scoreDescription = "Poor";
 
 	// Generate next steps
@@ -189,7 +243,20 @@ function analyzeCodeHygiene(input: CodeHygieneInput) {
 			"Code hygiene looks good! Consider adding automated linting if not already present.",
 		);
 	} else {
-		nextSteps.push("Address the identified issues in order of priority");
+		const criticalIssues = issues.filter(
+			(i) => i.severity === "critical",
+		).length;
+		const majorIssues = issues.filter((i) => i.severity === "major").length;
+
+		if (criticalIssues > 0) {
+			nextSteps.push(`Address ${criticalIssues} critical issue(s) immediately`);
+		}
+		if (majorIssues > 0) {
+			nextSteps.push(`Fix ${majorIssues} major issue(s) before merging`);
+		}
+		nextSteps.push(
+			"Address the identified issues in order of priority (critical > major > minor)",
+		);
 		nextSteps.push(
 			"Set up automated code quality checks (ESLint, Prettier, Biome, etc.)",
 		);
@@ -197,7 +264,7 @@ function analyzeCodeHygiene(input: CodeHygieneInput) {
 	}
 
 	return {
-		issues,
+		issues: issues.map(({ severity, ...rest }) => rest),
 		recommendations,
 		score,
 		scoreDescription,
