@@ -13,6 +13,8 @@ import { mermaidDiagramGenerator } from "../dist/tools/mermaid-diagram-generator
 import { modelCompatibilityChecker } from "../dist/tools/model-compatibility-checker.js";
 import { domainNeutralPromptBuilder } from "../dist/tools/prompt/domain-neutral-prompt-builder.js";
 import { hierarchicalPromptBuilder } from "../dist/tools/prompt/hierarchical-prompt-builder.js";
+import { hierarchyLevelSelector } from "../dist/tools/prompt/hierarchy-level-selector.js";
+import { promptingHierarchyEvaluator } from "../dist/tools/prompt/prompting-hierarchy-evaluator.js";
 import { securityHardeningPromptBuilder } from "../dist/tools/prompt/security-hardening-prompt-builder.js";
 import { sparkPromptBuilder } from "../dist/tools/prompt/spark-prompt-builder.js";
 import { sprintTimelineCalculator } from "../dist/tools/sprint-timeline-calculator.js";
@@ -308,6 +310,48 @@ app.post('/api/payment', (req, res) => {
 		"demo-code-analysis.security-hardening.prompt.md",
 		getText(securityHardening),
 	);
+
+	// Demo: Hierarchy Level Selector
+	const hierarchySelection = await hierarchyLevelSelector({
+		taskDescription:
+			"Implement JWT authentication with token refresh and session management for a user login system",
+		agentCapability: "intermediate",
+		taskComplexity: "complex",
+		autonomyPreference: "medium",
+		includeExamples: true,
+		includeReferences: true,
+	});
+	await writeReport(
+		"demo-hierarchy-level-selection.md",
+		getText(hierarchySelection),
+	);
+
+	// Demo: Prompting Hierarchy Evaluator
+	const promptEvaluation = await promptingHierarchyEvaluator({
+		promptText: `# Context
+We need to refactor the authentication module to improve security and maintainability.
+
+# Goal
+Enhance the authentication system with JWT token support and proper session management.
+
+# Requirements
+1. Implement JWT token generation and validation
+2. Add refresh token mechanism
+3. Implement proper session management
+4. Add comprehensive error handling
+5. Include unit tests with 90% coverage
+
+# Expected Output
+- Updated authentication module with JWT support
+- Refresh token implementation
+- Session management layer
+- Error handling middleware
+- Comprehensive test suite`,
+		targetLevel: "scaffolding",
+		includeRecommendations: true,
+		includeReferences: true,
+	});
+	await writeReport("demo-prompt-evaluation.md", getText(promptEvaluation));
 }
 
 main().catch((err) => {

@@ -53,6 +53,33 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
 					"Implement iterative prompt refinement based on results",
 				optional: true,
 			},
+			{
+				id: "hierarchy-level",
+				keywords: [
+					"independent",
+					"scaffolding",
+					"modeling",
+					"guidance",
+					"support level",
+				],
+				weight: 12,
+				strength:
+					"Uses appropriate hierarchy level for task and agent capability",
+				issue: "Hierarchy level not matched to task requirements",
+				recommendation:
+					"Select hierarchy level (independent/indirect/direct/modeling/scaffolding/full-physical) based on agent capability and task complexity",
+				optional: true,
+			},
+			{
+				id: "numeric-evaluation",
+				keywords: ["score", "metric", "measure", "evaluate", "quantify"],
+				weight: 8,
+				strength: "Includes numeric evaluation and scoring mechanisms",
+				issue: "Missing quantifiable success metrics",
+				recommendation:
+					"Define numeric evaluation criteria and scoring for prompt effectiveness",
+				optional: true,
+			},
 		],
 		bestPractices: [
 			"Use hierarchical prompt structure with clear layers",
@@ -60,6 +87,8 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
 			"Be specific about requirements and constraints",
 			"Implement iterative refinement based on results",
 			"Test prompts across different models and scenarios",
+			"Select appropriate hierarchy level based on agent capability and task complexity",
+			"Use numeric evaluation to measure and improve prompt effectiveness",
 		],
 	},
 	"code-management": {

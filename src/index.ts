@@ -44,6 +44,8 @@ import { modelCompatibilityChecker } from "./tools/model-compatibility-checker.j
 import { domainNeutralPromptBuilder } from "./tools/prompt/domain-neutral-prompt-builder.js";
 // Import tool implementations
 import { hierarchicalPromptBuilder } from "./tools/prompt/hierarchical-prompt-builder.js";
+import { hierarchyLevelSelector } from "./tools/prompt/hierarchy-level-selector.js";
+import { promptingHierarchyEvaluator } from "./tools/prompt/prompting-hierarchy-evaluator.js";
 import { securityHardeningPromptBuilder } from "./tools/prompt/security-hardening-prompt-builder.js";
 import { sparkPromptBuilder } from "./tools/prompt/spark-prompt-builder.js";
 import { sprintTimelineCalculator } from "./tools/sprint-timeline-calculator.js";
@@ -973,6 +975,83 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 				},
 			},
 			{
+				name: "prompting-hierarchy-evaluator",
+				description:
+					"Evaluate prompts using hierarchical taxonomy and provide numeric scoring based on clarity, specificity, completeness, and cognitive complexity. Implements reinforcement learning-inspired evaluation metrics.",
+				inputSchema: {
+					type: "object",
+					properties: {
+						promptText: {
+							type: "string",
+							description: "The prompt text to evaluate",
+						},
+						targetLevel: {
+							type: "string",
+							enum: [
+								"independent",
+								"indirect",
+								"direct",
+								"modeling",
+								"scaffolding",
+								"full-physical",
+							],
+							description: "Expected hierarchy level (if known)",
+						},
+						context: {
+							type: "string",
+							description: "Additional context about the task",
+						},
+						includeRecommendations: {
+							type: "boolean",
+							description: "Include improvement recommendations",
+						},
+						includeReferences: {
+							type: "boolean",
+							description: "Include reference links",
+						},
+					},
+					required: ["promptText"],
+				},
+			},
+			{
+				name: "hierarchy-level-selector",
+				description:
+					"Select the most appropriate prompting hierarchy level (independent, indirect, direct, modeling, scaffolding, full-physical) based on task characteristics, agent capability, and autonomy preferences.",
+				inputSchema: {
+					type: "object",
+					properties: {
+						taskDescription: {
+							type: "string",
+							description: "Description of the task the prompt will address",
+						},
+						agentCapability: {
+							type: "string",
+							enum: ["novice", "intermediate", "advanced", "expert"],
+							description: "Agent's capability level",
+						},
+						taskComplexity: {
+							type: "string",
+							enum: ["simple", "moderate", "complex", "very-complex"],
+							description: "Complexity of the task",
+						},
+						autonomyPreference: {
+							type: "string",
+							enum: ["low", "medium", "high"],
+							description: "Desired level of agent autonomy",
+						},
+						includeExamples: {
+							type: "boolean",
+							description: "Include example prompts for the recommended level",
+						},
+						includeReferences: {
+							type: "boolean",
+							description: "Include reference links",
+						},
+					},
+					required: ["taskDescription"],
+				},
+			},
+			{
 				name: "design-assistant",
 				description:
 					"Deterministic, context-driven design assistant with constraint framework for structured design sessions",
@@ -1078,6 +1157,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 				return modelCompatibilityChecker(args);
 			case "guidelines-validator":
 				return guidelinesValidator(args);
+			case "prompting-hierarchy-evaluator":
+				return promptingHierarchyEvaluator(args);
+			case "hierarchy-level-selector":
+				return hierarchyLevelSelector(args);
 			case "design-assistant": {
 				const result = await designAssistant.processRequest(
 					args as unknown as DesignAssistantRequest,

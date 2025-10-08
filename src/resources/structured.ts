@@ -936,4 +936,184 @@ export const structuredResources: StructuredResource[] = [
 			},
 		],
 	},
+
+	// Prompting Hierarchy and Numeric Evaluation
+	{
+		id: "prompting-hierarchy-evaluation",
+		title: "Prompting Hierarchy and Numeric Evaluation Framework",
+		version: "0.1.0",
+		lastUpdated: updated,
+		tags: [
+			"prompting",
+			"hierarchy",
+			"evaluation",
+			"reinforcement-learning",
+			"metrics",
+		],
+		segments: [
+			{ type: "heading", level: 2, text: "Overview" },
+			{
+				type: "paragraph",
+				text: "A structured framework for selecting appropriate prompt support levels and evaluating prompt effectiveness using reinforcement learning-inspired numeric metrics. Based on educational prompting hierarchies and Hierarchical Prompting Taxonomy (HPT) research.",
+			},
+			{ type: "heading", level: 2, text: "Hierarchy Levels" },
+			{
+				type: "table",
+				headers: ["Level", "Description", "Cognitive Load", "Use Case"],
+				rows: [
+					[
+						"Independent",
+						"Minimal guidance; high autonomy",
+						"High",
+						"Expert agents, exploratory tasks",
+					],
+					[
+						"Indirect",
+						"Subtle hints and cues",
+						"Medium",
+						"Learning scenarios, skill development",
+					],
+					[
+						"Direct",
+						"Clear instructions without steps",
+						"Medium",
+						"Standard tasks, experienced agents",
+					],
+					[
+						"Modeling",
+						"Examples and demonstrations",
+						"Low",
+						"New patterns, consistency",
+					],
+					[
+						"Scaffolding",
+						"Step-by-step structured guidance",
+						"Low",
+						"Complex tasks, less experienced agents",
+					],
+					[
+						"Full Physical",
+						"Complete detailed specification",
+						"Low",
+						"High-risk operations, exact replication",
+					],
+				],
+			},
+			{ type: "heading", level: 2, text: "Numeric Evaluation Metrics" },
+			{
+				type: "list",
+				items: [
+					"**Overall Score (0-100)**: Composite quality metric",
+					"**Clarity Score**: Sentence structure and language clarity",
+					"**Specificity Score**: Concrete action verbs and detailed requirements",
+					"**Completeness Score**: Context, goals, and constraints coverage",
+					"**Structure Score**: Organization with headings, bullets, numbering",
+					"**Hierarchy Score**: Match between prompt and intended support level",
+					"**Cognitive Complexity**: Task difficulty and technical depth",
+					"**Predicted Effectiveness**: RL-style reward signal for success probability",
+				],
+			},
+			{ type: "heading", level: 2, text: "Selection Guidelines" },
+			{
+				type: "paragraph",
+				text: "Choose hierarchy level based on three factors:",
+			},
+			{
+				type: "list",
+				ordered: true,
+				items: [
+					"**Agent Capability**: Novice → Full Physical/Scaffolding; Expert → Independent/Indirect",
+					"**Task Complexity**: Simple → Independent/Direct; Very Complex → Scaffolding/Full Physical",
+					"**Risk Level**: High-risk tasks (production, security, payments) → Higher support levels",
+				],
+			},
+			{ type: "heading", level: 2, text: "Evaluation Process" },
+			{
+				type: "list",
+				ordered: true,
+				items: [
+					"Analyze prompt characteristics (steps, examples, hints, specificity)",
+					"Detect hierarchy level based on patterns",
+					"Calculate component scores (clarity, specificity, completeness, structure)",
+					"Compute cognitive complexity and predicted effectiveness",
+					"Generate recommendations for improvement",
+					"Compare against target level if specified",
+				],
+			},
+			{ type: "heading", level: 2, text: "Tools Available" },
+			{
+				type: "list",
+				items: [
+					"**prompting-hierarchy-evaluator**: Evaluate prompt quality with numeric scores",
+					"**hierarchy-level-selector**: Select appropriate support level for task",
+					"**hierarchical-prompt-builder**: Build structured prompts with layers",
+				],
+			},
+			{
+				type: "references",
+				items: [
+					{
+						title:
+							"Hierarchical Prompting Taxonomy: A Universal Evaluation Framework",
+						url: "https://arxiv.org/abs/2406.12644",
+						source: "arXiv",
+					},
+					{
+						title: "HPT: Hierarchical Prompting Taxonomy Implementation",
+						url: "https://github.com/devichand579/HPT",
+						source: "GitHub",
+						note: "Reference implementation and research code for HPT framework",
+					},
+					{
+						title: "ACL Anthology: Computational Linguistics Research",
+						url: "https://github.com/acl-org/acl-anthology",
+						source: "GitHub",
+						note: "ACL papers and resources on prompt engineering and evaluation",
+					},
+					{
+						title: "Master Hierarchical Prompting for Better AI Interactions",
+						url: "https://relevanceai.com/prompt-engineering/master-hierarchical-prompting-for-better-ai-interactions",
+						source: "RelevanceAI",
+					},
+					{
+						title: "Prompting Techniques for Specialized LLMs",
+						url: "https://www.aiforeducation.io/ai-resources/prompting-techniques-for-specialized-llms",
+						source: "AI for Education",
+					},
+					{
+						title: "The Best 3 Prompting Hierarchy Tiers for AI Interactions",
+						url: "https://www.promptopti.com/best-3-prompting-hierarchy-tiers-for-ai-interaction/",
+						source: "PromptOpti",
+					},
+				],
+			},
+			{ type: "heading", level: 2, text: "Example Workflow" },
+			{
+				type: "code",
+				language: "typescript",
+				code: `// 1. Select appropriate hierarchy level
+const levelResult = await hierarchyLevelSelector({
+  taskDescription: "Implement JWT authentication",
+  agentCapability: "intermediate",
+  taskComplexity: "moderate"
+});
+
+// 2. Build prompt at that level
+const prompt = buildPromptAtLevel(levelResult.level);
+
+// 3. Evaluate the prompt
+const evaluation = await promptingHierarchyEvaluator({
+  promptText: prompt,
+  targetLevel: levelResult.level,
+  includeRecommendations: true
+});
+
+// 4. Iterate based on scores and recommendations
+if (evaluation.overallScore < 70) {
+  // Apply recommendations and re-evaluate
+}`,
+				caption: "Using hierarchy tools for optimal prompt design",
+			},
+		],
+	},
 ];
