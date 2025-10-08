@@ -541,22 +541,55 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "mermaid-diagram-generator",
 				description:
-					"Generate Mermaid diagrams from text descriptions following best practices",
+					"Generate Mermaid diagrams from text descriptions following best practices. Supports advanced diagram types and customization options for richer documentation.",
 				inputSchema: {
 					type: "object",
 					properties: {
 						description: {
 							type: "string",
-							description: "Description of the system or process to diagram",
+							description:
+								"Description of the system or process to diagram. Be specific and detailed for better diagram generation.",
 						},
 						diagramType: {
 							type: "string",
-							enum: ["flowchart", "sequence", "class", "state", "gantt", "pie"],
+							enum: [
+								"flowchart",
+								"sequence",
+								"class",
+								"state",
+								"gantt",
+								"pie",
+								"er",
+								"journey",
+								"quadrant",
+								"git-graph",
+								"mindmap",
+								"timeline",
+							],
 							description: "Type of diagram to generate",
 						},
 						theme: {
 							type: "string",
-							description: "Visual theme for the diagram",
+							description:
+								"Visual theme for the diagram (e.g., 'default', 'dark', 'forest', 'neutral')",
+						},
+						direction: {
+							type: "string",
+							enum: ["TD", "TB", "BT", "LR", "RL"],
+							description:
+								"Direction for flowcharts: TD/TB (top-down), BT (bottom-top), LR (left-right), RL (right-left)",
+						},
+						strict: {
+							type: "boolean",
+							description:
+								"If true, never emit invalid diagram; fallback to minimal diagram if needed (default: true)",
+							default: true,
+						},
+						repair: {
+							type: "boolean",
+							description:
+								"Attempt auto-repair on diagram validation failure (default: true)",
+							default: true,
 						},
 						accTitle: {
 							type: "string",
@@ -566,6 +599,16 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 							type: "string",
 							description:
 								"Accessibility description (added as a Mermaid comment)",
+						},
+						customStyles: {
+							type: "string",
+							description:
+								"Custom CSS/styling directives for advanced customization",
+						},
+						advancedFeatures: {
+							type: "object",
+							description:
+								"Type-specific advanced features (e.g., {autonumber: true} for sequence diagrams)",
 						},
 					},
 					required: ["description", "diagramType"],
