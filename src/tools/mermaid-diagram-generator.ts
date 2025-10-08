@@ -195,7 +195,7 @@ function generateMermaidDiagram(input: MermaidDiagramInput): string {
 		diagramType,
 		theme,
 		direction,
-		customStyles,
+		customStyles: _customStyles, // Reserved for future use
 		advancedFeatures,
 	} = input;
 
@@ -813,7 +813,7 @@ function parseGanttDescription(description: string): {
 
 		// Extract task
 		const taskName =
-			sentence.length > 50 ? sentence.substring(0, 47) + "..." : sentence;
+			sentence.length > 50 ? `${sentence.substring(0, 47)}...` : sentence;
 		const startDate = formatDate(currentDate);
 		const duration = 3 + Math.floor(Math.random() * 5); // 3-7 days
 		const endDate = formatDate(
@@ -853,7 +853,7 @@ function parsePieDescription(description: string): {
 	// Extract percentages or numbers
 	const percentMatches = description.matchAll(/(\w+[\w\s]*?)[\s:]+(\d+)%/gi);
 	for (const match of percentMatches) {
-		data.push({ label: match[1].trim(), value: parseInt(match[2]) });
+		data.push({ label: match[1].trim(), value: parseInt(match[2], 10) });
 	}
 
 	// Extract explicit counts
@@ -861,7 +861,7 @@ function parsePieDescription(description: string): {
 		const countMatches = description.matchAll(/(\d+)\s+(\w+[\w\s]*)/gi);
 		const items: Array<{ label: string; value: number }> = [];
 		for (const match of countMatches) {
-			items.push({ label: match[2].trim(), value: parseInt(match[1]) });
+			items.push({ label: match[2].trim(), value: parseInt(match[1], 10) });
 		}
 
 		// Convert to percentages
@@ -1107,7 +1107,7 @@ function parseJourneyDescription(description: string): {
 		} else {
 			const score = 3 + Math.floor(Math.random() * 3); // Random score 3-5
 			const step =
-				sentence.length > 30 ? sentence.substring(0, 27) + "..." : sentence;
+				sentence.length > 30 ? `${sentence.substring(0, 27)}...` : sentence;
 			steps.push(`${step}: ${score}: User`);
 		}
 	}
@@ -1136,7 +1136,7 @@ function parseQuadrantDescription(description: string): {
 	for (let i = 0; i < Math.min(sentences.length, 8); i++) {
 		const item =
 			sentences[i].length > 20
-				? sentences[i].substring(0, 17) + "..."
+				? `${sentences[i].substring(0, 17)}...`
 				: sentences[i];
 		const x = (0.2 + Math.random() * 0.6).toFixed(1);
 		const y = (0.2 + Math.random() * 0.6).toFixed(1);
@@ -1163,7 +1163,7 @@ function parseGitDescription(description: string): {
 	for (let i = 0; i < Math.min(sentences.length, 5); i++) {
 		const msg =
 			sentences[i].length > 30
-				? sentences[i].substring(0, 27) + "..."
+				? `${sentences[i].substring(0, 27)}...`
 				: sentences[i];
 		commits.push(`commit id: "${msg}"`);
 	}
@@ -1185,7 +1185,7 @@ function parseMindmapDescription(description: string): {
 	for (let i = 1; i < Math.min(sentences.length, 6); i++) {
 		const topic =
 			sentences[i].length > 30
-				? sentences[i].substring(0, 27) + "..."
+				? `${sentences[i].substring(0, 27)}...`
 				: sentences[i];
 		children.push(`    ${topic}`);
 	}
@@ -1218,7 +1218,7 @@ function parseTimelineDescription(description: string): {
 		}
 		const event =
 			sentences[i].length > 40
-				? sentences[i].substring(0, 37) + "..."
+				? `${sentences[i].substring(0, 37)}...`
 				: sentences[i];
 		events.push(event);
 	}
