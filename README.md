@@ -147,6 +147,56 @@ GitHub Chat (VS Code): In the chat, type your request and pick a tool suggestion
 
 ## Features
 
+> **🆕 NEW: Serena-Inspired Strategies** — We've integrated effective agent strategies from [@oraios/serena](https://github.com/oraios/serena) including semantic code analysis, project onboarding, and flexible mode switching. See [docs/SERENA_STRATEGIES.md](./docs/SERENA_STRATEGIES.md) for details.
+
+<details>
+<summary><strong>🔍 Semantic Code Analyzer</strong> — Symbol-based code understanding (NEW)</summary>
+
+Usage: `semantic-code-analyzer`
+
+| Parameter      | Required | Description                           |
+| -------------- | -------- | ------------------------------------- |
+| `codeContent`  | ✅        | Code content to analyze               |
+| `language`     | ❌        | Programming language (auto-detected)  |
+| `analysisType` | ❌        | symbols/structure/dependencies/patterns/all |
+
+Performs semantic analysis to identify symbols, dependencies, patterns, and structure. Inspired by Serena's language server approach.
+
+</details>
+
+<details>
+<summary><strong>🚀 Project Onboarding</strong> — Comprehensive project familiarization (NEW)</summary>
+
+Usage: `project-onboarding`
+
+| Parameter      | Required | Description                           |
+| -------------- | -------- | ------------------------------------- |
+| `projectPath`  | ✅        | Path to project directory             |
+| `projectName`  | ❌        | Name of the project                   |
+| `projectType`  | ❌        | library/application/service/tool/other |
+| `analysisDepth`| ❌        | quick/standard/deep                   |
+| `includeMemories` | ❌     | Generate project memories (default: true) |
+
+Analyzes project structure, detects technologies, and generates memories for context retention. Based on Serena's onboarding system.
+
+</details>
+
+<details>
+<summary><strong>🔄 Mode Switcher</strong> — Flexible agent operation modes (NEW)</summary>
+
+Usage: `mode-switcher`
+
+| Parameter      | Required | Description                           |
+| -------------- | -------- | ------------------------------------- |
+| `targetMode`   | ✅        | Mode to switch to (planning/editing/analysis/etc.) |
+| `currentMode`  | ❌        | Current active mode                   |
+| `context`      | ❌        | Operating context (desktop-app/ide-assistant/etc.) |
+| `reason`       | ❌        | Reason for mode switch                |
+
+Switches between operation modes with optimized tool sets and prompting strategies. Modes include: planning, editing, analysis, interactive, one-shot, debugging, refactoring, documentation.
+
+</details>
+
 <details>
 <summary><strong>Hierarchical Prompt Builder</strong> — Build structured prompts with clear hierarchies</summary>
 

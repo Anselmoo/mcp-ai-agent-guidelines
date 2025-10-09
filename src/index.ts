@@ -40,7 +40,9 @@ import { guidelinesValidator } from "./tools/guidelines-validator.js";
 import { iterativeCoverageEnhancer } from "./tools/iterative-coverage-enhancer.js";
 import { memoryContextOptimizer } from "./tools/memory-context-optimizer.js";
 import { mermaidDiagramGenerator } from "./tools/mermaid-diagram-generator.js";
+import { modeSwitcher } from "./tools/mode-switcher.js";
 import { modelCompatibilityChecker } from "./tools/model-compatibility-checker.js";
+import { projectOnboarding } from "./tools/project-onboarding.js";
 import { domainNeutralPromptBuilder } from "./tools/prompt/domain-neutral-prompt-builder.js";
 // Import tool implementations
 import { hierarchicalPromptBuilder } from "./tools/prompt/hierarchical-prompt-builder.js";
@@ -48,6 +50,7 @@ import { hierarchyLevelSelector } from "./tools/prompt/hierarchy-level-selector.
 import { promptingHierarchyEvaluator } from "./tools/prompt/prompting-hierarchy-evaluator.js";
 import { securityHardeningPromptBuilder } from "./tools/prompt/security-hardening-prompt-builder.js";
 import { sparkPromptBuilder } from "./tools/prompt/spark-prompt-builder.js";
+import { semanticCodeAnalyzer } from "./tools/semantic-code-analyzer.js";
 import { sprintTimelineCalculator } from "./tools/sprint-timeline-calculator.js";
 
 const server = new Server(
@@ -1032,6 +1035,146 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 				},
 			},
 			{
+				name: "semantic-code-analyzer",
+				description:
+					"Perform semantic code analysis to identify symbols, structure, dependencies, and patterns. Inspired by Serena's language server-based approach for precise code understanding.",
+				inputSchema: {
+					type: "object",
+					properties: {
+						codeContent: {
+							type: "string",
+							description: "Code content to analyze",
+						},
+						language: {
+							type: "string",
+							description:
+								"Programming language (auto-detected if not provided)",
+						},
+						analysisType: {
+							type: "string",
+							enum: ["symbols", "structure", "dependencies", "patterns", "all"],
+							description: "Type of semantic analysis to perform",
+						},
+						includeReferences: {
+							type: "boolean",
+							description: "Include external reference links",
+						},
+						includeMetadata: {
+							type: "boolean",
+							description: "Include metadata section",
+						},
+						inputFile: {
+							type: "string",
+							description: "Optional input file path",
+						},
+					},
+					required: ["codeContent"],
+				},
+			},
+			{
+				name: "project-onboarding",
+				description:
+					"Perform comprehensive project onboarding including structure analysis, dependency detection, and memory generation. Based on Serena's onboarding system for efficient project familiarization.",
+				inputSchema: {
+					type: "object",
+					properties: {
+						projectPath: {
+							type: "string",
+							description: "Path to the project directory",
+						},
+						projectName: {
+							type: "string",
+							description: "Name of the project",
+						},
+						projectType: {
+							type: "string",
+							enum: ["library", "application", "service", "tool", "other"],
+							description: "Type of project",
+						},
+						analysisDepth: {
+							type: "string",
+							enum: ["quick", "standard", "deep"],
+							description: "Depth of analysis",
+						},
+						includeMemories: {
+							type: "boolean",
+							description: "Generate project memories",
+						},
+						includeReferences: {
+							type: "boolean",
+							description: "Include external reference links",
+						},
+						includeMetadata: {
+							type: "boolean",
+							description: "Include metadata section",
+						},
+					},
+					required: ["projectPath"],
+				},
+			},
+			{
+				name: "mode-switcher",
+				description:
+					"Switch between different agent operation modes (planning, editing, analysis, debugging, etc.) with tailored tool sets and prompting strategies. Based on Serena's flexible mode/context system.",
+				inputSchema: {
+					type: "object",
+					properties: {
+						currentMode: {
+							type: "string",
+							enum: [
+								"planning",
+								"editing",
+								"analysis",
+								"interactive",
+								"one-shot",
+								"debugging",
+								"refactoring",
+								"documentation",
+							],
+							description: "Current active mode",
+						},
+						targetMode: {
+							type: "string",
+							enum: [
+								"planning",
+								"editing",
+								"analysis",
+								"interactive",
+								"one-shot",
+								"debugging",
+								"refactoring",
+								"documentation",
+							],
+							description: "Mode to switch to",
+						},
+						context: {
+							type: "string",
+							enum: [
+								"desktop-app",
+								"ide-assistant",
+								"agent",
+								"terminal",
+								"collaborative",
+							],
+							description: "Operating context",
+						},
+						reason: {
+							type: "string",
+							description: "Reason for mode switch",
+						},
+						includeReferences: {
+							type: "boolean",
+							description: "Include external reference links",
+						},
+						includeMetadata: {
+							type: "boolean",
+							description: "Include metadata section",
+						},
+					},
+					required: ["targetMode"],
+				},
+			},
+			{
 				name: "prompting-hierarchy-evaluator",
 				description:
 					"Evaluate prompts using hierarchical taxonomy and provide numeric scoring based on clarity, specificity, completeness, and cognitive complexity. Implements reinforcement learning-inspired evaluation metrics.",
@@ -1214,6 +1357,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 				return modelCompatibilityChecker(args);
 			case "guidelines-validator":
 				return guidelinesValidator(args);
+			case "semantic-code-analyzer":
+				return semanticCodeAnalyzer(args);
+			case "project-onboarding":
+				return projectOnboarding(args);
+			case "mode-switcher":
+				return modeSwitcher(args);
 			case "prompting-hierarchy-evaluator":
 				return promptingHierarchyEvaluator(args);
 			case "hierarchy-level-selector":

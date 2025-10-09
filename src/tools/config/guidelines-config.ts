@@ -89,6 +89,8 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
 			"Test prompts across different models and scenarios",
 			"Select appropriate hierarchy level based on agent capability and task complexity",
 			"Use numeric evaluation to measure and improve prompt effectiveness",
+			"Plan before implementation - understand requirements thoroughly",
+			"Use mode switching to optimize for different task types (planning, editing, debugging)",
 		],
 	},
 	"code-management": {
@@ -101,6 +103,15 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
 				strength: "Emphasizes code hygiene and maintenance",
 				issue: "Missing code hygiene practices",
 				recommendation: "Implement regular code hygiene analysis and cleanup",
+			},
+			{
+				id: "semantic",
+				keywords: ["semantic", "symbol", "structure"],
+				weight: 12,
+				strength: "Uses semantic code analysis and symbol-based operations",
+				issue: "Lacks semantic code understanding",
+				recommendation:
+					"Implement semantic code analysis for precise navigation and editing",
 			},
 			{
 				id: "refactor",
@@ -133,6 +144,9 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
 			"Remove outdated dependencies and unused imports",
 			"Keep documentation up-to-date with code changes",
 			"Use automated tools for code quality assurance",
+			"Use semantic code analysis for precise symbol-based operations",
+			"Implement project onboarding process for new codebases",
+			"Store project memories for context retention across sessions",
 		],
 	},
 	architecture: {
