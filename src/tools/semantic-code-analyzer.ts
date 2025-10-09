@@ -27,8 +27,6 @@ const SemanticCodeAnalyzerSchema = z.object({
 	inputFile: z.string().optional().describe("Optional input file path"),
 });
 
-type SemanticCodeAnalyzerInput = z.infer<typeof SemanticCodeAnalyzerSchema>;
-
 interface SymbolInfo {
 	name: string;
 	type: "function" | "class" | "variable" | "interface" | "type" | "constant";
@@ -296,7 +294,7 @@ function extractDependencies(code: string, language: string): DependencyInfo[] {
 	return dependencies;
 }
 
-function detectPatterns(code: string, language: string): PatternInfo[] {
+function detectPatterns(code: string, _language: string): PatternInfo[] {
 	const patterns: PatternInfo[] = [];
 
 	// Detect async/await pattern
@@ -394,7 +392,7 @@ function buildDependenciesSection(dependencies: DependencyInfo[]): string {
 		section += "\n";
 	});
 
-	return section + "\n";
+	return `${section}\n`;
 }
 
 function buildPatternsSection(patterns: PatternInfo[]): string {

@@ -40,7 +40,6 @@ const ModeSwitcherSchema = z.object({
 		.describe("Include metadata section"),
 });
 
-type ModeSwitcherInput = z.infer<typeof ModeSwitcherSchema>;
 type AgentMode = z.infer<typeof AgentModeSchema>;
 type AgentContext = z.infer<typeof AgentContextSchema>;
 

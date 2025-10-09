@@ -275,7 +275,7 @@ function detectDependencies(keyFiles: string[]): string[] {
 	return deps;
 }
 
-function detectEntryPoints(structure: {
+function detectEntryPoints(_structure: {
 	directories: string[];
 	keyFiles: string[];
 }): string[] {
