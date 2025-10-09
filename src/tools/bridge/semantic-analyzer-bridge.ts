@@ -150,6 +150,7 @@ export function suggestRefactorings(semanticAnalysis: string): {
 	if (semanticAnalysis.match(/Functions.*\((\d+)\)/)?.[1]) {
 		const funcCount = Number.parseInt(
 			semanticAnalysis.match(/Functions.*\((\d+)\)/)?.[1] || "0",
+			10,
 		);
 		if (funcCount > 10) {
 			suggestions.push({
