@@ -47,6 +47,8 @@ import { domainNeutralPromptBuilder } from "./tools/prompt/domain-neutral-prompt
 // Import tool implementations
 import { hierarchicalPromptBuilder } from "./tools/prompt/hierarchical-prompt-builder.js";
 import { hierarchyLevelSelector } from "./tools/prompt/hierarchy-level-selector.js";
+import { promptChainingBuilder } from "./tools/prompt/prompt-chaining-builder.js";
+import { promptFlowBuilder } from "./tools/prompt/prompt-flow-builder.js";
 import { promptingHierarchyEvaluator } from "./tools/prompt/prompting-hierarchy-evaluator.js";
 import { securityHardeningPromptBuilder } from "./tools/prompt/security-hardening-prompt-builder.js";
 import { sparkPromptBuilder } from "./tools/prompt/spark-prompt-builder.js";
@@ -1252,6 +1254,155 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 				},
 			},
 			{
+				name: "prompt-chaining-builder",
+				description:
+					"Build multi-step prompt chains with output passing, dependencies, and error handling for complex sequential workflows",
+				inputSchema: {
+					type: "object",
+					properties: {
+						chainName: {
+							type: "string",
+							description: "Name of the prompt chain",
+						},
+						description: {
+							type: "string",
+							description: "Description of what the chain accomplishes",
+						},
+						steps: {
+							type: "array",
+							items: {
+								type: "object",
+								properties: {
+									name: { type: "string" },
+									description: { type: "string" },
+									prompt: { type: "string" },
+									outputKey: { type: "string" },
+									dependencies: {
+										type: "array",
+										items: { type: "string" },
+									},
+									errorHandling: {
+										type: "string",
+										enum: ["skip", "retry", "abort"],
+									},
+								},
+								required: ["name", "prompt"],
+							},
+							description: "Array of chain steps",
+						},
+						context: {
+							type: "string",
+							description: "Global context for the chain",
+						},
+						globalVariables: {
+							type: "object",
+							description: "Global variables accessible to all steps",
+						},
+						includeMetadata: {
+							type: "boolean",
+							description: "Include metadata section",
+						},
+						includeReferences: {
+							type: "boolean",
+							description: "Include reference links",
+						},
+						includeVisualization: {
+							type: "boolean",
+							description: "Include Mermaid flow visualization",
+						},
+						executionStrategy: {
+							type: "string",
+							enum: ["sequential", "parallel-where-possible"],
+							description: "How to execute the chain",
+						},
+					},
+					required: ["chainName", "steps"],
+				},
+			},
+			{
+				name: "prompt-flow-builder",
+				description:
+					"Build declarative prompt flows with conditional branching, loops, parallel execution, and dynamic orchestration",
+				inputSchema: {
+					type: "object",
+					properties: {
+						flowName: {
+							type: "string",
+							description: "Name of the prompt flow",
+						},
+						description: {
+							type: "string",
+							description: "Description of the flow purpose",
+						},
+						nodes: {
+							type: "array",
+							items: {
+								type: "object",
+								properties: {
+									id: { type: "string" },
+									type: {
+										type: "string",
+										enum: [
+											"prompt",
+											"condition",
+											"loop",
+											"parallel",
+											"merge",
+											"transform",
+										],
+									},
+									name: { type: "string" },
+									description: { type: "string" },
+									config: { type: "object" },
+								},
+								required: ["id", "type", "name"],
+							},
+							description: "Flow nodes (processing units)",
+						},
+						edges: {
+							type: "array",
+							items: {
+								type: "object",
+								properties: {
+									from: { type: "string" },
+									to: { type: "string" },
+									condition: { type: "string" },
+									label: { type: "string" },
+								},
+								required: ["from", "to"],
+							},
+							description: "Flow edges (connections between nodes)",
+						},
+						entryPoint: {
+							type: "string",
+							description: "ID of the starting node",
+						},
+						variables: {
+							type: "object",
+							description: "Flow-level variables",
+						},
+						includeMetadata: {
+							type: "boolean",
+							description: "Include metadata section",
+						},
+						includeReferences: {
+							type: "boolean",
+							description: "Include reference links",
+						},
+						includeExecutionGuide: {
+							type: "boolean",
+							description: "Include execution guide",
+						},
+						outputFormat: {
+							type: "string",
+							enum: ["markdown", "mermaid", "both"],
+							description: "Output format preference",
+						},
+					},
+					required: ["flowName", "nodes"],
+				},
+			},
+			{
 				name: "design-assistant",
 				description:
 					"Deterministic, context-driven design assistant with constraint framework for structured design sessions",
@@ -1367,6 +1518,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 				return promptingHierarchyEvaluator(args);
 			case "hierarchy-level-selector":
 				return hierarchyLevelSelector(args);
+			case "prompt-chaining-builder":
+				return promptChainingBuilder(args);
+			case "prompt-flow-builder":
+				return promptFlowBuilder(args);
 			case "design-assistant": {
 				const result = await designAssistant.processRequest(
 					args as unknown as DesignAssistantRequest,

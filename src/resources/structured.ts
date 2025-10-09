@@ -1116,4 +1116,211 @@ if (evaluation.overallScore < 70) {
 			},
 		],
 	},
+
+	// Flow-based prompting and chaining patterns
+	{
+		id: "flow-based-prompting",
+		title: "Flow-Based Prompting & Chaining Strategies",
+		version: "0.1.0",
+		lastUpdated: updated,
+		tags: ["prompting", "flow", "chaining", "orchestration", "claude-flow"],
+		segments: [
+			{ type: "heading", level: 2, text: "Overview" },
+			{
+				type: "paragraph",
+				text: "Flow-based prompting enables sophisticated multi-step AI workflows through chaining, branching, and orchestration. Inspired by claude-flow, these patterns allow dynamic, context-aware prompting strategies.",
+			},
+			{ type: "heading", level: 2, text: "Prompt Chaining" },
+			{
+				type: "paragraph",
+				text: "Chain prompts sequentially, passing outputs from one step as inputs to the next. Ideal for complex tasks requiring progressive refinement.",
+			},
+			{
+				type: "list",
+				items: [
+					"Define clear output keys for each step",
+					"Specify dependencies between steps",
+					"Handle errors with skip/retry/abort strategies",
+					"Support parallel execution where dependencies allow",
+				],
+			},
+			{
+				type: "code",
+				language: "typescript",
+				caption: "Example: Analysis Chain",
+				code: `// Multi-step analysis with output passing
+await promptChainingBuilder({
+  chainName: "Code Security Analysis",
+  steps: [
+    {
+      name: "Initial Scan",
+      prompt: "Scan the codebase for security issues",
+      outputKey: "vulnerabilities"
+    },
+    {
+      name: "Risk Assessment",
+      prompt: "Assess risk level of {{vulnerabilities}}",
+      dependencies: ["vulnerabilities"],
+      outputKey: "risks"
+    },
+    {
+      name: "Remediation Plan",
+      prompt: "Create remediation plan for {{risks}}",
+      dependencies: ["risks"],
+      errorHandling: "retry"
+    }
+  ]
+});`,
+			},
+			{ type: "heading", level: 2, text: "Flow-Based Orchestration" },
+			{
+				type: "paragraph",
+				text: "Define complex flows with conditional branching, loops, parallel execution, and merge points. Enables adaptive prompting based on intermediate results.",
+			},
+			{
+				type: "list",
+				items: [
+					"Node types: prompt, condition, loop, parallel, merge, transform",
+					"Edge conditions for dynamic routing",
+					"Visual flow diagrams with Mermaid",
+					"Error handling and fallback paths",
+				],
+			},
+			{
+				type: "code",
+				language: "typescript",
+				caption: "Example: Conditional Flow",
+				code: `// Adaptive flow with branching
+await promptFlowBuilder({
+  flowName: "Adaptive Code Review",
+  nodes: [
+    {
+      id: "analyze",
+      type: "prompt",
+      name: "Analyze Code",
+      config: { prompt: "Review code quality" }
+    },
+    {
+      id: "check_complexity",
+      type: "condition",
+      name: "Check Complexity",
+      config: { expression: "complexity > 10" }
+    },
+    {
+      id: "deep_review",
+      type: "prompt",
+      name: "Deep Review",
+      config: { prompt: "Perform detailed analysis" }
+    },
+    {
+      id: "quick_review",
+      type: "prompt",
+      name: "Quick Review",
+      config: { prompt: "Perform basic checks" }
+    }
+  ],
+  edges: [
+    { from: "analyze", to: "check_complexity" },
+    { from: "check_complexity", to: "deep_review", condition: "true" },
+    { from: "check_complexity", to: "quick_review", condition: "false" }
+  ]
+});`,
+			},
+			{ type: "heading", level: 2, text: "Dynamic Template Selection" },
+			{
+				type: "paragraph",
+				text: "Automatically select the most appropriate prompting strategy based on task characteristics. Combine with existing tools like hierarchy-level-selector for context-aware prompting.",
+			},
+			{
+				type: "list",
+				items: [
+					"Analyze task complexity, domain, and requirements",
+					"Select from: hierarchical, security, spark, domain-neutral, flow-based",
+					"Configure templates with task-specific parameters",
+					"Chain multiple templates for complex workflows",
+				],
+			},
+			{ type: "heading", level: 2, text: "Best Practices" },
+			{
+				type: "list",
+				items: [
+					"Keep individual prompts focused and modular",
+					"Use explicit output keys for inter-step communication",
+					"Define clear error handling strategies per step",
+					"Visualize flows with diagrams for team collaboration",
+					"Test flows with edge cases and error scenarios",
+					"Monitor execution paths for optimization",
+					"Document complex conditions and transformations",
+				],
+			},
+			{ type: "heading", level: 2, text: "Integration Patterns" },
+			{
+				type: "paragraph",
+				text: "Combine flow-based prompting with existing MCP tools for powerful workflows:",
+			},
+			{
+				type: "code",
+				language: "typescript",
+				caption: "Integrated Workflow Example",
+				code: `// 1. Select appropriate hierarchy level
+const level = await hierarchyLevelSelector({
+  taskDescription: "Implement authentication",
+  agentCapability: "intermediate"
+});
+
+// 2. Build hierarchical prompt
+const prompt = await hierarchicalPromptBuilder({
+  context: level.context,
+  goal: level.goal,
+  requirements: level.requirements
+});
+
+// 3. Create security-focused chain
+const chain = await promptChainingBuilder({
+  chainName: "Secure Implementation",
+  steps: [
+    {
+      name: "Design",
+      prompt: prompt.content[0].text
+    },
+    {
+      name: "Security Review",
+      prompt: "Review design for security issues",
+      dependencies: ["Design"]
+    },
+    {
+      name: "Implementation",
+      prompt: "Implement with security controls",
+      dependencies: ["Security Review"]
+    }
+  ]
+});`,
+			},
+			{
+				type: "references",
+				items: [
+					{
+						title: "Claude Flow - AI Orchestration Platform",
+						url: "https://github.com/ruvnet/claude-flow",
+						source: "GitHub",
+					},
+					{
+						title: "Prompt Chaining Techniques",
+						url: "https://www.promptingguide.ai/techniques/prompt_chaining",
+						source: "Prompting Guide",
+					},
+					{
+						title: "Flow-Based Programming",
+						url: "https://en.wikipedia.org/wiki/Flow-based_programming",
+						source: "Wikipedia",
+					},
+					{
+						title: "Multi-Agent AI Systems",
+						url: "https://arxiv.org/abs/2203.11171",
+						source: "arXiv",
+					},
+				],
+			},
+		],
+	},
 ];
