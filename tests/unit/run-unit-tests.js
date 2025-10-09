@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import assert from "node:assert";
+import { extractProjectContext as _extractProjectContext } from "../../dist/tools/bridge/project-onboarding-bridge.js";
 import { guidelinesValidator } from "../../dist/tools/guidelines-validator.js";
 import { modelCompatibilityChecker } from "../../dist/tools/model-compatibility-checker.js";
 import { domainNeutralPromptBuilder } from "../../dist/tools/prompt/domain-neutral-prompt-builder.js";
@@ -8,6 +9,14 @@ import { securityHardeningPromptBuilder } from "../../dist/tools/prompt/security
 import { sparkPromptBuilder } from "../../dist/tools/prompt/spark-prompt-builder.js";
 import { buildDisclaimer as sharedBuildDisclaimer } from "../../dist/tools/shared/prompt-sections.js";
 import { testMethodologySelector } from "./test-methodology-selector.js";
+
+// lightweight bridge smoke test for node-based unit runner
+async function testBridgeSmoke() {
+	const md =
+		"| Name | S |\n| Type | app |\n**Key Directories:**\n- `src`\n**Key Files:**\n- `package.json`\n**Entry Points:**\n- `src/index.ts`\n";
+	const ctx = _extractProjectContext(md);
+	if (!ctx || !ctx.name) throw new Error("Bridge smoke failed");
+}
 
 async function testModelCompatibility() {
 	const result = await modelCompatibilityChecker({
@@ -443,6 +452,7 @@ async function run() {
 		["Shared Disclaimer Export", testSharedDisclaimerExport],
 		["Security Hardening Prompt Builder", testSecurityHardeningPromptBuilder],
 		["Methodology Selector", testMethodologySelector],
+		["Bridge Smoke Test", testBridgeSmoke],
 	];
 	for (const [name, fn] of tests) {
 		try {
