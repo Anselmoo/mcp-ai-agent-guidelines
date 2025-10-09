@@ -294,4 +294,278 @@ describe("prompt-flow-builder", () => {
 			}),
 		).rejects.toThrow(/must have either condition or iterations/);
 	});
+
+	it("excludes metadata when includeMetadata is false", async () => {
+		const res = await promptFlowBuilder({
+			flowName: "No Metadata Flow",
+			includeMetadata: false,
+			nodes: [
+				{
+					id: "n1",
+					type: "prompt",
+					name: "Node",
+					config: { prompt: "test" },
+				},
+			],
+		});
+
+		const text = res.content[0].text;
+		expect(text).not.toMatch(/Source Tool:/);
+	});
+
+	it("excludes references when includeReferences is false", async () => {
+		const res = await promptFlowBuilder({
+			flowName: "No Refs Flow",
+			includeReferences: false,
+			nodes: [
+				{
+					id: "n1",
+					type: "prompt",
+					name: "Node",
+					config: { prompt: "test" },
+				},
+			],
+		});
+
+		const text = res.content[0].text;
+		expect(text).not.toMatch(/## References/);
+	});
+
+	it("supports markdown-only output format", async () => {
+		const res = await promptFlowBuilder({
+			flowName: "Markdown Flow",
+			outputFormat: "markdown",
+			nodes: [
+				{
+					id: "n1",
+					type: "prompt",
+					name: "Node",
+					config: { prompt: "test" },
+				},
+			],
+		});
+
+		const text = res.content[0].text;
+		expect(text).not.toMatch(/## Flow Visualization/);
+		expect(text).not.toMatch(/```mermaid/);
+	});
+
+	it("supports mermaid-only output format", async () => {
+		const res = await promptFlowBuilder({
+			flowName: "Mermaid Flow",
+			outputFormat: "mermaid",
+			nodes: [
+				{
+					id: "n1",
+					type: "prompt",
+					name: "Node",
+					config: { prompt: "test" },
+				},
+			],
+		});
+
+		const text = res.content[0].text;
+		expect(text).toMatch(/## Flow Visualization/);
+		expect(text).toMatch(/```mermaid/);
+	});
+
+	it("handles nodes with descriptions", async () => {
+		const res = await promptFlowBuilder({
+			flowName: "Described Flow",
+			nodes: [
+				{
+					id: "n1",
+					type: "prompt",
+					name: "Analyzer",
+					description: "Analyzes code for issues",
+					config: { prompt: "analyze" },
+				},
+			],
+		});
+
+		const text = res.content[0].text;
+		expect(text).toMatch(/\*\*Description\*\*: Analyzes code for issues/);
+	});
+
+	it("handles nodes without config", async () => {
+		const res = await promptFlowBuilder({
+			flowName: "No Config Flow",
+			nodes: [
+				{
+					id: "m1",
+					type: "merge",
+					name: "Merge Point",
+				},
+			],
+		});
+
+		const text = res.content[0].text;
+		expect(text).toMatch(/### m1: Merge Point/);
+		expect(text).not.toMatch(/\*\*Configuration\*\*/);
+	});
+
+	it("displays outgoing edges for nodes", async () => {
+		const res = await promptFlowBuilder({
+			flowName: "Edges Flow",
+			nodes: [
+				{
+					id: "start",
+					type: "prompt",
+					name: "Start",
+					config: { prompt: "begin" },
+				},
+				{
+					id: "end",
+					type: "prompt",
+					name: "End",
+					config: { prompt: "finish" },
+				},
+			],
+			edges: [{ from: "start", to: "end", label: "proceed" }],
+		});
+
+		const text = res.content[0].text;
+		expect(text).toMatch(/\*\*Outgoing Edges\*\*/);
+		expect(text).toMatch(/To \*\*end\*\*.*\[proceed\]/);
+	});
+
+	it("validates entry point exists", async () => {
+		await expect(
+			promptFlowBuilder({
+				flowName: "Bad Entry Flow",
+				entryPoint: "nonexistent",
+				nodes: [
+					{
+						id: "n1",
+						type: "prompt",
+						name: "Node",
+						config: { prompt: "test" },
+					},
+				],
+			}),
+		).rejects.toThrow(/Entry point references non-existent node/);
+	});
+
+	it("validates from edge reference exists", async () => {
+		await expect(
+			promptFlowBuilder({
+				flowName: "Bad From Edge",
+				nodes: [
+					{
+						id: "n1",
+						type: "prompt",
+						name: "Node",
+						config: { prompt: "test" },
+					},
+				],
+				edges: [{ from: "nonexistent", to: "n1" }],
+			}),
+		).rejects.toThrow(/Edge references non-existent node: nonexistent/);
+	});
+
+	it("validates prompt node has prompt config", async () => {
+		await expect(
+			promptFlowBuilder({
+				flowName: "No Prompt Config",
+				nodes: [
+					{
+						id: "p1",
+						type: "prompt",
+						name: "Prompt",
+						config: {},
+					},
+				],
+			}),
+		).rejects.toThrow(/must have a prompt in config/);
+	});
+
+	it("handles edge with only condition (no label)", async () => {
+		const res = await promptFlowBuilder({
+			flowName: "Condition Only Edge",
+			nodes: [
+				{
+					id: "c1",
+					type: "condition",
+					name: "Check",
+					config: { expression: "x > 0" },
+				},
+				{
+					id: "p1",
+					type: "prompt",
+					name: "Action",
+					config: { prompt: "do it" },
+				},
+			],
+			edges: [{ from: "c1", to: "p1", condition: "true" }],
+		});
+
+		const text = res.content[0].text;
+		expect(text).toMatch(/c1 -\./); // dotted line for condition
+	});
+
+	it("includes legend for node types", async () => {
+		const res = await promptFlowBuilder({
+			flowName: "Legend Flow",
+			nodes: [
+				{
+					id: "p1",
+					type: "prompt",
+					name: "Prompt",
+					config: { prompt: "test" },
+				},
+			],
+		});
+
+		const text = res.content[0].text;
+		expect(text).toMatch(/### Legend/);
+		expect(text).toMatch(/Rectangle.*Prompt node/);
+		expect(text).toMatch(/Diamond.*Condition node/);
+	});
+
+	it("styles multiple condition nodes with comma separation", async () => {
+		const res = await promptFlowBuilder({
+			flowName: "Multi Condition Flow",
+			nodes: [
+				{
+					id: "c1",
+					type: "condition",
+					name: "Check 1",
+					config: { expression: "x > 0" },
+				},
+				{
+					id: "c2",
+					type: "condition",
+					name: "Check 2",
+					config: { expression: "y > 0" },
+				},
+			],
+		});
+
+		const text = res.content[0].text;
+		expect(text).toMatch(/style c1,c2 fill:#ffe6cc/);
+	});
+
+	it("generates execution guide with all sections", async () => {
+		const res = await promptFlowBuilder({
+			flowName: "Complete Guide Flow",
+			nodes: [
+				{
+					id: "p1",
+					type: "prompt",
+					name: "Step",
+					config: { prompt: "test" },
+				},
+			],
+		});
+
+		const text = res.content[0].text;
+		expect(text).toMatch(/### How to Execute This Flow/);
+		expect(text).toMatch(/Initialize.*flow variables/);
+		expect(text).toMatch(/Start.*at the entry point/);
+		expect(text).toMatch(/Execute.*each node/);
+		expect(text).toMatch(/### Error Handling/);
+		expect(text).toMatch(/try-catch blocks/);
+		expect(text).toMatch(/### Best Practices/);
+		expect(text).toMatch(/Keep prompts modular/);
+	});
 });

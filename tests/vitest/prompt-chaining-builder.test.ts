@@ -139,4 +139,182 @@ describe("prompt-chaining-builder", () => {
 		const text = res.content[0].text;
 		expect(text).toMatch(/parallel where dependencies allow/);
 	});
+
+	it("excludes metadata when includeMetadata is false", async () => {
+		const res = await promptChainingBuilder({
+			chainName: "No Metadata Chain",
+			includeMetadata: false,
+			steps: [
+				{
+					name: "Step 1",
+					prompt: "Do something",
+				},
+			],
+		});
+
+		const text = res.content[0].text;
+		expect(text).not.toMatch(/Source Tool:/);
+		expect(text).not.toMatch(/mcp_ai-agent-guid/);
+	});
+
+	it("excludes references when includeReferences is false", async () => {
+		const res = await promptChainingBuilder({
+			chainName: "No Refs Chain",
+			includeReferences: false,
+			steps: [
+				{
+					name: "Step 1",
+					prompt: "Do something",
+				},
+			],
+		});
+
+		const text = res.content[0].text;
+		expect(text).not.toMatch(/## References/);
+		expect(text).not.toMatch(/promptingguide.ai/);
+	});
+
+	it("excludes visualization when includeVisualization is false", async () => {
+		const res = await promptChainingBuilder({
+			chainName: "No Viz Chain",
+			includeVisualization: false,
+			steps: [
+				{
+					name: "Step 1",
+					prompt: "Do something",
+				},
+			],
+		});
+
+		const text = res.content[0].text;
+		expect(text).not.toMatch(/## Chain Visualization/);
+		expect(text).not.toMatch(/```mermaid/);
+	});
+
+	it("handles complex dependency chains with multiple dependencies", async () => {
+		const res = await promptChainingBuilder({
+			chainName: "Complex Chain",
+			steps: [
+				{
+					name: "Step A",
+					prompt: "First independent step",
+					outputKey: "resultA",
+				},
+				{
+					name: "Step B",
+					prompt: "Second independent step",
+					outputKey: "resultB",
+				},
+				{
+					name: "Step C",
+					prompt: "Depends on both A and B",
+					dependencies: ["resultA", "resultB"],
+					outputKey: "resultC",
+				},
+			],
+		});
+
+		const text = res.content[0].text;
+		expect(text).toMatch(/\*\*Dependencies\*\*: resultA, resultB/);
+		expect(text).toMatch(/Step1 -->\|output\| Step3/);
+		expect(text).toMatch(/Step2 -->\|output\| Step3/);
+	});
+
+	it("handles steps with descriptions", async () => {
+		const res = await promptChainingBuilder({
+			chainName: "Described Chain",
+			steps: [
+				{
+					name: "Analyze",
+					description: "Performs initial code analysis",
+					prompt: "Analyze the code",
+					outputKey: "analysis",
+				},
+			],
+		});
+
+		const text = res.content[0].text;
+		expect(text).toMatch(/\*\*Description\*\*: Performs initial code analysis/);
+	});
+
+	it("handles retry error handling", async () => {
+		const res = await promptChainingBuilder({
+			chainName: "Retry Chain",
+			steps: [
+				{
+					name: "Retryable Step",
+					prompt: "May fail, will retry",
+					errorHandling: "retry",
+				},
+			],
+		});
+
+		const text = res.content[0].text;
+		expect(text).toMatch(/\*\*Error Handling\*\*: retry/);
+	});
+
+	it("generates visualization with output key annotations", async () => {
+		const res = await promptChainingBuilder({
+			chainName: "Output Keys Chain",
+			steps: [
+				{
+					name: "Step 1",
+					prompt: "Generate data",
+					outputKey: "data",
+				},
+				{
+					name: "Step 2",
+					prompt: "Use data",
+					dependencies: ["data"],
+				},
+			],
+		});
+
+		const text = res.content[0].text;
+		expect(text).toMatch(/Step1 -\.->.*"data"/);
+		expect(text).toMatch(/style Step1_out/);
+	});
+
+	it("handles dependency by step name instead of output key", async () => {
+		const res = await promptChainingBuilder({
+			chainName: "Name Dependency Chain",
+			steps: [
+				{
+					name: "First Step",
+					prompt: "Do first task",
+				},
+				{
+					name: "Second Step",
+					prompt: "Do second task",
+					dependencies: ["First Step"],
+				},
+			],
+		});
+
+		const text = res.content[0].text;
+		expect(text).toMatch(/\*\*Dependencies\*\*: First Step/);
+	});
+
+	it("includes input data flow hints", async () => {
+		const res = await promptChainingBuilder({
+			chainName: "Data Flow Chain",
+			steps: [
+				{
+					name: "Producer",
+					prompt: "Produce data",
+					outputKey: "output",
+				},
+				{
+					name: "Consumer",
+					prompt: "Consume data",
+					dependencies: ["output"],
+				},
+			],
+		});
+
+		const text = res.content[0].text;
+		expect(text).toMatch(
+			/\*\*Input Data\*\*: This step receives outputs from: output/,
+		);
+	});
 });
