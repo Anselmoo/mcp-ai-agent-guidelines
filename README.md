@@ -149,6 +149,83 @@ GitHub Chat (VS Code): In the chat, type your request and pick a tool suggestion
 
 > **🆕 NEW: Serena-Inspired Strategies** — We've integrated effective agent strategies from [@oraios/serena](https://github.com/oraios/serena) including semantic code analysis, project onboarding, and flexible mode switching. See [docs/SERENA_STRATEGIES.md](./docs/SERENA_STRATEGIES.md) for details.
 
+> **🌊 NEW: Flow-Based Prompting** — Advanced prompting strategies inspired by [@ruvnet/claude-flow](https://github.com/ruvnet/claude-flow) including prompt chaining, declarative flows, and dynamic orchestration. See [docs/FLOW_PROMPTING_EXAMPLES.md](./docs/FLOW_PROMPTING_EXAMPLES.md) for examples.
+
+<details>
+<summary><strong>🔗 Prompt Chaining Builder</strong> — Multi-step prompts with output passing (NEW)</summary>
+
+Usage: `prompt-chaining-builder`
+
+| Parameter      | Required | Description                           |
+| -------------- | -------- | ------------------------------------- |
+| `chainName`    | ✅        | Name of the prompt chain              |
+| `steps`        | ✅        | Array of chain steps with prompts     |
+| `description`  | ❌        | Description of chain purpose          |
+| `context`      | ❌        | Global context for the chain          |
+| `globalVariables` | ❌     | Variables accessible to all steps     |
+| `executionStrategy` | ❌   | sequential/parallel-where-possible    |
+
+Build sophisticated multi-step prompt workflows where each step can depend on outputs from previous steps. Supports error handling strategies (skip/retry/abort) and automatic Mermaid visualization.
+
+**Example:**
+```typescript
+{
+  chainName: "Security Analysis Pipeline",
+  steps: [
+    {
+      name: "Scan",
+      prompt: "Scan for vulnerabilities",
+      outputKey: "vulns"
+    },
+    {
+      name: "Assess",
+      prompt: "Assess severity of {{vulns}}",
+      dependencies: ["vulns"],
+      errorHandling: "retry"
+    }
+  ]
+}
+```
+
+</details>
+
+<details>
+<summary><strong>🌊 Prompt Flow Builder</strong> — Declarative flows with branching/loops (NEW)</summary>
+
+Usage: `prompt-flow-builder`
+
+| Parameter      | Required | Description                           |
+| -------------- | -------- | ------------------------------------- |
+| `flowName`     | ✅        | Name of the prompt flow               |
+| `nodes`        | ✅        | Flow nodes (prompt/condition/loop/parallel/merge/transform) |
+| `edges`        | ❌        | Connections between nodes with conditions |
+| `entryPoint`   | ❌        | Starting node ID                      |
+| `variables`    | ❌        | Flow-level variables                  |
+| `outputFormat` | ❌        | markdown/mermaid/both                 |
+
+Create complex adaptive prompt flows with conditional branching, loops, parallel execution, and merge points. Automatically generates Mermaid flowcharts and execution guides.
+
+**Example:**
+```typescript
+{
+  flowName: "Adaptive Code Review",
+  nodes: [
+    { id: "analyze", type: "prompt", name: "Analyze" },
+    { id: "check", type: "condition", name: "Complex?",
+      config: { expression: "complexity > 10" } },
+    { id: "deep", type: "prompt", name: "Deep Review" },
+    { id: "quick", type: "prompt", name: "Quick Check" }
+  ],
+  edges: [
+    { from: "analyze", to: "check" },
+    { from: "check", to: "deep", condition: "true" },
+    { from: "check", to: "quick", condition: "false" }
+  ]
+}
+```
+
+</details>
+
 <details>
 <summary><strong>🔍 Semantic Code Analyzer</strong> — Symbol-based code understanding (NEW)</summary>
 

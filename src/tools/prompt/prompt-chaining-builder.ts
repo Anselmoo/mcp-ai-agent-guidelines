@@ -155,7 +155,6 @@ function buildChainVisualization(steps: ChainStep[]): string {
 	for (let i = 0; i < steps.length; i++) {
 		const step = steps[i];
 		const nodeId = `Step${i + 1}`;
-		const cleanName = step.name.replace(/[^a-zA-Z0-9]/g, "_");
 
 		// Add step node
 		mermaid += `    ${nodeId}["${step.name}"]\n`;
