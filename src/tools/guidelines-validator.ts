@@ -168,9 +168,9 @@ function validateAgainstGuidelines(
 	}
 	score = Math.min(100, score);
 	let compliance: ValidationResult["compliance"];
-	if (score >= 85) compliance = "excellent";
-	else if (score >= 70) compliance = "good";
-	else if (score >= 50) compliance = "fair";
+	if (score >= 80) compliance = "excellent";
+	else if (score >= 65) compliance = "good";
+	else if (score >= 45) compliance = "fair";
 	else compliance = "poor";
 	return {
 		compliance,

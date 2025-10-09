@@ -2,15 +2,16 @@ import { describe, expect, it } from "vitest";
 import { guidelinesValidator } from "../../src/tools/guidelines-validator";
 
 describe("Guidelines Validator - Additional Coverage", () => {
-	it("should handle excellent compliance (score >= 85)", async () => {
+	it("should handle excellent compliance (score >= 80)", async () => {
 		const result = await guidelinesValidator({
 			practiceDescription:
-				"We implement comprehensive hierarchical prompting with clear goal specification, structured requirements, and detailed audience targeting. Our prompts include proper context setting, step-by-step instructions, and clear success criteria. We regularly validate outputs and maintain consistency across all AI interactions.",
+				"We implement comprehensive hierarchical prompting with clear goal specification, structured requirements, and detailed audience targeting. Our prompts include proper context setting, step-by-step instructions, and clear success criteria with numeric evaluation metrics for measuring effectiveness. We regularly validate outputs and maintain consistency across all AI interactions with iterative refinement processes and appropriate scaffolding support levels for different agent capabilities.",
 			category: "prompting",
 			includeReferences: true,
 		});
 
 		const text = result.content[0].text;
+		// With new scoring (base 30), this comprehensive description should hit 80+ for excellent
 		expect(text).toContain("Excellent compliance");
 		expect(text).toContain("🟢");
 		expect(text).toContain(
@@ -18,34 +19,35 @@ describe("Guidelines Validator - Additional Coverage", () => {
 		);
 	});
 
-	it("should handle poor compliance (score < 50)", async () => {
+	it("should handle poor compliance (score < 45)", async () => {
 		const result = await guidelinesValidator({
 			practiceDescription:
-				"We just ask AI questions without any structure or planning.",
+				"We just ask AI basic questions without any planning.",
 			category: "prompting",
 		});
 
 		const text = result.content[0].text;
-		// Just check that it produces a valid compliance assessment
-		expect(text).toMatch(/🔴|🟠|🟡|🟢/); // Should have some status emoji
+		// With new base of 30, this should be POOR (30/100)
+		expect(text).toMatch(/🔴/); // Should have poor status emoji
 		expect(text).toContain("compliance");
 		expect(text).toContain("Overall Score");
 	});
 
-	it("should handle good compliance (score 70-84)", async () => {
+	it("should handle good compliance (score 65-79)", async () => {
 		const result = await guidelinesValidator({
 			practiceDescription:
-				"We structure our prompts with clear goals and provide context. We define audience and requirements. Sometimes we validate outputs but not consistently.",
+				"We structure our prompts with clear goals and hierarchical layers. We provide detailed context and specific requirements. We use appropriate guidance levels for different agent capabilities.",
 			category: "prompting",
 		});
 
 		const text = result.content[0].text;
+		// With new scoring, this should hit 65-79 for GOOD
 		expect(text).toContain("Good compliance");
 		expect(text).toContain("🟡");
 		expect(text).toContain("Minor improvements recommended");
 	});
 
-	it("should handle fair compliance (score 50-69)", async () => {
+	it("should handle fair compliance (score 45-64)", async () => {
 		const result = await guidelinesValidator({
 			practiceDescription:
 				"We try to structure prompts and sometimes provide context. Basic goal setting is present but not comprehensive.",

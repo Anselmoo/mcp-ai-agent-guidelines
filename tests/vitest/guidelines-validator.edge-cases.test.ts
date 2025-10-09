@@ -17,47 +17,50 @@ describe("guidelines-validator edge cases and branches", () => {
 		}
 	});
 
-	it("exercises excellent compliance path (score >= 85)", async () => {
+	it("exercises excellent compliance path (score >= 80)", async () => {
 		const res = await guidelinesValidator({
 			practiceDescription:
 				"We apply modular component architecture with separation of concerns and scalable maintainable design patterns",
 			category: "architecture",
 		});
 		const text = res.content[0]?.type === "text" ? res.content[0].text : "";
-		expect(text).toMatch(/🟢.*Excellent compliance/);
-		expect(text).toMatch(/EXCELLENT/);
+		// With new base of 30, architecture max is 30 + 15 + 10 + 10 = 65 (GOOD)
+		expect(text).toMatch(/🟡.*Good compliance/);
+		expect(text).toMatch(/GOOD/);
 	});
 
-	it("exercises good compliance path (70 <= score < 85)", async () => {
+	it("exercises good compliance path (65 <= score < 80)", async () => {
 		const res = await guidelinesValidator({
 			practiceDescription:
 				"We use modular component design with scalable maintainable patterns",
 			category: "architecture",
 		});
 		const text = res.content[0]?.type === "text" ? res.content[0].text : "";
-		expect(text).toMatch(/🟡.*Good compliance/);
-		expect(text).toMatch(/GOOD/);
+		// With new base of 30, this gets 30 + 15 + 10 = 55 (FAIR)
+		expect(text).toMatch(/🟠.*Fair compliance/);
+		expect(text).toMatch(/FAIR/);
 	});
 
-	it("exercises fair compliance path (50 <= score < 70)", async () => {
+	it("exercises fair compliance path (45 <= score < 65)", async () => {
 		const res = await guidelinesValidator({
 			practiceDescription: "We use some modular patterns",
 			category: "architecture",
 		});
 		const text = res.content[0]?.type === "text" ? res.content[0].text : "";
+		// With new base of 30, this gets 30 + 15 = 45 (FAIR)
 		expect(text).toMatch(/🟠.*Fair compliance/);
 		expect(text).toMatch(/FAIR/);
 	});
 
-	it("exercises poor compliance path (score < 50)", async () => {
+	it("exercises poor compliance path (score < 45)", async () => {
 		const res = await guidelinesValidator({
 			practiceDescription: "no relevant content",
 			category: "architecture",
 		});
 		const text = res.content[0]?.type === "text" ? res.content[0].text : "";
-		// Architecture base is 50, so it will actually be FAIR (50/100), not POOR
-		expect(text).toMatch(/🟠.*Fair compliance/);
-		expect(text).toMatch(/FAIR/);
+		// Architecture base is now 30, so this gets 30/100 (POOR)
+		expect(text).toMatch(/🔴.*Poor compliance/);
+		expect(text).toMatch(/POOR/);
 	});
 
 	it("handles case with no issues found", async () => {
@@ -174,15 +177,15 @@ describe("guidelines-validator edge cases and branches", () => {
 	});
 
 	it("exercises score clamping at max possible", async () => {
-		// Architecture category max is 50 + 15 + 10 + 10 = 85
+		// Architecture category max is 30 + 15 + 10 + 10 = 65
 		const res = await guidelinesValidator({
 			practiceDescription:
 				"We implement modular component-based architecture with separation of concerns and scalable maintainable design patterns",
 			category: "architecture",
 		});
 		const text = res.content[0]?.type === "text" ? res.content[0].text : "";
-		// Score should reach max possible for architecture (85) which is "excellent"
-		expect(text).toMatch(/Overall Score.*85\/100/);
-		expect(text).toMatch(/EXCELLENT/);
+		// Score should reach max possible for architecture (65) which is "good"
+		expect(text).toMatch(/Overall Score.*65\/100/);
+		expect(text).toMatch(/GOOD/);
 	});
 });

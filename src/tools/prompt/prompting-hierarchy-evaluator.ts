@@ -517,9 +517,9 @@ export async function promptingHierarchyEvaluator(args: unknown) {
 }
 
 function getScoreEmoji(score: number): string {
-	if (score >= 80) return "✅ Excellent";
-	if (score >= 60) return "👍 Good";
-	if (score >= 40) return "⚠️ Fair";
+	if (score >= 85) return "✅ Excellent";
+	if (score >= 70) return "👍 Good";
+	if (score >= 50) return "⚠️ Fair";
 	return "❌ Needs Improvement";
 }
 

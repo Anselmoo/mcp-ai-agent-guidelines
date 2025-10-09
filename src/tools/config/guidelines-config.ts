@@ -16,7 +16,7 @@ export interface CategoryConfig {
 
 export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
 	prompting: {
-		base: 50,
+		base: 30,
 		criteria: [
 			{
 				id: "hierarchy",
@@ -92,7 +92,7 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
 		],
 	},
 	"code-management": {
-		base: 50,
+		base: 30,
 		criteria: [
 			{
 				id: "hygiene",
@@ -136,7 +136,7 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
 		],
 	},
 	architecture: {
-		base: 50,
+		base: 30,
 		criteria: [
 			{
 				id: "modular",
@@ -172,7 +172,7 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
 		],
 	},
 	visualization: {
-		base: 50,
+		base: 30,
 		criteria: [
 			{
 				id: "tooling",
@@ -209,7 +209,7 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
 		],
 	},
 	memory: {
-		base: 50,
+		base: 30,
 		criteria: [
 			{
 				id: "cache",
@@ -245,7 +245,7 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
 		],
 	},
 	workflow: {
-		base: 50,
+		base: 30,
 		criteria: [
 			{
 				id: "agile",
