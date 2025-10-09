@@ -10,13 +10,16 @@ import { codeHygieneAnalyzer } from "../dist/tools/code-hygiene-analyzer.js";
 import { guidelinesValidator } from "../dist/tools/guidelines-validator.js";
 import { memoryContextOptimizer } from "../dist/tools/memory-context-optimizer.js";
 import { mermaidDiagramGenerator } from "../dist/tools/mermaid-diagram-generator.js";
+import { modeSwitcher } from "../dist/tools/mode-switcher.js";
 import { modelCompatibilityChecker } from "../dist/tools/model-compatibility-checker.js";
+import { projectOnboarding } from "../dist/tools/project-onboarding.js";
 import { domainNeutralPromptBuilder } from "../dist/tools/prompt/domain-neutral-prompt-builder.js";
 import { hierarchicalPromptBuilder } from "../dist/tools/prompt/hierarchical-prompt-builder.js";
 import { hierarchyLevelSelector } from "../dist/tools/prompt/hierarchy-level-selector.js";
 import { promptingHierarchyEvaluator } from "../dist/tools/prompt/prompting-hierarchy-evaluator.js";
 import { securityHardeningPromptBuilder } from "../dist/tools/prompt/security-hardening-prompt-builder.js";
 import { sparkPromptBuilder } from "../dist/tools/prompt/spark-prompt-builder.js";
+import { semanticCodeAnalyzer } from "../dist/tools/semantic-code-analyzer.js";
 import { sprintTimelineCalculator } from "../dist/tools/sprint-timeline-calculator.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -352,6 +355,36 @@ Enhance the authentication system with JWT token support and proper session mana
 		includeReferences: true,
 	});
 	await writeReport("demo-prompt-evaluation.md", getText(promptEvaluation));
+
+	// Semantic code analyzer demo
+	const semanticAnalysis = await semanticCodeAnalyzer({
+		codeContent: demoPy,
+		language: "python",
+		analysisType: "all",
+		includeReferences: true,
+		inputFile: demoPyPath,
+	});
+	await writeReport("demo-semantic-analysis.md", getText(semanticAnalysis));
+
+	// Project onboarding demo
+	const onboarding = await projectOnboarding({
+		projectPath: path.resolve(__dirname, ".."),
+		projectName: "MCP AI Agent Guidelines",
+		projectType: "library",
+		analysisDepth: "standard",
+		includeMemories: true,
+		includeReferences: true,
+	});
+	await writeReport("demo-project-onboarding.md", getText(onboarding));
+
+	// Mode switcher demo
+	const modeSwitching = await modeSwitcher({
+		targetMode: "analysis",
+		context: "ide-assistant",
+		reason: "Reviewing codebase for refactoring opportunities",
+		includeReferences: true,
+	});
+	await writeReport("demo-mode-switcher.md", getText(modeSwitching));
 }
 
 main().catch((err) => {
