@@ -1,16 +1,8 @@
 // Data-driven configuration for model compatibility scoring
-export interface ModelDefinition {
-	name: string;
-	provider: string;
-	pricingTier: "premium" | "mid-tier" | "budget";
-	contextTokens: number;
-	baseScore: number;
-	capabilities: string[]; // reasoning, code, speed, multimodal, safety, large-context, cost
-	strengths: string[];
-	limitations: string[];
-	specialFeatures: string[];
-	pricing: string;
-}
+import type { ModelDefinition, ScoredModel } from "./types/index.js";
+
+export type { ModelDefinition, ScoredModel };
+
 // See also: https://docs.github.com/en/copilot/reference/ai-models/model-comparison#recommended-models-by-task
 export const MODELS: ModelDefinition[] = [
 	{
@@ -222,15 +214,3 @@ export const BUDGET_ADJUSTMENTS: Record<
 };
 export const BUDGET_BONUS = 12;
 export const BUDGET_PENALTY = 14;
-
-export interface ScoredModel {
-	name: string;
-	provider: string;
-	score: number;
-	strengths: string[];
-	limitations: string[];
-	pricing: string;
-	contextWindow: string;
-	specialFeatures: string[];
-	breakdown: string[];
-}

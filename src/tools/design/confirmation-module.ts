@@ -6,7 +6,7 @@ import type {
 	ConfirmationResult,
 	DesignPhase,
 	DesignSessionState,
-} from "./types.js";
+} from "./types/index.js";
 
 const _ConfirmationRequestSchema = z.object({
 	sessionState: z.any(), // DesignSessionState

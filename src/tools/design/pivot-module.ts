@@ -1,7 +1,7 @@
 // Pivot Module - Deterministic decision making for strategic design changes
 import { z } from "zod";
 import { constraintManager } from "./constraint-manager.js";
-import type { DesignSessionState, PivotDecision } from "./types.js";
+import type { DesignSessionState, PivotDecision } from "./types/index.js";
 
 const _PivotRequestSchema = z.object({
 	sessionState: z.any(), // DesignSessionState

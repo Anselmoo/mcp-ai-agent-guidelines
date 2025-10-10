@@ -1,9 +1,6 @@
-export type FrontmatterOptions = {
-	mode?: string;
-	model?: string;
-	tools?: string[];
-	description: string;
-};
+import type { FrontmatterOptions } from "./types/index.js";
+
+export type { FrontmatterOptions };
 
 /**
  * Escape a string value for safe use in YAML frontmatter.

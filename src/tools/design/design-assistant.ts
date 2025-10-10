@@ -26,7 +26,7 @@ import type {
 	MethodologySignals,
 	PivotDecision,
 	StrategicPivotPromptResult,
-} from "./types.js";
+} from "./types/index.js";
 
 const _DesignAssistantRequestSchema = z.object({
 	action: z.enum([
