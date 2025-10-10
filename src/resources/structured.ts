@@ -1296,6 +1296,21 @@ const chain = await promptChainingBuilder({
   ]
 });`,
 			},
+			{ type: "heading", level: 2, text: "Serena Integration" },
+			{
+				type: "paragraph",
+				text: "Combine flow-based prompting with Serena memory patterns for context-aware, persistent workflows. Use project memories, mode switching, and semantic analysis within flows.",
+			},
+			{
+				type: "list",
+				items: [
+					"Memory-aware chaining: Use project-onboarding memories in chains",
+					"Mode-appropriate flows: Switch modes (planning/editing/analysis) during execution",
+					"Semantic-aware flows: Integrate semantic-code-analyzer for symbol-based operations",
+					"Context optimization: Use memory-context-optimizer between steps for long flows",
+					"Multi-mode orchestration: Design flows that adapt mode based on current phase",
+				],
+			},
 			{
 				type: "references",
 				items: [
@@ -1303,6 +1318,17 @@ const chain = await promptChainingBuilder({
 						title: "Claude Flow - AI Orchestration Platform",
 						url: "https://github.com/ruvnet/claude-flow",
 						source: "GitHub",
+					},
+					{
+						title: "Serena - Coding Agent Toolkit",
+						url: "https://github.com/oraios/serena",
+						source: "GitHub",
+					},
+					{
+						title: "Flow & Serena Integration Guide",
+						url: "https://github.com/Anselmoo/mcp-ai-agent-guidelines/blob/main/docs/FLOW_SERENA_INTEGRATION.md",
+						source: "MCP AI Agent Guidelines",
+						note: "Comprehensive integration patterns and examples",
 					},
 					{
 						title: "Prompt Chaining Techniques",
