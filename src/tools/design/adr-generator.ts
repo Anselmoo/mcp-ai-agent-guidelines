@@ -1,5 +1,6 @@
 // ADR Generator - Automated Architecture Decision Record generation
 import { z } from "zod";
+import { logger } from "../shared/logger.js";
 import { constraintManager } from "./constraint-manager.js";
 import type {
 	Artifact,
@@ -434,7 +435,10 @@ ${JSON.stringify(adr.metadata, null, 2)}
 
 						adrs.push(adrResult.artifact);
 					} catch (error) {
-						console.warn(`Failed to generate ADR for ${phaseId}:`, error);
+						logger.warn("Failed to generate ADR for phase", {
+							phaseId,
+							error: error instanceof Error ? error.message : String(error),
+						});
 					}
 				}
 			}

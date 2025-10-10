@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { logger } from "../shared/logger.js";
 import {
 	buildMetadataSection,
 	buildReferencesSection,
@@ -167,9 +168,10 @@ function validateFlow(input: PromptFlowInput): void {
 		const reachable = findReachableNodes(entryNode, input.edges);
 		const unreachable = Array.from(nodeIds).filter((id) => !reachable.has(id));
 		if (unreachable.length > 0) {
-			console.warn(
-				`Warning: Unreachable nodes detected: ${unreachable.join(", ")}`,
-			);
+			logger.warn("Unreachable nodes detected in flow", {
+				unreachableNodes: unreachable,
+				entryPoint: entryNode,
+			});
 		}
 	}
 
