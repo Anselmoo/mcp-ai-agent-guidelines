@@ -5,6 +5,18 @@ import {
 	slugify,
 } from "../shared/prompt-utils.js";
 
+/**
+ * Schema for a flow node - represents a single step/operation in the prompt flow.
+ * Inspired by claude-flow's node-based architecture for declarative AI workflows.
+ *
+ * Node types:
+ * - prompt: Execute a prompt and capture output
+ * - condition: Branch execution based on boolean expression
+ * - loop: Repeat execution with iteration limit or condition
+ * - parallel: Execute multiple branches concurrently
+ * - merge: Synchronization point for parallel branches
+ * - transform: Apply data transformation to flow state
+ */
 const FlowNodeSchema = z.object({
 	id: z.string(),
 	type: z.enum([
@@ -20,20 +32,34 @@ const FlowNodeSchema = z.object({
 	config: z.record(z.any()).optional(),
 });
 
+/**
+ * Schema for flow edges - defines connections between nodes with optional conditions.
+ * Edges create the control flow graph that determines execution order.
+ */
 const FlowEdgeSchema = z.object({
 	from: z.string(),
 	to: z.string(),
-	condition: z.string().optional(),
-	label: z.string().optional(),
+	condition: z.string().optional(), // Boolean expression for conditional edges
+	label: z.string().optional(), // Human-readable label for visualization
 });
 
+/**
+ * Main schema for prompt flow configuration.
+ * Defines a declarative, graph-based approach to complex AI workflows.
+ *
+ * Key features:
+ * - Declarative flow definition with nodes and edges
+ * - Support for branching, loops, and parallel execution
+ * - Automatic visualization generation (Mermaid diagrams)
+ * - Built-in validation and error handling
+ */
 const PromptFlowSchema = z.object({
 	flowName: z.string(),
 	description: z.string().optional(),
 	nodes: z.array(FlowNodeSchema).min(1),
 	edges: z.array(FlowEdgeSchema).optional().default([]),
-	entryPoint: z.string().optional(),
-	variables: z.record(z.string()).optional().default({}),
+	entryPoint: z.string().optional(), // If not specified, uses first node
+	variables: z.record(z.string()).optional().default({}), // Flow-level variables
 	includeMetadata: z.boolean().optional().default(true),
 	includeReferences: z.boolean().optional().default(true),
 	includeExecutionGuide: z.boolean().optional().default(true),
@@ -47,24 +73,50 @@ type PromptFlowInput = z.infer<typeof PromptFlowSchema>;
 type FlowNode = z.infer<typeof FlowNodeSchema>;
 type FlowEdge = z.infer<typeof FlowEdgeSchema>;
 
+/**
+ * Prompt Flow Builder - Creates declarative, graph-based AI workflows
+ *
+ * Inspired by claude-flow's architecture, this tool enables complex prompting strategies through:
+ * - Declarative flow definition with nodes and edges
+ * - Conditional branching and loops for adaptive behavior
+ * - Parallel execution for independent operations
+ * - Automatic visualization and execution guides
+ *
+ * Integration with Serena patterns:
+ * - Memory-aware execution (stores flow results for context retention)
+ * - Mode-appropriate flow design (planning vs. execution flows)
+ * - Symbol-based operations (flows can reference code symbols)
+ *
+ * @param args - Flow configuration (validated against PromptFlowSchema)
+ * @returns Formatted flow specification with visualization and execution guide
+ */
 export async function promptFlowBuilder(args: unknown) {
 	const input = PromptFlowSchema.parse(args);
 
-	// Validate flow structure
+	// Validate flow structure (edges, reachability, node configs)
 	validateFlow(input);
 
+	// Build comprehensive flow specification
 	const flowSpec = buildFlowSpecification(input);
+
+	// Generate Mermaid visualization (unless markdown-only format)
 	const visualization =
 		input.outputFormat !== "markdown" ? buildFlowDiagram(input) : "";
+
+	// Include execution guide with best practices
 	const executionGuide = input.includeExecutionGuide
 		? buildExecutionGuide(input)
 		: "";
+
+	// Add metadata for traceability
 	const metadata = input.includeMetadata
 		? buildMetadataSection({
 				sourceTool: "mcp_ai-agent-guid_prompt-flow-builder",
 				filenameHint: `${slugify(input.flowName)}.flow.md`,
 			})
 		: "";
+
+	// Include references to flow-based programming resources
 	const references = input.includeReferences ? buildFlowReferences() : "";
 
 	return {
@@ -77,10 +129,22 @@ export async function promptFlowBuilder(args: unknown) {
 	};
 }
 
+/**
+ * Validates flow structure for correctness and safety.
+ *
+ * Validation checks:
+ * 1. Edge integrity - all edges reference existing nodes
+ * 2. Entry point validity - entry point exists in node set
+ * 3. Reachability analysis - detect unreachable nodes (warnings only)
+ * 4. Node configuration - type-specific config requirements
+ *
+ * @param input - Flow configuration to validate
+ * @throws Error if validation fails (invalid edges, missing configs)
+ */
 function validateFlow(input: PromptFlowInput): void {
 	const nodeIds = new Set(input.nodes.map((n) => n.id));
 
-	// Validate edges reference existing nodes
+	// Validate edges reference existing nodes (critical for execution)
 	for (const edge of input.edges) {
 		if (!nodeIds.has(edge.from)) {
 			throw new Error(`Edge references non-existent node: ${edge.from}`);
@@ -97,7 +161,7 @@ function validateFlow(input: PromptFlowInput): void {
 		);
 	}
 
-	// Detect unreachable nodes
+	// Detect unreachable nodes (warning only - may be intentional for documentation)
 	const entryNode = input.entryPoint || input.nodes[0]?.id;
 	if (entryNode) {
 		const reachable = findReachableNodes(entryNode, input.edges);
@@ -115,6 +179,18 @@ function validateFlow(input: PromptFlowInput): void {
 	}
 }
 
+/**
+ * Validates node-specific configuration requirements.
+ *
+ * Each node type has different configuration requirements:
+ * - condition: must have 'expression' (boolean logic)
+ * - loop: must have 'condition' or 'iterations' (safety limit)
+ * - prompt: must have 'prompt' (the actual prompt text)
+ * - Others: no strict requirements (merge, parallel, transform are structural)
+ *
+ * @param node - Flow node to validate
+ * @throws Error if required configuration is missing
+ */
 function validateNodeConfig(node: FlowNode): void {
 	switch (node.type) {
 		case "condition":
@@ -139,11 +215,20 @@ function validateNodeConfig(node: FlowNode): void {
 			}
 			break;
 		default:
-			// Other node types don't require specific config validation
+			// Other node types (merge, parallel, transform) don't require specific config validation
+			// They are primarily structural/control flow nodes
 			break;
 	}
 }
 
+/**
+ * Performs breadth-first search to find all reachable nodes from the start node.
+ * Used to detect unreachable nodes that may indicate flow design issues.
+ *
+ * @param startNode - Entry point node ID
+ * @param edges - Flow edges defining connections
+ * @returns Set of reachable node IDs
+ */
 function findReachableNodes(startNode: string, edges: FlowEdge[]): Set<string> {
 	const reachable = new Set<string>([startNode]);
 	const queue = [startNode];
@@ -161,10 +246,22 @@ function findReachableNodes(startNode: string, edges: FlowEdge[]): Set<string> {
 	return reachable;
 }
 
+/**
+ * Builds human-readable flow specification with all node and edge details.
+ *
+ * Output includes:
+ * - Flow variables (context shared across all nodes)
+ * - Entry point (where execution begins)
+ * - Node specifications (type, config, connections)
+ * - Edge information (conditions, labels)
+ *
+ * @param input - Validated flow configuration
+ * @returns Markdown-formatted flow specification
+ */
 function buildFlowSpecification(input: PromptFlowInput): string {
 	let output = "";
 
-	// Add variables if any
+	// Add variables if any (flow-level context available to all nodes)
 	if (Object.keys(input.variables).length > 0) {
 		output += "## Flow Variables\n";
 		for (const [key, value] of Object.entries(input.variables)) {
@@ -173,11 +270,11 @@ function buildFlowSpecification(input: PromptFlowInput): string {
 		output += "\n";
 	}
 
-	// Entry point
+	// Entry point (determines where flow execution begins)
 	const entry = input.entryPoint || input.nodes[0]?.id;
 	output += `## Entry Point\nFlow begins at node: **${entry}**\n\n`;
 
-	// Node specifications
+	// Node specifications (detailed view of each node's purpose and configuration)
 	output += "## Flow Nodes\n\n";
 
 	for (const node of input.nodes) {
@@ -188,7 +285,7 @@ function buildFlowSpecification(input: PromptFlowInput): string {
 			output += `**Description**: ${node.description}\n\n`;
 		}
 
-		// Node configuration
+		// Node configuration (type-specific parameters)
 		if (node.config && Object.keys(node.config).length > 0) {
 			output += "**Configuration**:\n";
 			output += "```json\n";
@@ -196,7 +293,7 @@ function buildFlowSpecification(input: PromptFlowInput): string {
 			output += "\n```\n\n";
 		}
 
-		// Find outgoing edges
+		// Find outgoing edges (shows control flow from this node)
 		const outgoing = input.edges.filter((e) => e.from === node.id);
 		if (outgoing.length > 0) {
 			output += "**Outgoing Edges**:\n";
@@ -213,6 +310,20 @@ function buildFlowSpecification(input: PromptFlowInput): string {
 	return output;
 }
 
+/**
+ * Generates Mermaid flowchart visualization of the prompt flow.
+ *
+ * Features:
+ * - Node shapes based on type (diamonds for conditions, etc.)
+ * - Color-coded node types for easy identification
+ * - Edge styling (dashed for conditional, solid for unconditional)
+ * - Comprehensive legend for interpretation
+ *
+ * Mermaid syntax reference: https://mermaid.js.org/syntax/flowchart.html
+ *
+ * @param input - Validated flow configuration
+ * @returns Mermaid diagram in markdown code block with legend
+ */
 function buildFlowDiagram(input: PromptFlowInput): string {
 	let mermaid = "## Flow Visualization\n\n```mermaid\nflowchart TD\n";
 
@@ -223,15 +334,15 @@ function buildFlowDiagram(input: PromptFlowInput): string {
 		mermaid += `    ${node.id}${shape[0]}"${label}"${shape[1]}\n`;
 	}
 
-	// Add edges
+	// Add edges with conditional vs. unconditional styling
 	for (const edge of input.edges) {
-		const arrow = edge.condition ? "-." : "-->";
+		const arrow = edge.condition ? "-." : "-->"; // Dashed for conditional, solid for unconditional
 		const label = edge.label || edge.condition || "";
 		const labelText = label ? `|"${label}"| ` : " ";
 		mermaid += `    ${edge.from} ${arrow}${labelText}${edge.to}\n`;
 	}
 
-	// Style different node types
+	// Style different node types with distinct colors
 	const conditionNodes = input.nodes
 		.filter((n) => n.type === "condition")
 		.map((n) => n.id);
@@ -254,7 +365,7 @@ function buildFlowDiagram(input: PromptFlowInput): string {
 
 	mermaid += "```\n\n";
 
-	// Add legend
+	// Add legend for node shape interpretation
 	mermaid += "### Legend\n";
 	mermaid += "- **Rectangle**: Prompt node\n";
 	mermaid += "- **Diamond**: Condition node\n";
@@ -266,25 +377,56 @@ function buildFlowDiagram(input: PromptFlowInput): string {
 	return mermaid;
 }
 
+/**
+ * Maps node types to Mermaid shape syntax.
+ *
+ * Shape semantics:
+ * - Rectangles: Standard operations (prompts)
+ * - Diamonds: Decision points (conditions)
+ * - Rounded: Iteration (loops)
+ * - Parallelograms: Parallel processing
+ * - Circles: Synchronization (merge)
+ * - Trapezoids: Data transformation
+ *
+ * @param type - Node type from FlowNodeSchema
+ * @returns Tuple of [opening, closing] shape delimiters
+ */
 function getNodeShape(type: string): [string, string] {
 	switch (type) {
 		case "prompt":
-			return ["[", "]"];
+			return ["[", "]"]; // Rectangle
 		case "condition":
-			return ["{", "}"];
+			return ["{", "}"]; // Diamond
 		case "loop":
-			return ["(", ")"];
+			return ["(", ")"]; // Rounded
 		case "parallel":
-			return ["[/", "/]"];
+			return ["[/", "/]"]; // Parallelogram
 		case "merge":
-			return ["((", "))"];
+			return ["((", "))"]; // Circle
 		case "transform":
-			return ["[\\", "/]"];
+			return ["[\\", "/]"]; // Trapezoid
 		default:
-			return ["[", "]"];
+			return ["[", "]"]; // Default to rectangle
 	}
 }
 
+/**
+ * Generates comprehensive execution guide for flow implementation.
+ *
+ * Includes:
+ * - Step-by-step execution instructions
+ * - Error handling strategies per node type
+ * - Best practices for flow design and debugging
+ * - Performance optimization tips
+ *
+ * Integrates Serena best practices:
+ * - Planning-first approach (analyze before executing)
+ * - Context management (memory optimization for long flows)
+ * - Incremental execution (test nodes individually)
+ *
+ * @param input - Validated flow configuration
+ * @returns Markdown-formatted execution guide
+ */
 function buildExecutionGuide(input: PromptFlowInput): string {
 	let guide = "## Execution Guide\n\n";
 
@@ -316,11 +458,22 @@ function buildExecutionGuide(input: PromptFlowInput): string {
 	guide += "- Use descriptive node names and edge labels\n";
 	guide += "- Document complex conditions and transformations\n";
 	guide += "- Test flows with edge cases and error scenarios\n";
-	guide += "- Monitor performance and optimize bottlenecks\n\n";
+	guide += "- Monitor performance and optimize bottlenecks\n";
+	guide +=
+		"- **Memory optimization**: Use context summarization for long flows (see memory-context-optimizer)\n";
+	guide +=
+		"- **Mode switching**: Select appropriate mode (planning/execution) before flow start (see mode-switcher)\n";
+	guide +=
+		"- **Project context**: Load relevant project memories for better results (see project-onboarding)\n\n";
 
 	return guide;
 }
 
+/**
+ * Builds references section with flow-based programming resources.
+ *
+ * @returns Markdown-formatted references section
+ */
 function buildFlowReferences(): string {
 	return buildReferencesSection([
 		"Flow-based Programming: https://en.wikipedia.org/wiki/Flow-based_programming",
