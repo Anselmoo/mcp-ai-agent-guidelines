@@ -11,7 +11,7 @@ describe("Logger Integration - Error Path Coverage", () => {
 			);
 
 			// Create tasks with circular dependencies
-			const result = await sprintTimelineCalculator({
+			await sprintTimelineCalculator({
 				tasks: [
 					{
 						name: "Task A",
@@ -86,7 +86,7 @@ describe("Logger Integration - Error Path Coverage", () => {
 			);
 
 			// Create a flow with unreachable nodes
-			const result = await promptFlowBuilder({
+			await promptFlowBuilder({
 				flowName: "Test Flow",
 				nodes: [
 					{
