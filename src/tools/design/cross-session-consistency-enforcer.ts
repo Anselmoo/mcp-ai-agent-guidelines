@@ -12,7 +12,7 @@ import type {
 	EnforcementOption,
 	EnforcementPrompt,
 	HistoricalPattern,
-} from "./types.js";
+} from "./types/index.js";
 
 // Validation schemas
 const ConstraintDecisionSchema = z.object({

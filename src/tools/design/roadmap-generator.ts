@@ -1,6 +1,10 @@
 // Roadmap Generator - Automated implementation roadmap generation
 import { z } from "zod";
-import type { Artifact, DesignPhase, DesignSessionState } from "./types.js";
+import type {
+	Artifact,
+	DesignPhase,
+	DesignSessionState,
+} from "./types/index.js";
 
 const _RoadmapRequestSchema = z.object({
 	sessionState: z.any(), // DesignSessionState

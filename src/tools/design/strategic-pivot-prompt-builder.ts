@@ -10,7 +10,7 @@ import type {
 	RiskLevel,
 	StrategicPivotPromptRequest,
 	StrategicPivotPromptResult,
-} from "./types.js";
+} from "./types/index.js";
 
 const StrategicPivotPromptRequestSchema = z.object({
 	sessionState: z.any(), // DesignSessionState

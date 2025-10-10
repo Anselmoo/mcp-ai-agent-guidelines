@@ -5,7 +5,7 @@ import type {
 	ConstraintType,
 	DesignSessionConfig,
 	DesignSessionState,
-} from "./types.js";
+} from "./types/index.js";
 
 // Validation schemas for constraint configuration
 const ValidationRuleSchema = z.object({

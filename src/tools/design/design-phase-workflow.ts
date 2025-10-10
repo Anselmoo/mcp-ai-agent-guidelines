@@ -11,7 +11,7 @@ import type {
 	MethodologyProfile,
 	MethodologySignals,
 	SessionEvent,
-} from "./types.js";
+} from "./types/index.js";
 
 const _WorkflowRequestSchema = z.object({
 	action: z.enum(["start", "advance", "complete", "reset", "status"]),

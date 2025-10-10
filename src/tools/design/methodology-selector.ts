@@ -8,7 +8,7 @@ import type {
 	MethodologySignals,
 	Milestone,
 	PhaseStatus,
-} from "./types.js";
+} from "./types/index.js";
 
 const MethodologySignalsSchema = z.object({
 	projectType: z.enum([
