@@ -1,7 +1,11 @@
 // Confirmation Prompt Builder - Generates context-aware, deterministic confirmation prompts
 import { z } from "zod";
 import { constraintManager } from "./constraint-manager.js";
-import type { DesignPhase, DesignSessionState, OutputFormat } from "./types.js";
+import type {
+	DesignPhase,
+	DesignSessionState,
+	OutputFormat,
+} from "./types/index.js";
 
 // Schema for confirmation prompt configuration
 const _ConfirmationPromptConfigSchema = z.object({

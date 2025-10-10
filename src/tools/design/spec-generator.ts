@@ -1,6 +1,10 @@
 // Specification Generator - Automated technical specification generation
 import { z } from "zod";
-import type { Artifact, DesignPhase, DesignSessionState } from "./types.js";
+import type {
+	Artifact,
+	DesignPhase,
+	DesignSessionState,
+} from "./types/index.js";
 
 const _SpecRequestSchema = z.object({
 	sessionState: z.any(), // DesignSessionState

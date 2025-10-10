@@ -73,7 +73,7 @@ export {
 	IMPLEMENTATION_STATUS as STRATEGIC_PIVOT_PROMPT_BUILDER_STATUS,
 	strategicPivotPromptBuilder,
 } from "./strategic-pivot-prompt-builder.js";
-// Export types
+// Export types from the modular types directory
 export type {
 	Artifact,
 	ConfirmationResult,
@@ -106,7 +106,7 @@ export type {
 	PivotImpact,
 	StrategicPivotPromptRequest,
 	StrategicPivotPromptResult,
-} from "./types.js";
+} from "./types/index.js";
 
 // Module implementation status summary
 export const DESIGN_MODULE_STATUS = {

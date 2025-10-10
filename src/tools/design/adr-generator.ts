@@ -1,7 +1,11 @@
 // ADR Generator - Automated Architecture Decision Record generation
 import { z } from "zod";
 import { constraintManager } from "./constraint-manager.js";
-import type { Artifact, DesignPhase, DesignSessionState } from "./types.js";
+import type {
+	Artifact,
+	DesignPhase,
+	DesignSessionState,
+} from "./types/index.js";
 
 const _ADRRequestSchema = z.object({
 	sessionState: z.any(), // DesignSessionState

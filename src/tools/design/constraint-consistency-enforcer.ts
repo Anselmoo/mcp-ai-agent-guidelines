@@ -7,7 +7,11 @@ import {
 	type ConstraintViolation,
 	constraintManager,
 } from "./constraint-manager.js";
-import type { Artifact, ConstraintRule, DesignSessionState } from "./types.js";
+import type {
+	Artifact,
+	ConstraintRule,
+	DesignSessionState,
+} from "./types/index.js";
 
 // Cross-session constraint enforcement types
 export interface ConstraintEnforcementHistory {

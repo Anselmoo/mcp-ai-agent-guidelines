@@ -5,7 +5,7 @@ import type {
 	CoverageReport,
 	DesignPhase,
 	DesignSessionState,
-} from "./types.js";
+} from "./types/index.js";
 
 const _CoverageRequestSchema = z.object({
 	sessionState: z.any(), // DesignSessionState
