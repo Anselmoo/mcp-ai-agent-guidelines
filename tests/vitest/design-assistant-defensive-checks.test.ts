@@ -1,5 +1,5 @@
 // Regression test for design-assistant defensive array checks
-import { beforeAll, describe, expect, it, vi } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { designAssistant } from "../../dist/tools/design/index.js";
 
 describe("Design Assistant - Defensive Array Checks", () => {
