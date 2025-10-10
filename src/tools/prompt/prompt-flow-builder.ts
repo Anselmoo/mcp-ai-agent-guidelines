@@ -234,7 +234,9 @@ function findReachableNodes(startNode: string, edges: FlowEdge[]): Set<string> {
 	const queue = [startNode];
 
 	while (queue.length > 0) {
-		const current = queue.shift()!;
+		const current = queue.shift();
+		if (!current) break; // Safety check for empty queue
+
 		for (const edge of edges) {
 			if (edge.from === current && !reachable.has(edge.to)) {
 				reachable.add(edge.to);
@@ -298,7 +300,6 @@ function buildFlowSpecification(input: PromptFlowInput): string {
 		if (outgoing.length > 0) {
 			output += "**Outgoing Edges**:\n";
 			for (const edge of outgoing) {
-				const label = edge.label || edge.condition || "→";
 				output += `- To **${edge.to}** ${edge.condition ? `(if: ${edge.condition})` : ""} ${edge.label ? `[${edge.label}]` : ""}\n`;
 			}
 			output += "\n";
