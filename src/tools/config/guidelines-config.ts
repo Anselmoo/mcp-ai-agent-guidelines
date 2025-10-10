@@ -1,18 +1,7 @@
 // Data-driven configuration for guidelines validation
-export interface Criterion {
-	id: string;
-	keywords: string[];
-	weight: number;
-	strength: string;
-	issue: string;
-	recommendation: string;
-	optional?: boolean;
-}
-export interface CategoryConfig {
-	base: number;
-	criteria: Criterion[];
-	bestPractices: string[];
-}
+import type { CategoryConfig, Criterion } from "./types/index.js";
+
+export type { Criterion, CategoryConfig };
 
 export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
 	prompting: {
