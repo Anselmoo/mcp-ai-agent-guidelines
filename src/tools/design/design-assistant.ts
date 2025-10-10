@@ -700,8 +700,9 @@ class DesignAssistantImpl {
 			if (artifactTypes.includes("adr")) {
 				const sessionADRs =
 					await adrGenerator.generateSessionADRs(sessionState);
-				artifacts.push(...sessionADRs);
-				recommendations.push(`Generated ${sessionADRs.length} ADR(s)`);
+				const adrsArray = Array.isArray(sessionADRs) ? sessionADRs : [];
+				artifacts.push(...adrsArray);
+				recommendations.push(`Generated ${adrsArray.length} ADR(s)`);
 			}
 
 			if (artifactTypes.includes("specification")) {
@@ -711,7 +712,10 @@ class DesignAssistantImpl {
 					type: "technical",
 				});
 				artifacts.push(specResult.artifact);
-				recommendations.push(...specResult.recommendations.slice(0, 2));
+				const specRecs = Array.isArray(specResult.recommendations)
+					? specResult.recommendations.slice(0, 2)
+					: [];
+				recommendations.push(...specRecs);
 			}
 
 			if (artifactTypes.includes("roadmap")) {
@@ -720,7 +724,10 @@ class DesignAssistantImpl {
 					title: `${sessionState.config.goal} Implementation Roadmap`,
 				});
 				artifacts.push(roadmapResult.artifact);
-				recommendations.push(...roadmapResult.recommendations.slice(0, 2));
+				const roadmapRecs = Array.isArray(roadmapResult.recommendations)
+					? roadmapResult.recommendations.slice(0, 2)
+					: [];
+				recommendations.push(...roadmapRecs);
 			}
 
 			// Update session artifacts
@@ -1063,18 +1070,21 @@ class DesignAssistantImpl {
 					mockSessionState,
 				);
 
+			// Ensure recommendations is an array to prevent runtime errors
+			const recommendations = Array.isArray(consistencyReport.recommendations)
+				? consistencyReport.recommendations.map((r) => r.title)
+				: [];
+
 			return {
 				success: true,
 				sessionId,
 				status: "consistency-checked",
 				message: `Cross-session consistency enforced. Overall score: ${consistencyReport.overallConsistency}%`,
-				recommendations: (consistencyReport.recommendations || []).map(
-					(r) => r.title,
-				),
+				recommendations,
 				artifacts: [],
 				data: {
 					consistencyReport,
-					violationsCount: consistencyReport.violations.length,
+					violationsCount: consistencyReport.violations?.length || 0,
 					space7Alignment: consistencyReport.space7Alignment,
 				},
 			};
@@ -1135,17 +1145,20 @@ class DesignAssistantImpl {
 					consistencyReport,
 				);
 
+			// Ensure prompts is an array to prevent runtime errors
+			const promptsArray = Array.isArray(prompts) ? prompts : [];
+
 			return {
 				success: true,
 				sessionId,
 				status: "prompts-generated",
-				message: `Generated ${prompts.length} enforcement prompts`,
-				recommendations: (prompts || []).map(
+				message: `Generated ${promptsArray.length} enforcement prompts`,
+				recommendations: promptsArray.map(
 					(p) => `${p.severity.toUpperCase()}: ${p.title}`,
 				),
 				artifacts: [],
 				data: {
-					prompts,
+					prompts: promptsArray,
 					consistencyReport,
 				},
 			};
