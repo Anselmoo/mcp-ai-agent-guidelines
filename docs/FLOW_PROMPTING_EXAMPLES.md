@@ -337,6 +337,112 @@ const implChain = await promptChainingBuilder({
 });
 ```
 
+### Memory-Optimized Flow with Serena Patterns
+
+```typescript
+// Step 1: Switch to planning mode
+await modeSwitcher({
+  targetMode: "planning",
+  context: "ide-assistant",
+  reason: "Design flow architecture before implementation"
+});
+
+// Step 2: Load project context (Serena pattern)
+const onboarding = await projectOnboarding({
+  projectPath: "/path/to/project",
+  projectName: "My App",
+  projectType: "application",
+  analysisDepth: "standard",
+  includeMemories: true
+});
+
+// Step 3: Create memory-optimized flow
+const flow = await promptFlowBuilder({
+  flowName: "Context-Aware Code Refactoring",
+  description: "Refactor codebase with project-specific context and memory optimization",
+  variables: {
+    architecture: onboarding.memories.architecture,
+    conventions: onboarding.memories.codeConventions
+  },
+  nodes: [
+    {
+      id: "load_context",
+      type: "prompt",
+      name: "Load Project Context",
+      config: {
+        prompt: "Load project memories and recent changes from {{architecture}}"
+      }
+    },
+    {
+      id: "analyze",
+      type: "prompt",
+      name: "Semantic Analysis",
+      config: {
+        prompt: "Use semantic-code-analyzer to identify refactoring opportunities"
+      }
+    },
+    {
+      id: "optimize_memory",
+      type: "transform",
+      name: "Optimize Context",
+      config: {
+        transform: "Use memory-context-optimizer to compress context for next steps"
+      }
+    },
+    {
+      id: "refactor",
+      type: "prompt",
+      name: "Apply Refactoring",
+      config: {
+        prompt: "Refactor code following {{conventions}} and maintaining {{architecture}}"
+      }
+    }
+  ],
+  edges: [
+    { from: "load_context", to: "analyze" },
+    { from: "analyze", to: "optimize_memory" },
+    { from: "optimize_memory", to: "refactor" }
+  ]
+});
+
+// Step 4: Switch to editing mode for execution
+await modeSwitcher({
+  currentMode: "planning",
+  targetMode: "editing",
+  context: "ide-assistant"
+});
+```
+
+### Chaining with Error Recovery
+
+```typescript
+await promptChainingBuilder({
+  chainName: "Resilient API Integration",
+  description: "Build API integration with fallback strategies",
+  steps: [
+    {
+      name: "API Discovery",
+      prompt: "Analyze API documentation and identify endpoints",
+      outputKey: "endpoints",
+      errorHandling: "retry" // Retry on failure
+    },
+    {
+      name: "Schema Validation",
+      prompt: "Validate request/response schemas for {{endpoints}}",
+      dependencies: ["endpoints"],
+      outputKey: "schemas",
+      errorHandling: "skip" // Skip on failure, continue with partial results
+    },
+    {
+      name: "Implementation",
+      prompt: "Implement API client using {{endpoints}} and {{schemas}}",
+      dependencies: ["endpoints", "schemas"],
+      errorHandling: "abort" // Critical step - abort chain on failure
+    }
+  ]
+});
+```
+
 ## Best Practices
 
 ### 1. Chain Design
@@ -362,6 +468,123 @@ const implChain = await promptChainingBuilder({
 - **Log intermediate outputs**: Track data flow through the chain/flow
 - **Test edge cases**: Validate error handling and edge conditions
 - **Use execution guides**: Follow the generated execution instructions
+
+## Performance Optimization Patterns
+
+### 1. Context Window Management
+
+When working with long flows or chains, optimize token usage:
+
+```typescript
+// Use memory-context-optimizer between steps
+await promptChainingBuilder({
+  chainName: "Long Document Analysis",
+  steps: [
+    {
+      name: "Extract Key Points",
+      prompt: "Extract main points from document",
+      outputKey: "key_points"
+    },
+    {
+      name: "Compress Context",
+      prompt: "Use memory-context-optimizer to compress {{key_points}} for next steps",
+      dependencies: ["key_points"],
+      outputKey: "optimized_context"
+    },
+    {
+      name: "Deep Analysis",
+      prompt: "Analyze using compressed context: {{optimized_context}}",
+      dependencies: ["optimized_context"]
+    }
+  ]
+});
+```
+
+### 2. Parallel Execution for Independent Tasks
+
+Maximize throughput by parallelizing independent operations:
+
+```typescript
+await promptFlowBuilder({
+  flowName: "Parallel Code Analysis",
+  nodes: [
+    { id: "start", type: "prompt", name: "Parse Code", config: { prompt: "Parse codebase" } },
+    { id: "fork", type: "parallel", name: "Fork Analysis" },
+    { id: "security", type: "prompt", name: "Security Scan", config: { prompt: "Security analysis" } },
+    { id: "performance", type: "prompt", name: "Performance Check", config: { prompt: "Performance analysis" } },
+    { id: "quality", type: "prompt", name: "Quality Metrics", config: { prompt: "Code quality analysis" } },
+    { id: "merge", type: "merge", name: "Combine Results" },
+    { id: "report", type: "transform", name: "Generate Report", config: { transform: "Combine into report" } }
+  ],
+  edges: [
+    { from: "start", to: "fork" },
+    { from: "fork", to: "security" },
+    { from: "fork", to: "performance" },
+    { from: "fork", to: "quality" },
+    { from: "security", to: "merge" },
+    { from: "performance", to: "merge" },
+    { from: "quality", to: "merge" },
+    { from: "merge", to: "report" }
+  ]
+});
+```
+
+### 3. Caching and Reuse
+
+Store intermediate results for reuse across sessions:
+
+```typescript
+// Use project-onboarding to cache project analysis
+const onboarding = await projectOnboarding({
+  projectPath: "/path/to/project",
+  includeMemories: true // Stores memories for future use
+});
+
+// Reuse cached memories in flows
+await promptFlowBuilder({
+  flowName: "Incremental Analysis",
+  variables: {
+    cached_architecture: onboarding.memories.architecture,
+    cached_dependencies: onboarding.memories.dependencies
+  },
+  nodes: [
+    {
+      id: "incremental_scan",
+      type: "prompt",
+      name: "Scan Changes Only",
+      config: {
+        prompt: "Analyze only changes since last run, using {{cached_architecture}}"
+      }
+    }
+  ]
+});
+```
+
+### 4. Progressive Refinement
+
+Break complex tasks into iterative refinement loops:
+
+```typescript
+await promptFlowBuilder({
+  flowName: "Iterative Improvement",
+  nodes: [
+    { id: "draft", type: "prompt", name: "Create Draft", config: { prompt: "Generate initial draft" } },
+    { id: "review", type: "prompt", name: "Review Quality", config: { prompt: "Assess quality (1-10)" } },
+    { id: "check", type: "condition", name: "Quality Check", config: { expression: "quality >= 8" } },
+    { id: "refine", type: "prompt", name: "Refine Draft", config: { prompt: "Improve based on feedback" } },
+    { id: "loop", type: "loop", name: "Refinement Loop", config: { iterations: 3, condition: "quality < 8" } },
+    { id: "finalize", type: "transform", name: "Finalize", config: { transform: "Polish final version" } }
+  ],
+  edges: [
+    { from: "draft", to: "review" },
+    { from: "review", to: "check" },
+    { from: "check", to: "finalize", condition: "true", label: "High Quality" },
+    { from: "check", to: "refine", condition: "false", label: "Needs Work" },
+    { from: "refine", to: "loop" },
+    { from: "loop", to: "review" }
+  ]
+});
+```
 
 ## Resources
 

@@ -5,21 +5,42 @@ import {
 	slugify,
 } from "../shared/prompt-utils.js";
 
+/**
+ * Schema for a single step in a prompt chain.
+ *
+ * Each step represents a discrete prompting operation with:
+ * - Clear dependencies on previous steps
+ * - Explicit error handling strategy
+ * - Optional output capture for subsequent steps
+ *
+ * Inspired by claude-flow's sequential processing patterns.
+ */
 const ChainStepSchema = z.object({
 	name: z.string(),
 	description: z.string().optional(),
 	prompt: z.string(),
-	outputKey: z.string().optional(),
-	dependencies: z.array(z.string()).optional().default([]),
+	outputKey: z.string().optional(), // Key for storing/accessing this step's output
+	dependencies: z.array(z.string()).optional().default([]), // Step names or output keys this step depends on
 	errorHandling: z.enum(["skip", "retry", "abort"]).optional().default("abort"),
 });
 
+/**
+ * Main schema for prompt chaining configuration.
+ *
+ * Enables multi-step AI workflows with:
+ * - Sequential or parallel execution strategies
+ * - Inter-step data flow via output keys and dependencies
+ * - Configurable error handling per step
+ * - Context and variable management
+ *
+ * Best for: Progressive refinement, multi-phase analysis, complex transformations
+ */
 const PromptChainingSchema = z.object({
 	chainName: z.string(),
 	description: z.string().optional(),
 	steps: z.array(ChainStepSchema).min(1),
-	context: z.string().optional(),
-	globalVariables: z.record(z.string()).optional().default({}),
+	context: z.string().optional(), // Shared context for all steps
+	globalVariables: z.record(z.string()).optional().default({}), // Variables accessible to all steps
 	includeMetadata: z.boolean().optional().default(true),
 	includeReferences: z.boolean().optional().default(true),
 	includeVisualization: z.boolean().optional().default(true),
@@ -32,10 +53,32 @@ const PromptChainingSchema = z.object({
 type PromptChainingInput = z.infer<typeof PromptChainingSchema>;
 type ChainStep = z.infer<typeof ChainStepSchema>;
 
+/**
+ * Prompt Chaining Builder - Creates sequential/parallel multi-step AI workflows
+ *
+ * Inspired by claude-flow's orchestration patterns, this tool enables:
+ * - Progressive refinement through multi-step prompting
+ * - Data flow between steps via output keys and dependencies
+ * - Flexible error handling (skip, retry, abort)
+ * - Automatic visualization of chain structure
+ *
+ * Integration with Serena patterns:
+ * - Context-aware execution (uses project memories)
+ * - Planning-first approach (design chain before execution)
+ * - Memory optimization (chains can be cached for reuse)
+ *
+ * Common use cases:
+ * - Security analysis pipelines (scan → assess → remediate)
+ * - Code review workflows (static → performance → recommendations)
+ * - Documentation generation (outline → draft → refine)
+ *
+ * @param args - Chain configuration (validated against PromptChainingSchema)
+ * @returns Formatted chain specification with visualization
+ */
 export async function promptChainingBuilder(args: unknown) {
 	const input = PromptChainingSchema.parse(args);
 
-	// Validate dependencies
+	// Validate dependencies are acyclic and reference valid steps
 	validateDependencies(input.steps);
 
 	const chainPrompt = buildChainPrompt(input);
@@ -60,6 +103,17 @@ export async function promptChainingBuilder(args: unknown) {
 	};
 }
 
+/**
+ * Validates step dependencies to ensure chain is executable.
+ *
+ * Checks:
+ * - All dependencies reference existing step names or output keys
+ * - No circular dependencies (implicit - would cause runtime issues)
+ * - Dependencies can be resolved in sequential execution order
+ *
+ * @param steps - Array of chain steps to validate
+ * @throws Error if any dependency is invalid
+ */
 function validateDependencies(steps: ChainStep[]): void {
 	const stepNames = new Set(steps.map((s) => s.name));
 	const outputKeys = new Set(
@@ -68,7 +122,7 @@ function validateDependencies(steps: ChainStep[]): void {
 
 	for (const step of steps) {
 		for (const dep of step.dependencies || []) {
-			// Check if dependency is a step name
+			// Check if dependency is a step name or output key
 			if (!stepNames.has(dep) && !outputKeys.has(dep)) {
 				throw new Error(
 					`Step "${step.name}" has invalid dependency "${dep}". Must reference an existing step name or output key.`,

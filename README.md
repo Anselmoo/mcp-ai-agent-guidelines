@@ -149,7 +149,9 @@ GitHub Chat (VS Code): In the chat, type your request and pick a tool suggestion
 
 > **🆕 NEW: Serena-Inspired Strategies** — We've integrated effective agent strategies from [@oraios/serena](https://github.com/oraios/serena) including semantic code analysis, project onboarding, and flexible mode switching. See [docs/SERENA_STRATEGIES.md](./docs/SERENA_STRATEGIES.md) for details.
 
-> **🌊 NEW: Flow-Based Prompting** — Advanced prompting strategies inspired by [@ruvnet/claude-flow](https://github.com/ruvnet/claude-flow) including prompt chaining, declarative flows, and dynamic orchestration. See [docs/FLOW_PROMPTING_EXAMPLES.md](./docs/FLOW_PROMPTING_EXAMPLES.md) for examples.
+> **🌊 NEW: Flow-Based Prompting** — Advanced prompting strategies inspired by [@ruvnet/claude-flow](https://github.com/ruvnet/claude-flow) including prompt chaining, declarative flows, and dynamic orchestration.
+> - **Examples**: [docs/FLOW_PROMPTING_EXAMPLES.md](./docs/FLOW_PROMPTING_EXAMPLES.md)
+> - **Integration Guide**: [docs/FLOW_SERENA_INTEGRATION.md](./docs/FLOW_SERENA_INTEGRATION.md) - Combining flow-based prompting with Serena memory patterns
 
 <details>
 <summary><strong>🔗 Prompt Chaining Builder</strong> — Multi-step prompts with output passing (NEW)</summary>
