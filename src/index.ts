@@ -29,6 +29,11 @@ import {
 import { getPrompt, listPrompts } from "./prompts/index.js";
 // Import resources
 import { getResource, listResources } from "./resources/index.js";
+// Import tool schemas
+import {
+	promptChainingBuilderSchema,
+	promptFlowBuilderSchema,
+} from "./schemas/flow-tool-schemas.js";
 import { gapFrameworksAnalyzers } from "./tools/analysis/gap-frameworks-analyzers.js";
 import { strategyFrameworksBuilder } from "./tools/analysis/strategy-frameworks-builder.js";
 import { codeHygieneAnalyzer } from "./tools/code-hygiene-analyzer.js";
@@ -47,6 +52,8 @@ import { domainNeutralPromptBuilder } from "./tools/prompt/domain-neutral-prompt
 // Import tool implementations
 import { hierarchicalPromptBuilder } from "./tools/prompt/hierarchical-prompt-builder.js";
 import { hierarchyLevelSelector } from "./tools/prompt/hierarchy-level-selector.js";
+import { promptChainingBuilder } from "./tools/prompt/prompt-chaining-builder.js";
+import { promptFlowBuilder } from "./tools/prompt/prompt-flow-builder.js";
 import { promptingHierarchyEvaluator } from "./tools/prompt/prompting-hierarchy-evaluator.js";
 import { securityHardeningPromptBuilder } from "./tools/prompt/security-hardening-prompt-builder.js";
 import { sparkPromptBuilder } from "./tools/prompt/spark-prompt-builder.js";
@@ -1251,6 +1258,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 					required: ["taskDescription"],
 				},
 			},
+			promptChainingBuilderSchema,
+			promptFlowBuilderSchema,
 			{
 				name: "design-assistant",
 				description:
@@ -1367,6 +1376,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 				return promptingHierarchyEvaluator(args);
 			case "hierarchy-level-selector":
 				return hierarchyLevelSelector(args);
+			case "prompt-chaining-builder":
+				return promptChainingBuilder(args);
+			case "prompt-flow-builder":
+				return promptFlowBuilder(args);
 			case "design-assistant": {
 				const result = await designAssistant.processRequest(
 					args as unknown as DesignAssistantRequest,
