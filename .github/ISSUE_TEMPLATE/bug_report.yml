@@ -121,6 +121,7 @@ body:
         - 20.x (LTS)
         - 22.x (Current)
         - 23.x (Current)
+        - 24.x (Current)
         - Other (specify in additional context)
         - Unknown
     validations:
