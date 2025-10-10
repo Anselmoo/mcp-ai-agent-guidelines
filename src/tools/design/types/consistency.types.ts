@@ -5,7 +5,6 @@ import type {
 	ConstraintConsistencyViolation,
 	ConstraintDecision,
 	ConstraintEnforcementHistory,
-	ConstraintRule,
 } from "./constraint.types.js";
 import type { DesignSessionState } from "./session.types.js";
 
