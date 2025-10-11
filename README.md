@@ -518,6 +518,9 @@ npm run test:demo        # Demo runner
 npm run test:mcp         # MCP smoke script
 npm run test:coverage:unit # Unit test coverage (text-summary, lcov, html)
 npm run quality          # Type-check + Biome check
+npm run audit            # Security audit (production dependencies)
+npm run audit:fix        # Auto-fix vulnerabilities
+npm run audit:production # Audit production dependencies only
 ```
 
 ### Git Hooks with Lefthook 🪝
@@ -541,6 +544,7 @@ npx lefthook run pre-push    # Run pre-push checks manually
 - 🧹 **Code Hygiene**: Trailing whitespace & EOF fixes
 
 **Pre-push hooks** (comprehensive validation):
+- 🔒 **Security Audit**: Dependency vulnerability scanning (moderate+ level)
 - 🧪 **Testing**: Full test suite (unit, integration, demo, MCP)
 - ⚡ **Quality**: Type checking + Biome validation
 
@@ -590,9 +594,30 @@ VS Code + Docker settings:
 
 ## Security
 
-- No secrets committed; releases use provenance where supported.
-- Docker images are signed (Cosign); supply‑chain security via Sigstore.
-- Report vulnerabilities via GitHub Security tab or Issues.
+- **Dependency Scanning**: Automated vulnerability scanning runs on every PR and push to main
+  - Production dependencies: fails on moderate+ vulnerabilities
+  - All dependencies: audited and reported (dev dependencies don't block builds)
+  - Local audit: `npm run audit` or `npm audit --audit-level=moderate`
+  - Auto-fix: `npm run audit:fix` to automatically fix vulnerabilities when possible
+  - Pre-push hook: automatically checks for vulnerabilities before pushing code
+- **Secrets Protection**: No secrets committed; releases use provenance where supported
+- **Supply Chain Security**: Docker images are signed (Cosign); artifacts signed via Sigstore
+- **Vulnerability Reporting**: Report security issues via [GitHub Security tab](https://github.com/Anselmoo/mcp-ai-agent-guidelines/security) or Issues
+
+### Remediation Steps for Maintainers
+
+When vulnerabilities are detected:
+
+1. **Review the vulnerability**: `npm audit` provides details about affected packages
+2. **Update dependencies**: `npm run audit:fix` to apply automatic fixes
+3. **Manual updates**: If auto-fix doesn't work, update package.json manually:
+   ```bash
+   npm update <package-name>
+   # or for major version updates
+   npm install <package-name>@latest
+   ```
+4. **Test changes**: Run `npm run test:all` to ensure updates don't break functionality
+5. **Override if needed**: For false positives or accepted risks, document in security policy
 
 ## Documentation
 

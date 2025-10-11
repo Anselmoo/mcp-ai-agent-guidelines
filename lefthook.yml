@@ -57,6 +57,11 @@ pre-commit:
 # Pre-push hooks - run before push to remote
 pre-push:
   commands:
+    dependency-audit:
+      tags: [security, audit]
+      run: npm audit --omit=dev --audit-level=moderate
+      fail_text: "🔒 Dependency vulnerabilities detected - push aborted. Run 'npm audit' for details."
+
     test-all:
       tags: [test]
       run: npm run test:all

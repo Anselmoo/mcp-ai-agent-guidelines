@@ -57,12 +57,89 @@ jobs:
         run: npx lefthook run pre-commit --verbose
 
   # ============================================================================
+  # Security Audit - Dependency Vulnerability Scanning
+  # ============================================================================
+  security-audit:
+    name: Security Audit (Dependency Scanning) 🔒
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.NPM_CACHE_DIR }}
+          key: npm-${{ runner.os }}-${{ env.NODE_VERSION }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            npm-${{ runner.os }}-${{ env.NODE_VERSION }}-
+            npm-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit (production dependencies)
+        run: |
+          echo "### 🔒 Security Audit Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Running npm audit for production dependencies..." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Run audit and capture output
+          if npm audit --omit=dev --audit-level=moderate --json > audit-prod.json 2>&1; then
+            echo "✅ No vulnerabilities found in production dependencies" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ Vulnerabilities detected in production dependencies:" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo '```json' >> $GITHUB_STEP_SUMMARY
+            cat audit-prod.json | jq -r '.vulnerabilities | to_entries | .[] | "- \(.key): \(.value.severity) severity"' >> $GITHUB_STEP_SUMMARY || cat audit-prod.json >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+      - name: Run npm audit (all dependencies)
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Running npm audit for all dependencies..." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Run full audit and capture output
+          if npm audit --audit-level=moderate --json > audit-all.json 2>&1; then
+            echo "✅ No vulnerabilities found in all dependencies" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ Vulnerabilities detected in all dependencies (including dev):" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo '```json' >> $GITHUB_STEP_SUMMARY
+            cat audit-all.json | jq -r '.vulnerabilities | to_entries | .[] | "- \(.key): \(.value.severity) severity"' >> $GITHUB_STEP_SUMMARY || cat audit-all.json >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Note:** This includes dev dependencies. Only production vulnerabilities will fail the build." >> $GITHUB_STEP_SUMMARY
+          fi
+        continue-on-error: true
+
+      - name: Upload audit reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-audit-reports
+          path: |
+            audit-prod.json
+            audit-all.json
+
+  # ============================================================================
   # Testing and Quality Assurance
   # ============================================================================
   test-and-build:
     name: Test & Build (Node.js ${{ matrix.node-version }})
     runs-on: ubuntu-latest
-    needs: lint-and-quality
+    needs: [lint-and-quality, security-audit]
     permissions:
       contents: read
       id-token: write  # required for Codecov OIDC uploads
