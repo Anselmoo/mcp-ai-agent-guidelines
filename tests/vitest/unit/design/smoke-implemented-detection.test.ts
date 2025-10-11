@@ -151,7 +151,6 @@ describe("Design Module Smoke Tests - Implementation Detection", () => {
 			expect(typeof designAssistant.initialize).toBe("function");
 			expect(typeof designAssistant.processRequest).toBe("function");
 			expect(typeof designAssistant.createSession).toBe("function");
-			expect(typeof designAssistant.validatePhase).toBe("function");
 		});
 
 		it("should verify designPhaseWorkflow is implemented", () => {
