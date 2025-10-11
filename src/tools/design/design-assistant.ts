@@ -1,6 +1,6 @@
 // Design Assistant - Main orchestrator for the deterministic design framework
 import { z } from "zod";
-import { logger } from "../shared/logger.js";
+import { ConfigurationError, ErrorReporter } from "../shared/errors.js";
 import { type ADRGenerationResult, adrGenerator } from "./adr-generator.js";
 import { confirmationModule } from "./confirmation-module.js";
 import { constraintConsistencyEnforcer } from "./constraint-consistency-enforcer.js";
@@ -131,9 +131,9 @@ class DesignAssistantImpl {
 
 			this.initialized = true;
 		} catch (error) {
-			throw new Error(
-				`Failed to initialize Design Assistant: ${error instanceof Error ? error.message : "Unknown error"}`,
-			);
+			throw new ConfigurationError("Failed to initialize Design Assistant", {
+				originalError: error instanceof Error ? error.message : String(error),
+			});
 		}
 	}
 
@@ -267,8 +267,9 @@ class DesignAssistantImpl {
 					return this.loadConstraints(request.constraintConfig);
 				case "select-methodology":
 					if (!request.methodologySignals) {
-						throw new Error(
+						throw new ConfigurationError(
 							"Methodology signals are required for select-methodology action",
+							{ sessionId, action },
 						);
 					}
 					return this.selectMethodology(sessionId, request.methodologySignals);
@@ -279,18 +280,18 @@ class DesignAssistantImpl {
 				case "generate-constraint-documentation":
 					return this.generateConstraintDocumentation(sessionId);
 				default:
-					throw new Error(`Unknown action: ${action}`);
+					throw new ConfigurationError(`Unknown action: ${action}`, {
+						action,
+						sessionId,
+					});
 			}
 		} catch (error) {
-			return {
-				success: false,
+			return ErrorReporter.createFullErrorResponse(error, {
 				sessionId,
 				status: "error",
-				message:
-					error instanceof Error ? error.message : "Unknown error occurred",
 				recommendations: ["Check request parameters and try again"],
 				artifacts: [],
-			};
+			});
 		}
 	}
 
@@ -304,14 +305,12 @@ class DesignAssistantImpl {
 			try {
 				await constraintManager.loadConstraintsFromConfig(constraintConfig);
 			} catch (error) {
-				return {
-					success: false,
+				return ErrorReporter.createFullErrorResponse(error, {
 					sessionId,
 					status: "error",
-					message: `Failed to load constraint configuration: ${error instanceof Error ? error.message : "Unknown error"}`,
 					recommendations: ["Check constraint configuration format"],
 					artifacts: [],
-				};
+				});
 			}
 		}
 
@@ -336,17 +335,15 @@ class DesignAssistantImpl {
 					customPhaseSequence: methodologySelection.selected.phases,
 				};
 			} catch (error) {
-				return {
-					success: false,
+				return ErrorReporter.createFullErrorResponse(error, {
 					sessionId,
 					status: "error",
-					message: `Failed to select methodology: ${error instanceof Error ? error.message : "Unknown error"}`,
 					recommendations: [
 						"Check methodology signals format",
 						"Verify methodology configuration",
 					],
 					artifacts: [],
-				};
+				});
 			}
 		}
 
@@ -390,9 +387,9 @@ class DesignAssistantImpl {
 				});
 			} catch (error) {
 				// Log error but don't fail the session start
-				logger.warn("Failed to generate methodology ADR", {
-					error: error instanceof Error ? error.message : String(error),
+				ErrorReporter.warn(error, {
 					sessionId: config.sessionId,
+					operation: "generate-methodology-adr",
 				});
 			}
 		}
@@ -748,12 +745,13 @@ class DesignAssistantImpl {
 			};
 		} catch (error) {
 			return {
-				success: false,
-				sessionId,
-				status: "generation-failed",
-				message: `Artifact generation failed: ${error instanceof Error ? error.message : "Unknown error"}`,
-				recommendations: ["Check session state and try again"],
-				artifacts,
+				...ErrorReporter.createFullErrorResponse(error, {
+					sessionId,
+					status: "generation-failed",
+					recommendations: ["Check session state and try again"],
+					artifacts,
+				}),
+				artifacts, // Keep the partial artifacts
 			};
 		}
 	}
@@ -926,16 +924,14 @@ class DesignAssistantImpl {
 				},
 			};
 		} catch (error) {
-			return {
-				success: false,
+			return ErrorReporter.createFullErrorResponse(error, {
 				sessionId: "system",
 				status: "load-failed",
-				message: `Failed to load constraints: ${error instanceof Error ? error.message : "Unknown error"}`,
 				recommendations: [
 					"Check constraint configuration format and try again",
 				],
 				artifacts: [],
-			};
+			});
 		}
 	}
 
@@ -1014,18 +1010,16 @@ class DesignAssistantImpl {
 				},
 			};
 		} catch (error) {
-			return {
-				success: false,
-				sessionId: sessionId,
+			return ErrorReporter.createFullErrorResponse(error, {
+				sessionId,
 				status: "selection-failed",
-				message: `Failed to select methodology: ${error instanceof Error ? error.message : "Unknown error"}`,
 				recommendations: [
 					"Check methodology signals format",
 					"Verify all required signal fields are provided",
 					"Review methodology configuration",
 				],
 				artifacts: [],
-			};
+			});
 		}
 	}
 
@@ -1093,14 +1087,12 @@ class DesignAssistantImpl {
 				},
 			};
 		} catch (error) {
-			return {
-				success: false,
+			return ErrorReporter.createFullErrorResponse(error, {
 				sessionId,
 				status: "consistency-check-failed",
-				message: `Failed to enforce cross-session consistency: ${error instanceof Error ? error.message : "Unknown error"}`,
 				recommendations: ["Check session state and try again"],
 				artifacts: [],
-			};
+			});
 		}
 	}
 
@@ -1167,14 +1159,12 @@ class DesignAssistantImpl {
 				},
 			};
 		} catch (error) {
-			return {
-				success: false,
+			return ErrorReporter.createFullErrorResponse(error, {
 				sessionId,
 				status: "prompt-generation-failed",
-				message: `Failed to generate enforcement prompts: ${error instanceof Error ? error.message : "Unknown error"}`,
 				recommendations: ["Check session state and try again"],
 				artifacts: [],
-			};
+			});
 		}
 	}
 
@@ -1270,14 +1260,12 @@ class DesignAssistantImpl {
 				},
 			};
 		} catch (error) {
-			return {
-				success: false,
+			return ErrorReporter.createFullErrorResponse(error, {
 				sessionId,
 				status: "documentation-generation-failed",
-				message: `Failed to generate constraint documentation: ${error instanceof Error ? error.message : "Unknown error"}`,
 				recommendations: ["Check session state and try again"],
 				artifacts: [],
-			};
+			});
 		}
 	}
 

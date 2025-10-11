@@ -1,5 +1,6 @@
 // Confirmation Prompt Builder - Generates context-aware, deterministic confirmation prompts
 import { z } from "zod";
+import { PhaseError } from "../shared/errors.js";
 import { constraintManager } from "./constraint-manager.js";
 import type {
 	DesignPhase,
@@ -114,7 +115,10 @@ class ConfirmationPromptBuilderImpl {
 
 		const phase = sessionState.phases[phaseId];
 		if (!phase) {
-			throw new Error(`Phase '${phaseId}' not found in session`);
+			throw new PhaseError(`Phase '${phaseId}' not found in session`, {
+				phaseId,
+				sessionId: sessionState.config.sessionId,
+			});
 		}
 
 		// Analyze current session state for context
