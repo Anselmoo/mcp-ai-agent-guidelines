@@ -1,5 +1,10 @@
 // Design Phase Workflow - Orchestrates the structured design process
 import { z } from "zod";
+import {
+	ConfigurationError,
+	PhaseError,
+	SessionError,
+} from "../shared/errors.js";
 import { confirmationModule } from "./confirmation-module.js";
 import { constraintManager } from "./constraint-manager.js";
 import { pivotModule } from "./pivot-module.js";
@@ -63,7 +68,10 @@ class DesignPhaseWorkflowImpl {
 		switch (action) {
 			case "start":
 				if (!request.config) {
-					throw new Error("Configuration is required for start action");
+					throw new ConfigurationError(
+						"Configuration is required for start action",
+						{ sessionId, action },
+					);
 				}
 				return this.startSession(
 					sessionId,
@@ -74,8 +82,9 @@ class DesignPhaseWorkflowImpl {
 				return this.advancePhase(sessionId, request.phaseId, request.content);
 			case "complete":
 				if (!request.phaseId || !request.content) {
-					throw new Error(
+					throw new ConfigurationError(
 						"Phase ID and content are required for complete action",
+						{ sessionId, action },
 					);
 				}
 				return this.completePhase(sessionId, request.phaseId, request.content);
@@ -84,7 +93,10 @@ class DesignPhaseWorkflowImpl {
 			case "status":
 				return this.getSessionStatus(sessionId);
 			default:
-				throw new Error(`Unknown workflow action: ${action}`);
+				throw new ConfigurationError(`Unknown workflow action: ${action}`, {
+					action,
+					sessionId,
+				});
 		}
 	}
 
@@ -195,7 +207,7 @@ class DesignPhaseWorkflowImpl {
 	): Promise<WorkflowResponse> {
 		const sessionState = this.sessions.get(sessionId);
 		if (!sessionState) {
-			throw new Error(`Session ${sessionId} not found`);
+			throw new SessionError(`Session ${sessionId} not found`, { sessionId });
 		}
 
 		const currentPhase = sessionState.phases[sessionState.currentPhase];
@@ -295,12 +307,15 @@ class DesignPhaseWorkflowImpl {
 	): Promise<WorkflowResponse> {
 		const sessionState = this.sessions.get(sessionId);
 		if (!sessionState) {
-			throw new Error(`Session ${sessionId} not found`);
+			throw new SessionError(`Session ${sessionId} not found`, { sessionId });
 		}
 
 		const phase = sessionState.phases[phaseId];
 		if (!phase) {
-			throw new Error(`Phase ${phaseId} not found in session`);
+			throw new PhaseError(`Phase ${phaseId} not found in session`, {
+				sessionId,
+				phaseId,
+			});
 		}
 
 		// Validate phase completion
@@ -368,7 +383,7 @@ class DesignPhaseWorkflowImpl {
 	private async resetSession(sessionId: string): Promise<WorkflowResponse> {
 		const sessionState = this.sessions.get(sessionId);
 		if (!sessionState) {
-			throw new Error(`Session ${sessionId} not found`);
+			throw new SessionError(`Session ${sessionId} not found`, { sessionId });
 		}
 
 		// Reset all phases to initial state
@@ -406,7 +421,7 @@ class DesignPhaseWorkflowImpl {
 	private async getSessionStatus(sessionId: string): Promise<WorkflowResponse> {
 		const sessionState = this.sessions.get(sessionId);
 		if (!sessionState) {
-			throw new Error(`Session ${sessionId} not found`);
+			throw new SessionError(`Session ${sessionId} not found`, { sessionId });
 		}
 
 		const completedPhases = Object.values(sessionState.phases).filter(
