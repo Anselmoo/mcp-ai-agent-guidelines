@@ -1,5 +1,6 @@
 // Design Assistant - Main orchestrator for the deterministic design framework
 import { z } from "zod";
+import { logger } from "../shared/logger.js";
 import { type ADRGenerationResult, adrGenerator } from "./adr-generator.js";
 import { confirmationModule } from "./confirmation-module.js";
 import { constraintConsistencyEnforcer } from "./constraint-consistency-enforcer.js";
@@ -389,7 +390,10 @@ class DesignAssistantImpl {
 				});
 			} catch (error) {
 				// Log error but don't fail the session start
-				console.warn("Failed to generate methodology ADR:", error);
+				logger.warn("Failed to generate methodology ADR", {
+					error: error instanceof Error ? error.message : String(error),
+					sessionId: config.sessionId,
+				});
 			}
 		}
 

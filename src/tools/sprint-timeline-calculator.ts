@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { logger } from "./shared/logger.js";
 import { buildReferencesSection } from "./shared/prompt-utils.js";
 
 const SprintTimelineSchema = z.object({
@@ -272,9 +273,11 @@ function topologicalSort(tasks: TimelineTask[]): TimelineTask[] {
 	// Check for circular dependencies
 	if (sorted.length !== tasks.length) {
 		// Circular dependency detected, return original order with warning
-		console.warn(
-			"Warning: Circular dependencies detected in tasks. Using original order.",
-		);
+		logger.warn("Circular dependencies detected in tasks", {
+			totalTasks: tasks.length,
+			sortedTasks: sorted.length,
+			taskNames: tasks.map((t) => t.name),
+		});
 		return tasks;
 	}
 

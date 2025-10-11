@@ -1,6 +1,7 @@
 // Cross-Session Constraint Consistency Enforcer
 // Validates constraint usage and documentation across design sessions for alignment with Space 7 Instructions and templates
 import { z } from "zod";
+import { logger } from "../shared/logger.js";
 import { adrGenerator } from "./adr-generator.js";
 import {
 	type ConstraintValidationResult,
@@ -497,9 +498,11 @@ class ConstraintConsistencyEnforcerImpl {
 				artifacts.push(adrResult.artifact);
 			} catch (error) {
 				// Continue with other artifacts if ADR generation fails
-				console.warn(
-					`Failed to generate enforcement ADR: ${error instanceof Error ? error.message : "Unknown error"}`,
-				);
+				logger.warn("Failed to generate enforcement ADR", {
+					error: error instanceof Error ? error.message : "Unknown error",
+					sessionId: sessionState.config.sessionId,
+					phase: sessionState.currentPhase,
+				});
 			}
 		}
 
