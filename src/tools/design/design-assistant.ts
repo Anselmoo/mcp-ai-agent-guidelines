@@ -1,12 +1,6 @@
 // Design Assistant - Main orchestrator for the deterministic design framework
 import { z } from "zod";
-import {
-	ConfigurationError,
-	ErrorReporter,
-	GenerationError,
-	PhaseError,
-	SessionError,
-} from "../shared/errors.js";
+import { ConfigurationError, ErrorReporter } from "../shared/errors.js";
 import { logger } from "../shared/logger.js";
 import { type ADRGenerationResult, adrGenerator } from "./adr-generator.js";
 import { confirmationModule } from "./confirmation-module.js";
