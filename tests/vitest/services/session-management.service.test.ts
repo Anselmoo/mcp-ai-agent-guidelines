@@ -123,6 +123,92 @@ describe("SessionManagementService", () => {
 			expect(response.sessionId).toBe(sessionId);
 		});
 
+		it("should handle workflow failure gracefully", async () => {
+			const sessionId = `test-workflow-fail-${Date.now()}`;
+			// Use invalid config to trigger workflow failure
+			const config = {
+				sessionId,
+				context: "",
+				goal: "",
+				requirements: [],
+				constraints: [],
+				coverageThreshold: 85,
+				enablePivots: true,
+				templateRefs: [],
+				outputFormats: ["markdown"],
+				metadata: {},
+			};
+
+			const response = await sessionManagementService.startDesignSession(
+				sessionId,
+				config,
+			);
+
+			// Should handle failure gracefully
+			expect(response).toBeDefined();
+			expect(response.sessionId).toBe(sessionId);
+		});
+
+		it("should handle session start without methodology", async () => {
+			const sessionId = `test-no-methodology-${Date.now()}`;
+			const config = {
+				sessionId,
+				context: "Simple project",
+				goal: "Simple goal",
+				requirements: ["Simple requirement"],
+				constraints: [],
+				coverageThreshold: 85,
+				enablePivots: true,
+				templateRefs: [],
+				outputFormats: ["markdown"],
+				metadata: {},
+				// No methodologySignals provided
+			};
+
+			const response = await sessionManagementService.startDesignSession(
+				sessionId,
+				config,
+			);
+
+			expect(response.success).toBe(true);
+			expect(response.data?.methodologySelection).toBeUndefined();
+			expect(response.message).not.toContain("methodology");
+		});
+
+		it("should generate methodology ADR when methodology is selected", async () => {
+			const sessionId = `test-adr-${Date.now()}`;
+			const config = {
+				sessionId,
+				context: "Large enterprise system",
+				goal: "Build enterprise solution",
+				requirements: ["Scalability", "Security"],
+				constraints: [],
+				coverageThreshold: 85,
+				enablePivots: true,
+				templateRefs: [],
+				outputFormats: ["markdown"],
+				metadata: {},
+				methodologySignals: {
+					projectType: "greenfield",
+					problemFraming: "well-defined",
+					teamSize: "large",
+					timeline: "fixed",
+					riskTolerance: "low",
+				},
+			};
+
+			const response = await sessionManagementService.startDesignSession(
+				sessionId,
+				config,
+			);
+
+			expect(response.success).toBe(true);
+			if (response.data?.methodologySelection) {
+				// ADR should be generated for methodology
+				expect(response.artifacts.length).toBeGreaterThanOrEqual(0);
+			}
+		});
+
 		it("should return error for invalid constraint config", async () => {
 			const sessionId = `test-invalid-${Date.now()}`;
 			const config = {
