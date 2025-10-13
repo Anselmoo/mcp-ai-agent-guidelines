@@ -1,7 +1,7 @@
 // Session Management Service Tests
 import { beforeEach, describe, expect, it } from "vitest";
-import { designPhaseWorkflow } from "../../../dist/tools/design/design-phase-workflow.js";
-import { sessionManagementService } from "../../../dist/tools/design/services/session-management.service.js";
+import { designPhaseWorkflow } from "../../../src/tools/design/design-phase-workflow.js";
+import { sessionManagementService } from "../../../src/tools/design/services/session-management.service.js";
 
 describe("SessionManagementService", () => {
 	beforeEach(async () => {
@@ -47,6 +47,71 @@ describe("SessionManagementService", () => {
 			expect(response.message).toContain("started successfully");
 			expect(response.recommendations).toBeInstanceOf(Array);
 			expect(response.artifacts).toBeInstanceOf(Array);
+		});
+
+		it("should handle constraint configuration errors gracefully", async () => {
+			const sessionId = `test-session-constraint-error-${Date.now()}`;
+			const config = {
+				sessionId,
+				context: "Test context",
+				goal: "Test goal",
+				requirements: ["Test requirement"],
+				constraints: [],
+				coverageThreshold: 85,
+				enablePivots: true,
+				templateRefs: [],
+				outputFormats: ["markdown" as const],
+				metadata: {},
+			};
+
+			// Test with invalid constraint config
+			const invalidConstraintConfig = {
+				invalid: "config",
+				structure: true,
+			};
+
+			const response = await sessionManagementService.startDesignSession(
+				sessionId,
+				config,
+				invalidConstraintConfig,
+			);
+
+			// Should either succeed or return appropriate error
+			expect(response).toBeDefined();
+			expect(response.sessionId).toBe(sessionId);
+		});
+
+		it("should handle methodology signals", async () => {
+			const sessionId = `test-session-methodology-${Date.now()}`;
+			const config = {
+				sessionId,
+				context: "Building a microservices architecture",
+				goal: "Implement scalable services",
+				requirements: ["API gateway", "Service mesh", "Load balancing"],
+				constraints: [],
+				coverageThreshold: 85,
+				enablePivots: true,
+				templateRefs: [],
+				outputFormats: ["markdown" as const],
+				metadata: {},
+				methodologySignals: {
+					projectType: "microservices",
+					teamSize: "medium",
+					timeline: "6-months",
+					problemFraming: "distributed-system",
+				},
+			};
+
+			const response = await sessionManagementService.startDesignSession(
+				sessionId,
+				config,
+			);
+
+			expect(response.success).toBe(true);
+			expect(response.sessionId).toBe(sessionId);
+			if (response.success && config.metadata) {
+				expect(config.metadata.selectedMethodology).toBeDefined();
+			}
 		});
 
 		it("should start session with methodology selection", async () => {

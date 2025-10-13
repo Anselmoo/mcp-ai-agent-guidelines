@@ -1,7 +1,7 @@
 // Consistency Service Tests
 import { describe, expect, it } from "vitest";
-import { consistencyService } from "../../../dist/tools/design/services/consistency.service.js";
-import { sessionManagementService } from "../../../dist/tools/design/services/session-management.service.js";
+import { consistencyService } from "../../../src/tools/design/services/consistency.service.js";
+import { sessionManagementService } from "../../../src/tools/design/services/session-management.service.js";
 
 describe("ConsistencyService", () => {
 	describe("enforceCoverage", () => {

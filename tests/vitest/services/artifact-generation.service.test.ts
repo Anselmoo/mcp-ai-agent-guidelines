@@ -1,7 +1,7 @@
 // Artifact Generation Service Tests
 import { describe, expect, it } from "vitest";
-import { artifactGenerationService } from "../../../dist/tools/design/services/artifact-generation.service.js";
-import { sessionManagementService } from "../../../dist/tools/design/services/session-management.service.js";
+import { artifactGenerationService } from "../../../src/tools/design/services/artifact-generation.service.js";
+import { sessionManagementService } from "../../../src/tools/design/services/session-management.service.js";
 
 describe("ArtifactGenerationService", () => {
 	describe("generateArtifacts", () => {

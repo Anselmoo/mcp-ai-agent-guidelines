@@ -1,7 +1,7 @@
 // Additional Operations Service Tests
 import { describe, expect, it } from "vitest";
-import { additionalOperationsService } from "../../../dist/tools/design/services/additional-operations.service.js";
-import { sessionManagementService } from "../../../dist/tools/design/services/session-management.service.js";
+import { additionalOperationsService } from "../../../src/tools/design/services/additional-operations.service.js";
+import { sessionManagementService } from "../../../src/tools/design/services/session-management.service.js";
 
 describe("AdditionalOperationsService", () => {
 	describe("evaluatePivot", () => {

@@ -1,7 +1,7 @@
 // Phase Management Service Tests
 import { describe, expect, it } from "vitest";
-import { phaseManagementService } from "../../../dist/tools/design/services/phase-management.service.js";
-import { sessionManagementService } from "../../../dist/tools/design/services/session-management.service.js";
+import { phaseManagementService } from "../../../src/tools/design/services/phase-management.service.js";
+import { sessionManagementService } from "../../../src/tools/design/services/session-management.service.js";
 
 describe("PhaseManagementService", () => {
 	describe("advancePhase", () => {

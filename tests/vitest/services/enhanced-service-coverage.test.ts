@@ -1,10 +1,10 @@
 // Enhanced Service Coverage Tests - Targeting Uncovered Code Paths
 import { describe, expect, it } from "vitest";
-import { additionalOperationsService } from "../../../dist/tools/design/services/additional-operations.service.js";
-import { artifactGenerationService } from "../../../dist/tools/design/services/artifact-generation.service.js";
-import { consistencyService } from "../../../dist/tools/design/services/consistency.service.js";
-import { phaseManagementService } from "../../../dist/tools/design/services/phase-management.service.js";
-import { sessionManagementService } from "../../../dist/tools/design/services/session-management.service.js";
+import { additionalOperationsService } from "../../../src/tools/design/services/additional-operations.service.js";
+import { artifactGenerationService } from "../../../src/tools/design/services/artifact-generation.service.js";
+import { consistencyService } from "../../../src/tools/design/services/consistency.service.js";
+import { phaseManagementService } from "../../../src/tools/design/services/phase-management.service.js";
+import { sessionManagementService } from "../../../src/tools/design/services/session-management.service.js";
 
 describe("Enhanced Service Coverage - Edge Cases and Error Paths", () => {
 	describe("SessionManagementService - Enhanced Coverage", () => {
