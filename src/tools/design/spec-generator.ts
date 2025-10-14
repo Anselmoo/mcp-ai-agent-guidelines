@@ -7,7 +7,7 @@ import type {
 } from "./types/index.js";
 
 const _SpecRequestSchema = z.object({
-	sessionState: z.any(), // DesignSessionState
+	sessionState: z.custom<DesignSessionState>(),
 	title: z.string(),
 	type: z
 		.enum(["technical", "functional", "api", "architecture", "implementation"])
@@ -1085,7 +1085,7 @@ interface SessionDTO {
   id: string;
   userId: string;
   status: 'active' | 'completed' | 'paused';
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   createdAt: string;
   updatedAt: string;
 }
@@ -1094,7 +1094,7 @@ interface ErrorResponseDTO {
   error: {
     code: string;
     message: string;
-    details?: any;
+    details?: unknown;
     timestamp: string;
   };
 }
