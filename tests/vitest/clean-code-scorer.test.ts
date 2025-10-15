@@ -384,4 +384,218 @@ console.log('debug');
 			expect(text).not.toMatch(/Perfect/);
 		});
 	});
+
+	describe("Additional Coverage Tests", () => {
+		it("should detect SQL injection vulnerabilities", async () => {
+			const code = `
+const query = "SELECT * FROM users WHERE id = " + userId;
+db.execute(query);
+			`;
+
+			const result = await cleanCodeScorer({
+				codeContent: code,
+				language: "javascript",
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+
+			expect(text).toMatch(/SQL injection/i);
+		});
+
+		it("should detect XSS vulnerabilities", async () => {
+			const code = `
+element.innerHTML = userInput;
+div.dangerouslySetInnerHTML = { __html: content };
+			`;
+
+			const result = await cleanCodeScorer({
+				codeContent: code,
+				language: "javascript",
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+
+			expect(text).toMatch(/XSS/i);
+		});
+
+		it("should detect eval usage", async () => {
+			const code = `
+eval('some code');
+			`;
+
+			const result = await cleanCodeScorer({
+				codeContent: code,
+				language: "javascript",
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+
+			expect(text).toMatch(/eval/i);
+		});
+
+		it("should handle Python code", async () => {
+			const code = `
+def hello():
+    print("hello")
+# old code
+			`;
+
+			const result = await cleanCodeScorer({
+				codeContent: code,
+				language: "python",
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+
+			expect(text).toMatch(/\d+\/100/);
+		});
+
+		it("should include inputFile in metadata when provided", async () => {
+			const result = await cleanCodeScorer({
+				codeContent: "const x = 1;",
+				language: "javascript",
+				includeReferences: false,
+				includeMetadata: true,
+				inputFile: "/path/to/file.js",
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+
+			expect(text).toMatch(/Input file: \/path\/to\/file\.js/);
+		});
+
+		it("should detect JSDoc comments", async () => {
+			const code = `
+/**
+ * This is a JSDoc comment
+ * @param x The parameter
+ */
+function test(x) {
+	return x;
+}
+			`;
+
+			const result = await cleanCodeScorer({
+				codeContent: code,
+				language: "javascript",
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+
+			// Should get bonus for documentation
+			expect(text).toMatch(/Documentation/);
+		});
+
+		it("should give appropriate score based on quality", async () => {
+			const code = `
+console.log('debug');
+var x = 1;
+			`;
+
+			const result = await cleanCodeScorer({
+				codeContent: code,
+				language: "javascript",
+				coverageMetrics: {
+					statements: 60,
+					branches: 60,
+					functions: 60,
+					lines: 60,
+				},
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+
+			// With 60% coverage and minor issues, should get a decent score
+			expect(text).toMatch(/\d+\/100/);
+			expect(text).toMatch(/Very Good|Good|Fair/);
+		});
+
+		it("should provide specific security recommendations", async () => {
+			const code = `
+const secret = 'my-secret-key';
+eval('code');
+			`;
+
+			const result = await cleanCodeScorer({
+				codeContent: code,
+				language: "javascript",
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+
+			expect(text).toMatch(/security/i);
+			expect(text).toMatch(/Recommendations/);
+		});
+
+		it("should handle TypeScript code", async () => {
+			const code = `
+const value: string = "test";
+function typed(x: number): number {
+	return x * 2;
+}
+			`;
+
+			const result = await cleanCodeScorer({
+				codeContent: code,
+				language: "typescript",
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+
+			expect(text).toMatch(/\d+\/100/);
+		});
+
+		it("should handle framework parameter", async () => {
+			const result = await cleanCodeScorer({
+				codeContent: "const x = 1;",
+				language: "javascript",
+				framework: "react",
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+
+			expect(text).toMatch(/\d+\/100/);
+		});
+
+		it("should handle projectPath parameter", async () => {
+			const result = await cleanCodeScorer({
+				projectPath: "/home/user/project",
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+
+			expect(text).toMatch(/\d+\/100/);
+		});
+	});
 });
