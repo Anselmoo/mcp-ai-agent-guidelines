@@ -35,6 +35,7 @@
 		"hooks:install": "lefthook install",
 		"hooks:uninstall": "lefthook uninstall",
 		"hooks:run": "lefthook run",
+		"clean-code-dashboard": "node scripts/generate-clean-code-dashboard.js",
 		"prepare": "if [ -d .git ]; then lefthook install; else echo 'Skipping lefthook install (no Git repository)'; fi"
 	},
 	"keywords": [
