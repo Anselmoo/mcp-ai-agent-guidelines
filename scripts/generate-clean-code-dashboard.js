@@ -53,7 +53,7 @@ function getCoverageMetrics() {
 				lines: Number.parseFloat(summaryMatch[4]),
 			};
 		}
-	} catch (error) {
+	} catch (_error) {
 		log("⚠️  Failed to get coverage metrics, using defaults", "yellow");
 	}
 
