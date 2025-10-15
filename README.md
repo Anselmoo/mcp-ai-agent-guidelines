@@ -130,12 +130,14 @@ After adding the server, open your chat client (e.g., Cline in VS Code). The too
 
 - Run a tool directly by name:
 	- `hierarchical-prompt-builder` — Provide context, goal, and optional requirements.
+	- `clean-code-scorer` — Calculate comprehensive Clean Code score (0-100) with coverage metrics.
 	- `code-hygiene-analyzer` — Paste code or point to a file and set language.
 	- `mermaid-diagram-generator` — Describe the system and select a diagram type.
 - Ask in natural language and pick the suggested tool.
 
 Example prompts:
 - "Use hierarchical-prompt-builder to create a refactor plan for src/index.ts with outputFormat markdown."
+- "Use clean-code-scorer to analyze my project with current coverage metrics and get a quality score."
 - "Analyze this Python file with code-hygiene-analyzer; highlight security issues."
 - "Generate a Mermaid sequence diagram showing: User sends request to API, API queries Database, Database returns data, API responds to User."
 - "Create an ER diagram for: Customer has Orders, Order contains LineItems, Product referenced in LineItems."
@@ -146,6 +148,11 @@ Tip: Most clients can pass file content automatically when you select a file and
 GitHub Chat (VS Code): In the chat, type your request and pick a tool suggestion, or explicitly reference a tool by name (e.g., “Use mermaid-diagram-generator to draw a flowchart for our pipeline”).
 
 ## Features
+
+> **🏆 NEW: Clean Code 100/100 Initiative** — Comprehensive code quality scoring system with automated dashboard generation. Track and achieve perfect code quality across coverage, TypeScript, linting, and security. See [docs/CLEAN_CODE_INITIATIVE.md](./docs/CLEAN_CODE_INITIATIVE.md) for the complete guide.
+> - **Dashboard**: Run `npm run clean-code-dashboard` to generate score report
+> - **MCP Tool**: `clean-code-scorer` for on-demand quality analysis
+> - **Automated Gates**: Lefthook quality gates enforce standards on every commit
 
 > **🆕 NEW: Serena-Inspired Strategies** — We've integrated effective agent strategies from [@oraios/serena](https://github.com/oraios/serena) including semantic code analysis, project onboarding, and flexible mode switching. See [docs/SERENA_STRATEGIES.md](./docs/SERENA_STRATEGIES.md) for details.
 

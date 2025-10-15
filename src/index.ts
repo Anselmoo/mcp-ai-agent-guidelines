@@ -36,6 +36,7 @@ import {
 } from "./schemas/flow-tool-schemas.js";
 import { gapFrameworksAnalyzers } from "./tools/analysis/gap-frameworks-analyzers.js";
 import { strategyFrameworksBuilder } from "./tools/analysis/strategy-frameworks-builder.js";
+import { cleanCodeScorer } from "./tools/clean-code-scorer.js";
 import { codeHygieneAnalyzer } from "./tools/code-hygiene-analyzer.js";
 import {
 	type DesignAssistantRequest,
@@ -446,6 +447,67 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						"spacingContext",
 						"mobileLayout",
 					],
+				},
+			},
+			{
+				name: "clean-code-scorer",
+				description:
+					"Calculate comprehensive Clean Code score (0-100) based on multiple quality metrics including code hygiene, test coverage, TypeScript, linting, documentation, and security",
+				inputSchema: {
+					type: "object",
+					properties: {
+						projectPath: {
+							type: "string",
+							description: "Path to the project root directory",
+						},
+						codeContent: {
+							type: "string",
+							description: "Code content to analyze",
+						},
+						language: {
+							type: "string",
+							description: "Programming language",
+						},
+						framework: {
+							type: "string",
+							description: "Framework or technology stack",
+						},
+						coverageMetrics: {
+							type: "object",
+							description: "Test coverage metrics",
+							properties: {
+								statements: {
+									type: "number",
+									description: "Statement coverage percentage (0-100)",
+								},
+								branches: {
+									type: "number",
+									description: "Branch coverage percentage (0-100)",
+								},
+								functions: {
+									type: "number",
+									description: "Function coverage percentage (0-100)",
+								},
+								lines: {
+									type: "number",
+									description: "Line coverage percentage (0-100)",
+								},
+							},
+						},
+						includeReferences: {
+							type: "boolean",
+							description: "Include external best-practice links",
+						},
+						includeMetadata: {
+							type: "boolean",
+							description: "Include metadata in output",
+						},
+						inputFile: {
+							type: "string",
+							description: "Input file path for reference",
+						},
+					},
+					required: [],
 				},
 			},
 			{
@@ -1352,6 +1414,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 				return domainNeutralPromptBuilder(args);
 			case "security-hardening-prompt-builder":
 				return securityHardeningPromptBuilder(args);
+			case "clean-code-scorer":
+				return cleanCodeScorer(args);
 			case "code-hygiene-analyzer":
 				return codeHygieneAnalyzer(args);
 			case "iterative-coverage-enhancer":
