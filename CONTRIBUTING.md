@@ -4,7 +4,7 @@ Thanks for your interest!
 
 ## 🤖 GitHub Copilot & AI Assistants
 
-For comprehensive development guidelines when using GitHub Copilot or other AI coding assistants, see **[copilot-instructions.md](./copilot-instructions.md)**. This document contains detailed instructions for maintaining code quality and following project standards.
+For comprehensive development guidelines when using GitHub Copilot or other AI coding assistants, see **[.github/copilot-instructions.md](./.github/copilot-instructions.md)**. This document contains detailed instructions for maintaining code quality and following project standards.
 
 ## Quick Start
 
