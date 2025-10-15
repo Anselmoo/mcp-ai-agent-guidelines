@@ -681,6 +681,13 @@ export const structuredResources: StructuredResource[] = [
 						url: "https://www.nitorinfotech.com/blog/ai-in-software-project-delivery-smarter-planning-and-execution/",
 						source: "Nitor",
 					},
+					{
+						title:
+							"Optimizing Sprint Planning with Julia: A Linear Programming Approach",
+						url: "https://medium.com/@karim.ouldaklouche/optimizing-sprint-planning-with-julia-a-linear-programming-approach-with-gurobi-03f28c0cf5bf",
+						source: "Medium",
+						note: "Mathematical optimization approach to sprint planning",
+					},
 				],
 			},
 			{ type: "heading", level: 2, text: "Comprehensive Checklists" },
@@ -1085,6 +1092,12 @@ export const structuredResources: StructuredResource[] = [
 						url: "https://www.promptopti.com/best-3-prompting-hierarchy-tiers-for-ai-interaction/",
 						source: "PromptOpti",
 					},
+					{
+						title: "Prompting Hierarchy - Educational Framework",
+						url: "https://learnforlifeot.com.au/resources/f/prompting-hierarchy",
+						source: "Learn For Life OT",
+						note: "Structured prompting techniques for education",
+					},
 				],
 			},
 			{ type: "heading", level: 2, text: "Example Workflow" },
@@ -1323,6 +1336,12 @@ const chain = await promptChainingBuilder({
 						title: "Serena - Coding Agent Toolkit",
 						url: "https://github.com/oraios/serena",
 						source: "GitHub",
+					},
+					{
+						title: "Context7 - Documentation Context for AI",
+						url: "https://github.com/upstash/context7",
+						source: "GitHub",
+						note: "Dynamic documentation retrieval and context-aware resource provision",
 					},
 					{
 						title: "Flow & Serena Integration Guide",
