@@ -1096,7 +1096,7 @@ export const structuredResources: StructuredResource[] = [
 						title: "Prompting Hierarchy - Educational Framework",
 						url: "https://learnforlifeot.com.au/resources/f/prompting-hierarchy",
 						source: "Learn For Life OT",
-						note: "Structured prompting techniques for education",
+						note: "Visual guide to prompting strategies for learners and practitioners",
 					},
 				],
 			},

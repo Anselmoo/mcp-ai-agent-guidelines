@@ -200,7 +200,7 @@ This project evolves rapidly alongside the AI ecosystem. We commit to:
 - Maintaining accuracy in our attribution of ideas and implementations
 - Contributing back to the open-source community when possible
 
-**Last Updated:** 2025-10-15
+**Last Updated:** October 2025
 
 ---
 
