@@ -1,7 +1,7 @@
 ## 🧹 Code Hygiene Analysis Report
 
 ### Metadata
-- Updated: 2025-10-16
+- Updated: 2025-10-17
 - Source tool: mcp_ai-agent-guid_code-hygiene-analyzer
 - Input file: /home/runner/work/mcp-ai-agent-guidelines/mcp-ai-agent-guidelines/demos/demo-code-analysis.py
 
@@ -10,31 +10,35 @@
 |---|---|
 | Language | python |
 | Framework | none |
-| Issues Found | 2 |
-| Recommendations | 2 |
+| Issues Found | 3 |
+| Recommendations | 3 |
 
 ### ❗ Issues Detected
-1. **Technical Debt**: Found TODO or FIXME comments indicating incomplete work
-2. **Dead Code**: Found 28 lines of commented code - consider removing
+1. **Code Complexity**: Deep nesting detected (8 levels) - consider refactoring
+2. **Technical Debt**: Found TODO or FIXME comments indicating incomplete work
+3. **Dead Code**: Found 28 lines of commented code - consider removing
 
 ### 🗂️ Issues Table
 | Type | Description |
 |---|---|
+| Code Complexity | Deep nesting detected (8 levels) - consider refactoring |
 | Technical Debt | Found TODO or FIXME comments indicating incomplete work |
 | Dead Code | Found 28 lines of commented code - consider removing |
 
 
 ### ✅ Recommendations
-1. Address pending TODO and FIXME items before production
-2. Remove commented out code or move to version control history
+1. Reduce nesting depth by extracting functions or using early returns
+2. Address pending TODO and FIXME items before production
+3. Remove commented out code or move to version control history
 
 ### 🧮 Hygiene Score
-**90/100** - Excellent
+**78/100** - Good
 
 ### ▶️ Next Steps
-1. Address the identified issues in order of priority (critical > major > minor)
-2. Set up automated code quality checks (ESLint, Prettier, Biome, etc.)
-3. Consider implementing pre-commit hooks
+1. Fix 1 major issue(s) before merging
+2. Address the identified issues in order of priority (critical > major > minor)
+3. Set up automated code quality checks (ESLint, Prettier, Biome, etc.)
+4. Consider implementing pre-commit hooks
 
 ## References
 - Refactoring legacy code best practices: https://graphite.dev/guides/refactoring-legacy-code-best-practices-techniques

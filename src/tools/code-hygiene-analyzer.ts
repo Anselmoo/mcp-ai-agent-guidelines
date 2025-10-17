@@ -138,7 +138,7 @@ function analyzeCodeHygiene(input: CodeHygieneInput) {
 		);
 	}
 
-	// Check for magic numbers
+	// Check for magic numbers (simple heuristic - may have false positives for HTTP codes, ports, etc.)
 	const magicNumberPattern =
 		/(?:^|[^\w.])([2-9]\d{2,}|[1-9]\d{4,})(?:[^\w.]|$)/g;
 	const magicNumbers = code.match(magicNumberPattern);
@@ -153,10 +153,11 @@ function analyzeCodeHygiene(input: CodeHygieneInput) {
 		);
 	}
 
-	// Check for deep nesting
+	// Check for deep nesting (heuristic based on indentation - may vary with tab/space preferences)
 	let maxIndentation = 0;
 	for (const line of lines) {
 		const leadingSpaces = line.match(/^(\s*)/)?.[1].length || 0;
+		// Estimate indent level (assuming 2-4 space indentation is common)
 		const indentLevel = Math.floor(leadingSpaces / 2);
 		if (indentLevel > maxIndentation) {
 			maxIndentation = indentLevel;
@@ -361,7 +362,7 @@ function analyzeCodeHygiene(input: CodeHygieneInput) {
 
 		// Penalize very short code that might not be representative
 		if (codeOnlyLines < 5 && trimmedCode.length < 100) {
-			score = Math.max(70, score - 10); // Cap simple code at 80 max
+			score = Math.max(70, score - 10); // Reduce score for minimal code samples
 		}
 
 		// Penalize code with low comment ratio (if substantial)
