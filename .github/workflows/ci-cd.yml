@@ -288,7 +288,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install Cosign for image signing
-        uses: sigstore/cosign-installer@v3.10.0
+        uses: sigstore/cosign-installer@v3.10.1
 
       - name: Build and push Docker image
         id: build-and-push
