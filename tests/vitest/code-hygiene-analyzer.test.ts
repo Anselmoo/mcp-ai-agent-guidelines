@@ -54,4 +54,119 @@ describe("code-hygiene-analyzer", () => {
 		expect(text).toMatch(/Input file: clean.ts/);
 		expect(text).toMatch(/References|Refactoring legacy code/);
 	});
+
+	it("penalizes empty code", async () => {
+		const empty = "";
+		const res = await codeHygieneAnalyzer({
+			codeContent: empty,
+			language: "JavaScript",
+			includeReferences: false,
+			includeMetadata: false,
+		});
+		const text = res.content[0].type === "text" ? res.content[0].text : "";
+		expect(text).toMatch(/Empty Code/i);
+		expect(text).toMatch(/Issues Found\s*\|\s*1/);
+		// Should score less than 100
+		const scoreMatch = text.match(/\*\*(\d+)\/100\*\*/);
+		expect(scoreMatch).toBeTruthy();
+		if (scoreMatch) {
+			const score = parseInt(scoreMatch[1], 10);
+			expect(score).toBeLessThan(100);
+		}
+	});
+
+	it("penalizes very short code", async () => {
+		const short = "const x = 1;";
+		const res = await codeHygieneAnalyzer({
+			codeContent: short,
+			language: "JavaScript",
+			includeReferences: false,
+			includeMetadata: false,
+		});
+		const text = res.content[0].type === "text" ? res.content[0].text : "";
+		expect(text).toMatch(/Insufficient Code/i);
+		const scoreMatch = text.match(/\*\*(\d+)\/100\*\*/);
+		expect(scoreMatch).toBeTruthy();
+		if (scoreMatch) {
+			const score = parseInt(scoreMatch[1], 10);
+			expect(score).toBeLessThan(100);
+		}
+	});
+
+	it("penalizes code without documentation when substantial", async () => {
+		const withoutDocs = `
+function calculate() {
+  let result = 0;
+  for (let i = 0; i < 100; i++) {
+    result += i;
+  }
+  return result;
+}
+
+function process() {
+  const data = calculate();
+  return data * 2;
+}
+
+function transform() {
+  const value = process();
+  return value + 100;
+}
+
+export { calculate, process, transform };
+`;
+		const res = await codeHygieneAnalyzer({
+			codeContent: withoutDocs,
+			language: "JavaScript",
+			includeReferences: false,
+			includeMetadata: false,
+		});
+		const text = res.content[0].type === "text" ? res.content[0].text : "";
+		expect(text).toMatch(/Documentation/i);
+		const scoreMatch = text.match(/\*\*(\d+)\/100\*\*/);
+		expect(scoreMatch).toBeTruthy();
+		if (scoreMatch) {
+			const score = parseInt(scoreMatch[1], 10);
+			expect(score).toBeLessThan(100);
+		}
+	});
+
+	it("gives better score to documented code", async () => {
+		const withDocs = `
+/**
+ * Calculates the sum from 0 to 99
+ */
+function calculate() {
+  let result = 0;
+  for (let i = 0; i < 100; i++) {
+    result += i;
+  }
+  return result;
+}
+
+/**
+ * Processes the calculated value
+ */
+function process() {
+  const data = calculate();
+  return data * 2;
+}
+
+export { calculate, process };
+`;
+		const res = await codeHygieneAnalyzer({
+			codeContent: withDocs,
+			language: "JavaScript",
+			includeReferences: false,
+			includeMetadata: false,
+		});
+		const text = res.content[0].type === "text" ? res.content[0].text : "";
+		expect(text).toMatch(/Issues Found\s*\|\s*0/);
+		const scoreMatch = text.match(/\*\*(\d+)\/100\*\*/);
+		expect(scoreMatch).toBeTruthy();
+		if (scoreMatch) {
+			const score = parseInt(scoreMatch[1], 10);
+			expect(score).toBe(100);
+		}
+	});
 });

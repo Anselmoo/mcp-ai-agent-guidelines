@@ -90,6 +90,90 @@ function analyzeCodeHygiene(input: CodeHygieneInput) {
 	const code = input.codeContent;
 	const language = input.language.toLowerCase();
 
+	// Check for empty or minimal code
+	const trimmedCode = code.trim();
+	if (trimmedCode.length === 0) {
+		issues.push({
+			type: "Empty Code",
+			description: "No code provided for analysis",
+			severity: "critical",
+		});
+		recommendations.push("Provide code content for meaningful analysis");
+	} else if (trimmedCode.length < 20) {
+		issues.push({
+			type: "Insufficient Code",
+			description:
+				"Code too short for comprehensive analysis (less than 20 characters)",
+			severity: "minor",
+		});
+		recommendations.push("Provide more substantial code for better analysis");
+	}
+
+	// Check for code complexity metrics
+	const lines = code.split("\n");
+	const nonEmptyLines = lines.filter((line) => line.trim().length > 0).length;
+	const codeOnlyLines = lines.filter((line) => {
+		const trimmed = line.trim();
+		// Count lines that are not comments
+		return (
+			trimmed.length > 0 &&
+			!trimmed.startsWith("//") &&
+			!trimmed.startsWith("#") &&
+			!trimmed.startsWith("*") &&
+			!trimmed.startsWith("/*")
+		);
+	}).length;
+
+	// Check for lack of documentation
+	const hasDocComments =
+		/\/\*\*[\s\S]*?\*\/|\/\/\/|#\s*@|"""[\s\S]*?"""|'''[\s\S]*?'''/g.test(code);
+	if (codeOnlyLines > 15 && !hasDocComments) {
+		issues.push({
+			type: "Documentation",
+			description: "No documentation comments found in substantial codebase",
+			severity: "minor",
+		});
+		recommendations.push(
+			"Add documentation comments for functions and classes",
+		);
+	}
+
+	// Check for magic numbers (simple heuristic - may have false positives for HTTP codes, ports, etc.)
+	const magicNumberPattern =
+		/(?:^|[^\w.])([2-9]\d{2,}|[1-9]\d{4,})(?:[^\w.]|$)/g;
+	const magicNumbers = code.match(magicNumberPattern);
+	if (magicNumbers && magicNumbers.length > 2) {
+		issues.push({
+			type: "Code Quality",
+			description: `Found ${magicNumbers.length} potential magic numbers - consider using named constants`,
+			severity: "minor",
+		});
+		recommendations.push(
+			"Replace magic numbers with named constants for clarity",
+		);
+	}
+
+	// Check for deep nesting (heuristic based on indentation - may vary with tab/space preferences)
+	let maxIndentation = 0;
+	for (const line of lines) {
+		const leadingSpaces = line.match(/^(\s*)/)?.[1].length || 0;
+		// Estimate indent level (assuming 2-4 space indentation is common)
+		const indentLevel = Math.floor(leadingSpaces / 2);
+		if (indentLevel > maxIndentation) {
+			maxIndentation = indentLevel;
+		}
+	}
+	if (maxIndentation > 4) {
+		issues.push({
+			type: "Code Complexity",
+			description: `Deep nesting detected (${maxIndentation} levels) - consider refactoring`,
+			severity: "major",
+		});
+		recommendations.push(
+			"Reduce nesting depth by extracting functions or using early returns",
+		);
+	}
+
 	// Common code hygiene checks
 	if (code.includes("TODO") || code.includes("FIXME")) {
 		issues.push({
@@ -125,7 +209,6 @@ function analyzeCodeHygiene(input: CodeHygieneInput) {
 	}
 
 	// Check for long functions (simple heuristic)
-	const lines = code.split("\n");
 	let functionLines = 0;
 	let inFunction = false;
 
@@ -164,6 +247,43 @@ function analyzeCodeHygiene(input: CodeHygieneInput) {
 				severity: "minor",
 			});
 			recommendations.push("Replace var declarations with let or const");
+		}
+
+		// Check for potential callback hell
+		const nestedCallbacks = (code.match(/\)\s*{\s*[^}]*\([^)]*\)\s*{/g) || [])
+			.length;
+		if (nestedCallbacks > 2) {
+			issues.push({
+				type: "Code Complexity",
+				description: `Potential callback hell detected (${nestedCallbacks} nested callbacks)`,
+				severity: "major",
+			});
+			recommendations.push(
+				"Consider using async/await or Promise chains instead of nested callbacks",
+			);
+		}
+
+		// Check for missing type annotations in TypeScript
+		if (language === "typescript" && codeOnlyLines > 10) {
+			const functionDeclarations = (
+				code.match(/function\s+\w+\s*\([^)]*\)\s*{/g) || []
+			).length;
+			const typedFunctions = (
+				code.match(/function\s+\w+\s*\([^)]*\)\s*:\s*\w+/g) || []
+			).length;
+			if (
+				functionDeclarations > 0 &&
+				typedFunctions / functionDeclarations < 0.5
+			) {
+				issues.push({
+					type: "Type Safety",
+					description: "Many functions lack return type annotations",
+					severity: "minor",
+				});
+				recommendations.push(
+					"Add explicit return type annotations to functions",
+				);
+			}
 		}
 	}
 
@@ -229,6 +349,41 @@ function analyzeCodeHygiene(input: CodeHygieneInput) {
 		}
 	}
 	score = Math.max(0, score);
+
+	// Apply additional scoring adjustments for overall code quality
+	if (trimmedCode.length > 0 && codeOnlyLines > 0) {
+		// Reward code with good practices
+		let qualityBonus = 0;
+
+		// Check for good practices
+		if (hasDocComments && codeOnlyLines > 10) {
+			qualityBonus += 0; // Neutral - documentation is expected, not bonus
+		}
+
+		// Penalize very short code that might not be representative
+		if (codeOnlyLines < 5 && trimmedCode.length < 100) {
+			score = Math.max(70, score - 10); // Reduce score for minimal code samples
+		}
+
+		// Penalize code with low comment ratio (if substantial)
+		if (codeOnlyLines > 15) {
+			const commentLines = nonEmptyLines - codeOnlyLines;
+			const commentRatio = commentLines / codeOnlyLines;
+			if (commentRatio < 0.1) {
+				score -= 5;
+				if (!issues.some((i) => i.type === "Documentation")) {
+					issues.push({
+						type: "Documentation",
+						description: "Low comment-to-code ratio (< 10%)",
+						severity: "minor",
+					});
+					recommendations.push("Consider adding more explanatory comments");
+				}
+			}
+		}
+
+		score = Math.max(0, Math.min(100, score + qualityBonus));
+	}
 
 	let scoreDescription = "";
 	if (score >= 85) scoreDescription = "Excellent";
