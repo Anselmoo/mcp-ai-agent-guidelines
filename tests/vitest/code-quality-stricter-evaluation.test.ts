@@ -45,11 +45,11 @@ describe("Stricter Code Quality Evaluation", () => {
 			});
 			const text = res.content[0].type === "text" ? res.content[0].text : "";
 
-			// Multiple debug statements (major -12) + complex function (major -12)
-			// Score: 100 - 24 = 76 (Good)
+			// Documentation (minor -5) + debug statements (major -12) + complex function (major -12) + low comment ratio (-5)
+			// Score: 100 - 34 = 66 (Fair)
 			expect(text).toMatch(/Debug Code/);
 			expect(text).toMatch(/Code Complexity/);
-			expect(text).toMatch(/76\/100|Good/);
+			expect(text).toMatch(/66\/100|Fair/);
 		});
 
 		it("should detect commented out code as dead code", async () => {

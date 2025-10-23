@@ -4,10 +4,12 @@ import { logger } from "../../src/tools/shared/logger";
 describe("Logger Integration - Error Path Coverage", () => {
 	describe("Sprint Timeline Calculator error logging", () => {
 		it("should log circular dependency warnings", async () => {
-			const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation();
+			const consoleErrorSpy = vi
+				.spyOn(console, "error")
+				.mockImplementation(() => {});
 
 			const { sprintTimelineCalculator } = await import(
-				"../../dist/tools/sprint-timeline-calculator.js"
+				"../../src/tools/sprint-timeline-calculator"
 			);
 
 			// Create tasks with circular dependencies
@@ -48,10 +50,11 @@ describe("Logger Integration - Error Path Coverage", () => {
 		});
 
 		it("should handle tasks without circular dependencies", async () => {
-			const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation();
-
+			const consoleErrorSpy = vi
+				.spyOn(console, "error")
+				.mockImplementation(() => {});
 			const { sprintTimelineCalculator } = await import(
-				"../../dist/tools/sprint-timeline-calculator.js"
+				"../../src/tools/sprint-timeline-calculator"
 			);
 
 			// Create tasks without circular dependencies
@@ -79,10 +82,11 @@ describe("Logger Integration - Error Path Coverage", () => {
 
 	describe("Prompt Flow Builder error logging", () => {
 		it("should log unreachable nodes warnings", async () => {
-			const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation();
-
+			const consoleErrorSpy = vi
+				.spyOn(console, "error")
+				.mockImplementation(() => {});
 			const { promptFlowBuilder } = await import(
-				"../../dist/tools/prompt/prompt-flow-builder.js"
+				"../../src/tools/prompt/prompt-flow-builder"
 			);
 
 			// Create a flow with unreachable nodes
@@ -132,10 +136,12 @@ describe("Logger Integration - Error Path Coverage", () => {
 		});
 
 		it("should handle flows without unreachable nodes", async () => {
-			const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation();
+			const consoleErrorSpy = vi
+				.spyOn(console, "error")
+				.mockImplementation(() => {});
 
 			const { promptFlowBuilder } = await import(
-				"../../dist/tools/prompt/prompt-flow-builder.js"
+				"../../src/tools/prompt/prompt-flow-builder"
 			);
 
 			// Create a flow without unreachable nodes
@@ -180,11 +186,13 @@ describe("Logger Integration - Error Path Coverage", () => {
 		});
 
 		it("should produce structured JSON output", () => {
-			const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation();
+			const consoleErrorSpy = vi
+				.spyOn(console, "error")
+				.mockImplementation(() => {});
 
 			logger.warn("Test message", { key: "value" });
 
-			expect(consoleErrorSpy).toHaveBeenCalledOnce();
+			expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
 			const output = consoleErrorSpy.mock.calls[0][0];
 			const parsed = JSON.parse(output as string);
 

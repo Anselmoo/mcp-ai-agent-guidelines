@@ -135,6 +135,7 @@ class ConfirmationModuleImpl {
 				recommendations: ["Ensure phase is properly initialized"],
 				nextSteps: ["Initialize phase before validation"],
 				canProceed: false,
+				phase: actualPhaseId,
 			};
 		}
 
@@ -250,6 +251,7 @@ class ConfirmationModuleImpl {
 			recommendations,
 			nextSteps,
 			canProceed,
+			phase: actualPhaseId,
 		};
 
 		// Capture rationale if requested

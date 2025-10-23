@@ -1,5 +1,5 @@
 ### Metadata
-- Updated: 2025-10-16
+- Updated: 2025-10-23
 - Source tool: mcp_ai-agent-guid_gap-frameworks-analyzers
 - Suggested filename: gap-analysis-capability-performance-maturity-technology.md
 
