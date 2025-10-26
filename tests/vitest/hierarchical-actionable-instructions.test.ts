@@ -209,4 +209,36 @@ describe("hierarchical-prompt-builder actionable instructions", () => {
 		expect(text).not.toContain("# Examples");
 		expect(text).not.toContain("Think through this problem step-by-step");
 	});
+
+	it("should generate task-specific few-shot examples for documentation tasks", async () => {
+		const result = await hierarchicalPromptBuilder({
+			context: "API codebase",
+			goal: "Document API endpoints for the REST service",
+			techniques: ["few-shot"],
+			includeTechniqueHints: true,
+		});
+
+		const text = result.content[0].text;
+
+		// Should detect documentation task and generate relevant example
+		expect(text).toContain("# Examples");
+		expect(text).toContain("Documentation");
+		expect(text).toContain("API endpoints");
+	});
+
+	it("should handle prompt-chaining without requirements", async () => {
+		const result = await hierarchicalPromptBuilder({
+			context: "Web application",
+			goal: "Implement new feature",
+			// No requirements provided
+			techniques: ["prompt-chaining"],
+			includeTechniqueHints: true,
+		});
+
+		const text = result.content[0].text;
+
+		// Should include workflow section even without requirements
+		expect(text).toContain("# Step-by-Step Workflow");
+		expect(text).toContain("Execute the planned changes");
+	});
 });
