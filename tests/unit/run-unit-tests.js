@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 import assert from "node:assert";
-import { extractProjectContext as _extractProjectContext } from "../../src/tools/bridge/project-onboarding-bridge.js";
-import { guidelinesValidator } from "../../src/tools/guidelines-validator.js";
-import { modelCompatibilityChecker } from "../../src/tools/model-compatibility-checker.js";
-import { domainNeutralPromptBuilder } from "../../src/tools/prompt/domain-neutral-prompt-builder.js";
-import { hierarchicalPromptBuilder } from "../../src/tools/prompt/hierarchical-prompt-builder.js";
-import { securityHardeningPromptBuilder } from "../../src/tools/prompt/security-hardening-prompt-builder.js";
-import { sparkPromptBuilder } from "../../src/tools/prompt/spark-prompt-builder.js";
-import { buildDisclaimer as sharedBuildDisclaimer } from "../../src/tools/shared/prompt-sections.js";
+import { extractProjectContext as _extractProjectContext } from "../../dist/tools/bridge/project-onboarding-bridge.js";
+import { guidelinesValidator } from "../../dist/tools/guidelines-validator.js";
+import { modelCompatibilityChecker } from "../../dist/tools/model-compatibility-checker.js";
+import { domainNeutralPromptBuilder } from "../../dist/tools/prompt/domain-neutral-prompt-builder.js";
+import { hierarchicalPromptBuilder } from "../../dist/tools/prompt/hierarchical-prompt-builder.js";
+import { securityHardeningPromptBuilder } from "../../dist/tools/prompt/security-hardening-prompt-builder.js";
+import { sparkPromptBuilder } from "../../dist/tools/prompt/spark-prompt-builder.js";
+import { buildDisclaimer as sharedBuildDisclaimer } from "../../dist/tools/shared/prompt-sections.js";
 import { testMethodologySelector } from "./test-methodology-selector.js";
 
 // lightweight bridge smoke test for node-based unit runner
