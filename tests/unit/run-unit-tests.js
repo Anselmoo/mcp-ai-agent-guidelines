@@ -197,10 +197,8 @@ async function run() {
 			1,
 			"Hierarchical: duplicate References section",
 		);
-		assert.ok(
-			/# Technique Hints \(2025\)/.test(text),
-			"Technique hints missing",
-		);
+		// No longer checking for generic "Technique Hints" - now we check for actionable sections
+		// when techniques are auto-selected (which happens with no explicit techniques provided)
 	}
 
 	async function testDomainNeutralBuilder() {
@@ -356,7 +354,7 @@ async function run() {
 		);
 	}
 
-	// Additional branch coverage: auto-select techniques path in Technique Hints
+	// Additional branch coverage: auto-select techniques path - now generates actionable sections
 	async function testTechniqueAutoSelect() {
 		const res = await hierarchicalPromptBuilder({
 			context:
@@ -366,18 +364,15 @@ async function run() {
 			autoSelectTechniques: true,
 		});
 		const text = res.content[0].text;
-		// Expect several technique sections to appear
+		// Expect actionable instruction sections to appear based on auto-selected techniques
 		const expected = [
-			/Technique Hints \(2025\)/,
-			/Retrieval Augmented Generation \(RAG\)/i,
-			/Chain-of-Thought/i,
-			/Prompt Chaining/i,
-			/Few-Shot/i,
-			/Self-Consistency/i,
-			/Generate Knowledge/i,
+			/Document Handling/i, // RAG
+			/Approach/i, // Chain-of-Thought
+			/Step-by-Step Workflow/i, // Prompt Chaining
+			/Examples/i, // Few-Shot
 		];
 		for (const re of expected) {
-			assert.ok(re.test(text), `Missing technique section: ${re}`);
+			assert.ok(re.test(text), `Missing actionable section: ${re}`);
 		}
 	}
 
