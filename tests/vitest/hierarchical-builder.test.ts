@@ -24,6 +24,6 @@ describe("hierarchical-prompt-builder", () => {
 		expect(text).toMatch(/# Target Audience/);
 		expect(text).toMatch(/## Explanation/);
 		expect(text).toMatch(/## References/);
-		expect(text).toMatch(/# Pitfalls to Avoid/);
+		// No longer checking for "Pitfalls to Avoid" - removed in favor of actionable instructions
 	});
 });
