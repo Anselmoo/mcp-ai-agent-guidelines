@@ -1,3 +1,11 @@
+import { architectureDesignPromptBuilder } from "../tools/prompt/architecture-design-prompt-builder.js";
+import { codeAnalysisPromptBuilder } from "../tools/prompt/code-analysis-prompt-builder.js";
+import { debuggingAssistantPromptBuilder } from "../tools/prompt/debugging-assistant-prompt-builder.js";
+import { documentationGeneratorPromptBuilder } from "../tools/prompt/documentation-generator-prompt-builder.js";
+import { hierarchicalPromptBuilder } from "../tools/prompt/hierarchical-prompt-builder.js";
+import { securityHardeningPromptBuilder } from "../tools/prompt/security-hardening-prompt-builder.js";
+import { sparkPromptBuilder } from "../tools/prompt/spark-prompt-builder.js";
+
 const prompts = [
 	{
 		name: "code-analysis-prompt",
@@ -194,33 +202,171 @@ export async function getPrompt(name: string, args: PromptArgs) {
 		throw new Error(`Missing required arguments: ${missingArgs.join(", ")}`);
 	}
 
-	let content = "";
+	let result: { content: Array<{ type: string; text: string }> };
 
+	// Delegate to the appropriate tool builder
 	switch (name) {
 		case "code-analysis-prompt":
-			content = generateCodeAnalysisPrompt(args);
+			result = await codeAnalysisPromptBuilder({
+				codebase: args.codebase as string,
+				focusArea: args.focus_area as
+					| "security"
+					| "performance"
+					| "maintainability"
+					| "general"
+					| undefined,
+				language: args.language as string | undefined,
+				includeFrontmatter: false,
+				includeMetadata: false,
+				forcePromptMdStyle: false,
+			});
 			break;
 		case "hierarchical-task-prompt":
-			content = generateHierarchicalTaskPrompt(args);
+			result = await hierarchicalPromptBuilder({
+				context: "Task Breakdown",
+				goal: args.task_description as string,
+				audience: args.target_audience as string | undefined,
+				includeFrontmatter: false,
+				includeMetadata: false,
+				forcePromptMdStyle: false,
+			});
 			break;
 		case "architecture-design-prompt":
-			content = generateArchitectureDesignPrompt(args);
+			result = await architectureDesignPromptBuilder({
+				systemRequirements: args.system_requirements as string,
+				scale: args.scale as "small" | "medium" | "large" | undefined,
+				technologyStack: args.technology_stack as string | undefined,
+				includeFrontmatter: false,
+				includeMetadata: false,
+				forcePromptMdStyle: false,
+			});
 			break;
 		case "debugging-assistant-prompt":
-			content = generateDebuggingAssistantPrompt(args);
+			result = await debuggingAssistantPromptBuilder({
+				errorDescription: args.error_description as string,
+				context: args.context as string | undefined,
+				attemptedSolutions: args.attempted_solutions as string | undefined,
+				includeFrontmatter: false,
+				includeMetadata: false,
+				forcePromptMdStyle: false,
+			});
 			break;
 		case "documentation-generator-prompt":
-			content = generateDocumentationGeneratorPrompt(args);
+			result = await documentationGeneratorPromptBuilder({
+				contentType: args.content_type as string,
+				targetAudience: args.target_audience as string | undefined,
+				existingContent: args.existing_content as string | undefined,
+				includeFrontmatter: false,
+				includeMetadata: false,
+				forcePromptMdStyle: false,
+			});
 			break;
 		case "spark-ui-prompt":
-			content = generateSparkUiPrompt(args);
+			result = await sparkPromptBuilder({
+				title: args.title as string,
+				summary: args.summary as string,
+				complexityLevel: "medium",
+				designDirection: args.design_direction as string,
+				colorSchemeType: "dark",
+				colorPurpose: "readability",
+				primaryColor: "oklch(0.7 0.2 240)",
+				primaryColorPurpose: "brand identity",
+				accentColor: "oklch(0.75 0.25 180)",
+				accentColorPurpose: "highlights",
+				fontFamily: "system-ui",
+				fontIntention: "readability",
+				fontReasoning: "standard readable font",
+				animationPhilosophy: "subtle",
+				animationRestraint: "minimal",
+				animationPurpose: "feedback",
+				animationHierarchy: "secondary",
+				spacingRule: "8px base",
+				spacingContext: "consistent",
+				mobileLayout: "responsive",
+				includeFrontmatter: false,
+				includeMetadata: false,
+				forcePromptMdStyle: false,
+			});
 			break;
 		case "security-analysis-prompt":
-			content = generateSecurityAnalysisPrompt(args);
+			result = await securityHardeningPromptBuilder({
+				codeContext: args.codebase as string,
+				securityFocus:
+					(args.security_focus as
+						| "vulnerability-analysis"
+						| "security-hardening"
+						| "compliance-check"
+						| "threat-modeling"
+						| "penetration-testing"
+						| undefined) || "vulnerability-analysis",
+				language: args.language as string | undefined,
+				complianceStandards: Array.isArray(args.compliance_standards)
+					? (args.compliance_standards as Array<
+							| "OWASP-Top-10"
+							| "NIST-Cybersecurity-Framework"
+							| "ISO-27001"
+							| "SOC-2"
+							| "GDPR"
+							| "HIPAA"
+							| "PCI-DSS"
+						>)
+					: args.compliance_standards
+						? [
+								args.compliance_standards as
+									| "OWASP-Top-10"
+									| "NIST-Cybersecurity-Framework"
+									| "ISO-27001"
+									| "SOC-2"
+									| "GDPR"
+									| "HIPAA"
+									| "PCI-DSS",
+							]
+						: undefined,
+				riskTolerance: args.risk_tolerance as
+					| "low"
+					| "medium"
+					| "high"
+					| undefined,
+				includeFrontmatter: false,
+				includeMetadata: false,
+				forcePromptMdStyle: false,
+			});
 			break;
 		default:
 			throw new Error(`Unknown prompt: ${name}`);
 	}
+
+	// Extract the text content from the tool result and strip frontmatter/metadata
+	const text = result.content[0].text;
+
+	// Remove frontmatter, headers, and metadata sections for cleaner prompt output
+	let cleanText = text;
+
+	// Remove YAML frontmatter (everything between --- markers at the start)
+	cleanText = cleanText.replace(/^---[\s\S]*?---\s*/m, "");
+
+	// Remove markdown headers with emojis - use alternation instead of character class
+	cleanText = cleanText.replace(
+		/^##\s*(?:🔍|🏗️|🐛|📚|⚡|🔒|🧭)\s*[^\n]*\n+/gmu,
+		"",
+	);
+
+	// Remove metadata blocks (lines starting with >)
+	cleanText = cleanText.replace(/^>.*\n/gm, "");
+
+	// Remove empty lines at the start
+	cleanText = cleanText.replace(/^\s+/, "");
+
+	// Remove technique hints, model tips, pitfalls, references, and disclaimer sections
+	// These are added by the builders but not needed in the simple prompt format
+	cleanText = cleanText.split(
+		/\n+#\s+(Technique Hints|Model-Specific Tips|Pitfalls to Avoid|References|Disclaimer)/,
+	)[0];
+
+	// Also remove "## References" and "## Disclaimer" sections if they appear
+	cleanText = cleanText.split(/\n+##\s+(References|Disclaimer)/)[0];
+
+	cleanText = cleanText.trim();
 
 	return {
 		messages: [
@@ -228,570 +374,9 @@ export async function getPrompt(name: string, args: PromptArgs) {
 				role: "user",
 				content: {
 					type: "text",
-					text: content,
+					text: cleanText,
 				},
 			},
 		],
 	};
-}
-
-function generateCodeAnalysisPrompt(args: PromptArgs): string {
-	const {
-		codebase,
-		focus_area = "general",
-		language = "auto-detect",
-	} = args as {
-		codebase: string;
-		focus_area?: string;
-		language?: string;
-	};
-
-	return `# Code Analysis Request
-
-## Context
-You are an expert code reviewer analyzing ${language} code with a focus on ${focus_area} aspects.
-
-## Code to Analyze
-\`\`\`${language}
-${codebase}
-\`\`\`
-
-## Analysis Requirements
-1. **Code Quality Assessment**
-   - Readability and maintainability
-   - Code structure and organization
-   - Naming conventions and clarity
-
-2. **${focus_area === "security" ? "Security Analysis" : focus_area === "performance" ? "Performance Analysis" : "Maintainability Analysis"}**
-   ${
-			focus_area === "security"
-				? "- Identify potential security vulnerabilities\n   - Check for input validation issues\n   - Review authentication and authorization\n   - Analyze data exposure risks"
-				: focus_area === "performance"
-					? "- Identify performance bottlenecks\n   - Analyze algorithm complexity\n   - Review resource usage patterns\n   - Suggest optimization opportunities"
-					: "- Assess code maintainability\n   - Check for code duplication\n   - Review module coupling\n   - Analyze technical debt"
-		}
-
-3. **Best Practices Compliance**
-   - Language-specific best practices
-   - Design pattern usage
-   - Error handling implementation
-
-## Output Format
-- **Summary**: Brief overview of code quality
-- **Issues Found**: List of specific issues with severity levels
-- **Recommendations**: Actionable improvement suggestions
-- **Code Examples**: Improved code snippets where applicable
-
-## Scoring
-Provide an overall score from 1-10 for:
-- Code Quality
-- ${focus_area ? focus_area.charAt(0).toUpperCase() + focus_area.slice(1) : "General"}
-- Best Practices Adherence
-`;
-}
-
-function generateHierarchicalTaskPrompt(args: PromptArgs): string {
-	const {
-		task_description,
-		complexity_level = "medium",
-		target_audience = "intermediate",
-	} = args;
-
-	return `# Hierarchical Task Breakdown
-
-## Context
-Breaking down a ${complexity_level} complexity task for ${target_audience} level audience.
-
-## Primary Task
-${task_description}
-
-## Requirements
-1. **Hierarchical Structure**
-   - Main objective clearly defined
-   - Sub-tasks logically organized
-   - Dependencies identified
-
-2. **Task Granularity**
-   ${
-			complexity_level === "simple"
-				? "- Keep breakdown to 2-3 levels maximum\n   - Focus on concrete, actionable steps\n   - Minimize complexity"
-				: complexity_level === "complex"
-					? "- Use 4-5 hierarchical levels\n   - Include detailed sub-tasks\n   - Consider multiple approaches"
-					: "- Use 3-4 hierarchical levels\n   - Balance detail with clarity\n   - Include alternative paths"
-		}
-
-3. **Audience Considerations**
-   ${
-			target_audience === "beginner"
-				? "- Provide detailed explanations\n   - Include background information\n   - Define technical terms"
-				: target_audience === "expert"
-					? "- Focus on high-level strategy\n   - Assume domain knowledge\n   - Highlight critical decision points"
-					: "- Balance explanation with efficiency\n   - Provide context where needed\n   - Include relevant examples"
-		}
-
-## Output Structure
-1. **Level 1: Primary Objective**
-   - Clear goal statement
-   - Success criteria
-   - Overall timeline estimate
-
-2. **Level 2: Major Components**
-   - Key deliverables
-   - Resource requirements
-   - Risk assessment
-
-3. **Level 3: Detailed Tasks**
-   - Specific actions
-   - Dependencies
-   - Time estimates
-
-4. **Level 4: Implementation Steps** (if needed)
-   - Granular activities
-   - Technical details
-   - Quality checkpoints
-
-## Additional Elements
-- **Dependencies Map**: Visual representation of task relationships
-- **Timeline**: Suggested scheduling with milestones
-- **Resources**: Required tools, knowledge, or personnel
-- **Risks**: Potential challenges and mitigation strategies
-`;
-}
-
-function generateArchitectureDesignPrompt(args: PromptArgs): string {
-	const {
-		system_requirements,
-		scale = "medium",
-		technology_stack = "flexible",
-	} = args;
-
-	return `# System Architecture Design
-
-## Context
-Designing a ${scale}-scale system architecture with ${technology_stack} technology constraints.
-
-## System Requirements
-${system_requirements}
-
-## Design Constraints
-- **Scale**: ${scale} (affects infrastructure and technology choices)
-- **Technology Stack**: ${technology_stack}
-- **Architecture Type**: ${
-		scale === "small"
-			? "Monolithic or Simple Microservices"
-			: scale === "large"
-				? "Distributed Microservices"
-				: "Modular Monolith or Microservices"
-	}
-
-## Architecture Analysis Requirements
-
-1. **High-Level Architecture**
-   - System components and their responsibilities
-   - Data flow between components
-   - External dependencies and integrations
-
-2. **Technology Recommendations**
-   ${
-			technology_stack === "flexible"
-				? "- Suggest appropriate technologies for each component\n   - Consider modern best practices\n   - Balance proven solutions with innovation"
-				: `- Work within ${technology_stack} constraints\n   - Optimize for chosen technology stack\n   - Identify any limitations or workarounds needed`
-		}
-
-3. **Scalability Considerations**
-   ${
-			scale === "small"
-				? "- Simple deployment and maintenance\n   - Cost-effective solutions\n   - Easy to understand and modify"
-				: scale === "large"
-					? "- Horizontal scaling capabilities\n   - Load balancing strategies\n   - Performance optimization\n   - Fault tolerance and redundancy"
-					: "- Moderate scaling requirements\n   - Growth potential\n   - Balanced complexity"
-		}
-
-## Output Format
-
-### 1. Architecture Overview
-- System context diagram
-- High-level component architecture
-- Key architectural decisions and rationale
-
-### 2. Component Design
-- Detailed component specifications
-- Interface definitions
-- Data models and schemas
-
-### 3. Infrastructure Design
-- Deployment architecture
-- Network topology
-- Security considerations
-
-### 4. Implementation Roadmap
-- Development phases
-- Technology setup requirements
-- Testing and deployment strategies
-
-### 5. Documentation Artifacts
-- Architecture diagrams (Mermaid format)
-- Technical specifications
-- Deployment guides
-
-## Quality Attributes
-Address the following non-functional requirements:
-- **Performance**: Response time and throughput targets
-- **Reliability**: Availability and fault tolerance requirements
-- **Security**: Authentication, authorization, and data protection
-- **Maintainability**: Code organization and documentation standards
-- **Scalability**: Growth and load handling capabilities
-`;
-}
-
-function generateDebuggingAssistantPrompt(args: PromptArgs): string {
-	const {
-		error_description,
-		context = "",
-		attempted_solutions = "none specified",
-	} = args;
-
-	return `# Debugging Assistant
-
-## Problem Description
-${error_description}
-
-## Additional Context
-${context || "No additional context provided"}
-
-## Previously Attempted Solutions
-${attempted_solutions}
-
-## Systematic Debugging Approach
-
-### 1. Problem Analysis
-- **Symptom Classification**: Categorize the type of error/issue
-- **Impact Assessment**: Determine scope and severity
-- **Environment Factors**: Consider system, version, and configuration details
-
-### 2. Root Cause Investigation
-- **Error Pattern Analysis**: Look for recurring patterns or triggers
-- **Code Path Tracing**: Identify the execution flow leading to the issue
-- **Dependency Review**: Check external dependencies and integrations
-
-### 3. Hypothesis Formation
-- **Primary Hypothesis**: Most likely cause based on evidence
-- **Alternative Hypotheses**: Secondary potential causes
-- **Testing Strategy**: How to validate each hypothesis
-
-### 4. Solution Development
-- **Immediate Fixes**: Quick solutions to resolve symptoms
-- **Long-term Solutions**: Comprehensive fixes addressing root causes
-- **Prevention Measures**: Steps to avoid similar issues in the future
-
-## Debugging Checklist
-
-### Information Gathering
-- [ ] Complete error messages and stack traces
-- [ ] Environment details (OS, versions, configurations)
-- [ ] Steps to reproduce the issue
-- [ ] Recent changes or updates
-- [ ] System logs and monitoring data
-
-### Analysis Steps
-- [ ] Isolate the problem to specific components
-- [ ] Verify input data and parameters
-- [ ] Check for resource constraints (memory, disk, network)
-- [ ] Review recent code changes
-- [ ] Validate configuration settings
-
-### Testing Approach
-- [ ] Create minimal reproduction case
-- [ ] Test in isolated environment
-- [ ] Verify fix effectiveness
-- [ ] Test edge cases and error conditions
-- [ ] Validate no regression introduced
-
-## Output Format
-
-### 1. Problem Analysis Summary
-- Issue classification and severity
-- Likely root cause(s)
-- Contributing factors
-
-### 2. Recommended Solutions
-- Step-by-step resolution instructions
-- Alternative approaches if primary solution fails
-- Required tools or resources
-
-### 3. Verification Steps
-- How to confirm the fix works
-- Regression testing recommendations
-- Monitoring suggestions
-
-### 4. Prevention Strategy
-- Code improvements to prevent recurrence
-- Process improvements
-- Documentation updates needed
-
-## Follow-up Actions
-- Code review recommendations
-- Testing improvements
-- Documentation updates
-- Knowledge sharing with team
-`;
-}
-
-function generateDocumentationGeneratorPrompt(args: PromptArgs): string {
-	const {
-		content_type,
-		target_audience = "general",
-		existing_content = "",
-	} = args;
-
-	return `# Documentation Generation Request
-
-## Documentation Type
-${content_type}
-
-## Target Audience
-${target_audience}
-
-## Existing Content to Build Upon
-${existing_content || "Starting from scratch"}
-
-## Documentation Requirements
-
-### 1. Content Structure
-${
-	content_type === "API"
-		? "- API Overview and purpose\n- Authentication methods\n- Endpoint documentation with examples\n- Error codes and handling\n- SDK and integration guides"
-		: content_type === "user guide"
-			? "- Getting started guide\n- Feature walkthrough with screenshots\n- Common use cases and tutorials\n- Troubleshooting section\n- FAQ"
-			: content_type === "technical spec"
-				? "- System overview and architecture\n- Technical requirements\n- Implementation details\n- Configuration options\n- Performance specifications"
-				: "- Clear introduction and purpose\n- Logical content organization\n- Practical examples\n- Reference materials"
-}
-
-### 2. Audience Considerations
-$	{
-	target_audience === "developers"
-		? "- Technical depth and accuracy\n- Code examples and implementations\n- Integration patterns\n- Best practices and gotchas"
-		: target_audience === "end-users"
-			? "- Clear, jargon-free language\n- Step-by-step instructions\n- Visual aids and screenshots\n- Real-world scenarios"
-			: target_audience === "administrators"
-				? "- Configuration and setup procedures\n- Maintenance and monitoring guides\n- Security considerations\n- Troubleshooting procedures"
-				: "- Balanced technical depth\n- Clear explanations\n- Practical examples\n- Progressive complexity"
-}
-
-### 3. Quality Standards
-- **Clarity**: Information is easy to understand and follow
-- **Completeness**: All necessary information is included
-- **Accuracy**: Technical details are correct and up-to-date
-- **Usability**: Documentation is easy to navigate and search
-
-## Output Format
-
-### Documentation Structure
-1. **Introduction**
-   - Purpose and scope
-   - Audience and prerequisites
-   - Document organization
-
-2. **Main Content**
-   $
-			content_type === "API"
-				? "- Quick start guide\n   - Detailed endpoint documentation\n   - Authentication and authorization\n   - Error handling\n   - Examples and use cases"
-				: content_type === "user guide"
-					? "- Getting started\n   - Core features and functionality\n   - Advanced features\n   - Troubleshooting\n   - Tips and best practices"
-					: "- Core concepts\n   - Detailed procedures\n   - Configuration options\n   - Advanced topics\n   - Reference materials"
-		}
-
-3. **Supporting Materials**
-   - Glossary of terms
-   - Additional resources
-   - Contact information
-   - Version history
-
-### Content Guidelines
-- Use clear, concise language appropriate for ${target_audience}
-- Include practical examples and code snippets where relevant
-- Provide context and explain the "why" behind procedures
-- Use consistent formatting and terminology
-- Include cross-references and links to related sections
-
-### Visual Elements
-- Diagrams for complex concepts (Mermaid format preferred)
-- Screenshots for user interfaces
-- Code blocks with syntax highlighting
-- Tables for reference information
-- Callout boxes for important notes and warnings
-
-## Quality Checklist
-- [ ] Content is accurate and up-to-date
-- [ ] Language is appropriate for target audience
-- [ ] Examples are practical and tested
-- [ ] Navigation and structure are logical
-- [ ] All links and references work correctly
-- [ ] Document meets accessibility standards
-`;
-}
-
-function generateSparkUiPrompt(args: PromptArgs): string {
-	const {
-		title,
-		summary,
-		design_direction,
-		color_scheme = "dark for contrast and readability",
-	} = args as {
-		title: string;
-		summary: string;
-		design_direction: string;
-		color_scheme?: string;
-	};
-
-	return `---\nmode: 'agent'\nmodel: GPT-4.1\ntools: ['githubRepo', 'codebase', 'editFiles']\ndescription: '${(summary as string).replace(/'/g, "''")}'\n---\n## ⚡ Spark Prompt Template\n\n# ${title}\n\n${summary}\n\n## Design Direction\n${design_direction}\n\n## Color Scheme\n${color_scheme}\n`;
-}
-
-function generateSecurityAnalysisPrompt(args: PromptArgs): string {
-	const {
-		codebase,
-		security_focus = "vulnerability-analysis",
-		language = "auto-detect",
-		compliance_standards = "OWASP-Top-10",
-		risk_tolerance = "medium",
-	} = args as {
-		codebase: string;
-		security_focus?: string;
-		language?: string;
-		compliance_standards?: string;
-		risk_tolerance?: string;
-	};
-
-	return `# Security Analysis Request
-
-## Context
-You are a security expert analyzing ${language} code with focus on ${security_focus.replaceAll("-", " ")}. Apply ${risk_tolerance} risk tolerance and check against ${compliance_standards} standards.
-
-## Code to Analyze
-\`\`\`${language}
-${codebase}
-\`\`\`
-
-## Security Analysis Requirements
-
-### 1. Vulnerability Assessment
-${
-	security_focus === "vulnerability-analysis"
-		? `   - Identify security vulnerabilities and weaknesses
-   - Check for common attack vectors (injection, XSS, CSRF)
-   - Analyze input validation and sanitization
-   - Review authentication and authorization mechanisms`
-		: security_focus === "compliance-check"
-			? `   - Verify compliance with ${compliance_standards} requirements
-   - Check adherence to security policies and standards
-   - Validate implementation of required security controls
-   - Assess documentation and audit trail completeness`
-			: security_focus === "threat-modeling"
-				? `   - Identify potential threat vectors and attack surfaces
-   - Analyze security boundaries and trust zones
-   - Evaluate data flow security implications
-   - Assess impact and likelihood of potential threats`
-				: `   - Implement security hardening measures
-   - Apply defense-in-depth principles
-   - Strengthen existing security controls
-   - Minimize attack surface and exposure`
-}
-
-### 2. Risk Assessment
-   - Rate findings by severity (Critical/High/Medium/Low)
-   - Assess likelihood of exploitation (Very High/High/Medium/Low/Very Low)
-   - Evaluate impact on confidentiality, integrity, and availability
-   - Consider attack complexity and prerequisites
-   - Document potential for privilege escalation
-   - Apply OWASP Risk Rating methodology (Impact × Likelihood)
-
-### 3. Security Controls Review
-   - Authentication mechanisms and strength
-   - Authorization and access control implementation
-   - Data encryption in transit and at rest
-   - Input validation and output encoding
-   - Error handling and information disclosure
-   - Session management security
-   - Logging and monitoring coverage
-
-### 4. Remediation Guidance
-   - Specific fix recommendations with code examples
-   - Security best practices for the identified issues
-   - Implementation guidance and testing approaches
-   - Preventive measures for similar vulnerabilities
-
-## Risk Assessment Framework
-Follow OWASP Risk Rating Methodology using Impact vs Likelihood matrix:
-
-### Risk Calculation: Overall Risk = Likelihood × Impact
-
-**Likelihood Factors:**
-- Threat Agent (skill level, motive, opportunity, population size)
-- Vulnerability (ease of discovery, exploit, awareness, intrusion detection)
-
-**Impact Factors:**
-- Technical Impact (loss of confidentiality, integrity, availability, accountability)
-- Business Impact (financial damage, reputation damage, non-compliance, privacy violation)
-
-### Risk Matrix Visualization
-
-\`\`\`mermaid
-quadrantChart
-    title Security Risk Assessment Matrix
-    x-axis Low Impact --> High Impact
-    y-axis Low Likelihood --> High Likelihood
-    quadrant-1 Monitor & Review (High Impact, Low Likelihood)
-    quadrant-2 Immediate Action Required (High Impact, High Likelihood)
-    quadrant-3 Accept Risk (Low Impact, Low Likelihood)
-    quadrant-4 Mitigate When Possible (Low Impact, High Likelihood)
-\`\`\`
-
-## Risk Tolerance: ${risk_tolerance.toUpperCase()}
-${
-	risk_tolerance === "low"
-		? `- Accept minimal risk only (Low Impact × Low Likelihood)
-- Flag all potential security issues, including minor ones
-- Recommend defense-in-depth approaches
-- Prioritize security over convenience and performance
-- Require mitigation for Medium+ risk findings`
-		: risk_tolerance === "medium"
-			? `- Accept Low to Medium risk findings with proper justification
-- Focus on medium to critical severity issues
-- Balance security with usability and performance
-- Recommend practical, cost-effective solutions
-- Require immediate action for High+ risk findings`
-			: `- Accept Low to High risk findings with business justification
-- Focus only on critical and high severity issues
-- Consider business context and implementation cost
-- Provide flexible security recommendations
-- Require immediate action only for Critical risk findings`
-}
-
-## Output Format
-Provide a structured security assessment including:
-
-- **Executive Summary**: High-level security posture and critical findings
-- **Vulnerability Details**:
-  * Vulnerability description and location
-  * Severity rating (Critical/High/Medium/Low)
-  * Likelihood assessment (Very High/High/Medium/Low/Very Low)
-  * Overall risk score (Severity × Likelihood)
-  * Exploitation scenario and impact
-  * CVSS score if applicable
-  * Reference to OWASP risk matrix position
-- **Security Recommendations**:
-  * Immediate actions for critical issues
-  * Short-term improvements for high/medium issues
-  * Long-term security enhancements
-  * Code examples demonstrating secure implementations
-- **Compliance Assessment**: Alignment with ${compliance_standards} requirements
-- **Testing Recommendations**: Security test cases to validate fixes
-
-## Scoring
-Provide an overall security score from 1-10 for:
-- Security Posture
-- ${security_focus.replace("-", " ").replace(/\b\w/g, (l) => l.toUpperCase())}
-- Compliance Readiness
-`;
 }
