@@ -215,7 +215,7 @@ function generateContextualChecklist(
 	errorDescription: string,
 	context: string,
 ): string {
-	const errorLower = errorDescription.toLowerCase();
+	const _errorLower = errorDescription.toLowerCase();
 	const contextLower = context.toLowerCase();
 
 	let specificSteps = "";
