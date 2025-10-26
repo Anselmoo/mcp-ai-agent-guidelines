@@ -1,3 +1,22 @@
+/**
+ * MCP Prompt Handlers
+ *
+ * This module provides MCP prompt capability handlers that delegate to tool builders
+ * to generate structured prompts. This ensures a single source of truth for prompt
+ * generation logic and maintains consistency across both MCP prompts and tools.
+ *
+ * Architecture:
+ * - Prompt definitions (metadata only) are maintained here for MCP listPrompts
+ * - Prompt generation delegates to corresponding tool builders in src/tools/prompt/
+ * - Output is cleaned to remove tool-specific metadata (frontmatter, refs, etc.)
+ *
+ * Benefits:
+ * - No code duplication between prompts and tools
+ * - Consistent, high-quality prompt generation
+ * - Single place to update prompt logic
+ * - Tools can be used directly or via MCP prompts
+ */
+
 import { architectureDesignPromptBuilder } from "../tools/prompt/architecture-design-prompt-builder.js";
 import { codeAnalysisPromptBuilder } from "../tools/prompt/code-analysis-prompt-builder.js";
 import { debuggingAssistantPromptBuilder } from "../tools/prompt/debugging-assistant-prompt-builder.js";
