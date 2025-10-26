@@ -11,6 +11,15 @@ import {
 export { TechniqueEnum, ProviderEnum, StyleEnum };
 export type { Technique, Provider, Style };
 
+/**
+ * Build generic technique hints section.
+ *
+ * @deprecated This function is deprecated. Use applyTechniques from technique-applicator.ts instead
+ * for context-aware, actionable technique instructions rather than generic advice.
+ *
+ * This function provides static descriptions of techniques instead of applying them to the problem context.
+ * The new TechniqueApplicator generates specific instructions tailored to the user's input.
+ */
 export function buildTechniqueHintsSection(options: {
 	techniques?: Technique[];
 	autoSelectTechniques?: boolean;

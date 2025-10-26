@@ -1,7 +1,6 @@
 import { z } from "zod";
 import {
 	buildProviderTipsSection as buildSharedProviderTips,
-	inferTechniquesFromText,
 	ProviderEnum,
 	StyleEnum,
 	TechniqueEnum,
@@ -12,6 +11,7 @@ import {
 	buildReferencesSection,
 	slugify,
 } from "../shared/prompt-utils.js";
+import { applyTechniques } from "./technique-applicator.js";
 
 // Strict mode enum for YAML frontmatter
 const ModeEnum = z.enum(["agent", "tool", "workflow"]);
@@ -68,319 +68,22 @@ function buildHierarchicalFrontmatter(input: HierarchicalPromptInput): string {
 /**
  * Build context-aware, actionable instructions based on selected techniques.
  * This generates specific, tailored guidance rather than generic advice.
+ *
+ * @deprecated This function is deprecated. Use applyTechniques from technique-applicator.ts instead.
  */
 function buildActionableInstructions(input: HierarchicalPromptInput): string {
-	const contextText = [
-		input.context,
-		input.goal,
-		(input.requirements || []).join("\n"),
-		input.outputFormat || "",
-		input.audience || "",
-	].join("\n");
-
-	// Determine which techniques to use
-	const selectedList = input.techniques?.length
-		? input.techniques
-		: input.autoSelectTechniques
-			? inferTechniquesFromText(contextText)
-			: [];
-
-	if (selectedList.length === 0) {
-		return ""; // No techniques selected, no additional instructions
-	}
-
-	const selected = new Set(selectedList.map((t) => t.toLowerCase()));
-	let instructions = "";
-
-	// Chain-of-Thought: Generate specific step-by-step plan
-	if (selected.has("chain-of-thought")) {
-		instructions += buildChainOfThoughtInstructions(input);
-	}
-
-	// Few-Shot: Generate example-based instructions
-	if (selected.has("few-shot")) {
-		instructions += buildFewShotInstructions(input);
-	}
-
-	// RAG: Provide specific document handling instructions
-	if (selected.has("rag")) {
-		instructions += buildRAGInstructions(input);
-	}
-
-	// Prompt Chaining: Break down into sequential steps
-	if (selected.has("prompt-chaining")) {
-		instructions += buildPromptChainingInstructions(input);
-	}
-
-	// Tree of Thoughts: Generate exploration framework
-	if (selected.has("tree-of-thoughts")) {
-		instructions += buildTreeOfThoughtsInstructions(input);
-	}
-
-	// Generate Knowledge: Create fact-gathering framework
-	if (selected.has("generate-knowledge")) {
-		instructions += buildGenerateKnowledgeInstructions(input);
-	}
-
-	// Self-Consistency: Add verification steps
-	if (selected.has("self-consistency")) {
-		instructions += buildSelfConsistencyInstructions(input);
-	}
-
-	// ReAct: Tool-use pattern
-	if (selected.has("react")) {
-		instructions += buildReActInstructions(input);
-	}
-
-	return instructions;
-}
-
-/**
- * Generate specific chain-of-thought instructions based on the task context.
- */
-function buildChainOfThoughtInstructions(
-	input: HierarchicalPromptInput,
-): string {
-	const steps: string[] = [];
-
-	// Analyze the context to generate relevant thinking steps
-	steps.push("1. Analyze the current state:");
-	steps.push(`   - Review the context: ${input.context}`);
-
-	if (input.issues && input.issues.length > 0) {
-		steps.push(`   - Identify the key problems: ${input.issues.join(", ")}`);
-	}
-
-	steps.push("\n2. Break down the goal:");
-	steps.push(`   - Main objective: ${input.goal}`);
-
-	if (input.requirements && input.requirements.length > 0) {
-		steps.push("   - Key requirements to address:");
-		input.requirements.forEach((req, idx) => {
-			steps.push(`     ${idx + 1}. ${req}`);
-		});
-	}
-
-	steps.push("\n3. Plan your approach:");
-	steps.push("   - Identify the main components or modules involved");
-	steps.push("   - Determine the sequence of changes needed");
-	steps.push("   - Consider dependencies and potential impacts");
-
-	steps.push("\n4. Execute step-by-step:");
-	steps.push("   - Address each requirement methodically");
-	steps.push("   - Explain your reasoning for each decision");
-	steps.push("   - Validate each step before proceeding");
-
-	if (input.outputFormat) {
-		steps.push("\n5. Format your output:");
-		steps.push(
-			`   - Ensure it matches the required format: ${input.outputFormat}`,
-		);
-	}
-
-	return `# Approach\n\nThink through this problem step-by-step:\n\n${steps.join("\n")}\n\n`;
-}
-
-/**
- * Generate few-shot examples based on the output format and goal.
- */
-function buildFewShotInstructions(input: HierarchicalPromptInput): string {
-	let section = "# Examples\n\n";
-	section +=
-		"Here are examples of how to approach similar tasks. Follow these patterns:\n\n";
-
-	// Generate 1-2 simple examples based on the context
-	const isCodeTask = /code|refactor|implement|function|class|method/i.test(
-		input.goal,
-	);
-	const isAnalysisTask = /analyz|review|assess|evaluat|audit/i.test(input.goal);
-	const isDocTask = /document|write|describe|explain/i.test(input.goal);
-
-	if (isCodeTask) {
-		section += "**Example 1: Code Refactoring**\n";
-		section += "```\n";
-		section += "Task: Refactor authentication logic\n";
-		section += "Approach:\n";
-		section +=
-			"1. Identify current authentication mechanism (e.g., Passport.js strategy)\n";
-		section += "2. Extract authentication logic into separate module\n";
-		section += "3. Create clear interfaces for auth providers\n";
-		section += "4. Update tests to cover new structure\n";
-		section += "Output: Modular auth system with separated concerns\n";
-		section += "```\n\n";
-	} else if (isAnalysisTask) {
-		section += "**Example 1: Code Analysis**\n";
-		section += "```\n";
-		section += "Task: Analyze module dependencies\n";
-		section += "Approach:\n";
-		section += "1. Map all import/require statements\n";
-		section += "2. Identify circular dependencies\n";
-		section += "3. Assess coupling between modules\n";
-		section += "4. Recommend decoupling strategies\n";
-		section +=
-			"Output: Dependency graph with recommendations for improvement\n";
-		section += "```\n\n";
-	} else if (isDocTask) {
-		section += "**Example 1: Documentation**\n";
-		section += "```\n";
-		section += "Task: Document API endpoints\n";
-		section += "Approach:\n";
-		section += "1. List all endpoints with HTTP methods\n";
-		section += "2. Document request/response formats\n";
-		section += "3. Include authentication requirements\n";
-		section += "4. Provide example requests and responses\n";
-		section += "Output: Comprehensive API documentation\n";
-		section += "```\n\n";
-	} else {
-		// Generic example
-		section += "**Example: Task Execution**\n";
-		section += "```\n";
-		section += `Task: ${input.goal}\n`;
-		section += "Approach:\n";
-		section += "1. Understand the current state\n";
-		section += "2. Identify what needs to change\n";
-		section += "3. Plan the sequence of actions\n";
-		section += "4. Execute and validate\n";
-		section += "Output: Completed task meeting all requirements\n";
-		section += "```\n\n";
-	}
-
-	return section;
-}
-
-/**
- * Generate RAG-specific instructions.
- */
-function buildRAGInstructions(input: HierarchicalPromptInput): string {
-	let section = "# Document Handling\n\n";
-	section += "When working with documents or external knowledge sources:\n\n";
-	section += "1. **Retrieve Relevant Information**:\n";
-	section += `   - Extract information relevant to: ${input.goal}\n`;
-	section += "   - Focus on content that addresses the requirements\n\n";
-	section += "2. **Quote and Cite**:\n";
-	section += "   - Include direct quotes where appropriate\n";
-	section += "   - Always cite the source of information\n";
-	section += "   - Use clear markers like [Source: ...]\n\n";
-	section += "3. **Synthesize Information**:\n";
-	section += "   - Combine information from multiple sources\n";
-	section += "   - Resolve any conflicts or contradictions\n";
-	section += "   - Provide a coherent answer\n\n";
-	return section;
-}
-
-/**
- * Generate prompt chaining instructions.
- */
-function buildPromptChainingInstructions(
-	input: HierarchicalPromptInput,
-): string {
-	let section = "# Step-by-Step Workflow\n\n";
-	section += "Break this task into sequential steps:\n\n";
-	section += `1. **Analyze**: Examine ${input.context}\n`;
-	section += `2. **Plan**: Design approach to ${input.goal}\n`;
-
-	if (input.requirements && input.requirements.length > 0) {
-		section += "3. **Implement**: Address each requirement:\n";
-		input.requirements.forEach((req, idx) => {
-			section += `   - Step ${idx + 1}: ${req}\n`;
-		});
-	} else {
-		section += "3. **Implement**: Execute the planned changes\n";
-	}
-
-	section += "4. **Validate**: Verify all requirements are met\n";
-	section += "5. **Document**: Explain changes and decisions\n\n";
-
-	section +=
-		"Complete each step fully before moving to the next. Each step should build on the previous one.\n\n";
-
-	return section;
-}
-
-/**
- * Generate tree of thoughts instructions.
- */
-function buildTreeOfThoughtsInstructions(
-	input: HierarchicalPromptInput,
-): string {
-	let section = "# Explore Alternative Approaches\n\n";
-	section += `For the goal "${input.goal}", consider multiple paths:\n\n`;
-	section += "1. **Generate Alternatives**:\n";
-	section += "   - Brainstorm 2-3 different approaches\n";
-	section += "   - Consider both conservative and innovative solutions\n\n";
-	section += "2. **Evaluate Each Path**:\n";
-	section += "   - Pros: What are the benefits?\n";
-	section += "   - Cons: What are the drawbacks or risks?\n";
-	section += "   - Complexity: How difficult is implementation?\n\n";
-	section += "3. **Select Best Path**:\n";
-	section += "   - Compare alternatives against requirements\n";
-	section += "   - Choose the optimal solution\n";
-	section += "   - Justify your choice\n\n";
-	return section;
-}
-
-/**
- * Generate knowledge generation instructions.
- */
-function buildGenerateKnowledgeInstructions(
-	input: HierarchicalPromptInput,
-): string {
-	let section = "# Knowledge Gathering\n\n";
-	section +=
-		"Before solving the task, gather and document relevant knowledge:\n\n";
-	section += "1. **List Key Facts**:\n";
-	section += `   - What do we know about ${input.context}?\n`;
-	section += "   - What are the established patterns or conventions?\n";
-	section += "   - What are the constraints or limitations?\n\n";
-	section += "2. **Identify Assumptions**:\n";
-	section += "   - What assumptions are we making?\n";
-	section += "   - What additional information might we need?\n\n";
-	section += "3. **Apply Knowledge**:\n";
-	section += "   - Use the gathered facts to inform your solution\n";
-	section += `   - Ensure the approach aligns with: ${input.goal}\n\n`;
-	return section;
-}
-
-/**
- * Generate self-consistency instructions.
- */
-function buildSelfConsistencyInstructions(
-	_input: HierarchicalPromptInput,
-): string {
-	let section = "# Verification and Consistency\n\n";
-	section += "Ensure accuracy through multiple approaches:\n\n";
-	section += "1. **Generate Multiple Solutions**:\n";
-	section += "   - Approach the problem from 2-3 different angles\n";
-	section += "   - Use different reasoning paths\n\n";
-	section += "2. **Compare Results**:\n";
-	section += "   - Identify commonalities across solutions\n";
-	section += "   - Note any significant differences\n\n";
-	section += "3. **Select Consensus**:\n";
-	section += "   - Choose the solution that appears most consistently\n";
-	section += "   - If solutions differ significantly, analyze why\n";
-	section += "   - Provide the most reliable answer\n\n";
-	return section;
-}
-
-/**
- * Generate ReAct (Reasoning + Acting) instructions.
- */
-function buildReActInstructions(input: HierarchicalPromptInput): string {
-	let section = "# Reasoning and Tool Use\n\n";
-	section += "Interleave thinking and action when tools are available:\n\n";
-	section += "1. **Thought**: What do I need to accomplish?\n";
-	section += `   - Current goal: ${input.goal}\n\n`;
-	section += "2. **Action**: What tool or action should I use?\n";
-	section +=
-		"   - Choose the appropriate tool (e.g., search, code execution, file access)\n\n";
-	section += "3. **Observation**: What did I learn?\n";
-	section += "   - Analyze the results from the action\n\n";
-	section +=
-		"4. **Repeat**: Continue the Thought → Action → Observation cycle\n";
-	section += "   - Keep iterating until the goal is achieved\n\n";
-	section +=
-		"**Note**: Only use tools when they add value to solving the task.\n\n";
-	return section;
+	return applyTechniques({
+		context: {
+			context: input.context,
+			goal: input.goal,
+			requirements: input.requirements,
+			outputFormat: input.outputFormat,
+			audience: input.audience,
+			issues: input.issues,
+		},
+		techniques: input.techniques,
+		autoSelectTechniques: input.autoSelectTechniques,
+	});
 }
 
 export async function hierarchicalPromptBuilder(args: unknown) {
