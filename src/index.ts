@@ -49,6 +49,10 @@ import { mermaidDiagramGenerator } from "./tools/mermaid-diagram-generator.js";
 import { modeSwitcher } from "./tools/mode-switcher.js";
 import { modelCompatibilityChecker } from "./tools/model-compatibility-checker.js";
 import { projectOnboarding } from "./tools/project-onboarding.js";
+import { architectureDesignPromptBuilder } from "./tools/prompt/architecture-design-prompt-builder.js";
+import { codeAnalysisPromptBuilder } from "./tools/prompt/code-analysis-prompt-builder.js";
+import { debuggingAssistantPromptBuilder } from "./tools/prompt/debugging-assistant-prompt-builder.js";
+import { documentationGeneratorPromptBuilder } from "./tools/prompt/documentation-generator-prompt-builder.js";
 import { domainNeutralPromptBuilder } from "./tools/prompt/domain-neutral-prompt-builder.js";
 // Import tool implementations
 import { hierarchicalPromptBuilder } from "./tools/prompt/hierarchical-prompt-builder.js";
@@ -171,6 +175,133 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						},
 					},
 					required: ["context", "goal"],
+				},
+			},
+			{
+				name: "code-analysis-prompt-builder",
+				description:
+					"Generate comprehensive code analysis prompts with customizable focus areas (security, performance, maintainability)",
+				inputSchema: {
+					type: "object",
+					properties: {
+						codebase: {
+							type: "string",
+							description: "The codebase or code snippet to analyze",
+						},
+						focusArea: {
+							type: "string",
+							enum: ["security", "performance", "maintainability", "general"],
+							description: "Specific area to focus on",
+						},
+						language: {
+							type: "string",
+							description: "Programming language of the code",
+						},
+						mode: { type: "string" },
+						model: { type: "string" },
+						tools: { type: "array", items: { type: "string" } },
+						includeFrontmatter: { type: "boolean" },
+						includeReferences: { type: "boolean" },
+						includeMetadata: { type: "boolean" },
+						inputFile: { type: "string" },
+						forcePromptMdStyle: { type: "boolean" },
+					},
+					required: ["codebase"],
+				},
+			},
+			{
+				name: "architecture-design-prompt-builder",
+				description:
+					"Generate system architecture design prompts with scale-appropriate guidance",
+				inputSchema: {
+					type: "object",
+					properties: {
+						systemRequirements: {
+							type: "string",
+							description: "System requirements and constraints",
+						},
+						scale: {
+							type: "string",
+							enum: ["small", "medium", "large"],
+							description: "Expected system scale",
+						},
+						technologyStack: {
+							type: "string",
+							description: "Preferred or required technology stack",
+						},
+						mode: { type: "string" },
+						model: { type: "string" },
+						tools: { type: "array", items: { type: "string" } },
+						includeFrontmatter: { type: "boolean" },
+						includeReferences: { type: "boolean" },
+						includeMetadata: { type: "boolean" },
+						inputFile: { type: "string" },
+						forcePromptMdStyle: { type: "boolean" },
+					},
+					required: ["systemRequirements"],
+				},
+			},
+			{
+				name: "debugging-assistant-prompt-builder",
+				description:
+					"Generate systematic debugging and troubleshooting prompts with structured analysis",
+				inputSchema: {
+					type: "object",
+					properties: {
+						errorDescription: {
+							type: "string",
+							description: "Description of the error or issue",
+						},
+						context: {
+							type: "string",
+							description: "Additional context about the problem",
+						},
+						attemptedSolutions: {
+							type: "string",
+							description: "Solutions already attempted",
+						},
+						mode: { type: "string" },
+						model: { type: "string" },
+						tools: { type: "array", items: { type: "string" } },
+						includeFrontmatter: { type: "boolean" },
+						includeReferences: { type: "boolean" },
+						includeMetadata: { type: "boolean" },
+						inputFile: { type: "string" },
+						forcePromptMdStyle: { type: "boolean" },
+					},
+					required: ["errorDescription"],
+				},
+			},
+			{
+				name: "documentation-generator-prompt-builder",
+				description:
+					"Generate technical documentation prompts tailored to content type and audience",
+				inputSchema: {
+					type: "object",
+					properties: {
+						contentType: {
+							type: "string",
+							description:
+								"Type of documentation (API, user guide, technical spec)",
+						},
+						targetAudience: {
+							type: "string",
+							description: "Intended audience for the documentation",
+						},
+						existingContent: {
+							type: "string",
+							description: "Any existing content to build upon",
+						},
+						mode: { type: "string" },
+						model: { type: "string" },
+						tools: { type: "array", items: { type: "string" } },
+						includeFrontmatter: { type: "boolean" },
+						includeReferences: { type: "boolean" },
+						includeMetadata: { type: "boolean" },
+						inputFile: { type: "string" },
+						forcePromptMdStyle: { type: "boolean" },
+					},
+					required: ["contentType"],
 				},
 			},
 			{
@@ -1404,6 +1535,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 		switch (name) {
 			case "hierarchical-prompt-builder":
 				return hierarchicalPromptBuilder(args);
+			case "code-analysis-prompt-builder":
+				return codeAnalysisPromptBuilder(args);
+			case "architecture-design-prompt-builder":
+				return architectureDesignPromptBuilder(args);
+			case "debugging-assistant-prompt-builder":
+				return debuggingAssistantPromptBuilder(args);
+			case "documentation-generator-prompt-builder":
+				return documentationGeneratorPromptBuilder(args);
 			case "strategy-frameworks-builder":
 				return strategyFrameworksBuilder(args);
 			case "gap-frameworks-analyzers":
