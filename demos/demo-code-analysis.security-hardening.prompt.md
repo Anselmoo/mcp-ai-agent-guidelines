@@ -139,10 +139,44 @@ Apply low risk tolerance:
 2. **High**: Significant security risks requiring prompt attention
 3. **Medium**: Important improvements with moderate risk
 4. **Low**: Best practice recommendations with minimal risk
-# Technique Hints (2025)
+# Step-by-Step Workflow
 
-## Prompt Chaining
-Split multi-step workflows into sequential prompts (analyze ➜ hypothesize ➜ recommend ➜ plan).
+Break this task into sequential steps:
+
+1. **Analyze**: Examine Express.js API endpoint handling user authentication and payment processing:
+
+```javascript
+app.post('/api/login', (req, res) => {
+	const { username, password } = req.body;
+	const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
+	db.query(query, (err, result) => {
+		if (result.length > 0) {
+			req.session.user = result[0];
+			res.json({ success: true, token: result[0].id });
+		} else {
+			res.json({ success: false });
+		}
+	});
+});
+
+app.post('/api/payment', (req, res) => {
+	const { amount, cardNumber, cvv } = req.body;
+	// Process payment without validation
+	processPayment(amount, cardNumber, cvv);
+	res.json({ status: 'processed' });
+});
+```
+2. **Plan**: Design approach to Security vulnerability analysis analysis
+3. **Implement**: Address each requirement:
+   - Step 1: Prevent SQL injection attacks
+   - Step 2: Implement secure session management
+   - Step 3: Validate all user inputs
+   - Step 4: Protect sensitive payment data
+4. **Validate**: Verify all requirements are met
+5. **Document**: Explain changes and decisions
+
+Complete each step fully before moving to the next. Each step should build on the previous one.
+
 # Model-Specific Tips
 
 - Prefer Markdown with clear headings and sections
