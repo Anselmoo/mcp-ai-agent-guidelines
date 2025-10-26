@@ -1,6 +1,6 @@
 // Cross-Session Consistency Integration Tests
 import { beforeAll, describe, expect, it } from "vitest";
-import { designAssistant } from "../../dist/tools/design/index.js";
+import { designAssistant } from "../../src/tools/design/index.ts";
 
 describe("Cross-Session Consistency Integration", () => {
 	beforeAll(async () => {

@@ -1,7 +1,7 @@
 // Confirmation Prompt Builder Tests
 import { beforeAll, describe, expect, it } from "vitest";
-import { confirmationPromptBuilder } from "../../dist/tools/design/confirmation-prompt-builder.js";
-import type { DesignSessionState } from "../../dist/tools/design/types.js";
+import { confirmationPromptBuilder } from "../../src/tools/design/confirmation-prompt-builder.ts";
+import type { DesignSessionState } from "../../src/tools/design/types.ts";
 
 describe("Confirmation Prompt Builder", () => {
 	beforeAll(async () => {

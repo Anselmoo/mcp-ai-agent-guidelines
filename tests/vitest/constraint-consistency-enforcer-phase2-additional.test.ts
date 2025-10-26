@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { constraintConsistencyEnforcer } from "../../dist/tools/design/constraint-consistency-enforcer.js";
+import { constraintConsistencyEnforcer } from "../../src/tools/design/constraint-consistency-enforcer.ts";
 import type {
 	ConstraintRule,
 	DesignSessionState,
-} from "../../dist/tools/design/types/index.js";
+} from "../../src/tools/design/types/index.ts";
 
 describe("Constraint Consistency Enforcer - Phase 2 Additional Coverage", () => {
 	beforeEach(async () => {

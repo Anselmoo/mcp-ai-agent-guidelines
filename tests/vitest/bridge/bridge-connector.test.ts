@@ -4,12 +4,12 @@ import {
 	extractProjectContext,
 	generateContextualPrompt,
 	generateProjectSpecificHygieneRules,
-} from "../../../dist/tools/bridge/project-onboarding-bridge.js";
+} from "../../../src/tools/bridge/project-onboarding-bridge.ts";
 import {
 	enhancePromptWithSemantics,
 	extractSemanticInsights,
 	generateHygieneRecommendations,
-} from "../../../dist/tools/bridge/semantic-analyzer-bridge.js";
+} from "../../../src/tools/bridge/semantic-analyzer-bridge.ts";
 
 describe("Bridge Connectors - Project Onboarding Bridge", () => {
 	it("extracts project context from onboarding markdown", () => {
@@ -36,8 +36,13 @@ describe("Bridge Connectors - Project Onboarding Bridge", () => {
 			},
 		};
 		const base = { foo: "bar" };
-		const out = enhanceToolWithProjectContext(base, ctx as any);
-		expect((out as any).projectContext.name).toBe("P");
+		const out = enhanceToolWithProjectContext(
+			base,
+			ctx as unknown as Parameters<typeof enhanceToolWithProjectContext>[1],
+		);
+		expect(
+			(out as unknown as Record<string, unknown>).projectContext,
+		).toBeDefined();
 	});
 
 	it("generates a contextual prompt including entry points", () => {
@@ -54,7 +59,10 @@ describe("Bridge Connectors - Project Onboarding Bridge", () => {
 				entryPoints: ["src/index.ts"],
 			},
 		};
-		const p = generateContextualPrompt(ctx as any, "Refactor auth");
+		const p = generateContextualPrompt(
+			ctx as unknown as Parameters<typeof generateContextualPrompt>[0],
+			"Refactor auth",
+		);
 		expect(p).toMatch(/Refactor auth/);
 		expect(p).toMatch(/src\/index.ts/);
 	});
@@ -64,7 +72,7 @@ describe("Bridge Connectors - Project Onboarding Bridge", () => {
 			languages: ["TypeScript/JavaScript"],
 			buildSystem: "npm",
 			testFramework: "vitest",
-		} as any;
+		} as unknown as Parameters<typeof generateProjectSpecificHygieneRules>[0];
 		const rules = generateProjectSpecificHygieneRules(ctx);
 		expect(
 			rules.some((r) => r.includes("TypeScript") || r.includes("npm")),

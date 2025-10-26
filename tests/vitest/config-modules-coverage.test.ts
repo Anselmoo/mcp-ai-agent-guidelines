@@ -1,13 +1,13 @@
 // Configuration modules comprehensive coverage tests
 import { describe, expect, it } from "vitest";
-import { CATEGORY_CONFIG } from "../../dist/tools/config/guidelines-config.js";
+import { CATEGORY_CONFIG } from "../../src/tools/config/guidelines-config.ts";
 import {
 	BUDGET_BONUS,
 	BUDGET_PENALTY,
 	CAPABILITY_WEIGHTS,
 	MODELS,
 	REQUIREMENT_KEYWORDS,
-} from "../../dist/tools/config/model-config.js";
+} from "../../src/tools/config/model-config.ts";
 
 describe("Configuration Modules Comprehensive Coverage", () => {
 	describe("Guidelines Config Tests", () => {

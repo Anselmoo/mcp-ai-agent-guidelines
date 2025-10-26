@@ -1,20 +1,20 @@
 // MCP Server Index Tests - Testing main server functionality
 import { beforeAll, describe, expect, it } from "vitest";
-import { gapFrameworksAnalyzers } from "../../dist/tools/analysis/gap-frameworks-analyzers.js";
-import { strategyFrameworksBuilder } from "../../dist/tools/analysis/strategy-frameworks-builder.js";
-import { codeHygieneAnalyzer } from "../../dist/tools/code-hygiene-analyzer.js";
+import { gapFrameworksAnalyzers } from "../../src/tools/analysis/gap-frameworks-analyzers.ts";
+import { strategyFrameworksBuilder } from "../../src/tools/analysis/strategy-frameworks-builder.ts";
+import { codeHygieneAnalyzer } from "../../src/tools/code-hygiene-analyzer.ts";
 // Note: We can't directly test the server index since it sets up an MCP server,
 // but we can test the tool imports and basic functionality through the design assistant
-import { designAssistant } from "../../dist/tools/design/index.js";
-import { guidelinesValidator } from "../../dist/tools/guidelines-validator.js";
-import { memoryContextOptimizer } from "../../dist/tools/memory-context-optimizer.js";
-import { mermaidDiagramGenerator } from "../../dist/tools/mermaid-diagram-generator.js";
-import { modelCompatibilityChecker } from "../../dist/tools/model-compatibility-checker.js";
-import { domainNeutralPromptBuilder } from "../../dist/tools/prompt/domain-neutral-prompt-builder.js";
-import { hierarchicalPromptBuilder } from "../../dist/tools/prompt/hierarchical-prompt-builder.js";
-import { securityHardeningPromptBuilder } from "../../dist/tools/prompt/security-hardening-prompt-builder.js";
-import { sparkPromptBuilder } from "../../dist/tools/prompt/spark-prompt-builder.js";
-import { sprintTimelineCalculator } from "../../dist/tools/sprint-timeline-calculator.js";
+import { designAssistant } from "../../src/tools/design/index.ts";
+import { guidelinesValidator } from "../../src/tools/guidelines-validator.ts";
+import { memoryContextOptimizer } from "../../src/tools/memory-context-optimizer.ts";
+import { mermaidDiagramGenerator } from "../../src/tools/mermaid-diagram-generator.ts";
+import { modelCompatibilityChecker } from "../../src/tools/model-compatibility-checker.ts";
+import { domainNeutralPromptBuilder } from "../../src/tools/prompt/domain-neutral-prompt-builder.ts";
+import { hierarchicalPromptBuilder } from "../../src/tools/prompt/hierarchical-prompt-builder.ts";
+import { securityHardeningPromptBuilder } from "../../src/tools/prompt/security-hardening-prompt-builder.ts";
+import { sparkPromptBuilder } from "../../src/tools/prompt/spark-prompt-builder.ts";
+import { sprintTimelineCalculator } from "../../src/tools/sprint-timeline-calculator.ts";
 
 describe("MCP Server Index Integration", () => {
 	beforeAll(async () => {

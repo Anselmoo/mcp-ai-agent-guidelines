@@ -4,8 +4,8 @@ import { beforeAll, describe, expect, it } from "vitest";
 import {
 	confirmationPromptBuilder,
 	constraintManager,
-} from "../../dist/tools/design/index.js";
-import type { DesignAssistantRequest } from "../../dist/tools/design/types.js";
+} from "../../src/tools/design/index.ts";
+import type { DesignAssistantRequest } from "../../src/tools/design/types.ts";
 
 describe("Design Workflow Integration - Coverage Enhancement", () => {
 	beforeAll(async () => {

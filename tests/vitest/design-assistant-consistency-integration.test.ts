@@ -1,6 +1,6 @@
 // Design Assistant Constraint Consistency Enforcement Integration Test
 import { beforeEach, describe, expect, it } from "vitest";
-import { designAssistant } from "../../dist/tools/design/index.js";
+import { designAssistant } from "../../src/tools/design/index.ts";
 
 describe("Design Assistant - Constraint Consistency Enforcement Integration", () => {
 	beforeEach(async () => {

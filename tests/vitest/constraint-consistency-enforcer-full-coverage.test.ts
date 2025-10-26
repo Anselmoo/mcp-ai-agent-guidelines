@@ -1,11 +1,11 @@
 // Comprehensive tests for constraint-consistency-enforcer.ts
 // Targets all public methods and uncovered branches (232 lines)
 import { beforeEach, describe, expect, it } from "vitest";
-import { constraintConsistencyEnforcer } from "../../dist/tools/design/constraint-consistency-enforcer.js";
+import { constraintConsistencyEnforcer } from "../../src/tools/design/constraint-consistency-enforcer.ts";
 import type {
 	ConstraintRule,
 	DesignSessionState,
-} from "../../dist/tools/design/types/index.js";
+} from "../../src/tools/design/types/index.ts";
 
 describe("Constraint Consistency Enforcer - Complete Coverage", () => {
 	beforeEach(async () => {

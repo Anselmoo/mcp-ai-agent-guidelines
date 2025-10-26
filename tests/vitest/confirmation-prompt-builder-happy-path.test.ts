@@ -1,7 +1,7 @@
 // Confirmation Prompt Builder - Happy Path & Private Method Coverage Tests
 import { beforeAll, describe, expect, it } from "vitest";
-import { confirmationPromptBuilder } from "../../dist/tools/design/confirmation-prompt-builder.js";
-import type { DesignSessionState } from "../../dist/tools/design/types/index.js";
+import { confirmationPromptBuilder } from "../../src/tools/design/confirmation-prompt-builder.ts";
+import type { DesignSessionState } from "../../src/tools/design/types/index.ts";
 
 describe("Confirmation Prompt Builder - Happy Path & Private Methods", () => {
 	beforeAll(async () => {

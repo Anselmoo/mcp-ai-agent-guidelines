@@ -1,13 +1,13 @@
 // Comprehensive Coverage Tests for confirmation-prompt-builder.ts
 // Targets all 19 methods and uncovered branches (435 lines)
 import { beforeEach, describe, expect, it } from "vitest";
-import { confirmationPromptBuilder } from "../../dist/tools/design/confirmation-prompt-builder.js";
+import { confirmationPromptBuilder } from "../../src/tools/design/confirmation-prompt-builder.ts";
 import type {
 	Artifact,
 	ConstraintRule,
 	DesignPhase,
 	DesignSessionState,
-} from "../../dist/tools/design/types/index.js";
+} from "../../src/tools/design/types/index.ts";
 
 describe("Confirmation Prompt Builder - Complete Coverage", () => {
 	beforeEach(async () => {

@@ -1,12 +1,10 @@
 // Cross-Session Consistency Enforcer Tests
 import { beforeAll, describe, expect, it } from "vitest";
-import { crossSessionConsistencyEnforcer } from "../../dist/tools/design/cross-session-consistency-enforcer.js";
+import { crossSessionConsistencyEnforcer } from "../../src/tools/design/cross-session-consistency-enforcer.ts";
 import type {
 	ConstraintDecision,
-	CrossSessionConsistencyReport,
 	DesignSessionState,
-	EnforcementPrompt,
-} from "../../dist/tools/design/types.js";
+} from "../../src/tools/design/types.ts";
 
 describe("Cross-Session Consistency Enforcer", () => {
 	beforeAll(async () => {
@@ -86,7 +84,7 @@ describe("Cross-Session Consistency Enforcer", () => {
 				id: "requirements",
 				name: "Requirements",
 				description: "Requirements phase",
-				status: "active",
+				status: "in-progress",
 				inputs: ["stakeholders", "objectives"],
 				outputs: ["requirements"],
 				criteria: ["Functional requirements", "Non-functional requirements"],
@@ -96,11 +94,16 @@ describe("Cross-Session Consistency Enforcer", () => {
 			},
 		},
 		artifacts: [],
-		metadata: {},
-		events: [],
+		coverage: {
+			overall: 80,
+			phases: { discovery: 85, requirements: 80 },
+			constraints: { context_clarity: 90, functional_requirements: 75 },
+			assumptions: {},
+			documentation: {},
+			testCoverage: 85,
+		},
+		history: [],
 		status: "active",
-		createdAt: new Date().toISOString(),
-		updatedAt: new Date().toISOString(),
 	});
 
 	const createTestConstraintDecision = (
@@ -270,7 +273,7 @@ describe("Cross-Session Consistency Enforcer", () => {
 				report,
 			);
 
-		const patternPrompts = prompts.filter(
+		const _patternPrompts = prompts.filter(
 			(p) => p.type === "pattern_confirmation",
 		);
 		// Pattern prompts may or may not be generated depending on pattern confidence
@@ -342,7 +345,9 @@ describe("Cross-Session Consistency Enforcer", () => {
 		const invalidDecision = {
 			action: "applied",
 			// Missing required fields
-		} as any;
+		} as unknown as Parameters<
+			typeof crossSessionConsistencyEnforcer.recordConstraintDecision
+		>[2];
 
 		await expect(
 			crossSessionConsistencyEnforcer.recordConstraintDecision(
@@ -493,11 +498,10 @@ describe("Cross-Session Consistency Edge Cases", () => {
 			artifacts: [],
 			metadata: {},
 			events: [],
-			status: "active",
+			status: "in-progress",
 			createdAt: new Date().toISOString(),
 			updatedAt: new Date().toISOString(),
-		} as any;
-
+		} as unknown as DesignSessionState;
 		const report =
 			await crossSessionConsistencyEnforcer.enforceConsistency(sessionState);
 
@@ -525,11 +529,10 @@ describe("Cross-Session Consistency Edge Cases", () => {
 			artifacts: [],
 			metadata: {},
 			events: [],
-			status: "active",
+			status: "in-progress",
 			createdAt: new Date().toISOString(),
 			updatedAt: new Date().toISOString(),
-		} as any;
-
+		} as unknown as DesignSessionState;
 		await expect(
 			crossSessionConsistencyEnforcer.enforceConsistency(sessionState),
 		).resolves.not.toThrow();

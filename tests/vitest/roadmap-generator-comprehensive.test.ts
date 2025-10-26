@@ -1,10 +1,10 @@
 // Comprehensive test suite for roadmap-generator.ts to maximize function coverage
 import { describe, expect, it } from "vitest";
-import { roadmapGenerator } from "../../dist/tools/design/roadmap-generator.js";
+import { roadmapGenerator } from "../../src/tools/design/roadmap-generator.ts";
 import type {
 	DesignPhase,
 	DesignSessionState,
-} from "../../dist/tools/design/types.js";
+} from "../../src/tools/design/types.ts";
 
 describe("Roadmap Generator Comprehensive Function Coverage", () => {
 	const createTestSessionState = (): DesignSessionState => ({

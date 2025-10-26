@@ -1,10 +1,10 @@
 // Comprehensive test suite for pivot-module.ts to maximize function coverage
 import { beforeEach, describe, expect, it } from "vitest";
-import { pivotModule } from "../../dist/tools/design/pivot-module.js";
+import { pivotModule } from "../../src/tools/design/pivot-module.ts";
 import type {
 	DesignSessionState,
 	PivotRequest,
-} from "../../dist/tools/design/types.js";
+} from "../../src/tools/design/types.ts";
 
 describe("Pivot Module Comprehensive Function Coverage", () => {
 	beforeEach(async () => {

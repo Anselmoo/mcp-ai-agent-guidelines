@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // Test suite for Methodology Selector functionality
-import { methodologySelector } from "../../dist/tools/design/methodology-selector.js";
+import { methodologySelector } from "../../src/tools/design/methodology-selector.js";
 
 async function testMethodologySelector() {
 	console.log("🔬 Testing Methodology Selector...");

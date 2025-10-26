@@ -2,9 +2,7 @@ import { describe, expect, it } from "vitest";
 
 describe("Basic Function Coverage Tests", () => {
 	it("should exercise design assistant initialization and core functions", async () => {
-		const { designAssistant } = await import(
-			"../../dist/tools/design/index.js"
-		);
+		const { designAssistant } = await import("../../src/tools/design/index.js");
 
 		// Test initialization
 		await designAssistant.initialize();
@@ -32,7 +30,7 @@ describe("Basic Function Coverage Tests", () => {
 
 	it("should test additional mermaid diagram types for coverage", async () => {
 		const { mermaidDiagramGenerator } = await import(
-			"../../dist/tools/mermaid-diagram-generator.js"
+			"../../src/tools/mermaid-diagram-generator.js"
 		);
 
 		// Test additional diagram types to hit more functions
@@ -55,7 +53,7 @@ describe("Basic Function Coverage Tests", () => {
 
 	it("should test edge cases in existing tools", async () => {
 		const { codeHygieneAnalyzer } = await import(
-			"../../dist/tools/code-hygiene-analyzer.js"
+			"../../src/tools/code-hygiene-analyzer.js"
 		);
 
 		// Test with edge case inputs
@@ -76,7 +74,7 @@ describe("Basic Function Coverage Tests", () => {
 
 	it("should test comprehensive model compatibility scenarios", async () => {
 		const { modelCompatibilityChecker } = await import(
-			"../../dist/tools/model-compatibility-checker.js"
+			"../../src/tools/model-compatibility-checker.js"
 		);
 
 		// Test different budget scenarios
@@ -94,7 +92,7 @@ describe("Basic Function Coverage Tests", () => {
 
 	it("should test memory optimizer with different strategies", async () => {
 		const { memoryContextOptimizer } = await import(
-			"../../dist/tools/memory-context-optimizer.js"
+			"../../src/tools/memory-context-optimizer.js"
 		);
 
 		const strategies = ["aggressive", "conservative", "balanced"];
@@ -110,7 +108,7 @@ describe("Basic Function Coverage Tests", () => {
 
 	it("should test gap analysis with different types", async () => {
 		const { gapFrameworksAnalyzers } = await import(
-			"../../dist/tools/analysis/gap-frameworks-analyzers.js"
+			"../../src/tools/analysis/gap-frameworks-analyzers.js"
 		);
 
 		const types = ["capability", "process", "technology", "skills"];
@@ -128,7 +126,7 @@ describe("Basic Function Coverage Tests", () => {
 
 	it("should test strategy frameworks with different types", async () => {
 		const { strategyFrameworksBuilder } = await import(
-			"../../dist/tools/analysis/strategy-frameworks-builder.js"
+			"../../src/tools/analysis/strategy-frameworks-builder.js"
 		);
 
 		const frameworks = ["swot", "pest", "ansoffMatrix"];
@@ -145,7 +143,7 @@ describe("Basic Function Coverage Tests", () => {
 
 	it("should test hierarchical prompt builder variations", async () => {
 		const { hierarchicalPromptBuilder } = await import(
-			"../../dist/tools/prompt/hierarchical-prompt-builder.js"
+			"../../src/tools/prompt/hierarchical-prompt-builder.js"
 		);
 
 		// Test with different providers
@@ -163,7 +161,7 @@ describe("Basic Function Coverage Tests", () => {
 
 	it("should test security hardening with different scopes", async () => {
 		const { securityHardeningPromptBuilder } = await import(
-			"../../dist/tools/prompt/security-hardening-prompt-builder.js"
+			"../../src/tools/prompt/security-hardening-prompt-builder.js"
 		);
 
 		const result = await securityHardeningPromptBuilder({

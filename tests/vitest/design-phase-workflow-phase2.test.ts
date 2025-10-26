@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { designPhaseWorkflow } from "../../dist/tools/design/design-phase-workflow.js";
-import type { DesignSessionConfig } from "../../dist/tools/design/types/index.js";
+import { designPhaseWorkflow } from "../../src/tools/design/design-phase-workflow.ts";
+import type { DesignSessionConfig } from "../../src/tools/design/types/index.ts";
 
 describe("Design Phase Workflow - Phase 2 Additional Tests", () => {
 	beforeEach(async () => {

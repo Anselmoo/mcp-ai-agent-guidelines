@@ -1,10 +1,10 @@
 // Test for design assistant integration with strategic pivot prompt builder
 import { beforeEach, describe, expect, it } from "vitest";
-import { designAssistant } from "../../dist/tools/design/design-assistant.js";
+import { designAssistant } from "../../src/tools/design/design-assistant.ts";
 import type {
 	DesignAssistantRequest,
 	DesignSessionConfig,
-} from "../../dist/tools/design/types.js";
+} from "../../src/tools/design/types.ts";
 
 describe("Design Assistant Strategic Pivot Integration", () => {
 	beforeEach(async () => {
@@ -78,14 +78,18 @@ describe("Design Assistant Strategic Pivot Integration", () => {
 		expect(pivotResponse.strategicPivotPrompt).toBeDefined();
 
 		// Validate the strategic pivot prompt structure
-		const strategicPrompt = pivotResponse.strategicPivotPrompt!;
-		expect(strategicPrompt.success).toBe(true);
-		expect(strategicPrompt.prompt).toContain("🔄 Strategic Pivot Guidance");
-		expect(strategicPrompt.metadata).toBeDefined();
-		expect(strategicPrompt.metadata.complexityScore).toBeGreaterThanOrEqual(0);
-		expect(strategicPrompt.metadata.entropyLevel).toBeGreaterThanOrEqual(0);
-		expect(strategicPrompt.nextSteps).toBeDefined();
-		expect(strategicPrompt.conversationStarters).toHaveLength(6);
+		if (pivotResponse.strategicPivotPrompt) {
+			const strategicPrompt = pivotResponse.strategicPivotPrompt;
+			expect(strategicPrompt.success).toBe(true);
+			expect(strategicPrompt.prompt).toContain("🔄 Strategic Pivot Guidance");
+			expect(strategicPrompt.metadata).toBeDefined();
+			expect(strategicPrompt.metadata.complexityScore).toBeGreaterThanOrEqual(
+				0,
+			);
+			expect(strategicPrompt.metadata.entropyLevel).toBeGreaterThanOrEqual(0);
+			expect(strategicPrompt.nextSteps).toBeDefined();
+			expect(strategicPrompt.conversationStarters).toHaveLength(6);
+		}
 	});
 
 	it("should handle strategic pivot prompt generation for monitoring scenarios", async () => {
@@ -116,18 +120,18 @@ describe("Design Assistant Strategic Pivot Integration", () => {
 		expect(pivotResponse.success).toBe(true);
 		expect(pivotResponse.strategicPivotPrompt).toBeDefined();
 
-		const strategicPrompt = pivotResponse.strategicPivotPrompt!;
-		expect(strategicPrompt.metadata.templatesIncluded).toHaveLength(0);
-		expect(strategicPrompt.metadata.space7Integration).toBe(false);
+		if (pivotResponse.strategicPivotPrompt) {
+			const strategicPrompt = pivotResponse.strategicPivotPrompt;
+			expect(strategicPrompt.metadata.templatesIncluded).toHaveLength(0);
+			expect(strategicPrompt.metadata.space7Integration).toBe(false);
 
-		// Verify that the prompt was generated successfully
-		expect(strategicPrompt.success).toBe(true);
-		expect(strategicPrompt.prompt).toContain("🔄 Strategic Pivot Guidance");
-		expect(strategicPrompt.nextSteps.length).toBeGreaterThan(0);
-
-		// Low complexity should result in monitoring guidance
-		expect(strategicPrompt.metadata.complexityScore).toBeLessThan(50);
-		expect(strategicPrompt.metadata.entropyLevel).toBeLessThan(50);
+			// Verify that the prompt was generated successfully
+			expect(strategicPrompt.success).toBe(true);
+			expect(strategicPrompt.prompt).toContain("🔄 Strategic Pivot Guidance");
+			expect(strategicPrompt.nextSteps.length).toBeGreaterThan(0);
+			expect(strategicPrompt.metadata.complexityScore).toBeLessThan(50);
+			expect(strategicPrompt.metadata.entropyLevel).toBeLessThan(50);
+		}
 	});
 
 	it("should handle error cases gracefully", async () => {
