@@ -3,7 +3,7 @@
 ### Metadata
 - Updated: 2025-10-26
 - Source tool: mcp_ai-agent-guid_code-hygiene-analyzer
-- Input file: /Users/hahn/LocalDocuments/GitHub_Forks/mcp-ai-agent-guidelines/demos/demo-code-analysis.py
+- Input file: /mcp-ai-agent-guidelines/demos/demo-code-analysis.py
 
 ### 📋 Summary
 | Key | Value |
