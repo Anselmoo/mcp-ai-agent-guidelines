@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { confirmationModule } from "../../dist/tools/design/confirmation-module.js";
-import type { DesignSessionState } from "../../dist/tools/design/types/index.js";
+import { confirmationModule } from "../../src/tools/design/confirmation-module.ts";
+import type { DesignSessionState } from "../../src/tools/design/types/index.ts";
 
 describe("Confirmation Module - Phase 2", () => {
 	beforeEach(async () => {

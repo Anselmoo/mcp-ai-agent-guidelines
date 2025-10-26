@@ -1,10 +1,10 @@
 // Comprehensive Spec Generator Tests - Target 29/30 functions
 import { beforeAll, describe, expect, it } from "vitest";
-import { specGenerator } from "../../dist/tools/design/spec-generator.js";
+import { specGenerator } from "../../src/tools/design/spec-generator.ts";
 import type {
 	DesignSessionState,
 	SpecRequest,
-} from "../../dist/tools/design/types.js";
+} from "../../src/tools/design/types.ts";
 
 describe("Spec Generator Comprehensive Testing", () => {
 	beforeAll(async () => {

@@ -1,7 +1,7 @@
 // Enhanced Confirmation Module Tests - Step by Step Rebuild
 import { beforeAll, describe, expect, it } from "vitest";
-import { confirmationModule } from "../../dist/tools/design/confirmation-module.js";
-import type { DesignSessionState } from "../../dist/tools/design/types.js";
+import { confirmationModule } from "../../src/tools/design/confirmation-module.ts";
+import type { DesignSessionState } from "../../src/tools/design/types.ts";
 
 describe("Enhanced Confirmation Module - Step by Step Rebuild", () => {
 	beforeAll(async () => {

@@ -4,60 +4,60 @@ import { describe, expect, it } from "vitest";
 import {
 	IMPLEMENTATION_STATUS as ADR_STATUS,
 	adrGenerator,
-} from "../../../../dist/tools/design/adr-generator.js";
+} from "../../../../src/tools/design/adr-generator.ts";
 import {
 	IMPLEMENTATION_STATUS as CONFIRMATION_MODULE_STATUS,
 	confirmationModule,
-} from "../../../../dist/tools/design/confirmation-module.js";
+} from "../../../../src/tools/design/confirmation-module.ts";
 import {
 	IMPLEMENTATION_STATUS as CONFIRMATION_PROMPT_STATUS,
 	confirmationPromptBuilder,
-} from "../../../../dist/tools/design/confirmation-prompt-builder.js";
+} from "../../../../src/tools/design/confirmation-prompt-builder.ts";
 import {
 	IMPLEMENTATION_STATUS as CONSTRAINT_CONSISTENCY_STATUS,
 	constraintConsistencyEnforcer,
-} from "../../../../dist/tools/design/constraint-consistency-enforcer.js";
+} from "../../../../src/tools/design/constraint-consistency-enforcer.ts";
 import {
 	IMPLEMENTATION_STATUS as CONSTRAINT_MANAGER_STATUS,
 	constraintManager,
-} from "../../../../dist/tools/design/constraint-manager.js";
+} from "../../../../src/tools/design/constraint-manager.ts";
 import {
 	IMPLEMENTATION_STATUS as COVERAGE_ENFORCER_STATUS,
 	coverageEnforcer,
-} from "../../../../dist/tools/design/coverage-enforcer.js";
+} from "../../../../src/tools/design/coverage-enforcer.ts";
 import {
 	IMPLEMENTATION_STATUS as CROSS_SESSION_STATUS,
 	crossSessionConsistencyEnforcer,
-} from "../../../../dist/tools/design/cross-session-consistency-enforcer.js";
+} from "../../../../src/tools/design/cross-session-consistency-enforcer.ts";
 import {
 	IMPLEMENTATION_STATUS as DESIGN_ASSISTANT_STATUS,
 	designAssistant,
-} from "../../../../dist/tools/design/design-assistant.js";
+} from "../../../../src/tools/design/design-assistant.ts";
 import {
 	IMPLEMENTATION_STATUS as DESIGN_PHASE_STATUS,
 	designPhaseWorkflow,
-} from "../../../../dist/tools/design/design-phase-workflow.js";
-import { DESIGN_MODULE_STATUS } from "../../../../dist/tools/design/index.js";
+} from "../../../../src/tools/design/design-phase-workflow.ts";
+import { DESIGN_MODULE_STATUS } from "../../../../src/tools/design/index.ts";
 import {
 	IMPLEMENTATION_STATUS as METHODOLOGY_STATUS,
 	methodologySelector,
-} from "../../../../dist/tools/design/methodology-selector.js";
+} from "../../../../src/tools/design/methodology-selector.ts";
 import {
 	IMPLEMENTATION_STATUS as PIVOT_STATUS,
 	pivotModule,
-} from "../../../../dist/tools/design/pivot-module.js";
+} from "../../../../src/tools/design/pivot-module.ts";
 import {
 	IMPLEMENTATION_STATUS as ROADMAP_STATUS,
 	roadmapGenerator,
-} from "../../../../dist/tools/design/roadmap-generator.js";
+} from "../../../../src/tools/design/roadmap-generator.ts";
 import {
 	IMPLEMENTATION_STATUS as SPEC_STATUS,
 	specGenerator,
-} from "../../../../dist/tools/design/spec-generator.js";
+} from "../../../../src/tools/design/spec-generator.ts";
 import {
 	IMPLEMENTATION_STATUS as STRATEGIC_PIVOT_STATUS,
 	strategicPivotPromptBuilder,
-} from "../../../../dist/tools/design/strategic-pivot-prompt-builder.js";
+} from "../../../../src/tools/design/strategic-pivot-prompt-builder.ts";
 
 /**
  * Module Implementation Status Classification

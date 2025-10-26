@@ -4,8 +4,8 @@
 import { describe, expect, it } from "vitest";
 
 // Import analysis tools
-import { gapFrameworksAnalyzers } from "../../dist/tools/analysis/gap-frameworks-analyzers.js";
-import { strategyFrameworksBuilder } from "../../dist/tools/analysis/strategy-frameworks-builder.js";
+import { gapFrameworksAnalyzers } from "../../src/tools/analysis/gap-frameworks-analyzers.ts";
+import { strategyFrameworksBuilder } from "../../src/tools/analysis/strategy-frameworks-builder.ts";
 
 describe("Analysis Tools Coverage Tests", () => {
 	describe("Gap Frameworks Analyzers", () => {

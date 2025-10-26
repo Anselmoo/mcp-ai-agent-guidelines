@@ -43,3 +43,9 @@ Changed imports from:
 ```typescript
 import { coverageEnforcer } from "../../dist/tools/design/coverage-enforcer.js";
 ```
+
+to:
+
+```typescript
+import { coverageEnforcer } from "../../src/tools/design/coverage-enforcer.js";
+```

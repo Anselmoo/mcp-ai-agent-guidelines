@@ -1,12 +1,11 @@
 // Cross-Session Constraint Consistency Enforcer Tests
 import { beforeEach, describe, expect, it } from "vitest";
-import { constraintConsistencyEnforcer } from "../../dist/tools/design/constraint-consistency-enforcer.js";
-import { constraintManager } from "../../dist/tools/design/constraint-manager.js";
+import { constraintConsistencyEnforcer } from "../../src/tools/design/constraint-consistency-enforcer.ts";
+import { constraintManager } from "../../src/tools/design/constraint-manager.ts";
 import type {
 	ConsistencyEnforcementRequest,
-	ConstraintRule,
 	DesignSessionState,
-} from "../../dist/tools/design/types.js";
+} from "../../src/tools/design/types.ts";
 
 // Shared helper function for creating test session states
 const createTestSessionState = (sessionId: string): DesignSessionState => ({
@@ -677,7 +676,7 @@ describe("Constraint Consistency Enforcer Integration", () => {
 	});
 
 	it("should handle missing constraint in validation", async () => {
-		const sessionState = createTestSessionState(
+		const _sessionState = createTestSessionState(
 			"missing-constraint-validation",
 		);
 

@@ -1,7 +1,7 @@
 ## 🗓️ Sprint Timeline Calculation
 
 ### Metadata
-- **Updated:** 2025-10-23
+- **Updated:** 2025-10-25
 - **Source tool:** mcp_ai-agent-guid_sprint-timeline-calculator
 
 
@@ -62,10 +62,10 @@ gantt
 	title Sprint Plan
 %% Accessibility: Title=Project Sprint Plan; Description=Gantt chart of sprints and tasks over time. %%
   section Sprint 1
-  Refactor functions :s1t0, 2025-10-23, 4d
-  Add tests :s1t1, 2025-10-27, 5d
-  Improve logging :s1t2, 2025-11-01, 3d
-  Docs :s1t3, 2025-11-04, 2d
+  Refactor functions :s1t0, 2025-10-25, 4d
+  Add tests :s1t1, 2025-10-29, 5d
+  Improve logging :s1t2, 2025-11-03, 3d
+  Docs :s1t3, 2025-11-06, 2d
 ```
 
 ## References

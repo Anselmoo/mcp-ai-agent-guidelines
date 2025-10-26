@@ -4,22 +4,22 @@
 import { describe, expect, it } from "vitest";
 
 // Import tools using working patterns from existing tests
-import { codeHygieneAnalyzer } from "../../dist/tools/code-hygiene-analyzer.js";
-import { constraintManager } from "../../dist/tools/design/constraint-manager.js";
-import { coverageEnforcer } from "../../dist/tools/design/coverage-enforcer.js";
-import { designAssistant } from "../../dist/tools/design/design-assistant.js";
-import { pivotModule } from "../../dist/tools/design/pivot-module.js";
-import { specGenerator } from "../../dist/tools/design/spec-generator.js";
-import type { DesignSessionState } from "../../dist/tools/design/types.js";
-import { guidelinesValidator } from "../../dist/tools/guidelines-validator.js";
-import { memoryContextOptimizer } from "../../dist/tools/memory-context-optimizer.js";
-import { mermaidDiagramGenerator } from "../../dist/tools/mermaid-diagram-generator.js";
-import { modelCompatibilityChecker } from "../../dist/tools/model-compatibility-checker.js";
-import { domainNeutralPromptBuilder } from "../../dist/tools/prompt/domain-neutral-prompt-builder.js";
-import { hierarchicalPromptBuilder } from "../../dist/tools/prompt/hierarchical-prompt-builder.js";
-import { securityHardeningPromptBuilder } from "../../dist/tools/prompt/security-hardening-prompt-builder.js";
-import { sparkPromptBuilder } from "../../dist/tools/prompt/spark-prompt-builder.js";
-import { sprintTimelineCalculator } from "../../dist/tools/sprint-timeline-calculator.js";
+import { codeHygieneAnalyzer } from "../../src/tools/code-hygiene-analyzer.ts";
+import { constraintManager } from "../../src/tools/design/constraint-manager.ts";
+import { coverageEnforcer } from "../../src/tools/design/coverage-enforcer.ts";
+import { designAssistant } from "../../src/tools/design/design-assistant.ts";
+import { pivotModule } from "../../src/tools/design/pivot-module.ts";
+import { specGenerator } from "../../src/tools/design/spec-generator.ts";
+import type { DesignSessionState } from "../../src/tools/design/types.ts";
+import { guidelinesValidator } from "../../src/tools/guidelines-validator.ts";
+import { memoryContextOptimizer } from "../../src/tools/memory-context-optimizer.ts";
+import { mermaidDiagramGenerator } from "../../src/tools/mermaid-diagram-generator.ts";
+import { modelCompatibilityChecker } from "../../src/tools/model-compatibility-checker.ts";
+import { domainNeutralPromptBuilder } from "../../src/tools/prompt/domain-neutral-prompt-builder.ts";
+import { hierarchicalPromptBuilder } from "../../src/tools/prompt/hierarchical-prompt-builder.ts";
+import { securityHardeningPromptBuilder } from "../../src/tools/prompt/security-hardening-prompt-builder.ts";
+import { sparkPromptBuilder } from "../../src/tools/prompt/spark-prompt-builder.ts";
+import { sprintTimelineCalculator } from "../../src/tools/sprint-timeline-calculator.ts";
 
 describe("Final Coverage Push - 70% Target", () => {
 	const createSessionState = (): DesignSessionState => ({
@@ -450,7 +450,7 @@ describe("Final Coverage Push - 70% Target", () => {
 					language: "javascript",
 				},
 				{
-					codeContent: "SELECT * FROM users WHERE id = " + userId,
+					codeContent: "SELECT * FROM users WHERE id = 123",
 					language: "sql",
 					securityScope: ["input-validation", "sql-injection"],
 				},
