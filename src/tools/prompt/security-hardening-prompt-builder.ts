@@ -3,7 +3,6 @@ import type { Technique } from "../shared/prompt-sections.js";
 import {
 	buildPitfallsSection as buildSharedPitfalls,
 	buildProviderTipsSection as buildSharedProviderTips,
-	buildTechniqueHintsSection as buildSharedTechniqueHints,
 	ProviderEnum,
 	StyleEnum,
 	TechniqueEnum,
@@ -14,6 +13,7 @@ import {
 	buildReferencesSection,
 	slugify,
 } from "../shared/prompt-utils.js";
+import { applyTechniques } from "./technique-applicator.js";
 
 const SecurityHardeningSchema = z.object({
 	// Core context
@@ -311,17 +311,16 @@ function buildSecurityHardeningPrompt(input: SecurityHardeningInput): string {
 		prompt += `Consider ${input.framework}-specific security patterns and recommendations\n`;
 	}
 
-	// Optional technique hints
+	// Optional technique hints - using context-aware TechniqueApplicator
 	if (input.includeTechniqueHints !== false) {
-		prompt += buildSharedTechniqueHints({
+		prompt += applyTechniques({
+			context: {
+				context: input.codeContext,
+				goal: `Security ${input.securityFocus.replace("-", " ")} analysis`,
+				requirements: input.securityRequirements,
+			},
 			techniques: input.techniques as Technique[] | undefined,
 			autoSelectTechniques: input.autoSelectTechniques,
-			contextText: [
-				input.codeContext,
-				input.securityFocus,
-				(input.securityRequirements || []).join("\n"),
-				(input.complianceStandards || []).join("\n"),
-			].join("\n"),
 		});
 	}
 
