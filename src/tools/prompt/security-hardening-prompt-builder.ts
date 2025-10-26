@@ -632,6 +632,7 @@ function generateContextualVulnerabilityGuidance(codeContext: string): string {
 
 	// Analyze code context for keywords that suggest specific security concerns
 	const contextLower = codeContext.toLowerCase();
+	let contextsDetected = 0;
 
 	section +=
 		"Based on the provided code context, pay special attention to:\n\n";
@@ -644,6 +645,7 @@ function generateContextualVulnerabilityGuidance(codeContext: string): string {
 		contextLower.includes("password") ||
 		contextLower.includes("token")
 	) {
+		contextsDetected++;
 		section += "**Authentication & Authorization:**\n";
 		section +=
 			"- Verify password storage uses strong hashing (bcrypt, Argon2, PBKDF2)\n";
@@ -664,6 +666,7 @@ function generateContextualVulnerabilityGuidance(codeContext: string): string {
 		contextLower.includes("select") ||
 		contextLower.includes("insert")
 	) {
+		contextsDetected++;
 		section += "**Database Security:**\n";
 		section +=
 			"- Check all SQL queries use parameterized statements, not string concatenation\n";
@@ -684,6 +687,7 @@ function generateContextualVulnerabilityGuidance(codeContext: string): string {
 		contextLower.includes("controller") ||
 		contextLower.includes("request")
 	) {
+		contextsDetected++;
 		section += "**API Security:**\n";
 		section +=
 			"- Validate all input parameters with strict type and format checking\n";
@@ -702,6 +706,7 @@ function generateContextualVulnerabilityGuidance(codeContext: string): string {
 		contextLower.includes("multipart") ||
 		contextLower.includes("attachment")
 	) {
+		contextsDetected++;
 		section += "**File Upload Security:**\n";
 		section +=
 			"- Validate file types using content inspection, not just extensions\n";
@@ -718,6 +723,7 @@ function generateContextualVulnerabilityGuidance(codeContext: string): string {
 		contextLower.includes("validate") ||
 		contextLower.includes("sanitize")
 	) {
+		contextsDetected++;
 		section += "**Input Validation:**\n";
 		section +=
 			"- Implement whitelist validation, not just blacklist filtering\n";
@@ -737,6 +743,7 @@ function generateContextualVulnerabilityGuidance(codeContext: string): string {
 		contextLower.includes("hash") ||
 		contextLower.includes("cipher")
 	) {
+		contextsDetected++;
 		section += "**Cryptography:**\n";
 		section +=
 			"- Verify use of modern, approved cryptographic algorithms (AES-256, RSA-2048+)\n";
@@ -756,6 +763,7 @@ function generateContextualVulnerabilityGuidance(codeContext: string): string {
 		contextLower.includes("jwt") ||
 		contextLower.includes("bearer")
 	) {
+		contextsDetected++;
 		section += "**Session Management:**\n";
 		section +=
 			"- Check session cookies have HttpOnly, Secure, and SameSite flags\n";
@@ -773,6 +781,7 @@ function generateContextualVulnerabilityGuidance(codeContext: string): string {
 		contextLower.includes("log") ||
 		contextLower.includes("debug")
 	) {
+		contextsDetected++;
 		section += "**Error Handling & Logging:**\n";
 		section +=
 			"- Ensure error messages don't expose sensitive information or stack traces\n";
@@ -787,7 +796,7 @@ function generateContextualVulnerabilityGuidance(codeContext: string): string {
 	}
 
 	// If no specific context detected, provide general guidance
-	if (!section.includes("**")) {
+	if (contextsDetected === 0) {
 		section += "**General Security Review:**\n";
 		section += "- Apply OWASP Top 10 security checks relevant to the code\n";
 		section +=
