@@ -14,6 +14,9 @@ import {
 	additionalOperationsService,
 	artifactGenerationService,
 	consistencyService,
+	detectFramework,
+	detectLanguage,
+	generateContextAwareRecommendations,
 	phaseManagementService,
 	sessionManagementService,
 } from "./services/index.js";
@@ -41,6 +44,7 @@ const _DesignAssistantRequestSchema = z.object({
 		"enforce-cross-session-consistency",
 		"generate-enforcement-prompts",
 		"generate-constraint-documentation",
+		"generate-context-aware-guidance",
 	]),
 	sessionId: z.string(),
 	config: z.any().optional(), // DesignSessionConfig
@@ -73,7 +77,8 @@ export interface DesignAssistantRequest {
 		| "select-methodology"
 		| "enforce-cross-session-consistency"
 		| "generate-enforcement-prompts"
-		| "generate-constraint-documentation";
+		| "generate-constraint-documentation"
+		| "generate-context-aware-guidance";
 	sessionId: string;
 	config?: DesignSessionConfig;
 	content?: string;
@@ -285,6 +290,13 @@ class DesignAssistantImpl {
 					return artifactGenerationService.generateConstraintDocumentation(
 						sessionId,
 					);
+				case "generate-context-aware-guidance":
+					if (!request.content) {
+						throw new Error(
+							"Content is required for generate-context-aware-guidance action",
+						);
+					}
+					return this.generateContextAwareGuidance(sessionId, request.content);
 				default:
 					throw new ConfigurationError(`Unknown action: ${action}`, {
 						action,
@@ -306,6 +318,61 @@ class DesignAssistantImpl {
 	}
 
 	// Utility methods
+	async generateContextAwareGuidance(
+		sessionId: string,
+		codeContext: string,
+	): Promise<DesignAssistantResponse> {
+		await this.initialize();
+
+		try {
+			const language = detectLanguage(codeContext);
+			const framework = detectFramework(codeContext);
+			const guidanceText = generateContextAwareRecommendations(codeContext);
+
+			return {
+				success: true,
+				sessionId,
+				status: "guidance-generated",
+				message: `Generated context-aware design guidance for ${language}${framework ? ` with ${framework} framework` : ""}`,
+				recommendations: [
+					`Detected language: ${language}`,
+					...(framework ? [`Detected framework: ${framework}`] : []),
+					"Review the detailed guidance in the artifacts",
+				],
+				artifacts: [
+					{
+						id: `guidance-${Date.now()}`,
+						name: "Context-Aware Design Guidance",
+						type: "specification" as const,
+						content: guidanceText,
+						format: "markdown",
+						timestamp: new Date().toISOString(),
+						metadata: {
+							generatedAt: new Date().toISOString(),
+							detectedLanguage: language,
+							detectedFramework: framework,
+						},
+					},
+				],
+				data: {
+					detectedLanguage: language,
+					detectedFramework: framework,
+					guidanceLength: guidanceText.length,
+				},
+			};
+		} catch (error) {
+			return {
+				success: false,
+				sessionId,
+				status: "error",
+				message:
+					error instanceof Error ? error.message : "Unknown error occurred",
+				recommendations: ["Check the code context and try again"],
+				artifacts: [],
+			};
+		}
+	}
+
 	async getActiveSessions(): Promise<string[]> {
 		return sessionManagementService.getActiveSessions();
 	}

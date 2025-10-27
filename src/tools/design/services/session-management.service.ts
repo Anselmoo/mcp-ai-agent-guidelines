@@ -11,6 +11,10 @@ import type {
 	MethodologyProfile,
 	MethodologySelection,
 } from "../types/index.js";
+import {
+	detectFramework,
+	detectLanguage,
+} from "./context-pattern-analyzer.service.js";
 
 export interface SessionManagementResponse {
 	success: boolean;
@@ -141,6 +145,24 @@ class SessionManagementServiceImpl {
 
 		const artifacts = methodologyADR ? [methodologyADR.artifact] : [];
 
+		// Generate context-aware design recommendations based on code/project context
+		const codeContext = config.context || "";
+		const detectedLanguage = detectLanguage(codeContext);
+		const detectedFramework = detectFramework(codeContext);
+		const contextRecommendations: string[] = [];
+
+		if (detectedLanguage !== "auto-detect") {
+			contextRecommendations.push(
+				`Detected ${detectedLanguage} - apply language-specific SOLID principles and design patterns`,
+			);
+		}
+
+		if (detectedFramework) {
+			contextRecommendations.push(
+				`Detected ${detectedFramework} framework - follow ${detectedFramework}-specific architecture patterns and best practices`,
+			);
+		}
+
 		return {
 			success: true,
 			sessionId,
@@ -160,12 +182,15 @@ class SessionManagementServiceImpl {
 							`Follow ${methodologySelection.selected.phases.length} phases: ${methodologySelection.selected.phases.join(" → ")}`,
 						]
 					: []),
+				...contextRecommendations,
 			],
 			artifacts,
 			coverageReport: coverageResult,
 			data: {
 				methodologySelection,
 				methodologyProfile,
+				detectedLanguage,
+				detectedFramework,
 			},
 		};
 	}
