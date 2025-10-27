@@ -492,4 +492,72 @@ describe("dependency-auditor", () => {
 		expect(text).toMatch(/\*\*request@\^2\.88\.0\*\*/);
 		expect(text).toMatch(/💡 \*\*Recommendation\*\*/);
 	});
+
+	it("does not flag lodash 4.17.21 or higher as vulnerable", async () => {
+		const packageJson = JSON.stringify({
+			name: "test-project",
+			version: "1.0.0",
+			dependencies: {
+				lodash: "^4.17.21",
+			},
+		});
+
+		const result = await dependencyAuditor({
+			packageJsonContent: packageJson,
+			checkVulnerabilities: true,
+			analyzeBundleSize: false,
+			includeReferences: false,
+			includeMetadata: false,
+		});
+
+		const text =
+			result.content[0].type === "text" ? result.content[0].text : "";
+		expect(text).not.toMatch(/Known Vulnerabilities.*lodash/i);
+		expect(text).toMatch(/No Issues Detected/i);
+	});
+
+	it("does not flag axios 1.6.0 or higher as vulnerable", async () => {
+		const packageJson = JSON.stringify({
+			name: "test-project",
+			version: "1.0.0",
+			dependencies: {
+				axios: "^1.6.0",
+			},
+		});
+
+		const result = await dependencyAuditor({
+			packageJsonContent: packageJson,
+			checkVulnerabilities: true,
+			checkOutdated: false,
+			includeReferences: false,
+			includeMetadata: false,
+		});
+
+		const text =
+			result.content[0].type === "text" ? result.content[0].text : "";
+		expect(text).not.toMatch(/Known Vulnerabilities.*axios/i);
+		expect(text).toMatch(/No Issues Detected/i);
+	});
+
+	it("flags axios 1.5.x as vulnerable", async () => {
+		const packageJson = JSON.stringify({
+			name: "test-project",
+			version: "1.0.0",
+			dependencies: {
+				axios: "^1.5.0",
+			},
+		});
+
+		const result = await dependencyAuditor({
+			packageJsonContent: packageJson,
+			checkVulnerabilities: true,
+			includeReferences: false,
+			includeMetadata: false,
+		});
+
+		const text =
+			result.content[0].type === "text" ? result.content[0].text : "";
+		expect(text).toMatch(/Known Vulnerabilities/i);
+		expect(text).toMatch(/axios/i);
+	});
 });

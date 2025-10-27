@@ -189,10 +189,6 @@ function analyzeDependencies(
 				reason: "Deprecated in favor of ESLint",
 				alternative: "Use @typescript-eslint/eslint-plugin",
 			},
-			"@types/express": {
-				reason: "May be outdated for Express 5.x",
-				alternative: "Check if Express 5.x has built-in types",
-			},
 		};
 
 		for (const pkg of packages) {
@@ -212,9 +208,15 @@ function analyzeDependencies(
 
 	// Check for known vulnerable patterns
 	if (input.checkVulnerabilities) {
-		// Check for old lodash versions
+		// Check for vulnerable lodash versions (below 4.17.21)
 		const lodashPkg = packages.find((p) => p.name === "lodash");
-		if (lodashPkg?.version.match(/^[~^]?[34]\./)) {
+		if (
+			lodashPkg &&
+			(lodashPkg.version.match(/^[~^]?[0-3]\./) ||
+				lodashPkg.version.match(
+					/^[~^]?4\.(0|1[0-6]|17\.(0|1[0-9]|20))($|[^\d])/,
+				))
+		) {
 			issues.push({
 				package: "lodash",
 				version: lodashPkg.version,
@@ -241,9 +243,13 @@ function analyzeDependencies(
 			});
 		}
 
-		// Check for axios version (older versions have vulnerabilities)
+		// Check for vulnerable axios versions (below 1.6.0)
 		const axiosPkg = packages.find((p) => p.name === "axios");
-		if (axiosPkg?.version.match(/^[~^]?0\.[0-9]+\./)) {
+		if (
+			axiosPkg &&
+			(axiosPkg.version.match(/^[~^]?0\./) ||
+				axiosPkg.version.match(/^[~^]?1\.[0-5]($|\.)/))
+		) {
 			issues.push({
 				package: "axios",
 				version: axiosPkg.version,
