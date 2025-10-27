@@ -193,6 +193,29 @@ const prompts = [
 			},
 		],
 	},
+	{
+		name: "agent-workflow-prompt",
+		description:
+			"Multi-tool agent workflow prompt template demonstrating agent-relative calls for complex tasks",
+		arguments: [
+			{
+				name: "workflow_goal",
+				description: "The overall goal of the multi-tool workflow",
+				required: true,
+			},
+			{
+				name: "context",
+				description: "Project context and background information",
+				required: false,
+			},
+			{
+				name: "tools_needed",
+				description:
+					"Comma-separated list of tools needed (e.g., code-analysis, architecture-design, testing)",
+				required: false,
+			},
+		],
+	},
 ];
 
 export async function listPrompts() {
@@ -351,6 +374,70 @@ export async function getPrompt(name: string, args: PromptArgs) {
 				forcePromptMdStyle: false,
 			});
 			break;
+		case "agent-workflow-prompt": {
+			// Generate a multi-tool workflow prompt demonstrating agent-relative calls
+			const goal = args.workflow_goal as string;
+			const context = args.context as string | undefined;
+			const toolsNeeded = args.tools_needed as string | undefined;
+
+			const workflowPrompt = `# Multi-Tool Agent Workflow
+
+${context ? `## Context\n${context}\n\n` : ""}## Goal
+${goal}
+
+## Workflow Steps
+
+This workflow demonstrates agent-relative call patterns for the AI Agent Guidelines MCP server.
+
+### Step 1: Initial Analysis
+Use the clean-code-scorer MCP to establish baseline quality metrics.
+Use the code-hygiene-analyzer MCP to identify technical debt and outdated patterns.
+
+### Step 2: Strategic Planning
+${toolsNeeded?.includes("strategy") ? "Use the strategy-frameworks-builder MCP to generate SWOT analysis and other strategic frameworks.\n" : ""}Use the gap-frameworks-analyzers MCP to identify gaps between current and desired state.
+
+### Step 3: Design & Architecture
+${toolsNeeded?.includes("architecture") ? "Use the architecture-design-prompt-builder MCP to create detailed architecture planning prompts.\n" : ""}Use the design-assistant MCP for multi-phase design workflow management.
+Use the mermaid-diagram-generator MCP to visualize architecture and workflows.
+
+### Step 4: Implementation Guidance
+Use the hierarchical-prompt-builder MCP to create structured implementation prompts.
+${toolsNeeded?.includes("security") ? "Use the security-hardening-prompt-builder MCP for security-focused analysis.\n" : ""}Use the model-compatibility-checker MCP to select appropriate AI models for different tasks.
+
+### Step 5: Quality Assurance
+${toolsNeeded?.includes("testing") ? "Use the iterative-coverage-enhancer MCP to plan and improve test coverage.\n" : ""}Use the dependency-auditor MCP to check for security vulnerabilities.
+Use the guidelines-validator MCP to ensure adherence to best practices.
+
+### Step 6: Timeline & Planning
+Use the sprint-timeline-calculator MCP to estimate implementation timeline.
+Use the memory-context-optimizer MCP to optimize prompts for efficiency.
+
+### Step 7: Documentation
+Use the documentation-generator-prompt-builder MCP to create comprehensive documentation.
+Use the mermaid-diagram-generator MCP for visual documentation artifacts.
+
+## Expected Outputs
+- Baseline quality assessment
+- Strategic analysis and gap identification
+- Architecture diagrams and design artifacts
+- Implementation prompts and guidelines
+- Test coverage plan
+- Security audit results
+- Timeline estimates
+- Complete documentation
+
+## Agent Instructions
+1. Execute steps sequentially, using outputs from earlier steps to inform later ones
+2. Request confirmation before proceeding with major decisions
+3. Provide summary reports after each phase
+4. Flag any missing information or ambiguities
+5. Suggest additional tools if needed for comprehensive coverage`;
+
+			result = {
+				content: [{ type: "text", text: workflowPrompt }],
+			};
+			break;
+		}
 		default:
 			throw new Error(`Unknown prompt: ${name}`);
 	}

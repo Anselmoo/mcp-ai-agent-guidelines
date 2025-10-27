@@ -1349,4 +1349,690 @@ const chain = await promptChainingBuilder({
 			},
 		],
 	},
+	// Agent-relative call patterns and examples
+	{
+		id: "agent-relative-calls",
+		title: "Agent-Relative Call Patterns for MCP Tools",
+		version: "1.0.0",
+		lastUpdated: updated,
+		tags: ["mcp", "agent", "patterns", "prompting", "workflows"],
+		segments: [
+			{ type: "heading", level: 2, text: "Overview" },
+			{
+				type: "paragraph",
+				text: "Agent-relative calls enable AI agents to discover, invoke, and chain MCP tools contextually through natural language prompts. This guide demonstrates patterns for using the AI Agent Guidelines MCP server's tools in agent-driven workflows.",
+			},
+			{
+				type: "callout",
+				text: "Following the Model Context Protocol standard, this server provides 22+ tools, prompts, and resources that agents can invoke using clear, descriptive patterns like 'Use the [Tool] MCP to...'",
+			},
+			{ type: "heading", level: 2, text: "What Are Agent-Relative Calls?" },
+			{
+				type: "paragraph",
+				text: "Agent-relative calls are natural language patterns that enable agents to:",
+			},
+			{
+				type: "list",
+				items: [
+					"Discover available tools through descriptive names and purposes",
+					"Understand when and how to invoke specific tools contextually",
+					"Chain multiple tool calls to accomplish complex workflows",
+					"Adapt their approach based on tool outputs and feedback",
+				],
+			},
+			{ type: "heading", level: 2, text: "Core Prompt Patterns" },
+			{
+				type: "paragraph",
+				text: "Use these patterns to guide agents in invoking tools from this MCP server:",
+			},
+			{
+				type: "table",
+				headers: ["Pattern", "Example", "Tool Category"],
+				rows: [
+					[
+						"Use the [Tool] MCP to...",
+						"Use the hierarchical-prompt-builder MCP to create a structured prompt for code refactoring",
+						"Prompt Builders",
+					],
+					[
+						"Analyze using [Tool]...",
+						"Analyze using the code-hygiene-analyzer to identify technical debt",
+						"Code Analysis",
+					],
+					[
+						"Generate with [Tool]...",
+						"Generate with the mermaid-diagram-generator a system architecture diagram",
+						"Visualization",
+					],
+					[
+						"Validate using [Tool]...",
+						"Validate using the guidelines-validator that the implementation follows best practices",
+						"Validation",
+					],
+					[
+						"Check with [Tool]...",
+						"Check with the model-compatibility-checker which AI model best fits this task",
+						"Planning",
+					],
+				],
+			},
+			{ type: "heading", level: 2, text: "Tool Categories & Usage" },
+			{ type: "heading", level: 3, text: "1. Prompt Building Tools" },
+			{
+				type: "paragraph",
+				text: "Create structured, high-quality prompts for AI agents with various levels of specificity and focus areas.",
+			},
+			{
+				type: "code",
+				language: "markdown",
+				caption: "Example: Multi-step prompt building workflow",
+				code: `# Agent Prompt:
+Use the hierarchical-prompt-builder MCP to create a comprehensive code review prompt with:
+- Context: Legacy codebase modernization
+- Goal: Identify security vulnerabilities and performance issues
+- Requirements: Focus on authentication, data handling, and API endpoints
+- Include technique hints for chain-of-thought analysis
+
+Then use the security-hardening-prompt-builder MCP to create a focused security analysis prompt targeting:
+- OWASP Top 10 compliance
+- Input validation patterns
+- Authentication mechanisms`,
+			},
+			{
+				type: "list",
+				items: [
+					"**hierarchical-prompt-builder**: Structured prompts with clear context → goal → requirements hierarchy",
+					"**code-analysis-prompt-builder**: Code analysis prompts (security, performance, maintainability)",
+					"**architecture-design-prompt-builder**: System architecture and design planning prompts",
+					"**debugging-assistant-prompt-builder**: Systematic debugging and troubleshooting prompts",
+					"**documentation-generator-prompt-builder**: Technical documentation generation prompts",
+					"**security-hardening-prompt-builder**: Security-focused analysis with OWASP/compliance checks",
+					"**spark-prompt-builder**: UI/UX design prompts with color, typography, and animation specs",
+					"**domain-neutral-prompt-builder**: Generic workflow prompts with objectives and milestones",
+				],
+			},
+			{ type: "heading", level: 3, text: "2. Code Analysis & Quality Tools" },
+			{
+				type: "paragraph",
+				text: "Analyze code quality, identify technical debt, and improve test coverage.",
+			},
+			{
+				type: "code",
+				language: "markdown",
+				caption: "Example: Comprehensive code quality analysis",
+				code: `# Agent Prompt:
+I need to assess the quality of our authentication module. Please:
+
+1. Use the clean-code-scorer MCP to evaluate the codebase and provide a 0-100 quality score
+2. Use the code-hygiene-analyzer MCP to identify outdated patterns, unused dependencies, and code smells
+3. Use the iterative-coverage-enhancer MCP to analyze test coverage gaps and suggest test improvements
+4. Use the dependency-auditor MCP to check for security vulnerabilities in dependencies
+
+Provide a summary report with prioritized recommendations.`,
+			},
+			{
+				type: "list",
+				items: [
+					"**clean-code-scorer**: Comprehensive code quality scoring (0-100) with detailed metrics",
+					"**code-hygiene-analyzer**: Detect outdated patterns, unused dependencies, code smells",
+					"**iterative-coverage-enhancer**: Test coverage analysis with adaptive threshold recommendations",
+					"**dependency-auditor**: Security vulnerability scanning for project dependencies",
+					"**semantic-code-analyzer**: Semantic code analysis with symbol inspection and reference finding",
+				],
+			},
+			{ type: "heading", level: 3, text: "3. Strategy & Planning Tools" },
+			{
+				type: "paragraph",
+				text: "Strategic analysis frameworks and project planning utilities for agile development.",
+			},
+			{
+				type: "code",
+				language: "markdown",
+				caption: "Example: Strategic planning workflow",
+				code: `# Agent Prompt:
+We're planning a microservices migration. Help me create a strategic plan:
+
+1. Use the strategy-frameworks-builder MCP to generate:
+   - SWOT analysis for the migration
+   - Balanced Scorecard with objectives and KPIs
+   - Porter's Five Forces for competitive analysis
+
+2. Use the gap-frameworks-analyzers MCP to analyze:
+   - Current state: Monolithic architecture
+   - Desired state: Cloud-native microservices
+   - Frameworks: capability, technology, and strategic gaps
+
+3. Use the sprint-timeline-calculator MCP to estimate implementation timeline with team velocity considerations`,
+			},
+			{
+				type: "list",
+				items: [
+					"**strategy-frameworks-builder**: SWOT, Balanced Scorecard, VRIO, Porter's Five Forces, BCG Matrix, etc.",
+					"**gap-frameworks-analyzers**: Capability, performance, maturity, skills, technology, and process gap analysis",
+					"**sprint-timeline-calculator**: Agile sprint planning with velocity and complexity estimates",
+				],
+			},
+			{
+				type: "heading",
+				level: 3,
+				text: "4. Visualization & Documentation Tools",
+			},
+			{
+				type: "paragraph",
+				text: "Generate diagrams, visualizations, and documentation artifacts.",
+			},
+			{
+				type: "code",
+				language: "markdown",
+				caption: "Example: Architecture visualization",
+				code: `# Agent Prompt:
+Document our system architecture:
+
+Use the mermaid-diagram-generator MCP to create:
+1. A flowchart showing the user authentication flow
+2. A sequence diagram for the payment processing workflow
+3. An ER diagram of our database schema
+4. A class diagram showing the core domain models
+
+Generate these in Mermaid format suitable for markdown documentation.`,
+			},
+			{
+				type: "list",
+				items: [
+					"**mermaid-diagram-generator**: Generate flowcharts, sequence diagrams, ER diagrams, class diagrams, state machines, etc.",
+					"**memory-context-optimizer**: Optimize prompts for context window efficiency",
+					"**project-onboarding**: Scan and analyze project structure for developer onboarding",
+				],
+			},
+			{ type: "heading", level: 3, text: "5. Development Workflow Tools" },
+			{
+				type: "paragraph",
+				text: "Tools for validation, model selection, and workflow optimization.",
+			},
+			{
+				type: "list",
+				items: [
+					"**guidelines-validator**: Validate development practices against AI agent best practices",
+					"**model-compatibility-checker**: Recommend best AI models for specific tasks and requirements",
+					"**hierarchy-level-selector**: Select appropriate prompting hierarchy level (independent, direct, scaffolding)",
+					"**prompting-hierarchy-evaluator**: Evaluate and improve prompt effectiveness",
+					"**mode-switcher**: Switch between planning, editing, and analysis modes",
+					"**prompt-chaining-builder**: Create sequential prompt chains for complex workflows",
+					"**prompt-flow-builder**: Design parallel/conditional prompt flows with visual diagrams",
+				],
+			},
+			{ type: "heading", level: 3, text: "6. Design & Architecture Tools" },
+			{
+				type: "paragraph",
+				text: "Comprehensive design workflow tools for managing multi-phase design processes.",
+			},
+			{
+				type: "code",
+				language: "markdown",
+				caption: "Example: Complete design workflow",
+				code: `# Agent Prompt:
+I need to design a new feature for our application. Use the design-assistant MCP to:
+
+1. Start a design session for "Real-time collaboration feature"
+2. Advance through phases: discovery → requirements → architecture → implementation
+3. Generate artifacts including ADRs, specifications, and roadmap
+4. Validate consistency across all phases
+5. Enforce coverage requirements before advancing`,
+			},
+			{
+				type: "list",
+				items: [
+					"**design-assistant**: Multi-phase design workflow orchestration with constraint validation",
+				],
+			},
+			{ type: "heading", level: 2, text: "Multi-Tool Workflow Examples" },
+			{
+				type: "heading",
+				level: 3,
+				text: "Example 1: Complete Code Review & Improvement",
+			},
+			{
+				type: "code",
+				language: "markdown",
+				caption: "Agent prompt for comprehensive code review",
+				code: `# Complete Code Review Workflow
+
+I need a comprehensive code review and improvement plan for our authentication module.
+
+## Step 1: Initial Analysis
+Use the clean-code-scorer MCP to evaluate the authentication module code and provide a baseline quality score.
+
+## Step 2: Detailed Assessment
+Use the code-hygiene-analyzer MCP to identify:
+- Outdated authentication patterns
+- Unused dependencies
+- Security anti-patterns
+- Code smells in error handling
+
+## Step 3: Security Deep Dive
+Use the security-hardening-prompt-builder MCP to create a security analysis prompt focusing on:
+- OWASP Top 10 vulnerabilities
+- Authentication best practices
+- Session management security
+- Input validation patterns
+
+## Step 4: Test Coverage
+Use the iterative-coverage-enhancer MCP to:
+- Analyze current test coverage for auth module
+- Identify untested critical paths
+- Generate test suggestions for edge cases
+- Recommend coverage thresholds
+
+## Step 5: Dependencies
+Use the dependency-auditor MCP to check all authentication-related dependencies for known vulnerabilities.
+
+## Step 6: Documentation
+Use the mermaid-diagram-generator MCP to create:
+- Authentication flow sequence diagram
+- State machine for session lifecycle
+- Architecture diagram showing auth components
+
+## Step 7: Action Plan
+Use the sprint-timeline-calculator MCP to estimate the effort for implementing all recommended improvements.
+
+Compile all findings into a prioritized action plan with timelines.`,
+			},
+			{ type: "heading", level: 3, text: "Example 2: New Feature Development" },
+			{
+				type: "code",
+				language: "markdown",
+				caption: "Agent prompt for feature development workflow",
+				code: `# New Feature: Real-time Notifications
+
+We need to add real-time notifications to our application.
+
+## Phase 1: Planning & Design
+1. Use the design-assistant MCP to start a design session for "Real-time Notifications Feature"
+2. Use the strategy-frameworks-builder MCP to create a SWOT analysis for different implementation approaches (WebSockets vs Server-Sent Events vs Polling)
+3. Use the gap-frameworks-analyzers MCP to analyze capability gaps between current state and desired state
+
+## Phase 2: Architecture
+1. Use the architecture-design-prompt-builder MCP to create an architecture planning prompt
+2. Use the mermaid-diagram-generator MCP to create:
+   - System architecture diagram
+   - Sequence diagram for notification flow
+   - State machine for connection management
+
+## Phase 3: Implementation Planning
+1. Use the hierarchical-prompt-builder MCP to create structured implementation prompts for:
+   - Backend notification service
+   - WebSocket server setup
+   - Frontend notification UI
+2. Use the model-compatibility-checker MCP to select the best AI model for code generation
+3. Use the sprint-timeline-calculator MCP to estimate development timeline
+
+## Phase 4: Quality Assurance
+1. Use the guidelines-validator MCP to ensure the design follows best practices
+2. Use the iterative-coverage-enhancer MCP to plan test coverage strategy
+3. Use the security-hardening-prompt-builder MCP to create security review checklist
+
+## Phase 5: Documentation
+Use the documentation-generator-prompt-builder MCP to create:
+- API documentation
+- User guide for notification preferences
+- Developer guide for extending notification types`,
+			},
+			{
+				type: "heading",
+				level: 3,
+				text: "Example 3: Legacy System Modernization",
+			},
+			{
+				type: "code",
+				language: "markdown",
+				caption: "Agent prompt for legacy modernization",
+				code: `# Legacy CRM System Modernization
+
+Modernize our legacy PHP CRM system to a modern microservices architecture.
+
+## Assessment Phase
+1. Use the code-hygiene-analyzer MCP to scan the legacy codebase for:
+   - Outdated patterns and frameworks
+   - Security vulnerabilities
+   - Performance bottlenecks
+   - Technical debt hotspots
+
+2. Use the semantic-code-analyzer MCP to:
+   - Map dependencies between modules
+   - Identify highly coupled components
+   - Find dead code for removal
+
+3. Use the clean-code-scorer MCP to establish baseline quality metrics
+
+## Strategy Phase
+1. Use the strategy-frameworks-builder MCP to generate:
+   - SWOT analysis for modernization
+   - Porter's Five Forces for vendor/technology selection
+   - BCG Matrix for feature prioritization
+
+2. Use the gap-frameworks-analyzers MCP for:
+   - Technology gap analysis (PHP monolith → Node.js microservices)
+   - Skills gap analysis (team capabilities)
+   - Process gap analysis (waterfall → agile)
+
+## Design Phase
+1. Use the design-assistant MCP to manage the multi-phase design process
+2. Use the mermaid-diagram-generator MCP to visualize:
+   - Current architecture (as-is)
+   - Target architecture (to-be)
+   - Migration phases and dependencies
+
+3. Use the architecture-design-prompt-builder MCP to create detailed architecture planning prompts
+
+## Implementation Planning
+1. Use the sprint-timeline-calculator MCP to estimate migration timeline
+2. Use the prompt-chaining-builder MCP to create sequential migration steps
+3. Use the hierarchical-prompt-builder MCP for detailed implementation guidance
+
+## Validation
+1. Use the guidelines-validator MCP to ensure adherence to best practices
+2. Use the model-compatibility-checker MCP to select appropriate AI assistants for different phases
+3. Use the dependency-auditor MCP to validate all new dependencies`,
+			},
+			{
+				type: "heading",
+				level: 2,
+				text: "Best Practices for Agent-Relative Calls",
+			},
+			{ type: "heading", level: 3, text: "1. Be Specific About Goals" },
+			{
+				type: "paragraph",
+				text: "Clearly define what you want to accomplish and what output format you expect. Agents work best with explicit instructions.",
+			},
+			{
+				type: "code",
+				language: "markdown",
+				caption: "Good example",
+				code: `Use the hierarchical-prompt-builder MCP to create a code review prompt with:
+- Context: React application with TypeScript
+- Goal: Identify accessibility issues in UI components
+- Requirements: WCAG 2.1 AA compliance, keyboard navigation, screen reader support
+- Output: Structured markdown report with severity levels`,
+			},
+			{ type: "heading", level: 3, text: "2. Provide Context" },
+			{
+				type: "paragraph",
+				text: "Include relevant background information about your project, technology stack, and any constraints.",
+			},
+			{
+				type: "code",
+				language: "markdown",
+				caption: "Context example",
+				code: `Our e-commerce platform uses:
+- Node.js backend with Express
+- React frontend with Next.js
+- PostgreSQL database
+- Deployed on AWS with Docker
+
+Use the architecture-design-prompt-builder MCP to plan a migration to serverless architecture.`,
+			},
+			{ type: "heading", level: 3, text: "3. Chain Tools Logically" },
+			{
+				type: "paragraph",
+				text: "Order tool calls from analysis → planning → implementation → validation for best results.",
+			},
+			{
+				type: "list",
+				items: [
+					"**Analysis first**: Use code-hygiene-analyzer, clean-code-scorer before making changes",
+					"**Strategic planning**: Use strategy-frameworks-builder, gap-frameworks-analyzers for major decisions",
+					"**Design before implementation**: Use design-assistant, architecture-design-prompt-builder",
+					"**Validate continuously**: Use guidelines-validator, dependency-auditor throughout",
+					"**Document outcomes**: Use mermaid-diagram-generator, documentation-generator-prompt-builder",
+				],
+			},
+			{ type: "heading", level: 3, text: "4. Set Boundaries" },
+			{
+				type: "paragraph",
+				text: "Specify constraints, limitations, and what the agent should NOT do.",
+			},
+			{
+				type: "code",
+				language: "markdown",
+				caption: "Boundary setting example",
+				code: `Use the design-assistant MCP to plan the new feature, but:
+- DO NOT make any code changes yet
+- Focus only on the discovery and requirements phases
+- Skip implementation details until approved
+- Limit scope to the user authentication flow only`,
+			},
+			{ type: "heading", level: 3, text: "5. Request Confirmations" },
+			{
+				type: "paragraph",
+				text: "Ask agents to confirm understanding before proceeding with significant changes or decisions.",
+			},
+			{
+				type: "code",
+				language: "markdown",
+				caption: "Confirmation request example",
+				code: `Before using the sprint-timeline-calculator MCP to estimate the timeline, please:
+1. Summarize your understanding of the requirements
+2. List any assumptions you're making
+3. Identify any missing information needed
+4. Wait for my confirmation before proceeding`,
+			},
+			{ type: "heading", level: 2, text: "Tool Discovery & Selection" },
+			{
+				type: "paragraph",
+				text: "Agents can discover available tools through the MCP protocol's ListTools request. Each tool includes:",
+			},
+			{
+				type: "list",
+				items: [
+					"**name**: Descriptive identifier (e.g., 'hierarchical-prompt-builder')",
+					"**description**: Clear explanation of what the tool does",
+					"**inputSchema**: Detailed parameter descriptions and constraints",
+				],
+			},
+			{
+				type: "paragraph",
+				text: "When multiple tools could accomplish a task, agents should select based on:",
+			},
+			{
+				type: "table",
+				headers: ["Criterion", "Consideration", "Example"],
+				rows: [
+					[
+						"Specificity",
+						"More specialized tools for focused tasks",
+						"Use security-hardening-prompt-builder for security instead of generic code-analysis-prompt-builder",
+					],
+					[
+						"Scope",
+						"Match tool capabilities to task scope",
+						"Use design-assistant for multi-phase workflows, not single-purpose tools",
+					],
+					[
+						"Output Format",
+						"Choose tools that produce needed format",
+						"Use mermaid-diagram-generator for visual diagrams, not text descriptions",
+					],
+					[
+						"Integration",
+						"Consider which tools work well together",
+						"Use prompt-flow-builder for complex workflows instead of manual chaining",
+					],
+				],
+			},
+			{ type: "heading", level: 2, text: "Prompts & Resources" },
+			{
+				type: "paragraph",
+				text: "In addition to tools, this MCP server provides prompts and resources that agents can use:",
+			},
+			{ type: "heading", level: 3, text: "Available Prompts" },
+			{
+				type: "list",
+				items: [
+					"**code-analysis-prompt**: Comprehensive code analysis and review template",
+					"**spark-ui-prompt**: Spark UI design template for developer experiences",
+					"**hierarchical-task-prompt**: Structured task breakdown template",
+					"**architecture-design-prompt**: System architecture design and planning",
+					"**debugging-assistant-prompt**: Systematic debugging and troubleshooting",
+					"**documentation-generator-prompt**: Technical documentation generation",
+					"**security-analysis-prompt**: Security-focused code analysis with vulnerability assessment",
+				],
+			},
+			{ type: "heading", level: 3, text: "Available Resources" },
+			{
+				type: "list",
+				items: [
+					"**guidelines://core-development-principles**: Authoritative references for prompts, sprints, hygiene, Mermaid, memory",
+					"**guidelines://core-principles**: Fundamental AI agent development principles",
+					"**guidelines://prompt-templates**: Reusable prompt patterns and templates",
+					"**guidelines://development-checklists**: Comprehensive development workflow checklists",
+					"**guidelines://model-selection**: AI model selection guide based on task requirements",
+					"**guidelines://architecture-patterns**: Common architectural patterns and best practices",
+					"**guidelines://rapid-model-evolution**: Guidance for handling fast-changing model landscapes",
+					"**guidelines://external-references**: Selected URLs for grounding with live details",
+					"**guidelines://mcp-ts-insights**: MCP TypeScript SDK patterns for resources and tools",
+					"**guidelines://knowledge-base**: Offline summaries from public sources",
+					"**guidelines://mcp-advanced-functions**: MCP lifecycle management, notifications, completions",
+				],
+			},
+			{ type: "heading", level: 2, text: "Integration with Other MCP Servers" },
+			{
+				type: "paragraph",
+				text: "The AI Agent Guidelines MCP server is designed to work alongside other MCP servers in multi-tool agent workflows:",
+			},
+			{
+				type: "code",
+				language: "markdown",
+				caption: "Example: Combining multiple MCP servers",
+				code: `# Multi-MCP Workflow: Accessibility Compliance Review
+
+I need to ensure our web app meets WCAG 2.1 AA compliance standards.
+
+## Step 1: Design Analysis (Figma MCP)
+Use the Figma MCP to analyze our design file at [URL] for:
+- Color contrast ratios
+- Typography accessibility
+- Focus state indicators
+- Touch target sizes
+
+## Step 2: Issue Identification (GitHub MCP)
+Use the GitHub MCP to find open issues in our repository with labels:
+- accessibility
+- a11y
+- WCAG
+And categorize them by severity and component.
+
+## Step 3: Code Analysis (AI Agent Guidelines MCP)
+Use the security-hardening-prompt-builder MCP from AI Agent Guidelines to create a comprehensive accessibility audit prompt focusing on:
+- Semantic HTML structure
+- ARIA attributes usage
+- Keyboard navigation
+- Screen reader compatibility
+
+## Step 4: Test Planning (AI Agent Guidelines MCP)
+Use the iterative-coverage-enhancer MCP to analyze our accessibility test coverage and suggest:
+- Missing test scenarios
+- Edge cases for assistive technologies
+- Automated accessibility testing integration
+
+## Step 5: Implementation Plan (AI Agent Guidelines MCP)
+Use the sprint-timeline-calculator MCP to estimate effort for:
+- Fixing critical accessibility issues
+- Implementing automated testing
+- Documentation updates
+
+## Step 6: Testing (Playwright MCP)
+Use the Playwright MCP to create and run automated accessibility tests for:
+- Color contrast validation
+- Keyboard navigation flows
+- Screen reader announcements
+- Focus management
+
+## Step 7: Documentation (AI Agent Guidelines MCP)
+Use the mermaid-diagram-generator MCP to create:
+- Accessibility testing workflow diagram
+- Component accessibility decision tree
+Use the documentation-generator-prompt-builder MCP to create accessibility guidelines for the team.
+
+## Step 8: Issue Updates (GitHub MCP)
+Use the GitHub MCP to:
+- Update resolved accessibility issues with test results
+- Create new issues for remaining work
+- Link commits to accessibility improvements`,
+			},
+			{
+				type: "paragraph",
+				text: "This demonstrates how the AI Agent Guidelines MCP server complements other MCP servers (GitHub, Figma, Playwright) in complex, multi-step workflows.",
+			},
+			{ type: "heading", level: 2, text: "Security Considerations" },
+			{
+				type: "list",
+				items: [
+					"**Input validation**: All tools validate inputs using Zod schemas before processing",
+					"**No external calls**: Tools perform local analysis without making external API calls",
+					"**No secrets**: Tools don't require or store API keys, tokens, or sensitive credentials",
+					"**Read-only operations**: Analysis tools only read code/data, they don't modify files",
+					"**Dependency auditing**: Use dependency-auditor to check for known vulnerabilities",
+					"**Security-focused tools**: Use security-hardening-prompt-builder for security-specific analysis",
+				],
+			},
+			{ type: "heading", level: 2, text: "Performance Tips" },
+			{
+				type: "list",
+				items: [
+					"**Context optimization**: Use memory-context-optimizer for large prompts to reduce token usage",
+					"**Batch operations**: Chain related tools in one prompt instead of multiple separate calls",
+					"**Progressive analysis**: Start with high-level tools (clean-code-scorer) before deep dives",
+					"**Caching**: Reuse tool outputs when appropriate instead of re-running analysis",
+					"**Scope limiting**: Provide specific file paths or modules instead of analyzing entire codebases",
+				],
+			},
+			{
+				type: "references",
+				items: [
+					{
+						title: "Enhance Agent Mode with MCP - GitHub Documentation",
+						url: "https://docs.github.com/en/copilot/tutorials/enhance-agent-mode-with-mcp",
+						source: "GitHub",
+						note: "Official guide on using MCP with GitHub Copilot agent mode",
+					},
+					{
+						title: "Model Context Protocol - Anthropic",
+						url: "https://www.anthropic.com/news/model-context-protocol",
+						source: "Anthropic",
+						note: "MCP announcement and overview",
+					},
+					{
+						title: "Model Context Protocol - Official Documentation",
+						url: "https://modelcontextprotocol.io/introduction",
+						source: "MCP",
+						note: "Complete MCP specification and guides",
+					},
+					{
+						title: "MCP Architecture - Cloudflare",
+						url: "https://developers.cloudflare.com/agents/model-context-protocol/",
+						source: "Cloudflare",
+						note: "MCP architecture guide with tool design principles",
+					},
+					{
+						title: "MCP with LangChain",
+						url: "https://docs.langchain.com/oss/python/langchain/mcp",
+						source: "LangChain",
+						note: "Implementing MCP servers with Python",
+					},
+					{
+						title: "Building Agents with MCP on Azure",
+						url: "https://learn.microsoft.com/en-us/azure/developer/ai/intro-agents-mcp",
+						source: "Microsoft",
+						note: "MCP integration patterns on Azure",
+					},
+					{
+						title: "MCP AI Agent Guidelines - GitHub Repository",
+						url: "https://github.com/Anselmoo/mcp-ai-agent-guidelines",
+						source: "GitHub",
+						note: "This MCP server's source code and documentation",
+					},
+				],
+			},
+		],
+	},
 ];

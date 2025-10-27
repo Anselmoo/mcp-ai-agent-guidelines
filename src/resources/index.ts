@@ -81,6 +81,13 @@ const resources = [
 			"Lifecycle management (enable/disable/remove), listChanged notifications, argument completions, and resource_link usage",
 		mimeType: "text/markdown",
 	},
+	{
+		uri: "guidelines://agent-relative-calls",
+		name: "Agent-Relative Call Patterns for MCP Tools",
+		description:
+			"Comprehensive guide to using agent-relative calls for discovering, invoking, and chaining MCP tools in AI agent workflows with practical examples",
+		mimeType: "text/markdown",
+	},
 ];
 
 export async function listResources() {
