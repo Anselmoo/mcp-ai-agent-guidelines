@@ -147,6 +147,74 @@ Tip: Most clients can pass file content automatically when you select a file and
 
 GitHub Chat (VS Code): In the chat, type your request and pick a tool suggestion, or explicitly reference a tool by name (e.g., “Use mermaid-diagram-generator to draw a flowchart for our pipeline”).
 
+
+## Agent-Relative Calls
+
+This MCP server fully supports **agent-relative calls**, the MCP standard pattern for enabling AI agents to discover and invoke tools contextually. Following the [GitHub MCP documentation](https://docs.github.com/en/copilot/tutorials/enhance-agent-mode-with-mcp), agents can use natural language patterns to orchestrate complex multi-tool workflows.
+
+### What Are Agent-Relative Calls?
+
+Agent-relative calls are natural language patterns like:
+
+```markdown
+Use the [tool-name] MCP to [action] with [parameters/context]
+```
+
+### Quick Examples
+
+**Single Tool Invocation:**
+```markdown
+Use the hierarchical-prompt-builder MCP to create a code review prompt for our authentication module focusing on security best practices and OAuth2 implementation.
+```
+
+**Multi-Tool Workflow:**
+```markdown
+1. Use the clean-code-scorer MCP to establish baseline quality metrics
+2. Use the code-hygiene-analyzer MCP to identify specific technical debt
+3. Use the security-hardening-prompt-builder MCP to create a remediation plan
+4. Use the sprint-timeline-calculator MCP to estimate implementation timeline
+```
+
+**Integration with Other MCP Servers:**
+```markdown
+# Accessibility Compliance Workflow
+
+Use the Figma MCP to analyze design specifications for WCAG 2.1 AA compliance.
+Use the security-hardening-prompt-builder MCP from AI Agent Guidelines to create accessibility security audit prompts.
+Use the GitHub MCP to categorize open accessibility issues.
+Use the iterative-coverage-enhancer MCP from AI Agent Guidelines to plan accessibility test coverage.
+Use the Playwright MCP to create and run automated accessibility tests.
+```
+
+### Comprehensive Guide
+
+For complete documentation with 20+ detailed examples, workflow patterns, and best practices, see:
+
+📘 **[Agent-Relative Call Patterns Guide](./docs/AGENT_RELATIVE_CALLS.md)**
+
+This guide covers:
+- Core prompt patterns (single tool, chains, parallel, conditional)
+- Tool categories with complete usage examples
+- Multi-MCP server integration workflows
+- Best practices for agent-driven development
+- Performance optimization techniques
+- Troubleshooting common issues
+
+### Available Resources
+
+Access agent-relative call guidance via MCP resources:
+
+```markdown
+Use the resource guidelines://agent-relative-calls to get comprehensive patterns and examples
+```
+
+Or access programmatically:
+```typescript
+// MCP ReadResource request
+{
+  uri: "guidelines://agent-relative-calls"
+}
+```
 ## Features
 
 > **🏆 NEW: Clean Code 100/100 Initiative** — Comprehensive code quality scoring system with automated dashboard generation. Track and achieve perfect code quality across coverage, TypeScript, linting, and security. See [docs/CLEAN_CODE_INITIATIVE.md](./docs/CLEAN_CODE_INITIATIVE.md) for the complete guide.
