@@ -113,6 +113,24 @@ describe("Context Pattern Analyzer Service", () => {
 			expect(result).toBe("asp.net core");
 		});
 
+		it("should detect Flask from code context", () => {
+			const context = "This is a Flask app with @app.route decorators";
+			const result = detectFramework(context);
+			expect(result).toBe("flask");
+		});
+
+		it("should detect Rails from code context", () => {
+			const context = "This is a Ruby on Rails app with ActiveRecord models";
+			const result = detectFramework(context);
+			expect(result).toBe("rails");
+		});
+
+		it("should detect Laravel from code context", () => {
+			const context = "This is a Laravel project using Eloquent ORM";
+			const result = detectFramework(context);
+			expect(result).toBe("laravel");
+		});
+
 		it("should return undefined for unknown framework", () => {
 			const context = "This is some generic code without framework indicators";
 			const result = detectFramework(context);
@@ -220,6 +238,20 @@ describe("Context Pattern Analyzer Service", () => {
 			const result = generateContextualDesignGuidance(context);
 			expect(result).toContain("Testing Design");
 			expect(result).toContain("Test Pyramid");
+		});
+
+		it("should generate error handling guidance", () => {
+			const context = "This service has error handling and validation logic";
+			const result = generateContextualDesignGuidance(context);
+			expect(result).toContain("Error Handling Design");
+			expect(result).toContain("centralized error handling");
+		});
+
+		it("should generate event-driven guidance", () => {
+			const context = "This system uses event sourcing and message queues";
+			const result = generateContextualDesignGuidance(context);
+			expect(result).toContain("Event-Driven Design");
+			expect(result).toContain("Event Sourcing");
 		});
 
 		it("should generate general guidance when no specific context detected", () => {

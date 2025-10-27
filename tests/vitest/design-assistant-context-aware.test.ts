@@ -92,4 +92,17 @@ describe("Design Assistant - Context-Aware Guidance", () => {
 			"Go-Specific Design Recommendations",
 		);
 	});
+
+	it("should handle minimal content in context-aware guidance generation", async () => {
+		// Test with minimal content
+		const result = await designAssistant.processRequest({
+			action: "generate-context-aware-guidance",
+			sessionId: "test-session-007",
+			content: "some code", // Minimal content should still work
+		});
+
+		expect(result.success).toBe(true);
+		expect(result.artifacts).toHaveLength(1);
+		expect(result.data?.detectedLanguage).toBe("auto-detect");
+	});
 });
