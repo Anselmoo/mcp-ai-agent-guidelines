@@ -61,6 +61,94 @@ Focus on these security areas:
 - Data Encryption
 - Session Management
 
+
+### Javascript-Specific Security Checks
+
+**Common javascript Vulnerabilities to Check:**
+- Prototype pollution attacks
+- DOM-based XSS vulnerabilities
+- eval() and Function() misuse
+- Regex Denial of Service (ReDoS)
+- NPM package supply chain attacks
+
+**Specific Checks for javascript Code:**
+- Check for unsafe use of eval(), new Function(), or innerHTML
+- Validate all user inputs before DOM manipulation
+- Review npm dependencies for known vulnerabilities
+- Ensure proper Content Security Policy (CSP) headers
+- Check for exposed API keys in client-side code
+
+**javascript Security Best Practices:**
+- Use strict mode ('use strict') throughout
+- Sanitize HTML using DOMPurify or similar libraries
+- Implement proper error handling without exposing stack traces
+- Use HttpOnly and Secure flags for cookies
+
+
+### Context-Aware Vulnerability Analysis
+
+Based on the provided code context, pay special attention to:
+
+**Authentication & Authorization:**
+- Verify password storage uses strong hashing (bcrypt, Argon2, PBKDF2)
+- Check for insecure direct object references (IDOR)
+- Validate session management and timeout configurations
+- Review token generation for sufficient entropy and secure storage
+- Ensure proper role-based access control (RBAC) implementation
+
+**Database Security:**
+- Check all SQL queries use parameterized statements, not string concatenation
+- Review ORM usage for proper escaping and safe query construction
+- Validate input sanitization before any database operations
+- Ensure principle of least privilege for database user permissions
+- Check for NoSQL injection vulnerabilities if using NoSQL databases
+
+**API Security:**
+- Validate all input parameters with strict type and format checking
+- Implement rate limiting to prevent abuse and DoS attacks
+- Check for proper authentication on all endpoints (not just client-side)
+- Review CORS configuration for overly permissive origins
+- Ensure sensitive data is not exposed in error messages or responses
+
+**Session Management:**
+- Check session cookies have HttpOnly, Secure, and SameSite flags
+- Validate session timeout and idle timeout configurations
+- Review session ID generation for sufficient entropy
+- Check for proper session invalidation on logout
+- Ensure JWT tokens are validated properly with strong secrets
+
+**Error Handling & Logging:**
+- Ensure error messages don't expose sensitive information or stack traces
+- Validate proper logging of security events (auth failures, access violations)
+- Check that logs don't contain sensitive data (passwords, tokens, PII)
+- Implement proper exception handling without revealing implementation details
+- Configure appropriate log retention and secure log storage
+
+
+### Tailored Compliance Analysis
+
+**OWASP Top 10 Specific Checks:**
+- **A01:2021 – Broken Access Control**: Verify proper authorization checks on all sensitive operations
+- **A02:2021 – Cryptographic Failures**: Check for weak cryptography or unencrypted sensitive data
+- **A03:2021 – Injection**: Review for SQL, NoSQL, OS, and LDAP injection vulnerabilities
+- **A04:2021 – Insecure Design**: Assess threat modeling and security design patterns
+- **A05:2021 – Security Misconfiguration**: Check security headers, error handling, and defaults
+- **A06:2021 – Vulnerable Components**: Identify outdated or vulnerable dependencies
+- **A07:2021 – Authentication Failures**: Review authentication implementation and session management
+- **A08:2021 – Software and Data Integrity**: Validate CI/CD pipeline and update mechanisms
+- **A09:2021 – Logging Failures**: Ensure adequate security event logging and monitoring
+- **A10:2021 – Server-Side Request Forgery**: Check for SSRF vulnerabilities in external requests
+
+**PCI-DSS Compliance Focus:**
+- **Requirement 3**: Verify cardholder data is encrypted at rest and in transit
+- **Requirement 4**: Ensure strong cryptography for transmission over public networks
+- **Requirement 6**: Check for secure coding practices and vulnerability management
+- **Requirement 8**: Validate strong authentication mechanisms and unique user IDs
+- **Requirement 10**: Ensure all access to cardholder data is logged and monitored
+- **Context-Specific**: Review payment processing for PCI DSS compliance
+- Verify no storage of sensitive authentication data (CVV, full track data)
+- Check for proper data retention and disposal procedures
+
 ## Security Analysis Framework
 
 ### 1. Vulnerability Identification
