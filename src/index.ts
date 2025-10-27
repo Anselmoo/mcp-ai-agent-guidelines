@@ -38,6 +38,7 @@ import { gapFrameworksAnalyzers } from "./tools/analysis/gap-frameworks-analyzer
 import { strategyFrameworksBuilder } from "./tools/analysis/strategy-frameworks-builder.js";
 import { cleanCodeScorer } from "./tools/clean-code-scorer.js";
 import { codeHygieneAnalyzer } from "./tools/code-hygiene-analyzer.js";
+import { dependencyAuditor } from "./tools/dependency-auditor.js";
 import {
 	type DesignAssistantRequest,
 	designAssistant,
@@ -663,6 +664,60 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						},
 					},
 					required: ["codeContent", "language"],
+				},
+			},
+			{
+				name: "dependency-auditor",
+				description:
+					"Analyze package.json for outdated, deprecated, or insecure packages and recommend modern, secure alternatives with ESM compatibility and bundle size insights",
+				inputSchema: {
+					type: "object",
+					properties: {
+						packageJsonContent: {
+							type: "string",
+							description: "Content of package.json file",
+						},
+						checkOutdated: {
+							type: "boolean",
+							description: "Check for outdated version patterns",
+							default: true,
+						},
+						checkDeprecated: {
+							type: "boolean",
+							description: "Check for deprecated packages",
+							default: true,
+						},
+						checkVulnerabilities: {
+							type: "boolean",
+							description: "Check for known vulnerabilities",
+							default: true,
+						},
+						suggestAlternatives: {
+							type: "boolean",
+							description: "Suggest ESM-compatible alternatives",
+							default: true,
+						},
+						analyzeBundleSize: {
+							type: "boolean",
+							description: "Analyze bundle size concerns",
+							default: true,
+						},
+						includeReferences: {
+							type: "boolean",
+							description: "Include external reference links",
+							default: true,
+						},
+						includeMetadata: {
+							type: "boolean",
+							description: "Include metadata section",
+							default: true,
+						},
+						inputFile: {
+							type: "string",
+							description: "Input file path for reference",
+						},
+					},
+					required: ["packageJsonContent"],
 				},
 			},
 			{
@@ -1557,6 +1612,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 				return cleanCodeScorer(args);
 			case "code-hygiene-analyzer":
 				return codeHygieneAnalyzer(args);
+			case "dependency-auditor":
+				return dependencyAuditor(args);
 			case "iterative-coverage-enhancer":
 				return iterativeCoverageEnhancer(args);
 			case "mermaid-diagram-generator":
