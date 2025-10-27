@@ -14,7 +14,6 @@ import type {
 import {
 	detectFramework,
 	detectLanguage,
-	generateContextAwareRecommendations,
 } from "./context-pattern-analyzer.service.js";
 
 export interface SessionManagementResponse {
