@@ -12,6 +12,14 @@ export {
 	consistencyService,
 } from "./consistency.service.js";
 export {
+	detectFramework,
+	detectLanguage,
+	generateContextAwareRecommendations,
+	generateContextualDesignGuidance,
+	generateFrameworkDesignRecommendations,
+	generateLanguageDesignRecommendations,
+} from "./context-pattern-analyzer.service.js";
+export {
 	type PhaseManagementResponse,
 	phaseManagementService,
 } from "./phase-management.service.js";
