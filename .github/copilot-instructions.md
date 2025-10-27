@@ -6,8 +6,18 @@ This is a TypeScript-based MCP (Model Context Protocol) server providing AI agen
 
 These instructions help GitHub Copilot and other AI coding assistants understand the project structure, conventions, and workflows. When working on tasks:
 
-- **Well-suited for AI assistance**: Bug fixes, test coverage improvements, documentation updates, refactoring for clarity, adding new tools following existing patterns, updating dependencies
-- **Requires human expertise**: Major architectural changes, complex business logic, security-critical features, ambiguous requirements
+- **Well-suited for AI assistance**:
+  - Bug fixes
+  - Test coverage improvements
+  - Documentation updates
+  - Refactoring for clarity
+  - Adding new tools following existing patterns
+  - Updating dependencies
+- **Requires human expertise**:
+  - Major architectural changes
+  - Complex business logic
+  - Security-critical features
+  - Ambiguous requirements
 - **Always verify**: Lint, build, and test your changes early and often. Use `npm run quality` before committing.
 
 ## 1. Overview & Architecture
