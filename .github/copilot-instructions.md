@@ -2,6 +2,14 @@
 
 This is a TypeScript-based MCP (Model Context Protocol) server providing AI agent guidelines and development tools. It is primarily responsible for providing structured prompts, code analysis, and design assistance tools. Please follow these guidelines when contributing:
 
+## Using These Instructions
+
+These instructions help GitHub Copilot and other AI coding assistants understand the project structure, conventions, and workflows. When working on tasks:
+
+- **Well-suited for AI assistance**: Bug fixes, test coverage improvements, documentation updates, refactoring for clarity, adding new tools following existing patterns, updating dependencies
+- **Requires human expertise**: Major architectural changes, complex business logic, security-critical features, ambiguous requirements
+- **Always verify**: Lint, build, and test your changes early and often. Use `npm run quality` before committing.
+
 ## 1. Overview & Architecture
 
 - **Entry Point**: `src/index.ts` is the declarative entry point, wiring up the MCP server and its tool handlers. Avoid putting business logic here.
