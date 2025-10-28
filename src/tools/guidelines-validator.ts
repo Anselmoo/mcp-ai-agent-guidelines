@@ -258,7 +258,11 @@ function buildCategoryReferences(
 		],
 	} as const;
 	const set = [...(byCat[category as keyof typeof byCat] || []), ...common];
-	return asList ? set : JSON.stringify(set);
+	return asList
+		? set
+		: set
+				.map((r) => (typeof r === "string" ? r : `${r.title}: ${r.url}`))
+				.join("\n");
 }
 
 // Legacy per-category validators replaced by config-driven approach above.
