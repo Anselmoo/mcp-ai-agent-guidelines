@@ -193,12 +193,15 @@ patternRegistry.register({
 - `src/tools/semantic-analyzer/formatters.ts`
 - `src/tools/semantic-analyzer/index.ts`
 - `src/tools/semantic-analyzer/README.md`
-- `tests/vitest/semantic-analyzer-services.test.ts`
-- `tests/vitest/semantic-analyzer-core.test.ts`
+- `tests/vitest/semantic-analyzer-services.test.ts` (NEW)
+- `tests/vitest/semantic-analyzer-core.test.ts` (NEW)
 
 **Modified (2 files):**
 - `src/tools/semantic-code-analyzer.ts` (refactored to use new modules)
 - `src/tools/bridge/semantic-analyzer-bridge.ts` (added extensibility examples)
+
+**Unchanged (for backward compatibility):**
+- `tests/vitest/semantic-code-analyzer.test.ts` (20 existing tests maintained)
 
 ## Future Enhancements
 
