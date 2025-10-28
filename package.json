@@ -13,6 +13,7 @@
 		"test:integration": "node tests/test-server.js",
 		"test:demo": "node demos/demo-tools.js",
 		"test:mcp": "scripts/test-mcp-server.sh",
+		"validate:demo-coverage": "node scripts/validate-demo-coverage.js",
 		"test:all": "npm run build && npm run test:unit && npm run test:integration && npm run test:demo && npm run test:mcp",
 		"test:coverage:unit": "npm run build && c8 -r text-summary -r lcov -r html -o coverage node tests/unit/run-unit-tests.js",
 		"test:vitest": "vitest",

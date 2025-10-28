@@ -4,6 +4,7 @@
 > **Disclaimer -- Experimental / Early Stage:** This _research demonstrator_ project references third‑party models, tools, pricing, and docs that evolve quickly. Treat outputs as recommendations and verify against official docs and your own benchmarks before production use.
 
 [![CI/CD Pipeline](https://img.shields.io/github/actions/workflow/status/Anselmoo/mcp-ai-agent-guidelines/ci-cd.yml?branch=main&label=CI%2FCD&logo=github-actions&logoColor=white)](https://github.com/Anselmoo/mcp-ai-agent-guidelines/actions/workflows/ci-cd.yml)
+[![Auto-Regenerate Demos](https://img.shields.io/github/actions/workflow/status/Anselmoo/mcp-ai-agent-guidelines/auto-regenerate-demos.yml?label=demos&logo=github-actions&logoColor=white)](https://github.com/Anselmoo/mcp-ai-agent-guidelines/actions/workflows/auto-regenerate-demos.yml)
 [![Coverage Status](https://img.shields.io/codecov/c/github/Anselmoo/mcp-ai-agent-guidelines/main?label=coverage&logo=codecov&logoColor=white)](https://codecov.io/gh/Anselmoo/mcp-ai-agent-guidelines)
 [![NPM Version](https://img.shields.io/npm/v/mcp-ai-agent-guidelines?label=npm&logo=npm&logoColor=white&color=red)](https://www.npmjs.com/package/mcp-ai-agent-guidelines)
 [![Node.js Version](https://img.shields.io/node/v/mcp-ai-agent-guidelines?label=node&logo=node.js&logoColor=white&color=green)](https://nodejs.org/en/download/)
@@ -596,6 +597,27 @@ npm run quality          # Type-check + Biome check
 npm run audit            # Security audit (production dependencies)
 npm run audit:fix        # Auto-fix vulnerabilities
 npm run audit:production # Audit production dependencies only
+```
+
+### Automated Demo Regeneration 🔄
+
+Demo files are automatically regenerated when tools change via GitHub Actions:
+
+- **Trigger**: Any changes to `src/tools/**/*.ts` in a pull request
+- **Action**: Automatically runs `npm run test:demo` to regenerate demos
+- **Result**: Updated demo files are committed to the PR automatically
+
+**Benefits**:
+- ✅ Documentation always stays in sync with code
+- ✅ No manual steps to remember
+- ✅ Reviewers can see demo changes alongside code changes
+
+**Workflow**: [`.github/workflows/auto-regenerate-demos.yml`](./.github/workflows/auto-regenerate-demos.yml)
+
+**Manual regeneration** (if needed):
+```bash
+npm run build
+npm run test:demo
 ```
 
 ### Git Hooks with Lefthook 🪝
