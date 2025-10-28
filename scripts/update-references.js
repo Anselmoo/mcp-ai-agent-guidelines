@@ -4,7 +4,7 @@
  * with {title, url, description} objects instead of "Title: URL" strings.
  */
 
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { glob } from "glob";
 
 // Files already updated manually
