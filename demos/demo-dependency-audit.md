@@ -38,7 +38,10 @@
 4. Review package.json regularly for updates
 5. Use Dependabot or Renovate for automated dependency updates
 
-## References
+## Further Reading
+
+*The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*
+
 - NPM Audit Official Guide: https://docs.npmjs.com/auditing-package-dependencies-for-security-vulnerabilities
 - Understanding NPM Audit: https://www.niraj.life/blog/understanding-npm-audit-fixing-vulnerabilities-nodejs/
 - Dependency Tree Analysis: https://www.jit.io/resources/appsec-tools/guide-to-using-npm-audit-to-create-a-dependency-tree

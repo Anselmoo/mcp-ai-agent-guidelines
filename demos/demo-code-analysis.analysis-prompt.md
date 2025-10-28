@@ -359,7 +359,10 @@ Provide an overall score from 1-10 for:
 - Security
 - Best Practices Adherence
 
-## References
+## Further Reading
+
+*The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*
+
 - Code Review Best Practices: https://google.github.io/eng-practices/review/
 
 

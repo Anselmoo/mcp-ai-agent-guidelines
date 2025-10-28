@@ -52,7 +52,10 @@ Python repo. Fix security issues; add validation and logging. Key: calculate_dis
 - Leverage semantic similarity to identify redundant information
 - Implement rolling window approach for conversation history
 
-## References
+## Further Reading
+
+*The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*
+
 - Prompt Caching overview (Anthropic): https://www.anthropic.com/news/prompt-caching
 - Anthropic docs on caching: https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching
 - Token usage optimization tips: https://caylent.com/blog/prompt-caching-saving-time-and-money-in-llm-applications

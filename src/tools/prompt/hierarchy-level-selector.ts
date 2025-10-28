@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { buildReferencesSection } from "../shared/prompt-utils.js";
+import { buildFurtherReadingSection } from "../shared/prompt-utils.js";
 import {
 	HIERARCHY_LEVEL_DEFINITIONS,
 	type PromptingHierarchyLevel,
@@ -304,10 +304,23 @@ export async function hierarchyLevelSelector(args: unknown) {
 
 	// References
 	if (input.includeReferences) {
-		const references = buildReferencesSection([
-			"Prompting Hierarchy Techniques - https://www.aiforeducation.io/ai-resources/prompting-techniques-for-specialized-llms",
-			"Hierarchical Prompting Framework - https://relevanceai.com/prompt-engineering/master-hierarchical-prompting-for-better-ai-interactions",
-			"Task-Based Prompt Design - https://www.promptopti.com/best-3-prompting-hierarchy-tiers-for-ai-interaction/",
+		const references = buildFurtherReadingSection([
+			{
+				title: "Prompting Hierarchy Techniques",
+				url: "https://www.aiforeducation.io/ai-resources/prompting-techniques-for-specialized-llms",
+				description:
+					"Techniques for specialized LLM prompting and task adaptation",
+			},
+			{
+				title: "Hierarchical Prompting Framework",
+				url: "https://relevanceai.com/prompt-engineering/master-hierarchical-prompting-for-better-ai-interactions",
+				description: "Framework for structuring AI interactions hierarchically",
+			},
+			{
+				title: "Task-Based Prompt Design",
+				url: "https://www.promptopti.com/best-3-prompting-hierarchy-tiers-for-ai-interaction/",
+				description: "Three-tier approach to hierarchical prompt optimization",
+			},
 		]);
 		output += `\n${references}\n`;
 	}

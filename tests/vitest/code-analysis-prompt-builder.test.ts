@@ -32,7 +32,7 @@ describe("code-analysis-prompt-builder", () => {
 		expect(text).toContain("Scoring");
 
 		// Check for references when included
-		expect(text).toContain("References");
+		expect(text).toContain("Further Reading");
 	});
 
 	it("should generate a code analysis prompt with performance focus", async () => {

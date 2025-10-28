@@ -23,7 +23,7 @@ describe("hierarchical-prompt-builder", () => {
 		); // normalization
 		expect(text).toMatch(/# Target Audience/);
 		expect(text).toMatch(/## Explanation/);
-		expect(text).toMatch(/## References/);
+		expect(text).toMatch(/## Further Reading/);
 		// No longer checking for "Pitfalls to Avoid" - removed in favor of actionable instructions
 	});
 });

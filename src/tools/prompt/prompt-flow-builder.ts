@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { logger } from "../shared/logger.js";
 import {
+	buildFurtherReadingSection,
 	buildMetadataSection,
-	buildReferencesSection,
 	slugify,
 } from "../shared/prompt-utils.js";
 
@@ -478,10 +478,26 @@ function buildExecutionGuide(input: PromptFlowInput): string {
  * @returns Markdown-formatted references section
  */
 function buildFlowReferences(): string {
-	return buildReferencesSection([
-		"Flow-based Programming: https://en.wikipedia.org/wiki/Flow-based_programming",
-		"AI Workflow Patterns: https://www.anthropic.com/research/prompting-patterns",
-		"Claude Flow Architecture: https://github.com/ruvnet/claude-flow",
-		"Prompt Engineering Workflows: https://www.promptingguide.ai/techniques",
+	return buildFurtherReadingSection([
+		{
+			title: "Flow-Based Programming",
+			url: "https://en.wikipedia.org/wiki/Flow-based_programming",
+			description: "Programming paradigm for building data flow applications",
+		},
+		{
+			title: "AI Workflow Patterns",
+			url: "https://www.anthropic.com/research/prompting-patterns",
+			description: "Anthropic's research on effective prompting patterns",
+		},
+		{
+			title: "Claude Flow Architecture",
+			url: "https://github.com/ruvnet/claude-flow",
+			description: "Architecture for declarative Claude workflow orchestration",
+		},
+		{
+			title: "Prompt Engineering Workflows",
+			url: "https://www.promptingguide.ai/techniques",
+			description: "Comprehensive guide to prompt engineering techniques",
+		},
 	]);
 }

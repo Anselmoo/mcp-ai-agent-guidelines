@@ -49,7 +49,10 @@ Ask targeted questions. Use semantic analysis tools. Build understanding increme
 - Symbol navigation available
 - Real-time feedback expected
 
-## References
+## Further Reading
+
+*The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*
+
 - Agent Modes and Contexts: https://github.com/oraios/serena#modes-and-contexts
 - Effective Prompting Strategies: https://www.anthropic.com/index/prompting-long-context
 - Code Navigation Patterns: https://code.visualstudio.com/docs/editor/editingevolved

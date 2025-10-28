@@ -170,7 +170,7 @@ describe("prompt-chaining-builder", () => {
 		});
 
 		const text = res.content[0].text;
-		expect(text).not.toMatch(/## References/);
+		expect(text).not.toMatch(/## Further Reading/);
 		expect(text).not.toMatch(/promptingguide.ai/);
 	});
 

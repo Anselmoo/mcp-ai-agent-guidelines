@@ -156,11 +156,36 @@ export function buildMetadataSection(opts: {
 	return lines.join("\n");
 }
 
-export function buildReferencesSection(refs: string[]): string {
+/**
+ * Builds a "Further Reading" section with a disclaimer about external references.
+ *
+ * The disclaimer clarifies that:
+ * - References are provided for informational purposes only
+ * - No endorsement or affiliation is implied
+ * - Information may change over time
+ * - Users should verify with official sources
+ *
+ * This approach follows open-source best practices for referencing external resources
+ * without creating legal liability or implying endorsement.
+ */
+export function buildFurtherReadingSection(
+	refs: Array<{ title: string; url: string; description?: string } | string>,
+): string {
 	if (!refs || refs.length === 0) return "";
 	const lines: string[] = [
-		"## References",
-		...refs.map((r) => `- ${r}`),
+		"## Further Reading",
+		"",
+		"*The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*",
+		"",
+		...refs.map((r) => {
+			if (typeof r === "string") {
+				// Legacy format: "Title: URL"
+				return `- ${r}`;
+			}
+			// New format: object with title, url, and optional description
+			const link = `**[${r.title}](${r.url})**`;
+			return r.description ? `- ${link}: ${r.description}` : `- ${link}`;
+		}),
 		"",
 		"",
 	];

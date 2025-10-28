@@ -30,7 +30,7 @@ describe("architecture-design-prompt-builder", () => {
 		expect(text).toContain("Node.js, SQLite, React");
 
 		// Check for references
-		expect(text).toContain("References");
+		expect(text).toContain("Further Reading");
 	});
 
 	it("should generate architecture design prompt for medium scale system", async () => {

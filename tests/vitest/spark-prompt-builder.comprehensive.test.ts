@@ -185,7 +185,7 @@ describe("spark-prompt-builder comprehensive coverage", () => {
 		expect(content).toContain("Spacing");
 		expect(content).toContain("Mobile"); // Updated from "Mobile Layout"
 		expect(content).toContain("## Metadata");
-		expect(content).toContain("## References");
+		expect(content).toContain("## Further Reading");
 		expect(content).toContain("design-system-spec.md");
 	});
 

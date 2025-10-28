@@ -79,7 +79,10 @@
 4. Run tests using Jest/Vitest/Mocha (check package.json)
 5. Start with small, well-defined tasks to build context
 
-## References
+## Further Reading
+
+*The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*
+
 - Project Onboarding Best Practices: https://www.atlassian.com/onboarding
 - Code Navigation: https://code.visualstudio.com/docs/editor/editingevolved
 - Memory Systems for AI: https://ai.meta.com/blog/memory-in-ai-agents/

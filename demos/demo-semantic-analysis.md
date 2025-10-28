@@ -32,7 +32,10 @@
 ### 🎯 Recommendations
 - Add error handling (try-catch blocks) for robustness
 - Ensure async operations have proper error handling
-## References
+## Further Reading
+
+*The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*
+
 - Language Server Protocol: https://microsoft.github.io/language-server-protocol/
 - Semantic Code Analysis: https://en.wikipedia.org/wiki/Semantic_analysis_(compilers)
 - Design Patterns: https://refactoring.guru/design-patterns

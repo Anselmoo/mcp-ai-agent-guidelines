@@ -86,7 +86,10 @@ Tool definitions in src/index.ts
 - [ ] All links and references work correctly
 - [ ] Document meets accessibility standards
 
-## References
+## Further Reading
+
+*The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*
+
 - Write the Docs: https://www.writethedocs.org/guide/
 
 

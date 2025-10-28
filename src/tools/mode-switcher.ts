@@ -1,7 +1,7 @@
 import { z } from "zod";
 import {
+	buildFurtherReadingSection,
 	buildMetadataSection,
-	buildReferencesSection,
 } from "./shared/prompt-utils.js";
 
 const AgentModeSchema = z.enum([
@@ -413,11 +413,28 @@ function buildContextGuidance(context?: AgentContext): string {
 }
 
 function buildModeReferences(): string {
-	return buildReferencesSection([
-		"Agent Modes and Contexts: https://github.com/oraios/serena#modes-and-contexts",
-		"Effective Prompting Strategies: https://www.anthropic.com/index/prompting-long-context",
-		"Code Navigation Patterns: https://code.visualstudio.com/docs/editor/editingevolved",
-		"Debugging Best Practices: https://www.debuggingbook.org/",
+	return buildFurtherReadingSection([
+		{
+			title: "Serena Agent Modes and Contexts",
+			url: "https://github.com/oraios/serena#modes-and-contexts",
+			description: "Documentation on Serena's flexible mode and context system",
+		},
+		{
+			title: "Effective Prompting Strategies",
+			url: "https://www.anthropic.com/index/prompting-long-context",
+			description: "Anthropic's guide to prompting with long-context models",
+		},
+		{
+			title: "VS Code Navigation Patterns",
+			url: "https://code.visualstudio.com/docs/editor/editingevolved",
+			description: "Advanced code navigation and editing techniques in VS Code",
+		},
+		{
+			title: "The Debugging Book",
+			url: "https://www.debuggingbook.org/",
+			description:
+				"Comprehensive guide to debugging techniques and best practices",
+		},
 	]);
 }
 

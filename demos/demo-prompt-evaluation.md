@@ -67,7 +67,10 @@ Complete detailed specification with explicit instructions for every step
 **Use Cases**: Precise requirements, High-risk operations, Exact replication needed
 
 
-## References
+## Further Reading
+
+*The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*
+
 - Hierarchical Prompting for Better AI Interactions - https://relevanceai.com/prompt-engineering/master-hierarchical-prompting-for-better-ai-interactions
 - Hierarchical Prompting Taxonomy (HPT) - https://arxiv.org/abs/2406.12644
 - Prompt Engineering Techniques - https://www.aiforeducation.io/ai-resources/prompting-techniques-for-specialized-llms

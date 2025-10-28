@@ -86,7 +86,7 @@ describe("strategy-frameworks-builder additional coverage", () => {
 		});
 
 		const content = result.content[0].text;
-		expect(content).toContain("## References");
+		expect(content).toContain("## Further Reading");
 	});
 
 	it("should handle empty objectives and constraints arrays", async () => {

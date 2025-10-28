@@ -1,8 +1,8 @@
 import { z } from "zod";
 import {
 	buildFrontmatterWithPolicy as buildFrontmatter,
+	buildFurtherReadingSection,
 	buildMetadataSection,
-	buildReferencesSection,
 	slugify,
 } from "../shared/prompt-utils.js";
 
@@ -395,8 +395,13 @@ export async function debuggingAssistantPromptBuilder(args: unknown) {
 		? `${buildDebuggingAssistantFrontmatter(input)}\n`
 		: "";
 	const references = input.includeReferences
-		? buildReferencesSection([
-				"Debugging Best Practices: https://jvns.ca/blog/2022/12/08/a-debugging-manifesto/",
+		? buildFurtherReadingSection([
+				{
+					title: "A Debugging Manifesto",
+					url: "https://jvns.ca/blog/2022/12/08/a-debugging-manifesto/",
+					description:
+						"Julia Evans' systematic approach to debugging complex problems",
+				},
 			])
 		: "";
 	const filenameHint = `${slugify("debugging-assistant")}.prompt.md`;

@@ -1,7 +1,7 @@
 import { z } from "zod";
 import {
+	buildFurtherReadingSection,
 	buildMetadataSection,
-	buildReferencesSection,
 	slugify,
 } from "../shared/prompt-utils.js";
 
@@ -109,7 +109,7 @@ export async function strategyFrameworksBuilder(args: unknown) {
 		: "";
 
 	const refs = input.includeReferences
-		? buildReferencesSection(REFERENCE_LINKS)
+		? buildFurtherReadingSection(REFERENCE_LINKS)
 		: "";
 
 	const body = [metadata, sections.join("\n\n"), refs]
@@ -360,10 +360,26 @@ function withArtifacts(
 }
 
 const REFERENCE_LINKS = [
-	"Atlassian strategy frameworks: https://www.atlassian.com/work-management/strategic-planning/framework",
-	"ClearPoint 20 frameworks: https://www.clearpointstrategy.com/blog/strategic-planning-models",
-	"Quantive top frameworks: https://quantive.com/resources/articles/top-strategic-frameworks",
-	"HBS strategy tools overview: https://online.hbs.edu/blog/post/strategy-frameworks-and-tools",
+	{
+		title: "Atlassian Strategy Frameworks",
+		url: "https://www.atlassian.com/work-management/strategic-planning/framework",
+		description: "Comprehensive guide to strategic planning frameworks",
+	},
+	{
+		title: "20 Strategic Planning Models",
+		url: "https://www.clearpointstrategy.com/blog/strategic-planning-models",
+		description: "ClearPoint's overview of popular strategy frameworks",
+	},
+	{
+		title: "Top Strategic Frameworks",
+		url: "https://quantive.com/resources/articles/top-strategic-frameworks",
+		description: "Quantive's guide to effective strategic frameworks",
+	},
+	{
+		title: "HBS Strategy Frameworks and Tools",
+		url: "https://online.hbs.edu/blog/post/strategy-frameworks-and-tools",
+		description: "Harvard Business School overview of strategy tools",
+	},
 ];
 
 // Mermaid helpers (keep neutral, no trademarks spelled out in titles)

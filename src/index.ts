@@ -55,9 +55,11 @@ import { codeAnalysisPromptBuilder } from "./tools/prompt/code-analysis-prompt-b
 import { debuggingAssistantPromptBuilder } from "./tools/prompt/debugging-assistant-prompt-builder.js";
 import { documentationGeneratorPromptBuilder } from "./tools/prompt/documentation-generator-prompt-builder.js";
 import { domainNeutralPromptBuilder } from "./tools/prompt/domain-neutral-prompt-builder.js";
+import { enterpriseArchitectPromptBuilder } from "./tools/prompt/enterprise-architect-prompt-builder.js";
 // Import tool implementations
 import { hierarchicalPromptBuilder } from "./tools/prompt/hierarchical-prompt-builder.js";
 import { hierarchyLevelSelector } from "./tools/prompt/hierarchy-level-selector.js";
+import { l9DistinguishedEngineerPromptBuilder } from "./tools/prompt/l9-distinguished-engineer-prompt-builder.js";
 import { promptChainingBuilder } from "./tools/prompt/prompt-chaining-builder.js";
 import { promptFlowBuilder } from "./tools/prompt/prompt-flow-builder.js";
 import { promptingHierarchyEvaluator } from "./tools/prompt/prompting-hierarchy-evaluator.js";
@@ -243,6 +245,94 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 				},
 			},
 			{
+				name: "digital-enterprise-architect-prompt-builder",
+				description:
+					"Guide enterprise architecture strategy with mentor perspectives and current research",
+				inputSchema: {
+					type: "object",
+					properties: {
+						initiativeName: {
+							type: "string",
+							description: "Name or focus of the architecture initiative",
+						},
+						problemStatement: {
+							type: "string",
+							description: "Strategic problem or opportunity being addressed",
+						},
+						businessDrivers: {
+							type: "array",
+							items: { type: "string" },
+							description: "Key business objectives and desired outcomes",
+						},
+						currentLandscape: {
+							type: "string",
+							description: "Summary of the current ecosystem or architecture",
+						},
+						targetUsers: {
+							type: "string",
+							description: "Primary stakeholders or user segments",
+						},
+						differentiators: {
+							type: "array",
+							items: { type: "string" },
+							description: "Innovation themes or competitive differentiators",
+						},
+						constraints: {
+							type: "array",
+							items: { type: "string" },
+							description:
+								"Constraints or guardrails the solution must respect",
+						},
+						complianceObligations: {
+							type: "array",
+							items: { type: "string" },
+							description: "Regulatory or policy considerations",
+						},
+						technologyGuardrails: {
+							type: "array",
+							items: { type: "string" },
+							description:
+								"Existing technology standards or preferred platforms",
+						},
+						innovationThemes: {
+							type: "array",
+							items: { type: "string" },
+							description: "Innovation themes to explore",
+						},
+						timeline: {
+							type: "string",
+							description: "Timeline or planning horizon",
+						},
+						researchFocus: {
+							type: "array",
+							items: { type: "string" },
+							description:
+								"Research topics to benchmark against current best practices",
+						},
+						decisionDrivers: {
+							type: "array",
+							items: { type: "string" },
+							description:
+								"Decision drivers or evaluation criteria to emphasize",
+						},
+						knownRisks: {
+							type: "array",
+							items: { type: "string" },
+							description: "Known risks or assumptions to monitor",
+						},
+						mode: { type: "string" },
+						model: { type: "string" },
+						tools: { type: "array", items: { type: "string" } },
+						includeFrontmatter: { type: "boolean" },
+						includeReferences: { type: "boolean" },
+						includeMetadata: { type: "boolean" },
+						inputFile: { type: "string" },
+						forcePromptMdStyle: { type: "boolean" },
+					},
+					required: ["initiativeName", "problemStatement"],
+				},
+			},
+			{
 				name: "debugging-assistant-prompt-builder",
 				description:
 					"Generate systematic debugging and troubleshooting prompts with structured analysis",
@@ -271,6 +361,130 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						forcePromptMdStyle: { type: "boolean" },
 					},
 					required: ["errorDescription"],
+				},
+			},
+			{
+				name: "l9-distinguished-engineer-prompt-builder",
+				description:
+					"Generate Distinguished Engineer (L9) technical design prompts for high-level software architecture and system design",
+				inputSchema: {
+					type: "object",
+					properties: {
+						projectName: {
+							type: "string",
+							description: "Name of the software project or system initiative",
+						},
+						technicalChallenge: {
+							type: "string",
+							description:
+								"Core technical problem, architectural complexity, or scale challenge",
+						},
+						technicalDrivers: {
+							type: "array",
+							items: { type: "string" },
+							description:
+								"Key technical objectives: performance targets, scalability goals, reliability requirements",
+						},
+						currentArchitecture: {
+							type: "string",
+							description:
+								"Existing system architecture, tech stack, and known pain points",
+						},
+						userScale: {
+							type: "string",
+							description:
+								"Scale context: users, requests/sec, data volume, geographical distribution",
+						},
+						technicalDifferentiators: {
+							type: "array",
+							items: { type: "string" },
+							description:
+								"Technical innovations, performance advantages, or unique capabilities",
+						},
+						engineeringConstraints: {
+							type: "array",
+							items: { type: "string" },
+							description:
+								"Technical constraints: latency budgets, backward compatibility, migration windows",
+						},
+						securityRequirements: {
+							type: "array",
+							items: { type: "string" },
+							description: "Security, privacy, and compliance requirements",
+						},
+						techStack: {
+							type: "array",
+							items: { type: "string" },
+							description:
+								"Current/preferred technologies, languages, frameworks, and platforms",
+						},
+						experimentationAreas: {
+							type: "array",
+							items: { type: "string" },
+							description:
+								"Emerging technologies or patterns worth prototyping",
+						},
+						deliveryTimeline: {
+							type: "string",
+							description:
+								"Engineering timeline: sprints, milestones, or release windows",
+						},
+						benchmarkingFocus: {
+							type: "array",
+							items: { type: "string" },
+							description:
+								"Systems/companies to benchmark against or research areas requiring investigation",
+						},
+						tradeoffPriorities: {
+							type: "array",
+							items: { type: "string" },
+							description:
+								"Engineering trade-off priorities: latency vs throughput, consistency vs availability, etc.",
+						},
+						technicalRisks: {
+							type: "array",
+							items: { type: "string" },
+							description:
+								"Known technical risks, debt, or areas of uncertainty",
+						},
+						teamContext: {
+							type: "string",
+							description:
+								"Team size, skill distribution, and organizational dependencies",
+						},
+						observabilityRequirements: {
+							type: "array",
+							items: { type: "string" },
+							description:
+								"Monitoring, logging, tracing, and debugging requirements",
+						},
+						performanceTargets: {
+							type: "array",
+							items: { type: "string" },
+							description:
+								"Specific performance SLOs/SLAs: p99 latency, throughput, availability",
+						},
+						migrationStrategy: {
+							type: "string",
+							description:
+								"Migration or rollout strategy if re-architecting existing system",
+						},
+						codeQualityStandards: {
+							type: "array",
+							items: { type: "string" },
+							description:
+								"Code quality expectations: test coverage, documentation, design patterns",
+						},
+						mode: { type: "string" },
+						model: { type: "string" },
+						tools: { type: "array", items: { type: "string" } },
+						includeFrontmatter: { type: "boolean" },
+						includeReferences: { type: "boolean" },
+						includeMetadata: { type: "boolean" },
+						inputFile: { type: "string" },
+						forcePromptMdStyle: { type: "boolean" },
+					},
+					required: ["projectName", "technicalChallenge"],
 				},
 			},
 			{
@@ -1594,8 +1808,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 				return codeAnalysisPromptBuilder(args);
 			case "architecture-design-prompt-builder":
 				return architectureDesignPromptBuilder(args);
+			case "digital-enterprise-architect-prompt-builder":
+				return enterpriseArchitectPromptBuilder(args);
 			case "debugging-assistant-prompt-builder":
 				return debuggingAssistantPromptBuilder(args);
+			case "l9-distinguished-engineer-prompt-builder":
+				return l9DistinguishedEngineerPromptBuilder(args);
 			case "documentation-generator-prompt-builder":
 				return documentationGeneratorPromptBuilder(args);
 			case "strategy-frameworks-builder":

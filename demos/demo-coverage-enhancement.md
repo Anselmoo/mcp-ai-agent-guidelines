@@ -156,7 +156,10 @@ The system can automatically adjust coverage thresholds based on:
 - [GitHub Workflow Syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax?search-overlay-input=coverage&search-overlay-ask-ai=true)
 - [GitHub Copilot for Coverage](https://docs.github.com/en/copilot/tutorials/roll-out-at-scale/drive-downstream-impact/increase-test-coverage)
 
-## References
+## Further Reading
+
+*The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*
+
 - Coverage-driven development best practices: https://martinfowler.com/bliki/TestCoverage.html
 - Dead code elimination techniques: https://refactoring.guru/smells/dead-code
 - Test-driven development guide: https://testdriven.io/

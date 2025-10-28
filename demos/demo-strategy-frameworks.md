@@ -145,7 +145,10 @@ mindmap
 - Evaluate: Valuable, Rare, Inimitable, Organized
 - Implication: Competitive disadvantage→Parity→Advantage→Sustained
 
-## References
+## Further Reading
+
+*The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*
+
 - Atlassian strategy frameworks: https://www.atlassian.com/work-management/strategic-planning/framework
 - ClearPoint 20 frameworks: https://www.clearpointstrategy.com/blog/strategic-planning-models
 - Quantive top frameworks: https://quantive.com/resources/articles/top-strategic-frameworks

@@ -3,7 +3,7 @@
 // while identifying and suggesting removal of dead code
 
 import { z } from "zod";
-import { buildReferencesSection } from "./shared/prompt-utils.js";
+import { buildFurtherReadingSection } from "./shared/prompt-utils.js";
 
 const IterativeCoverageEnhancerSchema = z.object({
 	// Analysis Configuration
@@ -116,14 +116,45 @@ export async function iterativeCoverageEnhancer(args: unknown) {
 	];
 
 	const references = input.includeReferences
-		? buildReferencesSection([
-				"Coverage-driven development best practices: https://martinfowler.com/bliki/TestCoverage.html",
-				"Dead code elimination techniques: https://refactoring.guru/smells/dead-code",
-				"Test-driven development guide: https://testdriven.io/",
-				"The benefits of consistent testing: https://abseil.io/resources/swe-book/html/ch11.html#benefits_of_testing_code",
-				"GitHub’s Engineering System Success Playbook: https://resources.github.com/engineering-system-success-playbook/",
-				"Automated testing strategies: https://testing.googleblog.com/",
-				"Code coverage analysis: https://docs.github.com/en/actions/automating-builds-and-tests/about-continuous-integration",
+		? buildFurtherReadingSection([
+				{
+					title: "Test Coverage Best Practices",
+					url: "https://martinfowler.com/bliki/TestCoverage.html",
+					description:
+						"Martin Fowler on meaningful coverage-driven development",
+				},
+				{
+					title: "Dead Code Elimination",
+					url: "https://refactoring.guru/smells/dead-code",
+					description: "Techniques for identifying and removing unused code",
+				},
+				{
+					title: "Test-Driven Development Guide",
+					url: "https://testdriven.io/",
+					description: "Comprehensive resource for TDD practices and patterns",
+				},
+				{
+					title: "Benefits of Testing Code",
+					url: "https://abseil.io/resources/swe-book/html/ch11.html#benefits_of_testing_code",
+					description:
+						"Google's perspective on the value of comprehensive testing",
+				},
+				{
+					title: "Engineering System Success Playbook",
+					url: "https://resources.github.com/engineering-system-success-playbook/",
+					description:
+						"GitHub's guide to building effective engineering systems",
+				},
+				{
+					title: "Automated Testing Strategies",
+					url: "https://testing.googleblog.com/",
+					description: "Google Testing Blog with advanced testing techniques",
+				},
+				{
+					title: "Code Coverage Analysis in CI",
+					url: "https://docs.github.com/en/actions/automating-builds-and-tests/about-continuous-integration",
+					description: "GitHub's documentation on coverage in CI/CD pipelines",
+				},
 			])
 		: "";
 

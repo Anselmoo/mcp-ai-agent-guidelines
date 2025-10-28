@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { buildReferencesSection } from "./shared/prompt-utils.js";
+import { buildFurtherReadingSection } from "./shared/prompt-utils.js";
 
 const MemoryOptimizationSchema = z.object({
 	contextContent: z.string(),
@@ -24,10 +24,24 @@ export async function memoryContextOptimizer(args: unknown) {
 	const optimization = optimizeMemoryContext(input);
 
 	const references = input.includeReferences
-		? buildReferencesSection([
-				"Prompt Caching overview (Anthropic): https://www.anthropic.com/news/prompt-caching",
-				"Anthropic docs on caching: https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching",
-				"Token usage optimization tips: https://caylent.com/blog/prompt-caching-saving-time-and-money-in-llm-applications",
+		? buildFurtherReadingSection([
+				{
+					title: "Prompt Caching Overview",
+					url: "https://www.anthropic.com/news/prompt-caching",
+					description: "Anthropic's announcement and guide to prompt caching",
+				},
+				{
+					title: "Anthropic Prompt Caching Documentation",
+					url: "https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching",
+					description:
+						"Technical documentation for implementing prompt caching",
+				},
+				{
+					title: "Token Usage Optimization Tips",
+					url: "https://caylent.com/blog/prompt-caching-saving-time-and-money-in-llm-applications",
+					description:
+						"Strategies for saving time and money with prompt caching",
+				},
 			])
 		: undefined;
 

@@ -1,4 +1,4 @@
-import { buildReferencesSection } from "./prompt-utils.js";
+import { buildFurtherReadingSection } from "./prompt-utils.js";
 import {
 	type Provider,
 	ProviderEnum,
@@ -211,16 +211,37 @@ export function buildDisclaimer(): string {
 
 // Shared reference section builders (centralize to avoid duplication across builders)
 export function buildDesignReferencesSection(): string {
-	return buildReferencesSection([
-		"OKLCH color primer: https://oklch.com/",
-		"WCAG contrast guidelines: https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html",
-		"Interface animation best practices: https://www.material.io/design/motion/understanding-motion.html",
+	return buildFurtherReadingSection([
+		{
+			title: "OKLCH Color Primer",
+			url: "https://oklch.com/",
+			description: "Introduction to OKLCH color space for modern design",
+		},
+		{
+			title: "WCAG Contrast Guidelines",
+			url: "https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html",
+			description: "Accessibility standards for minimum color contrast ratios",
+		},
+		{
+			title: "Material Design Motion Principles",
+			url: "https://www.material.io/design/motion/understanding-motion.html",
+			description: "Best practices for interface animation and motion design",
+		},
 	]);
 }
 
 export function buildProjectReferencesSection(): string {
-	return buildReferencesSection([
-		"Project scope and acceptance criteria basics: https://www.pmi.org/learning/library/project-scope-statement-7017",
-		"Risk management primer: https://www.iso.org/iso-31000-risk-management.html",
+	return buildFurtherReadingSection([
+		{
+			title: "Project Scope Statement Best Practices",
+			url: "https://www.pmi.org/learning/library/project-scope-statement-7017",
+			description:
+				"PMI guide to defining project scope and acceptance criteria",
+		},
+		{
+			title: "ISO 31000 Risk Management",
+			url: "https://www.iso.org/iso-31000-risk-management.html",
+			description: "International standard for risk management principles",
+		},
 	]);
 }
