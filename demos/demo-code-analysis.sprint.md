@@ -72,8 +72,8 @@ gantt
 
 *The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*
 
-- ZenHub — AI-assisted sprint planning (2025): https://www.zenhub.com/blog-posts/the-7-best-ai-assisted-sprint-planning-tools-for-agile-teams-in-2025
-- Nitor Infotech — AI in project delivery: https://www.nitorinfotech.com/blog/ai-in-software-project-delivery-smarter-planning-and-execution/
-- Optimizing Sprint Planning with Julia — Linear Programming Approach (2025): https://medium.com/@karim.ouldaklouche/optimizing-sprint-planning-with-julia-a-linear-programming-approach-with-gurobi-03f28c0cf5bf
+- **[AI-Assisted Sprint Planning Tools 2025](https://www.zenhub.com/blog-posts/the-7-best-ai-assisted-sprint-planning-tools-for-agile-teams-in-2025)**: ZenHub's guide to the best AI-powered sprint planning tools
+- **[AI in Software Project Delivery](https://www.nitorinfotech.com/blog/ai-in-software-project-delivery-smarter-planning-and-execution/)**: How AI enables smarter planning and execution in projects
+- **[Optimizing Sprint Planning with Linear Programming](https://medium.com/@karim.ouldaklouche/optimizing-sprint-planning-with-julia-a-linear-programming-approach-with-gurobi-03f28c0cf5bf)**: Using Julia and Gurobi for mathematical sprint optimization
 
 

@@ -90,6 +90,6 @@ Tool definitions in src/index.ts
 
 *The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*
 
-- Write the Docs: https://www.writethedocs.org/guide/
+- **[Write the Docs Guide](https://www.writethedocs.org/guide/)**: Community-driven best practices for creating software documentation
 
 

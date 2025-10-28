@@ -149,8 +149,8 @@ mindmap
 
 *The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*
 
-- Atlassian strategy frameworks: https://www.atlassian.com/work-management/strategic-planning/framework
-- ClearPoint 20 frameworks: https://www.clearpointstrategy.com/blog/strategic-planning-models
-- Quantive top frameworks: https://quantive.com/resources/articles/top-strategic-frameworks
-- HBS strategy tools overview: https://online.hbs.edu/blog/post/strategy-frameworks-and-tools
+- **[Atlassian Strategy Frameworks](https://www.atlassian.com/work-management/strategic-planning/framework)**: Comprehensive guide to strategic planning frameworks
+- **[20 Strategic Planning Models](https://www.clearpointstrategy.com/blog/strategic-planning-models)**: ClearPoint's overview of popular strategy frameworks
+- **[Top Strategic Frameworks](https://quantive.com/resources/articles/top-strategic-frameworks)**: Quantive's guide to effective strategic frameworks
+- **[HBS Strategy Frameworks and Tools](https://online.hbs.edu/blog/post/strategy-frameworks-and-tools)**: Harvard Business School overview of strategy tools
 

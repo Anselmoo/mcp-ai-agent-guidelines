@@ -79,9 +79,9 @@ Constraints:
 
 *The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*
 
-- [Gap Analysis Best Practices](https://www.mindtools.com/pages/article/gap-analysis.htm)
-- [McKinsey Capability Building](https://www.mckinsey.com/capabilities/people-and-organizational-performance/our-insights/building-capabilities-for-performance)
-- [CMMI Maturity Models](https://cmmiinstitute.com/cmmi)
-- [Strategic Gap Analysis Framework](https://www.strategyand.pwc.com/gx/en/insights/gap-analysis.html)
-- [Performance Management Guide](https://www.shrm.org/resourcesandtools/tools-and-samples/toolkits/pages/performancemanagement.aspx)
+- **[Gap Analysis Best Practices](https://www.mindtools.com/pages/article/gap-analysis.htm)**: MindTools guide to conducting effective gap analysis
+- **[McKinsey Capability Building](https://www.mckinsey.com/capabilities/people-and-organizational-performance/our-insights/building-capabilities-for-performance)**: Building organizational capabilities for performance
+- **[CMMI Maturity Models](https://cmmiinstitute.com/cmmi)**: Capability Maturity Model Integration for process improvement
+- **[Strategic Gap Analysis Framework](https://www.strategyand.pwc.com/gx/en/insights/gap-analysis.html)**: PwC's strategic approach to gap analysis
+- **[Performance Management Guide](https://www.shrm.org/resourcesandtools/tools-and-samples/toolkits/pages/performancemanagement.aspx)**: SHRM toolkit for performance management best practices
 

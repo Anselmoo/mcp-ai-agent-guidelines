@@ -113,6 +113,6 @@ Added null checks, verified user session exists, checked discount table
 
 *The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*
 
-- Debugging Best Practices: https://jvns.ca/blog/2022/12/08/a-debugging-manifesto/
+- **[A Debugging Manifesto](https://jvns.ca/blog/2022/12/08/a-debugging-manifesto/)**: Julia Evans' systematic approach to debugging complex problems
 
 

@@ -65,9 +65,9 @@ Step-by-step guidance with structured support
 
 *The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*
 
-- Prompting Hierarchy Techniques - https://www.aiforeducation.io/ai-resources/prompting-techniques-for-specialized-llms
-- Hierarchical Prompting Framework - https://relevanceai.com/prompt-engineering/master-hierarchical-prompting-for-better-ai-interactions
-- Task-Based Prompt Design - https://www.promptopti.com/best-3-prompting-hierarchy-tiers-for-ai-interaction/
+- **[Prompting Hierarchy Techniques](https://www.aiforeducation.io/ai-resources/prompting-techniques-for-specialized-llms)**: Techniques for specialized LLM prompting and task adaptation
+- **[Hierarchical Prompting Framework](https://relevanceai.com/prompt-engineering/master-hierarchical-prompting-for-better-ai-interactions)**: Framework for structuring AI interactions hierarchically
+- **[Task-Based Prompt Design](https://www.promptopti.com/best-3-prompting-hierarchy-tiers-for-ai-interaction/)**: Three-tier approach to hierarchical prompt optimization
 
 
 

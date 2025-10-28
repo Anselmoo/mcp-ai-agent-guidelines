@@ -82,6 +82,6 @@ Address the following non-functional requirements:
 
 *The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*
 
-- Software Architecture Guide: https://martinfowler.com/architecture/
+- **[Software Architecture Guide](https://martinfowler.com/architecture/)**: Martin Fowler's comprehensive guide to software architecture patterns and principles
 
 
