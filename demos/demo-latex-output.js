@@ -96,7 +96,7 @@ async function demoLatexPrompt() {
 
 	console.log("LaTeX-formatted prompt (excerpt):");
 	const text = result.content[0].text;
-	console.log(text.substring(0, 800) + "...\n");
+	console.log(`${text.substring(0, 800)}...\n`);
 }
 
 demoLatexPrompt().catch(console.error);
