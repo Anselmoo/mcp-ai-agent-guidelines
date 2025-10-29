@@ -24,8 +24,8 @@ describe("domain-neutral-prompt-builder", () => {
 				expect(text).toMatch(/# Pitfalls to Avoid/);
 				// ensure unknown tool dropped comment appears in frontmatter comments area
 				expect(text).toMatch(/Dropped unknown tools: unknown/);
-				// model normalization should uppercase GPT-4.1 in frontmatter
-				expect(text).toMatch(/model: GPT-4.1/);
+				// model normalization should uppercase GPT-4o in frontmatter
+				expect(text).toMatch(/model: GPT-4o/);
 				// tools list should only contain allowed tools
 				expect(text).toMatch(
 					/tools: \['githubRepo', 'codebase'(, 'editFiles')?\]/,

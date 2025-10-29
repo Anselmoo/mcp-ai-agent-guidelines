@@ -80,7 +80,7 @@ const SecurityHardeningSchema = z.object({
 
 	// YAML prompt frontmatter
 	mode: z.string().optional().default("agent"),
-	model: z.string().optional().default("GPT-4.1"),
+	model: z.string().optional().default("GPT-4o"),
 	tools: z
 		.array(z.string())
 		.optional()
@@ -98,7 +98,7 @@ const SecurityHardeningSchema = z.object({
 	includeTechniqueHints: z.boolean().optional().default(true),
 	includePitfalls: z.boolean().optional().default(true),
 	autoSelectTechniques: z.boolean().optional().default(true),
-	provider: ProviderEnum.optional().default("gpt-4.1"),
+	provider: ProviderEnum.optional().default("gpt-4o"),
 	style: StyleEnum.optional(),
 });
 

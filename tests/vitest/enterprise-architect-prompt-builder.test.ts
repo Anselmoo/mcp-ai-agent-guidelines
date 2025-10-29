@@ -377,7 +377,7 @@ describe("enterpriseArchitectPromptBuilder", () => {
 
 			const text = result.content[0].text;
 			expect(text).toContain("mode: 'agent'");
-			expect(text).toContain("model: GPT-4.1");
+			expect(text).toContain("model: GPT-4o");
 		});
 
 		it("should respect forcePromptMdStyle: false", async () => {

@@ -129,7 +129,7 @@ const DomainNeutralSchema = z.object({
 
 	// Prompt frontmatter controls
 	mode: z.string().optional().default("agent"),
-	model: z.string().optional().default("GPT-4.1"),
+	model: z.string().optional().default("GPT-4o"),
 	tools: z
 		.array(z.string())
 		.optional()
@@ -146,7 +146,7 @@ const DomainNeutralSchema = z.object({
 	// Optional model tips
 	techniques: z.array(TechniqueEnum).optional(),
 	autoSelectTechniques: z.boolean().optional().default(false),
-	provider: ProviderEnum.optional().default("gpt-4.1"),
+	provider: ProviderEnum.optional().default("gpt-4o"),
 	style: StyleEnum.optional(),
 });
 

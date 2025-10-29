@@ -20,7 +20,7 @@ const DebuggingAssistantPromptSchema = z.object({
 		.describe("Solutions already attempted"),
 	// Optional frontmatter controls
 	mode: z.enum(["agent", "tool", "workflow"]).optional().default("agent"),
-	model: z.string().optional().default("GPT-4.1"),
+	model: z.string().optional().default("GPT-4o"),
 	tools: z
 		.array(z.string())
 		.optional()

@@ -83,11 +83,23 @@ export function buildFrontmatter({
 // Policy: enforce allowed modes/models/tools and normalize casing
 const ALLOWED_MODES = new Set(["agent"]);
 const MODEL_ALIASES: Record<string, string> = {
-	"gpt-4.1": "GPT-4.1",
-	"claude-4": "Claude-4",
-	"gemini-2.5": "Gemini-2.5",
-	"o4-mini": "o4-mini",
+	// Latest models
+	"gpt-4o": "GPT-4o",
+	"gpt-4o-mini": "GPT-4o-mini",
+	"o1-preview": "o1-preview",
+	"o1-mini": "o1-mini",
 	"o3-mini": "o3-mini",
+	"claude-3.5-sonnet": "Claude-3.5-Sonnet",
+	"claude-3.5-haiku": "Claude-3.5-Haiku",
+	"gemini-1.5-pro": "Gemini-1.5-Pro",
+	"gemini-2.0-flash": "Gemini-2.0-Flash",
+	// Legacy aliases for backward compatibility
+	"gpt-4.1": "GPT-4o",
+	"gpt-5": "o1-preview",
+	"claude-4": "Claude-3.5-Sonnet",
+	"claude-3.7": "Claude-3.5-Sonnet",
+	"gemini-2.5": "Gemini-2.0-Flash",
+	"o4-mini": "o1-mini",
 };
 const ALLOWED_TOOLS = new Set(["githubRepo", "codebase", "editFiles"]);
 
@@ -191,4 +203,102 @@ export function buildFurtherReadingSection(
 		"",
 	];
 	return lines.join("\n");
+}
+
+/**
+ * Escape special LaTeX characters in a string.
+ * Handles: \ { } $ & # ^ _ % ~
+ */
+export function escapeLatex(text: string): string {
+	// Replace backslashes first, but use a placeholder to avoid double-escaping
+	let result = text.replace(/\\/g, "BACKSLASHPLACEHOLDER");
+
+	// Replace other special characters
+	result = result
+		.replace(/\{/g, "\\{")
+		.replace(/\}/g, "\\}")
+		.replace(/\$/g, "\\$")
+		.replace(/&/g, "\\&")
+		.replace(/#/g, "\\#")
+		.replace(/\^/g, "\\textasciicircum{}")
+		.replace(/_/g, "\\_")
+		.replace(/%/g, "\\%")
+		.replace(/~/g, "\\textasciitilde{}")
+		// Finally replace the placeholder with the escaped backslash
+		.replace(/BACKSLASHPLACEHOLDER/g, "\\textbackslash{}");
+
+	return result;
+}
+
+/**
+ * Build a LaTeX-formatted section without GitHub-specific headers.
+ * Optimized for inline use in chat contexts.
+ */
+export function buildLatexSection(
+	title: string,
+	content: string,
+	level = 1,
+): string {
+	const sectionCmd =
+		level === 1 ? "section" : level === 2 ? "subsection" : "subsubsection";
+	return `\\${sectionCmd}{${escapeLatex(title)}}\n${content}\n`;
+}
+
+/**
+ * Convert markdown-style content to LaTeX format.
+ * Handles basic markdown formatting: headers, lists, code blocks.
+ */
+export function markdownToLatex(markdown: string): string {
+	let latex = markdown;
+
+	// Replace code blocks
+	latex = latex.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
+		return `\\begin{verbatim}\n${code}\\end{verbatim}`;
+	});
+
+	// Replace inline code
+	latex = latex.replace(/`([^`]+)`/g, (_, code) => {
+		return `\\texttt{${escapeLatex(code)}}`;
+	});
+
+	// Replace headers (### -> \subsubsection, ## -> \subsection, # -> \section)
+	latex = latex.replace(/^### (.+)$/gm, (_, title) => {
+		return `\\subsubsection{${escapeLatex(title)}}`;
+	});
+	latex = latex.replace(/^## (.+)$/gm, (_, title) => {
+		return `\\subsection{${escapeLatex(title)}}`;
+	});
+	latex = latex.replace(/^# (.+)$/gm, (_, title) => {
+		return `\\section{${escapeLatex(title)}}`;
+	});
+
+	// Replace bold
+	latex = latex.replace(/\*\*([^*]+)\*\*/g, (_, text) => {
+		return `\\textbf{${escapeLatex(text)}}`;
+	});
+
+	// Replace italic
+	latex = latex.replace(/\*([^*]+)\*/g, (_, text) => {
+		return `\\textit{${escapeLatex(text)}}`;
+	});
+
+	// Replace unordered lists
+	latex = latex.replace(/^- (.+)$/gm, (_, item) => {
+		return `\\item ${item}`;
+	});
+
+	// Wrap consecutive \item lines in itemize environment
+	latex = latex.replace(/(\\item .+\n)+/g, (match) => {
+		return `\\begin{itemize}\n${match}\\end{itemize}\n`;
+	});
+
+	// Replace numbered lists
+	latex = latex.replace(/^\d+\. (.+)$/gm, (_, item) => {
+		return `\\item ${item}`;
+	});
+
+	// Wrap consecutive numbered \item lines in enumerate environment
+	// This is a simplified approach - may need refinement
+
+	return latex;
 }

@@ -18,13 +18,13 @@ describe("prompt-utils", () => {
 	it("buildFrontmatter emits yaml with quoting and arrays", () => {
 		const fm = buildFrontmatter({
 			mode: "agent",
-			model: "GPT-4.1",
+			model: "GPT-4o",
 			tools: ["githubRepo", "codebase"],
 			description: "It's great",
 		});
 		expect(fm).toMatch(/^---/);
 		expect(fm).toMatch(/mode: 'agent'/);
-		expect(fm).toMatch(/model: GPT-4.1/);
+		expect(fm).toMatch(/model: GPT-4o/);
 		expect(fm).toMatch(/tools: \['githubRepo', 'codebase'\]/);
 		expect(fm).toMatch(/description: 'It''s great'/);
 		expect(fm).toMatch(/---$/);
@@ -38,7 +38,7 @@ describe("prompt-utils", () => {
 			description: "d",
 		});
 		expect(res.mode).toBe("agent");
-		expect(res.model).toBe("GPT-4.1");
+		expect(res.model).toBe("GPT-4o");
 		expect(res.tools).toEqual(["githubRepo"]);
 		expect(res.comments?.join("\n")).toMatch(/Unrecognized mode/);
 		expect(res.comments?.join("\n")).toMatch(/Dropped unknown tools/);

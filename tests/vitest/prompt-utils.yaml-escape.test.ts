@@ -182,14 +182,14 @@ describe("YAML escaping and slug sanitization", () => {
 		it("safely handles all fields with special characters", () => {
 			const result = buildFrontmatter({
 				mode: "agent",
-				model: "GPT-4.1",
+				model: "GPT-4o",
 				tools: ["tool-with-dash", "tool_with_underscore"],
 				description: "Description with 'quotes' and --- and newlines\nLine 2",
 			});
 			expect(result).toMatch(/^---/);
 			expect(result).toMatch(/---$/);
 			expect(result).toMatch(/mode: 'agent'/);
-			expect(result).toMatch(/model: GPT-4.1/);
+			expect(result).toMatch(/model: GPT-4o/);
 			// Should be valid YAML structure
 			const lines = result.split("\n");
 			expect(lines.filter((l) => l.trim() === "---").length).toBe(2);

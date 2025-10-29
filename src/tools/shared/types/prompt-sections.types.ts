@@ -17,17 +17,26 @@ export const TechniqueEnum = z.enum([
 ]);
 
 export const ProviderEnum = z.enum([
+	"gpt-4o",
+	"gpt-4o-mini",
+	"o1-preview",
+	"o1-mini",
+	"o3-mini",
+	"claude-3.5-sonnet",
+	"claude-3.5-haiku",
+	"gemini-1.5-pro",
+	"gemini-2.0-flash",
+	// Legacy aliases for backward compatibility
 	"gpt-5",
 	"gpt-4.1",
 	"claude-4",
 	"claude-3.7",
 	"gemini-2.5",
 	"o4-mini",
-	"o3-mini",
 	"other",
 ]);
 
-export const StyleEnum = z.enum(["markdown", "xml"]);
+export const StyleEnum = z.enum(["markdown", "xml", "latex"]);
 
 export type Technique = z.infer<typeof TechniqueEnum>;
 export type Provider = z.infer<typeof ProviderEnum>;

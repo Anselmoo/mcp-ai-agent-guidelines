@@ -114,7 +114,7 @@ const SparkPromptSchema = z.object({
 	techniques: z.array(TechniqueEnum).optional(),
 	includeTechniqueHints: z.boolean().optional().default(false),
 	autoSelectTechniques: z.boolean().optional().default(false),
-	provider: ProviderEnum.optional().default("gpt-4.1"),
+	provider: ProviderEnum.optional().default("gpt-4o"),
 	style: StyleEnum.optional(),
 
 	// Components
@@ -148,7 +148,7 @@ const SparkPromptSchema = z.object({
 
 	// YAML prompt frontmatter (optional, to mirror hierarchical builder)
 	mode: z.string().optional().default("agent"),
-	model: z.string().optional().default("GPT-4.1"),
+	model: z.string().optional().default("GPT-4o"),
 	tools: z
 		.array(z.string())
 		.optional()

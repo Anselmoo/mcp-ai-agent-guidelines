@@ -161,21 +161,35 @@ export function inferTechniquesFromText(text: string): Technique[] {
 }
 
 export function buildProviderTipsSection(
-	provider: Provider = "gpt-4.1",
-	style?: "markdown" | "xml",
+	provider: Provider = "gpt-4o",
+	style?: "markdown" | "xml" | "latex",
 ): string {
-	const p = (provider || "gpt-4.1").toLowerCase();
-	const effectiveStyle = style || (p === "claude-4" ? "xml" : "markdown");
+	const p = (provider || "gpt-4o").toLowerCase();
+	// Normalize legacy aliases
+	const normalizedProvider =
+		p === "gpt-4.1"
+			? "gpt-4o"
+			: p === "claude-4" || p === "claude-3.7"
+				? "claude-3.5-sonnet"
+				: p === "gemini-2.5"
+					? "gemini-2.0-flash"
+					: p === "o4-mini"
+						? "o1-mini"
+						: p === "gpt-5"
+							? "o1-preview"
+							: p;
+	const effectiveStyle =
+		style || (normalizedProvider.includes("claude") ? "xml" : "markdown");
 	const lines: string[] = [];
 	lines.push(`# Model-Specific Tips`);
 	lines.push("");
-	if (p === "gpt-4.1") {
+	if (normalizedProvider === "gpt-4o" || normalizedProvider === "gpt-4o-mini") {
 		lines.push("- Prefer Markdown with clear headings and sections");
 		lines.push(
 			"- Place instructions at the beginning (and optionally re-assert at the end) in long contexts",
 		);
 		lines.push("- Use explicit step numbering for CoT where helpful");
-	} else if (p === "claude-4") {
+	} else if (normalizedProvider.includes("claude")) {
 		lines.push(
 			"- Prefer XML-like structuring for clarity (e.g., <instructions>, <context>, <examples>)",
 		);
@@ -183,20 +197,37 @@ export function buildProviderTipsSection(
 			"- Be very specific about expectations and use extended thinking tags where appropriate",
 		);
 		lines.push("- Tag documents distinctly when doing RAG");
-	} else if (p === "gemini-2.5") {
+	} else if (normalizedProvider.includes("gemini")) {
 		lines.push(
 			"- Use consistent formatting throughout; keep queries at the end of long contexts",
 		);
 		lines.push("- Experiment with example quantities and placement");
+	} else if (
+		normalizedProvider.includes("o1") ||
+		normalizedProvider.includes("o3")
+	) {
+		lines.push(
+			"- Optimized for complex reasoning and multi-step problem solving",
+		);
+		lines.push("- Break down complex tasks into clear steps");
+		lines.push("- Provide comprehensive context for deep analysis");
 	}
 	lines.push("");
 	lines.push(`- Preferred Style: ${effectiveStyle.toUpperCase()}`);
 	lines.push("");
-	lines.push(
-		effectiveStyle === "xml"
-			? "```xml\n<instructions>...your task...</instructions>\n<context>...data...</context>\n<output_format>JSON fields ...</output_format>\n```\n"
-			: "```md\n# Instructions\n...your task...\n\n# Context\n...data...\n\n# Output Format\nJSON fields ...\n```\n",
-	);
+	if (effectiveStyle === "latex") {
+		lines.push(
+			"```latex\n\\section{Instructions}\n...your task...\n\n\\section{Context}\n...data...\n\n\\section{Output Format}\nJSON fields ...\n```\n",
+		);
+	} else if (effectiveStyle === "xml") {
+		lines.push(
+			"```xml\n<instructions>...your task...</instructions>\n<context>...data...</context>\n<output_format>JSON fields ...</output_format>\n```\n",
+		);
+	} else {
+		lines.push(
+			"```md\n# Instructions\n...your task...\n\n# Context\n...data...\n\n# Output Format\nJSON fields ...\n```\n",
+		);
+	}
 	lines.push("");
 	return lines.join("\n");
 }
