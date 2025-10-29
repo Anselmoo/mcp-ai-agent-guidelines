@@ -1,7 +1,7 @@
 ---
 # Note: Dropped unknown tools: security-scanner
 mode: 'agent'
-model: GPT-4.1
+model: GPT-4o
 tools: ['codebase', 'editFiles']
 description: 'Security vulnerability analysis analysis and hardening recommendations'
 ---

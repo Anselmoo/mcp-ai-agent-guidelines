@@ -1,7 +1,7 @@
 ---
 # Note: Dropped unknown tools: terminal, logs
 mode: 'agent'
-model: GPT-4.1
+model: GPT-4o
 tools: ['codebase']
 description: 'Systematic debugging and troubleshooting assistant'
 ---

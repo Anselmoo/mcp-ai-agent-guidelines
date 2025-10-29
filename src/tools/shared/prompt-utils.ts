@@ -252,7 +252,7 @@ export function markdownToLatex(markdown: string): string {
 	let latex = markdown;
 
 	// Replace code blocks
-	latex = latex.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
+	latex = latex.replace(/```(\w*)\n([\s\S]*?)```/g, (_, _lang, code) => {
 		return `\\begin{verbatim}\n${code}\\end{verbatim}`;
 	});
 
