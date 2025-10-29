@@ -117,5 +117,6 @@ All modules maintain backwards compatibility through:
 ## Related Documentation
 
 - [Design Tools Overview](../README.md)
-- [MCP Design Framework](./design-framework.md)
-- [Test Coverage Report](../coverage/index.html)
+- [Design Assistant Documentation](./design-module-status.md)
+<!-- [MCP Design Framework](./design-framework.md) - File does not exist -->
+<!-- [Test Coverage Report](../coverage/index.html) - Dynamic file, not in repository -->

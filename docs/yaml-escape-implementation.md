@@ -210,7 +210,7 @@ const safeValue = escapeYamlValue("User input: --- breaks YAML");
 
 - [YAML 1.2 Specification](https://yaml.org/spec/1.2/spec.html)
 - [YAML Block Scalars](https://yaml.org/spec/1.2/spec.html#id2793652)
-- [Gap Analysis Issue](../gap_analysis.issue.md)
+<!-- [Gap Analysis Issue](../gap_analysis.issue.md) - File does not exist -->
 
 ## Success Criteria
 

@@ -591,4 +591,4 @@ await promptFlowBuilder({
 - [Prompt Chaining Patterns](https://www.promptingguide.ai/techniques/prompt_chaining)
 - [Flow-Based Programming](https://en.wikipedia.org/wiki/Flow-based_programming)
 - [Claude Flow GitHub](https://github.com/ruvnet/claude-flow)
-- [Advanced Prompting Techniques](https://www.anthropic.com/research/prompting-patterns)
+<!-- [Advanced Prompting Techniques](https://www.anthropic.com/research/prompting-patterns) - Link returns 404 -->

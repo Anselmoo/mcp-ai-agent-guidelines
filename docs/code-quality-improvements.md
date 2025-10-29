@@ -32,7 +32,7 @@ The original code quality evaluation tools were too lenient, providing overly po
 - Maximum possible score per category reduced (e.g., Architecture: 85 → 65)
 
 ### 2. Code Hygiene Analyzer - Severity-Based Scoring
-**File**: `src/tools/code-hygiene-analyzer.ts`
+**File**: `../src/tools/code-hygiene-analyzer.ts`
 
 **Changes**:
 - Implemented **severity-based penalty system**:

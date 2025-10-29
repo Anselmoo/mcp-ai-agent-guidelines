@@ -2,7 +2,8 @@
 
 ## Overview
 
-The sprint timeline calculator has been enhanced with reliability improvements to ensure deterministic, dependency-aware planning. These changes address the core issues identified in [issue #XX](link-to-issue) and implement foundations for future optimization approaches inspired by linear programming methods.
+The sprint timeline calculator has been enhanced with reliability improvements to ensure deterministic, dependency-aware planning. These changes implement foundations for future optimization approaches inspired by linear programming methods.
+<!-- Note: Issue reference removed - link was broken -->
 
 ## Key Improvements
 

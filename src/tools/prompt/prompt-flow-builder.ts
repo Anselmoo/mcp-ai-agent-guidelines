@@ -485,9 +485,9 @@ function buildFlowReferences(): string {
 			description: "Programming paradigm for building data flow applications",
 		},
 		{
-			title: "AI Workflow Patterns",
-			url: "https://www.anthropic.com/research/prompting-patterns",
-			description: "Anthropic's research on effective prompting patterns",
+			title: "Prompt Engineering Guide",
+			url: "https://www.promptingguide.ai/",
+			description: "Comprehensive guide to prompting techniques and patterns",
 		},
 		{
 			title: "Claude Flow Architecture",

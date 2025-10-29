@@ -129,10 +129,10 @@ Generates:
 3. **`README.md`** - Updated with initiative highlights
 
 ### Quick Links
-- [Clean Code Initiative Guide](docs/CLEAN_CODE_INITIATIVE.md)
-- [Current Dashboard](CLEAN_CODE_DASHBOARD.md)
-- [Code Hygiene Analyzer](src/tools/code-hygiene-analyzer.ts)
-- [Guidelines Validator](src/tools/guidelines-validator.ts)
+- [Clean Code Initiative Guide](./CLEAN_CODE_INITIATIVE.md)
+<!-- [Current Dashboard](CLEAN_CODE_DASHBOARD.md) - Generated file, not in repository -->
+- [Code Hygiene Analyzer](../src/tools/code-hygiene-analyzer.ts)
+- [Guidelines Validator](../src/tools/guidelines-validator.ts)
 
 ## 🧪 Testing
 
