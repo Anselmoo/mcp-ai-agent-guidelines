@@ -95,7 +95,7 @@ jobs:
 
       - name: Add PR comment
         if: steps.check_changes.outputs.changed == 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             let body = '🔄 **Demo files automatically regenerated**\n\nThe demo files in `demos/` have been updated to reflect changes in `src/tools/`. Please review the changes to ensure they are correct.';
