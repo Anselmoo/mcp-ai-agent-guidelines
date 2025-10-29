@@ -40,12 +40,12 @@ Notes
 
 ### 🔄 Automated Demo Regeneration
 
-> [!TIP]
-> **Demo files are automatically kept in sync with code changes!**
+> [!TIP] > **Demo files are automatically kept in sync with code changes!**
 
 When you make changes to tools in `src/tools/`, a GitHub Actions workflow automatically regenerates the demo files. This ensures documentation never goes out of sync.
 
 **How it works:**
+
 1. You modify a tool file (e.g., `../src/tools/code-hygiene-analyzer.ts`)
 2. You create or update a pull request
 3. The workflow detects the change and runs `npm run test:demo`
@@ -55,6 +55,7 @@ When you make changes to tools in `src/tools/`, a GitHub Actions workflow automa
 **Workflow file:** [`.github/workflows/auto-regenerate-demos.yml`](../.github/workflows/auto-regenerate-demos.yml)
 
 **Manual regeneration** (if needed):
+
 ```bash
 npm run build
 npm run test:demo
