@@ -83,7 +83,6 @@ jobs:
             --exclude 'http://localhost' \
             --exclude 'https://httpbin.org' \
             --exclude 'https://api.example.com' \
-            --exclude-mail \
             '**/*.md' \
             'src/**/*.ts' \
             || echo "⚠️ Some links may be broken - check the detailed report"

@@ -249,9 +249,9 @@ When a module progresses:
 
 ## Documentation
 
-- **Module Status Doc**: [docs/design-module-status.md](docs/design-module-status.md)
-- **Smoke Tests**: [tests/vitest/unit/design/smoke-implemented-detection.test.ts](tests/vitest/unit/design/smoke-implemented-detection.test.ts)
-- **Design Tools Index**: [src/tools/design/index.ts](src/tools/design/index.ts)
+- **Module Status Doc**: [../docs/design-module-status.md](../docs/design-module-status.md)
+- **Smoke Tests**: [../tests/vitest/unit/design/smoke-implemented-detection.test.ts](../tests/vitest/unit/design/smoke-implemented-detection.test.ts)
+- **Design Tools Index**: [../src/tools/design/index.ts](../src/tools/design/index.ts)
 
 ## Success Criteria (All Met ✅)
 
