@@ -22,8 +22,10 @@ import { codeAnalysisPromptBuilder } from "../dist/tools/prompt/code-analysis-pr
 import { debuggingAssistantPromptBuilder } from "../dist/tools/prompt/debugging-assistant-prompt-builder.js";
 import { documentationGeneratorPromptBuilder } from "../dist/tools/prompt/documentation-generator-prompt-builder.js";
 import { domainNeutralPromptBuilder } from "../dist/tools/prompt/domain-neutral-prompt-builder.js";
+import { enterpriseArchitectPromptBuilder } from "../dist/tools/prompt/enterprise-architect-prompt-builder.js";
 import { hierarchicalPromptBuilder } from "../dist/tools/prompt/hierarchical-prompt-builder.js";
 import { hierarchyLevelSelector } from "../dist/tools/prompt/hierarchy-level-selector.js";
+import { l9DistinguishedEngineerPromptBuilder } from "../dist/tools/prompt/l9-distinguished-engineer-prompt-builder.js";
 import { promptingHierarchyEvaluator } from "../dist/tools/prompt/prompting-hierarchy-evaluator.js";
 import { securityHardeningPromptBuilder } from "../dist/tools/prompt/security-hardening-prompt-builder.js";
 import { sparkPromptBuilder } from "../dist/tools/prompt/spark-prompt-builder.js";
@@ -515,6 +517,61 @@ Enhance the authentication system with JWT token support and proper session mana
 		includeReferences: true,
 	});
 	await writeReport("demo-coverage-enhancement.md", getText(coverageEnhancer));
+
+	// Enterprise architect prompt builder demo
+	// Tool name: digitalEnterpriseArchitectPromptBuilder
+	const enterpriseArchitectPrompt = await enterpriseArchitectPromptBuilder({
+		initiativeName: "AI-Native Platform Transformation",
+		problemStatement:
+			"Transform to a sustainable, AI-native enterprise platform with world-class developer experience",
+		businessDrivers: [
+			"Accelerate AI/ML model deployment velocity by 10x",
+			"Reduce developer cognitive load and onboarding time by 70%",
+			"Enable autonomous product teams with self-service infrastructure",
+		],
+		currentLandscape:
+			"Legacy monolithic applications with manual deployments, fragmented AI initiatives",
+		targetUsers: "500+ developers across 50 product teams, ML engineers",
+		differentiators: ["AI-powered developer productivity platform"],
+		constraints: ["Must maintain 99.9% uptime during transformation"],
+		complianceObligations: ["GDPR", "SOC 2 Type II"],
+		technologyGuardrails: [
+			"Kubernetes-first infrastructure",
+			"TypeScript and Python as primary languages",
+		],
+		timeline: "18-month transformation with quarterly milestone reviews",
+		includeReferences: true,
+	});
+	await writeReport(
+		"demo-enterprise-architect.prompt.md",
+		getText(enterpriseArchitectPrompt),
+	);
+
+	// L9 Distinguished Engineer prompt builder demo
+	const l9EngineerPrompt = await l9DistinguishedEngineerPromptBuilder({
+		projectName: "Global Distributed Caching System",
+		technicalChallenge:
+			"Design a global-scale distributed caching layer capable of serving 10M+ QPS with <5ms p99 latency",
+		technicalDrivers: [
+			"Sub-5ms p99 latency at global scale",
+			"Linear horizontal scalability to 100M+ QPS",
+			"99.999% availability",
+		],
+		currentArchitecture:
+			"Monolithic Redis cluster with single-region deployment, manual sharding",
+		userScale: "500M monthly active users, 10M peak concurrent connections",
+		technicalDifferentiators: [
+			"Multi-region atomic transactions without global locks",
+			"AI-driven cache warming and eviction policies",
+		],
+		engineeringConstraints: [
+			"Must maintain backward compatibility with existing client SDKs",
+			"Migration must be zero-downtime",
+		],
+		securityRequirements: ["SOC 2 Type II compliance", "GDPR data residency"],
+		techStack: ["Redis 6.x", "Python/Go clients", "Kubernetes on AWS"],
+	});
+	await writeReport("demo-l9-engineer.prompt.md", getText(l9EngineerPrompt));
 }
 
 main().catch((err) => {

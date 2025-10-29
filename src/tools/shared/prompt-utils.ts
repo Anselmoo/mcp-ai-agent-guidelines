@@ -1,3 +1,4 @@
+import { REFERENCE_DISCLAIMER } from "./constants.js";
 import type { FrontmatterOptions } from "./types/index.js";
 
 export type { FrontmatterOptions };
@@ -175,7 +176,7 @@ export function buildFurtherReadingSection(
 	const lines: string[] = [
 		"## Further Reading",
 		"",
-		"*The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*",
+		REFERENCE_DISCLAIMER,
 		"",
 		...refs.map((r) => {
 			if (typeof r === "string") {
