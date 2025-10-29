@@ -42,10 +42,9 @@ describe("Prompting Hierarchy - Maximum Coverage Tests", () => {
 					includeReferences: true,
 				});
 				expect(result.content[0].text).toContain("Example Prompts");
-				expect(result.content[0].text).toContain("References");
+				expect(result.content[0].text).toContain("Further Reading");
 			}
 		});
-
 		it("should test without examples and references", async () => {
 			const result = await hierarchyLevelSelector({
 				taskDescription: "Test task",
@@ -53,7 +52,7 @@ describe("Prompting Hierarchy - Maximum Coverage Tests", () => {
 				includeReferences: false,
 			});
 			expect(result.content[0].text).not.toContain("Example Prompts");
-			expect(result.content[0].text).not.toContain("## References");
+			expect(result.content[0].text).not.toContain("## Further Reading");
 		});
 	});
 
@@ -343,7 +342,7 @@ Implement JWT authentication with proper security measures.
 			expect(text).toContain("All Level Scores");
 			expect(text).toContain("Alternative Considerations");
 			expect(text).toContain("Example Prompts");
-			expect(text).toContain("References");
+			expect(text).toContain("Further Reading");
 			expect(text).toContain("Note");
 		});
 	});

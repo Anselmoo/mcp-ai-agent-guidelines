@@ -1,7 +1,7 @@
 import { z } from "zod";
 import {
+	buildFurtherReadingSection,
 	buildMetadataSection,
-	buildReferencesSection,
 } from "./shared/prompt-utils.js";
 
 const ProjectOnboardingSchema = z.object({
@@ -410,9 +410,21 @@ function buildMemoriesSection(memories: ProjectMemory[]): string {
 }
 
 function buildOnboardingReferences(): string {
-	return buildReferencesSection([
-		"Project Onboarding Best Practices: https://www.atlassian.com/onboarding",
-		"Code Navigation: https://code.visualstudio.com/docs/editor/editingevolved",
-		"Memory Systems for AI: https://ai.meta.com/blog/memory-in-ai-agents/",
+	return buildFurtherReadingSection([
+		{
+			title: "Atlassian Onboarding Guide",
+			url: "https://www.atlassian.com/onboarding",
+			description: "Best practices for effective project and team onboarding",
+		},
+		{
+			title: "VS Code Navigation",
+			url: "https://code.visualstudio.com/docs/editor/editingevolved",
+			description: "Advanced code navigation features in Visual Studio Code",
+		},
+		{
+			title: "Memory in AI Agents",
+			url: "https://ai.meta.com/blog/memory-in-ai-agents/",
+			description: "Meta's research on memory systems for AI agents",
+		},
 	]);
 }

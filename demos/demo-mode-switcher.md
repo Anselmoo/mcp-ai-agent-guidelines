@@ -49,11 +49,14 @@ Ask targeted questions. Use semantic analysis tools. Build understanding increme
 - Symbol navigation available
 - Real-time feedback expected
 
-## References
-- Agent Modes and Contexts: https://github.com/oraios/serena#modes-and-contexts
-- Effective Prompting Strategies: https://www.anthropic.com/index/prompting-long-context
-- Code Navigation Patterns: https://code.visualstudio.com/docs/editor/editingevolved
-- Debugging Best Practices: https://www.debuggingbook.org/
+## Further Reading
+
+*The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*
+
+- **[Serena Agent Modes and Contexts](https://github.com/oraios/serena#modes-and-contexts)**: Documentation on Serena's flexible mode and context system
+- **[Effective Prompting Strategies](https://www.anthropic.com/index/prompting-long-context)**: Anthropic's guide to prompting with long-context models
+- **[VS Code Navigation Patterns](https://code.visualstudio.com/docs/editor/editingevolved)**: Advanced code navigation and editing techniques in VS Code
+- **[The Debugging Book](https://www.debuggingbook.org/)**: Comprehensive guide to debugging techniques and best practices
 
 
 

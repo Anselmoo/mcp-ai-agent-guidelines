@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
 	buildFrontmatter,
 	buildFrontmatterWithPolicy,
+	buildFurtherReadingSection,
 	buildMetadataSection,
-	buildReferencesSection,
 	slugify,
 	validateAndNormalizeFrontmatter,
 } from "../../src/tools/shared/prompt-utils";
@@ -70,10 +70,10 @@ describe("prompt-utils", () => {
 		expect(md).toMatch(/Suggested filename: file.prompt.md/);
 	});
 
-	it("buildReferencesSection handles empty and non-empty inputs", () => {
-		expect(buildReferencesSection([])).toBe("");
-		const ref = buildReferencesSection(["a", "b"]);
-		expect(ref).toMatch(/## References/);
+	it("buildFurtherReadingSection handles empty and non-empty inputs", () => {
+		expect(buildFurtherReadingSection([])).toBe("");
+		const ref = buildFurtherReadingSection(["a", "b"]);
+		expect(ref).toMatch(/## Further Reading/);
 		expect(ref).toMatch(/- a/);
 		expect(ref).toMatch(/- b/);
 	});

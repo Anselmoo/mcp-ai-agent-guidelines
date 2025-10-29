@@ -1,0 +1,21 @@
+# Ignore common badge/shield hosts and known external endpoints we don't want to validate
+
+^https://img\.shields\.io
+^https://insiders\.vscode\.dev
+^http://localhost
+^https://httpbin\.org
+^https://api\.example\.com
+
+# GitHub container registry (may 404 if package is private or unpublished)
+
+^https://github\.com/.\*/pkgs/container/
+
+# Relative issue template links (work in GitHub UI but not externally)
+
+^\.\./\.\.\/issues/
+
+# Local doc anchors and anchors to be skipped
+
+# Example: skip references to internal anchors that may be generated dynamically
+
+# ^#ref-.\*

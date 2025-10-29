@@ -30,7 +30,7 @@ describe("documentation-generator-prompt-builder", () => {
 		expect(text).toContain("Basic endpoint list");
 
 		// Check for references
-		expect(text).toContain("References");
+		expect(text).toContain("Further Reading");
 	});
 
 	it("should generate user guide documentation prompt", async () => {

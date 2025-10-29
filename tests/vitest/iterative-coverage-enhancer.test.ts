@@ -107,10 +107,9 @@ describe("Iterative Coverage Enhancer", () => {
 		const withReferences = await iterativeCoverageEnhancer({
 			includeReferences: true,
 		});
-		expect(withReferences.content[0].text).toContain("## References");
+		expect(withReferences.content[0].text).toContain("## Further Reading");
 		expect(withReferences.content[0].text).toContain("martinfowler.com");
 		expect(withReferences.content[0].text).toContain("testdriven.io");
-
 		const withoutReferences = await iterativeCoverageEnhancer({
 			includeReferences: false,
 		});

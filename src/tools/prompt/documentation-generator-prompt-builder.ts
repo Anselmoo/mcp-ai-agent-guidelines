@@ -1,8 +1,8 @@
 import { z } from "zod";
 import {
 	buildFrontmatterWithPolicy as buildFrontmatter,
+	buildFurtherReadingSection,
 	buildMetadataSection,
-	buildReferencesSection,
 	slugify,
 } from "../shared/prompt-utils.js";
 
@@ -154,8 +154,13 @@ export async function documentationGeneratorPromptBuilder(args: unknown) {
 		? `${buildDocumentationGeneratorFrontmatter(input)}\n`
 		: "";
 	const references = input.includeReferences
-		? buildReferencesSection([
-				"Write the Docs: https://www.writethedocs.org/guide/",
+		? buildFurtherReadingSection([
+				{
+					title: "Write the Docs Guide",
+					url: "https://www.writethedocs.org/guide/",
+					description:
+						"Community-driven best practices for creating software documentation",
+				},
 			])
 		: "";
 	const filenameHint = `${slugify(`documentation-${input.contentType}`)}.prompt.md`;

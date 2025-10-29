@@ -1,7 +1,7 @@
 ## 🏆 Clean Code Score Report
 
 ### Metadata
-- Updated: 2025-10-28
+- Updated: 2025-10-29
 - Source tool: mcp_ai-agent-guid_clean-code-scorer
 - Input file: /home/runner/work/mcp-ai-agent-guidelines/mcp-ai-agent-guidelines/demos/demo-code-analysis.py
 
@@ -64,11 +64,14 @@ Security:       [██████████████░░░░░░] 7
 ```
 
 
-## References
-- Clean Code principles: https://www.freecodecamp.org/news/clean-coding-for-beginners/
-- Code quality metrics: https://docs.sonarqube.org/latest/user-guide/metric-definitions/
-- Test coverage best practices: https://martinfowler.com/bliki/TestCoverage.html
-- TypeScript best practices: https://www.typescriptlang.org/docs/handbook/declaration-files/do-s-and-don-ts.html
+## Further Reading
+
+*The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*
+
+- **[Clean Code Principles](https://www.freecodecamp.org/news/clean-coding-for-beginners/)**: Beginner-friendly guide to writing clean, maintainable code
+- **[SonarQube Metric Definitions](https://docs.sonarqube.org/latest/user-guide/metric-definitions/)**: Comprehensive definitions of code quality metrics
+- **[Test Coverage Best Practices](https://martinfowler.com/bliki/TestCoverage.html)**: Martin Fowler on meaningful test coverage strategies
+- **[TypeScript Do's and Don'ts](https://www.typescriptlang.org/docs/handbook/declaration-files/do-s-and-don-ts.html)**: Official TypeScript best practices and style guide
 
 
 

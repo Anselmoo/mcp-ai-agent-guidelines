@@ -4,28 +4,26 @@ import { describe, expect, it } from "vitest";
 describe("Targeted Function Coverage Improvement", () => {
 	describe("Shared Utilities Coverage", () => {
 		it("should test prompt-utils edge cases and utility functions", async () => {
-			const { buildReferencesSection } = await import(
+			const { buildFurtherReadingSection } = await import(
 				"../../src/tools/shared/prompt-utils.js"
 			);
 
 			// Test with empty references
-			const result1 = buildReferencesSection([]);
+			const result1 = buildFurtherReadingSection([]);
 			expect(result1).toBe("");
 
 			// Test with single reference
-			const result2 = buildReferencesSection([
+			const result2 = buildFurtherReadingSection([
 				"Single reference: https://example.com",
 			]);
-			expect(result2).toContain("## References");
-			expect(result2).toContain("example.com");
-
-			// Test with multiple references
-			const result3 = buildReferencesSection([
+			expect(result2).toContain("## Further Reading");
+			expect(result2).toContain("example.com"); // Test with multiple references
+			const result3 = buildFurtherReadingSection([
 				"First reference: https://first.com",
 				"Second reference: https://second.com",
 				"Third reference with details: https://third.com/detailed-guide",
 			]);
-			expect(result3).toContain("## References");
+			expect(result3).toContain("## Further Reading");
 			expect(result3).toContain("first.com");
 			expect(result3).toContain("second.com");
 			expect(result3).toContain("third.com");
@@ -36,8 +34,8 @@ describe("Targeted Function Coverage Improvement", () => {
 				(_, i) =>
 					`Reference ${i + 1}: https://example${i + 1}.com/very/long/path/to/resource/${i}`,
 			);
-			const result4 = buildReferencesSection(longRefs);
-			expect(result4).toContain("## References");
+			const result4 = buildFurtherReadingSection(longRefs);
+			expect(result4).toContain("## Further Reading");
 			expect(result4).toContain("Reference 1");
 			expect(result4).toContain("Reference 20");
 		});

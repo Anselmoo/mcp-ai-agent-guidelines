@@ -695,8 +695,8 @@ function another(): boolean {
 			const text =
 				result.content[0].type === "text" ? result.content[0].text : "";
 
-			expect(text).toMatch(/References/);
-			expect(text).toMatch(/Clean Code principles/);
+			expect(text).toMatch(/Further Reading/);
+			expect(text).toMatch(/Clean Code Principles/);
 		});
 
 		it("should include metadata with date when requested", async () => {
@@ -756,7 +756,7 @@ function another(): boolean {
 				result.content[0].type === "text" ? result.content[0].text : "";
 
 			expect(text).not.toMatch(/Metadata/);
-			expect(text).not.toMatch(/References/);
+			expect(text).not.toMatch(/Further Reading/);
 			expect(text).not.toMatch(/Updated:/);
 		});
 	});

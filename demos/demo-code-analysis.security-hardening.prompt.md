@@ -8,7 +8,7 @@ description: 'Security vulnerability analysis analysis and hardening recommendat
 ## 🛡️ Security Hardening Prompt Template
 
 ### Metadata
-- Updated: 2025-10-28
+- Updated: 2025-10-29
 - Source tool: mcp_ai-agent-guid_security-hardening-prompt-builder
 - Suggested filename: security-hardening-vulnerability-analysis-prompt.prompt.md
 
@@ -305,12 +305,15 @@ JSON fields ...
 
 
 
-## References
-- OWASP Top 10: https://owasp.org/www-project-top-ten/
-- NIST Cybersecurity Framework: https://www.nist.gov/cyberframework
-- SANS Secure Coding Practices: https://www.sans.org/white-papers/2172/
-- CWE Top 25: https://cwe.mitre.org/top25/archive/2023/2023_top25_list.html
-- Security Code Review Guide: https://owasp.org/www-project-code-review-guide/
+## Further Reading
+
+*The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*
+
+- **[OWASP Top 10](https://owasp.org/www-project-top-ten/)**: Standard awareness document for web application security risks
+- **[NIST Cybersecurity Framework](https://www.nist.gov/cyberframework)**: Comprehensive framework for managing cybersecurity risk
+- **[SANS Secure Coding Practices](https://www.sans.org/white-papers/2172/)**: Quick reference guide for secure software development
+- **[CWE Top 25 Most Dangerous Weaknesses](https://cwe.mitre.org/top25/archive/2023/2023_top25_list.html)**: Most widespread and critical software weaknesses
+- **[OWASP Code Review Guide](https://owasp.org/www-project-code-review-guide/)**: Comprehensive guide for security-focused code reviews
 
 
 

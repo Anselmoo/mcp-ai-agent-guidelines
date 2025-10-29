@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { buildReferencesSection } from "../shared/prompt-utils.js";
+import { buildFurtherReadingSection } from "../shared/prompt-utils.js";
 import {
 	type HierarchyLevelDefinition,
 	type NumericEvaluation,
@@ -442,10 +442,23 @@ export async function promptingHierarchyEvaluator(args: unknown) {
 
 	// References
 	if (input.includeReferences) {
-		const references = buildReferencesSection([
-			"Hierarchical Prompting for Better AI Interactions - https://relevanceai.com/prompt-engineering/master-hierarchical-prompting-for-better-ai-interactions",
-			"Hierarchical Prompting Taxonomy (HPT) - https://arxiv.org/abs/2406.12644",
-			"Prompt Engineering Techniques - https://www.aiforeducation.io/ai-resources/prompting-techniques-for-specialized-llms",
+		const references = buildFurtherReadingSection([
+			{
+				title: "Hierarchical Prompting for Better AI Interactions",
+				url: "https://relevanceai.com/prompt-engineering/master-hierarchical-prompting-for-better-ai-interactions",
+				description: "Comprehensive guide to hierarchical prompting techniques",
+			},
+			{
+				title: "Hierarchical Prompting Taxonomy (HPT)",
+				url: "https://arxiv.org/abs/2406.12644",
+				description:
+					"Academic research on systematic prompt hierarchy classification",
+			},
+			{
+				title: "Prompting Techniques for Specialized LLMs",
+				url: "https://www.aiforeducation.io/ai-resources/prompting-techniques-for-specialized-llms",
+				description: "Educational resource on advanced prompting methods",
+			},
 		]);
 		output += `\n${references}\n`;
 	}

@@ -7,8 +7,8 @@ import {
 } from "../shared/prompt-sections.js";
 import {
 	buildFrontmatterWithPolicy as buildFrontmatter,
+	buildFurtherReadingSection,
 	buildMetadataSection,
-	buildReferencesSection,
 	slugify,
 } from "../shared/prompt-utils.js";
 import { applyTechniques } from "./technique-applicator.js";
@@ -262,10 +262,25 @@ function buildDisclaimer(): string {
 }
 
 function buildGeneralReferences(): string {
-	return buildReferencesSection([
-		"Hierarchical Prompting overview: https://relevanceai.com/prompt-engineering/master-hierarchical-prompting-for-better-ai-interactions",
-		"Prompt engineering best practices: https://kanerika.com/blogs/ai-prompt-engineering-best-practices/",
-		"Techniques round-up (2025): https://www.dataunboxed.io/blog/the-complete-guide-to-prompt-engineering-15-essential-techniques-for-2025",
+	return buildFurtherReadingSection([
+		{
+			title: "Hierarchical Prompting Overview",
+			url: "https://relevanceai.com/prompt-engineering/master-hierarchical-prompting-for-better-ai-interactions",
+			description:
+				"Master hierarchical prompting for better AI interactions and structured outputs",
+		},
+		{
+			title: "AI Prompt Engineering Best Practices",
+			url: "https://kanerika.com/blogs/ai-prompt-engineering-best-practices/",
+			description:
+				"Comprehensive guide to effective prompt engineering techniques",
+		},
+		{
+			title: "Complete Guide to Prompt Engineering 2025",
+			url: "https://www.dataunboxed.io/blog/the-complete-guide-to-prompt-engineering-15-essential-techniques-for-2025",
+			description:
+				"15 essential prompt engineering techniques for modern AI systems",
+		},
 	]);
 }
 

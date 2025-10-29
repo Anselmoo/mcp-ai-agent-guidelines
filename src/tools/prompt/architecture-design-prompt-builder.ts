@@ -1,8 +1,8 @@
 import { z } from "zod";
 import {
 	buildFrontmatterWithPolicy as buildFrontmatter,
+	buildFurtherReadingSection,
 	buildMetadataSection,
-	buildReferencesSection,
 	slugify,
 } from "../shared/prompt-utils.js";
 
@@ -145,8 +145,13 @@ export async function architectureDesignPromptBuilder(args: unknown) {
 		? `${buildArchitectureDesignFrontmatter(input)}\n`
 		: "";
 	const references = input.includeReferences
-		? buildReferencesSection([
-				"Software Architecture Guide: https://martinfowler.com/architecture/",
+		? buildFurtherReadingSection([
+				{
+					title: "Software Architecture Guide",
+					url: "https://martinfowler.com/architecture/",
+					description:
+						"Martin Fowler's comprehensive guide to software architecture patterns and principles",
+				},
 			])
 		: "";
 	const filenameHint = `${slugify(`architecture-design-${input.scale}`)}.prompt.md`;

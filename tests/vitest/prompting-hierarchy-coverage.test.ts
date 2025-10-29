@@ -64,7 +64,7 @@ describe("Prompting Hierarchy - Additional Coverage", () => {
 			});
 
 			const text = result.content[0].text;
-			expect(text).toContain("References");
+			expect(text).toContain("Further Reading");
 			expect(text).toContain("https://");
 		});
 
@@ -240,7 +240,7 @@ Enhance security with JWT tokens.
 			});
 
 			const text = result.content[0].text;
-			expect(text).toContain("References");
+			expect(text).toContain("Further Reading");
 			expect(text).toContain("https://");
 		});
 

@@ -1,10 +1,10 @@
 # MCP AI Agent Guidelines Server
 
-> [!CAUTION]
-> **Disclaimer -- Experimental / Early Stage:** This _research demonstrator_ project references third‑party models, tools, pricing, and docs that evolve quickly. Treat outputs as recommendations and verify against official docs and your own benchmarks before production use.
+> [!CAUTION] > **Disclaimer -- Experimental / Early Stage:** This _research demonstrator_ project references third‑party models, tools, pricing, and docs that evolve quickly. Treat outputs as recommendations and verify against official docs and your own benchmarks before production use.
 
 [![CI/CD Pipeline](https://img.shields.io/github/actions/workflow/status/Anselmoo/mcp-ai-agent-guidelines/ci-cd.yml?branch=main&label=CI%2FCD&logo=github-actions&logoColor=white)](https://github.com/Anselmoo/mcp-ai-agent-guidelines/actions/workflows/ci-cd.yml)
 [![Auto-Regenerate Demos](https://img.shields.io/github/actions/workflow/status/Anselmoo/mcp-ai-agent-guidelines/auto-regenerate-demos.yml?label=demos&logo=github-actions&logoColor=white)](https://github.com/Anselmoo/mcp-ai-agent-guidelines/actions/workflows/auto-regenerate-demos.yml)
+[![Link Checker](https://img.shields.io/github/actions/workflow/status/Anselmoo/mcp-ai-agent-guidelines/link-checker.yml?branch=main&label=links&logo=link&logoColor=white)](https://github.com/Anselmoo/mcp-ai-agent-guidelines/actions/workflows/link-checker.yml)
 [![Coverage Status](https://img.shields.io/codecov/c/github/Anselmoo/mcp-ai-agent-guidelines/main?label=coverage&logo=codecov&logoColor=white)](https://codecov.io/gh/Anselmoo/mcp-ai-agent-guidelines)
 [![NPM Version](https://img.shields.io/npm/v/mcp-ai-agent-guidelines?label=npm&logo=npm&logoColor=white&color=red)](https://www.npmjs.com/package/mcp-ai-agent-guidelines)
 [![Node.js Version](https://img.shields.io/node/v/mcp-ai-agent-guidelines?label=node&logo=node.js&logoColor=white&color=green)](https://nodejs.org/en/download/)
@@ -42,7 +42,26 @@ npm run start      # Build and start server
 npm run test:all   # Unit + integration + demos + MCP smoke
 npm run test:coverage:unit # Unit test coverage (c8) -> coverage/ + summary
 npm run quality    # Type-check + Biome checks
+npm run links:check # Check links in main markdown files
+npm run links:check:all # Check links in all markdown files (slow)
 ```
+
+### Local Link Checking
+
+The project includes automated link checking via GitHub Actions. To check links locally before committing:
+
+```bash
+# Quick check (README, CONTRIBUTING, DISCLAIMER)
+npm run links:check
+
+# Comprehensive check (all markdown files)
+npm run links:check:all
+
+# Or use npx directly
+npx markdown-link-check --config .mlc_config.json README.md
+```
+
+Configuration is in `.mlc_config.json`. Ignored patterns and retries are configured there.
 
 ## Demos
 
@@ -77,6 +96,7 @@ node demos/demo-tools.js
 ```
 
 Scripts:
+
 - `demos/demo-tools.js` — invokes several tools with sample inputs
 - `demos/generate-demo-reports.js` — produces end-to-end demo outputs
 - `demos/generate-hygiene-reports.js` — hygiene-focused reports
@@ -94,14 +114,14 @@ Manual settings (User Settings JSON):
 
 ```json
 {
-	"mcp": {
-		"servers": {
-			"ai-agent-guidelines": {
-				"command": "npx",
-				"args": ["-y", "mcp-ai-agent-guidelines"]
-			}
-		}
-	}
+  "mcp": {
+    "servers": {
+      "ai-agent-guidelines": {
+        "command": "npx",
+        "args": ["-y", "mcp-ai-agent-guidelines"]
+      }
+    }
+  }
 }
 ```
 
@@ -109,19 +129,19 @@ Using Docker:
 
 ```json
 {
-	"mcp": {
-		"servers": {
-			"ai-agent-guidelines": {
-				"command": "docker",
-				"args": [
-					"run",
-					"--rm",
-					"-i",
-					"ghcr.io/anselmoo/mcp-ai-agent-guidelines:latest"
-				]
-			}
-		}
-	}
+  "mcp": {
+    "servers": {
+      "ai-agent-guidelines": {
+        "command": "docker",
+        "args": [
+          "run",
+          "--rm",
+          "-i",
+          "ghcr.io/anselmoo/mcp-ai-agent-guidelines:latest"
+        ]
+      }
+    }
+  }
 }
 ```
 
@@ -130,13 +150,14 @@ Using Docker:
 After adding the server, open your chat client (e.g., Cline in VS Code). The tools appear under the server name. You can:
 
 - Run a tool directly by name:
-	- `hierarchical-prompt-builder` — Provide context, goal, and optional requirements.
-	- `clean-code-scorer` — Calculate comprehensive Clean Code score (0-100) with coverage metrics.
-	- `code-hygiene-analyzer` — Paste code or point to a file and set language.
-	- `mermaid-diagram-generator` — Describe the system and select a diagram type.
+  - `hierarchical-prompt-builder` — Provide context, goal, and optional requirements.
+  - `clean-code-scorer` — Calculate comprehensive Clean Code score (0-100) with coverage metrics.
+  - `code-hygiene-analyzer` — Paste code or point to a file and set language.
+  - `mermaid-diagram-generator` — Describe the system and select a diagram type.
 - Ask in natural language and pick the suggested tool.
 
 Example prompts:
+
 - "Use hierarchical-prompt-builder to create a refactor plan for src/index.ts with outputFormat markdown."
 - "Use clean-code-scorer to analyze my project with current coverage metrics and get a quality score."
 - "Analyze this Python file with code-hygiene-analyzer; highlight security issues."
@@ -147,7 +168,6 @@ Example prompts:
 Tip: Most clients can pass file content automatically when you select a file and invoke a tool.
 
 GitHub Chat (VS Code): In the chat, type your request and pick a tool suggestion, or explicitly reference a tool by name (e.g., “Use mermaid-diagram-generator to draw a flowchart for our pipeline”).
-
 
 ## Agent-Relative Calls
 
@@ -164,11 +184,13 @@ Use the [tool-name] MCP to [action] with [parameters/context]
 ### Quick Examples
 
 **Single Tool Invocation:**
+
 ```markdown
 Use the hierarchical-prompt-builder MCP to create a code review prompt for our authentication module focusing on security best practices and OAuth2 implementation.
 ```
 
 **Multi-Tool Workflow:**
+
 ```markdown
 1. Use the clean-code-scorer MCP to establish baseline quality metrics
 2. Use the code-hygiene-analyzer MCP to identify specific technical debt
@@ -177,6 +199,7 @@ Use the hierarchical-prompt-builder MCP to create a code review prompt for our a
 ```
 
 **Integration with Other MCP Servers:**
+
 ```markdown
 # Accessibility Compliance Workflow
 
@@ -194,6 +217,7 @@ For complete documentation with 20+ detailed examples, workflow patterns, and be
 📘 **[Agent-Relative Call Patterns Guide](./docs/AGENT_RELATIVE_CALLS.md)**
 
 This guide covers:
+
 - Core prompt patterns (single tool, chains, parallel, conditional)
 - Tool categories with complete usage examples
 - Multi-MCP server integration workflows
@@ -210,15 +234,18 @@ Use the resource guidelines://agent-relative-calls to get comprehensive patterns
 ```
 
 Or access programmatically:
+
 ```typescript
 // MCP ReadResource request
 {
-  uri: "guidelines://agent-relative-calls"
+  uri: "guidelines://agent-relative-calls";
 }
 ```
+
 ## Features
 
 > **🏆 NEW: Clean Code 100/100 Initiative** — Comprehensive code quality scoring system with automated dashboard generation. Track and achieve perfect code quality across coverage, TypeScript, linting, and security. See [docs/CLEAN_CODE_INITIATIVE.md](./docs/CLEAN_CODE_INITIATIVE.md) for the complete guide.
+>
 > - **Dashboard**: Run `npm run clean-code-dashboard` to generate score report
 > - **MCP Tool**: `clean-code-scorer` for on-demand quality analysis
 > - **Automated Gates**: Lefthook quality gates enforce standards on every commit
@@ -226,6 +253,7 @@ Or access programmatically:
 > **🆕 NEW: Serena-Inspired Strategies** — We've integrated effective agent strategies from [@oraios/serena](https://github.com/oraios/serena) including semantic code analysis, project onboarding, and flexible mode switching. See [docs/SERENA_STRATEGIES.md](./docs/SERENA_STRATEGIES.md) for details.
 
 > **🌊 NEW: Flow-Based Prompting** — Advanced prompting strategies inspired by [@ruvnet/claude-flow](https://github.com/ruvnet/claude-flow) including prompt chaining, declarative flows, and dynamic orchestration.
+>
 > - **Examples**: [docs/FLOW_PROMPTING_EXAMPLES.md](./docs/FLOW_PROMPTING_EXAMPLES.md)
 > - **Integration Guide**: [docs/FLOW_SERENA_INTEGRATION.md](./docs/FLOW_SERENA_INTEGRATION.md) - Combining flow-based prompting with Serena memory patterns
 
@@ -234,18 +262,19 @@ Or access programmatically:
 
 Usage: `prompt-chaining-builder`
 
-| Parameter      | Required | Description                           |
-| -------------- | -------- | ------------------------------------- |
-| `chainName`    | ✅        | Name of the prompt chain              |
-| `steps`        | ✅        | Array of chain steps with prompts     |
-| `description`  | ❌        | Description of chain purpose          |
-| `context`      | ❌        | Global context for the chain          |
-| `globalVariables` | ❌     | Variables accessible to all steps     |
-| `executionStrategy` | ❌   | sequential/parallel-where-possible    |
+| Parameter           | Required | Description                        |
+| ------------------- | -------- | ---------------------------------- |
+| `chainName`         | ✅       | Name of the prompt chain           |
+| `steps`             | ✅       | Array of chain steps with prompts  |
+| `description`       | ❌       | Description of chain purpose       |
+| `context`           | ❌       | Global context for the chain       |
+| `globalVariables`   | ❌       | Variables accessible to all steps  |
+| `executionStrategy` | ❌       | sequential/parallel-where-possible |
 
 Build sophisticated multi-step prompt workflows where each step can depend on outputs from previous steps. Supports error handling strategies (skip/retry/abort) and automatic Mermaid visualization.
 
 **Example:**
+
 ```typescript
 {
   chainName: "Security Analysis Pipeline",
@@ -272,18 +301,19 @@ Build sophisticated multi-step prompt workflows where each step can depend on ou
 
 Usage: `prompt-flow-builder`
 
-| Parameter      | Required | Description                           |
-| -------------- | -------- | ------------------------------------- |
-| `flowName`     | ✅        | Name of the prompt flow               |
-| `nodes`        | ✅        | Flow nodes (prompt/condition/loop/parallel/merge/transform) |
-| `edges`        | ❌        | Connections between nodes with conditions |
-| `entryPoint`   | ❌        | Starting node ID                      |
-| `variables`    | ❌        | Flow-level variables                  |
-| `outputFormat` | ❌        | markdown/mermaid/both                 |
+| Parameter      | Required | Description                                                 |
+| -------------- | -------- | ----------------------------------------------------------- |
+| `flowName`     | ✅       | Name of the prompt flow                                     |
+| `nodes`        | ✅       | Flow nodes (prompt/condition/loop/parallel/merge/transform) |
+| `edges`        | ❌       | Connections between nodes with conditions                   |
+| `entryPoint`   | ❌       | Starting node ID                                            |
+| `variables`    | ❌       | Flow-level variables                                        |
+| `outputFormat` | ❌       | markdown/mermaid/both                                       |
 
 Create complex adaptive prompt flows with conditional branching, loops, parallel execution, and merge points. Automatically generates Mermaid flowcharts and execution guides.
 
 **Example:**
+
 ```typescript
 {
   flowName: "Adaptive Code Review",
@@ -309,11 +339,11 @@ Create complex adaptive prompt flows with conditional branching, loops, parallel
 
 Usage: `semantic-code-analyzer`
 
-| Parameter      | Required | Description                           |
-| -------------- | -------- | ------------------------------------- |
-| `codeContent`  | ✅        | Code content to analyze               |
-| `language`     | ❌        | Programming language (auto-detected)  |
-| `analysisType` | ❌        | symbols/structure/dependencies/patterns/all |
+| Parameter      | Required | Description                                 |
+| -------------- | -------- | ------------------------------------------- |
+| `codeContent`  | ✅       | Code content to analyze                     |
+| `language`     | ❌       | Programming language (auto-detected)        |
+| `analysisType` | ❌       | symbols/structure/dependencies/patterns/all |
 
 Performs semantic analysis to identify symbols, dependencies, patterns, and structure. Inspired by Serena's language server approach.
 
@@ -324,13 +354,13 @@ Performs semantic analysis to identify symbols, dependencies, patterns, and stru
 
 Usage: `project-onboarding`
 
-| Parameter      | Required | Description                           |
-| -------------- | -------- | ------------------------------------- |
-| `projectPath`  | ✅        | Path to project directory             |
-| `projectName`  | ❌        | Name of the project                   |
-| `projectType`  | ❌        | library/application/service/tool/other |
-| `analysisDepth`| ❌        | quick/standard/deep                   |
-| `includeMemories` | ❌     | Generate project memories (default: true) |
+| Parameter         | Required | Description                               |
+| ----------------- | -------- | ----------------------------------------- |
+| `projectPath`     | ✅       | Path to project directory                 |
+| `projectName`     | ❌       | Name of the project                       |
+| `projectType`     | ❌       | library/application/service/tool/other    |
+| `analysisDepth`   | ❌       | quick/standard/deep                       |
+| `includeMemories` | ❌       | Generate project memories (default: true) |
 
 Analyzes project structure, detects technologies, and generates memories for context retention. Based on Serena's onboarding system.
 
@@ -341,12 +371,12 @@ Analyzes project structure, detects technologies, and generates memories for con
 
 Usage: `mode-switcher`
 
-| Parameter      | Required | Description                           |
-| -------------- | -------- | ------------------------------------- |
-| `targetMode`   | ✅        | Mode to switch to (planning/editing/analysis/etc.) |
-| `currentMode`  | ❌        | Current active mode                   |
-| `context`      | ❌        | Operating context (desktop-app/ide-assistant/etc.) |
-| `reason`       | ❌        | Reason for mode switch                |
+| Parameter     | Required | Description                                        |
+| ------------- | -------- | -------------------------------------------------- |
+| `targetMode`  | ✅       | Mode to switch to (planning/editing/analysis/etc.) |
+| `currentMode` | ❌       | Current active mode                                |
+| `context`     | ❌       | Operating context (desktop-app/ide-assistant/etc.) |
+| `reason`      | ❌       | Reason for mode switch                             |
 
 Switches between operation modes with optimized tool sets and prompting strategies. Modes include: planning, editing, analysis, interactive, one-shot, debugging, refactoring, documentation.
 
@@ -359,11 +389,11 @@ Usage: `hierarchical-prompt-builder`
 
 | Parameter      | Required | Description                           |
 | -------------- | -------- | ------------------------------------- |
-| `context`      | ✅        | The broad context or domain           |
-| `goal`         | ✅        | The specific goal or objective        |
-| `requirements` | ❌        | Detailed requirements and constraints |
-| `outputFormat` | ❌        | Desired output format                 |
-| `audience`     | ❌        | Target audience or expertise level    |
+| `context`      | ✅       | The broad context or domain           |
+| `goal`         | ✅       | The specific goal or objective        |
+| `requirements` | ❌       | Detailed requirements and constraints |
+| `outputFormat` | ❌       | Desired output format                 |
+| `audience`     | ❌       | Target audience or expertise level    |
 
 </details>
 
@@ -374,9 +404,9 @@ Usage: `code-hygiene-analyzer`
 
 | Parameter     | Required | Description                   |
 | ------------- | -------- | ----------------------------- |
-| `codeContent` | ✅        | Code content to analyze       |
-| `language`    | ✅        | Programming language          |
-| `framework`   | ❌        | Framework or technology stack |
+| `codeContent` | ✅       | Code content to analyze       |
+| `language`    | ✅       | Programming language          |
+| `framework`   | ❌       | Framework or technology stack |
 
 </details>
 
@@ -385,18 +415,19 @@ Usage: `code-hygiene-analyzer`
 
 Usage: `security-hardening-prompt-builder`
 
-| Parameter | Required | Description |
-| --------- | -------- | ----------- |
-| `codeContext` | ✅ | Code context or description to analyze for security |
-| `securityFocus` | ❌ | Security analysis focus (vulnerability-analysis, security-hardening, compliance-check, threat-modeling, penetration-testing) |
-| `securityRequirements` | ❌ | Specific security requirements to check |
-| `complianceStandards` | ❌ | Compliance standards (OWASP-Top-10, NIST-Cybersecurity-Framework, ISO-27001, SOC-2, GDPR, HIPAA, PCI-DSS) |
-| `language` | ❌ | Programming language of the code |
-| `riskTolerance` | ❌ | Risk tolerance level (low, medium, high) |
-| `analysisScope` | ❌ | Security areas to focus on (input-validation, authentication, authorization, etc.) |
-| `outputFormat` | ❌ | Output format (detailed, checklist, annotated-code) |
+| Parameter              | Required | Description                                                                                                                  |
+| ---------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `codeContext`          | ✅       | Code context or description to analyze for security                                                                          |
+| `securityFocus`        | ❌       | Security analysis focus (vulnerability-analysis, security-hardening, compliance-check, threat-modeling, penetration-testing) |
+| `securityRequirements` | ❌       | Specific security requirements to check                                                                                      |
+| `complianceStandards`  | ❌       | Compliance standards (OWASP-Top-10, NIST-Cybersecurity-Framework, ISO-27001, SOC-2, GDPR, HIPAA, PCI-DSS)                    |
+| `language`             | ❌       | Programming language of the code                                                                                             |
+| `riskTolerance`        | ❌       | Risk tolerance level (low, medium, high)                                                                                     |
+| `analysisScope`        | ❌       | Security areas to focus on (input-validation, authentication, authorization, etc.)                                           |
+| `outputFormat`         | ❌       | Output format (detailed, checklist, annotated-code)                                                                          |
 
 **Security Focus Areas:**
+
 - 🔍 Vulnerability analysis with OWASP Top 10 coverage
 - 🛡️ Security hardening recommendations
 - 📋 Compliance checking against industry standards
@@ -414,18 +445,18 @@ Usage: `mermaid-diagram-generator`
 
 Generates Mermaid diagrams with intelligent parsing of descriptions for rich, customizable visualizations.
 
-| Parameter          | Required | Description                                                                                                                                          |
-| ------------------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `description`      | ✅        | Description of the system or process to diagram. Be detailed and specific for better diagram generation.                                            |
-| `diagramType`      | ✅        | Type: `flowchart`, `sequence`, `class`, `state`, `gantt`, `pie`, `er`, `journey`, `quadrant`, `git-graph`, `mindmap`, `timeline`                   |
-| `theme`            | ❌        | Visual theme: `default`, `dark`, `forest`, `neutral`                                                                                                 |
-| `direction`        | ❌        | Flowchart direction: `TD`/`TB` (top-down), `BT` (bottom-top), `LR` (left-right), `RL` (right-left)                                                  |
-| `strict`           | ❌        | If true, never emit invalid diagram; use fallback if needed (default: true)                                                                          |
-| `repair`           | ❌        | Attempt auto-repair on validation failure (default: true)                                                                                            |
-| `accTitle`         | ❌        | Accessibility title (added as Mermaid comment)                                                                                                       |
-| `accDescr`         | ❌        | Accessibility description (added as Mermaid comment)                                                                                                 |
-| `customStyles`     | ❌        | Custom CSS/styling directives for advanced customization                                                                                             |
-| `advancedFeatures` | ❌        | Type-specific advanced features (e.g., `{autonumber: true}` for sequence diagrams)                                                                   |
+| Parameter          | Required | Description                                                                                                                      |
+| ------------------ | -------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `description`      | ✅       | Description of the system or process to diagram. Be detailed and specific for better diagram generation.                         |
+| `diagramType`      | ✅       | Type: `flowchart`, `sequence`, `class`, `state`, `gantt`, `pie`, `er`, `journey`, `quadrant`, `git-graph`, `mindmap`, `timeline` |
+| `theme`            | ❌       | Visual theme: `default`, `dark`, `forest`, `neutral`                                                                             |
+| `direction`        | ❌       | Flowchart direction: `TD`/`TB` (top-down), `BT` (bottom-top), `LR` (left-right), `RL` (right-left)                               |
+| `strict`           | ❌       | If true, never emit invalid diagram; use fallback if needed (default: true)                                                      |
+| `repair`           | ❌       | Attempt auto-repair on validation failure (default: true)                                                                        |
+| `accTitle`         | ❌       | Accessibility title (added as Mermaid comment)                                                                                   |
+| `accDescr`         | ❌       | Accessibility description (added as Mermaid comment)                                                                             |
+| `customStyles`     | ❌       | Custom CSS/styling directives for advanced customization                                                                         |
+| `advancedFeatures` | ❌       | Type-specific advanced features (e.g., `{autonumber: true}` for sequence diagrams)                                               |
 
 **Enhanced Features:**
 
@@ -491,9 +522,9 @@ Usage: `memory-context-optimizer`
 
 | Parameter        | Required | Description                                        |
 | ---------------- | -------- | -------------------------------------------------- |
-| `contextContent` | ✅        | Context content to optimize                        |
-| `maxTokens`      | ❌        | Maximum token limit                                |
-| `cacheStrategy`  | ❌        | Strategy: `aggressive`, `conservative`, `balanced` |
+| `contextContent` | ✅       | Context content to optimize                        |
+| `maxTokens`      | ❌       | Maximum token limit                                |
+| `cacheStrategy`  | ❌       | Strategy: `aggressive`, `conservative`, `balanced` |
 
 </details>
 
@@ -504,10 +535,10 @@ Usage: `sprint-timeline-calculator`
 
 | Parameter      | Required | Description                             |
 | -------------- | -------- | --------------------------------------- |
-| `tasks`        | ✅        | List of tasks with estimates            |
-| `teamSize`     | ✅        | Number of team members                  |
-| `sprintLength` | ❌        | Sprint length in days                   |
-| `velocity`     | ❌        | Team velocity (story points per sprint) |
+| `tasks`        | ✅       | List of tasks with estimates            |
+| `teamSize`     | ✅       | Number of team members                  |
+| `sprintLength` | ❌       | Sprint length in days                   |
+| `velocity`     | ❌       | Team velocity (story points per sprint) |
 
 </details>
 
@@ -518,9 +549,9 @@ Usage: `model-compatibility-checker`
 
 | Parameter         | Required | Description                                              |
 | ----------------- | -------- | -------------------------------------------------------- |
-| `taskDescription` | ✅        | Description of the task                                  |
-| `requirements`    | ❌        | Specific requirements (context length, multimodal, etc.) |
-| `budget`          | ❌        | Budget constraints: `low`, `medium`, `high`              |
+| `taskDescription` | ✅       | Description of the task                                  |
+| `requirements`    | ❌       | Specific requirements (context length, multimodal, etc.) |
+| `budget`          | ❌       | Budget constraints: `low`, `medium`, `high`              |
 
 </details>
 
@@ -531,8 +562,8 @@ Usage: `guidelines-validator`
 
 | Parameter             | Required | Description                                                                                     |
 | --------------------- | -------- | ----------------------------------------------------------------------------------------------- |
-| `practiceDescription` | ✅        | Description of the development practice                                                         |
-| `category`            | ✅        | Category: `prompting`, `code-management`, `architecture`, `visualization`, `memory`, `workflow` |
+| `practiceDescription` | ✅       | Description of the development practice                                                         |
+| `category`            | ✅       | Category: `prompting`, `code-management`, `architecture`, `visualization`, `memory`, `workflow` |
 
 </details>
 
@@ -562,6 +593,7 @@ To create a new release, [open a release setup issue](../../issues/new?template=
 ## Development
 
 Prerequisites:
+
 - Node.js 20+
 - npm 10+
 
@@ -608,6 +640,7 @@ Demo files are automatically regenerated when tools change via GitHub Actions:
 - **Result**: Updated demo files are committed to the PR automatically
 
 **Benefits**:
+
 - ✅ Documentation always stays in sync with code
 - ✅ No manual steps to remember
 - ✅ Reviewers can see demo changes alongside code changes
@@ -615,6 +648,7 @@ Demo files are automatically regenerated when tools change via GitHub Actions:
 **Workflow**: [`.github/workflows/auto-regenerate-demos.yml`](./.github/workflows/auto-regenerate-demos.yml)
 
 **Manual regeneration** (if needed):
+
 ```bash
 npm run build
 npm run test:demo
@@ -627,6 +661,7 @@ This project uses [Lefthook](https://github.com/evilmartians/lefthook) for fast,
 **Mandatory for GitHub Copilot Agent**: All quality gates must pass before commits and pushes.
 
 Setup (automatic via `npm install`):
+
 ```bash
 npm run hooks:install    # Install lefthook git hooks
 npm run hooks:uninstall  # Remove lefthook git hooks
@@ -635,17 +670,20 @@ npx lefthook run pre-push    # Run pre-push checks manually
 ```
 
 **Pre-commit hooks** (fast, parallel execution):
+
 - 🔒 **Security**: Gitleaks secret detection
 - 🟨 **Code Quality**: Biome formatting & linting
 - 🔷 **Type Safety**: TypeScript type checking
 - 🧹 **Code Hygiene**: Trailing whitespace & EOF fixes
 
 **Pre-push hooks** (comprehensive validation):
+
 - 🔒 **Security Audit**: Dependency vulnerability scanning (moderate+ level)
 - 🧪 **Testing**: Full test suite (unit, integration, demo, MCP)
 - ⚡ **Quality**: Type checking + Biome validation
 
 **Why Lefthook?**
+
 - ⚡ **Fast**: Written in Go, parallel execution
 - 🔄 **Reliable**: Better error handling than pre-commit
 - 🤖 **CI Integration**: Mandatory quality gates for GitHub Copilot Agent
@@ -673,19 +711,19 @@ VS Code + Docker settings:
 
 ```json
 {
-	"mcp": {
-		"servers": {
-			"mcp-ai-agent-guidelines": {
-				"command": "docker",
-				"args": [
-					"run",
-					"--rm",
-					"-i",
-					"ghcr.io/anselmoo/mcp-ai-agent-guidelines:latest"
-				]
-			}
-		}
-	}
+  "mcp": {
+    "servers": {
+      "mcp-ai-agent-guidelines": {
+        "command": "docker",
+        "args": [
+          "run",
+          "--rm",
+          "-i",
+          "ghcr.io/anselmoo/mcp-ai-agent-guidelines:latest"
+        ]
+      }
+    }
+  }
 }
 ```
 
@@ -721,6 +759,10 @@ When vulnerabilities are detected:
 - MCP Specification: https://modelcontextprotocol.io/
 - Tools implementation: see `src/tools/` in this repo.
 - Generated examples: see `demos/` and links above.
+
+## Disclaimer
+
+This project references third-party tools, frameworks, APIs, and services for informational purposes. See [DISCLAIMER.md](./DISCLAIMER.md) for important information about external references, trademarks, and limitations of liability.
 
 ## Contributing
 

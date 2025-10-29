@@ -19,7 +19,7 @@ describe("domain-neutral-prompt-builder", () => {
 			asserts: (text: string) => {
 				expect(text).toMatch(/^---/m); // frontmatter enforced
 				expect(text).toMatch(/### Metadata/);
-				expect(text).toMatch(/## References/);
+				expect(text).toMatch(/## Further Reading/);
 				expect(text).toMatch(/# Technique Hints/);
 				expect(text).toMatch(/# Pitfalls to Avoid/);
 				// ensure unknown tool dropped comment appears in frontmatter comments area

@@ -291,7 +291,7 @@ async function fetchUser(id) {
 
 			const text = result.content[0].text;
 
-			expect(text).toContain("References");
+			expect(text).toContain("Further Reading");
 			expect(text).toContain("Language Server Protocol");
 		});
 

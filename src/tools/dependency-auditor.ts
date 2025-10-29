@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { buildReferencesSection } from "./shared/prompt-utils.js";
+import { buildFurtherReadingSection } from "./shared/prompt-utils.js";
 
 const DependencyAuditorSchema = z.object({
 	packageJsonContent: z.string().describe("Content of package.json file"),
@@ -56,11 +56,31 @@ export async function dependencyAuditor(args: unknown) {
 
 	const analysis = analyzeDependencies(packageJson, input);
 	const references = input.includeReferences
-		? buildReferencesSection([
-				"NPM Audit Official Guide: https://docs.npmjs.com/auditing-package-dependencies-for-security-vulnerabilities",
-				"Understanding NPM Audit: https://www.niraj.life/blog/understanding-npm-audit-fixing-vulnerabilities-nodejs/",
-				"Dependency Tree Analysis: https://www.jit.io/resources/appsec-tools/guide-to-using-npm-audit-to-create-a-dependency-tree",
-				"Advanced Dependency Management: https://spectralops.io/blog/a-developers-tutorial-to-using-npm-audit-for-dependency-scanning/",
+		? buildFurtherReadingSection([
+				{
+					title: "NPM Audit Official Guide",
+					url: "https://docs.npmjs.com/auditing-package-dependencies-for-security-vulnerabilities",
+					description:
+						"Official documentation for auditing package dependencies",
+				},
+				{
+					title: "Understanding NPM Audit",
+					url: "https://www.niraj.life/blog/understanding-npm-audit-fixing-vulnerabilities-nodejs/",
+					description:
+						"Practical guide to fixing vulnerabilities in Node.js projects",
+				},
+				{
+					title: "Dependency Tree Analysis",
+					url: "https://www.jit.io/resources/appsec-tools/guide-to-using-npm-audit-to-create-a-dependency-tree",
+					description:
+						"Using npm audit to visualize and analyze dependency trees",
+				},
+				{
+					title: "Advanced Dependency Management",
+					url: "https://spectralops.io/blog/a-developers-tutorial-to-using-npm-audit-for-dependency-scanning/",
+					description:
+						"Developer tutorial for comprehensive dependency scanning",
+				},
 			])
 		: undefined;
 

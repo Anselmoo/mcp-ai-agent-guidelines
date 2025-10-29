@@ -1,7 +1,7 @@
 ## 🧹 Code Hygiene Analysis Report
 
 ### Metadata
-- Updated: 2025-10-28
+- Updated: 2025-10-29
 - Source tool: mcp_ai-agent-guid_code-hygiene-analyzer
 - Input file: /home/runner/work/mcp-ai-agent-guidelines/mcp-ai-agent-guidelines/demos/demo-code-analysis.py
 
@@ -40,9 +40,12 @@
 3. Set up automated code quality checks (ESLint, Prettier, Biome, etc.)
 4. Consider implementing pre-commit hooks
 
-## References
-- Refactoring legacy code best practices: https://graphite.dev/guides/refactoring-legacy-code-best-practices-techniques
-- General code hygiene checklist (community resources)
+## Further Reading
+
+*The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*
+
+- **[Refactoring Legacy Code Best Practices](https://graphite.dev/guides/refactoring-legacy-code-best-practices-techniques)**: Techniques for safely refactoring and improving legacy codebases
+- **[Code Hygiene Checklist](https://github.com/topics/code-hygiene)**: Community resources and tools for maintaining code quality
 
 
 

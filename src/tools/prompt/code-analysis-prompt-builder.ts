@@ -1,8 +1,8 @@
 import { z } from "zod";
 import {
 	buildFrontmatterWithPolicy as buildFrontmatter,
+	buildFurtherReadingSection,
 	buildMetadataSection,
-	buildReferencesSection,
 	slugify,
 } from "../shared/prompt-utils.js";
 
@@ -310,8 +310,13 @@ export async function codeAnalysisPromptBuilder(args: unknown) {
 		? `${buildCodeAnalysisFrontmatter(input)}\n`
 		: "";
 	const references = input.includeReferences
-		? buildReferencesSection([
-				"Code Review Best Practices: https://google.github.io/eng-practices/review/",
+		? buildFurtherReadingSection([
+				{
+					title: "Code Review Best Practices",
+					url: "https://google.github.io/eng-practices/review/",
+					description:
+						"Google's engineering practices guide for effective code reviews",
+				},
 			])
 		: "";
 	const filenameHint = `${slugify(`code-analysis-${input.focusArea}`)}.prompt.md`;
