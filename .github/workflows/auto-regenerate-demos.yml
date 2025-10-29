@@ -110,7 +110,7 @@ jobs:
               body += '\n\n⚠️ **Warning**: Some tools are missing demos. Run `npm run validate:demo-coverage` locally to see which tools need demos.';
             }
 
-            body += '\n\n> 💡 **Note**: The Lefthook quality check will remain pending after this commit because bot commits don\'t trigger workflows (GitHub security feature). This is expected - the demos are auto-generated and don\'t require linting. You can safely merge if all other checks pass.';
+            body += '\n\n> 💡 **Note**: The Lefthook quality check will automatically skip for this automated commit. This is expected - demos are auto-generated and the workflow is configured to skip quality gates for `[skip ci]` commits from `github-actions[bot]`.';
 
             github.rest.issues.createComment({
               issue_number: context.issue.number,

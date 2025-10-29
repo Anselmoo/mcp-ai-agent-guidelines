@@ -3,6 +3,7 @@
 ## Overview
 
 The sprint timeline calculator has been enhanced with reliability improvements to ensure deterministic, dependency-aware planning. These changes implement foundations for future optimization approaches inspired by linear programming methods.
+
 <!-- Note: Issue reference removed - link was broken -->
 
 ## Key Improvements
@@ -14,6 +15,7 @@ The sprint timeline calculator has been enhanced with reliability improvements t
 **Solution**: Implemented **Kahn's Algorithm** for topological sorting to ensure tasks are ordered such that dependencies always come before dependent tasks.
 
 **Benefits**:
+
 - Tasks are automatically ordered respecting all dependency relationships
 - Circular dependencies are detected and handled gracefully
 - Multi-level dependencies (A→B→C) work correctly
@@ -25,6 +27,7 @@ The sprint timeline calculator has been enhanced with reliability improvements t
 **Solution**: Replaced with **First Fit** bin-packing algorithm that produces consistent, reproducible results.
 
 **Benefits**:
+
 - Same input always produces same output (reproducible)
 - More predictable sprint allocation
 - Better capacity utilization
@@ -36,6 +39,7 @@ The sprint timeline calculator has been enhanced with reliability improvements t
 **Solution**: Added comprehensive dependency validation with detailed error reporting.
 
 **Benefits**:
+
 - Missing dependencies are detected and reported as High risk
 - Dependency violations are clearly described
 - Users can fix dependency issues before finalizing plans
@@ -45,10 +49,12 @@ The sprint timeline calculator has been enhanced with reliability improvements t
 **Problem**: No path to incorporate advanced optimization techniques like Linear Programming.
 
 **Solution**: Added `optimizationStrategy` parameter with support for:
+
 - `"greedy"` (default): Current deterministic bin-packing algorithm
 - `"linear-programming"`: Reserved for future MILP optimization (e.g., Gurobi/Julia integration)
 
 **Benefits**:
+
 - Graceful upgrade path to advanced optimization
 - No breaking changes to existing code
 - Documentation includes reference to optimization approaches
@@ -90,6 +96,7 @@ const result = await sprintTimelineCalculator({
 ```
 
 The tool will automatically:
+
 1. Order tasks: Design API → Implement Backend → Build Frontend → Testing
 2. Allocate them to sprints respecting dependencies
 3. Validate all dependencies are met
@@ -115,17 +122,17 @@ const result = await sprintTimelineCalculator({
     {
       name: "API Development",
       estimate: 13,
-      dependencies: ["Infrastructure"]
+      dependencies: ["Infrastructure"],
     },
     {
       name: "Database Schema",
       estimate: 5,
-      dependencies: ["Infrastructure"]
+      dependencies: ["Infrastructure"],
     },
     {
       name: "Integration Tests",
       estimate: 5,
-      dependencies: ["API Development", "Database Schema"] // Multiple dependencies
+      dependencies: ["API Development", "Database Schema"], // Multiple dependencies
     },
   ],
   teamSize: 5,
@@ -159,6 +166,7 @@ const result = await sprintTimelineCalculator({
 ### Dependency Validation
 
 After scheduling:
+
 1. For each task in each sprint
 2. Check all dependencies are in current or earlier sprints
 3. Report violations with task and dependency names
@@ -169,11 +177,13 @@ After scheduling:
 The tool now provides enhanced risk assessment:
 
 - **High Risk**:
+
   - Dependency violations detected (with details)
   - Over 90% capacity utilization
   - Large scope (>10 sprints worth of work)
 
 - **Medium Risk**:
+
   - Dependencies correctly scheduled (warning about potential delays)
   - Small team size (<3 members)
 
@@ -194,11 +204,13 @@ The improvements are inspired by modern sprint planning optimization approaches:
 While the current implementation provides reliable, deterministic planning, future enhancements could include:
 
 1. **Linear Programming Optimization**:
+
    - Integration with Gurobi/GLPK for optimal sprint count minimization
    - Fill rate optimization to balance sprint utilization
    - Multi-objective optimization (cost, time, resources)
 
 2. **Advanced Constraints**:
+
    - Team member skill matching
    - Resource availability windows
    - Critical path analysis
@@ -217,6 +229,7 @@ The changes are **100% backward compatible**. Existing code continues to work wi
 - **Enhanced output**: Additional information about dependencies and risks
 
 To leverage new features, simply:
+
 1. Add `dependencies` array to tasks that depend on others
 2. Optionally specify `optimizationStrategy` parameter
 3. Review enhanced risk assessment in output

@@ -30,40 +30,67 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.head_ref }}
 
+      - name: Check if skip CI
+        id: check_skip
+        run: |
+          # Get the last commit message
+          LAST_COMMIT_MSG=$(git log -1 --pretty=%B)
+          LAST_COMMIT_AUTHOR=$(git log -1 --pretty=%an)
+
+          echo "Last commit author: $LAST_COMMIT_AUTHOR"
+          echo "Last commit message: $LAST_COMMIT_MSG"
+
+          # Skip if commit is from github-actions[bot] and contains [skip ci]
+          if [[ "$LAST_COMMIT_AUTHOR" == "github-actions[bot]" ]] && [[ "$LAST_COMMIT_MSG" == *"[skip ci]"* ]]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "✅ Skipping quality gates for automated demo regeneration commit"
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+            echo "🔍 Running quality gates for regular commit"
+          fi
+
       - name: Set up Node.js ${{ env.NODE_VERSION }}
+        if: steps.check_skip.outputs.skip == 'false'
         uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
 
       - name: Install dependencies
+        if: steps.check_skip.outputs.skip == 'false'
         run: npm ci
 
       - name: Install gitleaks
+        if: steps.check_skip.outputs.skip == 'false'
         run: |
           curl -sSL https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks-linux-amd64 -o /usr/local/bin/gitleaks
           chmod +x /usr/local/bin/gitleaks
 
       - name: Install lefthook
+        if: steps.check_skip.outputs.skip == 'false'
         run: npm run hooks:install
 
       - name: Verify lefthook installation
+        if: steps.check_skip.outputs.skip == 'false'
         run: |
           echo "🔍 Verifying lefthook installation..."
           npx lefthook version
           npx lefthook dump
 
       - name: Run lefthook pre-commit checks (Security & Quality)
+        if: steps.check_skip.outputs.skip == 'false'
         run: |
           echo "🔒 Running security and quality checks..."
           npx lefthook run pre-commit --verbose
 
       - name: Run lefthook pre-push checks (Tests & Validation)
+        if: steps.check_skip.outputs.skip == 'false'
         run: |
           echo "🧪 Running comprehensive tests and validation..."
           npx lefthook run pre-push --verbose
 
       - name: Validate links in TypeScript and Markdown files
+        if: steps.check_skip.outputs.skip == 'false'
         run: |
           echo "🔗 Validating external links in source files..."
 
@@ -90,22 +117,37 @@ jobs:
       - name: Generate quality report
         if: always()
         run: |
-          echo "## 🪝 Lefthook Quality Report" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### ✅ Quality Gates Passed:" >> $GITHUB_STEP_SUMMARY
-          echo "- 🔒 **Security**: Gitleaks secret detection" >> $GITHUB_STEP_SUMMARY
-          echo "- 🟨 **Code Quality**: Biome formatting & linting" >> $GITHUB_STEP_SUMMARY
-          echo "- 🔷 **Type Safety**: TypeScript type checking" >> $GITHUB_STEP_SUMMARY
-          echo "- 📄 **File Validation**: YAML/JSON syntax checking" >> $GITHUB_STEP_SUMMARY
-          echo "- 🧹 **Code Hygiene**: Trailing whitespace & EOF fixes" >> $GITHUB_STEP_SUMMARY
-          echo "- 🧪 **Testing**: Unit, integration, and MCP server tests" >> $GITHUB_STEP_SUMMARY
-          echo "- 🔗 **Link Validation**: External URLs in TypeScript & Markdown files" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 📋 Configuration:" >> $GITHUB_STEP_SUMMARY
-          echo "- **Hook Manager**: Lefthook (replacing pre-commit)" >> $GITHUB_STEP_SUMMARY
-          echo "- **Mandatory**: All quality gates must pass for GitHub Copilot Agent" >> $GITHUB_STEP_SUMMARY
-          echo "- **Performance**: Parallel execution for faster feedback" >> $GITHUB_STEP_SUMMARY
-          echo "- **Link Coverage**: 100+ URLs validated across src/ directory" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.check_skip.outputs.skip }}" == "true" ]; then
+            echo "## 🪝 Lefthook Quality Report - SKIPPED" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### ℹ️ Automated Demo Regeneration Commit" >> $GITHUB_STEP_SUMMARY
+            echo "Quality gates were skipped because this commit was created by \`github-actions[bot]\` for automated demo regeneration." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Why skip?**" >> $GITHUB_STEP_SUMMARY
+            echo "- Demos are auto-generated and don't require linting" >> $GITHUB_STEP_SUMMARY
+            echo "- Bot commits using GITHUB_TOKEN don't trigger workflows (GitHub security feature)" >> $GITHUB_STEP_SUMMARY
+            echo "- The \`[skip ci]\` flag indicates this is safe to skip" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**What to do?**" >> $GITHUB_STEP_SUMMARY
+            echo "✅ This is expected behavior - you can safely merge if all other checks pass" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## 🪝 Lefthook Quality Report" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### ✅ Quality Gates Passed:" >> $GITHUB_STEP_SUMMARY
+            echo "- 🔒 **Security**: Gitleaks secret detection" >> $GITHUB_STEP_SUMMARY
+            echo "- 🟨 **Code Quality**: Biome formatting & linting" >> $GITHUB_STEP_SUMMARY
+            echo "- 🔷 **Type Safety**: TypeScript type checking" >> $GITHUB_STEP_SUMMARY
+            echo "- 📄 **File Validation**: YAML/JSON syntax checking" >> $GITHUB_STEP_SUMMARY
+            echo "- 🧹 **Code Hygiene**: Trailing whitespace & EOF fixes" >> $GITHUB_STEP_SUMMARY
+            echo "- 🧪 **Testing**: Unit, integration, and MCP server tests" >> $GITHUB_STEP_SUMMARY
+            echo "- 🔗 **Link Validation**: External URLs in TypeScript & Markdown files" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### 📋 Configuration:" >> $GITHUB_STEP_SUMMARY
+            echo "- **Hook Manager**: Lefthook (replacing pre-commit)" >> $GITHUB_STEP_SUMMARY
+            echo "- **Mandatory**: All quality gates must pass for GitHub Copilot Agent" >> $GITHUB_STEP_SUMMARY
+            echo "- **Performance**: Parallel execution for faster feedback" >> $GITHUB_STEP_SUMMARY
+            echo "- **Link Coverage**: 100+ URLs validated across src/ directory" >> $GITHUB_STEP_SUMMARY
+          fi
 
   # ============================================================================
   # GitHub Copilot Agent Integration Check
