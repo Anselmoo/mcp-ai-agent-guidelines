@@ -26,7 +26,7 @@ jobs:
   regenerate-demos-pr:
     name: 🔄 Regenerate Demo Files (PR)
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && github.event.pull_request.number != 199
     permissions:
       contents: write
       pull-requests: write
