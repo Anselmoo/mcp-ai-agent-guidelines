@@ -11,7 +11,7 @@ export default defineConfig({
 			include: ["src/**/*.{ts,tsx}"],
 			exclude: ["**/*.d.ts", "dist/**", "node_modules/**", "coverage/**"],
 			// Progressive coverage improvement: 60% -> 68% -> 75% -> 85%
-			// Updated: Current coverage ~94% (statements), ~89% (branches), ~95% (functions)
+			// Updated: Current coverage 94.34% (statements), 89.16% (branches), 95.68% (functions)
 			// Setting thresholds to 90% for statements/lines/functions, 85% for branches
 			// This ensures we maintain high coverage while allowing some flexibility
 			thresholds: {
