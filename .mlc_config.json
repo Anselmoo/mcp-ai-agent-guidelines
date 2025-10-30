@@ -19,6 +19,9 @@
 			"pattern": "^https://github\\.com/.*/pkgs/container/"
 		},
 		{
+			"pattern": "^https://github\\.com/Anselmoo/mcp-ai-agent-guidelines/pkgs/container/mcp-ai-agent-guidelines$"
+		},
+		{
 			"pattern": "^\\.\\./\\.\\./issues/"
 		}
 	],
