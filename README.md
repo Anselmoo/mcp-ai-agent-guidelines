@@ -6,7 +6,6 @@
 [![Auto-Regenerate Demos](https://img.shields.io/github/actions/workflow/status/Anselmoo/mcp-ai-agent-guidelines/auto-regenerate-demos.yml?label=demos&logo=github-actions&logoColor=white)](https://github.com/Anselmoo/mcp-ai-agent-guidelines/actions/workflows/auto-regenerate-demos.yml)
 [![Link Checker](https://img.shields.io/github/actions/workflow/status/Anselmoo/mcp-ai-agent-guidelines/link-checker.yml?branch=main&label=links&logo=link&logoColor=white)](https://github.com/Anselmoo/mcp-ai-agent-guidelines/actions/workflows/link-checker.yml)
 [![Coverage Status](https://img.shields.io/codecov/c/github/Anselmoo/mcp-ai-agent-guidelines/main?label=coverage&logo=codecov&logoColor=white)](https://codecov.io/gh/Anselmoo/mcp-ai-agent-guidelines)
-[![NPM Version](https://img.shields.io/npm/v/mcp-ai-agent-guidelines?label=npm&logo=npm&logoColor=white&color=red)](https://www.npmjs.com/package/mcp-ai-agent-guidelines)
 [![Node.js Version](https://img.shields.io/node/v/mcp-ai-agent-guidelines?label=node&logo=node.js&logoColor=white&color=green)](https://nodejs.org/en/download/)
 [![Docker](https://img.shields.io/badge/docker-available-blue?logo=docker&logoColor=white)](https://github.com/Anselmoo/mcp-ai-agent-guidelines/pkgs/container/mcp-ai-agent-guidelines)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?logo=opensourceinitiative&logoColor=white)](./LICENSE)
@@ -14,7 +13,6 @@
 [![GitHub Stars](https://img.shields.io/github/stars/Anselmoo/mcp-ai-agent-guidelines?style=social)](https://github.com/Anselmoo/mcp-ai-agent-guidelines/stargazers)
 [![GitHub Forks](https://img.shields.io/github/forks/Anselmoo/mcp-ai-agent-guidelines?style=social)](https://github.com/Anselmoo/mcp-ai-agent-guidelines/network/members)
 [![GitHub Issues](https://img.shields.io/github/issues/Anselmoo/mcp-ai-agent-guidelines?label=issues&logo=github&logoColor=white)](https://github.com/Anselmoo/mcp-ai-agent-guidelines/issues)
-[![NPM Downloads](https://img.shields.io/npm/dt/mcp-ai-agent-guidelines?label=downloads&logo=npm&logoColor=white&color=blue)](https://www.npmjs.com/package/mcp-ai-agent-guidelines)
 [![GitHub Last Commit](https://img.shields.io/github/last-commit/Anselmoo/mcp-ai-agent-guidelines?logo=github&logoColor=white)](https://github.com/Anselmoo/mcp-ai-agent-guidelines/commits/main)
 
 A Model Context Protocol (MCP) server offering professional tools and templates for hierarchical prompting, code hygiene, visualization, memory optimization, and agile planning.
@@ -588,7 +586,7 @@ Use the [Release Setup Issue Form](.github/ISSUE_TEMPLATE/release-setup.yml) to 
 - **Quality gates**: Pre-release checklist ensures reliability
 - **CI/CD integration**: Supports existing NPM and Docker publishing workflow
 
-To create a new release, [open a release setup issue](../../issues/new?template=release-setup.yml) with the target version and release details.
+To create a new release, [open a release setup issue](https://github.com/Anselmoo/mcp-ai-agent-guidelines/issues/new?template=release-setup.yml) with the target version and release details.
 
 ## Development
 

@@ -1193,7 +1193,7 @@ function buildSecurityReferencesSection(): string {
 		},
 		{
 			title: "SANS Secure Coding Practices",
-			url: "https://www.sans.org/white-papers/2172/",
+			url: "https://reports.weforum.org/docs/WEF_Global_Cybersecurity_Outlook_2025.pdf",
 			description: "Quick reference guide for secure software development",
 		},
 		{

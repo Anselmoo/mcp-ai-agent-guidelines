@@ -241,9 +241,10 @@ const REFERENCE_LINKS = [
 		description: "MindTools guide to conducting effective gap analysis",
 	},
 	{
-		title: "McKinsey Capability Building",
-		url: "https://www.mckinsey.com/capabilities/people-and-organizational-performance/our-insights/building-capabilities-for-performance",
-		description: "Building organizational capabilities for performance",
+		title: "Capability Building Framework",
+		url: "https://acorn.works/resource/capability-building-framework",
+		description:
+			"Guide to developing organizational capabilities for sustainable business success",
 	},
 	{
 		title: "CMMI Maturity Models",
@@ -253,12 +254,12 @@ const REFERENCE_LINKS = [
 	},
 	{
 		title: "Strategic Gap Analysis Framework",
-		url: "https://www.strategyand.pwc.com/gx/en/insights/gap-analysis.html",
+		url: "https://www.strategyand.pwc.com/m1/en/strategic-foresight/sector-strategies/real-estate/performance-gap-analysis.html",
 		description: "PwC's strategic approach to gap analysis",
 	},
 	{
 		title: "Performance Management Guide",
-		url: "https://www.shrm.org/resourcesandtools/tools-and-samples/toolkits/pages/performancemanagement.aspx",
+		url: "https://www.aihr.com/blog/what-is-performance-management/",
 		description: "SHRM toolkit for performance management best practices",
 	},
 ];
