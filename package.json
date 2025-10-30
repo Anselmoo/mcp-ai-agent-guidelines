@@ -5,7 +5,8 @@
 	"main": "dist/index.js",
 	"type": "module",
 	"scripts": {
-		"build": "tsc",
+		"build": "tsc && npm run copy-yaml",
+		"copy-yaml": "cp src/tools/config/models.yaml dist/tools/config/",
 		"start": "npm run build && node dist/index.js",
 		"dev": "tsc --watch",
 		"test": "npm run test:all",
