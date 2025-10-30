@@ -77,7 +77,7 @@ export async function dependencyAuditor(args: unknown) {
 				},
 				{
 					title: "Advanced Dependency Management",
-					url: "https://spectralops.io/blog/a-developers-tutorial-to-using-npm-audit-for-dependency-scanning/",
+					url: "https://www.jit.io/resources/appsec-tools/guide-to-using-npm-audit-to-create-a-dependency-tree",
 					description:
 						"Developer tutorial for comprehensive dependency scanning",
 				},

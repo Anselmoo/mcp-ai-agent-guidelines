@@ -6,8 +6,6 @@ import {
 	slugify,
 } from "../shared/prompt-utils.js";
 
-// 🥚 Easter Egg: "L9" is Google's level for Distinguished Engineer
-// While company-specific, it's become shorthand in the industry for the highest IC engineering level
 const L9DistinguishedEngineerPromptSchema = z.object({
 	projectName: z
 		.string()

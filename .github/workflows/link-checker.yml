@@ -93,7 +93,6 @@ jobs:
             --exclude 'http://localhost'
             --exclude 'https://httpbin.org'
             --exclude 'https://api.example.com'
-            --exclude-mail
             '**/*.md'
             'src/**/*.ts'
           fail: true

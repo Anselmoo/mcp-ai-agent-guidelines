@@ -413,7 +413,7 @@ function buildOnboardingReferences(): string {
 	return buildFurtherReadingSection([
 		{
 			title: "Atlassian Onboarding Guide",
-			url: "https://www.atlassian.com/onboarding",
+			url: "https://www.atlassian.com/teams/hr/guide/employee-onboarding",
 			description: "Best practices for effective project and team onboarding",
 		},
 		{
@@ -422,9 +422,10 @@ function buildOnboardingReferences(): string {
 			description: "Advanced code navigation features in Visual Studio Code",
 		},
 		{
-			title: "Memory in AI Agents",
-			url: "https://ai.meta.com/blog/memory-in-ai-agents/",
-			description: "Meta's research on memory systems for AI agents",
+			title: "Meta AI Research: Memory Layers",
+			url: "https://ai.meta.com/blog/meta-fair-updates-agents-robustness-safety-architecture/",
+			description:
+				"Meta's research on memory systems and memory layers for AI agents",
 		},
 	]);
 }

@@ -371,9 +371,10 @@ const REFERENCE_LINKS = [
 		description: "ClearPoint's overview of popular strategy frameworks",
 	},
 	{
-		title: "Top Strategic Frameworks",
-		url: "https://quantive.com/resources/articles/top-strategic-frameworks",
-		description: "Quantive's guide to effective strategic frameworks",
+		title: "Strategic Frameworks Comparison",
+		url: "https://bscdesigner.com/strategic-frameworks-comparison.htm",
+		description:
+			"Comprehensive guide to SWOT, VRIO, BSC, and other strategic frameworks",
 	},
 	{
 		title: "HBS Strategy Frameworks and Tools",

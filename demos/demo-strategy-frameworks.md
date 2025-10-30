@@ -151,6 +151,6 @@ mindmap
 
 - **[Atlassian Strategy Frameworks](https://www.atlassian.com/work-management/strategic-planning/framework)**: Comprehensive guide to strategic planning frameworks
 - **[20 Strategic Planning Models](https://www.clearpointstrategy.com/blog/strategic-planning-models)**: ClearPoint's overview of popular strategy frameworks
-- **[Top Strategic Frameworks](https://quantive.com/resources/articles/top-strategic-frameworks)**: Quantive's guide to effective strategic frameworks
+- **[Strategic Frameworks Comparison](https://bscdesigner.com/strategic-frameworks-comparison.htm)**: Comprehensive guide to SWOT, VRIO, BSC, and other strategic frameworks
 - **[HBS Strategy Frameworks and Tools](https://online.hbs.edu/blog/post/strategy-frameworks-and-tools)**: Harvard Business School overview of strategy tools
 
