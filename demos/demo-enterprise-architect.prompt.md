@@ -175,6 +175,6 @@ description: 'Enterprise Architect guidance for AI-Native Platform Transformatio
 - **[Thoughtworks Technology Radar](https://www.thoughtworks.com/radar)**: Quarterly analysis of emerging technologies and trends
 - **[Microsoft Cloud Adoption Framework](https://learn.microsoft.com/azure/cloud-adoption-framework/)**: Guidance for cloud migration and modernization
 - **[Google Cloud Architecture Framework](https://cloud.google.com/architecture/framework)**: Best practices for designing cloud applications on Google Cloud
-- **[Principles of Green Software Engineering](https://principles.green/)**: Guidelines for building sustainable, energy-efficient software
+- **[Green Software Foundation Training](https://learn.greensoftware.foundation/)**: Training to become a Green Software Practitioner and learn sustainable software principles
 
 
