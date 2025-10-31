@@ -1725,7 +1725,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "design-assistant",
 				description:
-					"Deterministic, context-driven design assistant with constraint framework for structured design sessions",
+					"Deterministic, context-driven design assistant with constraint framework for structured design sessions. Provides context-aware design recommendations tailored to language, framework, and code patterns including SOLID principles, design patterns, and framework-specific best practices.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1736,11 +1736,17 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 								"advance-phase",
 								"validate-phase",
 								"evaluate-pivot",
+								"generate-strategic-pivot-prompt",
 								"generate-artifacts",
 								"enforce-coverage",
 								"enforce-consistency",
 								"get-status",
 								"load-constraints",
+								"select-methodology",
+								"enforce-cross-session-consistency",
+								"generate-enforcement-prompts",
+								"generate-constraint-documentation",
+								"generate-context-aware-guidance",
 							],
 							description: "Action to perform",
 						},
@@ -1788,6 +1794,27 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 							},
 							description: "Types of artifacts to generate",
 							default: ["adr", "specification", "roadmap"],
+						},
+						methodologySignals: {
+							type: "object",
+							description:
+								"Methodology signals for select-methodology action (e.g., team size, project complexity, domain)",
+						},
+						includeTemplates: {
+							type: "boolean",
+							description:
+								"Include templates in generated prompts (for generate-strategic-pivot-prompt)",
+						},
+						includeSpace7Instructions: {
+							type: "boolean",
+							description:
+								"Include Space7 instructions in prompts (for generate-strategic-pivot-prompt)",
+						},
+						customInstructions: {
+							type: "array",
+							items: { type: "string" },
+							description:
+								"Custom instructions for prompt generation (for generate-strategic-pivot-prompt)",
 						},
 					},
 					required: ["action", "sessionId"],
