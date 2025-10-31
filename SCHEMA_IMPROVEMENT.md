@@ -4,7 +4,7 @@
 The MCP schema for `prompt-flow-builder` didn't properly document the type-specific requirements for node `config` objects. This caused users to encounter runtime validation errors like:
 
 ```
-Error: MPC -32603: Condition node "src" must have an expression in config
+Error: MCP -32603: Condition node "src" must have an expression in config
 ```
 
 ## Root Cause
@@ -56,7 +56,7 @@ The config object now has defined properties with descriptions:
   ]
 }
 ```
-**Result**: Runtime error `MPC -32603: Condition node "src" must have an expression in config`
+**Result**: Runtime error `MCP -32603: Condition node "src" must have an expression in config`
 
 ### After (clear requirements)
 ```json
