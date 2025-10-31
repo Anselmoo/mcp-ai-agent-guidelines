@@ -5,7 +5,8 @@
 	"main": "dist/index.js",
 	"type": "module",
 	"scripts": {
-		"build": "tsc",
+		"build": "tsc && npm run copy-yaml",
+		"copy-yaml": "cp src/tools/config/models.yaml dist/tools/config/",
 		"start": "npm run build && node dist/index.js",
 		"dev": "tsc --watch",
 		"test": "npm run test:all",
@@ -81,6 +82,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.3.1",
+		"@types/js-yaml": "^4.0.9",
 		"@types/node": "^24.3.1",
 		"@vitest/coverage-v8": "^3.2.4",
 		"c8": "^10.0.0",
@@ -93,6 +95,7 @@
 		"@modelcontextprotocol/sdk": "^1.17.1",
 		"@types/express": "^5.0.3",
 		"express": "^5.1.0",
+		"js-yaml": "^4.1.0",
 		"mermaid": "^11.0.0",
 		"zod": "^3.25.76"
 	}

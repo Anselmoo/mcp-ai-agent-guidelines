@@ -2,7 +2,7 @@
 
 ### Metadata
 
-- Updated: 2025-10-29
+- Updated: 2025-10-30
 - Source tool: mcp_ai-agent-guid_dependency-auditor
 
 ### 📋 Summary
@@ -11,7 +11,7 @@
 | ------------------ | ----------------------- |
 | Project            | mcp-ai-agent-guidelines |
 | Version            | 0.8.0                   |
-| Total Dependencies | 5                       |
+| Total Dependencies | 7                       |
 | Dev Dependencies   | 8                       |
 | Peer Dependencies  | 0                       |
 | Issues Found       | 1                       |

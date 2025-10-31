@@ -1,5 +1,5 @@
 ### Metadata
-- Updated: 2025-10-29
+- Updated: 2025-10-30
 - Source tool: mcp_ai-agent-guid_strategy-frameworks-builder
 - Suggested filename: strategy-swot-wheretoplayhowtowin-balancedscorecard-mckinsey7s-bcgmatrix-ansoffm.md
 

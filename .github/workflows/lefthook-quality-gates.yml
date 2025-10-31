@@ -91,32 +91,6 @@ jobs:
           echo "🧪 Running comprehensive tests and validation..."
           npx lefthook run pre-push --verbose
 
-      - name: Validate links in TypeScript and Markdown files
-        if: steps.check_skip.outputs.skip == 'false'
-        run: |
-          echo "🔗 Validating external links in source files..."
-
-          # Install lychee for link checking
-          curl -sSL https://github.com/lycheeverse/lychee/releases/latest/download/lychee-x86_64-unknown-linux-gnu.tar.gz | tar -xz -C /tmp
-          sudo mv /tmp/lychee /usr/local/bin/
-
-          # Check links in TypeScript and Markdown files
-          lychee \
-            --verbose \
-            --no-progress \
-            --accept 200,206,301,302,307,308,403,429 \
-            --timeout 20 \
-            --max-retries 2 \
-            --exclude 'https://img.shields.io' \
-            --exclude 'https://insiders.vscode.dev' \
-            --exclude 'http://localhost' \
-            --exclude 'https://httpbin.org' \
-            --exclude 'https://api.example.com' \
-            --exclude 'https://github.com/Anselmoo/mcp-ai-agent-guidelines/pkgs/container/mcp-ai-agent-guidelines' \
-            '**/*.md' \
-            'src/**/*.ts' \
-            || echo "⚠️ Some links may be broken - check the detailed report"
-
       - name: Generate quality report
         if: always()
         run: |
@@ -140,16 +114,15 @@ jobs:
             echo "- 🔒 **Security**: Gitleaks secret detection" >> $GITHUB_STEP_SUMMARY
             echo "- 🟨 **Code Quality**: Biome formatting & linting" >> $GITHUB_STEP_SUMMARY
             echo "- 🔷 **Type Safety**: TypeScript type checking" >> $GITHUB_STEP_SUMMARY
-            echo "- 📄 **File Validation**: YAML/JSON syntax checking" >> $GITHUB_STEP_SUMMARY
             echo "- 🧹 **Code Hygiene**: Trailing whitespace & EOF fixes" >> $GITHUB_STEP_SUMMARY
             echo "- 🧪 **Testing**: Unit, integration, and MCP server tests" >> $GITHUB_STEP_SUMMARY
-            echo "- 🔗 **Link Validation**: External URLs in TypeScript & Markdown files" >> $GITHUB_STEP_SUMMARY
+            echo "- � **Audit**: Dependency vulnerability scanning" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "### 📋 Configuration:" >> $GITHUB_STEP_SUMMARY
             echo "- **Hook Manager**: Lefthook (replacing pre-commit)" >> $GITHUB_STEP_SUMMARY
             echo "- **Mandatory**: All quality gates must pass for GitHub Copilot Agent" >> $GITHUB_STEP_SUMMARY
             echo "- **Performance**: Parallel execution for faster feedback" >> $GITHUB_STEP_SUMMARY
-            echo "- **Link Coverage**: 100+ URLs validated across src/ directory" >> $GITHUB_STEP_SUMMARY
+            echo "- **Note**: YAML/JSON validation and link checking run in separate CI workflows" >> $GITHUB_STEP_SUMMARY
           fi
 
   # ============================================================================
@@ -222,7 +195,7 @@ jobs:
           echo "- **Code Quality**: Biome linting and formatting" >> $GITHUB_STEP_SUMMARY
           echo "- **Type Safety**: TypeScript strict checking" >> $GITHUB_STEP_SUMMARY
           echo "- **Testing**: Comprehensive test suite validation" >> $GITHUB_STEP_SUMMARY
-          echo "- **Link Validation**: External URL verification in source files" >> $GITHUB_STEP_SUMMARY
+          echo "- **Note**: YAML/JSON and link validation in separate workflows" >> $GITHUB_STEP_SUMMARY
 
   # ============================================================================
   # Prevent merge if quality gates fail

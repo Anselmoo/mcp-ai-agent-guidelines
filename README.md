@@ -242,6 +242,13 @@ Or access programmatically:
 
 ## Features
 
+> **✨ NEW: Export Formats & Model Management** — Enhanced output format support with LaTeX, CSV, and JSON exports. Models now managed via YAML for easy updates.
+>
+> - **Export Formats**: Full LaTeX documents, CSV data export, JSON structured output
+> - **Header Control**: Suppress headers for cleaner chat outputs
+> - **YAML Models**: AI model definitions in easy-to-edit YAML format
+> - **Documentation**: See [docs/export-formats.md](./docs/export-formats.md) and [docs/maintaining-models.md](./docs/maintaining-models.md)
+
 > **🏆 NEW: Clean Code 100/100 Initiative** — Comprehensive code quality scoring system with automated dashboard generation. Track and achieve perfect code quality across coverage, TypeScript, linting, and security. See [docs/CLEAN_CODE_INITIATIVE.md](./docs/CLEAN_CODE_INITIATIVE.md) for the complete guide.
 >
 > - **Dashboard**: Run `npm run clean-code-dashboard` to generate score report
