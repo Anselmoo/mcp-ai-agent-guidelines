@@ -149,10 +149,7 @@ const SparkPromptSchema = z.object({
 	// YAML prompt frontmatter (optional, to mirror hierarchical builder)
 	mode: z.string().optional().default("agent"),
 	model: z.string().optional().default("GPT-4.1"),
-	tools: z
-		.array(z.string())
-		.optional()
-		.default(["githubRepo", "codebase", "editFiles"]),
+	tools: z.array(z.string()).optional(),
 	includeFrontmatter: z.boolean().optional().default(true),
 	includeDisclaimer: z.boolean().optional().default(true),
 	includeReferences: z.boolean().optional().default(false),
