@@ -89,7 +89,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "hierarchical-prompt-builder",
 				description:
-					"Build structured prompts with clear hierarchies and layers of specificity",
+					"Build structured prompts with clear hierarchies and layers of specificity. Use this MCP to create prompts with context → goal → requirements hierarchy, supporting multiple prompting techniques (chain-of-thought, few-shot, etc.). Example: 'Use the hierarchical-prompt-builder MCP to create a code review prompt for React components focusing on performance optimization'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -183,7 +183,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "code-analysis-prompt-builder",
 				description:
-					"Generate comprehensive code analysis prompts with customizable focus areas (security, performance, maintainability)",
+					"Generate comprehensive code analysis prompts with customizable focus areas (security, performance, maintainability). Use this MCP to create targeted code review prompts for specific quality concerns. Example: 'Use the code-analysis-prompt-builder MCP to analyze authentication code for security vulnerabilities'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -215,7 +215,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "architecture-design-prompt-builder",
 				description:
-					"Generate system architecture design prompts with scale-appropriate guidance",
+					"Generate system architecture design prompts with scale-appropriate guidance. Use this MCP to create architecture planning prompts for different system scales and technology stacks. Example: 'Use the architecture-design-prompt-builder MCP to design a microservices architecture for a medium-scale e-commerce platform'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -247,7 +247,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "digital-enterprise-architect-prompt-builder",
 				description:
-					"Guide enterprise architecture strategy with mentor perspectives and current research",
+					"Guide enterprise architecture strategy with mentor perspectives and current research. Use this MCP to create strategic architecture prompts from an enterprise architect perspective. Example: 'Use the digital-enterprise-architect-prompt-builder MCP to guide cloud migration strategy for our legacy CRM system'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -335,7 +335,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "debugging-assistant-prompt-builder",
 				description:
-					"Generate systematic debugging and troubleshooting prompts with structured analysis",
+					"Generate systematic debugging and troubleshooting prompts with structured analysis. Use this MCP to create diagnostic prompts for error investigation and root cause analysis. Example: 'Use the debugging-assistant-prompt-builder MCP to troubleshoot a production database connection timeout issue'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -366,7 +366,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "l9-distinguished-engineer-prompt-builder",
 				description:
-					"Generate Distinguished Engineer (L9) technical design prompts for high-level software architecture and system design",
+					"Generate Distinguished Engineer (L9) technical design prompts for high-level software architecture and system design. Use this MCP to create expert-level technical architecture prompts. Example: 'Use the l9-distinguished-engineer-prompt-builder MCP to design a globally distributed real-time data processing platform'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -490,7 +490,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "documentation-generator-prompt-builder",
 				description:
-					"Generate technical documentation prompts tailored to content type and audience",
+					"Generate technical documentation prompts tailored to content type and audience. Use this MCP to create structured documentation generation prompts for API docs, user guides, or technical specs. Example: 'Use the documentation-generator-prompt-builder MCP to create API documentation for our REST endpoints'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -522,7 +522,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "strategy-frameworks-builder",
 				description:
-					"Compose strategy analysis sections from selected frameworks (SWOT, BSC, VRIO, etc.) with compliant aliases for certain trademarks",
+					"Compose strategy analysis sections from selected frameworks (SWOT, BSC, VRIO, Porter's Five Forces, etc.). Use this MCP to generate strategic business analysis using established frameworks. Example: 'Use the strategy-frameworks-builder MCP to create a SWOT analysis and Balanced Scorecard for our market expansion plan'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -571,7 +571,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "gap-frameworks-analyzers",
 				description:
-					"Analyze gaps between current and desired states using various frameworks (capability, performance, maturity, etc.)",
+					"Analyze gaps between current and desired states using various frameworks (capability, performance, maturity, skills, technology, process, etc.). Use this MCP to identify and analyze gaps in capabilities, processes, or technologies. Example: 'Use the gap-frameworks-analyzers MCP to analyze the technology gap between our current monolith and desired microservices architecture'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -620,7 +620,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "spark-prompt-builder",
 				description:
-					"Build a generic UI/UX product prompt from structured inputs (title, features, colors, typography, etc.)",
+					"Build comprehensive UI/UX product design prompts from structured inputs (title, features, colors, typography, animation, spacing, etc.). Use this MCP to create detailed design system prompts for developer tools and user interfaces. Example: 'Use the spark-prompt-builder MCP to design a dark-mode code editor with syntax highlighting and accessibility features'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -798,7 +798,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "clean-code-scorer",
 				description:
-					"Calculate comprehensive Clean Code score (0-100) based on multiple quality metrics including code hygiene, test coverage, TypeScript, linting, documentation, and security",
+					"Calculate comprehensive Clean Code score (0-100) based on multiple quality metrics including code hygiene, test coverage, TypeScript, linting, documentation, and security. Use this MCP to get an overall quality assessment of your codebase. Example: 'Use the clean-code-scorer MCP to evaluate the quality of our authentication module and identify improvement areas'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -859,7 +859,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "code-hygiene-analyzer",
 				description:
-					"Analyze codebase for outdated patterns, unused dependencies, and code hygiene issues",
+					"Analyze codebase for outdated patterns, unused dependencies, and code hygiene issues. Use this MCP to identify technical debt, code smells, and modernization opportunities. Example: 'Use the code-hygiene-analyzer MCP to scan our legacy codebase for outdated patterns and unused dependencies'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -883,7 +883,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "dependency-auditor",
 				description:
-					"Analyze package.json for outdated, deprecated, or insecure packages and recommend modern, secure alternatives with ESM compatibility and bundle size insights",
+					"Analyze package.json for outdated, deprecated, or insecure packages and recommend modern, secure alternatives with ESM compatibility and bundle size insights. Use this MCP to audit project dependencies for security vulnerabilities and modernization opportunities. Example: 'Use the dependency-auditor MCP to check our package.json for security vulnerabilities and deprecated packages'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -937,7 +937,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "iterative-coverage-enhancer",
 				description:
-					"Iteratively analyze code coverage, detect dead code, generate test suggestions, and adapt coverage thresholds for continuous improvement",
+					"Iteratively analyze code coverage, detect dead code, generate test suggestions, and adapt coverage thresholds for continuous improvement. Use this MCP to identify test coverage gaps and generate actionable test improvement suggestions. Example: 'Use the iterative-coverage-enhancer MCP to analyze test coverage gaps in our payment processing module and suggest new test cases'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1013,7 +1013,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "mermaid-diagram-generator",
 				description:
-					"Generate Mermaid diagrams from text descriptions following best practices. Supports advanced diagram types and customization options for richer documentation.",
+					"Generate Mermaid diagrams from text descriptions following best practices. Supports flowcharts, sequence diagrams, class diagrams, state machines, ER diagrams, and more with validation and auto-repair. Use this MCP to create visual documentation and architecture diagrams. Example: 'Use the mermaid-diagram-generator MCP to create a sequence diagram showing the OAuth authentication flow'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1089,7 +1089,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "memory-context-optimizer",
 				description:
-					"Optimize prompt caching and context window usage for AI agents",
+					"Optimize prompt caching and context window usage for AI agents. Use this MCP to reduce token usage and improve context efficiency in long conversations or large codebases. Example: 'Use the memory-context-optimizer MCP to compress our system architecture documentation for efficient AI agent context'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1114,7 +1114,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "domain-neutral-prompt-builder",
 				description:
-					"Build a domain-neutral, non-visual prompt/template (objectives, scope, inputs/outputs, workflow, capabilities, risks, acceptance)",
+					"Build comprehensive domain-neutral prompts with objectives, scope, inputs/outputs, workflow, capabilities, risks, and acceptance criteria. Use this MCP to create structured specification documents or technical requirements. Example: 'Use the domain-neutral-prompt-builder MCP to create a technical specification for our API gateway service'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1240,7 +1240,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "security-hardening-prompt-builder",
 				description:
-					"Build specialized security hardening and vulnerability analysis prompts for AI-guided security assessment",
+					"Build specialized security hardening and vulnerability analysis prompts for AI-guided security assessment with OWASP Top 10, NIST, and compliance framework support. Use this MCP to create comprehensive security analysis prompts with threat modeling and compliance checks. Example: 'Use the security-hardening-prompt-builder MCP to analyze our API endpoints for OWASP Top 10 vulnerabilities and PCI-DSS compliance'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1396,7 +1396,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "sprint-timeline-calculator",
 				description:
-					"Calculate optimal development cycles and sprint timelines with dependency-aware scheduling",
+					"Calculate optimal development cycles and sprint timelines with dependency-aware scheduling, team velocity, and complexity analysis. Use this MCP to estimate project timelines and plan sprint allocations. Example: 'Use the sprint-timeline-calculator MCP to estimate the timeline for our microservices migration with a team of 6 developers'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1435,7 +1435,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "model-compatibility-checker",
 				description:
-					"Recommend best AI models for specific tasks and requirements",
+					"Recommend best AI models for specific tasks and requirements based on capabilities, budget, and use case. Use this MCP to select optimal AI models for different development tasks. Example: 'Use the model-compatibility-checker MCP to recommend the best AI model for code generation with long context windows on a medium budget'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1479,7 +1479,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "guidelines-validator",
 				description:
-					"Validate development practices against established AI agent guidelines",
+					"Validate development practices against established AI agent guidelines for prompting, code management, architecture, visualization, memory, and workflow. Use this MCP to ensure your practices follow AI agent best practices. Example: 'Use the guidelines-validator MCP to validate our code review workflow against AI agent best practices'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1506,7 +1506,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "semantic-code-analyzer",
 				description:
-					"Perform semantic code analysis to identify symbols, structure, dependencies, and patterns. Inspired by Serena's language server-based approach for precise code understanding.",
+					"Perform semantic code analysis to identify symbols, structure, dependencies, and patterns using language server-based analysis for precise code understanding. Use this MCP to analyze code semantics, find references, and understand code structure. Example: 'Use the semantic-code-analyzer MCP to map dependencies and identify tightly coupled components in our codebase'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1543,7 +1543,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "project-onboarding",
 				description:
-					"Perform comprehensive project onboarding including structure analysis, dependency detection, and memory generation. Based on Serena's onboarding system for efficient project familiarization.",
+					"Perform comprehensive project onboarding including structure analysis, dependency detection, and documentation generation for efficient developer onboarding. Use this MCP to analyze and document project structure for new developers. Example: 'Use the project-onboarding MCP to generate onboarding documentation for our microservices repository'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1584,7 +1584,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "mode-switcher",
 				description:
-					"Switch between different agent operation modes (planning, editing, analysis, debugging, etc.) with tailored tool sets and prompting strategies. Based on Serena's flexible mode/context system.",
+					"Switch between different agent operation modes (planning, editing, analysis, debugging, refactoring, documentation, etc.) with tailored tool sets and prompting strategies for context-appropriate workflows. Use this MCP to transition between development workflows. Example: 'Use the mode-switcher MCP to transition from planning mode to implementation mode'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1646,7 +1646,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "prompting-hierarchy-evaluator",
 				description:
-					"Evaluate prompts using hierarchical taxonomy and provide numeric scoring based on clarity, specificity, completeness, and cognitive complexity. Implements reinforcement learning-inspired evaluation metrics.",
+					"Evaluate prompts using hierarchical taxonomy and provide numeric scoring based on clarity, specificity, completeness, and cognitive complexity with reinforcement learning-inspired metrics. Use this MCP to assess and improve prompt quality. Example: 'Use the prompting-hierarchy-evaluator MCP to evaluate and score our code review prompt for effectiveness'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1685,7 +1685,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "hierarchy-level-selector",
 				description:
-					"Select the most appropriate prompting hierarchy level (independent, indirect, direct, modeling, scaffolding, full-physical) based on task characteristics, agent capability, and autonomy preferences.",
+					"Select the most appropriate prompting hierarchy level (independent, indirect, direct, modeling, scaffolding, full-physical) based on task characteristics, agent capability, and autonomy preferences. Use this MCP to determine optimal prompt guidance level for different scenarios. Example: 'Use the hierarchy-level-selector MCP to determine the best prompting level for a junior developer working on complex refactoring'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1725,7 +1725,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "design-assistant",
 				description:
-					"Deterministic, context-driven design assistant with constraint framework for structured design sessions",
+					"Comprehensive multi-phase design workflow orchestration with constraint validation, coverage enforcement, and artifact generation (ADRs, specifications, roadmaps). Use this MCP to manage complex design processes through discovery, requirements, architecture, and implementation phases. Example: 'Use the design-assistant MCP to start a design session for our new API gateway and guide it through all design phases'",
 				inputSchema: {
 					type: "object",
 					properties: {
