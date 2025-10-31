@@ -87,7 +87,10 @@ export const promptFlowBuilderSchema = {
 				items: {
 					type: "object",
 					properties: {
-						id: { type: "string" },
+						id: {
+							type: "string",
+							description: "Unique identifier for the node",
+						},
 						type: {
 							type: "string",
 							enum: [
@@ -98,14 +101,52 @@ export const promptFlowBuilderSchema = {
 								"merge",
 								"transform",
 							],
+							description: "Node type determines required config properties",
 						},
-						name: { type: "string" },
-						description: { type: "string" },
-						config: { type: "object" },
+						name: {
+							type: "string",
+							description: "Human-readable name for the node",
+						},
+						description: {
+							type: "string",
+							description: "Optional description of the node's purpose",
+						},
+						config: {
+							type: "object",
+							description:
+								"Node configuration (type-specific requirements): " +
+								"prompt nodes require 'prompt' property; " +
+								"condition nodes require 'expression' property; " +
+								"loop nodes require either 'condition' or 'iterations' property; " +
+								"parallel, merge, and transform nodes have no required config properties",
+							properties: {
+								prompt: {
+									type: "string",
+									description:
+										"Required for prompt nodes: the actual prompt text",
+								},
+								expression: {
+									type: "string",
+									description:
+										"Required for condition nodes: boolean expression to evaluate",
+								},
+								condition: {
+									type: "string",
+									description:
+										"Required for loop nodes (alternative to iterations): condition to evaluate for loop continuation",
+								},
+								iterations: {
+									type: "number",
+									description:
+										"Required for loop nodes (alternative to condition): maximum number of iterations",
+								},
+							},
+						},
 					},
 					required: ["id", "type", "name"],
 				},
-				description: "Flow nodes (processing units)",
+				description:
+					"Flow nodes (processing units). Each node type has specific config requirements - see config property description for details.",
 			},
 			edges: {
 				type: "array",
