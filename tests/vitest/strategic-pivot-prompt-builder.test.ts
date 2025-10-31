@@ -1,11 +1,11 @@
 // Comprehensive test suite for strategic-pivot-prompt-builder.ts
 import { beforeEach, describe, expect, it } from "vitest";
-import { strategicPivotPromptBuilder } from "../../dist/tools/design/strategic-pivot-prompt-builder.js";
+import { strategicPivotPromptBuilder } from "../../src/tools/design/strategic-pivot-prompt-builder.ts";
 import type {
 	DesignSessionState,
 	PivotDecision,
 	StrategicPivotPromptRequest,
-} from "../../dist/tools/design/types.js";
+} from "../../src/tools/design/types.ts";
 
 describe("Strategic Pivot Prompt Builder Comprehensive Coverage", () => {
 	beforeEach(async () => {

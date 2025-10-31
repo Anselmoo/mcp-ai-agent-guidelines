@@ -93,6 +93,7 @@ export class ConsistencyError extends OperationError {
 /**
  * Centralized error reporter for consistent error handling
  */
+// biome-ignore lint/complexity/noStaticOnlyClass: ErrorReporter is a utility namespace that provides static helper functions for error handling
 export class ErrorReporter {
 	/**
 	 * Report and log an error, optionally rethrowing it

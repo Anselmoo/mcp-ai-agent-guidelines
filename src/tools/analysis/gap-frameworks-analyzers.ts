@@ -1,7 +1,7 @@
 import { z } from "zod";
 import {
+	buildFurtherReadingSection,
 	buildMetadataSection,
-	buildReferencesSection,
 	slugify,
 } from "../shared/prompt-utils.js";
 
@@ -93,7 +93,7 @@ export async function gapFrameworksAnalyzers(args: unknown) {
 		: "";
 
 	const refs = input.includeReferences
-		? buildReferencesSection(REFERENCE_LINKS)
+		? buildFurtherReadingSection(REFERENCE_LINKS)
 		: "";
 
 	const body = [metadata, sections.join("\n\n"), refs]
@@ -235,9 +235,31 @@ function section(title: string, bullets: string[]): string {
 }
 
 const REFERENCE_LINKS = [
-	"[Gap Analysis Best Practices](https://www.mindtools.com/pages/article/gap-analysis.htm)",
-	"[McKinsey Capability Building](https://www.mckinsey.com/capabilities/people-and-organizational-performance/our-insights/building-capabilities-for-performance)",
-	"[CMMI Maturity Models](https://cmmiinstitute.com/cmmi)",
-	"[Strategic Gap Analysis Framework](https://www.strategyand.pwc.com/gx/en/insights/gap-analysis.html)",
-	"[Performance Management Guide](https://www.shrm.org/resourcesandtools/tools-and-samples/toolkits/pages/performancemanagement.aspx)",
+	{
+		title: "Gap Analysis Best Practices",
+		url: "https://www.mindtools.com/pages/article/gap-analysis.htm",
+		description: "MindTools guide to conducting effective gap analysis",
+	},
+	{
+		title: "Capability Building Framework",
+		url: "https://acorn.works/resource/capability-building-framework",
+		description:
+			"Guide to developing organizational capabilities for sustainable business success",
+	},
+	{
+		title: "CMMI Maturity Models",
+		url: "https://cmmiinstitute.com/cmmi",
+		description:
+			"Capability Maturity Model Integration for process improvement",
+	},
+	{
+		title: "Strategic Gap Analysis Framework",
+		url: "https://www.strategyand.pwc.com/m1/en/strategic-foresight/sector-strategies/real-estate/performance-gap-analysis.html",
+		description: "PwC's strategic approach to gap analysis",
+	},
+	{
+		title: "Performance Management Guide",
+		url: "https://www.aihr.com/blog/what-is-performance-management/",
+		description: "SHRM toolkit for performance management best practices",
+	},
 ];

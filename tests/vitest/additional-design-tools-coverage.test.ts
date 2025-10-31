@@ -1,12 +1,11 @@
 // Additional design tools comprehensive coverage tests
 import { describe, expect, it } from "vitest";
-import { confirmationModule } from "../../dist/tools/design/confirmation-module.js";
-import { constraintManager } from "../../dist/tools/design/constraint-manager.js";
-import { coverageEnforcer } from "../../dist/tools/design/coverage-enforcer.js";
+import { confirmationModule } from "../../src/tools/design/confirmation-module.ts";
+import { constraintManager } from "../../src/tools/design/constraint-manager.ts";
 import type {
 	ConstraintRule,
 	DesignSessionState,
-} from "../../dist/tools/design/types.js";
+} from "../../src/tools/design/types.ts";
 
 describe("Additional Design Tools Comprehensive Coverage", () => {
 	const createTestSessionState = (): DesignSessionState => ({
@@ -276,7 +275,7 @@ describe("Additional Design Tools Comprehensive Coverage", () => {
 
 	describe("Coverage Enforcer Tests", () => {
 		it("should check overall coverage thresholds", async () => {
-			const sessionState = createTestSessionState();
+			const _sessionState = createTestSessionState();
 
 			const result = {
 				passed: true,
@@ -295,7 +294,7 @@ describe("Additional Design Tools Comprehensive Coverage", () => {
 		});
 
 		it("should enforce phase-specific coverage", async () => {
-			const sessionState = createTestSessionState();
+			const _sessionState = createTestSessionState();
 
 			const result = {
 				phase: "implementation",
@@ -310,7 +309,7 @@ describe("Additional Design Tools Comprehensive Coverage", () => {
 		});
 
 		it("should calculate coverage for different aspects", async () => {
-			const sessionState = createTestSessionState();
+			const _sessionState = createTestSessionState();
 
 			const result = {
 				overall: 85,
@@ -329,9 +328,9 @@ describe("Additional Design Tools Comprehensive Coverage", () => {
 		});
 
 		it("should identify coverage gaps", async () => {
-			const sessionState = createTestSessionState();
+			const _sessionState = createTestSessionState();
 
-			const gaps = []; // REMOVED: await coverageEnforcer.identifyGaps(sessionState);
+			const gaps: unknown[] = []; // REMOVED: await coverageEnforcer.identifyGaps(sessionState);
 
 			expect(gaps).toBeDefined();
 			expect(Array.isArray(gaps)).toBe(true);
@@ -339,7 +338,7 @@ describe("Additional Design Tools Comprehensive Coverage", () => {
 		});
 
 		it("should generate coverage improvement recommendations", async () => {
-			const sessionState = createTestSessionState();
+			const _sessionState = createTestSessionState();
 
 			const recommendations = [
 				"Improve test coverage",
@@ -352,9 +351,9 @@ describe("Additional Design Tools Comprehensive Coverage", () => {
 		});
 
 		it("should validate minimum coverage requirements", async () => {
-			const sessionState = createTestSessionState();
+			const _sessionState = createTestSessionState();
 			// Lower the implementation coverage to test validation
-			sessionState.phases["implementation"].coverage = 60;
+			_sessionState.phases.implementation.coverage = 60;
 
 			const result = {
 				passed: true,
@@ -385,7 +384,7 @@ describe("Additional Design Tools Comprehensive Coverage", () => {
 		});
 
 		it("should confirm overall session readiness", async () => {
-			const sessionState = createTestSessionState();
+			const _sessionState = createTestSessionState();
 
 			const result = {
 				passed: true,
@@ -401,7 +400,7 @@ describe("Additional Design Tools Comprehensive Coverage", () => {
 		});
 
 		it("should confirm constraint satisfaction", async () => {
-			const sessionState = createTestSessionState();
+			const _sessionState = createTestSessionState();
 
 			const result = { passed: true, coverage: 85, violations: 0, warnings: 0 }; // REMOVED: method
 			expect(result).toBeDefined();
@@ -411,7 +410,7 @@ describe("Additional Design Tools Comprehensive Coverage", () => {
 		});
 
 		it("should confirm artifact quality", async () => {
-			const sessionState = createTestSessionState();
+			const _sessionState = createTestSessionState();
 
 			const result = {
 				passed: true,
@@ -426,7 +425,7 @@ describe("Additional Design Tools Comprehensive Coverage", () => {
 		});
 
 		it("should generate confirmation report", async () => {
-			const sessionState = createTestSessionState();
+			const _sessionState = createTestSessionState();
 
 			const report = {
 				overall: true,
@@ -445,7 +444,7 @@ describe("Additional Design Tools Comprehensive Coverage", () => {
 		});
 
 		it("should validate session state for confirmation", async () => {
-			const sessionState = createTestSessionState();
+			const _sessionState = createTestSessionState();
 
 			const result = {
 				passed: true,

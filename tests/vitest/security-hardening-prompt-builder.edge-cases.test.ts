@@ -118,8 +118,9 @@ describe("security-hardening-prompt-builder edge cases", () => {
 		});
 
 		const text = result.content[0].text;
-		expect(text).toContain("## Framework-Specific Considerations");
-		expect(text).toContain("Django-specific security patterns");
+		expect(text).toContain("Django Framework Security Analysis");
+		expect(text).toContain("Django-Specific Security Checks");
+		expect(text).toContain("Django ORM");
 	});
 
 	it("should exclude framework considerations when not specified", async () => {

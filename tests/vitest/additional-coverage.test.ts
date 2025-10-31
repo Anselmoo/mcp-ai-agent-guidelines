@@ -161,7 +161,7 @@ describe("Additional coverage for uncovered lines", () => {
 			validateAndNormalizeFrontmatter,
 			buildFrontmatterWithPolicy,
 			buildMetadataSection,
-			buildReferencesSection,
+			buildFurtherReadingSection,
 		} = await import("../../src/tools/shared/prompt-utils.js");
 
 		// Test frontmatter validation
@@ -190,8 +190,11 @@ describe("Additional coverage for uncovered lines", () => {
 		expect(metadata).toContain("test.md");
 
 		// Test references section
-		const references = buildReferencesSection(["Reference 1", "Reference 2"]);
-		expect(references).toContain("## References");
+		const references = buildFurtherReadingSection([
+			"Reference 1",
+			"Reference 2",
+		]);
+		expect(references).toContain("## Further Reading");
 		expect(references).toContain("Reference 1");
 	});
 

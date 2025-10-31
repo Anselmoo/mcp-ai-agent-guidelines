@@ -1,10 +1,10 @@
 // Comprehensive Confirmation Module Tests - Target 27/28 functions
 import { beforeAll, describe, expect, it } from "vitest";
-import { confirmationModule } from "../../dist/tools/design/confirmation-module.js";
+import { confirmationModule } from "../../src/tools/design/confirmation-module.ts";
 import type {
 	ConfirmationRequest,
 	DesignSessionState,
-} from "../../dist/tools/design/types.js";
+} from "../../src/tools/design/types.ts";
 
 describe("Confirmation Module Comprehensive Testing", () => {
 	beforeAll(async () => {
@@ -513,7 +513,7 @@ All prerequisites for design phase have been met:
 	describe("Enhanced Confirmation with Prompts and Rationale", () => {
 		it.skip("should confirm phase completion with prompt generation", async () => {
 			const sessionState = createComprehensiveSessionState();
-			const request: ConfirmationRequest = {
+			const _request: ConfirmationRequest = {
 				sessionState,
 				phaseId: "analysis",
 				content:
@@ -552,7 +552,7 @@ All prerequisites for design phase have been met:
 		});
 
 		it.skip("should generate confirmation prompt independently", async () => {
-			const sessionState = createComprehensiveSessionState();
+			const _sessionState = createComprehensiveSessionState();
 
 			const prompt = "Test confirmation prompt"; // REMOVED: await confirmationModule.generateConfirmationPrompt();
 			expect(prompt).toBeDefined();
@@ -604,7 +604,7 @@ All prerequisites for design phase have been met:
 - Feasibility: 60% - requires significant training investment
 			`.trim();
 
-			const request: ConfirmationRequest = {
+			const _request: ConfirmationRequest = {
 				sessionState,
 				phaseId: "design",
 				content: decisionRichContent,
@@ -679,7 +679,7 @@ All prerequisites for design phase have been met:
 
 	describe("Session and Constraint Validation", () => {
 		it.skip("should confirm session readiness for next phase", async () => {
-			const sessionState = createComprehensiveSessionState();
+			const _sessionState = createComprehensiveSessionState();
 
 			const result = { passed: true, coverage: 85 }; // REMOVED: method
 			expect(result).toBeDefined();
@@ -692,7 +692,7 @@ All prerequisites for design phase have been met:
 		});
 
 		it.skip("should confirm overall project readiness", async () => {
-			const sessionState = createComprehensiveSessionState();
+			const _sessionState = createComprehensiveSessionState();
 
 			const result = { passed: true, coverage: 85 }; // REMOVED: method
 			expect(result).toBeDefined();
@@ -704,7 +704,7 @@ All prerequisites for design phase have been met:
 		});
 
 		it.skip("should confirm constraint satisfaction", async () => {
-			const sessionState = createComprehensiveSessionState();
+			const _sessionState = createComprehensiveSessionState();
 
 			const result = { passed: true, violations: 0, warnings: 0 }; // REMOVED: await confirmationModule.confirmConstraintSatisfaction();
 			expect(result).toBeDefined();
@@ -714,7 +714,7 @@ All prerequisites for design phase have been met:
 		});
 
 		it.skip("should confirm artifact quality", async () => {
-			const sessionState = createComprehensiveSessionState();
+			const _sessionState = createComprehensiveSessionState();
 
 			const result = { passed: true, issues: [], recommendations: [] }; // REMOVED: await confirmationModule.confirmArtifactQuality();
 			expect(result).toBeDefined();
@@ -724,7 +724,7 @@ All prerequisites for design phase have been met:
 		});
 
 		it.skip("should validate session state integrity", async () => {
-			const sessionState = createComprehensiveSessionState();
+			const _sessionState = createComprehensiveSessionState();
 
 			const result = { passed: true, coverage: 85 }; // REMOVED: method
 			expect(result).toBeDefined();
@@ -736,12 +736,18 @@ All prerequisites for design phase have been met:
 
 	describe("Comprehensive Reporting", () => {
 		it.skip("should generate detailed confirmation report", async () => {
-			const sessionState = createComprehensiveSessionState();
+			const _sessionState = createComprehensiveSessionState();
 
-			const report =
-				// REMOVED: await confirmationModule.generateConfirmationReport(sessionState);
+			const report = {
+				overall: true,
+				phases: {},
+				constraints: {},
+				artifacts: {},
+				recommendations: [],
+			};
+			// REMOVED: await confirmationModule.generateConfirmationReport(sessionState);
 
-				expect(report).toBeDefined();
+			expect(report).toBeDefined();
 			expect(report.overall).toBeDefined();
 			expect(report.phases).toBeDefined();
 			expect(report.constraints).toBeDefined();
@@ -756,13 +762,19 @@ All prerequisites for design phase have been met:
 			// Set varying phase completion levels
 			sessionState.phases.analysis.status = "completed";
 			sessionState.phases.design.status = "in-progress";
-			sessionState.phases.implementation.status = "planned";
-			sessionState.phases.deployment.status = "planned";
+			sessionState.phases.implementation.status = "pending";
+			sessionState.phases.deployment.status = "pending";
 
-			const report =
-				// REMOVED: await confirmationModule.generateConfirmationReport(sessionState);
+			const report = {
+				overall: true,
+				phases: {},
+				constraints: {},
+				artifacts: {},
+				recommendations: [],
+			};
+			// REMOVED: await confirmationModule.generateConfirmationReport(sessionState);
 
-				expect(report).toBeDefined();
+			expect(report).toBeDefined();
 			expect(Object.keys(report.phases)).toContain("analysis");
 			expect(Object.keys(report.phases)).toContain("design");
 			expect(Object.keys(report.phases)).toContain("implementation");
@@ -830,7 +842,7 @@ All prerequisites for design phase have been met:
 		it.skip("should handle validation with corrupted session state", async () => {
 			const sessionState = createComprehensiveSessionState();
 			// Simulate corruption
-			delete (sessionState as any).coverage;
+			delete (sessionState as unknown as Record<string, unknown>).coverage;
 
 			const result = { passed: true, coverage: 85 }; // REMOVED: method
 			expect(result).toBeDefined();
@@ -842,7 +854,7 @@ All prerequisites for design phase have been met:
 	describe("Advanced Confirmation Scenarios", () => {
 		it.skip("should handle strict mode confirmation", async () => {
 			const sessionState = createComprehensiveSessionState();
-			const request: ConfirmationRequest = {
+			const _request: ConfirmationRequest = {
 				sessionState,
 				phaseId: "analysis",
 				content: "Strict mode confirmation test with comprehensive validation.",
@@ -867,7 +879,7 @@ All prerequisites for design phase have been met:
 
 		it.skip("should handle auto-advance confirmation", async () => {
 			const sessionState = createComprehensiveSessionState();
-			const request: ConfirmationRequest = {
+			const _request: ConfirmationRequest = {
 				sessionState,
 				phaseId: "analysis",
 				content: "Auto-advance confirmation test.",
@@ -892,7 +904,7 @@ All prerequisites for design phase have been met:
 
 		it.skip("should handle confirmation without rationale capture", async () => {
 			const sessionState = createComprehensiveSessionState();
-			const request: ConfirmationRequest = {
+			const _request: ConfirmationRequest = {
 				sessionState,
 				phaseId: "design",
 				content: "Confirmation without rationale capture.",
@@ -959,7 +971,7 @@ All prerequisites for design phase have been met:
 - Regulatory requirements will remain stable
 			`.trim();
 
-			const request: ConfirmationRequest = {
+			const _request: ConfirmationRequest = {
 				sessionState,
 				phaseId: "design",
 				content: complexDecisionContent,

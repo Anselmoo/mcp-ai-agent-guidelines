@@ -7,7 +7,7 @@ description: 'Template to run consistent, security-first code hygiene reviews ac
 ## 🧩 Domain-Neutral Prompt Template
 
 ### Metadata
-- Updated: 2025-10-15
+- Updated: 2025-10-31
 - Source tool: mcp_ai-agent-guid_domain-neutral-prompt-builder
 - Input file: /home/runner/work/mcp-ai-agent-guidelines/mcp-ai-agent-guidelines/demos/demo-code-analysis.py
 - Suggested filename: domain-neutral-code-hygiene-review-prompt.prompt.md
@@ -55,9 +55,12 @@ JSON fields ...
 ```
 
 
-## References
-- Project scope and acceptance criteria basics: https://www.pmi.org/learning/library/project-scope-statement-7017
-- Risk management primer: https://www.iso.org/iso-31000-risk-management.html
+## Further Reading
+
+*The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*
+
+- **[Project Scope Statement Best Practices](https://www.pmi.org/learning/library/project-scope-statement-7017)**: PMI guide to defining project scope and acceptance criteria
+- **[ISO 31000 Risk Management](https://www.iso.org/iso-31000-risk-management.html)**: International standard for risk management principles
 
 
 ## Disclaimer

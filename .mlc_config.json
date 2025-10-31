@@ -1,0 +1,52 @@
+{
+	"ignorePatterns": [
+		{
+			"pattern": "^https://img\\.shields\\.io"
+		},
+		{
+			"pattern": "^https://insiders\\.vscode\\.dev"
+		},
+		{
+			"pattern": "^http://localhost"
+		},
+		{
+			"pattern": "^https://httpbin\\.org"
+		},
+		{
+			"pattern": "^https://api\\.example\\.com"
+		},
+		{
+			"pattern": "^https://github\\.com/.*/pkgs/container/"
+		},
+		{
+			"pattern": "^https://github\\.com/Anselmoo/mcp-ai-agent-guidelines/pkgs/container/mcp-ai-agent-guidelines$"
+		},
+		{
+			"pattern": "^\\.\\./\\.\\./issues/"
+		},
+		{
+			"pattern": "^file:///path/to/"
+		},
+		{
+			"pattern": "^file:///<project-root>/"
+		},
+		{
+			"pattern": "^mailto:.*@[0-9~^]"
+		}
+	],
+	"replacementPatterns": [],
+	"httpHeaders": [
+		{
+			"urls": ["https://github.com", "https://www.github.com"],
+			"headers": {
+				"Accept": "text/html",
+				"User-Agent": "Mozilla/5.0 (compatible; LinkChecker/1.0)"
+			}
+		}
+	],
+	"timeout": "20s",
+	"retryOn429": true,
+	"retryCount": 3,
+	"fallbackRetryDelay": "30s",
+	"aliveStatusCodes": [200, 206, 301, 302, 307, 308, 403, 429]
+}

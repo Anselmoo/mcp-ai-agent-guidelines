@@ -1,7 +1,7 @@
 ## 🗓️ Sprint Timeline Calculation
 
 ### Metadata
-- **Updated:** 2025-10-15
+- **Updated:** 2025-10-31
 - **Source tool:** mcp_ai-agent-guid_sprint-timeline-calculator
 
 
@@ -62,15 +62,18 @@ gantt
 	title Sprint Plan
 %% Accessibility: Title=Project Sprint Plan; Description=Gantt chart of sprints and tasks over time. %%
   section Sprint 1
-  Refactor functions :s1t0, 2025-10-15, 4d
-  Add tests :s1t1, 2025-10-19, 5d
-  Improve logging :s1t2, 2025-10-24, 3d
-  Docs :s1t3, 2025-10-27, 2d
+  Refactor functions :s1t0, 2025-10-31, 4d
+  Add tests :s1t1, 2025-11-04, 5d
+  Improve logging :s1t2, 2025-11-09, 3d
+  Docs :s1t3, 2025-11-12, 2d
 ```
 
-## References
-- ZenHub — AI-assisted sprint planning (2025): https://www.zenhub.com/blog-posts/the-7-best-ai-assisted-sprint-planning-tools-for-agile-teams-in-2025
-- Nitor Infotech — AI in project delivery: https://www.nitorinfotech.com/blog/ai-in-software-project-delivery-smarter-planning-and-execution/
-- Optimizing Sprint Planning with Julia — Linear Programming Approach (2025): https://medium.com/@karim.ouldaklouche/optimizing-sprint-planning-with-julia-a-linear-programming-approach-with-gurobi-03f28c0cf5bf
+## Further Reading
+
+*The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*
+
+- **[AI-Assisted Sprint Planning Tools 2025](https://www.zenhub.com/blog-posts/the-7-best-ai-assisted-sprint-planning-tools-for-agile-teams-in-2025)**: ZenHub's guide to the best AI-powered sprint planning tools
+- **[AI in Software Project Delivery](https://www.nitorinfotech.com/blog/ai-in-software-project-delivery-smarter-planning-and-execution/)**: How AI enables smarter planning and execution in projects
+- **[Optimizing Sprint Planning with Linear Programming](https://medium.com/@karim.ouldaklouche/optimizing-sprint-planning-with-julia-a-linear-programming-approach-with-gurobi-03f28c0cf5bf)**: Using Julia and Gurobi for mathematical sprint optimization
 
 

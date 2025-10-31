@@ -1,7 +1,7 @@
 ## 🧠 Memory Context Optimization Report
 
 ### Metadata
-- Updated: 2025-10-15
+- Updated: 2025-10-31
 - Source tool: mcp_ai-agent-guid_memory-context-optimizer
 
 ### 🔎 Input Analysis
@@ -52,10 +52,13 @@ Python repo. Fix security issues; add validation and logging. Key: calculate_dis
 - Leverage semantic similarity to identify redundant information
 - Implement rolling window approach for conversation history
 
-## References
-- Prompt Caching overview (Anthropic): https://www.anthropic.com/news/prompt-caching
-- Anthropic docs on caching: https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching
-- Token usage optimization tips: https://caylent.com/blog/prompt-caching-saving-time-and-money-in-llm-applications
+## Further Reading
+
+*The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*
+
+- **[Prompt Caching Overview](https://www.anthropic.com/news/prompt-caching)**: Anthropic's announcement and guide to prompt caching
+- **[Anthropic Prompt Caching Documentation](https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching)**: Technical documentation for implementing prompt caching
+- **[Token Usage Optimization Tips](https://caylent.com/blog/prompt-caching-saving-time-and-money-in-llm-applications)**: Strategies for saving time and money with prompt caching
 
 
 

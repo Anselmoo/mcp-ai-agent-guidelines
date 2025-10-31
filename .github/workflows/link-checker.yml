@@ -1,0 +1,197 @@
+# Link Checker Workflow
+# Validates all external links in markdown files to ensure documentation quality
+# Runs on push to main, pull requests, and weekly schedule
+
+name: Link Checker
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "**.md"
+      - "**.ts"
+      - "docs/**"
+      - "src/**"
+      - ".mlc_config.json"
+      - ".github/workflows/link-checker.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "**.md"
+      - "**.ts"
+      - "docs/**"
+      - "src/**"
+      - ".mlc_config.json"
+  schedule:
+    # Run weekly on Monday at 8:00 AM UTC to catch broken links over time
+    - cron: "0 8 * * 1"
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  # ============================================================================
+  # Markdown Link Check - Comprehensive Link Validation
+  # ============================================================================
+  check-links:
+    name: Check Markdown Links 🔗
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Check links in all markdown files
+        uses: gaurav-nelson/github-action-markdown-link-check@4a1af151f4d7cf4d8f8ac5780597672a3671b88b # 1.0.17
+        with:
+          config-file: ".mlc_config.json"
+          use-quiet-mode: "no"
+          use-verbose-mode: "yes"
+          check-modified-files-only: "no"
+          base-branch: "main"
+
+      - name: Generate link check summary
+        if: always()
+        run: |
+          echo "### 🔗 Link Check Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "All markdown files have been checked for broken links." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Configuration: .mlc_config.json" >> $GITHUB_STEP_SUMMARY
+
+  # ============================================================================
+  # Alternative Link Checker - Backup validation with lychee
+  # ============================================================================
+  lychee-check:
+    name: Advanced Link Check (Lychee) 🌐
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Restore lychee cache
+        id: restore-cache
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: .lycheecache
+          key: cache-lychee-${{ github.sha }}
+          restore-keys: cache-lychee-
+
+      - name: Link Checker (Lychee)
+        uses: lycheeverse/lychee-action@44b353b6a25f31110975901498b02f7cfb09f808 # v2.6.1
+        with:
+          # Check all markdown and TypeScript files
+          args: >
+            --verbose
+            --no-progress
+            --accept 200,206,301,302,307,308,403,429
+            --timeout 20
+            --max-retries 3
+            --exclude 'https://img.shields.io'
+            --exclude 'https://insiders.vscode.dev'
+            --exclude 'http://localhost'
+            --exclude 'https://httpbin.org'
+            --exclude 'https://api.example.com'
+            --exclude 'https://github.com/.*/pkgs/container/.*'
+            '**/*.md'
+            'src/**/*.ts'
+          fail: true
+
+      - name: Save lychee cache
+        if: always()
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: .lycheecache
+          key: ${{ steps.restore-cache.outputs.cache-primary-key }}
+
+      - name: Create Issue From File (if links are broken)
+        if: failure()
+        uses: peter-evans/create-issue-from-file@fca9117c27cdc29c6c4db3b86c48e4115a786710 # v6.0.0
+        with:
+          title: "🔗 Broken Links Detected in Documentation"
+          content-filepath: ./lychee/out.md
+          labels: |
+            documentation
+            broken-link
+            automated
+
+      - name: Generate Lychee summary
+        if: always()
+        run: |
+          echo "### 🌐 Advanced Link Check Results (Lychee)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f ./lychee/out.md ]; then
+            cat ./lychee/out.md >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ No broken links found!" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  # ============================================================================
+  # Reference Validation - Specific check for Further Reading sections
+  # ============================================================================
+  validate-references:
+    name: Validate External References 📚
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check for disclaimer in generated content
+        run: |
+          echo "### 📚 Reference Validation" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Count files with "Further Reading" sections in markdown
+          FURTHER_READING_MD=$(grep -r "## Further Reading" demos/ docs/ --include="*.md" | wc -l || true)
+          echo "Markdown files with 'Further Reading' sections: $FURTHER_READING_MD" >> $GITHUB_STEP_SUMMARY
+
+          # Count files with "Further Reading" sections in TypeScript
+          FURTHER_READING_TS=$(grep -r "buildFurtherReadingSection" src/ --include="*.ts" | wc -l || true)
+          echo "TypeScript files with 'Further Reading' sections: $FURTHER_READING_TS" >> $GITHUB_STEP_SUMMARY
+
+          # Count total URLs in TypeScript files
+          TS_URLS=$(grep -rE "(http|https)://[^\s\)\"']+" src/ --include="*.ts" | wc -l || true)
+          echo "Total URLs found in TypeScript files: $TS_URLS" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Check for disclaimer text
+          DISCLAIMER_COUNT=$(
+            grep -r "informational and educational purposes only" \
+              demos/ docs/ --include="*.md" | wc -l || true
+          )
+          echo "Files with disclaimer text: $DISCLAIMER_COUNT" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ $FURTHER_READING_MD -gt 0 ]; then
+            RATIO=$((DISCLAIMER_COUNT * 100 / FURTHER_READING_MD))
+            echo "Disclaimer coverage: ${RATIO}%" >> $GITHUB_STEP_SUMMARY
+
+            if [ $RATIO -lt 90 ]; then
+              echo "⚠️ Warning: Some 'Further Reading' sections may be missing disclaimers" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "✅ Good disclaimer coverage in reference sections" >> $GITHUB_STEP_SUMMARY
+            fi
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ TypeScript files are now being checked for broken links" >> $GITHUB_STEP_SUMMARY
+
+      - name: Validate DISCLAIMER.md exists
+        run: |
+          if [ ! -f "DISCLAIMER.md" ]; then
+            echo "❌ DISCLAIMER.md is missing!" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          else
+            echo "✅ DISCLAIMER.md present" >> $GITHUB_STEP_SUMMARY
+          fi

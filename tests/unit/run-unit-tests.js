@@ -172,9 +172,13 @@ async function run() {
 			),
 			"Frontmatter not normalized",
 		);
-		// single References section
-		const refsCount = (text.match(/## References/g) || []).length;
-		assert.strictEqual(refsCount, 1, "Spark: duplicate References section");
+		// single Further Reading section
+		const refsCount = (text.match(/## Further Reading/g) || []).length;
+		assert.strictEqual(
+			refsCount,
+			1,
+			"Spark: duplicate Further Reading section",
+		);
 	}
 
 	async function testHierarchicalBuilder() {
@@ -191,16 +195,14 @@ async function run() {
 			/## 🧭 Hierarchical Prompt Structure/.test(text),
 			"Missing hierarchical header",
 		);
-		const refsCount = (text.match(/## References/g) || []).length;
+		const refsCount = (text.match(/## Further Reading/g) || []).length;
 		assert.strictEqual(
 			refsCount,
 			1,
-			"Hierarchical: duplicate References section",
+			"Hierarchical: duplicate Further Reading section",
 		);
-		assert.ok(
-			/# Technique Hints \(2025\)/.test(text),
-			"Technique hints missing",
-		);
+		// No longer checking for generic "Technique Hints" - now we check for actionable sections
+		// when techniques are auto-selected (which happens with no explicit techniques provided)
 	}
 
 	async function testDomainNeutralBuilder() {
@@ -240,9 +242,9 @@ async function run() {
 			throw new Error("IO section missing");
 		if (!/## Workflow[\s\S]*1\) Ingest/.test(text))
 			throw new Error("Workflow numbering incorrect");
-		const refsCount = (text.match(/## References/g) || []).length;
+		const refsCount = (text.match(/## Further Reading/g) || []).length;
 		if (refsCount !== 1)
-			throw new Error("Domain-neutral: duplicate References section");
+			throw new Error("Domain-neutral: duplicate Further Reading section");
 	}
 
 	async function testModelCompatibilityCodeExamplesPython() {
@@ -356,7 +358,7 @@ async function run() {
 		);
 	}
 
-	// Additional branch coverage: auto-select techniques path in Technique Hints
+	// Additional branch coverage: auto-select techniques path - now generates actionable sections
 	async function testTechniqueAutoSelect() {
 		const res = await hierarchicalPromptBuilder({
 			context:
@@ -366,18 +368,15 @@ async function run() {
 			autoSelectTechniques: true,
 		});
 		const text = res.content[0].text;
-		// Expect several technique sections to appear
+		// Expect actionable instruction sections to appear based on auto-selected techniques
 		const expected = [
-			/Technique Hints \(2025\)/,
-			/Retrieval Augmented Generation \(RAG\)/i,
-			/Chain-of-Thought/i,
-			/Prompt Chaining/i,
-			/Few-Shot/i,
-			/Self-Consistency/i,
-			/Generate Knowledge/i,
+			/Document Handling/i, // RAG
+			/Approach/i, // Chain-of-Thought
+			/Step-by-Step Workflow/i, // Prompt Chaining
+			/Examples/i, // Few-Shot
 		];
 		for (const re of expected) {
-			assert.ok(re.test(text), `Missing technique section: ${re}`);
+			assert.ok(re.test(text), `Missing actionable section: ${re}`);
 		}
 	}
 

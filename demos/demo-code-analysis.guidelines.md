@@ -1,7 +1,7 @@
 ## ✅ AI Agent Development Guidelines Validation
 
 ### Metadata
-- Updated: 2025-10-15
+- Updated: 2025-10-31
 - Source tool: mcp_ai-agent-guid_guidelines-validator
 - Input file: /home/runner/work/mcp-ai-agent-guidelines/mcp-ai-agent-guidelines/demos/demo-code-analysis.py
 - Category: workflow
@@ -55,10 +55,13 @@ For detailed information on AI agent development best practices, refer to:
 - Monitoring of industry best practices evolution
 - Iterative refinement based on project outcomes
 
-## References
-- Sprint planning tools overview (ZenHub 2025): https://www.zenhub.com/blog-posts/the-7-best-ai-assisted-sprint-planning-tools-for-agile-teams-in-2025
-- Prompt caching (Anthropic): https://www.anthropic.com/news/prompt-caching
-- Mermaid.js: https://github.com/mermaid-js/mermaid
+## Further Reading
+
+*The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*
+
+- **[AI-Assisted Sprint Planning Tools 2025](https://www.zenhub.com/blog-posts/the-7-best-ai-assisted-sprint-planning-tools-for-agile-teams-in-2025)**: ZenHub's guide to modern sprint planning tools
+- **[Prompt Caching](https://www.anthropic.com/news/prompt-caching)**: Anthropic's guide to efficient prompt caching strategies
+- **[Mermaid.js](https://github.com/mermaid-js/mermaid)**: JavaScript library for generating diagrams from text
 
 
 

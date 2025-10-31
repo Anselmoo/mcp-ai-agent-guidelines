@@ -301,6 +301,35 @@ describe("SessionManagementService", () => {
 			expect(response).toBeDefined();
 			expect(response.sessionId).toBe(sessionId);
 		});
+
+		it("should detect language and framework from context", async () => {
+			const sessionId = `test-context-detection-${Date.now()}`;
+			const config = {
+				sessionId,
+				context:
+					"This is a TypeScript React application with component library",
+				goal: "Build a scalable UI library",
+				requirements: ["Reusable components", "Type safety"],
+				constraints: [],
+				coverageThreshold: 85,
+				enablePivots: true,
+				templateRefs: [],
+				outputFormats: ["markdown"],
+				metadata: {},
+			};
+
+			const response = await sessionManagementService.startDesignSession(
+				sessionId,
+				config,
+			);
+
+			expect(response.success).toBe(true);
+			expect(response.data?.detectedLanguage).toBe("typescript");
+			expect(response.data?.detectedFramework).toBe("react");
+			expect(
+				response.recommendations.some((r) => r.includes("typescript")),
+			).toBe(true);
+		});
 	});
 
 	describe("getSessionStatus", () => {

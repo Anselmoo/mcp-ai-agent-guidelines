@@ -1,13 +1,13 @@
 // Tool Function Coverage Enhancement Tests
-import { beforeAll, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 
 // Import all tools that need coverage improvement
-import { codeHygieneAnalyzer } from "../../dist/tools/code-hygiene-analyzer.js";
-import { guidelinesValidator } from "../../dist/tools/guidelines-validator.js";
-import { memoryContextOptimizer } from "../../dist/tools/memory-context-optimizer.js";
-import { mermaidDiagramGenerator } from "../../dist/tools/mermaid-diagram-generator.js";
-import { modelCompatibilityChecker } from "../../dist/tools/model-compatibility-checker.js";
-import { sprintTimelineCalculator } from "../../dist/tools/sprint-timeline-calculator.js";
+import { codeHygieneAnalyzer } from "../../src/tools/code-hygiene-analyzer.ts";
+import { guidelinesValidator } from "../../src/tools/guidelines-validator.ts";
+import { memoryContextOptimizer } from "../../src/tools/memory-context-optimizer.ts";
+import { mermaidDiagramGenerator } from "../../src/tools/mermaid-diagram-generator.ts";
+import { modelCompatibilityChecker } from "../../src/tools/model-compatibility-checker.ts";
+import { sprintTimelineCalculator } from "../../src/tools/sprint-timeline-calculator.ts";
 
 describe("Tool Function Coverage Enhancement", () => {
 	describe("Code Hygiene Analyzer Extended Coverage", () => {
@@ -489,13 +489,13 @@ This is a very long context that contains multiple paragraphs and extensive info
 			// Test tools with potentially problematic inputs
 			try {
 				await codeHygieneAnalyzer({ codeContent: "", language: "javascript" });
-			} catch (error) {
+			} catch (_error) {
 				// Error handling is acceptable
 			}
 
 			try {
 				await memoryContextOptimizer({ context: "test", targetLength: 50 });
-			} catch (error) {
+			} catch (_error) {
 				// Error handling is acceptable
 			}
 		});

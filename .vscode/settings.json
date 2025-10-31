@@ -8,5 +8,9 @@
 				"DEBUG": "mcp*"
 			}
 		}
-	}
+	},
+	"terminal.integrated.accessibleViewPreserveCursorPosition": true,
+	"terminal.integrated.copyOnSelection": true,
+	"git.terminalGitEditor": true,
+	"terminal.integrated.defaultProfile.osx": "bash"
 }

@@ -1,6 +1,6 @@
 // Design Assistant Tests
 import { beforeAll, describe, expect, it } from "vitest";
-import { designAssistant } from "../../dist/tools/design/index.js";
+import { designAssistant } from "../../src/tools/design/index.ts";
 
 describe("Design Assistant Framework", () => {
 	beforeAll(async () => {

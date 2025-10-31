@@ -38,6 +38,7 @@ export interface ConfirmationResult {
 	recommendations: string[];
 	nextSteps: string[];
 	canProceed: boolean;
+	phase?: string;
 }
 
 export interface ConfirmationReport {

@@ -113,7 +113,10 @@ describe("security-hardening-prompt-builder", () => {
 		expect(text).toContain("// SECURITY RISK:");
 		expect(text).toContain("// SECURE FIX:");
 		expect(text).toContain("// SECURITY ENHANCEMENT:");
-		expect(text).toContain("React-specific security patterns");
+		expect(text).toContain("React Framework Security Analysis");
+		expect(text).toContain("React-Specific Security Checks");
+		expect(text).toContain("dangerouslySetInnerHTML");
+		expect(text).toContain("File Upload Security");
 	});
 
 	it("should include all security analysis scope areas", async () => {

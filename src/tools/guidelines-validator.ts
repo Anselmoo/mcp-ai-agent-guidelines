@@ -3,7 +3,7 @@ import {
 	CATEGORY_CONFIG,
 	type CategoryConfig,
 } from "./config/guidelines-config.js";
-import { buildReferencesSection } from "./shared/prompt-utils.js";
+import { buildFurtherReadingSection } from "./shared/prompt-utils.js";
 
 const GuidelinesValidationSchema = z.object({
 	practiceDescription: z.string(),
@@ -49,8 +49,12 @@ export async function guidelinesValidator(args: unknown) {
 
 	const validation = validateAgainstGuidelines(input);
 	const references = input.includeReferences
-		? buildReferencesSection(
-				buildCategoryReferences(input.category, true) as string[],
+		? buildFurtherReadingSection(
+				buildCategoryReferences(input.category, true) as Array<{
+					title: string;
+					url: string;
+					description: string;
+				}>,
 			)
 		: undefined;
 	const metadata = input.includeMetadata
@@ -185,32 +189,80 @@ function validateAgainstGuidelines(
 function buildCategoryReferences(
 	category: string,
 	asList = false,
-): string[] | string {
+): Array<{ title: string; url: string; description: string }> | string {
 	const common = [
-		"Prompt caching (Anthropic): https://www.anthropic.com/news/prompt-caching",
-		"Mermaid.js: https://github.com/mermaid-js/mermaid",
+		{
+			title: "Prompt Caching",
+			url: "https://www.anthropic.com/news/prompt-caching",
+			description: "Anthropic's guide to efficient prompt caching strategies",
+		},
+		{
+			title: "Mermaid.js",
+			url: "https://github.com/mermaid-js/mermaid",
+			description: "JavaScript library for generating diagrams from text",
+		},
 	];
-	const byCat: Record<string, string[]> = {
+	const byCat: Record<
+		string,
+		Array<{ title: string; url: string; description: string }>
+	> = {
 		prompting: [
-			"Hierarchical Prompting: https://relevanceai.com/prompt-engineering/master-hierarchical-prompting-for-better-ai-interactions",
-			"Best Practices (2025): https://www.dataunboxed.io/blog/the-complete-guide-to-prompt-engineering-15-essential-techniques-for-2025",
+			{
+				title: "Hierarchical Prompting",
+				url: "https://relevanceai.com/prompt-engineering/master-hierarchical-prompting-for-better-ai-interactions",
+				description: "Master hierarchical prompting for better AI interactions",
+			},
+			{
+				title: "Prompt Engineering Best Practices 2025",
+				url: "https://www.dataunboxed.io/blog/the-complete-guide-to-prompt-engineering-15-essential-techniques-for-2025",
+				description: "15 essential techniques for modern prompt engineering",
+			},
 		],
 		"code-management": [
-			"Refactoring legacy code: https://graphite.dev/guides/refactoring-legacy-code-best-practices-techniques",
+			{
+				title: "Refactoring Legacy Code",
+				url: "https://graphite.dev/guides/refactoring-legacy-code-best-practices-techniques",
+				description:
+					"Best practices and techniques for legacy code refactoring",
+			},
 		],
-		architecture: ["Event-driven, microservices patterns (general references)"],
+		architecture: [
+			{
+				title: "Event-Driven Architecture Patterns",
+				url: "https://martinfowler.com/articles/201701-event-driven.html",
+				description:
+					"Martin Fowler on event-driven architecture and microservices",
+			},
+		],
 		visualization: [
-			"Kubernetes diagram guide: https://kubernetes.io/docs/contribute/style/diagram-guide/",
+			{
+				title: "Kubernetes Diagram Guide",
+				url: "https://kubernetes.io/docs/contribute/style/diagram-guide/",
+				description:
+					"Official guide for creating Kubernetes architecture diagrams",
+			},
 		],
 		memory: [
-			"Prompt caching docs: https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching",
+			{
+				title: "Prompt Caching Documentation",
+				url: "https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching",
+				description: "Comprehensive docs on Claude's prompt caching feature",
+			},
 		],
 		workflow: [
-			"Sprint planning tools overview (ZenHub 2025): https://www.zenhub.com/blog-posts/the-7-best-ai-assisted-sprint-planning-tools-for-agile-teams-in-2025",
+			{
+				title: "AI-Assisted Sprint Planning Tools 2025",
+				url: "https://www.zenhub.com/blog-posts/the-7-best-ai-assisted-sprint-planning-tools-for-agile-teams-in-2025",
+				description: "ZenHub's guide to modern sprint planning tools",
+			},
 		],
 	} as const;
 	const set = [...(byCat[category as keyof typeof byCat] || []), ...common];
-	return asList ? set : set.join("\n");
+	return asList
+		? set
+		: set
+				.map((r) => (typeof r === "string" ? r : `${r.title}: ${r.url}`))
+				.join("\n");
 }
 
 // Legacy per-category validators replaced by config-driven approach above.

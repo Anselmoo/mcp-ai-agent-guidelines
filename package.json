@@ -1,11 +1,12 @@
 {
 	"name": "mcp-ai-agent-guidelines",
-	"version": "0.7.3",
+	"version": "0.8.0",
 	"description": "A comprehensive Model Context Protocol server providing professional tools, resources, and prompts for implementing AI agent best practices",
 	"main": "dist/index.js",
 	"type": "module",
 	"scripts": {
-		"build": "tsc",
+		"build": "tsc && npm run copy-yaml",
+		"copy-yaml": "cp src/tools/config/models.yaml dist/tools/config/",
 		"start": "npm run build && node dist/index.js",
 		"dev": "tsc --watch",
 		"test": "npm run test:all",
@@ -13,6 +14,7 @@
 		"test:integration": "node tests/test-server.js",
 		"test:demo": "node demos/demo-tools.js",
 		"test:mcp": "scripts/test-mcp-server.sh",
+		"validate:demo-coverage": "node scripts/validate-demo-coverage.js",
 		"test:all": "npm run build && npm run test:unit && npm run test:integration && npm run test:demo && npm run test:mcp",
 		"test:coverage:unit": "npm run build && c8 -r text-summary -r lcov -r html -o coverage node tests/unit/run-unit-tests.js",
 		"test:vitest": "vitest",
@@ -35,6 +37,9 @@
 		"hooks:install": "lefthook install",
 		"hooks:uninstall": "lefthook uninstall",
 		"hooks:run": "lefthook run",
+		"links:check": "npx markdown-link-check --config .mlc_config.json README.md CONTRIBUTING.md DISCLAIMER.md",
+		"links:check:all": "find . -name '*.md' -not -path './node_modules/*' -not -path './dist/*' -not -path './coverage/*' -exec npx markdown-link-check --config .mlc_config.json {} \\;",
+		"clean-code-dashboard": "node scripts/generate-clean-code-dashboard.js",
 		"prepare": "if [ -d .git ]; then lefthook install; else echo 'Skipping lefthook install (no Git repository)'; fi"
 	},
 	"keywords": [
@@ -76,11 +81,13 @@
 		"npm": ">=10.0.0"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.2.5",
+		"@biomejs/biome": "2.3.1",
+		"@types/js-yaml": "^4.0.9",
 		"@types/node": "^24.3.1",
 		"@vitest/coverage-v8": "^3.2.4",
 		"c8": "^10.0.0",
-		"lefthook": "^1.13.0",
+		"lefthook": "^2.0.0",
+		"markdown-link-check": "^3.14.1",
 		"typescript": "^5.9.2",
 		"vitest": "^3.2.4"
 	},
@@ -88,6 +95,7 @@
 		"@modelcontextprotocol/sdk": "^1.17.1",
 		"@types/express": "^5.0.3",
 		"express": "^5.1.0",
+		"js-yaml": "^4.1.0",
 		"mermaid": "^11.0.0",
 		"zod": "^3.25.76"
 	}

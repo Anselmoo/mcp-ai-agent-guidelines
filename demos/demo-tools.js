@@ -6,16 +6,26 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { gapFrameworksAnalyzers } from "../dist/tools/analysis/gap-frameworks-analyzers.js";
 import { strategyFrameworksBuilder } from "../dist/tools/analysis/strategy-frameworks-builder.js";
+import { cleanCodeScorer } from "../dist/tools/clean-code-scorer.js";
 import { codeHygieneAnalyzer } from "../dist/tools/code-hygiene-analyzer.js";
+import { dependencyAuditor } from "../dist/tools/dependency-auditor.js";
+import { designAssistant } from "../dist/tools/design/index.js";
 import { guidelinesValidator } from "../dist/tools/guidelines-validator.js";
+import { iterativeCoverageEnhancer } from "../dist/tools/iterative-coverage-enhancer.js";
 import { memoryContextOptimizer } from "../dist/tools/memory-context-optimizer.js";
 import { mermaidDiagramGenerator } from "../dist/tools/mermaid-diagram-generator.js";
 import { modeSwitcher } from "../dist/tools/mode-switcher.js";
 import { modelCompatibilityChecker } from "../dist/tools/model-compatibility-checker.js";
 import { projectOnboarding } from "../dist/tools/project-onboarding.js";
+import { architectureDesignPromptBuilder } from "../dist/tools/prompt/architecture-design-prompt-builder.js";
+import { codeAnalysisPromptBuilder } from "../dist/tools/prompt/code-analysis-prompt-builder.js";
+import { debuggingAssistantPromptBuilder } from "../dist/tools/prompt/debugging-assistant-prompt-builder.js";
+import { documentationGeneratorPromptBuilder } from "../dist/tools/prompt/documentation-generator-prompt-builder.js";
 import { domainNeutralPromptBuilder } from "../dist/tools/prompt/domain-neutral-prompt-builder.js";
+import { enterpriseArchitectPromptBuilder } from "../dist/tools/prompt/enterprise-architect-prompt-builder.js";
 import { hierarchicalPromptBuilder } from "../dist/tools/prompt/hierarchical-prompt-builder.js";
 import { hierarchyLevelSelector } from "../dist/tools/prompt/hierarchy-level-selector.js";
+import { l9DistinguishedEngineerPromptBuilder } from "../dist/tools/prompt/l9-distinguished-engineer-prompt-builder.js";
 import { promptingHierarchyEvaluator } from "../dist/tools/prompt/prompting-hierarchy-evaluator.js";
 import { securityHardeningPromptBuilder } from "../dist/tools/prompt/security-hardening-prompt-builder.js";
 import { sparkPromptBuilder } from "../dist/tools/prompt/spark-prompt-builder.js";
@@ -385,6 +395,183 @@ Enhance the authentication system with JWT token support and proper session mana
 		includeReferences: true,
 	});
 	await writeReport("demo-mode-switcher.md", getText(modeSwitching));
+
+	// Architecture design prompt builder demo
+	const architectureDesign = await architectureDesignPromptBuilder({
+		systemRequirements:
+			"Design a scalable microservices architecture for an e-commerce platform with high availability requirements",
+		scale: "large",
+		technologyStack: "Node.js, PostgreSQL, Redis, Kubernetes",
+		includeReferences: true,
+		includeMetadata: true,
+	});
+	await writeReport(
+		"demo-architecture-design.prompt.md",
+		getText(architectureDesign),
+	);
+
+	// Clean code scorer demo
+	const cleanScore = await cleanCodeScorer({
+		codeContent: demoPy,
+		language: "python",
+		includeRecommendations: true,
+		inputFile: demoPyPath,
+	});
+	await writeReport("demo-clean-code-score.md", getText(cleanScore));
+
+	// Code analysis prompt builder demo
+	const codeAnalysisPrompt = await codeAnalysisPromptBuilder({
+		codebase: demoPy,
+		focusArea: "security",
+		language: "python",
+		includeReferences: true,
+		includeMetadata: true,
+	});
+	await writeReport(
+		"demo-code-analysis.analysis-prompt.md",
+		getText(codeAnalysisPrompt),
+	);
+
+	// Debugging assistant prompt builder demo
+	const debuggingPrompt = await debuggingAssistantPromptBuilder({
+		errorDescription:
+			"AttributeError: 'NoneType' object has no attribute 'calculate_discount' when processing user orders",
+		context:
+			"E-commerce checkout flow with discount calculation for logged-in users",
+		attemptedSolutions:
+			"Added null checks, verified user session exists, checked discount table",
+		includeReferences: true,
+		includeMetadata: true,
+	});
+	await writeReport(
+		"demo-debugging-assistant.prompt.md",
+		getText(debuggingPrompt),
+	);
+
+	// Dependency auditor demo
+	const packageJsonPath = path.resolve(__dirname, "../package.json");
+	const packageJsonContent = await fs.readFile(packageJsonPath, "utf8");
+	const depAudit = await dependencyAuditor({
+		packageJsonContent,
+		auditLevel: "moderate",
+		includeDevDependencies: true,
+		outputFormat: "detailed",
+	});
+	await writeReport("demo-dependency-audit.md", getText(depAudit));
+
+	// Design assistant demo (start session example)
+	await designAssistant.initialize();
+	const designSession = await designAssistant.processRequest({
+		action: "start-session",
+		sessionId: "demo-design-001",
+		config: {
+			sessionId: "demo-design-001",
+			context: "AI Agent Framework for developer tools",
+			goal: "Create modular architecture for AI agents with multi-LLM support",
+			requirements: [
+				"Support multiple LLM providers (OpenAI, Anthropic, Google)",
+				"Enable easy extensibility for custom agents",
+				"Provide structured prompt templates",
+				"Include memory and context management",
+			],
+			constraints: [],
+			coverageThreshold: 80,
+			enablePivots: false,
+		},
+	});
+	await writeReport("demo-design-session.md", getText(designSession));
+
+	// Documentation generator prompt builder demo
+	const docGenPrompt = await documentationGeneratorPromptBuilder({
+		contentType: "API documentation",
+		targetAudience: "Backend developers integrating the MCP server",
+		existingContent: "Tool definitions in src/index.ts",
+		includeReferences: true,
+		includeMetadata: true,
+	});
+	await writeReport(
+		"demo-documentation-generator.prompt.md",
+		getText(docGenPrompt),
+	);
+
+	// Iterative coverage enhancer demo
+	const coverageEnhancer = await iterativeCoverageEnhancer({
+		currentCoverage: {
+			lines: 72,
+			statements: 70,
+			functions: 68,
+			branches: 65,
+		},
+		targetCoverage: {
+			lines: 90,
+			statements: 90,
+			functions: 85,
+			branches: 80,
+		},
+		language: "typescript",
+		framework: "vitest",
+		analyzeCoverageGaps: true,
+		detectDeadCode: true,
+		generateTestSuggestions: true,
+		includeCodeExamples: true,
+		includeReferences: true,
+	});
+	await writeReport("demo-coverage-enhancement.md", getText(coverageEnhancer));
+
+	// Enterprise architect prompt builder demo
+	// Tool name: digitalEnterpriseArchitectPromptBuilder
+	const enterpriseArchitectPrompt = await enterpriseArchitectPromptBuilder({
+		initiativeName: "AI-Native Platform Transformation",
+		problemStatement:
+			"Transform to a sustainable, AI-native enterprise platform with world-class developer experience",
+		businessDrivers: [
+			"Accelerate AI/ML model deployment velocity by 10x",
+			"Reduce developer cognitive load and onboarding time by 70%",
+			"Enable autonomous product teams with self-service infrastructure",
+		],
+		currentLandscape:
+			"Legacy monolithic applications with manual deployments, fragmented AI initiatives",
+		targetUsers: "500+ developers across 50 product teams, ML engineers",
+		differentiators: ["AI-powered developer productivity platform"],
+		constraints: ["Must maintain 99.9% uptime during transformation"],
+		complianceObligations: ["GDPR", "SOC 2 Type II"],
+		technologyGuardrails: [
+			"Kubernetes-first infrastructure",
+			"TypeScript and Python as primary languages",
+		],
+		timeline: "18-month transformation with quarterly milestone reviews",
+		includeReferences: true,
+	});
+	await writeReport(
+		"demo-enterprise-architect.prompt.md",
+		getText(enterpriseArchitectPrompt),
+	);
+
+	// L9 Distinguished Engineer prompt builder demo
+	const l9EngineerPrompt = await l9DistinguishedEngineerPromptBuilder({
+		projectName: "Global Distributed Caching System",
+		technicalChallenge:
+			"Design a global-scale distributed caching layer capable of serving 10M+ QPS with <5ms p99 latency",
+		technicalDrivers: [
+			"Sub-5ms p99 latency at global scale",
+			"Linear horizontal scalability to 100M+ QPS",
+			"99.999% availability",
+		],
+		currentArchitecture:
+			"Monolithic Redis cluster with single-region deployment, manual sharding",
+		userScale: "500M monthly active users, 10M peak concurrent connections",
+		technicalDifferentiators: [
+			"Multi-region atomic transactions without global locks",
+			"AI-driven cache warming and eviction policies",
+		],
+		engineeringConstraints: [
+			"Must maintain backward compatibility with existing client SDKs",
+			"Migration must be zero-downtime",
+		],
+		securityRequirements: ["SOC 2 Type II compliance", "GDPR data residency"],
+		techStack: ["Redis 6.x", "Python/Go clients", "Kubernetes on AWS"],
+	});
+	await writeReport("demo-l9-engineer.prompt.md", getText(l9EngineerPrompt));
 }
 
 main().catch((err) => {

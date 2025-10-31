@@ -100,7 +100,8 @@ describe("hierarchical-schema.validation - Schema Validation and Canonicalizatio
 				techniques: "chain-of-thought",
 			});
 			expect(result.content[0].type).toBe("text");
-			expect(result.content[0].text).toContain("Technique Hints");
+			// Should generate actionable instructions based on chain-of-thought
+			expect(result.content[0].text).toContain("Approach");
 		});
 
 		it("should accept techniques as an array of strings", async () => {
@@ -110,7 +111,9 @@ describe("hierarchical-schema.validation - Schema Validation and Canonicalizatio
 				techniques: ["chain-of-thought", "few-shot"],
 			});
 			expect(result.content[0].type).toBe("text");
-			expect(result.content[0].text).toContain("Technique Hints");
+			// Should generate actionable instructions for both techniques
+			expect(result.content[0].text).toContain("Approach"); // chain-of-thought
+			expect(result.content[0].text).toContain("Examples"); // few-shot
 		});
 
 		it("should reject invalid technique values", async () => {

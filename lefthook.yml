@@ -29,6 +29,31 @@ pre-commit:
       run: npx tsc --noEmit
       fail_text: "🔷 TypeScript type checking failed"
 
+    # ----------------------------- 📝 File Validation ---------------------------- #
+    yaml-lint:
+      tags: [format, lint, validate]
+      glob: "*.{yml,yaml}"
+      run: |
+        if command -v yamllint >/dev/null 2>&1; then
+          yamllint {staged_files}
+        else
+          echo "⚠️  yamllint not found, skipping YAML validation"
+          echo "   Install: brew install yamllint (macOS) or pip install yamllint"
+        fi
+      fail_text: "📄 YAML syntax errors found"
+
+    json-lint:
+      tags: [format, lint, validate]
+      glob: "*.{json,jsonc}"
+      run: |
+        for file in {staged_files}; do
+          if [ -f "$file" ]; then
+            # Use Node.js built-in JSON parser for validation
+            node -e "try { JSON.parse(require('fs').readFileSync('$file', 'utf8')); } catch(e) { console.error('Invalid JSON in $file:', e.message); process.exit(1); }" || exit 1
+          fi
+        done
+      fail_text: "📄 JSON syntax errors found"
+
     # ----------------------------- 📝 File Quality ---------------------------- #
     trailing-whitespace:
       tags: [format]

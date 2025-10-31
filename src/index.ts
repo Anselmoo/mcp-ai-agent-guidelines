@@ -36,7 +36,9 @@ import {
 } from "./schemas/flow-tool-schemas.js";
 import { gapFrameworksAnalyzers } from "./tools/analysis/gap-frameworks-analyzers.js";
 import { strategyFrameworksBuilder } from "./tools/analysis/strategy-frameworks-builder.js";
+import { cleanCodeScorer } from "./tools/clean-code-scorer.js";
 import { codeHygieneAnalyzer } from "./tools/code-hygiene-analyzer.js";
+import { dependencyAuditor } from "./tools/dependency-auditor.js";
 import {
 	type DesignAssistantRequest,
 	designAssistant,
@@ -48,10 +50,16 @@ import { mermaidDiagramGenerator } from "./tools/mermaid-diagram-generator.js";
 import { modeSwitcher } from "./tools/mode-switcher.js";
 import { modelCompatibilityChecker } from "./tools/model-compatibility-checker.js";
 import { projectOnboarding } from "./tools/project-onboarding.js";
+import { architectureDesignPromptBuilder } from "./tools/prompt/architecture-design-prompt-builder.js";
+import { codeAnalysisPromptBuilder } from "./tools/prompt/code-analysis-prompt-builder.js";
+import { debuggingAssistantPromptBuilder } from "./tools/prompt/debugging-assistant-prompt-builder.js";
+import { documentationGeneratorPromptBuilder } from "./tools/prompt/documentation-generator-prompt-builder.js";
 import { domainNeutralPromptBuilder } from "./tools/prompt/domain-neutral-prompt-builder.js";
+import { enterpriseArchitectPromptBuilder } from "./tools/prompt/enterprise-architect-prompt-builder.js";
 // Import tool implementations
 import { hierarchicalPromptBuilder } from "./tools/prompt/hierarchical-prompt-builder.js";
 import { hierarchyLevelSelector } from "./tools/prompt/hierarchy-level-selector.js";
+import { l9DistinguishedEngineerPromptBuilder } from "./tools/prompt/l9-distinguished-engineer-prompt-builder.js";
 import { promptChainingBuilder } from "./tools/prompt/prompt-chaining-builder.js";
 import { promptFlowBuilder } from "./tools/prompt/prompt-flow-builder.js";
 import { promptingHierarchyEvaluator } from "./tools/prompt/prompting-hierarchy-evaluator.js";
@@ -81,7 +89,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "hierarchical-prompt-builder",
 				description:
-					"Build structured prompts with clear hierarchies and layers of specificity",
+					"Build structured prompts with clear hierarchies and layers of specificity. Use this MCP to create prompts with context → goal → requirements hierarchy, supporting multiple prompting techniques (chain-of-thought, few-shot, etc.). Example: 'Use the hierarchical-prompt-builder MCP to create a code review prompt for React components focusing on performance optimization'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -173,9 +181,348 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 				},
 			},
 			{
+				name: "code-analysis-prompt-builder",
+				description:
+					"Generate comprehensive code analysis prompts with customizable focus areas (security, performance, maintainability). Use this MCP to create targeted code review prompts for specific quality concerns. Example: 'Use the code-analysis-prompt-builder MCP to analyze authentication code for security vulnerabilities'",
+				inputSchema: {
+					type: "object",
+					properties: {
+						codebase: {
+							type: "string",
+							description: "The codebase or code snippet to analyze",
+						},
+						focusArea: {
+							type: "string",
+							enum: ["security", "performance", "maintainability", "general"],
+							description: "Specific area to focus on",
+						},
+						language: {
+							type: "string",
+							description: "Programming language of the code",
+						},
+						mode: { type: "string" },
+						model: { type: "string" },
+						tools: { type: "array", items: { type: "string" } },
+						includeFrontmatter: { type: "boolean" },
+						includeReferences: { type: "boolean" },
+						includeMetadata: { type: "boolean" },
+						inputFile: { type: "string" },
+						forcePromptMdStyle: { type: "boolean" },
+					},
+					required: ["codebase"],
+				},
+			},
+			{
+				name: "architecture-design-prompt-builder",
+				description:
+					"Generate system architecture design prompts with scale-appropriate guidance. Use this MCP to create architecture planning prompts for different system scales and technology stacks. Example: 'Use the architecture-design-prompt-builder MCP to design a microservices architecture for a medium-scale e-commerce platform'",
+				inputSchema: {
+					type: "object",
+					properties: {
+						systemRequirements: {
+							type: "string",
+							description: "System requirements and constraints",
+						},
+						scale: {
+							type: "string",
+							enum: ["small", "medium", "large"],
+							description: "Expected system scale",
+						},
+						technologyStack: {
+							type: "string",
+							description: "Preferred or required technology stack",
+						},
+						mode: { type: "string" },
+						model: { type: "string" },
+						tools: { type: "array", items: { type: "string" } },
+						includeFrontmatter: { type: "boolean" },
+						includeReferences: { type: "boolean" },
+						includeMetadata: { type: "boolean" },
+						inputFile: { type: "string" },
+						forcePromptMdStyle: { type: "boolean" },
+					},
+					required: ["systemRequirements"],
+				},
+			},
+			{
+				name: "digital-enterprise-architect-prompt-builder",
+				description:
+					"Guide enterprise architecture strategy with mentor perspectives and current research. Use this MCP to create strategic architecture prompts from an enterprise architect perspective. Example: 'Use the digital-enterprise-architect-prompt-builder MCP to guide cloud migration strategy for our legacy CRM system'",
+				inputSchema: {
+					type: "object",
+					properties: {
+						initiativeName: {
+							type: "string",
+							description: "Name or focus of the architecture initiative",
+						},
+						problemStatement: {
+							type: "string",
+							description: "Strategic problem or opportunity being addressed",
+						},
+						businessDrivers: {
+							type: "array",
+							items: { type: "string" },
+							description: "Key business objectives and desired outcomes",
+						},
+						currentLandscape: {
+							type: "string",
+							description: "Summary of the current ecosystem or architecture",
+						},
+						targetUsers: {
+							type: "string",
+							description: "Primary stakeholders or user segments",
+						},
+						differentiators: {
+							type: "array",
+							items: { type: "string" },
+							description: "Innovation themes or competitive differentiators",
+						},
+						constraints: {
+							type: "array",
+							items: { type: "string" },
+							description:
+								"Constraints or guardrails the solution must respect",
+						},
+						complianceObligations: {
+							type: "array",
+							items: { type: "string" },
+							description: "Regulatory or policy considerations",
+						},
+						technologyGuardrails: {
+							type: "array",
+							items: { type: "string" },
+							description:
+								"Existing technology standards or preferred platforms",
+						},
+						innovationThemes: {
+							type: "array",
+							items: { type: "string" },
+							description: "Innovation themes to explore",
+						},
+						timeline: {
+							type: "string",
+							description: "Timeline or planning horizon",
+						},
+						researchFocus: {
+							type: "array",
+							items: { type: "string" },
+							description:
+								"Research topics to benchmark against current best practices",
+						},
+						decisionDrivers: {
+							type: "array",
+							items: { type: "string" },
+							description:
+								"Decision drivers or evaluation criteria to emphasize",
+						},
+						knownRisks: {
+							type: "array",
+							items: { type: "string" },
+							description: "Known risks or assumptions to monitor",
+						},
+						mode: { type: "string" },
+						model: { type: "string" },
+						tools: { type: "array", items: { type: "string" } },
+						includeFrontmatter: { type: "boolean" },
+						includeReferences: { type: "boolean" },
+						includeMetadata: { type: "boolean" },
+						inputFile: { type: "string" },
+						forcePromptMdStyle: { type: "boolean" },
+					},
+					required: ["initiativeName", "problemStatement"],
+				},
+			},
+			{
+				name: "debugging-assistant-prompt-builder",
+				description:
+					"Generate systematic debugging and troubleshooting prompts with structured analysis. Use this MCP to create diagnostic prompts for error investigation and root cause analysis. Example: 'Use the debugging-assistant-prompt-builder MCP to troubleshoot a production database connection timeout issue'",
+				inputSchema: {
+					type: "object",
+					properties: {
+						errorDescription: {
+							type: "string",
+							description: "Description of the error or issue",
+						},
+						context: {
+							type: "string",
+							description: "Additional context about the problem",
+						},
+						attemptedSolutions: {
+							type: "string",
+							description: "Solutions already attempted",
+						},
+						mode: { type: "string" },
+						model: { type: "string" },
+						tools: { type: "array", items: { type: "string" } },
+						includeFrontmatter: { type: "boolean" },
+						includeReferences: { type: "boolean" },
+						includeMetadata: { type: "boolean" },
+						inputFile: { type: "string" },
+						forcePromptMdStyle: { type: "boolean" },
+					},
+					required: ["errorDescription"],
+				},
+			},
+			{
+				name: "l9-distinguished-engineer-prompt-builder",
+				description:
+					"Generate Distinguished Engineer (L9) technical design prompts for high-level software architecture and system design. Use this MCP to create expert-level technical architecture prompts. Example: 'Use the l9-distinguished-engineer-prompt-builder MCP to design a globally distributed real-time data processing platform'",
+				inputSchema: {
+					type: "object",
+					properties: {
+						projectName: {
+							type: "string",
+							description: "Name of the software project or system initiative",
+						},
+						technicalChallenge: {
+							type: "string",
+							description:
+								"Core technical problem, architectural complexity, or scale challenge",
+						},
+						technicalDrivers: {
+							type: "array",
+							items: { type: "string" },
+							description:
+								"Key technical objectives: performance targets, scalability goals, reliability requirements",
+						},
+						currentArchitecture: {
+							type: "string",
+							description:
+								"Existing system architecture, tech stack, and known pain points",
+						},
+						userScale: {
+							type: "string",
+							description:
+								"Scale context: users, requests/sec, data volume, geographical distribution",
+						},
+						technicalDifferentiators: {
+							type: "array",
+							items: { type: "string" },
+							description:
+								"Technical innovations, performance advantages, or unique capabilities",
+						},
+						engineeringConstraints: {
+							type: "array",
+							items: { type: "string" },
+							description:
+								"Technical constraints: latency budgets, backward compatibility, migration windows",
+						},
+						securityRequirements: {
+							type: "array",
+							items: { type: "string" },
+							description: "Security, privacy, and compliance requirements",
+						},
+						techStack: {
+							type: "array",
+							items: { type: "string" },
+							description:
+								"Current/preferred technologies, languages, frameworks, and platforms",
+						},
+						experimentationAreas: {
+							type: "array",
+							items: { type: "string" },
+							description:
+								"Emerging technologies or patterns worth prototyping",
+						},
+						deliveryTimeline: {
+							type: "string",
+							description:
+								"Engineering timeline: sprints, milestones, or release windows",
+						},
+						benchmarkingFocus: {
+							type: "array",
+							items: { type: "string" },
+							description:
+								"Systems/companies to benchmark against or research areas requiring investigation",
+						},
+						tradeoffPriorities: {
+							type: "array",
+							items: { type: "string" },
+							description:
+								"Engineering trade-off priorities: latency vs throughput, consistency vs availability, etc.",
+						},
+						technicalRisks: {
+							type: "array",
+							items: { type: "string" },
+							description:
+								"Known technical risks, debt, or areas of uncertainty",
+						},
+						teamContext: {
+							type: "string",
+							description:
+								"Team size, skill distribution, and organizational dependencies",
+						},
+						observabilityRequirements: {
+							type: "array",
+							items: { type: "string" },
+							description:
+								"Monitoring, logging, tracing, and debugging requirements",
+						},
+						performanceTargets: {
+							type: "array",
+							items: { type: "string" },
+							description:
+								"Specific performance SLOs/SLAs: p99 latency, throughput, availability",
+						},
+						migrationStrategy: {
+							type: "string",
+							description:
+								"Migration or rollout strategy if re-architecting existing system",
+						},
+						codeQualityStandards: {
+							type: "array",
+							items: { type: "string" },
+							description:
+								"Code quality expectations: test coverage, documentation, design patterns",
+						},
+						mode: { type: "string" },
+						model: { type: "string" },
+						tools: { type: "array", items: { type: "string" } },
+						includeFrontmatter: { type: "boolean" },
+						includeReferences: { type: "boolean" },
+						includeMetadata: { type: "boolean" },
+						inputFile: { type: "string" },
+						forcePromptMdStyle: { type: "boolean" },
+					},
+					required: ["projectName", "technicalChallenge"],
+				},
+			},
+			{
+				name: "documentation-generator-prompt-builder",
+				description:
+					"Generate technical documentation prompts tailored to content type and audience. Use this MCP to create structured documentation generation prompts for API docs, user guides, or technical specs. Example: 'Use the documentation-generator-prompt-builder MCP to create API documentation for our REST endpoints'",
+				inputSchema: {
+					type: "object",
+					properties: {
+						contentType: {
+							type: "string",
+							description:
+								"Type of documentation (API, user guide, technical spec)",
+						},
+						targetAudience: {
+							type: "string",
+							description: "Intended audience for the documentation",
+						},
+						existingContent: {
+							type: "string",
+							description: "Any existing content to build upon",
+						},
+						mode: { type: "string" },
+						model: { type: "string" },
+						tools: { type: "array", items: { type: "string" } },
+						includeFrontmatter: { type: "boolean" },
+						includeReferences: { type: "boolean" },
+						includeMetadata: { type: "boolean" },
+						inputFile: { type: "string" },
+						forcePromptMdStyle: { type: "boolean" },
+					},
+					required: ["contentType"],
+				},
+			},
+			{
 				name: "strategy-frameworks-builder",
 				description:
-					"Compose strategy analysis sections from selected frameworks (SWOT, BSC, VRIO, etc.) with compliant aliases for certain trademarks",
+					"Compose strategy analysis sections from selected frameworks (SWOT, BSC, VRIO, Porter's Five Forces, etc.). Use this MCP to generate strategic business analysis using established frameworks. Example: 'Use the strategy-frameworks-builder MCP to create a SWOT analysis and Balanced Scorecard for our market expansion plan'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -224,7 +571,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "gap-frameworks-analyzers",
 				description:
-					"Analyze gaps between current and desired states using various frameworks (capability, performance, maturity, etc.)",
+					"Analyze gaps between current and desired states using various frameworks (capability, performance, maturity, skills, technology, process, etc.). Use this MCP to identify and analyze gaps in capabilities, processes, or technologies. Example: 'Use the gap-frameworks-analyzers MCP to analyze the technology gap between our current monolith and desired microservices architecture'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -273,7 +620,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "spark-prompt-builder",
 				description:
-					"Build a generic UI/UX product prompt from structured inputs (title, features, colors, typography, etc.)",
+					"Build comprehensive UI/UX product design prompts from structured inputs (title, features, colors, typography, animation, spacing, etc.). Use this MCP to create detailed design system prompts for developer tools and user interfaces. Example: 'Use the spark-prompt-builder MCP to design a dark-mode code editor with syntax highlighting and accessibility features'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -449,9 +796,70 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 				},
 			},
 			{
+				name: "clean-code-scorer",
+				description:
+					"Calculate comprehensive Clean Code score (0-100) based on multiple quality metrics including code hygiene, test coverage, TypeScript, linting, documentation, and security. Use this MCP to get an overall quality assessment of your codebase. Example: 'Use the clean-code-scorer MCP to evaluate the quality of our authentication module and identify improvement areas'",
+				inputSchema: {
+					type: "object",
+					properties: {
+						projectPath: {
+							type: "string",
+							description: "Path to the project root directory",
+						},
+						codeContent: {
+							type: "string",
+							description: "Code content to analyze",
+						},
+						language: {
+							type: "string",
+							description: "Programming language",
+						},
+						framework: {
+							type: "string",
+							description: "Framework or technology stack",
+						},
+						coverageMetrics: {
+							type: "object",
+							description: "Test coverage metrics",
+							properties: {
+								statements: {
+									type: "number",
+									description: "Statement coverage percentage (0-100)",
+								},
+								branches: {
+									type: "number",
+									description: "Branch coverage percentage (0-100)",
+								},
+								functions: {
+									type: "number",
+									description: "Function coverage percentage (0-100)",
+								},
+								lines: {
+									type: "number",
+									description: "Line coverage percentage (0-100)",
+								},
+							},
+						},
+						includeReferences: {
+							type: "boolean",
+							description: "Include external best-practice links",
+						},
+						includeMetadata: {
+							type: "boolean",
+							description: "Include metadata in output",
+						},
+						inputFile: {
+							type: "string",
+							description: "Input file path for reference",
+						},
+					},
+					required: [],
+				},
+			},
+			{
 				name: "code-hygiene-analyzer",
 				description:
-					"Analyze codebase for outdated patterns, unused dependencies, and code hygiene issues",
+					"Analyze codebase for outdated patterns, unused dependencies, and code hygiene issues. Use this MCP to identify technical debt, code smells, and modernization opportunities. Example: 'Use the code-hygiene-analyzer MCP to scan our legacy codebase for outdated patterns and unused dependencies'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -473,9 +881,63 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 				},
 			},
 			{
+				name: "dependency-auditor",
+				description:
+					"Analyze package.json for outdated, deprecated, or insecure packages and recommend modern, secure alternatives with ESM compatibility and bundle size insights. Use this MCP to audit project dependencies for security vulnerabilities and modernization opportunities. Example: 'Use the dependency-auditor MCP to check our package.json for security vulnerabilities and deprecated packages'",
+				inputSchema: {
+					type: "object",
+					properties: {
+						packageJsonContent: {
+							type: "string",
+							description: "Content of package.json file",
+						},
+						checkOutdated: {
+							type: "boolean",
+							description: "Check for outdated version patterns",
+							default: true,
+						},
+						checkDeprecated: {
+							type: "boolean",
+							description: "Check for deprecated packages",
+							default: true,
+						},
+						checkVulnerabilities: {
+							type: "boolean",
+							description: "Check for known vulnerabilities",
+							default: true,
+						},
+						suggestAlternatives: {
+							type: "boolean",
+							description: "Suggest ESM-compatible alternatives",
+							default: true,
+						},
+						analyzeBundleSize: {
+							type: "boolean",
+							description: "Analyze bundle size concerns",
+							default: true,
+						},
+						includeReferences: {
+							type: "boolean",
+							description: "Include external reference links",
+							default: true,
+						},
+						includeMetadata: {
+							type: "boolean",
+							description: "Include metadata section",
+							default: true,
+						},
+						inputFile: {
+							type: "string",
+							description: "Input file path for reference",
+						},
+					},
+					required: ["packageJsonContent"],
+				},
+			},
+			{
 				name: "iterative-coverage-enhancer",
 				description:
-					"Iteratively analyze code coverage, detect dead code, generate test suggestions, and adapt coverage thresholds for continuous improvement",
+					"Iteratively analyze code coverage, detect dead code, generate test suggestions, and adapt coverage thresholds for continuous improvement. Use this MCP to identify test coverage gaps and generate actionable test improvement suggestions. Example: 'Use the iterative-coverage-enhancer MCP to analyze test coverage gaps in our payment processing module and suggest new test cases'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -551,7 +1013,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "mermaid-diagram-generator",
 				description:
-					"Generate Mermaid diagrams from text descriptions following best practices. Supports advanced diagram types and customization options for richer documentation.",
+					"Generate Mermaid diagrams from text descriptions following best practices. Supports flowcharts, sequence diagrams, class diagrams, state machines, ER diagrams, and more with validation and auto-repair. Use this MCP to create visual documentation and architecture diagrams. Example: 'Use the mermaid-diagram-generator MCP to create a sequence diagram showing the OAuth authentication flow'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -627,7 +1089,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "memory-context-optimizer",
 				description:
-					"Optimize prompt caching and context window usage for AI agents",
+					"Optimize prompt caching and context window usage for AI agents. Use this MCP to reduce token usage and improve context efficiency in long conversations or large codebases. Example: 'Use the memory-context-optimizer MCP to compress our system architecture documentation for efficient AI agent context'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -652,7 +1114,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "domain-neutral-prompt-builder",
 				description:
-					"Build a domain-neutral, non-visual prompt/template (objectives, scope, inputs/outputs, workflow, capabilities, risks, acceptance)",
+					"Build comprehensive domain-neutral prompts with objectives, scope, inputs/outputs, workflow, capabilities, risks, and acceptance criteria. Use this MCP to create structured specification documents or technical requirements. Example: 'Use the domain-neutral-prompt-builder MCP to create a technical specification for our API gateway service'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -778,7 +1240,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "security-hardening-prompt-builder",
 				description:
-					"Build specialized security hardening and vulnerability analysis prompts for AI-guided security assessment",
+					"Build specialized security hardening and vulnerability analysis prompts for AI-guided security assessment with OWASP Top 10, NIST, and compliance framework support. Use this MCP to create comprehensive security analysis prompts with threat modeling and compliance checks. Example: 'Use the security-hardening-prompt-builder MCP to analyze our API endpoints for OWASP Top 10 vulnerabilities and PCI-DSS compliance'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -934,7 +1396,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "sprint-timeline-calculator",
 				description:
-					"Calculate optimal development cycles and sprint timelines with dependency-aware scheduling",
+					"Calculate optimal development cycles and sprint timelines with dependency-aware scheduling, team velocity, and complexity analysis. Use this MCP to estimate project timelines and plan sprint allocations. Example: 'Use the sprint-timeline-calculator MCP to estimate the timeline for our microservices migration with a team of 6 developers'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -973,7 +1435,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "model-compatibility-checker",
 				description:
-					"Recommend best AI models for specific tasks and requirements",
+					"Recommend best AI models for specific tasks and requirements based on capabilities, budget, and use case. Use this MCP to select optimal AI models for different development tasks. Example: 'Use the model-compatibility-checker MCP to recommend the best AI model for code generation with long context windows on a medium budget'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1017,7 +1479,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "guidelines-validator",
 				description:
-					"Validate development practices against established AI agent guidelines",
+					"Validate development practices against established AI agent guidelines for prompting, code management, architecture, visualization, memory, and workflow. Use this MCP to ensure your practices follow AI agent best practices. Example: 'Use the guidelines-validator MCP to validate our code review workflow against AI agent best practices'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1044,7 +1506,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "semantic-code-analyzer",
 				description:
-					"Perform semantic code analysis to identify symbols, structure, dependencies, and patterns. Inspired by Serena's language server-based approach for precise code understanding.",
+					"Perform semantic code analysis to identify symbols, structure, dependencies, and patterns using language server-based analysis for precise code understanding. Use this MCP to analyze code semantics, find references, and understand code structure. Example: 'Use the semantic-code-analyzer MCP to map dependencies and identify tightly coupled components in our codebase'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1081,7 +1543,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "project-onboarding",
 				description:
-					"Perform comprehensive project onboarding including structure analysis, dependency detection, and memory generation. Based on Serena's onboarding system for efficient project familiarization.",
+					"Perform comprehensive project onboarding including structure analysis, dependency detection, and documentation generation for efficient developer onboarding. Use this MCP to analyze and document project structure for new developers. Example: 'Use the project-onboarding MCP to generate onboarding documentation for our microservices repository'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1122,7 +1584,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "mode-switcher",
 				description:
-					"Switch between different agent operation modes (planning, editing, analysis, debugging, etc.) with tailored tool sets and prompting strategies. Based on Serena's flexible mode/context system.",
+					"Switch between different agent operation modes (planning, editing, analysis, debugging, refactoring, documentation, etc.) with tailored tool sets and prompting strategies for context-appropriate workflows. Use this MCP to transition between development workflows. Example: 'Use the mode-switcher MCP to transition from planning mode to implementation mode'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1184,7 +1646,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "prompting-hierarchy-evaluator",
 				description:
-					"Evaluate prompts using hierarchical taxonomy and provide numeric scoring based on clarity, specificity, completeness, and cognitive complexity. Implements reinforcement learning-inspired evaluation metrics.",
+					"Evaluate prompts using hierarchical taxonomy and provide numeric scoring based on clarity, specificity, completeness, and cognitive complexity with reinforcement learning-inspired metrics. Use this MCP to assess and improve prompt quality. Example: 'Use the prompting-hierarchy-evaluator MCP to evaluate and score our code review prompt for effectiveness'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1223,7 +1685,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "hierarchy-level-selector",
 				description:
-					"Select the most appropriate prompting hierarchy level (independent, indirect, direct, modeling, scaffolding, full-physical) based on task characteristics, agent capability, and autonomy preferences.",
+					"Select the most appropriate prompting hierarchy level (independent, indirect, direct, modeling, scaffolding, full-physical) based on task characteristics, agent capability, and autonomy preferences. Use this MCP to determine optimal prompt guidance level for different scenarios. Example: 'Use the hierarchy-level-selector MCP to determine the best prompting level for a junior developer working on complex refactoring'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1263,7 +1725,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "design-assistant",
 				description:
-					"Deterministic, context-driven design assistant with constraint framework for structured design sessions",
+					"Comprehensive multi-phase design workflow orchestration with constraint validation, coverage enforcement, and artifact generation (ADRs, specifications, roadmaps). Use this MCP to manage complex design processes through discovery, requirements, architecture, and implementation phases. Example: 'Use the design-assistant MCP to start a design session for our new API gateway and guide it through all design phases'",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1342,6 +1804,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 		switch (name) {
 			case "hierarchical-prompt-builder":
 				return hierarchicalPromptBuilder(args);
+			case "code-analysis-prompt-builder":
+				return codeAnalysisPromptBuilder(args);
+			case "architecture-design-prompt-builder":
+				return architectureDesignPromptBuilder(args);
+			case "digital-enterprise-architect-prompt-builder":
+				return enterpriseArchitectPromptBuilder(args);
+			case "debugging-assistant-prompt-builder":
+				return debuggingAssistantPromptBuilder(args);
+			case "l9-distinguished-engineer-prompt-builder":
+				return l9DistinguishedEngineerPromptBuilder(args);
+			case "documentation-generator-prompt-builder":
+				return documentationGeneratorPromptBuilder(args);
 			case "strategy-frameworks-builder":
 				return strategyFrameworksBuilder(args);
 			case "gap-frameworks-analyzers":
@@ -1352,8 +1826,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 				return domainNeutralPromptBuilder(args);
 			case "security-hardening-prompt-builder":
 				return securityHardeningPromptBuilder(args);
+			case "clean-code-scorer":
+				return cleanCodeScorer(args);
 			case "code-hygiene-analyzer":
 				return codeHygieneAnalyzer(args);
+			case "dependency-auditor":
+				return dependencyAuditor(args);
 			case "iterative-coverage-enhancer":
 				return iterativeCoverageEnhancer(args);
 			case "mermaid-diagram-generator":

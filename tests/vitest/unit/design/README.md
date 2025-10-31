@@ -24,6 +24,7 @@ The main smoke test suite that:
 - Generates implementation status reports
 
 **Test Coverage:**
+
 - 18 test cases covering all 14 design modules
 - Validates module structure and exports
 - Confirms all modules are IMPLEMENTED
@@ -58,15 +59,15 @@ Each design module exports an `IMPLEMENTATION_STATUS` constant:
 
 ```typescript
 // From individual modules
-import { IMPLEMENTATION_STATUS } from '../src/tools/design/adr-generator.js';
+import { IMPLEMENTATION_STATUS } from "../src/tools/design/adr-generator.js";
 console.log(IMPLEMENTATION_STATUS); // "IMPLEMENTED"
 
 // From index (with aliases)
-import { ADR_GENERATOR_STATUS } from '../src/tools/design/index.js';
+import { ADR_GENERATOR_STATUS } from "../src/tools/design/index.js";
 console.log(ADR_GENERATOR_STATUS); // "IMPLEMENTED"
 
 // Summary object
-import { DESIGN_MODULE_STATUS } from '../src/tools/design/index.js';
+import { DESIGN_MODULE_STATUS } from "../src/tools/design/index.js";
 console.log(DESIGN_MODULE_STATUS);
 // {
 //   adrGenerator: "IMPLEMENTED",
@@ -80,12 +81,14 @@ console.log(DESIGN_MODULE_STATUS);
 Modules are classified as:
 
 - **IMPLEMENTED**: Has complete business logic and all key methods functional
+
   - All core async methods implemented
   - Proper error handling
   - Type-safe interfaces
   - Ready for production use
 
 - **PARTIAL** (none currently): Some implementation but missing key features
+
   - Would have basic structure but incomplete methods
   - May have placeholder logic
   - Not recommended for production
@@ -100,11 +103,16 @@ Modules are classified as:
 When adding a new design module:
 
 1. Add the module import to the smoke test:
+
 ```typescript
-import { newModule, IMPLEMENTATION_STATUS as NEW_MODULE_STATUS } from "../../../../dist/tools/design/new-module.js";
+import {
+  newModule,
+  IMPLEMENTATION_STATUS as NEW_MODULE_STATUS,
+} from "../../../../src/tools/design/new-module.js";
 ```
 
 2. Add a test case for the module:
+
 ```typescript
 it("should verify newModule is implemented", () => {
   expect(newModule).toBeDefined();
@@ -114,6 +122,7 @@ it("should verify newModule is implemented", () => {
 ```
 
 3. Add to the status verification test:
+
 ```typescript
 expect(NEW_MODULE_STATUS).toBe("IMPLEMENTED");
 ```
@@ -122,6 +131,7 @@ expect(NEW_MODULE_STATUS).toBe("IMPLEMENTED");
 
 ## Related Documentation
 
-- [Design Module Status](../../../docs/design-module-status.md) - Detailed status documentation
-- [Design Tools](../../../src/tools/design/README.md) - Design framework overview
-- [Contributing Guide](../../../CONTRIBUTING.md) - Development guidelines
+- [Design Module Status](../../../../docs/design-module-status.md) - Detailed status documentation
+- [Design Tools Index](../../../../src/tools/design/index.ts) - Design framework exports
+<!-- [Design Tools](../../../../src/tools/design/README.md) - File does not exist -->
+- [Contributing Guide](../../../../CONTRIBUTING.md) - Development guidelines
