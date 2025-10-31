@@ -274,9 +274,9 @@ By following these patterns, you'll unlock the full power of the MCP AI Agent Gu
 
 ## Additional Resources
 
-- **[Agent-Relative Call Patterns](./docs/AGENT_RELATIVE_CALLS.md)** - Comprehensive guide to invoking tools in workflows
-- **[Prompting Hierarchy](./docs/PROMPTING_HIERARCHY.md)** - Understanding prompt levels and evaluation
-- **[Flow Prompting Examples](./docs/FLOW_PROMPTING_EXAMPLES.md)** - Advanced chaining and orchestration
-- **[Demo Reports](./demos/README.md)** - Real-world tool usage examples
+- **[Agent-Relative Call Patterns](./AGENT_RELATIVE_CALLS.md)** - Comprehensive guide to invoking tools in workflows
+- **[Prompting Hierarchy](./PROMPTING_HIERARCHY.md)** - Understanding prompt levels and evaluation
+- **[Flow Prompting Examples](./FLOW_PROMPTING_EXAMPLES.md)** - Advanced chaining and orchestration
+- **[Demo Reports](../demos/README.md)** - Real-world tool usage examples
 
-For more information about specific tools, see the main [README.md](./README.md).
+For more information about specific tools, see the main [README.md](../README.md).

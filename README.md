@@ -17,6 +17,22 @@
 
 A Model Context Protocol (MCP) server offering professional tools and templates for hierarchical prompting, code hygiene, visualization, memory optimization, and agile planning.
 
+## 📚 Table of Contents
+
+- [Installation](#installation)
+- [Documentation](#documentation)
+  - [User Guides](#user-guides)
+  - [Developer Documentation](#developer-documentation)
+  - [Tools Reference](#tools-reference)
+- [Features](#features)
+- [VS Code Integration](#vs-code-integration-oneclick)
+- [Agent-Relative Calls](#agent-relative-calls)
+- [Configuration](#configuration)
+- [Development](#development)
+- [Contributing](#contributing)
+- [Changelog](./CHANGELOG.md)
+- [License](#license)
+
 ## Installation
 
 ```bash
@@ -60,6 +76,44 @@ npx markdown-link-check --config .mlc_config.json README.md
 ```
 
 Configuration is in `.mlc_config.json`. Ignored patterns and retries are configured there.
+
+## Documentation
+
+### 📖 Complete Documentation Index
+
+**[→ Browse Full Documentation](./docs/README.md)** - Comprehensive documentation index with all guides and references
+
+### User Guides
+
+**Getting Started:**
+- **[🎯 AI Interaction Tips](./docs/AI_INTERACTION_TIPS.md)** ⭐ **NEW** - Learn to ask targeted questions for better tool utilization
+- **[📊 Prompting Hierarchy](./docs/PROMPTING_HIERARCHY.md)** - Understanding prompt levels and evaluation metrics
+- **[🔗 Agent-Relative Call Patterns](./docs/AGENT_RELATIVE_CALLS.md)** - Comprehensive guide to invoking tools in workflows
+
+**Advanced Techniques:**
+- **[🌊 Flow-Based Prompting](./docs/FLOW_PROMPTING_EXAMPLES.md)** - Advanced chaining and orchestration strategies
+- **[🎨 Mermaid Diagram Examples](./docs/mermaid-diagram-examples.md)** - Visual diagram generation patterns
+- **[📦 Export Formats](./docs/export-formats.md)** - LaTeX, CSV, and JSON output options
+
+### Developer Documentation
+
+**Architecture & Contributing:**
+- **[🤝 Contributing Guidelines](./CONTRIBUTING.md)** - How to contribute to the project
+- **[🏗️ Bridge Connectors](./docs/BRIDGE_CONNECTORS.md)** - External system integration patterns
+- **[⚠️ Error Handling](./docs/ERROR_HANDLING.md)** - Error handling patterns and best practices
+
+**Code Quality:**
+- **[✨ Clean Code Initiative](./docs/CLEAN_CODE_INITIATIVE.md)** - 100/100 quality scoring system
+- **[📈 Code Quality Improvements](./docs/code-quality-improvements.md)** - Ongoing quality enhancements
+
+### Tools Reference
+
+**Quick Tool Discovery:**
+- Browse available tools in the [Features](#features) section below
+- See real-world usage in [Demo Reports](./demos/README.md)
+- Learn optimal usage patterns in [AI Interaction Tips](./docs/AI_INTERACTION_TIPS.md)
+
+**All Documentation:** See the [complete documentation index](./docs/README.md) for a full list of guides organized by topic.
 
 ## Demos
 
@@ -771,36 +825,40 @@ This project references third-party tools, frameworks, APIs, and services for in
 
 ## Contributing
 
-Contributions welcome. Please see [CONTRIBUTING.md](./CONTRIBUTING.md). Keep changes typed, linted, and include tests when behavior changes.
+Contributions welcome! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
+
+### Developer Resources
+
+- **[Complete Documentation](./docs/README.md)** - Full documentation index
+- **[Clean Code Standards](./docs/CLEAN_CODE_INITIATIVE.md)** - Quality requirements and scoring
+- **[Error Handling Patterns](./docs/ERROR_HANDLING.md)** - Best practices for error handling
+- **[Architecture Guide](./docs/BRIDGE_CONNECTORS.md)** - System architecture and integration patterns
+- **[Type System Organization](./docs/TYPE_ORGANIZATION_EXTENSION.md)** - TypeScript conventions
+
+### Quality Standards
+
+- **TypeScript strict mode** - All code must pass type checking
+- **100% test coverage goal** - See [Clean Code Initiative](./docs/CLEAN_CODE_INITIATIVE.md)
+- **Biome linting** - Code must pass `npm run quality`
+- **Git hooks** - Automated checks via Lefthook (see [lefthook.yml](./lefthook.yml))
+
+Keep changes typed, linted, and include tests when behavior changes.
 
 ## License
 
 MIT © Anselmoo — see [LICENSE](./LICENSE).
 
-## References & Inspirations
-
-This project builds upon foundational research and draws inspiration from several exceptional open-source projects. We formally acknowledge:
-
-### 📚 Research & Concepts
-
-- **[Prompting Hierarchy](https://learnforlifeot.com.au/resources/f/prompting-hierarchy)** - Educational framework for structured prompting
-- **[Hierarchical Prompting Taxonomy (arXiv)](https://arxiv.org/abs/2406.12644)** - Research establishing the HPT framework
-- **[Sprint Planning Optimization](https://medium.com/@karim.ouldaklouche/optimizing-sprint-planning-with-julia-a-linear-programming-approach-with-gurobi-03f28c0cf5bf)** - Mathematical approach to agile planning
-- **[Multi-Agent AI Systems (arXiv)](https://arxiv.org/abs/2203.11171)** - Foundational research on multi-step workflows
-
-### 🚀 Inspirational Projects
-
-- **[@devichand579/HPT](https://github.com/devichand579/HPT)** - Reference implementation of Hierarchical Prompting Taxonomy; influenced our hierarchical prompt builder and evaluation methodology
-- **[@acl-org/acl-anthology](https://github.com/acl-org/acl-anthology)** - ACL papers and resources on prompt engineering; informed our evaluation strategies and best practices
-- **[@ruvnet/claude-flow](https://github.com/ruvnet/claude-flow)** - AI orchestration platform; inspired our prompt-flow-builder and prompt-chaining-builder with declarative flows and dynamic orchestration
-- **[@oraios/serena](https://github.com/oraios/serena)** - Coding agent toolkit; influenced our semantic-code-analyzer, project-onboarding, and mode-switcher implementations
-- **[@upstash/context7](https://github.com/upstash/context7)** - Documentation context for AI; guided our resource structure and external references system
+## References & Acknowledgments
 
 For a comprehensive list of references, research papers, and detailed attribution, see **[docs/REFERENCES.md](./docs/REFERENCES.md)**.
 
-## Acknowledgments
+### Key Acknowledgments
 
-- Model Context Protocol team for the spec
-- Anthropic for prompt caching research
-- Mermaid community for diagram tooling
-- All open-source contributors whose work has shaped this project
+- **Model Context Protocol team** for the specification
+- **Anthropic** for prompt caching research
+- **Mermaid community** for diagram tooling
+- **[@ruvnet/claude-flow](https://github.com/ruvnet/claude-flow)** - Inspired flow-based prompting features
+- **[@oraios/serena](https://github.com/oraios/serena)** - Influenced semantic analysis and mode switching
+- **All open-source contributors** whose work has shaped this project
+
+See [docs/REFERENCES.md](./docs/REFERENCES.md) for the complete list of research papers, projects, and inspirations.
