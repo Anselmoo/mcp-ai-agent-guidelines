@@ -23,6 +23,12 @@
 		},
 		{
 			"pattern": "^\\.\\./\\.\\./issues/"
+		},
+		{
+			"pattern": "^file:///path/to/"
+		},
+		{
+			"pattern": "^file:///<project-root>/"
 		}
 	],
 	"replacementPatterns": [],
