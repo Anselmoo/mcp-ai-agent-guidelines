@@ -1,5 +1,3 @@
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import { describe, expect, it } from "vitest";
 
 describe("MCP Design Assistant Exposure", () => {
