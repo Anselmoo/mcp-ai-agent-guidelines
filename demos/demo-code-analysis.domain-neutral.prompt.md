@@ -1,7 +1,6 @@
 ---
 mode: 'agent'
 model: GPT-4.1
-tools: ['githubRepo', 'codebase', 'editFiles']
 description: 'Template to run consistent, security-first code hygiene reviews across languages'
 ---
 ## 🧩 Domain-Neutral Prompt Template
