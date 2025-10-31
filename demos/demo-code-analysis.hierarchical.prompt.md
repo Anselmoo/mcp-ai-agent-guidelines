@@ -1,6 +1,6 @@
 ---
 mode: 'agent'
-model: GPT-4.1
+model: GPT-5
 tools: ['githubRepo', 'codebase', 'editFiles']
 description: 'Produce a step-by-step refactor plan and a checklist'
 ---

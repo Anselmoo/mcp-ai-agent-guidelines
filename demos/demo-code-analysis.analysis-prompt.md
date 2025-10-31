@@ -1,6 +1,6 @@
 ---
 mode: 'agent'
-model: GPT-4.1
+model: GPT-5
 tools: ['codebase', 'editFiles']
 description: 'Code analysis with focus on security'
 ---

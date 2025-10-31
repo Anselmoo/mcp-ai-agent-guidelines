@@ -1,9 +1,3 @@
----
-mode: 'agent'
-model: GPT-4.1
-tools: ['githubRepo', 'codebase', 'editFiles']
-description: 'A compact, skimmable card with risk badges, prioritized checklist, and a tiny plan'
----
 ## ⚡ Spark Prompt Template
 
 ### Metadata
