@@ -29,6 +29,6 @@ describe("strategy-frameworks-builder diagrams & aliases", () => {
 		expect(text).toMatch(/Market Position Snapshot/);
 		expect(text).toMatch(/Metadata/);
 		expect(text).toMatch(/Input file: demo.md/);
-		expect(text).toMatch(/References/);
+		expect(text).toMatch(/Further Reading/);
 	});
 });

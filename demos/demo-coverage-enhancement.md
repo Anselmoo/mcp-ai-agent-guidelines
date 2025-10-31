@@ -156,12 +156,15 @@ The system can automatically adjust coverage thresholds based on:
 - [GitHub Workflow Syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax?search-overlay-input=coverage&search-overlay-ask-ai=true)
 - [GitHub Copilot for Coverage](https://docs.github.com/en/copilot/tutorials/roll-out-at-scale/drive-downstream-impact/increase-test-coverage)
 
-## References
-- Coverage-driven development best practices: https://martinfowler.com/bliki/TestCoverage.html
-- Dead code elimination techniques: https://refactoring.guru/smells/dead-code
-- Test-driven development guide: https://testdriven.io/
-- The benefits of consistent testing: https://abseil.io/resources/swe-book/html/ch11.html#benefits_of_testing_code
-- GitHub’s Engineering System Success Playbook: https://resources.github.com/engineering-system-success-playbook/
-- Automated testing strategies: https://testing.googleblog.com/
-- Code coverage analysis: https://docs.github.com/en/actions/automating-builds-and-tests/about-continuous-integration
+## Further Reading
+
+*The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*
+
+- **[Test Coverage Best Practices](https://martinfowler.com/bliki/TestCoverage.html)**: Martin Fowler on meaningful coverage-driven development
+- **[Dead Code Elimination](https://refactoring.guru/smells/dead-code)**: Techniques for identifying and removing unused code
+- **[Test-Driven Development Guide](https://testdriven.io/)**: Comprehensive resource for TDD practices and patterns
+- **[Benefits of Testing Code](https://abseil.io/resources/swe-book/html/ch11.html#benefits_of_testing_code)**: Google's perspective on the value of comprehensive testing
+- **[Engineering System Success Playbook](https://resources.github.com/engineering-system-success-playbook/)**: GitHub's guide to building effective engineering systems
+- **[Automated Testing Strategies](https://testing.googleblog.com/)**: Google Testing Blog with advanced testing techniques
+- **[Code Coverage Analysis in CI](https://docs.github.com/en/actions/automating-builds-and-tests/about-continuous-integration)**: GitHub's documentation on coverage in CI/CD pipelines
 

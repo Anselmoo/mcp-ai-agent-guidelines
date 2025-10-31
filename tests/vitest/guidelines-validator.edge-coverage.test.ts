@@ -133,7 +133,7 @@ describe("Guidelines Validator - Additional Coverage", () => {
 		const text = result.content[0].text;
 		expect(text).toContain("Guidelines Validation");
 		// Should not contain references section
-		expect(text).not.toContain("## References");
+		expect(text).not.toContain("## Further Reading");
 	});
 
 	it("should handle unknown category gracefully", async () => {

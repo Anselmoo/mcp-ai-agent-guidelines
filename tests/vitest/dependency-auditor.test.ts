@@ -299,7 +299,7 @@ describe("dependency-auditor", () => {
 
 		const text =
 			result.content[0].type === "text" ? result.content[0].text : "";
-		expect(text).toMatch(/References/i);
+		expect(text).toMatch(/Further Reading/i);
 		expect(text).toMatch(/npm.*audit/i);
 	});
 

@@ -172,9 +172,13 @@ async function run() {
 			),
 			"Frontmatter not normalized",
 		);
-		// single References section
-		const refsCount = (text.match(/## References/g) || []).length;
-		assert.strictEqual(refsCount, 1, "Spark: duplicate References section");
+		// single Further Reading section
+		const refsCount = (text.match(/## Further Reading/g) || []).length;
+		assert.strictEqual(
+			refsCount,
+			1,
+			"Spark: duplicate Further Reading section",
+		);
 	}
 
 	async function testHierarchicalBuilder() {
@@ -191,11 +195,11 @@ async function run() {
 			/## 🧭 Hierarchical Prompt Structure/.test(text),
 			"Missing hierarchical header",
 		);
-		const refsCount = (text.match(/## References/g) || []).length;
+		const refsCount = (text.match(/## Further Reading/g) || []).length;
 		assert.strictEqual(
 			refsCount,
 			1,
-			"Hierarchical: duplicate References section",
+			"Hierarchical: duplicate Further Reading section",
 		);
 		// No longer checking for generic "Technique Hints" - now we check for actionable sections
 		// when techniques are auto-selected (which happens with no explicit techniques provided)
@@ -238,9 +242,9 @@ async function run() {
 			throw new Error("IO section missing");
 		if (!/## Workflow[\s\S]*1\) Ingest/.test(text))
 			throw new Error("Workflow numbering incorrect");
-		const refsCount = (text.match(/## References/g) || []).length;
+		const refsCount = (text.match(/## Further Reading/g) || []).length;
 		if (refsCount !== 1)
-			throw new Error("Domain-neutral: duplicate References section");
+			throw new Error("Domain-neutral: duplicate Further Reading section");
 	}
 
 	async function testModelCompatibilityCodeExamplesPython() {

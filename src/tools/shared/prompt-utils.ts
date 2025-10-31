@@ -1,3 +1,6 @@
+import { REFERENCE_DISCLAIMER } from "./constants.js";
+import { exportAsCSV, exportAsLaTeX } from "./export-utils.js";
+import type { OutputOptions } from "./types/export-format.types.js";
 import type { FrontmatterOptions } from "./types/index.js";
 
 export type { FrontmatterOptions };
@@ -156,13 +159,142 @@ export function buildMetadataSection(opts: {
 	return lines.join("\n");
 }
 
-export function buildReferencesSection(refs: string[]): string {
+/**
+ * Builds a "Further Reading" section with a disclaimer about external references.
+ *
+ * The disclaimer clarifies that:
+ * - References are provided for informational purposes only
+ * - No endorsement or affiliation is implied
+ * - Information may change over time
+ * - Users should verify with official sources
+ *
+ * This approach follows open-source best practices for referencing external resources
+ * without creating legal liability or implying endorsement.
+ */
+export function buildFurtherReadingSection(
+	refs: Array<{ title: string; url: string; description?: string } | string>,
+): string {
 	if (!refs || refs.length === 0) return "";
 	const lines: string[] = [
-		"## References",
-		...refs.map((r) => `- ${r}`),
+		"## Further Reading",
+		"",
+		REFERENCE_DISCLAIMER,
+		"",
+		...refs.map((r) => {
+			if (typeof r === "string") {
+				// Legacy format: "Title: URL"
+				return `- ${r}`;
+			}
+			// New format: object with title, url, and optional description
+			const link = `**[${r.title}](${r.url})**`;
+			return r.description ? `- ${link}: ${r.description}` : `- ${link}`;
+		}),
 		"",
 		"",
 	];
 	return lines.join("\n");
+}
+
+/**
+ * Apply export format to content based on output options
+ *
+ * @param content - The markdown content to export
+ * @param options - Output options including format and headers
+ * @returns Formatted content according to the specified export format
+ */
+export function applyExportFormat(
+	content: string,
+	options?: OutputOptions,
+): string {
+	// Default to markdown with headers
+	if (!options) {
+		return content;
+	}
+
+	const { exportFormat = "markdown", includeHeaders = true } = options;
+
+	// Remove headers if requested (for chat outputs)
+	let processedContent = content;
+	if (!includeHeaders) {
+		// Remove markdown headers (lines starting with #)
+		processedContent = processedContent
+			.split("\n")
+			.filter((line) => !line.match(/^#{1,6}\s+/))
+			.join("\n")
+			.trim();
+	}
+
+	// Apply format-specific transformations
+	switch (exportFormat) {
+		case "latex":
+			return exportAsLaTeX({
+				title: options.documentTitle || "Document",
+				author: options.documentAuthor,
+				date: options.documentDate,
+				content: processedContent,
+			});
+
+		case "csv":
+			// For CSV export, we need structured data
+			// This is a basic implementation that converts simple markdown tables
+			// More complex data should use objectsToCSV from export-utils
+			return convertMarkdownTableToCSV(processedContent);
+
+		case "json":
+			// Return content as JSON string
+			return JSON.stringify(
+				{
+					content: processedContent,
+					metadata: {
+						title: options.documentTitle,
+						author: options.documentAuthor,
+						date: options.documentDate,
+						format: "json",
+					},
+				},
+				null,
+				2,
+			);
+
+		default:
+			return processedContent;
+	}
+}
+
+/**
+ * Convert a simple markdown table to CSV format
+ * This is a basic implementation for simple use cases
+ */
+function convertMarkdownTableToCSV(markdown: string): string {
+	const lines = markdown.split("\n");
+	const tableLines: string[] = [];
+
+	// Find table lines (lines containing |)
+	for (const line of lines) {
+		if (line.includes("|")) {
+			// Skip separator lines (e.g., |---|---|)
+			if (!line.match(/^\|[\s-:|]+\|$/)) {
+				tableLines.push(line);
+			}
+		}
+	}
+
+	if (tableLines.length === 0) {
+		// No table found, return simple CSV with content as single cell
+		return `"${markdown.replace(/"/g, '""')}"`;
+	}
+
+	// Parse table rows
+	const rows = tableLines.map((line) =>
+		line
+			.split("|")
+			.map((cell) => cell.trim())
+			.filter((cell) => cell !== ""),
+	);
+
+	return exportAsCSV({
+		headers: rows[0] || [],
+		rows: rows.slice(1),
+		includeHeaders: true,
+	});
 }

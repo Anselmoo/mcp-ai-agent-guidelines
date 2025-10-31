@@ -6,11 +6,13 @@ import {
 	TechniqueEnum,
 } from "../shared/prompt-sections.js";
 import {
+	applyExportFormat,
 	buildFrontmatterWithPolicy as buildFrontmatter,
+	buildFurtherReadingSection,
 	buildMetadataSection,
-	buildReferencesSection,
 	slugify,
 } from "../shared/prompt-utils.js";
+import { ExportFormatEnum } from "../shared/types/export-format.types.js";
 import { applyTechniques } from "./technique-applicator.js";
 
 // Strict mode enum for YAML frontmatter
@@ -51,6 +53,13 @@ const HierarchicalPromptSchema = z.object({
 	autoSelectTechniques: z.boolean().optional().default(false),
 	provider: ProviderEnum.optional().default("gpt-4.1"),
 	style: StyleEnum.optional(),
+
+	// Export format options (NEW)
+	exportFormat: ExportFormatEnum.optional().default("markdown"),
+	includeHeaders: z.boolean().optional().default(true),
+	documentTitle: z.string().optional(),
+	documentAuthor: z.string().optional(),
+	documentDate: z.string().optional(),
 });
 
 type HierarchicalPromptInput = z.infer<typeof HierarchicalPromptSchema>;
@@ -109,11 +118,24 @@ export async function hierarchicalPromptBuilder(args: unknown) {
 			})
 		: "";
 
+	// Build the full content
+	const fullContent = `${frontmatter}## 🧭 Hierarchical Prompt Structure\n\n${metadata}\n${prompt}\n\n${input.includeExplanation ? `## Explanation\nThis prompt follows hierarchical structuring principles (context → goal → requirements → format → audience) to reduce ambiguity and align responses with constraints.\n\n` : ""}${references ? `${references}\n` : ""}${disclaimer}`;
+
+	// Apply export format if specified
+	const formattedContent = applyExportFormat(fullContent, {
+		exportFormat: input.exportFormat,
+		includeHeaders: input.includeHeaders,
+		includeFrontmatter: effectiveIncludeFrontmatter,
+		documentTitle: input.documentTitle || input.goal || "Hierarchical Prompt",
+		documentAuthor: input.documentAuthor,
+		documentDate: input.documentDate,
+	});
+
 	return {
 		content: [
 			{
 				type: "text",
-				text: `${frontmatter}## 🧭 Hierarchical Prompt Structure\n\n${metadata}\n${prompt}\n\n${input.includeExplanation ? `## Explanation\nThis prompt follows hierarchical structuring principles (context → goal → requirements → format → audience) to reduce ambiguity and align responses with constraints.\n\n` : ""}${references ? `${references}\n` : ""}${disclaimer}`,
+				text: formattedContent,
 			},
 		],
 	};
@@ -262,10 +284,25 @@ function buildDisclaimer(): string {
 }
 
 function buildGeneralReferences(): string {
-	return buildReferencesSection([
-		"Hierarchical Prompting overview: https://relevanceai.com/prompt-engineering/master-hierarchical-prompting-for-better-ai-interactions",
-		"Prompt engineering best practices: https://kanerika.com/blogs/ai-prompt-engineering-best-practices/",
-		"Techniques round-up (2025): https://www.dataunboxed.io/blog/the-complete-guide-to-prompt-engineering-15-essential-techniques-for-2025",
+	return buildFurtherReadingSection([
+		{
+			title: "Hierarchical Prompting Overview",
+			url: "https://relevanceai.com/prompt-engineering/master-hierarchical-prompting-for-better-ai-interactions",
+			description:
+				"Master hierarchical prompting for better AI interactions and structured outputs",
+		},
+		{
+			title: "AI Prompt Engineering Best Practices",
+			url: "https://kanerika.com/blogs/ai-prompt-engineering-best-practices/",
+			description:
+				"Comprehensive guide to effective prompt engineering techniques",
+		},
+		{
+			title: "Complete Guide to Prompt Engineering 2025",
+			url: "https://www.dataunboxed.io/blog/the-complete-guide-to-prompt-engineering-15-essential-techniques-for-2025",
+			description:
+				"15 essential prompt engineering techniques for modern AI systems",
+		},
 	]);
 }
 

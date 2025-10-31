@@ -7,7 +7,7 @@ description: 'Code analysis with focus on security'
 ## 🔍 Code Analysis Prompt
 
 ### Metadata
-- Updated: 2025-10-28
+- Updated: 2025-10-31
 - Source tool: mcp_ai-agent-guid_code-analysis-prompt-builder
 - Suggested filename: code-analysis-security.prompt.md
 
@@ -359,7 +359,10 @@ Provide an overall score from 1-10 for:
 - Security
 - Best Practices Adherence
 
-## References
-- Code Review Best Practices: https://google.github.io/eng-practices/review/
+## Further Reading
+
+*The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*
+
+- **[Code Review Best Practices](https://google.github.io/eng-practices/review/)**: Google's engineering practices guide for effective code reviews
 
 

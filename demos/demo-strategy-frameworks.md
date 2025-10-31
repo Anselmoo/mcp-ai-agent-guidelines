@@ -1,5 +1,5 @@
 ### Metadata
-- Updated: 2025-10-28
+- Updated: 2025-10-31
 - Source tool: mcp_ai-agent-guid_strategy-frameworks-builder
 - Suggested filename: strategy-swot-wheretoplayhowtowin-balancedscorecard-mckinsey7s-bcgmatrix-ansoffm.md
 
@@ -145,9 +145,12 @@ mindmap
 - Evaluate: Valuable, Rare, Inimitable, Organized
 - Implication: Competitive disadvantage→Parity→Advantage→Sustained
 
-## References
-- Atlassian strategy frameworks: https://www.atlassian.com/work-management/strategic-planning/framework
-- ClearPoint 20 frameworks: https://www.clearpointstrategy.com/blog/strategic-planning-models
-- Quantive top frameworks: https://quantive.com/resources/articles/top-strategic-frameworks
-- HBS strategy tools overview: https://online.hbs.edu/blog/post/strategy-frameworks-and-tools
+## Further Reading
+
+*The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*
+
+- **[Atlassian Strategy Frameworks](https://www.atlassian.com/work-management/strategic-planning/framework)**: Comprehensive guide to strategic planning frameworks
+- **[20 Strategic Planning Models](https://www.clearpointstrategy.com/blog/strategic-planning-models)**: ClearPoint's overview of popular strategy frameworks
+- **[Strategic Frameworks Comparison](https://bscdesigner.com/strategic-frameworks-comparison.htm)**: Comprehensive guide to SWOT, VRIO, BSC, and other strategic frameworks
+- **[HBS Strategy Frameworks and Tools](https://online.hbs.edu/blog/post/strategy-frameworks-and-tools)**: Harvard Business School overview of strategy tools
 

@@ -8,7 +8,7 @@ description: 'API documentation documentation for Backend developers integrating
 ## 📚 Documentation Generator Prompt
 
 ### Metadata
-- Updated: 2025-10-28
+- Updated: 2025-10-31
 - Source tool: mcp_ai-agent-guid_documentation-generator-prompt-builder
 - Suggested filename: documentation-api-documentation.prompt.md
 
@@ -86,7 +86,10 @@ Tool definitions in src/index.ts
 - [ ] All links and references work correctly
 - [ ] Document meets accessibility standards
 
-## References
-- Write the Docs: https://www.writethedocs.org/guide/
+## Further Reading
+
+*The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*
+
+- **[Write the Docs Guide](https://www.writethedocs.org/guide/)**: Community-driven best practices for creating software documentation
 
 

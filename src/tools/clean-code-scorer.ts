@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { buildReferencesSection } from "./shared/prompt-utils.js";
+import { buildFurtherReadingSection } from "./shared/prompt-utils.js";
 
 const CleanCodeScorerSchema = z.object({
 	projectPath: z.string().optional(),
@@ -42,11 +42,28 @@ export async function cleanCodeScorer(args: unknown) {
 
 	const scoreResult = calculateCleanCodeScore(input);
 	const references = input.includeReferences
-		? buildReferencesSection([
-				"Clean Code principles: https://www.freecodecamp.org/news/clean-coding-for-beginners/",
-				"Code quality metrics: https://docs.sonarqube.org/latest/user-guide/metric-definitions/",
-				"Test coverage best practices: https://martinfowler.com/bliki/TestCoverage.html",
-				"TypeScript best practices: https://www.typescriptlang.org/docs/handbook/declaration-files/do-s-and-don-ts.html",
+		? buildFurtherReadingSection([
+				{
+					title: "Clean Code Principles",
+					url: "https://www.freecodecamp.org/news/clean-coding-for-beginners/",
+					description:
+						"Beginner-friendly guide to writing clean, maintainable code",
+				},
+				{
+					title: "SonarQube Metric Definitions",
+					url: "https://docs.sonarqube.org/latest/user-guide/metric-definitions/",
+					description: "Comprehensive definitions of code quality metrics",
+				},
+				{
+					title: "Test Coverage Best Practices",
+					url: "https://martinfowler.com/bliki/TestCoverage.html",
+					description: "Martin Fowler on meaningful test coverage strategies",
+				},
+				{
+					title: "TypeScript Do's and Don'ts",
+					url: "https://www.typescriptlang.org/docs/handbook/declaration-files/do-s-and-don-ts.html",
+					description: "Official TypeScript best practices and style guide",
+				},
 			])
 		: undefined;
 

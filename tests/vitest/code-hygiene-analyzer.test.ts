@@ -52,7 +52,9 @@ describe("code-hygiene-analyzer", () => {
 		expect(text).toMatch(/Code hygiene looks good|looks good/i);
 		expect(text).toMatch(/Metadata/);
 		expect(text).toMatch(/Input file: clean.ts/);
-		expect(text).toMatch(/References|Refactoring legacy code/);
+		expect(text).toMatch(
+			/Further Reading|Refactoring Legacy Code Best Practices/,
+		);
 	});
 
 	it("penalizes empty code", async () => {

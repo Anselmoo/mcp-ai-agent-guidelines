@@ -9,8 +9,8 @@ import {
 } from "../shared/prompt-sections.js";
 import {
 	buildFrontmatterWithPolicy as buildFrontmatter,
+	buildFurtherReadingSection,
 	buildMetadataSection,
-	buildReferencesSection,
 	slugify,
 } from "../shared/prompt-utils.js";
 import { applyTechniques } from "./technique-applicator.js";
@@ -1179,12 +1179,33 @@ function buildSecurityHardeningFrontmatter(
 }
 
 function buildSecurityReferencesSection(): string {
-	return buildReferencesSection([
-		"OWASP Top 10: https://owasp.org/www-project-top-ten/",
-		"NIST Cybersecurity Framework: https://www.nist.gov/cyberframework",
-		"SANS Secure Coding Practices: https://www.sans.org/white-papers/2172/",
-		"CWE Top 25: https://cwe.mitre.org/top25/archive/2023/2023_top25_list.html",
-		"Security Code Review Guide: https://owasp.org/www-project-code-review-guide/",
+	return buildFurtherReadingSection([
+		{
+			title: "OWASP Top 10",
+			url: "https://owasp.org/www-project-top-ten/",
+			description:
+				"Standard awareness document for web application security risks",
+		},
+		{
+			title: "NIST Cybersecurity Framework",
+			url: "https://www.nist.gov/cyberframework",
+			description: "Comprehensive framework for managing cybersecurity risk",
+		},
+		{
+			title: "SANS Secure Coding Practices",
+			url: "https://reports.weforum.org/docs/WEF_Global_Cybersecurity_Outlook_2025.pdf",
+			description: "Quick reference guide for secure software development",
+		},
+		{
+			title: "CWE Top 25 Most Dangerous Weaknesses",
+			url: "https://cwe.mitre.org/top25/archive/2023/2023_top25_list.html",
+			description: "Most widespread and critical software weaknesses",
+		},
+		{
+			title: "OWASP Code Review Guide",
+			url: "https://owasp.org/www-project-code-review-guide/",
+			description: "Comprehensive guide for security-focused code reviews",
+		},
 	]);
 }
 

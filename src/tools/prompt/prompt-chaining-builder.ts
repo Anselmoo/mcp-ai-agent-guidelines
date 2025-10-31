@@ -1,7 +1,7 @@
 import { z } from "zod";
 import {
+	buildFurtherReadingSection,
 	buildMetadataSection,
-	buildReferencesSection,
 	slugify,
 } from "../shared/prompt-utils.js";
 
@@ -248,9 +248,21 @@ function buildChainVisualization(steps: ChainStep[]): string {
 }
 
 function buildChainReferences(): string {
-	return buildReferencesSection([
-		"Prompt Chaining Patterns: https://www.promptingguide.ai/techniques/prompt_chaining",
-		"Multi-step AI Workflows: https://arxiv.org/abs/2203.11171",
-		"Claude Flow Orchestration: https://github.com/ruvnet/claude-flow",
+	return buildFurtherReadingSection([
+		{
+			title: "Prompt Chaining Patterns",
+			url: "https://www.promptingguide.ai/techniques/prompt_chaining",
+			description: "Guide to implementing multi-step prompt chains",
+		},
+		{
+			title: "Multi-step AI Workflows",
+			url: "https://arxiv.org/abs/2203.11171",
+			description: "Academic research on sequential AI task decomposition",
+		},
+		{
+			title: "Claude Flow Orchestration",
+			url: "https://github.com/ruvnet/claude-flow",
+			description: "Framework for building complex Claude-based workflows",
+		},
 	]);
 }

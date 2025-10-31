@@ -16,29 +16,29 @@ All design modules are **IMPLEMENTED** and ready for use:
 
 ### Core Modules
 
-| Module | Status | Key Methods | Description |
-|--------|--------|-------------|-------------|
-| `adrGenerator` | ✅ IMPLEMENTED | `generateADR`, `generateSessionADRs` | Automated Architecture Decision Record generation |
-| `confirmationModule` | ✅ IMPLEMENTED | `confirmPhase`, `confirmPhaseCompletion`, `getSessionRationaleHistory`, `exportRationaleDocumentation` | Phase completion confirmation with rationale tracking |
-| `confirmationPromptBuilder` | ✅ IMPLEMENTED | `generatePhaseCompletionPrompt`, `generateConfirmationPrompt`, `generateCoverageValidationPrompt` | Generates structured confirmation prompts |
-| `constraintConsistencyEnforcer` | ✅ IMPLEMENTED | `enforceConsistency`, `detectViolations`, `generateReport` | Ensures constraint consistency across design phases |
-| `constraintManager` | ✅ IMPLEMENTED | `loadConstraintsFromConfig`, `validateConstraints`, `getConstraint`, `getMicroMethods` | Central constraint management and validation |
-| `coverageEnforcer` | ✅ IMPLEMENTED | `enforceCoverage`, `calculateCoverage` | Coverage threshold enforcement |
-| `crossSessionConsistencyEnforcer` | ✅ IMPLEMENTED | `enforceConsistency`, `generateEnforcementPrompts` | Cross-session design consistency validation |
-| `designAssistant` | ✅ IMPLEMENTED | `initialize`, `processRequest`, `createSession`, `validatePhase` | Main orchestrator for the design framework |
-| `designPhaseWorkflow` | ✅ IMPLEMENTED | `executeWorkflow`, `generateWorkflowGuide` | Manages design phase transitions and workflows |
-| `methodologySelector` | ✅ IMPLEMENTED | `selectMethodology`, `generateMethodologyProfile` | Selects appropriate design methodology |
-| `pivotModule` | ✅ IMPLEMENTED | `evaluatePivotNeed`, `generateRecommendations` | Deterministic pivot decision making |
-| `roadmapGenerator` | ✅ IMPLEMENTED | `generateRoadmap` | Automated implementation roadmap generation |
-| `specGenerator` | ✅ IMPLEMENTED | `generateSpecification` | Technical specification generation |
-| `strategicPivotPromptBuilder` | ✅ IMPLEMENTED | `generateStrategicPivotPrompt` | Strategic pivot prompt construction |
+| Module                            | Status         | Key Methods                                                                                            | Description                                           |
+| --------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------ | ----------------------------------------------------- |
+| `adrGenerator`                    | ✅ IMPLEMENTED | `generateADR`, `generateSessionADRs`                                                                   | Automated Architecture Decision Record generation     |
+| `confirmationModule`              | ✅ IMPLEMENTED | `confirmPhase`, `confirmPhaseCompletion`, `getSessionRationaleHistory`, `exportRationaleDocumentation` | Phase completion confirmation with rationale tracking |
+| `confirmationPromptBuilder`       | ✅ IMPLEMENTED | `generatePhaseCompletionPrompt`, `generateConfirmationPrompt`, `generateCoverageValidationPrompt`      | Generates structured confirmation prompts             |
+| `constraintConsistencyEnforcer`   | ✅ IMPLEMENTED | `enforceConsistency`, `detectViolations`, `generateReport`                                             | Ensures constraint consistency across design phases   |
+| `constraintManager`               | ✅ IMPLEMENTED | `loadConstraintsFromConfig`, `validateConstraints`, `getConstraint`, `getMicroMethods`                 | Central constraint management and validation          |
+| `coverageEnforcer`                | ✅ IMPLEMENTED | `enforceCoverage`, `calculateCoverage`                                                                 | Coverage threshold enforcement                        |
+| `crossSessionConsistencyEnforcer` | ✅ IMPLEMENTED | `enforceConsistency`, `generateEnforcementPrompts`                                                     | Cross-session design consistency validation           |
+| `designAssistant`                 | ✅ IMPLEMENTED | `initialize`, `processRequest`, `createSession`, `validatePhase`                                       | Main orchestrator for the design framework            |
+| `designPhaseWorkflow`             | ✅ IMPLEMENTED | `executeWorkflow`, `generateWorkflowGuide`                                                             | Manages design phase transitions and workflows        |
+| `methodologySelector`             | ✅ IMPLEMENTED | `selectMethodology`, `generateMethodologyProfile`                                                      | Selects appropriate design methodology                |
+| `pivotModule`                     | ✅ IMPLEMENTED | `evaluatePivotNeed`, `generateRecommendations`                                                         | Deterministic pivot decision making                   |
+| `roadmapGenerator`                | ✅ IMPLEMENTED | `generateRoadmap`                                                                                      | Automated implementation roadmap generation           |
+| `specGenerator`                   | ✅ IMPLEMENTED | `generateSpecification`                                                                                | Technical specification generation                    |
+| `strategicPivotPromptBuilder`     | ✅ IMPLEMENTED | `generateStrategicPivotPrompt`                                                                         | Strategic pivot prompt construction                   |
 
 ## Usage
 
 ### Programmatic Status Check
 
 ```typescript
-import { DESIGN_MODULE_STATUS } from './src/tools/design/index.js';
+import { DESIGN_MODULE_STATUS } from "./src/tools/design/index.js";
 
 // Check status of all modules
 console.log(DESIGN_MODULE_STATUS);
@@ -49,7 +49,7 @@ console.log(DESIGN_MODULE_STATUS);
 // }
 
 // Check individual module status
-import { IMPLEMENTATION_STATUS } from './src/tools/design/adr-generator.js';
+import { IMPLEMENTATION_STATUS } from "./src/tools/design/adr-generator.js";
 console.log(IMPLEMENTATION_STATUS); // "IMPLEMENTED"
 ```
 
@@ -64,21 +64,24 @@ import {
   roadmapGenerator,
   specGenerator,
   // ... all other modules
-} from './src/tools/design/index.js';
+} from "./src/tools/design/index.js";
 ```
 
 ## Testing
 
 The implementation status is validated through smoke tests located at:
+
 - `tests/vitest/unit/design/smoke-implemented-detection.test.ts`
 
 This test suite:
+
 1. Verifies each module exports required methods
 2. Validates IMPLEMENTATION_STATUS sentinel exports
 3. Tests module initialization
 4. Generates classification summary
 
 Run the smoke tests:
+
 ```bash
 npm run test:vitest -- tests/vitest/unit/design/smoke-implemented-detection.test.ts
 ```
@@ -88,6 +91,7 @@ npm run test:vitest -- tests/vitest/unit/design/smoke-implemented-detection.test
 When adding new design modules:
 
 1. **Add IMPLEMENTATION_STATUS export** to the module:
+
    ```typescript
    // At the end of your module file
    export const IMPLEMENTATION_STATUS = "IMPLEMENTED" as const;
@@ -95,10 +99,11 @@ When adding new design modules:
    ```
 
 2. **Update `index.ts`** to export the status:
+
    ```typescript
    export {
      newModule,
-     IMPLEMENTATION_STATUS as NEW_MODULE_STATUS
+     IMPLEMENTATION_STATUS as NEW_MODULE_STATUS,
    } from "./new-module.js";
    ```
 
@@ -109,6 +114,7 @@ When adding new design modules:
 ## API Surface Compatibility
 
 All modules maintain backwards compatibility through:
+
 - Consistent async/await patterns
 - Standard error handling
 - Type-safe interfaces
@@ -117,5 +123,6 @@ All modules maintain backwards compatibility through:
 ## Related Documentation
 
 - [Design Tools Overview](../README.md)
-- [MCP Design Framework](./design-framework.md)
-- [Test Coverage Report](../coverage/index.html)
+- [Design Assistant Documentation](./design-module-status.md)
+  <!-- [MCP Design Framework](./design-framework.md) - File does not exist -->
+  <!-- [Test Coverage Report](../coverage/index.html) - Dynamic file, not in repository -->

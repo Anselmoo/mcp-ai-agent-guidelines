@@ -17,8 +17,8 @@ import {
 	generateRecommendations,
 } from "./semantic-analyzer/index.js";
 import {
+	buildFurtherReadingSection,
 	buildMetadataSection,
-	buildReferencesSection,
 } from "./shared/prompt-utils.js";
 
 const SemanticCodeAnalyzerSchema = z.object({
@@ -96,11 +96,29 @@ ${references}
 }
 
 function buildSemanticReferences(): string {
-	return buildReferencesSection([
-		"Language Server Protocol: https://microsoft.github.io/language-server-protocol/",
-		"Semantic Code Analysis: https://en.wikipedia.org/wiki/Semantic_analysis_(compilers)",
-		"Design Patterns: https://refactoring.guru/design-patterns",
-		"Symbol-Based Navigation: https://code.visualstudio.com/docs/editor/editingevolved",
+	return buildFurtherReadingSection([
+		{
+			title: "Language Server Protocol",
+			url: "https://microsoft.github.io/language-server-protocol/",
+			description:
+				"Microsoft's protocol for language intelligence in code editors",
+		},
+		{
+			title: "Semantic Analysis in Compilers",
+			url: "https://en.wikipedia.org/wiki/Semantic_analysis_(compilers)",
+			description:
+				"Overview of semantic analysis techniques in code compilation",
+		},
+		{
+			title: "Design Patterns Catalog",
+			url: "https://refactoring.guru/design-patterns",
+			description: "Comprehensive catalog of software design patterns",
+		},
+		{
+			title: "Symbol-Based Navigation",
+			url: "https://code.visualstudio.com/docs/editor/editingevolved",
+			description: "Advanced code navigation using symbols in VS Code",
+		},
 	]);
 }
 

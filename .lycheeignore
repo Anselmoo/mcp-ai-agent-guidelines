@@ -1,0 +1,27 @@
+# Ignore common badge/shield hosts and known external endpoints we don't want to validate
+
+^https://img\.shields\.io
+^https://insiders\.vscode\.dev
+^http://localhost
+^https://httpbin\.org
+^https://api\.example\.com
+
+# GitHub container registry (may 404 if package is private or unpublished)
+# Generic pattern for all container registry links
+^https://github\.com/.*\/pkgs\/container\/
+# Specific pattern for this project's container registry
+^https://github\.com/Anselmoo/mcp-ai-agent-guidelines/pkgs/container/mcp-ai-agent-guidelines
+
+# Relative issue template links (work in GitHub UI but not externally)
+
+^\.\./\.\.\/issues/
+
+# NPM package names that look like mailto links (e.g., package@version)
+# Matches mailto: links where the part after @ starts with a version number or range operator
+^mailto:.*@[0-9~^]
+
+# Local doc anchors and anchors to be skipped
+
+# Example: skip references to internal anchors that may be generated dynamically
+
+# ^#ref-.\*

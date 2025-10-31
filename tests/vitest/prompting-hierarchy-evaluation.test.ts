@@ -35,7 +35,7 @@ describe("Prompting Hierarchy and Numeric Evaluation", () => {
 			expect(text).toContain("Direct");
 			expect(text).toContain("Clarity");
 			expect(text).toContain("Specificity");
-			expect(text).toContain("References");
+			expect(text).toContain("Further Reading");
 		});
 
 		it("should evaluate a scaffolding-level prompt with steps", async () => {

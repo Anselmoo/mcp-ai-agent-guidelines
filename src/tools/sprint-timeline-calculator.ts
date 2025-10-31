@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { logger } from "./shared/logger.js";
-import { buildReferencesSection } from "./shared/prompt-utils.js";
+import { buildFurtherReadingSection } from "./shared/prompt-utils.js";
 
 const SprintTimelineSchema = z.object({
 	tasks: z.array(
@@ -142,10 +142,22 @@ ${calculation.sprints
 	.join("\n")}
 \`\`\`
 
-${buildReferencesSection([
-	"ZenHub — AI-assisted sprint planning (2025): https://www.zenhub.com/blog-posts/the-7-best-ai-assisted-sprint-planning-tools-for-agile-teams-in-2025",
-	"Nitor Infotech — AI in project delivery: https://www.nitorinfotech.com/blog/ai-in-software-project-delivery-smarter-planning-and-execution/",
-	"Optimizing Sprint Planning with Julia — Linear Programming Approach (2025): https://medium.com/@karim.ouldaklouche/optimizing-sprint-planning-with-julia-a-linear-programming-approach-with-gurobi-03f28c0cf5bf",
+${buildFurtherReadingSection([
+	{
+		title: "AI-Assisted Sprint Planning Tools 2025",
+		url: "https://www.zenhub.com/blog-posts/the-7-best-ai-assisted-sprint-planning-tools-for-agile-teams-in-2025",
+		description: "ZenHub's guide to the best AI-powered sprint planning tools",
+	},
+	{
+		title: "AI in Software Project Delivery",
+		url: "https://www.nitorinfotech.com/blog/ai-in-software-project-delivery-smarter-planning-and-execution/",
+		description: "How AI enables smarter planning and execution in projects",
+	},
+	{
+		title: "Optimizing Sprint Planning with Linear Programming",
+		url: "https://medium.com/@karim.ouldaklouche/optimizing-sprint-planning-with-julia-a-linear-programming-approach-with-gurobi-03f28c0cf5bf",
+		description: "Using Julia and Gurobi for mathematical sprint optimization",
+	},
 ])}
 `,
 			},
@@ -255,7 +267,9 @@ function topologicalSort(tasks: TimelineTask[]): TimelineTask[] {
 	}
 
 	while (queue.length > 0) {
+		// biome-ignore lint/style/noNonNullAssertion: queue.length > 0 guarantees shift() returns a value
 		const current = queue.shift()!;
+		// biome-ignore lint/style/noNonNullAssertion: current is derived from taskMap keys, so get(current) is guaranteed to exist
 		const task = taskMap.get(current)!;
 		sorted.push(task);
 

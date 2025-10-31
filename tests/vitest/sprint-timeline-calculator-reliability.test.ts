@@ -218,8 +218,10 @@ describe("Sprint Timeline Calculator - Reliability Improvements", () => {
 		});
 
 		const text = result.content[0].text;
-		expect(text).toContain("Optimizing Sprint Planning with Julia");
-		expect(text).toContain("Linear Programming Approach");
+		expect(text).toContain(
+			"Optimizing Sprint Planning with Linear Programming",
+		);
+		expect(text).toContain("Using Julia and Gurobi");
 	});
 
 	it("should report missing dependencies as violations", async () => {

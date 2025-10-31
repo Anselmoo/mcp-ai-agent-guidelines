@@ -131,6 +131,7 @@ expect(NEW_MODULE_STATUS).toBe("IMPLEMENTED");
 
 ## Related Documentation
 
-- [Design Module Status](../../../docs/design-module-status.md) - Detailed status documentation
-- [Design Tools](../../../src/tools/design/README.md) - Design framework overview
-- [Contributing Guide](../../../CONTRIBUTING.md) - Development guidelines
+- [Design Module Status](../../../../docs/design-module-status.md) - Detailed status documentation
+- [Design Tools Index](../../../../src/tools/design/index.ts) - Design framework exports
+<!-- [Design Tools](../../../../src/tools/design/README.md) - File does not exist -->
+- [Contributing Guide](../../../../CONTRIBUTING.md) - Development guidelines

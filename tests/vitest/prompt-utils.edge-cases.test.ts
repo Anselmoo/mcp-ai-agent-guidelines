@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
 	buildFrontmatter,
 	buildFrontmatterWithPolicy,
+	buildFurtherReadingSection,
 	buildMetadataSection,
-	buildReferencesSection,
 	slugify,
 	validateAndNormalizeFrontmatter,
 } from "../../src/tools/shared/prompt-utils";
@@ -194,23 +194,23 @@ describe("prompt-utils edge cases and branches", () => {
 		});
 	});
 
-	describe("buildReferencesSection", () => {
+	describe("buildFurtherReadingSection", () => {
 		it("handles empty references array", () => {
-			const result = buildReferencesSection([]);
+			const result = buildFurtherReadingSection([]);
 			expect(result).toBe("");
 		});
 
 		it("handles null/undefined references", () => {
-			const result = buildReferencesSection(null as any);
+			const result = buildFurtherReadingSection(null as any);
 			expect(result).toBe("");
 		});
 
 		it("builds references section with multiple links", () => {
-			const result = buildReferencesSection([
+			const result = buildFurtherReadingSection([
 				"Link 1: https://example.com",
 				"Link 2: https://test.com",
 			]);
-			expect(result).toMatch(/## References/);
+			expect(result).toMatch(/## Further Reading/);
 			expect(result).toMatch(/- Link 1: https:\/\/example\.com/);
 			expect(result).toMatch(/- Link 2: https:\/\/test\.com/);
 		});

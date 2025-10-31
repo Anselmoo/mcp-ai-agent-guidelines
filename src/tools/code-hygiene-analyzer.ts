@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { buildReferencesSection } from "./shared/prompt-utils.js";
+import { buildFurtherReadingSection } from "./shared/prompt-utils.js";
 
 const CodeHygieneSchema = z.object({
 	codeContent: z.string(),
@@ -17,9 +17,19 @@ export async function codeHygieneAnalyzer(args: unknown) {
 
 	const analysis = analyzeCodeHygiene(input);
 	const references = input.includeReferences
-		? buildReferencesSection([
-				"Refactoring legacy code best practices: https://graphite.dev/guides/refactoring-legacy-code-best-practices-techniques",
-				"General code hygiene checklist (community resources)",
+		? buildFurtherReadingSection([
+				{
+					title: "Refactoring Legacy Code Best Practices",
+					url: "https://graphite.dev/guides/refactoring-legacy-code-best-practices-techniques",
+					description:
+						"Techniques for safely refactoring and improving legacy codebases",
+				},
+				{
+					title: "Code Hygiene Checklist",
+					url: "https://github.com/topics/code-hygiene",
+					description:
+						"Community resources and tools for maintaining code quality",
+				},
 			])
 		: undefined;
 

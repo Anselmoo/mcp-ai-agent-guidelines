@@ -8,7 +8,7 @@ description: 'Architecture design for large-scale system'
 ## 🏗️ Architecture Design Prompt
 
 ### Metadata
-- Updated: 2025-10-28
+- Updated: 2025-10-31
 - Source tool: mcp_ai-agent-guid_architecture-design-prompt-builder
 - Suggested filename: architecture-design-large.prompt.md
 
@@ -78,7 +78,10 @@ Address the following non-functional requirements:
 - **Maintainability**: Code organization and documentation standards
 - **Scalability**: Growth and load handling capabilities
 
-## References
-- Software Architecture Guide: https://martinfowler.com/architecture/
+## Further Reading
+
+*The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*
+
+- **[Software Architecture Guide](https://martinfowler.com/architecture/)**: Martin Fowler's comprehensive guide to software architecture patterns and principles
 
 

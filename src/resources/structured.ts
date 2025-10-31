@@ -878,7 +878,7 @@ export const structuredResources: StructuredResource[] = [
 					"  async ({ pattern }) => ({",
 					"    content: [",
 					"      { type: 'text', text: 'Found: ' + pattern },",
-					"      { type: 'resource_link', uri: 'file:///project/README.md', name: 'README.md', mimeType: 'text/markdown' }",
+					"      { type: 'resource_link', uri: 'file:///<project-root>/README.md', name: 'README.md', mimeType: 'text/markdown' }",
 					"    ]",
 					"  })",
 					");",
