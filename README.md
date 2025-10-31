@@ -777,8 +777,30 @@ Contributions welcome. Please see [CONTRIBUTING.md](./CONTRIBUTING.md). Keep cha
 
 MIT © Anselmoo — see [LICENSE](./LICENSE).
 
+## References & Inspirations
+
+This project builds upon foundational research and draws inspiration from several exceptional open-source projects. We formally acknowledge:
+
+### 📚 Research & Concepts
+
+- **[Prompting Hierarchy](https://learnforlifeot.com.au/resources/f/prompting-hierarchy)** - Educational framework for structured prompting
+- **[Hierarchical Prompting Taxonomy (arXiv)](https://arxiv.org/abs/2406.12644)** - Research establishing the HPT framework
+- **[Sprint Planning Optimization](https://medium.com/@karim.ouldaklouche/optimizing-sprint-planning-with-julia-a-linear-programming-approach-with-gurobi-03f28c0cf5bf)** - Mathematical approach to agile planning
+- **[Multi-Agent AI Systems (arXiv)](https://arxiv.org/abs/2203.11171)** - Foundational research on multi-step workflows
+
+### 🚀 Inspirational Projects
+
+- **[@devichand579/HPT](https://github.com/devichand579/HPT)** - Reference implementation of Hierarchical Prompting Taxonomy; influenced our hierarchical prompt builder and evaluation methodology
+- **[@acl-org/acl-anthology](https://github.com/acl-org/acl-anthology)** - ACL papers and resources on prompt engineering; informed our evaluation strategies and best practices
+- **[@ruvnet/claude-flow](https://github.com/ruvnet/claude-flow)** - AI orchestration platform; inspired our prompt-flow-builder and prompt-chaining-builder with declarative flows and dynamic orchestration
+- **[@oraios/serena](https://github.com/oraios/serena)** - Coding agent toolkit; influenced our semantic-code-analyzer, project-onboarding, and mode-switcher implementations
+- **[@upstash/context7](https://github.com/upstash/context7)** - Documentation context for AI; guided our resource structure and external references system
+
+For a comprehensive list of references, research papers, and detailed attribution, see **[docs/REFERENCES.md](./docs/REFERENCES.md)**.
+
 ## Acknowledgments
 
 - Model Context Protocol team for the spec
 - Anthropic for prompt caching research
 - Mermaid community for diagram tooling
+- All open-source contributors whose work has shaped this project
