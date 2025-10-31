@@ -7,8 +7,10 @@
 ^https://api\.example\.com
 
 # GitHub container registry (may 404 if package is private or unpublished)
-
-^https://github\.com/.\*/pkgs/container/
+# Generic pattern for all container registry links
+^https://github\.com/.*\/pkgs\/container\/
+# Specific pattern for this project's container registry
+^https://github\.com/Anselmoo/mcp-ai-agent-guidelines/pkgs/container/mcp-ai-agent-guidelines
 
 # Relative issue template links (work in GitHub UI but not externally)
 
