@@ -51,7 +51,7 @@ const GapFrameworkSchema = z.object({
 	inputFile: z.string().optional(),
 });
 
-export async function gapFrameworksAnalyzers(args: unknown) {
+export async function gapFrameworksAnalyzer(args: unknown) {
 	const input = GapFrameworkSchema.parse(args);
 
 	const sections: string[] = [];

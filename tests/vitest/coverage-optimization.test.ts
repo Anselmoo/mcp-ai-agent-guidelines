@@ -2,13 +2,13 @@
 import { describe, expect, it } from "vitest";
 
 // Import main tools that users interact with directly - using src imports for reliability
-import { codeHygieneAnalyzer } from "../../src/tools/code-hygiene-analyzer";
-import { guidelinesValidator } from "../../src/tools/guidelines-validator";
-import { memoryContextOptimizer } from "../../src/tools/memory-context-optimizer";
-import { mermaidDiagramGenerator } from "../../src/tools/mermaid-diagram-generator";
-import { modelCompatibilityChecker } from "../../src/tools/model-compatibility-checker";
+import { codeHygieneAnalyzer } from "../../src/tools/analysis/code-hygiene-analyzer.js";
 import { hierarchicalPromptBuilder } from "../../src/tools/prompt/hierarchical-prompt-builder";
-import { sprintTimelineCalculator } from "../../src/tools/sprint-timeline-calculator";
+import { guidelinesValidator } from "../../src/tools/utility/guidelines-validator.js";
+import { memoryContextOptimizer } from "../../src/tools/utility/memory-context-optimizer.js";
+import { mermaidDiagramGenerator } from "../../src/tools/utility/mermaid-diagram-generator.js";
+import { modelCompatibilityChecker } from "../../src/tools/utility/model-compatibility-checker.js";
+import { sprintTimelineCalculator } from "../../src/tools/utility/sprint-timeline-calculator.js";
 
 describe("Coverage Optimization - Core Tool Functions", () => {
 	// Code Hygiene Analyzer - comprehensive testing to hit internal functions

@@ -2,8 +2,8 @@ import { z } from "zod";
 import {
 	CATEGORY_CONFIG,
 	type CategoryConfig,
-} from "./config/guidelines-config.js";
-import { buildFurtherReadingSection } from "./shared/prompt-utils.js";
+} from "../config/guidelines-config.js";
+import { buildFurtherReadingSection } from "../shared/prompt-utils.js";
 
 const GuidelinesValidationSchema = z.object({
 	practiceDescription: z.string(),

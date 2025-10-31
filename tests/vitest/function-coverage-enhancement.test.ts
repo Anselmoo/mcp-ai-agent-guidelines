@@ -30,7 +30,7 @@ describe("Basic Function Coverage Tests", () => {
 
 	it("should test additional mermaid diagram types for coverage", async () => {
 		const { mermaidDiagramGenerator } = await import(
-			"../../src/tools/mermaid-diagram-generator.js"
+			"../../src/tools/utility/mermaid-diagram-generator.js"
 		);
 
 		// Test additional diagram types to hit more functions
@@ -53,7 +53,7 @@ describe("Basic Function Coverage Tests", () => {
 
 	it("should test edge cases in existing tools", async () => {
 		const { codeHygieneAnalyzer } = await import(
-			"../../src/tools/code-hygiene-analyzer.js"
+			"../../src/tools/analysis/code-hygiene-analyzer.js"
 		);
 
 		// Test with edge case inputs
@@ -74,7 +74,7 @@ describe("Basic Function Coverage Tests", () => {
 
 	it("should test comprehensive model compatibility scenarios", async () => {
 		const { modelCompatibilityChecker } = await import(
-			"../../src/tools/model-compatibility-checker.js"
+			"../../src/tools/utility/model-compatibility-checker.js"
 		);
 
 		// Test different budget scenarios
@@ -92,7 +92,7 @@ describe("Basic Function Coverage Tests", () => {
 
 	it("should test memory optimizer with different strategies", async () => {
 		const { memoryContextOptimizer } = await import(
-			"../../src/tools/memory-context-optimizer.js"
+			"../../src/tools/utility/memory-context-optimizer.js"
 		);
 
 		const strategies = ["aggressive", "conservative", "balanced"];
@@ -107,13 +107,13 @@ describe("Basic Function Coverage Tests", () => {
 	});
 
 	it("should test gap analysis with different types", async () => {
-		const { gapFrameworksAnalyzers } = await import(
-			"../../src/tools/analysis/gap-frameworks-analyzers.js"
+		const { gapFrameworksAnalyzer } = await import(
+			"../../src/tools/analysis/gap-frameworks-analyzer.js"
 		);
 
 		const types = ["capability", "process", "technology", "skills"];
 		for (const analysisType of types) {
-			const result = await gapFrameworksAnalyzers({
+			const result = await gapFrameworksAnalyzer({
 				currentState: `Current ${analysisType} state`,
 				desiredState: `Target ${analysisType} state`,
 				analysisType: analysisType as any,

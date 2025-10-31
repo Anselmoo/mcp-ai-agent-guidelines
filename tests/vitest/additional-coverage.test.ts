@@ -200,7 +200,7 @@ describe("Additional coverage for uncovered lines", () => {
 
 	it("should test mermaid generator edge cases", async () => {
 		const { mermaidDiagramGenerator } = await import(
-			"../../src/tools/mermaid-diagram-generator.js"
+			"../../src/tools/utility/mermaid-diagram-generator.js"
 		);
 
 		// Test different diagram types
@@ -229,7 +229,7 @@ describe("Additional coverage for uncovered lines", () => {
 
 	it("should test memory optimizer edge cases", async () => {
 		const { memoryContextOptimizer } = await import(
-			"../../src/tools/memory-context-optimizer.js"
+			"../../src/tools/utility/memory-context-optimizer.js"
 		);
 
 		// Test different cache strategies
@@ -250,7 +250,7 @@ describe("Additional coverage for uncovered lines", () => {
 
 	it("should test code hygiene analyzer edge cases", async () => {
 		const { codeHygieneAnalyzer } = await import(
-			"../../src/tools/code-hygiene-analyzer.js"
+			"../../src/tools/analysis/code-hygiene-analyzer.js"
 		);
 
 		// Test with different languages
@@ -276,7 +276,7 @@ describe("Additional coverage for uncovered lines", () => {
 
 	it("should test sprint timeline calculator edge cases", async () => {
 		const { sprintTimelineCalculator } = await import(
-			"../../src/tools/sprint-timeline-calculator.js"
+			"../../src/tools/utility/sprint-timeline-calculator.js"
 		);
 
 		// Test with complex task structure
@@ -297,7 +297,7 @@ describe("Additional coverage for uncovered lines", () => {
 
 	it("should test model compatibility checker edge cases", async () => {
 		const { modelCompatibilityChecker } = await import(
-			"../../src/tools/model-compatibility-checker.js"
+			"../../src/tools/utility/model-compatibility-checker.js"
 		);
 
 		// Test with different budget levels and requirements
@@ -321,7 +321,7 @@ describe("Additional coverage for uncovered lines", () => {
 
 	it("should test guidelines validator edge cases", async () => {
 		const { guidelinesValidator } = await import(
-			"../../src/tools/guidelines-validator.js"
+			"../../src/tools/utility/guidelines-validator.js"
 		);
 
 		// Test different categories

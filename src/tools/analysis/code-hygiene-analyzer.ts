@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { buildFurtherReadingSection } from "./shared/prompt-utils.js";
+import { buildFurtherReadingSection } from "../shared/prompt-utils.js";
 
 const CodeHygieneSchema = z.object({
 	codeContent: z.string(),

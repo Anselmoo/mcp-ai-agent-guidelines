@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { codeHygieneAnalyzer } from "../../src/tools/code-hygiene-analyzer";
+import { codeHygieneAnalyzer } from "../../src/tools/analysis/code-hygiene-analyzer.js";
 
 describe("code-hygiene-analyzer", () => {
 	it("flags JS issues: TODO, var, console.log, async without try/catch", async () => {

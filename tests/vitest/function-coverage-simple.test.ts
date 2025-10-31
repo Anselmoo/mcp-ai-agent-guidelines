@@ -1,9 +1,9 @@
 // Strategic Function Coverage Boost Tests - Simple Version
 import { describe, expect, it } from "vitest";
-import { gapFrameworksAnalyzers } from "../../src/tools/analysis/gap-frameworks-analyzers.ts";
-import { strategyFrameworksBuilder } from "../../src/tools/analysis/strategy-frameworks-builder.ts";
 // Import main tools to exercise more functions
-import { codeHygieneAnalyzer } from "../../src/tools/code-hygiene-analyzer.ts";
+import { codeHygieneAnalyzer } from "../../src/tools/analysis/code-hygiene-analyzer.js";
+import { gapFrameworksAnalyzer } from "../../src/tools/analysis/gap-frameworks-analyzer.js";
+import { strategyFrameworksBuilder } from "../../src/tools/analysis/strategy-frameworks-builder.ts";
 import { confirmationModule } from "../../src/tools/design/confirmation-module.ts";
 // Import design tools that work in other tests
 import { constraintManager } from "../../src/tools/design/constraint-manager.ts";
@@ -11,15 +11,15 @@ import { coverageEnforcer } from "../../src/tools/design/coverage-enforcer.ts";
 import { designAssistant } from "../../src/tools/design/design-assistant.ts";
 import { pivotModule } from "../../src/tools/design/pivot-module.ts";
 import type { DesignSessionState } from "../../src/tools/design/types.ts";
-import { guidelinesValidator } from "../../src/tools/guidelines-validator.ts";
-import { memoryContextOptimizer } from "../../src/tools/memory-context-optimizer.ts";
-import { mermaidDiagramGenerator } from "../../src/tools/mermaid-diagram-generator.ts";
-import { modelCompatibilityChecker } from "../../src/tools/model-compatibility-checker.ts";
 import { domainNeutralPromptBuilder } from "../../src/tools/prompt/domain-neutral-prompt-builder.ts";
 import { hierarchicalPromptBuilder } from "../../src/tools/prompt/hierarchical-prompt-builder.ts";
 import { securityHardeningPromptBuilder } from "../../src/tools/prompt/security-hardening-prompt-builder.ts";
 import { sparkPromptBuilder } from "../../src/tools/prompt/spark-prompt-builder.ts";
-import { sprintTimelineCalculator } from "../../src/tools/sprint-timeline-calculator.ts";
+import { guidelinesValidator } from "../../src/tools/utility/guidelines-validator.js";
+import { memoryContextOptimizer } from "../../src/tools/utility/memory-context-optimizer.js";
+import { mermaidDiagramGenerator } from "../../src/tools/utility/mermaid-diagram-generator.js";
+import { modelCompatibilityChecker } from "../../src/tools/utility/model-compatibility-checker.js";
+import { sprintTimelineCalculator } from "../../src/tools/utility/sprint-timeline-calculator.js";
 
 describe("Function Coverage Boost - Simple", () => {
 	const createTestSessionState = (): DesignSessionState => ({
@@ -464,7 +464,7 @@ describe("Function Coverage Boost - Simple", () => {
 
 			for (const testCase of cases) {
 				try {
-					const result = await gapFrameworksAnalyzers(testCase);
+					const result = await gapFrameworksAnalyzer(testCase);
 					expect(result).toBeDefined();
 				} catch (error) {
 					expect(error).toBeDefined();

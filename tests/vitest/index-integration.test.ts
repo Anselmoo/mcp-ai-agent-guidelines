@@ -1,20 +1,20 @@
 // MCP Server Index Tests - Testing main server functionality
 import { beforeAll, describe, expect, it } from "vitest";
-import { gapFrameworksAnalyzers } from "../../src/tools/analysis/gap-frameworks-analyzers.ts";
+import { codeHygieneAnalyzer } from "../../src/tools/analysis/code-hygiene-analyzer.js";
+import { gapFrameworksAnalyzer } from "../../src/tools/analysis/gap-frameworks-analyzer.js";
 import { strategyFrameworksBuilder } from "../../src/tools/analysis/strategy-frameworks-builder.ts";
-import { codeHygieneAnalyzer } from "../../src/tools/code-hygiene-analyzer.ts";
 // Note: We can't directly test the server index since it sets up an MCP server,
 // but we can test the tool imports and basic functionality through the design assistant
 import { designAssistant } from "../../src/tools/design/index.ts";
-import { guidelinesValidator } from "../../src/tools/guidelines-validator.ts";
-import { memoryContextOptimizer } from "../../src/tools/memory-context-optimizer.ts";
-import { mermaidDiagramGenerator } from "../../src/tools/mermaid-diagram-generator.ts";
-import { modelCompatibilityChecker } from "../../src/tools/model-compatibility-checker.ts";
 import { domainNeutralPromptBuilder } from "../../src/tools/prompt/domain-neutral-prompt-builder.ts";
 import { hierarchicalPromptBuilder } from "../../src/tools/prompt/hierarchical-prompt-builder.ts";
 import { securityHardeningPromptBuilder } from "../../src/tools/prompt/security-hardening-prompt-builder.ts";
 import { sparkPromptBuilder } from "../../src/tools/prompt/spark-prompt-builder.ts";
-import { sprintTimelineCalculator } from "../../src/tools/sprint-timeline-calculator.ts";
+import { guidelinesValidator } from "../../src/tools/utility/guidelines-validator.js";
+import { memoryContextOptimizer } from "../../src/tools/utility/memory-context-optimizer.js";
+import { mermaidDiagramGenerator } from "../../src/tools/utility/mermaid-diagram-generator.js";
+import { modelCompatibilityChecker } from "../../src/tools/utility/model-compatibility-checker.js";
+import { sprintTimelineCalculator } from "../../src/tools/utility/sprint-timeline-calculator.js";
 
 describe("MCP Server Index Integration", () => {
 	beforeAll(async () => {
@@ -34,7 +34,7 @@ describe("MCP Server Index Integration", () => {
 		expect(sparkPromptBuilder).toBeDefined();
 		expect(domainNeutralPromptBuilder).toBeDefined();
 		expect(securityHardeningPromptBuilder).toBeDefined();
-		expect(gapFrameworksAnalyzers).toBeDefined();
+		expect(gapFrameworksAnalyzer).toBeDefined();
 		expect(strategyFrameworksBuilder).toBeDefined();
 	});
 
@@ -197,7 +197,7 @@ function testFunction() {
 	});
 
 	it("should test gap frameworks analyzers", async () => {
-		const result = await gapFrameworksAnalyzers({
+		const result = await gapFrameworksAnalyzer({
 			frameworks: ["capability"],
 			currentState: "Basic functionality implemented",
 			desiredState: "Full feature set with optimization",
@@ -312,7 +312,7 @@ function testFunction() {
 
 	it("should test analysis tools with complex scenarios", async () => {
 		// Test gap analysis with multiple frameworks
-		const gapResult = await gapFrameworksAnalyzers({
+		const gapResult = await gapFrameworksAnalyzer({
 			frameworks: ["capability", "performance", "maturity"],
 			currentState: "Initial implementation with basic features",
 			desiredState: "Production-ready system with advanced capabilities",

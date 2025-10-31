@@ -34,22 +34,17 @@ import {
 	promptChainingBuilderSchema,
 	promptFlowBuilderSchema,
 } from "./schemas/flow-tool-schemas.js";
-import { gapFrameworksAnalyzers } from "./tools/analysis/gap-frameworks-analyzers.js";
+import { cleanCodeScorer } from "./tools/analysis/clean-code-scorer.js";
+import { codeHygieneAnalyzer } from "./tools/analysis/code-hygiene-analyzer.js";
+import { dependencyAuditor } from "./tools/analysis/dependency-auditor.js";
+import { gapFrameworksAnalyzer } from "./tools/analysis/gap-frameworks-analyzer.js";
+import { iterativeCoverageEnhancer } from "./tools/analysis/iterative-coverage-enhancer.js";
+import { semanticCodeAnalyzer } from "./tools/analysis/semantic-code-analyzer.js";
 import { strategyFrameworksBuilder } from "./tools/analysis/strategy-frameworks-builder.js";
-import { cleanCodeScorer } from "./tools/clean-code-scorer.js";
-import { codeHygieneAnalyzer } from "./tools/code-hygiene-analyzer.js";
-import { dependencyAuditor } from "./tools/dependency-auditor.js";
 import {
 	type DesignAssistantRequest,
 	designAssistant,
 } from "./tools/design/index.js";
-import { guidelinesValidator } from "./tools/guidelines-validator.js";
-import { iterativeCoverageEnhancer } from "./tools/iterative-coverage-enhancer.js";
-import { memoryContextOptimizer } from "./tools/memory-context-optimizer.js";
-import { mermaidDiagramGenerator } from "./tools/mermaid-diagram-generator.js";
-import { modeSwitcher } from "./tools/mode-switcher.js";
-import { modelCompatibilityChecker } from "./tools/model-compatibility-checker.js";
-import { projectOnboarding } from "./tools/project-onboarding.js";
 import { architectureDesignPromptBuilder } from "./tools/prompt/architecture-design-prompt-builder.js";
 import { codeAnalysisPromptBuilder } from "./tools/prompt/code-analysis-prompt-builder.js";
 import { debuggingAssistantPromptBuilder } from "./tools/prompt/debugging-assistant-prompt-builder.js";
@@ -65,8 +60,13 @@ import { promptFlowBuilder } from "./tools/prompt/prompt-flow-builder.js";
 import { promptingHierarchyEvaluator } from "./tools/prompt/prompting-hierarchy-evaluator.js";
 import { securityHardeningPromptBuilder } from "./tools/prompt/security-hardening-prompt-builder.js";
 import { sparkPromptBuilder } from "./tools/prompt/spark-prompt-builder.js";
-import { semanticCodeAnalyzer } from "./tools/semantic-code-analyzer.js";
-import { sprintTimelineCalculator } from "./tools/sprint-timeline-calculator.js";
+import { guidelinesValidator } from "./tools/utility/guidelines-validator.js";
+import { memoryContextOptimizer } from "./tools/utility/memory-context-optimizer.js";
+import { mermaidDiagramGenerator } from "./tools/utility/mermaid-diagram-generator.js";
+import { modeSwitcher } from "./tools/utility/mode-switcher.js";
+import { modelCompatibilityChecker } from "./tools/utility/model-compatibility-checker.js";
+import { projectOnboarding } from "./tools/utility/project-onboarding.js";
+import { sprintTimelineCalculator } from "./tools/utility/sprint-timeline-calculator.js";
 
 const server = new Server(
 	{
@@ -1846,7 +1846,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 			case "strategy-frameworks-builder":
 				return strategyFrameworksBuilder(args);
 			case "gap-frameworks-analyzers":
-				return gapFrameworksAnalyzers(args);
+				return gapFrameworksAnalyzer(args);
 			case "spark-prompt-builder":
 				return sparkPromptBuilder(args);
 			case "domain-neutral-prompt-builder":

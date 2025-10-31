@@ -3,7 +3,7 @@
 // while identifying and suggesting removal of dead code
 
 import { z } from "zod";
-import { buildFurtherReadingSection } from "./shared/prompt-utils.js";
+import { buildFurtherReadingSection } from "../shared/prompt-utils.js";
 
 const IterativeCoverageEnhancerSchema = z.object({
 	// Analysis Configuration

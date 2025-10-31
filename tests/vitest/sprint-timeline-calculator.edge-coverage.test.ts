@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { sprintTimelineCalculator } from "../../src/tools/sprint-timeline-calculator";
+import { sprintTimelineCalculator } from "../../src/tools/utility/sprint-timeline-calculator.js";
 
 describe("Sprint Timeline Calculator - Additional Coverage", () => {
 	it("should handle edge case: no risks (low risk scenario)", async () => {

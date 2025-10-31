@@ -2,7 +2,7 @@ import { z } from "zod";
 import {
 	buildFurtherReadingSection,
 	buildMetadataSection,
-} from "./shared/prompt-utils.js";
+} from "../shared/prompt-utils.js";
 
 const ProjectOnboardingSchema = z.object({
 	projectPath: z.string().describe("Path to the project directory"),

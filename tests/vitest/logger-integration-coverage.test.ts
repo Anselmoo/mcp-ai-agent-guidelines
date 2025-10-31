@@ -9,7 +9,7 @@ describe("Logger Integration - Error Path Coverage", () => {
 				.mockImplementation(() => {});
 
 			const { sprintTimelineCalculator } = await import(
-				"../../src/tools/sprint-timeline-calculator"
+				"../../src/tools/utility/sprint-timeline-calculator.js"
 			);
 
 			// Create tasks with circular dependencies
@@ -54,7 +54,7 @@ describe("Logger Integration - Error Path Coverage", () => {
 				.spyOn(console, "error")
 				.mockImplementation(() => {});
 			const { sprintTimelineCalculator } = await import(
-				"../../src/tools/sprint-timeline-calculator"
+				"../../src/tools/utility/sprint-timeline-calculator.js"
 			);
 
 			// Create tasks without circular dependencies

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { iterativeCoverageEnhancer } from "../../src/tools/iterative-coverage-enhancer.js";
+import { iterativeCoverageEnhancer } from "../../src/tools/analysis/iterative-coverage-enhancer.js";
 
 describe("Iterative Coverage Enhancer", () => {
 	it("should generate a comprehensive coverage enhancement report with default settings", async () => {

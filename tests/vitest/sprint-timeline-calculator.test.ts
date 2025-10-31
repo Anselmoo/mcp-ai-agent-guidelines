@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { sprintTimelineCalculator } from "../../src/tools/sprint-timeline-calculator";
+import { sprintTimelineCalculator } from "../../src/tools/utility/sprint-timeline-calculator.js";
 
 describe("sprint-timeline-calculator", () => {
 	it("calculates sprints and outputs tables and gantt", async () => {

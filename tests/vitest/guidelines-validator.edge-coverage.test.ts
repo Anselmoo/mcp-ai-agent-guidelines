@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { guidelinesValidator } from "../../src/tools/guidelines-validator";
+import { guidelinesValidator } from "../../src/tools/utility/guidelines-validator.js";
 
 describe("Guidelines Validator - Additional Coverage", () => {
 	it("should handle excellent compliance (score >= 80)", async () => {

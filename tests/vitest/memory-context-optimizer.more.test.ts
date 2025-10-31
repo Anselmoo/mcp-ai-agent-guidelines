@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { memoryContextOptimizer } from "../../src/tools/memory-context-optimizer";
+import { memoryContextOptimizer } from "../../src/tools/utility/memory-context-optimizer.js";
 
 describe("memory-context-optimizer (limits and segments)", () => {
 	it("truncates when maxTokens is smaller than content", async () => {

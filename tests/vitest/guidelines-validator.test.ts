@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { guidelinesValidator } from "../../src/tools/guidelines-validator";
+import { guidelinesValidator } from "../../src/tools/utility/guidelines-validator.js";
 
 describe("guidelines-validator", () => {
 	it("assesses compliance and includes best practices with references", async () => {

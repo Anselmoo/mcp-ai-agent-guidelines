@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { dependencyAuditor } from "../../src/tools/dependency-auditor.js";
+import { dependencyAuditor } from "../../src/tools/analysis/dependency-auditor.js";
 
 describe("dependency-auditor", () => {
 	it("analyzes a basic package.json with no issues", async () => {

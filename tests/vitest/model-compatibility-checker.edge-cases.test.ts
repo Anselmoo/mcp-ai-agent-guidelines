@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { modelCompatibilityChecker } from "../../src/tools/model-compatibility-checker";
+import { modelCompatibilityChecker } from "../../src/tools/utility/model-compatibility-checker.js";
 
 describe("model-compatibility-checker edge cases and branches", () => {
 	it("handles empty requirements array", async () => {

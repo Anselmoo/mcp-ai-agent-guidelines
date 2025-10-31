@@ -4,7 +4,7 @@
 import { describe, expect, it } from "vitest";
 
 // Import analysis frameworks
-import { gapFrameworksAnalyzers } from "../../src/tools/analysis/gap-frameworks-analyzers.ts";
+import { gapFrameworksAnalyzer } from "../../src/tools/analysis/gap-frameworks-analyzer.js";
 import { strategyFrameworksBuilder } from "../../src/tools/analysis/strategy-frameworks-builder.ts";
 
 // Import design tools that need more coverage
@@ -28,7 +28,7 @@ describe("Maximum Coverage Expansion", () => {
 			];
 
 			for (const framework of frameworks) {
-				const result = await gapFrameworksAnalyzers({
+				const result = await gapFrameworksAnalyzer({
 					frameworks: [framework as any],
 					currentState: "Current system state",
 					desiredState: "Target system state",
@@ -39,7 +39,7 @@ describe("Maximum Coverage Expansion", () => {
 			}
 
 			// Test with multiple frameworks
-			const multiResult = await gapFrameworksAnalyzers({
+			const multiResult = await gapFrameworksAnalyzer({
 				frameworks: ["capability", "performance", "maturity"],
 				currentState: "Existing capabilities need improvement",
 				desiredState: "Enhanced system with better performance",
@@ -423,7 +423,7 @@ describe("Maximum Coverage Expansion", () => {
 		});
 
 		it.skip("should handle empty analysis requests", async () => {
-			// SKIPPED: gapFrameworksAnalyzers was removed as dead code during refactoring
+			// SKIPPED: gapFrameworksAnalyzer was removed as dead code during refactoring
 			// This test validates error handling for empty analysis frameworks
 			expect(true).toBe(true);
 		});
