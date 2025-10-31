@@ -21,7 +21,7 @@
 ### 🚨 Issues by Severity
 
 #### 🔵 Low (1)
-**@biomejs/biome@2.3.1** - Exact Version Pin
+**`@biomejs/biome@2.3.1`** - Exact Version Pin
   - Exact version pinning prevents automatic security updates
   - 💡 **Recommendation**: Consider using caret (^) ranges to allow patch updates
 
