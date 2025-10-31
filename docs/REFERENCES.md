@@ -177,20 +177,6 @@ We are deeply grateful to:
 3. **The open-source community** for building and sharing tools that advance the field of AI agent development
 4. **All researchers and practitioners** who have contributed to the fields of prompt engineering, AI orchestration, and agent-based systems
 
-## 📝 How to Cite
-
-If you use this MCP server in your research or project and find the methodologies helpful, please consider citing the relevant papers and projects mentioned above. For this specific implementation:
-
-```bibtex
-@software{mcp_ai_agent_guidelines,
-  title = {MCP AI Agent Guidelines Server},
-  author = {Anselmoo and contributors},
-  year = {2025},
-  url = {https://github.com/Anselmoo/mcp-ai-agent-guidelines},
-  note = {Model Context Protocol server for hierarchical prompting and AI agent guidelines}
-}
-```
-
 ## 🔄 Keeping References Updated
 
 This project evolves rapidly alongside the AI ecosystem. We commit to:
