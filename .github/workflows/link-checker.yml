@@ -166,7 +166,10 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
 
           # Check for disclaimer text
-          DISCLAIMER_COUNT=$(grep -r "informational and educational purposes only" demos/ docs/ --include="*.md" | wc -l || true)
+          DISCLAIMER_COUNT=$(
+            grep -r "informational and educational purposes only" \
+              demos/ docs/ --include="*.md" | wc -l || true
+          )
           echo "Files with disclaimer text: $DISCLAIMER_COUNT" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
