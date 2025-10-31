@@ -3,6 +3,41 @@
  *
  * Provides integration points between semantic code analyzer and other tools
  * Enables semantic analysis to enhance prompts, strategies, and other tools
+ *
+ * ## Extensibility Examples
+ *
+ * ### Adding a Custom Language
+ * ```typescript
+ * import { languageRegistry } from '../semantic-analyzer';
+ *
+ * languageRegistry.register({
+ *   name: 'Kotlin',
+ *   extensions: ['.kt'],
+ *   detect: (code) => code.includes('fun ') && code.includes('package'),
+ *   extractSymbols: (code) => { ... },
+ *   extractDependencies: (code) => { ... }
+ * });
+ * ```
+ *
+ * ### Adding a Custom Pattern
+ * ```typescript
+ * import { patternRegistry } from '../semantic-analyzer';
+ *
+ * patternRegistry.register({
+ *   name: 'Repository Pattern',
+ *   description: 'Data access layer pattern',
+ *   detect: (code, language) => {
+ *     if (code.match(/class\s+\w+Repository/i)) {
+ *       return {
+ *         pattern: 'Repository Pattern',
+ *         description: 'Repository pattern for data access abstraction',
+ *         locations: ['Repository class detected']
+ *       };
+ *     }
+ *     return null;
+ *   }
+ * });
+ * ```
  */
 
 /**
