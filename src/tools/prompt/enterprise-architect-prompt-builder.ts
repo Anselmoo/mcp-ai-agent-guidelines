@@ -586,7 +586,7 @@ export async function enterpriseArchitectPromptBuilder(args: unknown) {
 						"Best practices for designing cloud applications on Google Cloud",
 				},
 				{
-					title: "Principles of being a Green Software Practitioner",
+					title: "Principles of Green Software Engineering",
 					url: "https://learn.greensoftware.foundation/",
 					description:
 						"Guidelines for building sustainable, energy-efficient software",
