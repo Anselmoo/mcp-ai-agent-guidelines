@@ -124,12 +124,6 @@
 - Add error handling (try-catch blocks) for robustness
 - Ensure async operations have proper error handling
 - Review dependencies for potential consolidation or removal
-## References
-- Language Server Protocol: https://microsoft.github.io/language-server-protocol/
-- Semantic Code Analysis: https://en.wikipedia.org/wiki/Semantic_analysis_(compilers)
-- Design Patterns: https://refactoring.guru/design-patterns
-- Symbol-Based Navigation: https://code.visualstudio.com/docs/editor/editingevolved
-=======
 ## Further Reading
 
 *The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*
@@ -138,6 +132,5 @@
 - **[Semantic Analysis in Compilers](https://en.wikipedia.org/wiki/Semantic_analysis_(compilers))**: Overview of semantic analysis techniques in code compilation
 - **[Design Patterns Catalog](https://refactoring.guru/design-patterns)**: Comprehensive catalog of software design patterns
 - **[Symbol-Based Navigation](https://code.visualstudio.com/docs/editor/editingevolved)**: Advanced code navigation using symbols in VS Code
-
 
 
