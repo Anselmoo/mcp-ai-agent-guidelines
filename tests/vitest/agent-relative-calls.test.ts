@@ -288,4 +288,149 @@ describe("Agent-Relative Calls Support", () => {
 			expect(markdown).toContain("Performance");
 		});
 	});
+
+	describe("Enhanced Tool Descriptions", () => {
+		it("should verify all tools have agent-friendly descriptions with examples", async () => {
+			// Import the actual index file to get tool descriptions
+			const fs = await import("node:fs");
+			const indexContent = fs.readFileSync("src/index.ts", "utf-8");
+
+			// Check that all tools have the "Use this MCP" pattern
+			const toolDescriptionMatches = indexContent.match(
+				/description:\s*"[^"]*Use this MCP to[^"]*"/g,
+			);
+
+			// We should have at least 25 tools with this pattern
+			expect(toolDescriptionMatches).toBeDefined();
+			if (toolDescriptionMatches) {
+				expect(toolDescriptionMatches.length).toBeGreaterThanOrEqual(25);
+			}
+
+			// Check that all tools have examples
+			const exampleMatches = indexContent.match(
+				/description:\s*"[^"]*Example:[^"]*"/g,
+			);
+			expect(exampleMatches).toBeDefined();
+			if (exampleMatches) {
+				expect(exampleMatches.length).toBeGreaterThanOrEqual(25);
+			}
+		});
+
+		it("should validate prompt builder tools have consistent descriptions", async () => {
+			const fs = await import("node:fs");
+			const indexContent = fs.readFileSync("src/index.ts", "utf-8");
+
+			const promptBuilders = [
+				"hierarchical-prompt-builder",
+				"code-analysis-prompt-builder",
+				"architecture-design-prompt-builder",
+				"debugging-assistant-prompt-builder",
+				"documentation-generator-prompt-builder",
+				"security-hardening-prompt-builder",
+			];
+
+			for (const tool of promptBuilders) {
+				// Find the tool definition - look for name followed by description on next line
+				const toolRegex = new RegExp(
+					`name:\\s*"${tool}",\\s*description:\\s*"([^"]+)"`,
+					"s",
+				);
+				const match = indexContent.match(toolRegex);
+
+				expect(match, `Tool ${tool} should be found in index.ts`).toBeTruthy();
+				if (match) {
+					const description = match[1];
+					expect(
+						description,
+						`${tool} should have "Use this MCP" pattern`,
+					).toContain("Use this MCP");
+					expect(description, `${tool} should have Example`).toContain(
+						"Example:",
+					);
+				}
+			}
+		});
+
+		it("should validate analysis tools have consistent descriptions", async () => {
+			const fs = await import("node:fs");
+			const indexContent = fs.readFileSync("src/index.ts", "utf-8");
+
+			const analysisTools = [
+				"clean-code-scorer",
+				"code-hygiene-analyzer",
+				"dependency-auditor",
+				"iterative-coverage-enhancer",
+			];
+
+			for (const tool of analysisTools) {
+				const toolRegex = new RegExp(
+					`name:\\s*"${tool}",\\s*description:\\s*"([^"]+)"`,
+					"s",
+				);
+				const match = indexContent.match(toolRegex);
+
+				expect(match, `Tool ${tool} should be found in index.ts`).toBeTruthy();
+				if (match) {
+					const description = match[1];
+					expect(
+						description,
+						`${tool} should have "Use this MCP" pattern`,
+					).toContain("Use this MCP");
+					expect(description, `${tool} should have Example`).toContain(
+						"Example:",
+					);
+				}
+			}
+		});
+
+		it("should validate workflow tools have consistent descriptions", async () => {
+			const fs = await import("node:fs");
+			const indexContent = fs.readFileSync("src/index.ts", "utf-8");
+
+			const workflowTools = [
+				"design-assistant",
+				"mode-switcher",
+				"guidelines-validator",
+				"model-compatibility-checker",
+			];
+
+			for (const tool of workflowTools) {
+				const toolRegex = new RegExp(
+					`name:\\s*"${tool}",\\s*description:\\s*"([^"]+)"`,
+					"s",
+				);
+				const match = indexContent.match(toolRegex);
+
+				expect(match, `Tool ${tool} should be found in index.ts`).toBeTruthy();
+				if (match) {
+					const description = match[1];
+					expect(
+						description,
+						`${tool} should have "Use this MCP" pattern`,
+					).toContain("Use this MCP");
+					expect(description, `${tool} should have Example`).toContain(
+						"Example:",
+					);
+				}
+			}
+		});
+
+		it("should validate flow builder schemas have enhanced descriptions", async () => {
+			const fs = await import("node:fs");
+			const schemaContent = fs.readFileSync(
+				"src/schemas/flow-tool-schemas.ts",
+				"utf-8",
+			);
+
+			// Check prompt-chaining-builder
+			expect(schemaContent).toContain("prompt-chaining-builder");
+			expect(schemaContent).toContain("Use this MCP");
+			expect(schemaContent).toContain("Example:");
+
+			// Check prompt-flow-builder
+			expect(schemaContent).toContain("prompt-flow-builder");
+			expect(schemaContent).toContain("Use this MCP");
+			expect(schemaContent).toContain("Example:");
+		});
+	});
 });
