@@ -114,7 +114,7 @@ const SparkPromptSchema = z.object({
 	techniques: z.array(TechniqueEnum).optional(),
 	includeTechniqueHints: z.boolean().optional().default(false),
 	autoSelectTechniques: z.boolean().optional().default(false),
-	provider: ProviderEnum.optional().default("gpt-4.1"),
+	provider: ProviderEnum.optional().default("gpt-5"),
 	style: StyleEnum.optional(),
 
 	// Components
@@ -148,7 +148,7 @@ const SparkPromptSchema = z.object({
 
 	// YAML prompt frontmatter (optional, to mirror hierarchical builder)
 	mode: z.string().optional().default("agent"),
-	model: z.string().optional().default("GPT-4.1"),
+	model: z.string().optional().default("GPT-5"),
 	tools: z
 		.array(z.string())
 		.optional()
@@ -177,8 +177,19 @@ export async function sparkPromptBuilder(args: unknown) {
 	const input = SparkPromptSchema.parse(args);
 
 	const enforce = input.forcePromptMdStyle ?? true;
-	const effectiveIncludeFrontmatter = enforce ? true : input.includeFrontmatter;
-	const effectiveIncludeMetadata = enforce ? true : input.includeMetadata;
+	// Explicit false for includeFrontmatter overrides forcePromptMdStyle
+	const effectiveIncludeFrontmatter =
+		input.includeFrontmatter === false
+			? false
+			: enforce
+				? true
+				: input.includeFrontmatter;
+	const effectiveIncludeMetadata =
+		input.includeMetadata === false
+			? false
+			: enforce
+				? true
+				: input.includeMetadata;
 
 	const prompt = buildSparkPrompt(input);
 	const frontmatter = effectiveIncludeFrontmatter

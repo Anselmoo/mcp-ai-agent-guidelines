@@ -129,7 +129,7 @@ const DomainNeutralSchema = z.object({
 
 	// Prompt frontmatter controls
 	mode: z.string().optional().default("agent"),
-	model: z.string().optional().default("GPT-4.1"),
+	model: z.string().optional().default("GPT-5"),
 	tools: z
 		.array(z.string())
 		.optional()
@@ -146,7 +146,7 @@ const DomainNeutralSchema = z.object({
 	// Optional model tips
 	techniques: z.array(TechniqueEnum).optional(),
 	autoSelectTechniques: z.boolean().optional().default(false),
-	provider: ProviderEnum.optional().default("gpt-4.1"),
+	provider: ProviderEnum.optional().default("gpt-5"),
 	style: StyleEnum.optional(),
 });
 
@@ -166,8 +166,19 @@ export async function domainNeutralPromptBuilder(args: unknown) {
 	const input = DomainNeutralSchema.parse(args);
 
 	const enforce = input.forcePromptMdStyle ?? true;
-	const effectiveIncludeFrontmatter = enforce ? true : input.includeFrontmatter;
-	const effectiveIncludeMetadata = enforce ? true : input.includeMetadata;
+	// Explicit false for includeFrontmatter/includeMetadata overrides forcePromptMdStyle
+	const effectiveIncludeFrontmatter =
+		input.includeFrontmatter === false
+			? false
+			: enforce
+				? true
+				: input.includeFrontmatter;
+	const effectiveIncludeMetadata =
+		input.includeMetadata === false
+			? false
+			: enforce
+				? true
+				: input.includeMetadata;
 
 	const prompt = buildDomainNeutralPrompt(input);
 	const frontmatter = effectiveIncludeFrontmatter
