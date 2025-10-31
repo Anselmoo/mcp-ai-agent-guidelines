@@ -243,7 +243,7 @@ describe("enterpriseArchitectPromptBuilder", () => {
 			expect(text).toContain("EU AI Act Compliance Framework");
 			expect(text).toContain("Platform Engineering Maturity Model");
 			expect(text).toContain("Internal Developer Platform Guides");
-			expect(text).toContain("Principles of Green Software Engineering");
+			expect(text).toContain("Green Software Foundation Training");
 		});
 
 		it("should not include references when includeReferences is false", async () => {
