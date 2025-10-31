@@ -16,6 +16,10 @@
 
 ^\.\./\.\.\/issues/
 
+# NPM package names that look like mailto links (e.g., package@version)
+# Matches mailto: links where the part after @ starts with a version number or range operator
+^mailto:.*@[0-9~^]
+
 # Local doc anchors and anchors to be skipped
 
 # Example: skip references to internal anchors that may be generated dynamically

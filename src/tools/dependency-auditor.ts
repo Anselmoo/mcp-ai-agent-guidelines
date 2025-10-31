@@ -489,7 +489,7 @@ ${metadata}
 }
 
 function formatIssue(issue: Issue): string {
-	let formatted = `**\`${issue.package}@${issue.version}\`** - ${issue.type}\n`;
+	let formatted = `**${issue.package}@${issue.version}** - ${issue.type}\n`;
 	formatted += `  - ${issue.description}\n`;
 	if (issue.recommendation) {
 		formatted += `  - 💡 **Recommendation**: ${issue.recommendation}\n`;

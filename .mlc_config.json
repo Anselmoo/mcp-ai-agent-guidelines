@@ -29,6 +29,9 @@
 		},
 		{
 			"pattern": "^file:///<project-root>/"
+		},
+		{
+			"pattern": "^mailto:.*@[0-9~^]"
 		}
 	],
 	"replacementPatterns": [],
