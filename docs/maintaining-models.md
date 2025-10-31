@@ -24,22 +24,22 @@ src/tools/config/
 
 ```yaml
 - name: "Model Name"
-  provider: "Provider Name"  # e.g., "OpenAI", "Anthropic", "Google"
-  pricingTier: "mid-tier"    # Options: "premium", "mid-tier", "budget"
-  contextTokens: 128000      # Context window size
-  baseScore: 52              # Base scoring (1-100)
-  capabilities:              # List of capabilities
+  provider: "Provider Name" # e.g., "OpenAI", "Anthropic", "Google"
+  pricingTier: "mid-tier" # Options: "premium", "mid-tier", "budget"
+  contextTokens: 128000 # Context window size
+  baseScore: 52 # Base scoring (1-100)
+  capabilities: # List of capabilities
     - "reasoning"
     - "code"
     - "speed"
-  strengths:                 # List of strength descriptions
+  strengths: # List of strength descriptions
     - "Strength 1"
     - "Strength 2"
-  limitations:               # List of limitations
+  limitations: # List of limitations
     - "Limitation 1"
-  specialFeatures:           # List of special features
+  specialFeatures: # List of special features
     - "Feature 1"
-  pricing: "Mid-tier ($5-10/1M tokens)"  # Pricing description
+  pricing: "Mid-tier ($5-10/1M tokens)" # Pricing description
 ```
 
 ### Updating an Existing Model
@@ -73,6 +73,7 @@ src/tools/config/
 ### Capability Keywords
 
 Available capability types:
+
 - `reasoning`: For complex problem-solving
 - `code`: For programming and development
 - `large-context`: For handling large documents
@@ -94,6 +95,7 @@ Available capability types:
 Reference: https://docs.github.com/en/copilot/reference/ai-models/supported-models
 
 Check this page regularly for:
+
 - New model releases
 - Model deprecations
 - Updated capabilities
@@ -102,6 +104,7 @@ Check this page regularly for:
 ### Model Migration/Retirement
 
 When models are deprecated:
+
 1. Check: https://docs.github.com/en/copilot/reference/ai-models/supported-models#model-retirement-history
 2. Update the YAML to remove deprecated models
 3. Add replacement models if available
@@ -165,6 +168,7 @@ budgetAdjustments:
 ### YAML Syntax Errors
 
 If you get an error loading the YAML file:
+
 - Check for proper indentation (use 2 spaces, not tabs)
 - Ensure lists use `- ` prefix
 - Verify strings with special characters are quoted
@@ -173,6 +177,7 @@ If you get an error loading the YAML file:
 ### Type Errors
 
 If TypeScript complains:
+
 - Ensure all required fields are present
 - Check that `pricingTier` is one of the three allowed values
 - Verify arrays contain the correct data types
@@ -180,6 +185,7 @@ If TypeScript complains:
 ### Caching Issues
 
 The model loader caches data on first load. If changes aren't reflected:
+
 1. Restart your development server
 2. Rebuild: `npm run build`
 
@@ -222,6 +228,7 @@ Complete example of adding "Claude Sonnet 5":
 ## Getting Help
 
 If you need assistance:
-1. Check the [CONTRIBUTING.md](../../../CONTRIBUTING.md) guide
+
+1. Check the [CONTRIBUTING.md](../CONTRIBUTING.md) guide
 2. Review existing model entries for reference
 3. Open an issue on GitHub with the "documentation" label
