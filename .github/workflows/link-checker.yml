@@ -40,7 +40,7 @@ jobs:
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
       - name: Check links in all markdown files
-        uses: gaurav-nelson/github-action-markdown-link-check@4a1af151f4d7cf4d8f8ac5780597672a3671b88b # 1.0.17
+        uses: gaurav-nelson/github-action-markdown-link-check@3c3b66f1f7d0900e37b71eca45b63ea9eedfce31 # 1.0.17
         with:
           config-file: ".mlc_config.json"
           use-quiet-mode: "no"
