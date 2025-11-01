@@ -1,3 +1,13 @@
+<!-- AUTO-GENERATED INTERACTIVE HEADER - DO NOT EDIT -->
+<iframe
+    src="../.frames-interactive/header-tips.html"
+    style="width: 100%; height: 180px; border: none; display: block; margin: 0; padding: 0;"
+    title="Interactive Header"
+    loading="lazy"
+    sandbox="allow-scripts allow-same-origin"
+></iframe>
+<!-- END AUTO-GENERATED INTERACTIVE HEADER -->
+
 # AI Interaction Tips
 
 > **Quick Start Guides** for effective AI collaboration and prompting strategies
@@ -54,3 +64,15 @@ This folder contains practical tips, best practices, and quick reference guides 
 ---
 
 **Navigation**: [📁 Docs Home](../README.md) • [🛠️ Tools Reference](./tools/) • [ℹ️ About](../about/)
+
+
+<!-- AUTO-GENERATED INTERACTIVE FOOTER - DO NOT EDIT -->
+<iframe
+    src="../.frames-interactive/footer-tips.html"
+    style="width: 100%; height: 400px; border: none; display: block; margin: 0; padding: 0;"
+    title="Interactive Footer"
+    loading="lazy"
+    sandbox="allow-scripts allow-same-origin"
+></iframe>
+<!-- END AUTO-GENERATED INTERACTIVE FOOTER -->
+

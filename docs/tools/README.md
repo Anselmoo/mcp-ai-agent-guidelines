@@ -1,3 +1,13 @@
+<!-- AUTO-GENERATED INTERACTIVE HEADER - DO NOT EDIT -->
+<iframe
+    src="../.frames-interactive/header-tools.html"
+    style="width: 100%; height: 180px; border: none; display: block; margin: 0; padding: 0;"
+    title="Interactive Header"
+    loading="lazy"
+    sandbox="allow-scripts allow-same-origin"
+></iframe>
+<!-- END AUTO-GENERATED INTERACTIVE HEADER -->
+
 # Tools Documentation
 
 > **Detailed guides** for each MCP tool and workflow patterns
@@ -104,3 +114,15 @@ For complete parameter schemas, examples, and best practices:
 ---
 
 **Navigation**: [📁 Docs Home](../README.md) • [💡 Tips](../tips/) • [ℹ️ About](../about/)
+
+
+<!-- AUTO-GENERATED INTERACTIVE FOOTER - DO NOT EDIT -->
+<iframe
+    src="../.frames-interactive/footer-tools.html"
+    style="width: 100%; height: 400px; border: none; display: block; margin: 0; padding: 0;"
+    title="Interactive Footer"
+    loading="lazy"
+    sandbox="allow-scripts allow-same-origin"
+></iframe>
+<!-- END AUTO-GENERATED INTERACTIVE FOOTER -->
+

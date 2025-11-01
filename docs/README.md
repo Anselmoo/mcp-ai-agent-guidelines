@@ -1,3 +1,13 @@
+<!-- AUTO-GENERATED INTERACTIVE HEADER - DO NOT EDIT -->
+<iframe
+    src=".frames-interactive/header-docs-README.html"
+    style="width: 100%; height: 180px; border: none; display: block; margin: 0; padding: 0;"
+    title="Interactive Header"
+    loading="lazy"
+    sandbox="allow-scripts allow-same-origin"
+></iframe>
+<!-- END AUTO-GENERATED INTERACTIVE HEADER -->
+
 ![Documentation Index](https://img.shields.io/badge/Documentation_Index-1a7f37?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMyA3VjE3TDEyIDIyTDIxIDE3VjdMMTIgMloiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CjxwYXRoIGQ9Ik0xMiA4VjE2IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8cGF0aCBkPSJNOCAxMkgxNiIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPC9zdmc+)
 
 **Comprehensive Documentation Hub** • All MCP AI Agent Guidelines Resources
@@ -141,3 +151,15 @@ npm run quality            # Check quality standards
 Made with ❤️ by the MCP AI Agent Guidelines community
 
 </div>
+
+
+<!-- AUTO-GENERATED INTERACTIVE FOOTER - DO NOT EDIT -->
+<iframe
+    src=".frames-interactive/footer-docs-README.html"
+    style="width: 100%; height: 400px; border: none; display: block; margin: 0; padding: 0;"
+    title="Interactive Footer"
+    loading="lazy"
+    sandbox="allow-scripts allow-same-origin"
+></iframe>
+<!-- END AUTO-GENERATED INTERACTIVE FOOTER -->
+

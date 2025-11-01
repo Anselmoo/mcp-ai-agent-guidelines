@@ -1,3 +1,13 @@
+<!-- AUTO-GENERATED INTERACTIVE HEADER - DO NOT EDIT -->
+<iframe
+    src="docs/.frames-interactive/header-DISCLAIMER.html"
+    style="width: 100%; height: 180px; border: none; display: block; margin: 0; padding: 0;"
+    title="Interactive Header"
+    loading="lazy"
+    sandbox="allow-scripts allow-same-origin"
+></iframe>
+<!-- END AUTO-GENERATED INTERACTIVE HEADER -->
+
 # Disclaimer
 
 ## External References
@@ -83,3 +93,15 @@ This disclaimer may be updated periodically. Continued use of the project after 
 **Last Updated**: 2025-10-28
 **Project**: mcp-ai-agent-guidelines
 **License**: See [LICENSE](./LICENSE) file in repository root
+
+
+<!-- AUTO-GENERATED INTERACTIVE FOOTER - DO NOT EDIT -->
+<iframe
+    src="docs/.frames-interactive/footer-DISCLAIMER.html"
+    style="width: 100%; height: 400px; border: none; display: block; margin: 0; padding: 0;"
+    title="Interactive Footer"
+    loading="lazy"
+    sandbox="allow-scripts allow-same-origin"
+></iframe>
+<!-- END AUTO-GENERATED INTERACTIVE FOOTER -->
+

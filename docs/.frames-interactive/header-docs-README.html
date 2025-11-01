@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #5FED83 0%, #3094FF 100%);
+            color: #FFFFFF;
+            overflow: hidden;
+            height: 180px;
+            position: relative;
+        }
+
+        /* Animated Gitlines */
+        .gitlines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            opacity: 0.3;
+            z-index: 1;
+        }
+
+        .gitline {
+            position: absolute;
+            width: 2px;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, #FFFFFF, transparent);
+            animation: slideDown 3s ease-in-out infinite;
+        }
+
+        .gitline:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .gitline:nth-child(2) { left: 30%; animation-delay: 0.6s; }
+        .gitline:nth-child(3) { left: 50%; animation-delay: 1.2s; }
+        .gitline:nth-child(4) { left: 70%; animation-delay: 1.8s; }
+        .gitline:nth-child(5) { left: 90%; animation-delay: 2.4s; }
+
+        @keyframes slideDown {
+            0% { transform: translateY(-100%); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(100%); opacity: 0; }
+        }
+
+        /* Floating Shapes */
+        .shapes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 8px;
+            opacity: 0.2;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .shape:nth-child(1) {
+            width: 40px;
+            height: 40px;
+            background: #BFFFD1;
+            top: 20%;
+            left: 15%;
+            animation-delay: 0s;
+        }
+
+        .shape:nth-child(2) {
+            width: 60px;
+            height: 60px;
+            background: #D0B0FF;
+            top: 60%;
+            left: 75%;
+            animation-delay: 2s;
+        }
+
+        .shape:nth-child(3) {
+            width: 50px;
+            height: 50px;
+            background: #9EECFF;
+            top: 40%;
+            right: 20%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        /* Content Container */
+        .header-container {
+            position: relative;
+            z-index: 10;
+            padding: 20px 40px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Title Row */
+        .title-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            animation: slideInLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .icon {
+            font-size: 48px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-top: 8px;
+            animation: fadeIn 1s ease-in 0.5s both;
+        }
+
+        /* Navigation Row */
+        .nav-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            animation: slideInLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-link {
+            color: #FFFFFF;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Search Bar */
+        .search-container {
+            animation: slideInRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+        }
+
+        .search-input {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            color: #FFFFFF;
+            font-size: 14px;
+            width: 200px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .search-input:focus {
+            outline: none;
+            width: 300px;
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        @keyframes slideInLeft {
+            from { transform: translateX(-30px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(30px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-container {
+                padding: 15px 20px;
+            }
+
+            .title {
+                font-size: 24px;
+            }
+
+            .subtitle {
+                font-size: 14px;
+            }
+
+            .nav-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .search-input {
+                width: 100%;
+            }
+
+            .search-input:focus {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Gitlines -->
+    <div class="gitlines" aria-hidden="true">
+        <div class="gitline"></div>
+        <div class="gitline"></div>
+        <div class="gitline"></div>
+        <div class="gitline"></div>
+        <div class="gitline"></div>
+    </div>
+
+    <!-- Floating Shapes -->
+    <div class="shapes" aria-hidden="true">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
+    <!-- Header Content -->
+    <div class="header-container">
+        <div class="title-row">
+            <div class="icon" role="img" aria-label="Documentation icon">📚</div>
+            <div>
+                <h1 class="title">Documentation</h1>
+                <p class="subtitle">Complete project documentation</p>
+            </div>
+        </div>
+
+        <nav class="nav-row" aria-label="Main navigation">
+            <div class="nav-links">
+                <a href="#overview" class="nav-link">Overview</a>
+                <a href="#api" class="nav-link">API</a>
+            </div>
+            <div class="search-container">
+                <input 
+                    type="search" 
+                    class="search-input" 
+                    placeholder="Search documentation..." 
+                    aria-label="Search documentation"
+                    onkeypress="handleSearch(event)"
+                />
+            </div>
+        </nav>
+    </div>
+
+    <script>
+        function handleSearch(event) {
+            if (event.key === 'Enter') {
+                const query = event.target.value;
+                if (query) {
+                    window.parent.postMessage({
+                        type: 'search',
+                        query: query
+                    }, '*');
+                }
+            }
+        }
+    </script>
+</body>
+</html>
