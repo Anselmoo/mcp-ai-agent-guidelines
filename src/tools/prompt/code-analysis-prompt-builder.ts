@@ -22,7 +22,7 @@ const CodeAnalysisPromptSchema = z.object({
 		.describe("Programming language of the code"),
 	// Optional frontmatter controls
 	mode: z.enum(["agent", "tool", "workflow"]).optional().default("agent"),
-	model: z.string().optional().default("GPT-4.1"),
+	model: z.string().optional().default("GPT-5"),
 	tools: z.array(z.string()).optional().default(["codebase", "editFiles"]),
 	includeFrontmatter: z.boolean().optional().default(true),
 	includeReferences: z.boolean().optional().default(false),
@@ -302,8 +302,19 @@ export async function codeAnalysisPromptBuilder(args: unknown) {
 	const input = CodeAnalysisPromptSchema.parse(args);
 
 	const enforce = input.forcePromptMdStyle ?? true;
-	const effectiveIncludeFrontmatter = enforce ? true : input.includeFrontmatter;
-	const effectiveIncludeMetadata = enforce ? true : input.includeMetadata;
+	// Explicit false for includeFrontmatter overrides forcePromptMdStyle
+	const effectiveIncludeFrontmatter =
+		input.includeFrontmatter === false
+			? false
+			: enforce
+				? true
+				: input.includeFrontmatter;
+	const effectiveIncludeMetadata =
+		input.includeMetadata === false
+			? false
+			: enforce
+				? true
+				: input.includeMetadata;
 
 	const prompt = buildCodeAnalysisPrompt(input);
 	const frontmatter = effectiveIncludeFrontmatter

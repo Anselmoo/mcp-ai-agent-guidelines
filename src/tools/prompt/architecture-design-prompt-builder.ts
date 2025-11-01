@@ -22,7 +22,7 @@ const ArchitectureDesignPromptSchema = z.object({
 		.describe("Preferred or required technology stack"),
 	// Optional frontmatter controls
 	mode: z.enum(["agent", "tool", "workflow"]).optional().default("agent"),
-	model: z.string().optional().default("GPT-4.1"),
+	model: z.string().optional().default("GPT-5"),
 	tools: z
 		.array(z.string())
 		.optional()
@@ -137,8 +137,19 @@ export async function architectureDesignPromptBuilder(args: unknown) {
 	const input = ArchitectureDesignPromptSchema.parse(args);
 
 	const enforce = input.forcePromptMdStyle ?? true;
-	const effectiveIncludeFrontmatter = enforce ? true : input.includeFrontmatter;
-	const effectiveIncludeMetadata = enforce ? true : input.includeMetadata;
+	// Explicit false for includeFrontmatter overrides forcePromptMdStyle
+	const effectiveIncludeFrontmatter =
+		input.includeFrontmatter === false
+			? false
+			: enforce
+				? true
+				: input.includeFrontmatter;
+	const effectiveIncludeMetadata =
+		input.includeMetadata === false
+			? false
+			: enforce
+				? true
+				: input.includeMetadata;
 
 	const prompt = buildArchitectureDesignPrompt(input);
 	const frontmatter = effectiveIncludeFrontmatter

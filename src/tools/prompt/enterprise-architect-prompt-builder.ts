@@ -99,7 +99,7 @@ const EnterpriseArchitectPromptSchema = z.object({
 		.describe("Whether to emphasize continuous EA over static planning cycles"),
 	// Optional frontmatter controls
 	mode: z.enum(["agent", "tool", "workflow"]).optional().default("agent"),
-	model: z.string().optional().default("GPT-4.1"),
+	model: z.string().optional().default("GPT-5"),
 	tools: z
 		.array(z.string())
 		.optional()
@@ -515,8 +515,19 @@ export async function enterpriseArchitectPromptBuilder(args: unknown) {
 	const input = EnterpriseArchitectPromptSchema.parse(args);
 
 	const enforce = input.forcePromptMdStyle ?? true;
-	const effectiveIncludeFrontmatter = enforce ? true : input.includeFrontmatter;
-	const effectiveIncludeMetadata = enforce ? true : input.includeMetadata;
+	// Explicit false for includeFrontmatter overrides forcePromptMdStyle
+	const effectiveIncludeFrontmatter =
+		input.includeFrontmatter === false
+			? false
+			: enforce
+				? true
+				: input.includeFrontmatter;
+	const effectiveIncludeMetadata =
+		input.includeMetadata === false
+			? false
+			: enforce
+				? true
+				: input.includeMetadata;
 
 	const prompt = buildEnterpriseArchitectPrompt(input);
 	const frontmatter = effectiveIncludeFrontmatter
