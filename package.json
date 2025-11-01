@@ -40,6 +40,9 @@
 		"links:check": "npx markdown-link-check --config .mlc_config.json README.md CONTRIBUTING.md DISCLAIMER.md",
 		"links:check:all": "find . -name '*.md' -not -path './node_modules/*' -not -path './dist/*' -not -path './coverage/*' -exec npx markdown-link-check --config .mlc_config.json {} \\;",
 		"clean-code-dashboard": "node scripts/generate-clean-code-dashboard.js",
+		"frames:generate-interactive": "node scripts/generate-interactive-frames.js",
+		"frames:apply-interactive": "node scripts/apply-interactive-frames.js",
+		"frames:preview-interactive": "echo 'Preview: open docs/.frames-interactive/header-README.html and footer-README.html in your browser'",
 		"prepare": "if [ -d .git ]; then lefthook install; else echo 'Skipping lefthook install (no Git repository)'; fi"
 	},
 	"keywords": [

@@ -1,3 +1,13 @@
+<!-- AUTO-GENERATED INTERACTIVE HEADER - DO NOT EDIT -->
+<iframe
+    src="https://raw.githubusercontent.com/Anselmoo/mcp-ai-agent-guidelines/main/docs/.frames-interactive/header-about-README.html"
+    style="width: 100%; height: 120px; border: none; display: block; margin: 0; padding: 0;"
+    title="Interactive Header"
+    loading="lazy"
+    sandbox="allow-scripts allow-same-origin"
+></iframe>
+<!-- END AUTO-GENERATED INTERACTIVE HEADER -->
+
 # About MCP AI Agent Guidelines
 
 > **Project information**, credits, references, and acknowledgments
@@ -138,3 +148,16 @@ Our visual design is inspired by modern open source best practices and contempor
 ---
 
 **Navigation**: [📁 Docs Home](../README.md) • [💡 Tips](../tips/) • [🛠️ Tools](../tools/)
+
+
+
+<!-- AUTO-GENERATED INTERACTIVE FOOTER - DO NOT EDIT -->
+<iframe
+    src="https://raw.githubusercontent.com/Anselmoo/mcp-ai-agent-guidelines/main/docs/.frames-interactive/footer-about-README.html"
+    style="width: 100%; height: 80px; border: none; display: block; margin: 0; padding: 0;"
+    title="Interactive Footer"
+    loading="lazy"
+    sandbox="allow-scripts allow-same-origin"
+></iframe>
+<!-- END AUTO-GENERATED INTERACTIVE FOOTER -->
+
