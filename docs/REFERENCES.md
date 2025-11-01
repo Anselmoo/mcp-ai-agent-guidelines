@@ -1,3 +1,24 @@
+# References
+
+> **Credits, Research & Inspirations**
+
+[![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../README.md)
+[![Documentation](https://img.shields.io/badge/📚-Documentation-blue?style=flat-square)](./README.md)
+[![Reference](https://img.shields.io/badge/Type-Reference-purple?style=flat-square)](#)
+
+<details>
+<summary><strong>📍 Quick Navigation</strong></summary>
+
+**Related Guides:**
+
+- [Documentation Index](#documentation-index)
+- [Contributing](#contributing)
+- [Disclaimer](#disclaimer)
+
+</details>
+
+---
+
 # References & Inspirations
 
 This document formally acknowledges the key references, research, and open-source projects that have shaped the development of the MCP AI Agent Guidelines server. We stand on the shoulders of giants and are grateful for the foundational work that has influenced our advanced features.
@@ -59,6 +80,7 @@ The HPT project provides the reference implementation and research code for the 
 - Taxonomy-based prompt organization
 
 **Key Contributions:**
+
 - Established evaluation metrics for prompting effectiveness
 - Demonstrated practical implementation of hierarchical prompting
 - Provided research-backed approach to prompt engineering
@@ -70,11 +92,13 @@ The HPT project provides the reference implementation and research code for the 
 The ACL (Association for Computational Linguistics) Anthology is an invaluable resource for prompt engineering and NLP evaluation research.
 
 **Key Contributions:**
+
 - Papers and resources on advanced prompt engineering
 - Evaluation methodologies for language models
 - Research-driven approaches to AI agent design
 
 **How it influenced us:**
+
 - Informed our prompt evaluation strategies
 - Guided best practices in prompt construction
 - Provided academic rigor to our methodology
@@ -86,16 +110,19 @@ The ACL (Association for Computational Linguistics) Anthology is an invaluable r
 Claude Flow pioneered declarative flow-based prompting and dynamic orchestration patterns that have been adapted in our implementation.
 
 **Key Contributions:**
+
 - Flow-based prompting paradigm
 - Prompt chaining patterns
 - Dynamic workflow orchestration
 
 **How it influenced us:**
+
 - Inspired our `prompt-flow-builder` tool with branching, loops, and conditional logic
 - Informed our `prompt-chaining-builder` design
 - Guided integration of flow-based patterns with Serena-style memory management (see [FLOW_SERENA_INTEGRATION.md](./FLOW_SERENA_INTEGRATION.md))
 
 **Related Documentation:**
+
 - [FLOW_PROMPTING_EXAMPLES.md](./FLOW_PROMPTING_EXAMPLES.md) - Flow-based prompting examples
 - [FLOW_SERENA_INTEGRATION.md](./FLOW_SERENA_INTEGRATION.md) - Integration patterns
 
@@ -106,17 +133,20 @@ Claude Flow pioneered declarative flow-based prompting and dynamic orchestration
 Serena's approach to semantic code analysis, project onboarding, and mode-based agent operation has significantly influenced our design tools.
 
 **Key Contributions:**
+
 - Semantic code understanding via language servers
 - Project memory and context retention
 - Flexible mode switching for different agent behaviors
 
 **How it influenced us:**
+
 - Inspired our `semantic-code-analyzer` tool
 - Guided development of `project-onboarding` for intelligent project familiarization
 - Informed our `mode-switcher` implementation with specialized operation modes
 - Influenced memory pattern integration in flow-based prompting
 
 **Related Documentation:**
+
 - [SERENA_STRATEGIES.md](./SERENA_STRATEGIES.md) - Serena-inspired strategies overview
 - [SERENA_INTEGRATION_SUMMARY.md](./SERENA_INTEGRATION_SUMMARY.md) - Integration summary
 
@@ -127,11 +157,13 @@ Serena's approach to semantic code analysis, project onboarding, and mode-based 
 Context7's approach to providing up-to-date library documentation and context to AI agents has informed our resource management and documentation strategies.
 
 **Key Contributions:**
+
 - Dynamic documentation retrieval
 - Context-aware resource provision
 - Library-specific knowledge grounding
 
 **How it influenced us:**
+
 - Informed our MCP resource structure for providing contextual documentation
 - Guided design of our external references system in `structured.ts`
 - Inspired integration of real-time documentation references in our tools
@@ -191,3 +223,41 @@ This project evolves rapidly alongside the AI ecosystem. We commit to:
 ---
 
 For questions about specific references or to suggest additions, please [open an issue](https://github.com/Anselmoo/mcp-ai-agent-guidelines/issues) or see [CONTRIBUTING.md](../CONTRIBUTING.md).
+
+<!-- AUTO-GENERATED FOOTER - DO NOT EDIT -->
+
+---
+
+<div align="center">
+
+<!-- Navigation Grid -->
+<table>
+  <tr>
+    <td align="center" width="33%">
+      <strong>📖 References</strong><br/>
+      <a href="./REFERENCES.md">Credits & Research</a><br/>
+      <a href="./SERENA_STRATEGIES.md">Serena Integration</a><br/>
+      <a href="./CONTEXT_AWARE_GUIDANCE.md">Context Guidance</a>
+    </td>
+    <td align="center" width="33%">
+      <strong>🏗️ Architecture</strong><br/>
+      <a href="./BRIDGE_CONNECTORS.md">Bridge Connectors</a><br/>
+      <a href="./design-module-status.md">Module Status</a><br/>
+      <a href="./TECHNICAL_IMPROVEMENTS.md">Improvements</a>
+    </td>
+    <td align="center" width="33%">
+      <strong>🚀 Get Started</strong><br/>
+      <a href="../README.md">Main README</a><br/>
+      <a href="./AI_INTERACTION_TIPS.md">Interaction Tips</a><br/>
+      <a href="../demos/README.md">Demo Examples</a>
+    </td>
+  </tr>
+</table>
+
+<!-- Back to Top -->
+<p>
+  <a href="#top">⬆️ Back to Top</a>
+</p>
+---
+
+<sub>**MCP AI Agent Guidelines** • Licensed under [MIT](../LICENSE) • [Disclaimer](../DISCLAIMER.md) • [Contributing](../CONTRIBUTING.md)</sub>

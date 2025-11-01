@@ -1,3 +1,13 @@
+<div align="center">
+
+<!-- Interactive SVG Header -->
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./docs/assets/readme-header.svg">
+  <img alt="MCP AI Agent Guidelines Server - advanced tools for AI development" src="./docs/assets/readme-header.svg" width="100%">
+</picture>
+
+</div>
+
 # MCP AI Agent Guidelines Server
 
 > [!CAUTION] > **Disclaimer -- Experimental / Early Stage:** This _research demonstrator_ project references third‑party models, tools, pricing, and docs that evolve quickly. Treat outputs as recommendations and verify against official docs and your own benchmarks before production use.
@@ -15,7 +25,21 @@
 [![GitHub Issues](https://img.shields.io/github/issues/Anselmoo/mcp-ai-agent-guidelines?label=issues&logo=github&logoColor=white)](https://github.com/Anselmoo/mcp-ai-agent-guidelines/issues)
 [![GitHub Last Commit](https://img.shields.io/github/last-commit/Anselmoo/mcp-ai-agent-guidelines?logo=github&logoColor=white)](https://github.com/Anselmoo/mcp-ai-agent-guidelines/commits/main)
 
-A Model Context Protocol (MCP) server offering professional tools and templates for hierarchical prompting, code hygiene, visualization, memory optimization, and agile planning.
+A Model Context Protocol (MCP) server offering advanced tools and templates for hierarchical prompting, code hygiene, visualization, memory optimization, and agile planning.
+
+## 📚 Table of Contents
+
+- [Installation](#installation)
+- [Documentation](#documentation)
+- [Demos](#demos)
+- [Features](#features)
+- [VS Code Integration](#vs-code-integration-one-click)
+- [Agent-Relative Calls](#agent-relative-calls)
+- [Configuration](#configuration)
+- [Development](#development)
+- [Contributing](#contributing)
+- [Changelog](./CHANGELOG.md)
+- [License](#license)
 
 ## Installation
 
@@ -61,45 +85,178 @@ npx markdown-link-check --config .mlc_config.json README.md
 
 Configuration is in `.mlc_config.json`. Ignored patterns and retries are configured there.
 
+## Documentation
+
+## Documentation
+
+**[📖 Complete Documentation Index](./docs/README.md)** - Full guide to all tools and features
+
+### Getting Started Guides
+
+- **[🎯 AI Interaction Tips](./docs/AI_INTERACTION_TIPS.md)** - Learn to ask targeted questions for better results
+- **[📊 Prompting Hierarchy](./docs/PROMPTING_HIERARCHY.md)** - Understanding prompt levels and evaluation
+- **[🔗 Agent-Relative Call Patterns](./docs/AGENT_RELATIVE_CALLS.md)** - Invoking tools in workflows
+
+### Advanced Features
+
+- **[🌊 Flow-Based Prompting](./docs/FLOW_PROMPTING_EXAMPLES.md)** - Multi-step prompt workflows
+- **[🎨 Mermaid Diagram Generation](./docs/MERMAID_DIAGRAM_EXAMPLES.md)** - Create flowcharts, sequences, ER diagrams
+- **[🔍 Code Quality Analysis](./docs/CODE_QUALITY_IMPROVEMENTS.md)** - Hygiene scoring and best practices
+- **[⚡ Sprint Planning](./docs/SPRINT_PLANNING_RELIABILITY.md)** - Dependency-aware timeline calculation
+
+### Integration & Reference
+
+- **[🏗️ Bridge Connectors](./docs/BRIDGE_CONNECTORS.md)** - Integration patterns for external systems
+- **[🔄 Serena Integration](./docs/SERENA_STRATEGIES.md)** - Semantic analysis strategies
+- **[📚 Complete Reference](./docs/REFERENCES.md)** - Credits, research papers, and citations
+
+See **[docs/README.md](./docs/README.md)** for the complete documentation index.
+
+### Quick Links
+
+#### For Users
+
+- **[🎯 AI Interaction Tips](./docs/AI_INTERACTION_TIPS.md)** - Learn to ask targeted questions for better results
+- **[📊 Prompting Hierarchy](./docs/PROMPTING_HIERARCHY.md)** - Understanding prompt levels and evaluation
+- **[🔗 Agent-Relative Call Patterns](./docs/AGENT_RELATIVE_CALLS.md)** - Invoking tools in workflows
+- **[🌊 Flow-Based Prompting](./docs/FLOW_PROMPTING_EXAMPLES.md)** - Advanced chaining strategies
+- **[🎨 Mermaid Diagrams](./docs/mermaid-diagram-examples.md)** - Visual diagram generation
+
+#### For Developers
+
+- **[🤝 Contributing Guidelines](./CONTRIBUTING.md)** - How to contribute
+- **[✨ Clean Code Initiative](./docs/CLEAN_CODE_INITIATIVE.md)** - Quality standards (100/100 scoring)
+- **[� Technical Improvements](./docs/TECHNICAL_IMPROVEMENTS.md)** - Refactoring and enhancements
+- **[⚠️ Error Handling](./docs/ERROR_HANDLING.md)** - Best practices
+- **[🏗️ Bridge Connectors](./docs/BRIDGE_CONNECTORS.md)** - Integration patterns
+
+See the **[complete documentation](./docs/README.md)** for the full list of guides organized by topic.
+
 ## Demos
 
-Explore generated demo reports in the repository:
+Explore real-world examples showing the tools in action. All demos are auto-generated and kept in sync with the codebase.
 
-- Code Hygiene Report: [demos/demo-code-analysis.hygiene.md](./demos/demo-code-analysis.hygiene.md)
-- Guidelines Validation: [demos/demo-code-analysis.guidelines.md](./demos/demo-code-analysis.guidelines.md)
-- Hierarchical Prompt (Refactor plan): [demos/demo-code-analysis.hierarchical.prompt.md](./demos/demo-code-analysis.hierarchical.prompt.md)
-- Domain-neutral Prompt Template: [demos/demo-code-analysis.domain-neutral.prompt.md](./demos/demo-code-analysis.domain-neutral.prompt.md)
-- Security Hardening Prompt: [demos/demo-code-analysis.security-hardening.prompt.md](./demos/demo-code-analysis.security-hardening.prompt.md)
-- Spark Prompt Card: [demos/demo-code-analysis.spark.prompt.md](./demos/demo-code-analysis.spark.prompt.md)
-- Memory Context Optimization: [demos/demo-code-analysis.memory.md](./demos/demo-code-analysis.memory.md)
-- Architecture Diagram (Mermaid): [demos/demo-code-analysis.diagram.md](./demos/demo-code-analysis.diagram.md)
-- Model Compatibility Analysis: [demos/demo-code-analysis.model-compat.md](./demos/demo-code-analysis.model-compat.md)
-- Sprint Plan: [demos/demo-code-analysis.sprint.md](./demos/demo-code-analysis.sprint.md)
+**[📖 Complete Demo Index](./demos/README.md)** - Full list of all demos with descriptions
 
-See more in [demos/README.md](./demos/README.md).
+### Featured Examples
 
-### Demo scripts (.js)
+**Code Analysis & Quality:**
 
-Run demo scripts to generate or test artifacts:
+- [Code Hygiene Report](./demos/demo-code-analysis.hygiene.md) - Pattern detection and best practices
+- [Guidelines Validation](./demos/demo-code-analysis.guidelines.md) - AI agent development standards
+- [Clean Code Scoring](./demos/demo-clean-code-score.md) - Comprehensive quality metrics (0-100)
+
+**Prompt Engineering:**
+
+- [Hierarchical Prompt](./demos/demo-code-analysis.hierarchical.prompt.md) - Structured refactoring plan
+- [Domain-Neutral Prompt](./demos/demo-code-analysis.domain-neutral.prompt.md) - Generic template
+- [Security Hardening Prompt](./demos/demo-code-analysis.security-hardening.prompt.md) - OWASP-focused analysis
+- [Flow-Based Prompting](./demos/demo-design-session.md) - Multi-step workflows
+
+**Visualization & Planning:**
+
+- [Architecture Diagram](./demos/demo-code-analysis.diagram.md) - Mermaid system diagrams
+- [Sprint Planning](./demos/demo-code-analysis.sprint.md) - Dependency-aware timeline
+- [Model Compatibility](./demos/demo-code-analysis.model-compat.md) - AI model selection
+
+**Advanced Features:**
+
+- [Memory Context Optimization](./demos/demo-code-analysis.memory.md) - Token efficiency
+- [Strategy Frameworks](./demos/demo-strategy-frameworks.md) - SWOT, BCG, Porter's Five Forces
+- [Gap Analysis](./demos/demo-gap-analysis.md) - Current vs. desired state
+
+### Running Demos Locally
 
 ```bash
-# Build first
 npm run build
-
-# Run sample tool calls
-node demos/demo-tools.js
-
-# Generate demo reports
-node demos/demo-tools.js
+node demos/demo-tools.js  # Generate sample tool outputs
 ```
 
-Scripts:
+Demos are automatically regenerated when tool code changes via GitHub Actions.
 
-- `demos/demo-tools.js` — invokes several tools with sample inputs
-- `demos/generate-demo-reports.js` — produces end-to-end demo outputs
-- `demos/generate-hygiene-reports.js` — hygiene-focused reports
+## Features & Tools
 
-## VS Code Integration (One‑Click)
+**27 professional tools** for AI-powered development workflows. Each tool is rated by complexity:
+
+**⭐ Complexity Ratings:**
+
+- ⭐ **Simple** - Single input, immediate output (5-10 min to master)
+- ⭐⭐ **Moderate** - Multiple parameters, straightforward usage (15-30 min)
+- ⭐⭐⭐ **Advanced** - Complex inputs, requires understanding of domain (1-2 hours)
+- ⭐⭐⭐⭐ **Expert** - Multi-phase workflows, deep domain knowledge (half day)
+- ⭐⭐⭐⭐⭐ **Master** - Enterprise-scale, comprehensive orchestration (1-2 days)
+
+**📖 [Complete Tools Reference](./docs/TOOLS_REFERENCE.md)** - Detailed documentation with examples
+
+---
+
+### 🎨 Prompt Builders (9 tools)
+
+Build structured, effective prompts for various use cases.
+
+| Tool                                          | Purpose                                                         | Complexity | Learn More                                                           |
+| --------------------------------------------- | --------------------------------------------------------------- | ---------- | -------------------------------------------------------------------- |
+| `hierarchical-prompt-builder`                 | Multi-level specificity prompts (context → goal → requirements) | ⭐⭐       | [Guide](./docs/tools/hierarchical-prompt-builder.md)                 |
+| `code-analysis-prompt-builder`                | Code review prompts (security, performance, maintainability)    | ⭐⭐       | [Guide](./docs/tools/code-analysis-prompt-builder.md)                |
+| `architecture-design-prompt-builder`          | Architecture design with scale-appropriate guidance             | ⭐⭐⭐     | [Guide](./docs/tools/architecture-design-prompt-builder.md)          |
+| `digital-enterprise-architect-prompt-builder` | Enterprise architecture with mentor perspectives & research     | ⭐⭐⭐⭐   | [Guide](./docs/tools/digital-enterprise-architect-prompt-builder.md) |
+| `debugging-assistant-prompt-builder`          | Systematic debugging prompts with structured analysis           | ⭐⭐       | [Guide](./docs/tools/debugging-assistant-prompt-builder.md)          |
+| `l9-distinguished-engineer-prompt-builder`    | L9 (Distinguished Engineer) high-level technical design         | ⭐⭐⭐⭐⭐ | [Guide](./docs/tools/l9-distinguished-engineer-prompt-builder.md)    |
+| `documentation-generator-prompt-builder`      | Technical docs tailored to audience (API, user guide, spec)     | ⭐⭐       | [Guide](./docs/tools/documentation-generator-prompt-builder.md)      |
+| `domain-neutral-prompt-builder`               | Generic templates with objectives and workflows                 | ⭐⭐⭐     | [Guide](./docs/tools/domain-neutral-prompt-builder.md)               |
+| `security-hardening-prompt-builder`           | Security analysis with OWASP/compliance focus                   | ⭐⭐⭐     | [Guide](./docs/tools/security-hardening-prompt-builder.md)           |
+
+### 🔍 Code Analysis & Quality (7 tools)
+
+Analyze and improve code quality with automated insights.
+
+| Tool                          | Purpose                                                            | Complexity | Learn More                                           |
+| ----------------------------- | ------------------------------------------------------------------ | ---------- | ---------------------------------------------------- |
+| `clean-code-scorer`           | Comprehensive 0-100 quality score with metric breakdown            | ⭐⭐⭐     | [Guide](./docs/tools/clean-code-scorer.md)           |
+| `code-hygiene-analyzer`       | Detect outdated patterns, unused dependencies, code smells         | ⭐⭐       | [Guide](./docs/tools/code-hygiene-analyzer.md)       |
+| `dependency-auditor`          | Audit package.json for security, deprecation, ESM compatibility    | ⭐         | [Guide](./docs/tools/dependency-auditor.md)          |
+| `iterative-coverage-enhancer` | Analyze coverage gaps, generate test suggestions, adapt thresholds | ⭐⭐⭐     | [Guide](./docs/tools/iterative-coverage-enhancer.md) |
+| `semantic-code-analyzer`      | Identify symbols, structure, dependencies, patterns (LSP-based)    | ⭐⭐       | [Guide](./docs/tools/semantic-code-analyzer.md)      |
+| `guidelines-validator`        | Validate practices against AI agent development guidelines         | ⭐         | [Guide](./docs/tools/guidelines-validator.md)        |
+| `mermaid-diagram-generator`   | Generate visual diagrams (flowchart, sequence, ER, class, etc.)    | ⭐⭐       | [Guide](./docs/tools/mermaid-diagram-generator.md)   |
+
+### 📊 Strategy & Planning (5 tools)
+
+Business strategy analysis and agile project planning.
+
+| Tool                          | Purpose                                                               | Complexity | Learn More                                           |
+| ----------------------------- | --------------------------------------------------------------------- | ---------- | ---------------------------------------------------- |
+| `strategy-frameworks-builder` | SWOT, BSC, VRIO, Porter's Five Forces, market analysis                | ⭐⭐⭐     | [Guide](./docs/tools/strategy-frameworks-builder.md) |
+| `gap-frameworks-analyzers`    | Capability, technology, maturity, skills gap analysis                 | ⭐⭐⭐     | [Guide](./docs/tools/gap-frameworks-analyzers.md)    |
+| `sprint-timeline-calculator`  | Dependency-aware sprint planning with bin-packing optimization        | ⭐⭐       | [Guide](./docs/tools/sprint-timeline-calculator.md)  |
+| `model-compatibility-checker` | Recommend best AI models for task requirements and budget             | ⭐         | [Guide](./docs/tools/model-compatibility-checker.md) |
+| `project-onboarding`          | Comprehensive project structure analysis and documentation generation | ⭐⭐       | [Guide](./docs/tools/project-onboarding.md)          |
+
+### 🎨 Design Workflow (1 tool)
+
+Multi-phase design orchestration with constraint enforcement.
+
+| Tool               | Purpose                                                                            | Complexity | Learn More                                |
+| ------------------ | ---------------------------------------------------------------------------------- | ---------- | ----------------------------------------- |
+| `design-assistant` | Constraint-driven design sessions with artifact generation (ADRs, specs, roadmaps) | ⭐⭐⭐⭐   | [Guide](./docs/tools/design-assistant.md) |
+
+### 🛠️ Utilities (5 tools)
+
+Supporting tools for workflow optimization.
+
+| Tool                            | Purpose                                                                             | Complexity | Learn More                                             |
+| ------------------------------- | ----------------------------------------------------------------------------------- | ---------- | ------------------------------------------------------ |
+| `memory-context-optimizer`      | Optimize prompt caching and context window usage                                    | ⭐⭐       | [Guide](./docs/tools/memory-context-optimizer.md)      |
+| `mode-switcher`                 | Switch between agent operation modes (planning, debugging, refactoring)             | ⭐         | [Guide](./docs/tools/mode-switcher.md)                 |
+| `prompting-hierarchy-evaluator` | Evaluate prompts with numeric scoring (clarity, specificity, completeness)          | ⭐⭐       | [Guide](./docs/tools/prompting-hierarchy-evaluator.md) |
+| `hierarchy-level-selector`      | Select optimal prompting level for task complexity                                  | ⭐         | [Guide](./docs/tools/hierarchy-level-selector.md)      |
+| `spark-prompt-builder`          | Build UI/UX product prompts with structured inputs (colors, typography, components) | ⭐⭐⭐     | [Guide](./docs/tools/spark-prompt-builder.md)          |
+
+**💡 Pro Tip**: Start with ⭐ tools to learn the basics, then progress to ⭐⭐⭐+ tools for advanced workflows.
+
+---
+
+## VS Code Integration (One-Click)
 
 Use buttons below to add this MCP server to VS Code (User Settings → mcp.servers):
 
@@ -242,28 +399,8 @@ Or access programmatically:
 
 ## Features
 
-> **✨ NEW: Export Formats & Model Management** — Enhanced output format support with LaTeX, CSV, and JSON exports. Models now managed via YAML for easy updates.
->
-> - **Export Formats**: Full LaTeX documents, CSV data export, JSON structured output
-> - **Header Control**: Suppress headers for cleaner chat outputs
-> - **YAML Models**: AI model definitions in easy-to-edit YAML format
-> - **Documentation**: See [docs/export-formats.md](./docs/export-formats.md) and [docs/maintaining-models.md](./docs/maintaining-models.md)
-
-> **🏆 NEW: Clean Code 100/100 Initiative** — Comprehensive code quality scoring system with automated dashboard generation. Track and achieve perfect code quality across coverage, TypeScript, linting, and security. See [docs/CLEAN_CODE_INITIATIVE.md](./docs/CLEAN_CODE_INITIATIVE.md) for the complete guide.
->
-> - **Dashboard**: Run `npm run clean-code-dashboard` to generate score report
-> - **MCP Tool**: `clean-code-scorer` for on-demand quality analysis
-> - **Automated Gates**: Lefthook quality gates enforce standards on every commit
-
-> **🆕 NEW: Serena-Inspired Strategies** — We've integrated effective agent strategies from [@oraios/serena](https://github.com/oraios/serena) including semantic code analysis, project onboarding, and flexible mode switching. See [docs/SERENA_STRATEGIES.md](./docs/SERENA_STRATEGIES.md) for details.
-
-> **🌊 NEW: Flow-Based Prompting** — Advanced prompting strategies inspired by [@ruvnet/claude-flow](https://github.com/ruvnet/claude-flow) including prompt chaining, declarative flows, and dynamic orchestration.
->
-> - **Examples**: [docs/FLOW_PROMPTING_EXAMPLES.md](./docs/FLOW_PROMPTING_EXAMPLES.md)
-> - **Integration Guide**: [docs/FLOW_SERENA_INTEGRATION.md](./docs/FLOW_SERENA_INTEGRATION.md) - Combining flow-based prompting with Serena memory patterns
-
 <details>
-<summary><strong>🔗 Prompt Chaining Builder</strong> — Multi-step prompts with output passing (NEW)</summary>
+<summary><strong>🔗 Prompt Chaining Builder</strong> — Multi-step prompts with output passing</summary>
 
 Usage: `prompt-chaining-builder`
 
@@ -302,7 +439,7 @@ Build sophisticated multi-step prompt workflows where each step can depend on ou
 </details>
 
 <details>
-<summary><strong>🌊 Prompt Flow Builder</strong> — Declarative flows with branching/loops (NEW)</summary>
+<summary><strong>🌊 Prompt Flow Builder</strong> — Declarative flows with branching/loops</summary>
 
 Usage: `prompt-flow-builder`
 
@@ -340,7 +477,7 @@ Create complex adaptive prompt flows with conditional branching, loops, parallel
 </details>
 
 <details>
-<summary><strong>🔍 Semantic Code Analyzer</strong> — Symbol-based code understanding (NEW)</summary>
+<summary><strong>🔍 Semantic Code Analyzer</strong> — Symbol-based code understanding</summary>
 
 Usage: `semantic-code-analyzer`
 
@@ -355,7 +492,7 @@ Performs semantic analysis to identify symbols, dependencies, patterns, and stru
 </details>
 
 <details>
-<summary><strong>🚀 Project Onboarding</strong> — Comprehensive project familiarization (NEW)</summary>
+<summary><strong>🚀 Project Onboarding</strong> — Comprehensive project familiarization</summary>
 
 Usage: `project-onboarding`
 
@@ -372,7 +509,7 @@ Analyzes project structure, detects technologies, and generates memories for con
 </details>
 
 <details>
-<summary><strong>🔄 Mode Switcher</strong> — Flexible agent operation modes (NEW)</summary>
+<summary><strong>🔄 Mode Switcher</strong> — Flexible agent operation modes</summary>
 
 Usage: `mode-switcher`
 
@@ -771,36 +908,51 @@ This project references third-party tools, frameworks, APIs, and services for in
 
 ## Contributing
 
-Contributions welcome. Please see [CONTRIBUTING.md](./CONTRIBUTING.md). Keep changes typed, linted, and include tests when behavior changes.
+Contributions welcome! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
+
+### Developer Resources
+
+- **[Complete Documentation](./docs/README.md)** - Full documentation index
+- **[Clean Code Standards](./docs/CLEAN_CODE_INITIATIVE.md)** - Quality requirements and scoring
+- **[Error Handling Patterns](./docs/ERROR_HANDLING.md)** - Best practices for error handling
+- **[Architecture Guide](./docs/BRIDGE_CONNECTORS.md)** - System architecture and integration patterns
+- **[Type System Organization](./docs/TYPE_ORGANIZATION_EXTENSION.md)** - TypeScript conventions
+
+### Quality Standards
+
+- **TypeScript strict mode** - All code must pass type checking
+- **100% test coverage goal** - See [Clean Code Initiative](./docs/CLEAN_CODE_INITIATIVE.md)
+- **Biome linting** - Code must pass `npm run quality`
+- **Git hooks** - Automated checks via Lefthook (see [lefthook.yml](./lefthook.yml))
+
+Keep changes typed, linted, and include tests when behavior changes.
 
 ## License
 
 MIT © Anselmoo — see [LICENSE](./LICENSE).
 
-## References & Inspirations
-
-This project builds upon foundational research and draws inspiration from several exceptional open-source projects. We formally acknowledge:
-
-### 📚 Research & Concepts
-
-- **[Prompting Hierarchy](https://learnforlifeot.com.au/resources/f/prompting-hierarchy)** - Educational framework for structured prompting
-- **[Hierarchical Prompting Taxonomy (arXiv)](https://arxiv.org/abs/2406.12644)** - Research establishing the HPT framework
-- **[Sprint Planning Optimization](https://medium.com/@karim.ouldaklouche/optimizing-sprint-planning-with-julia-a-linear-programming-approach-with-gurobi-03f28c0cf5bf)** - Mathematical approach to agile planning
-- **[Multi-Agent AI Systems (arXiv)](https://arxiv.org/abs/2203.11171)** - Foundational research on multi-step workflows
-
-### 🚀 Inspirational Projects
-
-- **[@devichand579/HPT](https://github.com/devichand579/HPT)** - Reference implementation of Hierarchical Prompting Taxonomy; influenced our hierarchical prompt builder and evaluation methodology
-- **[@acl-org/acl-anthology](https://github.com/acl-org/acl-anthology)** - ACL papers and resources on prompt engineering; informed our evaluation strategies and best practices
-- **[@ruvnet/claude-flow](https://github.com/ruvnet/claude-flow)** - AI orchestration platform; inspired our prompt-flow-builder and prompt-chaining-builder with declarative flows and dynamic orchestration
-- **[@oraios/serena](https://github.com/oraios/serena)** - Coding agent toolkit; influenced our semantic-code-analyzer, project-onboarding, and mode-switcher implementations
-- **[@upstash/context7](https://github.com/upstash/context7)** - Documentation context for AI; guided our resource structure and external references system
+## References & Acknowledgments
 
 For a comprehensive list of references, research papers, and detailed attribution, see **[docs/REFERENCES.md](./docs/REFERENCES.md)**.
 
-## Acknowledgments
+### Key Acknowledgments
 
-- Model Context Protocol team for the spec
-- Anthropic for prompt caching research
-- Mermaid community for diagram tooling
-- All open-source contributors whose work has shaped this project
+---
+
+<div align="center">
+
+<!-- Interactive SVG Footer -->
+<img src="./docs/assets/readme-footer.svg" alt="" width="100%" aria-hidden="true">
+
+**[⭐ Star this project](https://github.com/Anselmoo/mcp-ai-agent-guidelines)** • **[🐛 Report issues](https://github.com/Anselmoo/mcp-ai-agent-guidelines/issues)** • **[💡 Request features](https://github.com/Anselmoo/mcp-ai-agent-guidelines/issues/new)**
+
+</div>
+
+- **Model Context Protocol team** for the specification
+- **Anthropic** for prompt caching research
+- **Mermaid community** for diagram tooling
+- **[@ruvnet/claude-flow](https://github.com/ruvnet/claude-flow)** - Inspired flow-based prompting features
+- **[@oraios/serena](https://github.com/oraios/serena)** - Influenced semantic analysis and mode switching
+- **All open-source contributors** whose work has shaped this project
+
+See [docs/REFERENCES.md](./docs/REFERENCES.md) for the complete list of research papers, projects, and inspirations.

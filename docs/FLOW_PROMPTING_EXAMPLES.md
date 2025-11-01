@@ -1,3 +1,24 @@
+# Flow-Based Prompting Examples
+
+> **Multi-Step Prompt Workflows**
+
+[![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../README.md)
+[![Documentation](https://img.shields.io/badge/📚-Documentation-blue?style=flat-square)](./README.md)
+[![User Guide](https://img.shields.io/badge/Type-User_Guide-purple?style=flat-square)](#)
+
+<details>
+<summary><strong>📍 Quick Navigation</strong></summary>
+
+**Related Guides:**
+
+- [Prompt Flow Builder](#prompt-flow-builder)
+- [Prompt Chaining Builder](#prompt-chaining-builder)
+- [Documentation Index](#documentation-index)
+
+</details>
+
+---
+
 # Advanced Prompting Strategies Examples
 
 This document demonstrates the new flow-based prompting capabilities inspired by claude-flow.
@@ -689,3 +710,46 @@ await promptFlowBuilder({
 - [Prompt Chaining Patterns](https://www.promptingguide.ai/techniques/prompt_chaining)
 - [Flow-Based Programming](https://en.wikipedia.org/wiki/Flow-based_programming)
 - [Claude Flow GitHub](https://github.com/ruvnet/claude-flow)
+
+<!-- AUTO-GENERATED FOOTER - DO NOT EDIT -->
+
+---
+
+<div align="center">
+
+<!-- Navigation Grid -->
+<table>
+  <tr>
+    <td align="center" width="33%">
+      <strong>📖 References</strong><br/>
+      <a href="./REFERENCES.md">Credits & Research</a><br/>
+      <a href="./SERENA_STRATEGIES.md">Serena Integration</a><br/>
+      <a href="./CONTEXT_AWARE_GUIDANCE.md">Context Guidance</a>
+    </td>
+    <td align="center" width="33%">
+      <strong>🏗️ Architecture</strong><br/>
+      <a href="./BRIDGE_CONNECTORS.md">Bridge Connectors</a><br/>
+      <a href="./design-module-status.md">Module Status</a><br/>
+      <a href="./TECHNICAL_IMPROVEMENTS.md">Improvements</a>
+    </td>
+    <td align="center" width="33%">
+      <strong>🚀 Get Started</strong><br/>
+      <a href="../README.md">Main README</a><br/>
+      <a href="./AI_INTERACTION_TIPS.md">Interaction Tips</a><br/>
+      <a href="../demos/README.md">Demo Examples</a>
+    </td>
+  </tr>
+</table>
+
+## <!-- Back to Top -->
+
+<details>
+<summary><strong>📚 Related Documentation</strong></summary>
+
+- [Prompting Hierarchy](./PROMPTING_HIERARCHY.md)
+- [Flow & Serena Integration](./FLOW_SERENA_INTEGRATION.md)
+- [AI Interaction Tips](./AI_INTERACTION_TIPS.md)
+
+</details>
+
+<sub>**MCP AI Agent Guidelines** • Licensed under [MIT](../LICENSE) • [Disclaimer](../DISCLAIMER.md) • [Contributing](../CONTRIBUTING.md)</sub>

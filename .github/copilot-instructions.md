@@ -1,6 +1,6 @@
 # Copilot Project Instructions
 
-A TypeScript-based MCP (Model Context Protocol) server delivering professional tools for hierarchical prompting, code hygiene analysis, design workflows, security hardening, and agile planning. This is an **experimental/research project** referencing evolving third-party models and docs. Please follow these guidelines when contributing:
+A TypeScript-based MCP (Model Context Protocol) server delivering advanced tools for hierarchical prompting, code hygiene analysis, design workflows, security hardening, and agile planning. This is an **experimental/research project** referencing evolving third-party models and docs. Please follow these guidelines when contributing:
 
 ## Using These Instructions
 
@@ -164,6 +164,7 @@ npm run lint:fix           # Auto-fix lint issues
 ### Git Hooks (Lefthook)
 
 The project uses `lefthook` (configured in `lefthook.yml`) to enforce quality gates:
+
 - **`pre-commit`**: Runs fast checks like formatting (Biome) and type-checking (`tsc --noEmit`)
 - **`pre-push`**: Runs the full quality and test pipeline (`npm run quality` and `npm run test:all`)
 - **Your changes must pass these hooks to be committed and pushed**

@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="100" viewBox="0 0 1200 100" role="img" aria-label="Footer decoration">
+  <defs>
+    <linearGradient id="footer-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#0969DA;stop-opacity:0.3">
+        <animate attributeName="stop-opacity" values="0.3;0.6;0.3" dur="3s" repeatCount="indefinite" />
+      </stop>
+      <stop offset="50%" style="stop-color:#8250df;stop-opacity:0.3">
+        <animate attributeName="stop-opacity" values="0.3;0.6;0.3" dur="3s" repeatCount="indefinite" begin="1s" />
+      </stop>
+      <stop offset="100%" style="stop-color:#1a7f37;stop-opacity:0.3">
+        <animate attributeName="stop-opacity" values="0.3;0.6;0.3" dur="3s" repeatCount="indefinite" begin="2s" />
+      </stop>
+    </linearGradient>
+    
+    <!-- Wave path for bottom decoration -->
+    <path id="wave" d="M 0,50 Q 300,30 600,50 T 1200,50 V 100 H 0 Z" />
+  </defs>
+  
+  <!-- Top decorative line -->
+  <rect width="1200" height="3" fill="url(#footer-gradient)" />
+  
+  <!-- Wave pattern (subtle) -->
+  <use href="#wave" fill="url(#footer-gradient)" opacity="0.15" />
+  
+  <!-- Icons representing different tool categories -->
+  <g transform="translate(300, 35)" opacity="0.5">
+    <!-- Prompt Builder icon (lightbulb) -->
+    <circle cx="0" cy="0" r="12" fill="none" stroke="#0969DA" stroke-width="1.5" />
+    <path d="M 0,-6 L 0,6" stroke="#0969DA" stroke-width="1.5" stroke-linecap="round" />
+    <circle cx="0" cy="0" r="2.5" fill="#0969DA" />
+  </g>
+  
+  <g transform="translate(500, 35)" opacity="0.5">
+    <!-- Code Analysis icon (magnifying glass) -->
+    <circle cx="-3" cy="-3" r="7" fill="none" stroke="#8250df" stroke-width="1.5" />
+    <line x1="2" y1="2" x2="7" y2="7" stroke="#8250df" stroke-width="1.5" stroke-linecap="round" />
+  </g>
+  
+  <g transform="translate(700, 35)" opacity="0.5">
+    <!-- Strategy icon (chart) -->
+    <polyline points="-8,5 -4,0 0,3 4,-5 8,2" fill="none" stroke="#1a7f37" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    <line x1="-8" y1="8" x2="8" y2="8" stroke="#1a7f37" stroke-width="1.5" stroke-linecap="round" />
+  </g>
+  
+  <g transform="translate(900, 35)" opacity="0.5">
+    <!-- Design icon (grid/blueprint) -->
+    <rect x="-7" y="-7" width="14" height="14" fill="none" stroke="#0969DA" stroke-width="1.5" stroke-dasharray="2,2" />
+    <line x1="-7" y1="0" x2="7" y2="0" stroke="#0969DA" stroke-width="0.5" opacity="0.5" />
+    <line x1="0" y1="-7" x2="0" y2="7" stroke="#0969DA" stroke-width="0.5" opacity="0.5" />
+  </g>
+  
+  <!-- Footer text -->
+  <text x="600" y="80" 
+        text-anchor="middle" 
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" 
+        font-weight="400" 
+        font-size="13" 
+        fill="#57606a">
+    Built with ❤️ for the MCP community • Open Source • MIT License
+  </text>
+</svg>

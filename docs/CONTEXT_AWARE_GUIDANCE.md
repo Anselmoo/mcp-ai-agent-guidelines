@@ -1,3 +1,24 @@
+# Context-Aware Guidance
+
+> **Adaptive Tool Recommendations**
+
+[![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../README.md)
+[![Documentation](https://img.shields.io/badge/📚-Documentation-blue?style=flat-square)](./README.md)
+[![User Guide](https://img.shields.io/badge/Type-User_Guide-purple?style=flat-square)](#)
+
+<details>
+<summary><strong>📍 Quick Navigation</strong></summary>
+
+**Related Guides:**
+
+- [AI Interaction Tips](#ai-interaction-tips)
+- [Mode Switcher](#mode-switcher)
+- [Documentation Index](#documentation-index)
+
+</details>
+
+---
+
 # Context-Aware Design Guidance
 
 The design-assistant tool provides context-aware design recommendations tailored to your project's programming language, framework, and code patterns. This feature analyzes your codebase context and generates actionable, language-specific guidance including SOLID principles, design patterns, and best practices.
@@ -148,19 +169,19 @@ console.log("Guidance:", result.artifacts[0]?.content);
 
 ## Supported Frameworks
 
-| Framework     | Architecture Patterns | Best Practices | Common Issues | Recommended Structure |
-| ------------- | --------------------- | -------------- | ------------- | --------------------- |
-| React         | ✅                    | ✅             | ✅            | ✅                    |
-| Angular       | ✅                    | ✅             | ✅            | ✅                    |
-| Vue           | ✅                    | ✅             | ✅            | ✅                    |
-| Express       | ✅                    | ✅             | ✅            | ✅                    |
-| Node.js       | ✅                    | ✅             | ✅            | ✅                    |
-| Django        | ✅                    | ✅             | ✅            | ✅                    |
-| Flask         | ✅                    | ✅             | ✅            | ✅                    |
-| Spring Boot   | ✅                    | ✅             | ✅            | ✅                    |
-| ASP.NET Core  | ✅                    | ✅             | ✅            | ✅                    |
-| Rails         | ✅                    | ✅             | ✅            | ✅                    |
-| Laravel       | ✅                    | ✅             | ✅            | ✅                    |
+| Framework    | Architecture Patterns | Best Practices | Common Issues | Recommended Structure |
+| ------------ | --------------------- | -------------- | ------------- | --------------------- |
+| React        | ✅                    | ✅             | ✅            | ✅                    |
+| Angular      | ✅                    | ✅             | ✅            | ✅                    |
+| Vue          | ✅                    | ✅             | ✅            | ✅                    |
+| Express      | ✅                    | ✅             | ✅            | ✅                    |
+| Node.js      | ✅                    | ✅             | ✅            | ✅                    |
+| Django       | ✅                    | ✅             | ✅            | ✅                    |
+| Flask        | ✅                    | ✅             | ✅            | ✅                    |
+| Spring Boot  | ✅                    | ✅             | ✅            | ✅                    |
+| ASP.NET Core | ✅                    | ✅             | ✅            | ✅                    |
+| Rails        | ✅                    | ✅             | ✅            | ✅                    |
+| Laravel      | ✅                    | ✅             | ✅            | ✅                    |
 
 ## Context-Aware Guidance Categories
 
@@ -345,3 +366,50 @@ To extend language or framework support:
 3. Add tests to `tests/vitest/design-assistant-context-aware.test.ts`
 
 See [CONTRIBUTING.md](../CONTRIBUTING.md) for details.
+
+<!-- AUTO-GENERATED FOOTER - DO NOT EDIT -->
+
+---
+
+<div align="center">
+
+<!-- Navigation Grid -->
+<table>
+  <tr>
+    <td align="center" width="33%">
+      <strong>📖 References</strong><br/>
+      <a href="./REFERENCES.md">Credits & Research</a><br/>
+      <a href="./SERENA_STRATEGIES.md">Serena Integration</a><br/>
+      <a href="./CONTEXT_AWARE_GUIDANCE.md">Context Guidance</a>
+    </td>
+    <td align="center" width="33%">
+      <strong>🏗️ Architecture</strong><br/>
+      <a href="./BRIDGE_CONNECTORS.md">Bridge Connectors</a><br/>
+      <a href="./design-module-status.md">Module Status</a><br/>
+      <a href="./TECHNICAL_IMPROVEMENTS.md">Improvements</a>
+    </td>
+    <td align="center" width="33%">
+      <strong>🚀 Get Started</strong><br/>
+      <a href="../README.md">Main README</a><br/>
+      <a href="./AI_INTERACTION_TIPS.md">Interaction Tips</a><br/>
+      <a href="../demos/README.md">Demo Examples</a>
+    </td>
+  </tr>
+</table>
+
+<!-- Back to Top -->
+<p>
+  <a href="#top">⬆️ Back to Top</a>
+</p>
+---
+
+<details>
+<summary><strong>📚 Related Documentation</strong></summary>
+
+- [Design Assistant](./AI_INTERACTION_TIPS.md#design-assistant)
+- [Architecture Design Prompt Builder](./AI_INTERACTION_TIPS.md#architecture-design-prompt-builder)
+- [Design Module Status](./DESIGN_MODULE_STATUS.md)
+
+</details>
+
+<sub>**MCP AI Agent Guidelines** • Licensed under [MIT](../LICENSE) • [Disclaimer](../DISCLAIMER.md) • [Contributing](../CONTRIBUTING.md)</sub>

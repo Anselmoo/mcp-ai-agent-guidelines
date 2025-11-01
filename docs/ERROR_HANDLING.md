@@ -1,3 +1,24 @@
+# Error Handling
+
+> **Best Practices for Robust Code**
+
+[![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../README.md)
+[![Documentation](https://img.shields.io/badge/📚-Documentation-blue?style=flat-square)](./README.md)
+[![Technical Guide](https://img.shields.io/badge/Type-Technical_Guide-purple?style=flat-square)](#)
+
+<details>
+<summary><strong>📍 Quick Navigation</strong></summary>
+
+**Related Guides:**
+
+- [Documentation Index](#documentation-index)
+- [Code Quality Improvements](#code-quality-improvements)
+- [Contributing](#contributing)
+
+</details>
+
+---
+
 # Error Handling Guide
 
 This document describes the centralized error handling patterns and best practices for the MCP AI Agent Guidelines project.
@@ -11,6 +32,7 @@ The project implements a centralized error handling system using typed errors an
 ### 1. Typed Error Classes
 
 All errors in the system extend from `OperationError`, which provides:
+
 - `code`: Error code for categorization
 - `context`: Structured context data for debugging
 - `timestamp`: When the error occurred
@@ -42,6 +64,7 @@ The `ErrorReporter` class provides centralized error handling methods:
 #### Methods
 
 **`report(error, context?, options?)`**
+
 - Reports and logs an error
 - Optionally rethrows the error
 - Returns an `OperationError` instance
@@ -50,11 +73,16 @@ The `ErrorReporter` class provides centralized error handling methods:
 try {
   // ... operation
 } catch (error) {
-  ErrorReporter.report(error, { sessionId, operation: "generate-artifacts" }, { rethrow: true });
+  ErrorReporter.report(
+    error,
+    { sessionId, operation: "generate-artifacts" },
+    { rethrow: true }
+  );
 }
 ```
 
 **`warn(error, context?, defaultMessage?)`**
+
 - Logs non-critical errors as warnings
 - Does not rethrow
 
@@ -67,6 +95,7 @@ try {
 ```
 
 **`createErrorResponse(error, context?)`**
+
 - Creates a standardized error response object
 - Returns `{ success: false, error: { message, code, timestamp, context } }`
 
@@ -79,6 +108,7 @@ try {
 ```
 
 **`createFullErrorResponse(error, baseResponse)`**
+
 - Creates a full error response matching API interfaces
 - Includes `sessionId`, `status`, `message`, `recommendations`, `artifacts`
 
@@ -100,6 +130,7 @@ try {
 ### 1. Use Typed Errors for Known Failure Cases
 
 Instead of generic `Error`:
+
 ```typescript
 // ❌ Don't
 throw new Error(`Session ${sessionId} not found`);
@@ -111,6 +142,7 @@ throw new SessionError(`Session ${sessionId} not found`, { sessionId });
 ### 2. Include Context in Errors
 
 Always provide context for debugging:
+
 ```typescript
 throw new ConfigurationError(
   "Methodology signals are required for select-methodology action",
@@ -138,17 +170,22 @@ try {
 ### 4. Log Non-Critical Errors as Warnings
 
 For operations that fail but shouldn't stop execution:
+
 ```typescript
 try {
   await generateOptionalArtifact();
 } catch (error) {
-  ErrorReporter.warn(error, { sessionId, operation: "generate-optional-artifact" });
+  ErrorReporter.warn(error, {
+    sessionId,
+    operation: "generate-optional-artifact",
+  });
 }
 ```
 
 ### 5. Preserve Error Stack Traces
 
 The ErrorReporter automatically preserves stack traces:
+
 ```typescript
 // Stack trace is maintained through error conversion
 const opError = ErrorReporter.report(new Error("Something failed"));
@@ -160,19 +197,23 @@ console.log(opError.stack); // Original stack trace is preserved
 ### Converting Existing Error Handling
 
 #### Before:
+
 ```typescript
 try {
   await operation();
 } catch (error) {
   return {
     success: false,
-    message: `Operation failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+    message: `Operation failed: ${
+      error instanceof Error ? error.message : "Unknown error"
+    }`,
     // ...
   };
 }
 ```
 
 #### After:
+
 ```typescript
 try {
   await operation();
@@ -187,6 +228,7 @@ try {
 ```
 
 #### Before (throwing errors):
+
 ```typescript
 if (!config) {
   throw new Error("Configuration is required");
@@ -194,11 +236,12 @@ if (!config) {
 ```
 
 #### After:
+
 ```typescript
 if (!config) {
   throw new ConfigurationError("Configuration is required", {
     action,
-    sessionId
+    sessionId,
   });
 }
 ```
@@ -206,6 +249,7 @@ if (!config) {
 ## Error Response Structure
 
 ### Standard Error Response
+
 ```typescript
 {
   success: false,
@@ -222,6 +266,7 @@ if (!config) {
 ```
 
 ### Full Error Response (for API compatibility)
+
 ```typescript
 {
   success: false,
@@ -239,6 +284,7 @@ if (!config) {
 ## Testing Error Handling
 
 ### Example Test Pattern
+
 ```typescript
 import { describe, expect, it } from "vitest";
 import { SessionError, ErrorReporter } from "../src/tools/shared/errors";
@@ -246,7 +292,7 @@ import { SessionError, ErrorReporter } from "../src/tools/shared/errors";
 describe("Error Handling", () => {
   it("should create typed error with context", () => {
     const error = new SessionError("Session not found", {
-      sessionId: "test-123"
+      sessionId: "test-123",
     });
 
     expect(error).toBeInstanceOf(SessionError);
@@ -300,3 +346,60 @@ The following files have been updated to use the new error handling:
 - [ ] Add error rate monitoring
 - [ ] Create error dashboards for production
 - [ ] Add more specific error types as needed
+
+<!-- AUTO-GENERATED FOOTER - DO NOT EDIT -->
+
+---
+
+<div align="center">
+
+<!-- Navigation Grid -->
+<table>
+  <tr>
+    <td align="center" width="33%">
+      <strong>🛠️ Code Quality</strong><br/>
+      <a href="./CLEAN_CODE_INITIATIVE.md">Clean Code 100/100</a><br/>
+      <a href="./code-quality-improvements.md">Quality Improvements</a><br/>
+      <a href="./ERROR_HANDLING.md">Error Patterns</a>
+    </td>
+    <td align="center" width="33%">
+      <strong>🏗️ Architecture</strong><br/>
+      <a href="./BRIDGE_CONNECTORS.md">Bridge Connectors</a><br/>
+      <a href="./TECHNICAL_IMPROVEMENTS.md">Refactoring</a><br/>
+      <a href="./design-module-status.md">Module Status</a>
+    </td>
+    <td align="center" width="33%">
+      <strong>📚 Resources</strong><br/>
+      <a href="../CONTRIBUTING.md">Contributing Guide</a><br/>
+      <a href="./REFERENCES.md">References</a><br/>
+      <a href="../.github/copilot-instructions.md">Copilot Guide</a>
+    </td>
+  </tr>
+</table>
+
+<details>
+<summary><strong>📚 Related Documentation</strong></summary>
+
+<br>
+
+**Developer Resources:**
+
+- [Clean Code Initiative](./CLEAN_CODE_INITIATIVE.md) - Quality standards
+- [Bridge Connectors](./BRIDGE_CONNECTORS.md) - Architecture patterns
+- [Contributing Guidelines](../CONTRIBUTING.md) - How to contribute
+
+**Error Tools:**
+
+- [Guidelines Validator](./tools/guidelines-validator.md) - Practice validation
+- [Debugging Assistant](./tools/debugging-assistant-prompt-builder.md) - Systematic debugging
+
+</details>
+
+<div align="center">
+
+<p>
+  <a href="#top">⬆️ Back to Top</a>
+</p>
+
+<sub>
+<sub>**MCP AI Agent Guidelines** • Licensed under [MIT](../LICENSE) • [Disclaimer](../DISCLAIMER.md) • [Contributing](../CONTRIBUTING.md)</sub>
