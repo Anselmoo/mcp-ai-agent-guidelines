@@ -498,7 +498,7 @@ function generateFooter(config) {
 	const tasks = config.activityData.tasks;
 
 	// Generate random activity data
-	const activityMatrix = agents.map((agent) =>
+	const activityMatrix = agents.map((_agent) =>
 		tasks.map(() => Math.floor(Math.random() * 10) + 1),
 	);
 

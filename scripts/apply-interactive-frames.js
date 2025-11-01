@@ -119,7 +119,7 @@ function applyFramesToFile(filePath, frameBaseName, dryRun = false) {
 		);
 
 		// Inject frames
-		const newContent = headerHTML + content + "\n" + footerHTML;
+		const newContent = `${headerHTML}${content}\n${footerHTML}`;
 
 		// Check if content changed
 		if (newContent === originalContent) {

@@ -266,17 +266,17 @@
             <h3 class="feedback-title">Feedback</h3>
             <form onsubmit="handleFeedback(event)">
                 <div class="form-group">
-                    <input 
-                        type="email" 
-                        class="form-input" 
-                        placeholder="Email (optional)" 
+                    <input
+                        type="email"
+                        class="form-input"
+                        placeholder="Email (optional)"
                         aria-label="Email"
                     />
                 </div>
                 <div class="form-group">
-                    <textarea 
-                        class="form-input" 
-                        placeholder="Your feedback..." 
+                    <textarea
+                        class="form-input"
+                        placeholder="Your feedback..."
                         required
                         aria-label="Feedback message"
                     ></textarea>
@@ -288,8 +288,8 @@
         <!-- Copyright -->
         <div class="copyright">
             <p>
-                © 2025 MCP AI Agent Guidelines | 
-                <span class="octocat" onclick="handleOctocat()" role="button" aria-label="Octocat easter egg">🐙</span> | 
+                © 2025 MCP AI Agent Guidelines |
+                <span class="octocat" onclick="handleOctocat()" role="button" aria-label="Octocat easter egg">🐙</span> |
                 Made with ❤️
             </p>
         </div>
@@ -301,7 +301,7 @@
         // Activity Matrix Data
         const agents = ["release-bot","changelog-generator"];
         const tasks = ["version","release","document"];
-        const data = [[5,6,1],[6,6,3]];
+        const data = [[1,8,1],[5,9,8]];
 
         // D3.js Activity Matrix Visualization
         function createActivityMatrix() {
@@ -327,7 +327,7 @@
             agents.forEach((agent, i) => {
                 tasks.forEach((task, j) => {
                     const value = data[i][j];
-                    
+
                     g.append('rect')
                         .attr('class', 'matrix-cell')
                         .attr('x', j * cellSize)
