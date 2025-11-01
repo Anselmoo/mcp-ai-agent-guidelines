@@ -1,38 +1,19 @@
+![Documentation Index](https://img.shields.io/badge/Documentation_Index-1a7f37?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMyA3VjE3TDEyIDIyTDIxIDE3VjdMMTIgMloiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CjxwYXRoIGQ9Ik0xMiA4VjE2IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8cGF0aCBkPSJNOCAxMkgxNiIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPC9zdmc+)
+
+**Comprehensive Documentation Hub** • All MCP AI Agent Guidelines Resources
+
+<details>
+<summary><strong>� Quick Navigation</strong></summary>
+
+- [🏠 Main README](../README.md)
+- [💡 AI Interaction Tips](./AI_INTERACTION_TIPS.md)
+- [🛠️ Tools Reference](./TOOLS_REFERENCE.md)
+- [🏗️ Architecture](./BRIDGE_CONNECTORS.md)
+- [📖 References](./REFERENCES.md)
+
+</details>
+
 # Documentation Index
-
-<div align="center">
-
-![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-blue?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMyA3VjE3TDEyIDIyTDIxIDE3VjdMMTIgMloiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CjxwYXRoIGQ9Ik0xMiA4VjE2IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8cGF0aCBkPSJNOCAxMkgxNiIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPC9zdmc+)
-
-**Comprehensive documentation for the MCP AI Agent Guidelines Server**
-
-[Getting Started](#getting-started) • [Tips](#-tips) • [Tools](#-tools) • [About](#-about) • [Developer Docs](#developer-documentation)
-
-</div>
-
----
-
-## 🚀 Quick Navigation
-
-### 💡 [Tips](./tips/)
-
-Best practices, quick reference guides, and AI interaction strategies
-
-### 🛠️ [Tools](./tools/)
-
-Detailed documentation for all 27 MCP tools and workflow patterns
-
-### ℹ️ [About](./about/)
-
-Credits, references, license, disclaimer, and acknowledgments
-
----
-
-## 📚 Table of Contents
-
-### Getting Started
-
-**Essential reading for new users**
 
 - **[Main README](../README.md)** - Project overview, installation, and quick start
 - **[Tools Reference](./TOOLS_REFERENCE.md)** - Complete reference for all 27 MCP tools ⭐

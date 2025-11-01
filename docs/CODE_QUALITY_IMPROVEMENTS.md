@@ -1,34 +1,23 @@
-<!-- AUTO-GENERATED HEADER - DO NOT EDIT -->
-<div align="center">
+# Code Quality Improvements
 
-<!-- Animated gradient header -->
-<img src="https://capsule-render.vercel.app/api?type=rect&color=gradient&customColorList=FFB86C,FF79C6,BD93F9,8BE9FD&height=3&section=header&animation=twinkling" />
+> **Best Practices & Analysis Tools**
 
-<br/>
+[![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../README.md)
+[![Documentation](https://img.shields.io/badge/📚-Documentation-blue?style=flat-square)](./README.md)
+[![Technical Guide](https://img.shields.io/badge/Type-Technical_Guide-purple?style=flat-square)](#)
 
-<!-- Document Title -->
-<h1>
-  <img src="https://img.shields.io/badge/MCP-AI_Agent_Guidelines-FFB86C?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMyA3VjE3TDEyIDIyTDIxIDE3VjdMMTIgMloiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CjxwYXRoIGQ9Ik0xMiA4VjE2IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8cGF0aCBkPSJNOCAxMkgxNiIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPC9zdmc+" alt="MCP AI Agent Guidelines - Reference" />
-</h1>
+<details>
+<summary><strong>📍 Quick Navigation</strong></summary>
 
-<p>
-  <strong>📖 Reference Documentation</strong> • Architecture & Integration Patterns
-</p>
+**Related Guides:**
 
-<!-- Quick Navigation Bar -->
-<div>
-  <a href="../README.md">🏠 Home</a> •
-  <a href="./README.md">📚 Docs Index</a> •
-  <a href="./REFERENCES.md">📚 References</a> •
-  <a href="./BRIDGE_CONNECTORS.md">🏗️ Architecture</a> •
-  <a href="./SERENA_STRATEGIES.md">🔄 Serena</a>
-</div>
+- [Clean Code Initiative](./CLEAN_CODE_INITIATIVE.md)
+- [Clean Code Scorer](./tools/clean-code-scorer.md)
+- [Code Hygiene Analyzer](./tools/code-hygiene-analyzer.md)
 
-</div>
+</details>
 
 ---
-<!-- END AUTO-GENERATED HEADER -->
-
 
 # Code Quality Evaluation Improvements
 
@@ -240,7 +229,6 @@ Potential areas for further improvement:
 - PR: #[pr-number]
 - Related Documentation: `/docs/code-quality-evaluation.md`
 
-
 <!-- AUTO-GENERATED FOOTER - DO NOT EDIT -->
 
 ---
@@ -275,16 +263,15 @@ Potential areas for further improvement:
 <p>
   <a href="#top">⬆️ Back to Top</a>
 </p>
+---
 
-<!-- Animated Waving Footer -->
-<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=FFB86C,FF79C6,BD93F9,8BE9FD,50FA7B&height=80&section=footer&animation=twinkling" />
+<details>
+<summary><strong>📚 Related Documentation</strong></summary>
 
-<!-- Metadata Footer -->
-<sub>
-  <strong>MCP AI Agent Guidelines</strong> • Made with ❤️ by <a href="https://github.com/Anselmoo">@Anselmoo</a> and contributors<br/>
-  Licensed under <a href="../LICENSE">MIT</a> • <a href="../DISCLAIMER.md">Disclaimer</a> • <a href="../CONTRIBUTING.md">Contributing</a>
-</sub>
+- [Clean Code Initiative](./CLEAN_CODE_INITIATIVE.md)
+- [Clean Code Scorer](./AI_INTERACTION_TIPS.md#clean-code-scorer)
+- [Code Hygiene Analyzer](./AI_INTERACTION_TIPS.md#code-hygiene-analyzer)
 
-</div>
+</details>
 
-<!-- END AUTO-GENERATED FOOTER -->
+<sub>**MCP AI Agent Guidelines** • Licensed under [MIT](../LICENSE) • [Disclaimer](../DISCLAIMER.md) • [Contributing](../CONTRIBUTING.md)</sub>

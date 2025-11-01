@@ -1,3 +1,24 @@
+# Complete Tools Reference
+
+> **All Available Tools & Capabilities**
+
+[![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../README.md)
+[![Documentation](https://img.shields.io/badge/📚-Documentation-blue?style=flat-square)](./README.md)
+[![Reference](https://img.shields.io/badge/Type-Reference-purple?style=flat-square)](#)
+
+<details>
+<summary><strong>📍 Quick Navigation</strong></summary>
+
+**Related Guides:**
+
+- [Documentation Index](#documentation-index)
+- [AI Interaction Tips](#ai-interaction-tips)
+- [Contributing](#contributing)
+
+</details>
+
+---
+
 # MCP Tools Reference
 
 **Complete guide to all 27 Model Context Protocol (MCP) tools provided by this server.**
@@ -22,6 +43,7 @@
 **Purpose**: Build structured prompts with clear context → goal → requirements hierarchy.
 
 **Key Parameters**:
+
 - `context` (required): Broad domain/context
 - `goal` (required): Specific objective
 - `requirements`: Detailed constraints
@@ -29,6 +51,7 @@
 - `provider`: Model family (gpt-4.1, claude-3.7, gemini-2.5, etc.)
 
 **Usage Example**:
+
 ```json
 {
   "context": "React component development",
@@ -48,11 +71,13 @@
 **Purpose**: Generate prompts for code analysis with security, performance, or maintainability focus.
 
 **Key Parameters**:
+
 - `codebase` (required): Code to analyze
 - `language`: Programming language
 - `focusArea`: security | performance | maintainability | general
 
 **Usage Example**:
+
 ```json
 {
   "codebase": "async function fetchData() { ... }",
@@ -70,11 +95,13 @@
 **Purpose**: Create architecture design prompts with scale-appropriate guidance.
 
 **Key Parameters**:
+
 - `systemRequirements` (required): System requirements and constraints
 - `scale`: small | medium | large
 - `technologyStack`: Preferred tech stack
 
 **Usage Example**:
+
 ```json
 {
   "systemRequirements": "Real-time chat with 10K concurrent users",
@@ -92,12 +119,14 @@
 **Purpose**: Guide enterprise architecture strategy with mentor perspectives and current research.
 
 **Key Parameters**:
+
 - `initiativeName` (required): Architecture initiative name
 - `problemStatement` (required): Strategic problem/opportunity
 - `businessDrivers`: Business objectives
 - `researchFocus`: Topics to benchmark
 
 **Usage Example**:
+
 ```json
 {
   "initiativeName": "Cloud Migration Strategy",
@@ -116,11 +145,13 @@
 **Purpose**: Generate systematic debugging prompts with structured analysis.
 
 **Key Parameters**:
+
 - `errorDescription` (required): Error/issue description
 - `context`: Additional context
 - `attemptedSolutions`: Solutions already tried
 
 **Usage Example**:
+
 ```json
 {
   "errorDescription": "React component not re-rendering after state update",
@@ -138,12 +169,14 @@
 **Purpose**: Generate L9 (Distinguished Engineer) level technical design prompts for high-level architecture.
 
 **Key Parameters**:
+
 - `projectName` (required): Software project name
 - `technicalChallenge` (required): Core technical problem
 - `techStack`: Technologies/frameworks
 - `performanceTargets`: SLOs/SLAs
 
 **Usage Example**:
+
 ```json
 {
   "projectName": "Distributed Cache System",
@@ -162,11 +195,13 @@
 **Purpose**: Generate technical documentation prompts tailored to content type and audience.
 
 **Key Parameters**:
+
 - `contentType` (required): API | user guide | technical spec
 - `targetAudience`: Intended audience
 - `existingContent`: Content to build upon
 
 **Usage Example**:
+
 ```json
 {
   "contentType": "API",
@@ -184,6 +219,7 @@
 **Purpose**: Build domain-neutral prompts with objectives, workflow, capabilities, and acceptance criteria.
 
 **Key Parameters**:
+
 - `title` (required): Document title
 - `summary` (required): One-paragraph summary
 - `objectives`: Goals list
@@ -191,6 +227,7 @@
 - `capabilities`: Tool capabilities
 
 **Usage Example**:
+
 ```json
 {
   "title": "API Rate Limiting Implementation",
@@ -209,11 +246,13 @@
 **Purpose**: Build security hardening and vulnerability analysis prompts with OWASP/compliance focus.
 
 **Key Parameters**:
+
 - `codeContext` (required): Code to analyze
 - `securityFocus`: vulnerability-analysis | security-hardening | compliance-check
 - `complianceStandards`: OWASP-Top-10, NIST, ISO-27001, etc.
 
 **Usage Example**:
+
 ```json
 {
   "codeContext": "Express.js authentication middleware",
@@ -233,6 +272,7 @@
 **Purpose**: Calculate comprehensive Clean Code score (0-100) based on multiple quality metrics.
 
 **Key Parameters**:
+
 - `codeContent`: Code to analyze
 - `language`: Programming language
 - `framework`: Framework/tech stack
@@ -240,6 +280,7 @@
 - `coverageMetrics`: Test coverage data
 
 **Usage Example**:
+
 ```json
 {
   "projectPath": "/path/to/project",
@@ -264,12 +305,14 @@
 **Purpose**: Analyze codebase for outdated patterns, unused dependencies, and hygiene issues.
 
 **Key Parameters**:
+
 - `codeContent` (required): Code to analyze
 - `language` (required): Programming language
 - `framework`: Framework/tech stack
 - `includeReferences`: Include best-practice links
 
 **Usage Example**:
+
 ```json
 {
   "codeContent": "const user = users.find(u => u.id === id); ...",
@@ -289,6 +332,7 @@
 **Purpose**: Analyze package.json for outdated, deprecated, or insecure packages with modern alternatives.
 
 **Key Parameters**:
+
 - `packageJsonContent` (required): package.json content
 - `checkOutdated`: Check for outdated versions
 - `checkDeprecated`: Check for deprecated packages
@@ -296,6 +340,7 @@
 - `suggestAlternatives`: Suggest ESM-compatible alternatives
 
 **Usage Example**:
+
 ```json
 {
   "packageJsonContent": "{\"dependencies\": {\"lodash\": \"^4.17.0\"}}",
@@ -316,6 +361,7 @@
 **Purpose**: Analyze coverage gaps, detect dead code, generate test suggestions, adapt thresholds.
 
 **Key Parameters**:
+
 - `projectPath`: Project root directory
 - `currentCoverage`: Current coverage metrics
 - `targetCoverage`: Target coverage goals
@@ -323,11 +369,12 @@
 - `detectDeadCode`: Detect unused code
 
 **Usage Example**:
+
 ```json
 {
   "projectPath": "/path/to/project",
-  "currentCoverage": {"lines": 65, "branches": 58},
-  "targetCoverage": {"lines": 85, "branches": 80},
+  "currentCoverage": { "lines": 65, "branches": 58 },
+  "targetCoverage": { "lines": 85, "branches": 80 },
   "generateTestSuggestions": true,
   "detectDeadCode": true
 }
@@ -344,11 +391,13 @@
 **Purpose**: Perform semantic analysis to identify symbols, structure, dependencies, and patterns.
 
 **Key Parameters**:
+
 - `codeContent` (required): Code to analyze
 - `language`: Programming language (auto-detected)
 - `analysisType`: symbols | structure | dependencies | patterns | all
 
 **Usage Example**:
+
 ```json
 {
   "codeContent": "export class UserService { ... }",
@@ -368,10 +417,12 @@
 **Purpose**: Validate development practices against AI agent guidelines.
 
 **Key Parameters**:
+
 - `practiceDescription` (required): Practice to validate
 - `category` (required): prompting | code-management | architecture | visualization | memory | workflow
 
 **Usage Example**:
+
 ```json
 {
   "practiceDescription": "Use chain-of-thought prompting for complex reasoning",
@@ -390,12 +441,14 @@
 **Purpose**: Generate Mermaid diagrams from text descriptions following best practices.
 
 **Key Parameters**:
+
 - `description` (required): System/process description
 - `diagramType` (required): flowchart | sequence | class | state | gantt | pie | er | journey | etc.
 - `direction`: TD | BT | LR | RL (for flowcharts)
 - `theme`: Visual theme (default, dark, forest, neutral)
 
 **Usage Example**:
+
 ```json
 {
   "description": "User authentication flow with JWT tokens",
@@ -417,12 +470,14 @@
 **Purpose**: Compose strategy analysis using SWOT, BSC, VRIO, Porter's Five Forces, etc.
 
 **Key Parameters**:
+
 - `frameworks` (required): Array of framework IDs (swot, balancedScorecard, portersFiveForces, etc.)
 - `context` (required): Business context
 - `objectives`: Strategic objectives
 - `market`: Market description
 
 **Usage Example**:
+
 ```json
 {
   "frameworks": ["swot", "portersFiveForces", "bcgMatrix"],
@@ -443,12 +498,14 @@
 **Purpose**: Analyze gaps between current and desired states using various frameworks.
 
 **Key Parameters**:
+
 - `frameworks` (required): capability | performance | maturity | skills | technology | etc.
 - `currentState` (required): Current state description
 - `desiredState` (required): Desired state description
 - `context` (required): Analysis context
 
 **Usage Example**:
+
 ```json
 {
   "frameworks": ["capability", "technology"],
@@ -469,6 +526,7 @@
 **Purpose**: Calculate optimal sprint timelines with dependency-aware scheduling.
 
 **Key Parameters**:
+
 - `tasks` (required): Tasks with estimates
 - `teamSize` (required): Number of team members
 - `sprintLength`: Sprint length in days
@@ -476,11 +534,12 @@
 - `optimizationStrategy`: greedy | linear-programming
 
 **Usage Example**:
+
 ```json
 {
   "tasks": [
-    {"name": "API design", "estimate": 8, "dependencies": []},
-    {"name": "Implementation", "estimate": 13, "dependencies": ["API design"]}
+    { "name": "API design", "estimate": 8, "dependencies": [] },
+    { "name": "Implementation", "estimate": 13, "dependencies": ["API design"] }
   ],
   "teamSize": 5,
   "sprintLength": 14,
@@ -499,12 +558,14 @@
 **Purpose**: Recommend best AI models for specific tasks based on capabilities and budget.
 
 **Key Parameters**:
+
 - `taskDescription` (required): Task description
 - `requirements`: Context length, multimodal, etc.
 - `budget`: low | medium | high
 - `language`: Language for code examples
 
 **Usage Example**:
+
 ```json
 {
   "taskDescription": "Code generation with long context windows",
@@ -525,6 +586,7 @@
 **Purpose**: Perform comprehensive project onboarding with structure analysis and documentation.
 
 **Key Parameters**:
+
 - `projectPath` (required): Project directory path
 - `projectName`: Project name
 - `projectType`: library | application | service | tool | other
@@ -532,6 +594,7 @@
 - `includeMemories`: Generate project memories
 
 **Usage Example**:
+
 ```json
 {
   "projectPath": "/Users/dev/my-project",
@@ -555,6 +618,7 @@
 **Purpose**: Multi-phase design workflow orchestration with constraint validation and artifact generation.
 
 **Key Parameters**:
+
 - `action` (required): start-session | advance-phase | validate-phase | generate-artifacts | etc.
 - `sessionId` (required): Unique session ID
 - `config`: Session configuration (for start-session)
@@ -562,6 +626,7 @@
 - `artifactTypes`: adr | specification | roadmap
 
 **Usage Example**:
+
 ```json
 {
   "action": "start-session",
@@ -587,11 +652,13 @@
 **Purpose**: Optimize prompt caching and context window usage for AI agents.
 
 **Key Parameters**:
+
 - `contextContent` (required): Context to optimize
 - `maxTokens`: Maximum token limit
 - `cacheStrategy`: aggressive | conservative | balanced
 
 **Usage Example**:
+
 ```json
 {
   "contextContent": "Long documentation text...",
@@ -611,12 +678,14 @@
 **Purpose**: Switch between agent operation modes with tailored tool sets.
 
 **Key Parameters**:
+
 - `targetMode` (required): planning | editing | analysis | debugging | refactoring | documentation
 - `currentMode`: Current mode
 - `context`: desktop-app | ide-assistant | agent | terminal | collaborative
 - `reason`: Reason for mode switch
 
 **Usage Example**:
+
 ```json
 {
   "targetMode": "debugging",
@@ -637,11 +706,13 @@
 **Purpose**: Evaluate prompts with numeric scoring (clarity, specificity, completeness).
 
 **Key Parameters**:
+
 - `promptText` (required): Prompt to evaluate
 - `targetLevel`: independent | indirect | direct | modeling | scaffolding | full-physical
 - `includeRecommendations`: Include improvement suggestions
 
 **Usage Example**:
+
 ```json
 {
   "promptText": "Write a function to sort an array",
@@ -660,12 +731,14 @@
 **Purpose**: Select optimal prompting hierarchy level based on task and agent capability.
 
 **Key Parameters**:
+
 - `taskDescription` (required): Task description
 - `agentCapability`: novice | intermediate | advanced | expert
 - `taskComplexity`: simple | moderate | complex | very-complex
 - `autonomyPreference`: low | medium | high
 
 **Usage Example**:
+
 ```json
 {
   "taskDescription": "Implement OAuth2 authentication",
@@ -686,6 +759,7 @@
 **Purpose**: Build UI/UX product prompts with structured design inputs.
 
 **Key Parameters**:
+
 - `title` (required): Prompt title
 - `summary` (required): Brief summary
 - `complexityLevel` (required): Design complexity
@@ -694,6 +768,7 @@
 - `features`: UI features with functionality
 
 **Usage Example**:
+
 ```json
 {
   "title": "Dashboard Design",
@@ -701,9 +776,7 @@
   "complexityLevel": "medium",
   "designDirection": "Clean, modern",
   "colorSchemeType": "Professional blue/gray",
-  "features": [
-    {"name": "Chart widget", "functionality": "Display metrics"}
-  ]
+  "features": [{ "name": "Chart widget", "functionality": "Display metrics" }]
 }
 ```
 
@@ -715,35 +788,35 @@
 
 ## Quick Reference Table
 
-| Tool | Category | Primary Use | Input Complexity |
-|------|----------|-------------|------------------|
-| hierarchical-prompt-builder | Prompt | Structured prompts | ⭐⭐ |
-| code-analysis-prompt-builder | Prompt | Code analysis prompts | ⭐⭐ |
-| architecture-design-prompt-builder | Prompt | Architecture prompts | ⭐⭐⭐ |
-| digital-enterprise-architect-prompt-builder | Prompt | Enterprise strategy | ⭐⭐⭐⭐ |
-| debugging-assistant-prompt-builder | Prompt | Debugging prompts | ⭐⭐ |
-| l9-distinguished-engineer-prompt-builder | Prompt | L9 tech design | ⭐⭐⭐⭐⭐ |
-| documentation-generator-prompt-builder | Prompt | Documentation prompts | ⭐⭐ |
-| domain-neutral-prompt-builder | Prompt | Generic templates | ⭐⭐⭐ |
-| security-hardening-prompt-builder | Prompt | Security analysis | ⭐⭐⭐ |
-| clean-code-scorer | Analysis | Code quality scoring | ⭐⭐⭐ |
-| code-hygiene-analyzer | Analysis | Pattern detection | ⭐⭐ |
-| dependency-auditor | Analysis | Package audit | ⭐ |
-| iterative-coverage-enhancer | Analysis | Test coverage | ⭐⭐⭐ |
-| semantic-code-analyzer | Analysis | Semantic analysis | ⭐⭐ |
-| guidelines-validator | Analysis | Practice validation | ⭐ |
-| mermaid-diagram-generator | Analysis | Diagram generation | ⭐⭐ |
-| strategy-frameworks-builder | Strategy | Business strategy | ⭐⭐⭐ |
-| gap-frameworks-analyzers | Strategy | Gap analysis | ⭐⭐⭐ |
-| sprint-timeline-calculator | Planning | Sprint planning | ⭐⭐ |
-| model-compatibility-checker | Planning | Model selection | ⭐ |
-| project-onboarding | Planning | Project analysis | ⭐⭐ |
-| design-assistant | Design | Design workflow | ⭐⭐⭐⭐ |
-| memory-context-optimizer | Utility | Context optimization | ⭐⭐ |
-| mode-switcher | Utility | Workflow modes | ⭐ |
-| prompting-hierarchy-evaluator | Utility | Prompt evaluation | ⭐⭐ |
-| hierarchy-level-selector | Utility | Hierarchy selection | ⭐ |
-| spark-prompt-builder | Utility | UI/UX prompts | ⭐⭐⭐ |
+| Tool                                        | Category | Primary Use           | Input Complexity |
+| ------------------------------------------- | -------- | --------------------- | ---------------- |
+| hierarchical-prompt-builder                 | Prompt   | Structured prompts    | ⭐⭐             |
+| code-analysis-prompt-builder                | Prompt   | Code analysis prompts | ⭐⭐             |
+| architecture-design-prompt-builder          | Prompt   | Architecture prompts  | ⭐⭐⭐           |
+| digital-enterprise-architect-prompt-builder | Prompt   | Enterprise strategy   | ⭐⭐⭐⭐         |
+| debugging-assistant-prompt-builder          | Prompt   | Debugging prompts     | ⭐⭐             |
+| l9-distinguished-engineer-prompt-builder    | Prompt   | L9 tech design        | ⭐⭐⭐⭐⭐       |
+| documentation-generator-prompt-builder      | Prompt   | Documentation prompts | ⭐⭐             |
+| domain-neutral-prompt-builder               | Prompt   | Generic templates     | ⭐⭐⭐           |
+| security-hardening-prompt-builder           | Prompt   | Security analysis     | ⭐⭐⭐           |
+| clean-code-scorer                           | Analysis | Code quality scoring  | ⭐⭐⭐           |
+| code-hygiene-analyzer                       | Analysis | Pattern detection     | ⭐⭐             |
+| dependency-auditor                          | Analysis | Package audit         | ⭐               |
+| iterative-coverage-enhancer                 | Analysis | Test coverage         | ⭐⭐⭐           |
+| semantic-code-analyzer                      | Analysis | Semantic analysis     | ⭐⭐             |
+| guidelines-validator                        | Analysis | Practice validation   | ⭐               |
+| mermaid-diagram-generator                   | Analysis | Diagram generation    | ⭐⭐             |
+| strategy-frameworks-builder                 | Strategy | Business strategy     | ⭐⭐⭐           |
+| gap-frameworks-analyzers                    | Strategy | Gap analysis          | ⭐⭐⭐           |
+| sprint-timeline-calculator                  | Planning | Sprint planning       | ⭐⭐             |
+| model-compatibility-checker                 | Planning | Model selection       | ⭐               |
+| project-onboarding                          | Planning | Project analysis      | ⭐⭐             |
+| design-assistant                            | Design   | Design workflow       | ⭐⭐⭐⭐         |
+| memory-context-optimizer                    | Utility  | Context optimization  | ⭐⭐             |
+| mode-switcher                               | Utility  | Workflow modes        | ⭐               |
+| prompting-hierarchy-evaluator               | Utility  | Prompt evaluation     | ⭐⭐             |
+| hierarchy-level-selector                    | Utility  | Hierarchy selection   | ⭐               |
+| spark-prompt-builder                        | Utility  | UI/UX prompts         | ⭐⭐⭐           |
 
 **Complexity Legend**: ⭐ (Simple) → ⭐⭐⭐⭐⭐ (Advanced)
 

@@ -1,34 +1,23 @@
-<!-- AUTO-GENERATED HEADER - DO NOT EDIT -->
-<div align="center">
+# Clean Code Initiative
 
-<!-- Animated gradient header -->
-<img src="https://capsule-render.vercel.app/api?type=rect&color=gradient&customColorList=50FA7B,8BE9FD,FFB86C,FF79C6&height=3&section=header&animation=twinkling" />
+> **Quality Standards & Best Practices**
 
-<br/>
+[![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../README.md)
+[![Documentation](https://img.shields.io/badge/📚-Documentation-blue?style=flat-square)](./README.md)
+[![Technical Guide](https://img.shields.io/badge/Type-Technical_Guide-purple?style=flat-square)](#)
 
-<!-- Document Title -->
-<h1>
-  <img src="https://img.shields.io/badge/MCP-AI_Agent_Guidelines-50FA7B?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMyA3VjE3TDEyIDIyTDIxIDE3VjdMMTIgMloiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CjxwYXRoIGQ9Ik0xMiA4VjE2IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8cGF0aCBkPSJNOCAxMkgxNiIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPC9zdmc+" alt="MCP AI Agent Guidelines - Developer Docs" />
-</h1>
+<details>
+<summary><strong>📍 Quick Navigation</strong></summary>
 
-<p>
-  <strong>🛠️ Developer Documentation</strong> • Architecture & Quality Standards
-</p>
+**Related Guides:**
 
-<!-- Quick Navigation Bar -->
-<div>
-  <a href="../README.md">🏠 Home</a> •
-  <a href="./README.md">📚 Docs Index</a> •
-  <a href="./CLEAN_CODE_INITIATIVE.md">✨ Clean Code</a> •
-  <a href="./ERROR_HANDLING.md">⚠️ Errors</a> •
-  <a href="../CONTRIBUTING.md">🤝 Contributing</a>
-</div>
+- [Code Quality Improvements](#code-quality-improvements)
+- [Clean Code Scorer](#clean-code-scorer)
+- [Documentation Index](#documentation-index)
 
-</div>
+</details>
 
 ---
-<!-- END AUTO-GENERATED HEADER -->
-
 
 # Clean Code 100/100 Initiative
 
@@ -45,6 +34,7 @@ npm run clean-code-dashboard
 ```
 
 This generates a comprehensive dashboard in `CLEAN_CODE_DASHBOARD.md` with:
+
 - Overall Clean Code Score (0-100)
 - Category breakdown (Coverage, TypeScript, Linting, Security)
 - Detailed metrics and statistics
@@ -56,42 +46,50 @@ This generates a comprehensive dashboard in `CLEAN_CODE_DASHBOARD.md` with:
 The Clean Code Score is calculated from multiple quality metrics:
 
 ### 1. Test Coverage (30 points)
+
 - **Target:** 80%+ coverage across all metrics
 - **Measured:** Statements, Branches, Functions, Lines
 - **Tool:** Vitest with V8 coverage
 
 **Check coverage:**
+
 ```bash
 npm run test:coverage:vitest
 ```
 
 ### 2. TypeScript Quality (25 points)
+
 - **Target:** Zero TypeScript errors
 - **Mode:** Strict type checking enabled
 - **Tool:** TypeScript compiler
 
 **Check types:**
+
 ```bash
 npm run type-check
 ```
 
 ### 3. Code Linting (20 points)
+
 - **Target:** Zero linting issues
 - **Standards:** Biome linting and formatting rules
 - **Tool:** Biome
 
 **Check linting:**
+
 ```bash
 npm run check
 npm run check:fix  # Auto-fix issues
 ```
 
 ### 4. Security (25 points)
+
 - **Target:** Zero security vulnerabilities
 - **Level:** Moderate and above
 - **Tool:** npm audit, Gitleaks
 
 **Check security:**
+
 ```bash
 npm audit --omit=dev --audit-level=moderate
 ```
@@ -119,6 +117,7 @@ A dedicated MCP tool for calculating Clean Code scores:
 ```
 
 **Features:**
+
 - Multi-category scoring (hygiene, coverage, types, linting, docs, security)
 - Visual score bars and status indicators
 - Actionable recommendations
@@ -129,17 +128,20 @@ A dedicated MCP tool for calculating Clean Code scores:
 Automated quality checks run on every commit and push:
 
 **Pre-commit hooks:**
+
 - 🔒 Gitleaks secret detection
 - 🟨 Biome formatting & linting
 - 🔷 TypeScript type checking
 - 🧹 Trailing whitespace & EOF fixes
 
 **Pre-push hooks:**
+
 - 🔒 Dependency security audit
 - 🧪 Full test suite
 - ⚡ Quality validation
 
 **Run manually:**
+
 ```bash
 npx lefthook run pre-commit
 npx lefthook run pre-push
@@ -148,6 +150,7 @@ npx lefthook run pre-push
 ### CI/CD Integration
 
 GitHub Actions workflow enforces quality gates:
+
 - `.github/workflows/lefthook-quality-gates.yml`
 - All checks must pass before merging
 - GitHub Copilot Agent integration verified
@@ -156,14 +159,14 @@ GitHub Actions workflow enforces quality gates:
 
 ### Score Ranges
 
-| Score | Rating | Description |
-|-------|--------|-------------|
-| 95-100 | 🏆 Perfect | Clean Code Excellence |
-| 90-94 | ✨ Excellent | Near Perfect Quality |
-| 80-89 | ✅ Very Good | High Quality Code |
-| 70-79 | 👍 Good | Quality Standards Met |
-| 60-69 | ⚠️ Fair | Improvements Needed |
-| 0-59 | ❌ Poor | Significant Issues |
+| Score  | Rating       | Description           |
+| ------ | ------------ | --------------------- |
+| 95-100 | 🏆 Perfect   | Clean Code Excellence |
+| 90-94  | ✨ Excellent | Near Perfect Quality  |
+| 80-89  | ✅ Very Good | High Quality Code     |
+| 70-79  | 👍 Good      | Quality Standards Met |
+| 60-69  | ⚠️ Fair      | Improvements Needed   |
+| 0-59   | ❌ Poor      | Significant Issues    |
 
 ### Weighted Categories
 
@@ -176,6 +179,7 @@ Total Score = Coverage (30%) + TypeScript (25%) + Linting (20%) + Security (25%)
 ### Step-by-Step Guide
 
 1. **Maximize Test Coverage (30 points)**
+
    ```bash
    # Run coverage report
    npm run test:coverage:vitest
@@ -188,6 +192,7 @@ Total Score = Coverage (30%) + TypeScript (25%) + Linting (20%) + Security (25%)
    ```
 
 2. **Eliminate TypeScript Errors (25 points)**
+
    ```bash
    # Check for errors
    npm run type-check
@@ -197,6 +202,7 @@ Total Score = Coverage (30%) + TypeScript (25%) + Linting (20%) + Security (25%)
    ```
 
 3. **Clean Up Linting Issues (20 points)**
+
    ```bash
    # Check issues
    npm run check
@@ -208,6 +214,7 @@ Total Score = Coverage (30%) + TypeScript (25%) + Linting (20%) + Security (25%)
    ```
 
 4. **Address Security Vulnerabilities (25 points)**
+
    ```bash
    # Audit dependencies
    npm audit
@@ -222,16 +229,19 @@ Total Score = Coverage (30%) + TypeScript (25%) + Linting (20%) + Security (25%)
 ### Best Practices
 
 1. **Regular Monitoring**
+
    - Run dashboard weekly: `npm run clean-code-dashboard`
    - Track score trends over time
    - Celebrate improvements
 
 2. **Automated Prevention**
+
    - Let Lefthook hooks prevent quality degradation
    - Review CI/CD failures promptly
    - Never bypass quality gates
 
 3. **Team Collaboration**
+
    - Share dashboard in team meetings
    - Set team goals for score improvements
    - Peer review for quality
@@ -246,21 +256,25 @@ Total Score = Coverage (30%) + TypeScript (25%) + Linting (20%) + Security (25%)
 Use this checklist for new code:
 
 - [ ] **Tests Written**
+
   - [ ] Unit tests added
   - [ ] Coverage ≥80%
   - [ ] Edge cases covered
 
 - [ ] **TypeScript Quality**
+
   - [ ] No type errors
   - [ ] Proper type annotations
   - [ ] Strict mode compatible
 
 - [ ] **Code Linting**
+
   - [ ] Biome check passes
   - [ ] No linting warnings
   - [ ] Consistent formatting
 
 - [ ] **Security**
+
   - [ ] No hardcoded secrets
   - [ ] Dependencies updated
   - [ ] No known vulnerabilities
@@ -273,7 +287,9 @@ Use this checklist for new code:
 ## 🔗 Related Tools
 
 ### Code Hygiene Analyzer
+
 Analyzes individual files for code hygiene issues:
+
 - Debug statements
 - Commented code
 - TODOs/FIXMEs
@@ -292,7 +308,9 @@ Analyzes individual files for code hygiene issues:
 ```
 
 ### Guidelines Validator
+
 Validates development practices against best practices:
+
 - Prompting strategies
 - Code management
 - Architecture patterns
@@ -321,6 +339,7 @@ npm run clean-code-dashboard
 ```
 
 Output: `CLEAN_CODE_DASHBOARD.md` with:
+
 - Current score and rating
 - Category breakdown
 - Detailed metrics
@@ -339,6 +358,7 @@ git commit -m "docs: update clean code dashboard [score: 95/100]"
 ### Reporting
 
 Include score in:
+
 - PR descriptions
 - Release notes
 - Team status updates
@@ -349,16 +369,19 @@ Include score in:
 The Clean Code 100/100 Initiative is considered successful when:
 
 1. **Score Achievement**
+
    - ✅ Codebase achieves 100/100 Clean Code score
    - ✅ Score maintained for at least 1 month
    - ✅ All categories at maximum points
 
 2. **Process Integration**
+
    - ✅ All PRs meet quality gates
    - ✅ Automated checks prevent quality degradation
    - ✅ Team follows quality guidelines
 
 3. **Community Impact**
+
    - ✅ Increased contributor engagement
    - ✅ Positive feedback on code quality
    - ✅ Fewer code-related issues reported
@@ -389,7 +412,6 @@ Help improve the Clean Code initiative:
 **Status:** 🚀 Active Initiative
 **Goal:** 🏆 100/100 Clean Code Score
 **Last Updated:** 2025-10-15
-
 
 <!-- AUTO-GENERATED FOOTER - DO NOT EDIT -->
 
@@ -426,15 +448,30 @@ Help improve the Clean Code initiative:
   <a href="#top">⬆️ Back to Top</a>
 </p>
 
-<!-- Animated Waving Footer -->
-<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=50FA7B,8BE9FD,FFB86C,FF79C6,BD93F9&height=80&section=footer&animation=twinkling" />
+<details>
+<summary><strong>📚 Related Documentation</strong></summary>
 
-<!-- Metadata Footer -->
+<br>
+
+**Quality & Standards:**
+
+- [Code Quality Improvements](./CODE_QUALITY_IMPROVEMENTS.md) - Hygiene scoring and analysis
+- [Error Handling](./ERROR_HANDLING.md) - Best practices
+- [Bridge Connectors](./BRIDGE_CONNECTORS.md) - Architecture patterns
+
+**Tools:**
+
+- [Clean Code Scorer](./tools/clean-code-scorer.md) - 0-100 quality metrics
+- [Code Hygiene Analyzer](./tools/code-hygiene-analyzer.md) - Pattern detection
+- [Dependency Auditor](./tools/dependency-auditor.md) - Security & ESM audit
+
+</details>
+
+<div align="center">
+
 <sub>
   <strong>MCP AI Agent Guidelines</strong> • Made with ❤️ by <a href="https://github.com/Anselmoo">@Anselmoo</a> and contributors<br/>
   Licensed under <a href="../LICENSE">MIT</a> • <a href="../DISCLAIMER.md">Disclaimer</a> • <a href="../CONTRIBUTING.md">Contributing</a>
 </sub>
 
 </div>
-
-<!-- END AUTO-GENERATED FOOTER -->

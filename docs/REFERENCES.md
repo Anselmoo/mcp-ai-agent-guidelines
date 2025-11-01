@@ -1,34 +1,23 @@
-<!-- AUTO-GENERATED HEADER - DO NOT EDIT -->
-<div align="center">
+# References
 
-<!-- Animated gradient header -->
-<img src="https://capsule-render.vercel.app/api?type=rect&color=gradient&customColorList=FFB86C,FF79C6,BD93F9,8BE9FD&height=3&section=header&animation=twinkling" />
+> **Credits, Research & Inspirations**
 
-<br/>
+[![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../README.md)
+[![Documentation](https://img.shields.io/badge/📚-Documentation-blue?style=flat-square)](./README.md)
+[![Reference](https://img.shields.io/badge/Type-Reference-purple?style=flat-square)](#)
 
-<!-- Document Title -->
-<h1>
-  <img src="https://img.shields.io/badge/MCP-AI_Agent_Guidelines-FFB86C?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMyA3VjE3TDEyIDIyTDIxIDE3VjdMMTIgMloiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CjxwYXRoIGQ9Ik0xMiA4VjE2IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8cGF0aCBkPSJNOCAxMkgxNiIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPC9zdmc+" alt="MCP AI Agent Guidelines - Reference" />
-</h1>
+<details>
+<summary><strong>📍 Quick Navigation</strong></summary>
 
-<p>
-  <strong>📖 Reference Documentation</strong> • Architecture & Integration Patterns
-</p>
+**Related Guides:**
 
-<!-- Quick Navigation Bar -->
-<div>
-  <a href="../README.md">🏠 Home</a> •
-  <a href="./README.md">📚 Docs Index</a> •
-  <a href="./REFERENCES.md">📚 References</a> •
-  <a href="./BRIDGE_CONNECTORS.md">🏗️ Architecture</a> •
-  <a href="./SERENA_STRATEGIES.md">🔄 Serena</a>
-</div>
+- [Documentation Index](#documentation-index)
+- [Contributing](#contributing)
+- [Disclaimer](#disclaimer)
 
-</div>
+</details>
 
 ---
-<!-- END AUTO-GENERATED HEADER -->
-
 
 # References & Inspirations
 
@@ -91,6 +80,7 @@ The HPT project provides the reference implementation and research code for the 
 - Taxonomy-based prompt organization
 
 **Key Contributions:**
+
 - Established evaluation metrics for prompting effectiveness
 - Demonstrated practical implementation of hierarchical prompting
 - Provided research-backed approach to prompt engineering
@@ -102,11 +92,13 @@ The HPT project provides the reference implementation and research code for the 
 The ACL (Association for Computational Linguistics) Anthology is an invaluable resource for prompt engineering and NLP evaluation research.
 
 **Key Contributions:**
+
 - Papers and resources on advanced prompt engineering
 - Evaluation methodologies for language models
 - Research-driven approaches to AI agent design
 
 **How it influenced us:**
+
 - Informed our prompt evaluation strategies
 - Guided best practices in prompt construction
 - Provided academic rigor to our methodology
@@ -118,16 +110,19 @@ The ACL (Association for Computational Linguistics) Anthology is an invaluable r
 Claude Flow pioneered declarative flow-based prompting and dynamic orchestration patterns that have been adapted in our implementation.
 
 **Key Contributions:**
+
 - Flow-based prompting paradigm
 - Prompt chaining patterns
 - Dynamic workflow orchestration
 
 **How it influenced us:**
+
 - Inspired our `prompt-flow-builder` tool with branching, loops, and conditional logic
 - Informed our `prompt-chaining-builder` design
 - Guided integration of flow-based patterns with Serena-style memory management (see [FLOW_SERENA_INTEGRATION.md](./FLOW_SERENA_INTEGRATION.md))
 
 **Related Documentation:**
+
 - [FLOW_PROMPTING_EXAMPLES.md](./FLOW_PROMPTING_EXAMPLES.md) - Flow-based prompting examples
 - [FLOW_SERENA_INTEGRATION.md](./FLOW_SERENA_INTEGRATION.md) - Integration patterns
 
@@ -138,17 +133,20 @@ Claude Flow pioneered declarative flow-based prompting and dynamic orchestration
 Serena's approach to semantic code analysis, project onboarding, and mode-based agent operation has significantly influenced our design tools.
 
 **Key Contributions:**
+
 - Semantic code understanding via language servers
 - Project memory and context retention
 - Flexible mode switching for different agent behaviors
 
 **How it influenced us:**
+
 - Inspired our `semantic-code-analyzer` tool
 - Guided development of `project-onboarding` for intelligent project familiarization
 - Informed our `mode-switcher` implementation with specialized operation modes
 - Influenced memory pattern integration in flow-based prompting
 
 **Related Documentation:**
+
 - [SERENA_STRATEGIES.md](./SERENA_STRATEGIES.md) - Serena-inspired strategies overview
 - [SERENA_INTEGRATION_SUMMARY.md](./SERENA_INTEGRATION_SUMMARY.md) - Integration summary
 
@@ -159,11 +157,13 @@ Serena's approach to semantic code analysis, project onboarding, and mode-based 
 Context7's approach to providing up-to-date library documentation and context to AI agents has informed our resource management and documentation strategies.
 
 **Key Contributions:**
+
 - Dynamic documentation retrieval
 - Context-aware resource provision
 - Library-specific knowledge grounding
 
 **How it influenced us:**
+
 - Informed our MCP resource structure for providing contextual documentation
 - Guided design of our external references system in `structured.ts`
 - Inspired integration of real-time documentation references in our tools
@@ -224,7 +224,6 @@ This project evolves rapidly alongside the AI ecosystem. We commit to:
 
 For questions about specific references or to suggest additions, please [open an issue](https://github.com/Anselmoo/mcp-ai-agent-guidelines/issues) or see [CONTRIBUTING.md](../CONTRIBUTING.md).
 
-
 <!-- AUTO-GENERATED FOOTER - DO NOT EDIT -->
 
 ---
@@ -259,16 +258,6 @@ For questions about specific references or to suggest additions, please [open an
 <p>
   <a href="#top">⬆️ Back to Top</a>
 </p>
+---
 
-<!-- Animated Waving Footer -->
-<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=FFB86C,FF79C6,BD93F9,8BE9FD,50FA7B&height=80&section=footer&animation=twinkling" />
-
-<!-- Metadata Footer -->
-<sub>
-  <strong>MCP AI Agent Guidelines</strong> • Made with ❤️ by <a href="https://github.com/Anselmoo">@Anselmoo</a> and contributors<br/>
-  Licensed under <a href="../LICENSE">MIT</a> • <a href="../DISCLAIMER.md">Disclaimer</a> • <a href="../CONTRIBUTING.md">Contributing</a>
-</sub>
-
-</div>
-
-<!-- END AUTO-GENERATED FOOTER -->
+<sub>**MCP AI Agent Guidelines** • Licensed under [MIT](../LICENSE) • [Disclaimer](../DISCLAIMER.md) • [Contributing](../CONTRIBUTING.md)</sub>

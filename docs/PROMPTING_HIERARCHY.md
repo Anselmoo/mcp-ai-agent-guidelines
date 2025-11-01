@@ -1,34 +1,23 @@
-<!-- AUTO-GENERATED HEADER - DO NOT EDIT -->
-<div align="center">
+# Prompting Hierarchy
 
-<!-- Animated gradient header -->
-<img src="https://capsule-render.vercel.app/api?type=rect&color=gradient&customColorList=BD93F9,FF79C6,8BE9FD,50FA7B&height=3&section=header&animation=twinkling" />
+> **Understanding Prompt Levels & Evaluation**
 
-<br/>
+[![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../README.md)
+[![Documentation](https://img.shields.io/badge/📚-Documentation-blue?style=flat-square)](./README.md)
+[![User Guide](https://img.shields.io/badge/Type-User_Guide-purple?style=flat-square)](#)
 
-<!-- Document Title (to be replaced with actual title) -->
-<h1>
-  <img src="https://img.shields.io/badge/MCP-AI_Agent_Guidelines-BD93F9?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMyA3VjE3TDEyIDIyTDIxIDE3VjdMMTIgMloiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CjxwYXRoIGQ9Ik0xMiA4VjE2IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8cGF0aCBkPSJNOCAxMkgxNiIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPC9zdmc+" alt="MCP AI Agent Guidelines - User Guide" />
-</h1>
+<details>
+<summary><strong>📍 Quick Navigation</strong></summary>
 
-<p>
-  <strong>📚 User Guide</strong> • Prompting Strategies & Best Practices
-</p>
+**Related Guides:**
 
-<!-- Quick Navigation Bar -->
-<div>
-  <a href="../README.md">🏠 Home</a> •
-  <a href="./README.md">📚 Docs Index</a> •
-  <a href="./AI_INTERACTION_TIPS.md">💡 Tips</a> •
-  <a href="./PROMPTING_HIERARCHY.md">📊 Hierarchy</a> •
-  <a href="./AGENT_RELATIVE_CALLS.md">🔗 Patterns</a>
-</div>
+- [AI Interaction Tips](./AI_INTERACTION_TIPS.md)
+- [Hierarchical Prompt Builder](./tools/hierarchical-prompt-builder.md)
+- [Hierarchy Level Selector](./tools/hierarchy-level-selector.md)
 
-</div>
+</details>
 
 ---
-<!-- END AUTO-GENERATED HEADER -->
-
 
 # Prompting Hierarchy and Numeric Evaluation
 
@@ -37,6 +26,7 @@ This document describes the new prompting hierarchy and numeric evaluation featu
 ## Overview
 
 The system implements a structured framework for:
+
 1. **Hierarchical Prompting Levels** - Different levels of guidance and support for AI agents
 2. **Numeric Evaluation** - Quantitative metrics for assessing prompt quality
 3. **Reinforcement Learning-Inspired Scoring** - Predictive effectiveness metrics
@@ -45,14 +35,14 @@ The system implements a structured framework for:
 
 The framework defines six levels of prompting support, from least to most specific:
 
-| Level | Description | Cognitive Load | Best For |
-|-------|-------------|----------------|----------|
-| **Independent** | Minimal guidance; high autonomy | High | Expert agents, exploratory tasks |
-| **Indirect** | Subtle hints and cues | Medium | Learning scenarios, skill development |
-| **Direct** | Clear instructions without steps | Medium | Standard tasks, experienced agents |
-| **Modeling** | Examples and demonstrations | Low | New patterns, ensuring consistency |
-| **Scaffolding** | Step-by-step structured guidance | Low | Complex tasks, less experienced agents |
-| **Full Physical** | Complete detailed specification | Low | High-risk operations, exact replication |
+| Level             | Description                      | Cognitive Load | Best For                                |
+| ----------------- | -------------------------------- | -------------- | --------------------------------------- |
+| **Independent**   | Minimal guidance; high autonomy  | High           | Expert agents, exploratory tasks        |
+| **Indirect**      | Subtle hints and cues            | Medium         | Learning scenarios, skill development   |
+| **Direct**        | Clear instructions without steps | Medium         | Standard tasks, experienced agents      |
+| **Modeling**      | Examples and demonstrations      | Low            | New patterns, ensuring consistency      |
+| **Scaffolding**   | Step-by-step structured guidance | Low            | Complex tasks, less experienced agents  |
+| **Full Physical** | Complete detailed specification  | Low            | High-risk operations, exact replication |
 
 ## Evaluation Metrics
 
@@ -74,6 +64,7 @@ The numeric evaluation system provides scores across multiple dimensions:
 Evaluates prompts and provides numeric scoring with recommendations.
 
 **Input:**
+
 ```typescript
 {
   promptText: string;           // The prompt to evaluate
@@ -85,6 +76,7 @@ Evaluates prompts and provides numeric scoring with recommendations.
 ```
 
 **Output:**
+
 - Numeric scores for all metrics
 - Detected hierarchy level
 - Component scores breakdown
@@ -96,6 +88,7 @@ Evaluates prompts and provides numeric scoring with recommendations.
 Selects the most appropriate hierarchy level based on task characteristics.
 
 **Input:**
+
 ```typescript
 {
   taskDescription: string;
@@ -108,6 +101,7 @@ Selects the most appropriate hierarchy level based on task characteristics.
 ```
 
 **Output:**
+
 - Recommended hierarchy level
 - Scoring for all levels
 - Usage guidance
@@ -120,9 +114,10 @@ Selects the most appropriate hierarchy level based on task characteristics.
 
 ```typescript
 const evaluation = await promptingHierarchyEvaluator({
-  promptText: "Implement JWT authentication for the user login endpoint. Add input validation for email and password fields.",
+  promptText:
+    "Implement JWT authentication for the user login endpoint. Add input validation for email and password fields.",
   targetLevel: "direct",
-  includeRecommendations: true
+  includeRecommendations: true,
 });
 
 // Returns:
@@ -139,10 +134,11 @@ const evaluation = await promptingHierarchyEvaluator({
 
 ```typescript
 const recommendation = await hierarchyLevelSelector({
-  taskDescription: "Implement a comprehensive authentication system with OAuth, JWT, and session management",
+  taskDescription:
+    "Implement a comprehensive authentication system with OAuth, JWT, and session management",
   agentCapability: "intermediate",
   taskComplexity: "very-complex",
-  autonomyPreference: "low"
+  autonomyPreference: "low",
 });
 
 // Returns:
@@ -159,7 +155,7 @@ const recommendation = await hierarchyLevelSelector({
 const levelResult = await hierarchyLevelSelector({
   taskDescription: "Fix authentication bug in login module",
   agentCapability: "intermediate",
-  taskComplexity: "moderate"
+  taskComplexity: "moderate",
 });
 
 // 2. Build prompt at that level (Direct in this case)
@@ -181,7 +177,7 @@ Fix the token expiration logic.
 const evaluation = await promptingHierarchyEvaluator({
   promptText: prompt,
   targetLevel: levelResult.level,
-  includeRecommendations: true
+  includeRecommendations: true,
 });
 
 // 4. Iterate based on scores
@@ -195,12 +191,14 @@ if (evaluation.overallScore < 70) {
 Choose hierarchy level based on:
 
 1. **Agent Capability**
+
    - Novice → Full Physical/Scaffolding
    - Intermediate → Direct/Modeling
    - Advanced → Indirect/Direct
    - Expert → Independent/Indirect
 
 2. **Task Complexity**
+
    - Simple → Independent/Direct
    - Moderate → Direct/Modeling
    - Complex → Modeling/Scaffolding
@@ -237,12 +235,12 @@ The `guidelines-config.ts` now includes:
 ## Testing
 
 Comprehensive tests are available in:
+
 - `tests/vitest/prompting-hierarchy-evaluation.test.ts`
   - Tests for all hierarchy levels
   - Numeric scoring validation
   - Integration tests
   - RL-style effectiveness scoring
-
 
 <!-- AUTO-GENERATED FOOTER - DO NOT EDIT -->
 
@@ -275,13 +273,37 @@ Comprehensive tests are available in:
   </tr>
 </table>
 
-<!-- Back to Top -->
+<details>
+<summary><strong>📚 Related Documentation</strong></summary>
+
+<br>
+
+**User Guides:**
+
+- [AI Interaction Tips](./AI_INTERACTION_TIPS.md) - Targeted tool-oriented questions
+- [Agent-Relative Patterns](./AGENT_RELATIVE_CALLS.md) - Tool orchestration workflows
+- [Flow-Based Prompting](./FLOW_PROMPTING_EXAMPLES.md) - Multi-step workflows
+
+**Tool References:**
+
+- [Complete Tools Reference](./TOOLS_REFERENCE.md) - All 27 tools documented
+- [Hierarchy Level Selector](./tools/hierarchy-level-selector.md) - Optimal level selection
+- [Prompting Hierarchy Evaluator](./tools/prompting-hierarchy-evaluator.md) - Numeric scoring
+
+</details>
+
+<div align="center">
+
 <p>
   <a href="#top">⬆️ Back to Top</a>
 </p>
 
-<!-- Animated Waving Footer -->
-<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=BD93F9,FF79C6,8BE9FD,50FA7B,FFB86C&height=80&section=footer&animation=twinkling" />
+<sub>
+  <strong>MCP AI Agent Guidelines</strong> • Made with ❤️ by <a href="https://github.com/Anselmoo">@Anselmoo</a> and contributors<br/>
+  Licensed under <a href="../LICENSE">MIT</a> • <a href="../DISCLAIMER.md">Disclaimer</a> • <a href="../CONTRIBUTING.md">Contributing</a>
+</sub>
+
+</div>
 
 <!-- Metadata Footer -->
 <sub>

@@ -1,34 +1,23 @@
-<!-- AUTO-GENERATED HEADER - DO NOT EDIT -->
-<div align="center">
+# Serena Integration Workflows
 
-<!-- Animated gradient header -->
-<img src="https://capsule-render.vercel.app/api?type=rect&color=gradient&customColorList=FFB86C,FF79C6,BD93F9,8BE9FD&height=3&section=header&animation=twinkling" />
+> **Flow-Based Serena Patterns**
 
-<br/>
+[![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../README.md)
+[![Documentation](https://img.shields.io/badge/📚-Documentation-blue?style=flat-square)](./README.md)
+[![Technical Guide](https://img.shields.io/badge/Type-Technical_Guide-purple?style=flat-square)](#)
 
-<!-- Document Title -->
-<h1>
-  <img src="https://img.shields.io/badge/MCP-AI_Agent_Guidelines-FFB86C?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMyA3VjE3TDEyIDIyTDIxIDE3VjdMMTIgMloiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CjxwYXRoIGQ9Ik0xMiA4VjE2IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8cGF0aCBkPSJNOCAxMkgxNiIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPC9zdmc+" alt="MCP AI Agent Guidelines - Reference" />
-</h1>
+<details>
+<summary><strong>📍 Quick Navigation</strong></summary>
 
-<p>
-  <strong>📖 Reference Documentation</strong> • Architecture & Integration Patterns
-</p>
+**Related Guides:**
 
-<!-- Quick Navigation Bar -->
-<div>
-  <a href="../README.md">🏠 Home</a> •
-  <a href="./README.md">📚 Docs Index</a> •
-  <a href="./REFERENCES.md">📚 References</a> •
-  <a href="./BRIDGE_CONNECTORS.md">🏗️ Architecture</a> •
-  <a href="./SERENA_STRATEGIES.md">🔄 Serena</a>
-</div>
+- [Serena Strategies](#serena-strategies)
+- [Bridge Connectors](#bridge-connectors)
+- [Documentation Index](#documentation-index)
 
-</div>
+</details>
 
 ---
-<!-- END AUTO-GENERATED HEADER -->
-
 
 # Flow-Based Prompting & Serena Patterns Integration
 
@@ -37,12 +26,14 @@ This guide demonstrates how to combine flow-based prompting strategies (inspired
 ## Overview
 
 ### Flow-Based Prompting (claude-flow)
+
 - **Prompt Chaining**: Sequential multi-step workflows with data flow
 - **Prompt Flows**: Declarative graphs with branching, loops, and parallel execution
 - **Visualization**: Automatic Mermaid diagram generation
 - **Error Handling**: Configurable strategies (skip, retry, abort)
 
 ### Serena Patterns
+
 - **Memory System**: Project context retention across sessions
 - **Mode Switching**: Adaptive behavior (planning, editing, analysis, etc.)
 - **Semantic Analysis**: Symbol-based code understanding
@@ -59,7 +50,7 @@ Start in planning mode, design the flow, then execute in editing mode.
 await modeSwitcher({
   targetMode: "planning",
   context: "ide-assistant",
-  reason: "Design comprehensive workflow before execution"
+  reason: "Design comprehensive workflow before execution",
 });
 
 // Step 2: Design the flow architecture
@@ -71,41 +62,46 @@ const flowDesign = await promptFlowBuilder({
       id: "requirements",
       type: "prompt",
       name: "Gather Requirements",
-      config: { prompt: "Analyze feature requirements and constraints" }
+      config: { prompt: "Analyze feature requirements and constraints" },
     },
     {
       id: "design",
       type: "prompt",
       name: "Design Architecture",
-      config: { prompt: "Design system architecture and data flow" }
+      config: { prompt: "Design system architecture and data flow" },
     },
     {
       id: "review",
       type: "condition",
       name: "Design Review",
-      config: { expression: "complexity <= acceptable_threshold" }
+      config: { expression: "complexity <= acceptable_threshold" },
     },
     {
       id: "simplify",
       type: "prompt",
       name: "Simplify Design",
-      config: { prompt: "Reduce complexity while maintaining requirements" }
+      config: { prompt: "Reduce complexity while maintaining requirements" },
     },
     {
       id: "implement",
       type: "prompt",
       name: "Implementation Plan",
-      config: { prompt: "Create detailed implementation steps" }
-    }
+      config: { prompt: "Create detailed implementation steps" },
+    },
   ],
   edges: [
     { from: "requirements", to: "design" },
     { from: "design", to: "review" },
     { from: "review", to: "implement", condition: "true", label: "Approved" },
-    { from: "review", to: "simplify", condition: "false", label: "Too Complex" },
-    { from: "simplify", to: "design", label: "Iterate" }
+    {
+      from: "review",
+      to: "simplify",
+      condition: "false",
+      label: "Too Complex",
+    },
+    { from: "simplify", to: "design", label: "Iterate" },
   ],
-  outputFormat: "both"
+  outputFormat: "both",
 });
 
 // Step 3: Review and validate plan
@@ -116,7 +112,7 @@ await modeSwitcher({
   currentMode: "planning",
   targetMode: "editing",
   context: "ide-assistant",
-  reason: "Execute validated implementation plan"
+  reason: "Execute validated implementation plan",
 });
 
 // Step 5: Execute the implementation
@@ -134,7 +130,7 @@ const onboarding = await projectOnboarding({
   projectName: "MyProject",
   projectType: "application",
   analysisDepth: "standard",
-  includeMemories: true
+  includeMemories: true,
 });
 
 // Step 2: Create chain that uses project context
@@ -144,33 +140,33 @@ await promptChainingBuilder({
   context: `Project: ${onboarding.memories.architecture}`,
   globalVariables: {
     coding_standards: onboarding.memories.codeConventions,
-    tech_stack: onboarding.memories.dependencies
+    tech_stack: onboarding.memories.dependencies,
   },
   steps: [
     {
       name: "Identify Patterns",
       prompt: "Identify code patterns that violate {{coding_standards}}",
-      outputKey: "violations"
+      outputKey: "violations",
     },
     {
       name: "Check Compatibility",
       prompt: "Ensure refactoring is compatible with {{tech_stack}}",
       dependencies: ["violations"],
-      outputKey: "safe_changes"
+      outputKey: "safe_changes",
     },
     {
       name: "Apply Refactoring",
       prompt: "Refactor code following project patterns: {{safe_changes}}",
       dependencies: ["safe_changes"],
-      errorHandling: "abort"
+      errorHandling: "abort",
     },
     {
       name: "Update Memories",
       prompt: "Update project memories with new patterns discovered",
       dependencies: ["safe_changes"],
-      errorHandling: "skip"
-    }
-  ]
+      errorHandling: "skip",
+    },
+  ],
 });
 ```
 
@@ -183,7 +179,7 @@ Combine semantic code analysis with flow-based processing.
 const semanticAnalysis = await semanticCodeAnalyzer({
   codeContent: sourceCode,
   analysisType: "all",
-  language: "TypeScript/JavaScript"
+  language: "TypeScript/JavaScript",
 });
 
 // Step 2: Create flow based on code structure
@@ -192,7 +188,7 @@ await promptFlowBuilder({
   description: "Refactor using semantic understanding of code symbols",
   variables: {
     symbols: JSON.stringify(semanticAnalysis.symbols),
-    dependencies: JSON.stringify(semanticAnalysis.dependencies)
+    dependencies: JSON.stringify(semanticAnalysis.dependencies),
   },
   nodes: [
     {
@@ -200,44 +196,45 @@ await promptFlowBuilder({
       type: "prompt",
       name: "Analyze Symbols",
       config: {
-        prompt: "Review symbols: {{symbols}} for refactoring opportunities"
-      }
+        prompt: "Review symbols: {{symbols}} for refactoring opportunities",
+      },
     },
     {
       id: "check_deps",
       type: "condition",
       name: "Has Dependencies",
-      config: { expression: "dependencies.length > 0" }
+      config: { expression: "dependencies.length > 0" },
     },
     {
       id: "refactor_safe",
       type: "prompt",
       name: "Safe Refactoring",
       config: {
-        prompt: "Refactor symbols with no dependencies first"
-      }
+        prompt: "Refactor symbols with no dependencies first",
+      },
     },
     {
       id: "refactor_deps",
       type: "prompt",
       name: "Dependency-Aware Refactoring",
       config: {
-        prompt: "Carefully refactor symbols with dependencies: {{dependencies}}"
-      }
+        prompt:
+          "Carefully refactor symbols with dependencies: {{dependencies}}",
+      },
     },
     {
       id: "merge",
       type: "merge",
-      name: "Combine Changes"
-    }
+      name: "Combine Changes",
+    },
   ],
   edges: [
     { from: "analyze_symbols", to: "check_deps" },
     { from: "check_deps", to: "refactor_safe", condition: "false" },
     { from: "check_deps", to: "refactor_deps", condition: "true" },
     { from: "refactor_safe", to: "merge" },
-    { from: "refactor_deps", to: "merge" }
-  ]
+    { from: "refactor_deps", to: "merge" },
+  ],
 });
 ```
 
@@ -253,39 +250,40 @@ await promptChainingBuilder({
     {
       name: "Extract Code Structure",
       prompt: "Extract code structure and API surface",
-      outputKey: "structure"
+      outputKey: "structure",
     },
     {
       name: "Optimize Context",
-      prompt: "Use memory-context-optimizer with cacheStrategy=aggressive to compress {{structure}}",
+      prompt:
+        "Use memory-context-optimizer with cacheStrategy=aggressive to compress {{structure}}",
       dependencies: ["structure"],
-      outputKey: "optimized_structure"
+      outputKey: "optimized_structure",
     },
     {
       name: "Generate API Docs",
       prompt: "Generate API documentation from {{optimized_structure}}",
       dependencies: ["optimized_structure"],
-      outputKey: "api_docs"
+      outputKey: "api_docs",
     },
     {
       name: "Optimize Again",
       prompt: "Re-optimize context before examples: {{api_docs}}",
       dependencies: ["api_docs"],
-      outputKey: "optimized_docs"
+      outputKey: "optimized_docs",
     },
     {
       name: "Add Examples",
       prompt: "Add code examples to {{optimized_docs}}",
       dependencies: ["optimized_docs"],
-      outputKey: "complete_docs"
+      outputKey: "complete_docs",
     },
     {
       name: "Final Optimization",
       prompt: "Final memory optimization of {{complete_docs}} for storage",
-      dependencies: ["complete_docs"]
-    }
+      dependencies: ["complete_docs"],
+    },
   ],
-  executionStrategy: "sequential"
+  executionStrategy: "sequential",
 });
 ```
 
@@ -297,7 +295,7 @@ Switch modes throughout a complex workflow for optimal results.
 // Step 1: Start with analysis mode
 await modeSwitcher({
   targetMode: "analysis",
-  context: "agent"
+  context: "agent",
 });
 
 const analysisFlow = await promptFlowBuilder({
@@ -307,16 +305,16 @@ const analysisFlow = await promptFlowBuilder({
       id: "analyze",
       type: "prompt",
       name: "Analyze Requirements",
-      config: { prompt: "Analyze project requirements and constraints" }
-    }
-  ]
+      config: { prompt: "Analyze project requirements and constraints" },
+    },
+  ],
 });
 
 // Step 2: Switch to planning mode
 await modeSwitcher({
   currentMode: "analysis",
   targetMode: "planning",
-  context: "agent"
+  context: "agent",
 });
 
 const planningChain = await promptChainingBuilder({
@@ -325,21 +323,21 @@ const planningChain = await promptChainingBuilder({
     {
       name: "Design Architecture",
       prompt: "Design system architecture based on analysis",
-      outputKey: "architecture"
+      outputKey: "architecture",
     },
     {
       name: "Plan Implementation",
       prompt: "Create implementation plan for {{architecture}}",
-      dependencies: ["architecture"]
-    }
-  ]
+      dependencies: ["architecture"],
+    },
+  ],
 });
 
 // Step 3: Switch to editing mode for implementation
 await modeSwitcher({
   currentMode: "planning",
   targetMode: "editing",
-  context: "agent"
+  context: "agent",
 });
 
 // Implementation happens here...
@@ -348,7 +346,7 @@ await modeSwitcher({
 await modeSwitcher({
   currentMode: "editing",
   targetMode: "debugging",
-  context: "agent"
+  context: "agent",
 });
 
 // Testing and debugging...
@@ -357,7 +355,7 @@ await modeSwitcher({
 await modeSwitcher({
   currentMode: "debugging",
   targetMode: "documentation",
-  context: "agent"
+  context: "agent",
 });
 
 // Documentation generation...
@@ -366,26 +364,31 @@ await modeSwitcher({
 ## Best Practices
 
 ### 1. Always Start with Planning Mode
+
 - Design flows before executing them
 - Use visualization to validate flow logic
 - Get stakeholder approval on flow structure
 
 ### 2. Leverage Project Memories
+
 - Load project context at the start of workflows
 - Update memories after significant operations
 - Use memories to maintain consistency across sessions
 
 ### 3. Optimize Context Window Usage
+
 - Use memory-context-optimizer between long steps
 - Compress intermediate results when possible
 - Cache frequently used context data
 
 ### 4. Combine Semantic Analysis with Flows
+
 - Use symbol-based operations for precise code changes
 - Let semantic analysis inform flow branching decisions
 - Validate changes against code structure
 
 ### 5. Switch Modes Appropriately
+
 - Use planning mode for design and architecture
 - Use editing mode for implementation
 - Use analysis mode for understanding existing code
@@ -395,6 +398,7 @@ await modeSwitcher({
 ## Common Patterns
 
 ### Pattern: Incremental Feature Development
+
 ```typescript
 // 1. Planning mode: Design feature
 // 2. Load project context
@@ -405,6 +409,7 @@ await modeSwitcher({
 ```
 
 ### Pattern: Large-Scale Refactoring
+
 ```typescript
 // 1. Analysis mode: Semantic code analysis
 // 2. Planning mode: Design refactoring flow with branches for different cases
@@ -415,6 +420,7 @@ await modeSwitcher({
 ```
 
 ### Pattern: Comprehensive Code Review
+
 ```typescript
 // 1. Analysis mode: Understand changes
 // 2. Create parallel flow for multiple review aspects
@@ -437,18 +443,23 @@ await modeSwitcher({
 ## Troubleshooting
 
 ### Issue: Context Window Overflow
+
 **Solution**: Add memory-context-optimizer steps between large operations
 
 ### Issue: Slow Flow Execution
+
 **Solution**: Identify independent nodes and use parallel execution
 
 ### Issue: Inconsistent Results
+
 **Solution**: Load project memories at flow start for consistent context
 
 ### Issue: Complex Flow Hard to Debug
+
 **Solution**: Enable visualization and add logging at merge points
 
 ### Issue: Lost Context Between Sessions
+
 **Solution**: Use project-onboarding to persist and reload memories
 
 ## Resources
@@ -458,7 +469,6 @@ await modeSwitcher({
 - [Serena Integration Summary](./SERENA_INTEGRATION_SUMMARY.md)
 - [Claude Flow Architecture](https://github.com/ruvnet/claude-flow)
 - [Serena Project](https://github.com/oraios/serena)
-
 
 <!-- AUTO-GENERATED FOOTER - DO NOT EDIT -->
 
@@ -494,16 +504,15 @@ await modeSwitcher({
 <p>
   <a href="#top">⬆️ Back to Top</a>
 </p>
+---
 
-<!-- Animated Waving Footer -->
-<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=FFB86C,FF79C6,BD93F9,8BE9FD,50FA7B&height=80&section=footer&animation=twinkling" />
+<details>
+<summary><strong>📚 Related Documentation</strong></summary>
 
-<!-- Metadata Footer -->
-<sub>
-  <strong>MCP AI Agent Guidelines</strong> • Made with ❤️ by <a href="https://github.com/Anselmoo">@Anselmoo</a> and contributors<br/>
-  Licensed under <a href="../LICENSE">MIT</a> • <a href="../DISCLAIMER.md">Disclaimer</a> • <a href="../CONTRIBUTING.md">Contributing</a>
-</sub>
+- [Flow Prompting Examples](./FLOW_PROMPTING_EXAMPLES.md)
+- [Serena Strategies](./SERENA_STRATEGIES.md)
+- [Context-Aware Guidance](./CONTEXT_AWARE_GUIDANCE.md)
 
-</div>
+</details>
 
-<!-- END AUTO-GENERATED FOOTER -->
+<sub>**MCP AI Agent Guidelines** • Licensed under [MIT](../LICENSE) • [Disclaimer](../DISCLAIMER.md) • [Contributing](../CONTRIBUTING.md)</sub>

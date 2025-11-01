@@ -1,111 +1,35 @@
-# project-onboarding
+# Project Onboarding
 
-> **Comprehensive project onboarding**
+> **Utilities Tool** • **Complexity: Medium**
 
-**Complexity**: ⭐⭐ Moderate | **Category**: Utilities | **Time to Learn**: 15-30 minutes
+[![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../../README.md)
+[![Utilities](https://img.shields.io/badge/Category-Utilities-gray?style=flat-square)](./README.md#utilities)
+[![Documentation](https://img.shields.io/badge/📚-Docs-blue?style=flat-square)](../README.md)
+
+---
+
+<details>
+<summary><strong>📚 Related Documentation</strong></summary>
+
+- [All Utility Tools](./README.md#utilities)
+- [Prompting Hierarchy Guide](../PROMPTING_HIERARCHY.md)
+- [Context-Aware Guidance](../CONTEXT_AWARE_GUIDANCE.md)
+- [AI Interaction Tips](../AI_INTERACTION_TIPS.md)
+
+</details>
+
+<sub>**MCP AI Agent Guidelines** • Licensed under [MIT](../../LICENSE) • [Disclaimer](../../DISCLAIMER.md) • [Contributing](../../CONTRIBUTING.md)</sub>
 
 ---
 
-## Overview
+## Related Documentation
 
-Structure analysis, dependencies, memory generation
-
-### Key Capabilities
-
-- Project structure scanning
-- Dependency detection
-- Technology stack identification
-- Memory generation for quick context
+- [All Utilities Tools](./README.md#utilities)
+- [Documentation Index](#documentation-index)
+- [AI Interaction Tips](#ai-interaction-tips)
 
 ---
-## When to Use
 
-✅ **Good for:**
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+**[← Back to Tools](./README.md)** • **[📚 Documentation](../README.md)** • **[�� Home](../../README.md)**
 
-❌ **Not ideal for:**
-- [Anti-pattern 1]
-- [Anti-pattern 2]
-
----
-## Basic Usage
-
-### Example 1: [Use Case Name]
-
-```json
-{
-  "tool": "project-onboarding",
-  "projectPath": "[value]",
-  "projectName": "[value]",
-  "projectType": "[value]"
-}
-```
-
-**Output**: [Description of what you get]
-
----
-## Parameters
-
-| Parameter | Type | Required | Default | Description |
-|-----------|------|----------|---------|-------------|
-| `projectPath` | [type] | ✅ Yes | - | [Description] |
-| `projectName` | [type] | No | `[default]` | [Description] |
-| `projectType` | [type] | No | `[default]` | [Description] |
-| `analysisDepth` | [type] | No | `[default]` | [Description] |
-| `includeMemories` | [type] | No | `[default]` | [Description] |
-
----
-## What You Get
-
-The tool returns a structured report with:
-
-1. **[Section 1]** - [Description]
-2. **[Section 2]** - [Description]
-3. **[Section 3]** - [Description]
-
----
-## Real-World Examples
-
-### Example 1: [Scenario Name]
-
-**Before:**
-```[language]
-[code or data before]
-```
-
-**After:**
-```[language]
-[code or data after]
-```
-
-**Impact**: [What improved]
-
----
-## Tips & Tricks
-
-### 💡 Best Practices
-
-1. **[Practice 1]** - [Explanation]
-2. **[Practice 2]** - [Explanation]
-3. **[Practice 3]** - [Explanation]
-
-### 🚫 Common Mistakes
-
-- ❌ [Mistake] → ✅ [Correct approach]
-- ❌ [Mistake] → ✅ [Correct approach]
-
-### ⚡ Pro Tips
-
-- [Pro tip 1]
-- [Pro tip 2]
-
----
-## Related Tools
-
-- **[sprint-timeline-calculator](./sprint-timeline-calculator.md)** - [Brief description]
-- **[semantic-code-analyzer](./semantic-code-analyzer.md)** - [Brief description]
-
----
-**[← Back to Tools](../README.md)** • **[📖 Complete Tools Reference](../../TOOLS_REFERENCE.md)** • **[🏠 Main README](../../../README.md)**
+<sub>Part of **[MCP AI Agent Guidelines](../../README.md)** • Licensed under **[MIT](../../LICENSE)** • © 2025</sub>

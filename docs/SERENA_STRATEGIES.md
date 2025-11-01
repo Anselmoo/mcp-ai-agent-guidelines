@@ -1,34 +1,23 @@
-<!-- AUTO-GENERATED HEADER - DO NOT EDIT -->
-<div align="center">
+# Serena Integration Strategies
 
-<!-- Animated gradient header -->
-<img src="https://capsule-render.vercel.app/api?type=rect&color=gradient&customColorList=FFB86C,FF79C6,BD93F9,8BE9FD&height=3&section=header&animation=twinkling" />
+> **Semantic Analysis Patterns**
 
-<br/>
+[![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../README.md)
+[![Documentation](https://img.shields.io/badge/📚-Documentation-blue?style=flat-square)](./README.md)
+[![Technical Guide](https://img.shields.io/badge/Type-Technical_Guide-purple?style=flat-square)](#)
 
-<!-- Document Title -->
-<h1>
-  <img src="https://img.shields.io/badge/MCP-AI_Agent_Guidelines-FFB86C?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMyA3VjE3TDEyIDIyTDIxIDE3VjdMMTIgMloiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CjxwYXRoIGQ9Ik0xMiA4VjE2IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8cGF0aCBkPSJNOCAxMkgxNiIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPC9zdmc+" alt="MCP AI Agent Guidelines - Reference" />
-</h1>
+<details>
+<summary><strong>📍 Quick Navigation</strong></summary>
 
-<p>
-  <strong>📖 Reference Documentation</strong> • Architecture & Integration Patterns
-</p>
+**Related Guides:**
 
-<!-- Quick Navigation Bar -->
-<div>
-  <a href="../README.md">🏠 Home</a> •
-  <a href="./README.md">📚 Docs Index</a> •
-  <a href="./REFERENCES.md">📚 References</a> •
-  <a href="./BRIDGE_CONNECTORS.md">🏗️ Architecture</a> •
-  <a href="./SERENA_STRATEGIES.md">🔄 Serena</a>
-</div>
+- [Bridge Connectors](#bridge-connectors)
+- [Semantic Code Analyzer](#semantic-code-analyzer)
+- [Documentation Index](#documentation-index)
 
-</div>
+</details>
 
 ---
-<!-- END AUTO-GENERATED HEADER -->
-
 
 # Serena-Inspired Strategies Integration
 
@@ -47,6 +36,7 @@ Serena is a powerful coding agent toolkit that uses language servers for semanti
 Implements symbol-based code understanding inspired by Serena's language server integration.
 
 **Features**:
+
 - Symbol extraction (functions, classes, interfaces, types)
 - Dependency analysis
 - Code structure mapping
@@ -54,6 +44,7 @@ Implements symbol-based code understanding inspired by Serena's language server 
 - Language auto-detection
 
 **Example Usage**:
+
 ```typescript
 {
   "codeContent": "export class UserService { ... }",
@@ -63,6 +54,7 @@ Implements symbol-based code understanding inspired by Serena's language server 
 ```
 
 **Key Benefits**:
+
 - Precise code navigation without reading entire files
 - Symbol-level operations instead of line-based editing
 - Better understanding of code relationships
@@ -75,6 +67,7 @@ Implements symbol-based code understanding inspired by Serena's language server 
 Implements systematic project familiarization inspired by Serena's onboarding process.
 
 **Features**:
+
 - Automated project structure analysis
 - Technology stack detection
 - Build system identification
@@ -82,6 +75,7 @@ Implements systematic project familiarization inspired by Serena's onboarding pr
 - Project memory generation for future reference
 
 **Example Usage**:
+
 ```typescript
 {
   "projectPath": "/path/to/project",
@@ -93,12 +87,14 @@ Implements systematic project familiarization inspired by Serena's onboarding pr
 ```
 
 **Generated Memories**:
+
 - Architecture overview
 - Development workflow
 - Code conventions
 - Dependencies
 
 **Key Benefits**:
+
 - Faster onboarding to new codebases
 - Context retention across sessions
 - Consistent development practices
@@ -111,6 +107,7 @@ Implements systematic project familiarization inspired by Serena's onboarding pr
 Implements flexible operation modes inspired by Serena's context/mode system.
 
 **Available Modes**:
+
 - **Planning**: Focus on analysis and design before implementation
 - **Editing**: Direct code modification and implementation
 - **Analysis**: Understanding code and architecture
@@ -121,6 +118,7 @@ Implements flexible operation modes inspired by Serena's context/mode system.
 - **Documentation**: Creating and maintaining docs
 
 **Available Contexts**:
+
 - **desktop-app**: Desktop application usage
 - **ide-assistant**: IDE integration
 - **agent**: Autonomous operation
@@ -128,6 +126,7 @@ Implements flexible operation modes inspired by Serena's context/mode system.
 - **collaborative**: Multi-stakeholder collaboration
 
 **Example Usage**:
+
 ```typescript
 {
   "currentMode": "planning",
@@ -138,6 +137,7 @@ Implements flexible operation modes inspired by Serena's context/mode system.
 ```
 
 **Key Benefits**:
+
 - Optimized tool selection for task type
 - Appropriate prompting strategies per mode
 - Clear workflow transitions
@@ -146,30 +146,35 @@ Implements flexible operation modes inspired by Serena's context/mode system.
 ## Best Practices from Serena
 
 ### 1. **Planning Before Implementation**
+
 - Thoroughly understand requirements
 - Break down complex tasks
 - Create detailed action plans
 - Identify risks and dependencies
 
 ### 2. **Symbol-Based Operations**
+
 - Use semantic analysis instead of text search
 - Navigate code by symbols, not line numbers
 - Make precise, targeted changes
 - Understand code relationships
 
 ### 3. **Incremental Changes**
+
 - Make small, verifiable changes
 - Test after each modification
 - Build understanding progressively
 - Maintain clean git state
 
 ### 4. **Context Management**
+
 - Generate and store project memories
 - Read relevant memories when needed
 - Manage context window efficiently
 - Use summarization for long sessions
 
 ### 5. **Tool Logic Separation**
+
 - Keep tool logic separate from protocol implementation
 - Make tools reusable across contexts
 - Maintain clean architecture
@@ -179,90 +184,97 @@ Implements flexible operation modes inspired by Serena's context/mode system.
 
 The Serena-inspired tools complement existing MCP AI Agent Guidelines tools:
 
-| Existing Tool | Serena Enhancement |
-|--------------|-------------------|
-| `code-hygiene-analyzer` | Works with `semantic-code-analyzer` for deeper insights |
-| `hierarchical-prompt-builder` | Enhanced by mode-specific prompting strategies |
-| `guidelines-validator` | Updated with semantic analysis best practices |
-| `design-assistant` | Can use mode switching for different design phases |
+| Existing Tool                 | Serena Enhancement                                      |
+| ----------------------------- | ------------------------------------------------------- |
+| `code-hygiene-analyzer`       | Works with `semantic-code-analyzer` for deeper insights |
+| `hierarchical-prompt-builder` | Enhanced by mode-specific prompting strategies          |
+| `guidelines-validator`        | Updated with semantic analysis best practices           |
+| `design-assistant`            | Can use mode switching for different design phases      |
 
 ## Usage Patterns
 
 ### Pattern 1: New Project Onboarding
+
 ```typescript
 // 1. Onboard the project
 await projectOnboarding({
   projectPath: "/path/to/project",
-  includeMemories: true
+  includeMemories: true,
 });
 
 // 2. Switch to analysis mode
 await modeSwitcher({
-  targetMode: "analysis"
+  targetMode: "analysis",
 });
 
 // 3. Analyze key files
 await semanticCodeAnalyzer({
   codeContent: "...",
-  analysisType: "all"
+  analysisType: "all",
 });
 ```
 
 ### Pattern 2: Code Understanding & Refactoring
+
 ```typescript
 // 1. Switch to analysis mode
 await modeSwitcher({
   targetMode: "analysis",
-  context: "ide-assistant"
+  context: "ide-assistant",
 });
 
 // 2. Analyze code structure
 await semanticCodeAnalyzer({
   codeContent: "...",
-  analysisType: "structure"
+  analysisType: "structure",
 });
 
 // 3. Switch to refactoring mode
 await modeSwitcher({
   currentMode: "analysis",
-  targetMode: "refactoring"
+  targetMode: "refactoring",
 });
 
 // 4. Apply changes incrementally
 ```
 
 ### Pattern 3: Planning to Implementation
+
 ```typescript
 // 1. Start in planning mode
 await modeSwitcher({
-  targetMode: "planning"
+  targetMode: "planning",
 });
 
 // 2. Use hierarchical prompting for requirements
 await hierarchicalPromptBuilder({
   context: "Complex feature implementation",
-  goal: "Build user authentication system"
+  goal: "Build user authentication system",
 });
 
 // 3. Switch to editing mode
 await modeSwitcher({
   currentMode: "planning",
   targetMode: "editing",
-  reason: "Plan complete, ready for implementation"
+  reason: "Plan complete, ready for implementation",
 });
 ```
 
 ## Implementation Details
 
 ### Semantic Code Analysis
+
 The analyzer uses pattern matching to identify code symbols and structures. While not as powerful as a full language server (like Serena uses), it provides:
+
 - Multi-language support (TypeScript, JavaScript, Python, Java, Rust, Go, etc.)
 - Pattern detection (async/await, error handling, dependency injection)
 - Dependency extraction
 - Code structure mapping
 
 ### Project Memories
+
 Memories are structured documents that capture:
+
 - Project architecture and technology stack
 - Development workflows and build processes
 - Code conventions and best practices
@@ -271,7 +283,9 @@ Memories are structured documents that capture:
 These can be stored and referenced across sessions to maintain context.
 
 ### Mode Profiles
+
 Each mode has a defined profile including:
+
 - Description and focus areas
 - Enabled/disabled tools
 - Prompting strategy
@@ -288,6 +302,7 @@ Each mode has a defined profile including:
 ## Future Enhancements
 
 Potential additions based on Serena's roadmap:
+
 - [ ] Language server integration for true semantic analysis
 - [ ] Symbol-based editing operations
 - [ ] Reference finding capabilities
@@ -298,12 +313,12 @@ Potential additions based on Serena's roadmap:
 ## Contributing
 
 When adding new tools or strategies inspired by Serena:
+
 1. Study the original implementation in Serena
 2. Adapt to MCP AI Agent Guidelines architecture
 3. Add tests following existing patterns
 4. Update documentation
 5. Consider integration with existing tools
-
 
 <!-- AUTO-GENERATED FOOTER - DO NOT EDIT -->
 
@@ -339,16 +354,15 @@ When adding new tools or strategies inspired by Serena:
 <p>
   <a href="#top">⬆️ Back to Top</a>
 </p>
+---
 
-<!-- Animated Waving Footer -->
-<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=FFB86C,FF79C6,BD93F9,8BE9FD,50FA7B&height=80&section=footer&animation=twinkling" />
+<details>
+<summary><strong>📚 Related Documentation</strong></summary>
 
-<!-- Metadata Footer -->
-<sub>
-  <strong>MCP AI Agent Guidelines</strong> • Made with ❤️ by <a href="https://github.com/Anselmoo">@Anselmoo</a> and contributors<br/>
-  Licensed under <a href="../LICENSE">MIT</a> • <a href="../DISCLAIMER.md">Disclaimer</a> • <a href="../CONTRIBUTING.md">Contributing</a>
-</sub>
+- [Bridge Connectors](./BRIDGE_CONNECTORS.md)
+- [Flow & Serena Integration](./FLOW_SERENA_INTEGRATION.md)
+- [Context-Aware Guidance](./CONTEXT_AWARE_GUIDANCE.md)
 
-</div>
+</details>
 
-<!-- END AUTO-GENERATED FOOTER -->
+<sub>**MCP AI Agent Guidelines** • Licensed under [MIT](../LICENSE) • [Disclaimer](../DISCLAIMER.md) • [Contributing](../CONTRIBUTING.md)</sub>
