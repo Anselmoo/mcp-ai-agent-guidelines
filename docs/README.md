@@ -6,9 +6,22 @@
 
 **Comprehensive documentation for the MCP AI Agent Guidelines Server**
 
-[Getting Started](#getting-started) • [User Guides](#user-guides) • [Developer Docs](#developer-documentation) • [Reference](#reference)
+[Getting Started](#getting-started) • [Tips](#-tips) • [Tools](#-tools) • [About](#-about) • [Developer Docs](#developer-documentation)
 
 </div>
+
+---
+
+## 🚀 Quick Navigation
+
+### 💡 [Tips](./tips/)
+Best practices, quick reference guides, and AI interaction strategies
+
+### 🛠️ [Tools](./tools/)
+Detailed documentation for all 27 MCP tools and workflow patterns
+
+### ℹ️ [About](./about/)
+Credits, references, license, disclaimer, and acknowledgments
 
 ---
 
@@ -19,11 +32,14 @@
 **Essential reading for new users**
 
 - **[Main README](../README.md)** - Project overview, installation, and quick start
-- **[AI Interaction Tips](./AI_INTERACTION_TIPS.md)** - Learn to ask targeted questions for better tool utilization
+- **[Tools Reference](./TOOLS_REFERENCE.md)** - Complete reference for all 27 MCP tools ⭐
+- **[AI Interaction Tips](./tips/)** - Best practices for effective AI collaboration ⭐ **NEW**
 - **[Contributing Guidelines](../CONTRIBUTING.md)** - How to contribute to the project
 - **[Disclaimer](../DISCLAIMER.md)** - Important information about external references
 
-### User Guides
+> 💡 **Note for Contributors**: Internal development documentation (migration summaries, technical improvements) is located in [`docs/internal/`](./internal/README.md). This folder contains contributor-only content and is referenced in the [CHANGELOG](../CHANGELOG.md).
+
+### 👥 User Guides
 
 **Learn how to use the tools effectively**
 
@@ -43,7 +59,7 @@
 - **[Export Formats](./EXPORT_FORMATS.md)** - LaTeX, CSV, and JSON output options
 - **[Maintaining Models](./MAINTAINING_MODELS.md)** - YAML-based model configuration
 
-### Developer Documentation
+### 👨‍💻 Developer Documentation
 
 **For contributors and developers extending the codebase**
 

@@ -1,3 +1,13 @@
+<div align="center">
+
+<!-- Interactive SVG Header -->
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./docs/assets/readme-header.svg">
+  <img alt="MCP AI Agent Guidelines Server - Professional tools for AI development" src="./docs/assets/readme-header.svg" width="100%">
+</picture>
+
+</div>
+
 # MCP AI Agent Guidelines Server
 
 > [!CAUTION] > **Disclaimer -- Experimental / Early Stage:** This _research demonstrator_ project references third‑party models, tools, pricing, and docs that evolve quickly. Treat outputs as recommendations and verify against official docs and your own benchmarks before production use.
@@ -157,6 +167,76 @@ node demos/demo-tools.js  # Generate sample tool outputs
 ```
 
 Demos are automatically regenerated when tool code changes via GitHub Actions.
+
+## Features & Tools
+
+This MCP server provides **27 specialized tools** organized into 5 categories. **[📖 View Complete Tools Reference](./docs/TOOLS_REFERENCE.md)**
+
+### 🎨 Prompt Builders (9 tools)
+
+Build structured, effective prompts for various use cases:
+
+| Tool | Purpose | Complexity |
+|------|---------|------------|
+| **hierarchical-prompt-builder** | Structured prompts with context → goal → requirements | ⭐⭐ |
+| **code-analysis-prompt-builder** | Code analysis prompts (security, performance, maintainability) | ⭐⭐ |
+| **architecture-design-prompt-builder** | Architecture design with scale-appropriate guidance | ⭐⭐⭐ |
+| **digital-enterprise-architect-prompt-builder** | Enterprise architecture strategy with mentor perspectives | ⭐⭐⭐⭐ |
+| **debugging-assistant-prompt-builder** | Systematic debugging prompts with structured analysis | ⭐⭐ |
+| **l9-distinguished-engineer-prompt-builder** | L9 (Distinguished Engineer) level technical design | ⭐⭐⭐⭐⭐ |
+| **documentation-generator-prompt-builder** | Technical documentation tailored to audience | ⭐⭐ |
+| **domain-neutral-prompt-builder** | Generic templates with objectives and workflows | ⭐⭐⭐ |
+| **security-hardening-prompt-builder** | Security analysis with OWASP/compliance focus | ⭐⭐⭐ |
+
+### 🔍 Code Analysis & Quality (7 tools)
+
+Analyze and improve code quality:
+
+| Tool | Purpose | Complexity |
+|------|---------|------------|
+| **clean-code-scorer** | Comprehensive Clean Code score (0-100) with breakdown | ⭐⭐⭐ |
+| **code-hygiene-analyzer** | Detect outdated patterns, unused dependencies | ⭐⭐ |
+| **dependency-auditor** | Audit package.json for security and modernization | ⭐ |
+| **iterative-coverage-enhancer** | Analyze coverage gaps, generate test suggestions | ⭐⭐⭐ |
+| **semantic-code-analyzer** | Identify symbols, structure, dependencies, patterns | ⭐⭐ |
+| **guidelines-validator** | Validate practices against AI agent guidelines | ⭐ |
+| **mermaid-diagram-generator** | Generate visual diagrams (flowchart, sequence, ER, etc.) | ⭐⭐ |
+
+### 📊 Strategy & Planning (5 tools)
+
+Business strategy and project planning:
+
+| Tool | Purpose | Complexity |
+|------|---------|------------|
+| **strategy-frameworks-builder** | SWOT, BSC, VRIO, Porter's Five Forces analysis | ⭐⭐⭐ |
+| **gap-frameworks-analyzers** | Gap analysis (capability, technology, maturity, etc.) | ⭐⭐⭐ |
+| **sprint-timeline-calculator** | Dependency-aware sprint planning and scheduling | ⭐⭐ |
+| **model-compatibility-checker** | Recommend best AI models for specific tasks | ⭐ |
+| **project-onboarding** | Comprehensive project structure analysis and docs | ⭐⭐ |
+
+### 🎨 Design Workflow (1 tool)
+
+Multi-phase design orchestration:
+
+| Tool | Purpose | Complexity |
+|------|---------|------------|
+| **design-assistant** | Constraint-driven design workflow with artifact generation (ADRs, specs, roadmaps) | ⭐⭐⭐⭐ |
+
+### 🛠️ Utilities (5 tools)
+
+Workflow optimization and evaluation:
+
+| Tool | Purpose | Complexity |
+|------|---------|------------|
+| **memory-context-optimizer** | Optimize prompt caching and context window usage | ⭐⭐ |
+| **mode-switcher** | Switch between agent modes (planning, debugging, etc.) | ⭐ |
+| **prompting-hierarchy-evaluator** | Evaluate prompts with numeric scoring | ⭐⭐ |
+| **hierarchy-level-selector** | Select optimal prompting level for task complexity | ⭐ |
+| **spark-prompt-builder** | Build UI/UX product prompts with structured inputs | ⭐⭐⭐ |
+
+**Complexity Legend**: ⭐ Simple → ⭐⭐⭐⭐⭐ Advanced
+
+---
 
 ## VS Code Integration (One-Click)
 
@@ -838,6 +918,17 @@ MIT © Anselmoo — see [LICENSE](./LICENSE).
 For a comprehensive list of references, research papers, and detailed attribution, see **[docs/REFERENCES.md](./docs/REFERENCES.md)**.
 
 ### Key Acknowledgments
+
+---
+
+<div align="center">
+
+<!-- Interactive SVG Footer -->
+<img src="./docs/assets/readme-footer.svg" alt="" width="100%" aria-hidden="true">
+
+**[⭐ Star this project](https://github.com/Anselmoo/mcp-ai-agent-guidelines)** • **[🐛 Report issues](https://github.com/Anselmoo/mcp-ai-agent-guidelines/issues)** • **[💡 Request features](https://github.com/Anselmoo/mcp-ai-agent-guidelines/issues/new)**
+
+</div>
 
 - **Model Context Protocol team** for the specification
 - **Anthropic** for prompt caching research

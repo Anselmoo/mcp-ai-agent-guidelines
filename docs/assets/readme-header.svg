@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="200" viewBox="0 0 1200 200" role="img" aria-labelledby="mcp-hero-title">
+  <title id="mcp-hero-title">MCP AI Agent Guidelines Server</title>
+  
+  <!-- Background gradient (subtle, professional) -->
+  <defs>
+    <linearGradient id="bg-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0969DA;stop-opacity:0.05" />
+      <stop offset="100%" style="stop-color:#1a7f37;stop-opacity:0.03" />
+    </linearGradient>
+    
+    <linearGradient id="accent-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#0969DA" />
+      <stop offset="50%" style="stop-color:#8250df" />
+      <stop offset="100%" style="stop-color:#1a7f37" />
+    </linearGradient>
+    
+    <!-- Animation: subtle pulse (respects prefers-reduced-motion) -->
+    <style>
+      @media (prefers-reduced-motion: no-preference) {
+        .pulse-icon {
+          animation: pulse 3s ease-in-out infinite;
+        }
+        @keyframes pulse {
+          0%, 100% { opacity: 0.6; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.05); }
+        }
+        .slide-in {
+          animation: slideIn 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        @keyframes slideIn {
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      }
+    </style>
+  </defs>
+  
+  <rect width="1200" height="200" fill="url(#bg-gradient)" />
+  
+  <!-- Decorative accent line (top) -->
+  <rect width="1200" height="3" fill="url(#accent-gradient)" opacity="0.3" />
+  
+  <!-- Left icon: Abstract representation of MCP (Model Context Protocol) -->
+  <g transform="translate(80, 70)" class="pulse-icon">
+    <!-- Hexagon (represents protocol/network) -->
+    <path d="M 30,0 L 60,17.5 L 60,52.5 L 30,70 L 0,52.5 L 0,17.5 Z" 
+          fill="none" stroke="#0969DA" stroke-width="2.5" opacity="0.6" />
+    
+    <!-- Inner connecting lines (represents context flow) -->
+    <line x1="30" y1="17.5" x2="30" y2="52.5" stroke="#1a7f37" stroke-width="1.5" opacity="0.5" />
+    <line x1="15" y1="35" x2="45" y2="35" stroke="#1a7f37" stroke-width="1.5" opacity="0.5" />
+    
+    <!-- Center node -->
+    <circle cx="30" cy="35" r="4" fill="#8250df" opacity="0.8" />
+  </g>
+  
+  <!-- Main title -->
+  <text x="600" y="90" 
+        text-anchor="middle" 
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" 
+        font-weight="600" 
+        font-size="42" 
+        fill="#000000"
+        class="slide-in">
+    MCP AI Agent Guidelines
+  </text>
+  
+  <!-- Subtitle -->
+  <text x="600" y="125" 
+        text-anchor="middle" 
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" 
+        font-weight="400" 
+        font-size="20" 
+        fill="#57606a"
+        class="slide-in">
+    Professional tools for hierarchical prompting, code quality, and agile planning
+  </text>
+  
+  <!-- Tool count badge -->
+  <g transform="translate(520, 145)" class="slide-in">
+    <rect width="160" height="32" rx="16" fill="#0969DA" opacity="0.1" />
+    <text x="80" y="21" 
+          text-anchor="middle" 
+          font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" 
+          font-weight="500" 
+          font-size="14" 
+          fill="#0969DA">
+      27 Specialized Tools
+    </text>
+  </g>
+  
+  <!-- Right icon: Abstract representation of AI/Guidelines -->
+  <g transform="translate(1050, 70)" class="pulse-icon">
+    <!-- Brain/network metaphor -->
+    <circle cx="30" cy="20" r="5" fill="none" stroke="#1a7f37" stroke-width="1.5" opacity="0.6" />
+    <circle cx="45" cy="35" r="5" fill="none" stroke="#0969DA" stroke-width="1.5" opacity="0.6" />
+    <circle cx="15" cy="35" r="5" fill="none" stroke="#8250df" stroke-width="1.5" opacity="0.6" />
+    <circle cx="30" cy="50" r="5" fill="none" stroke="#1a7f37" stroke-width="1.5" opacity="0.6" />
+    
+    <!-- Connecting lines -->
+    <line x1="30" y1="25" x2="42" y2="32" stroke="#57606a" stroke-width="1" opacity="0.3" />
+    <line x1="30" y1="25" x2="18" y2="32" stroke="#57606a" stroke-width="1" opacity="0.3" />
+    <line x1="42" y1="38" x2="30" y2="45" stroke="#57606a" stroke-width="1" opacity="0.3" />
+    <line x1="18" y1="38" x2="30" y2="45" stroke="#57606a" stroke-width="1" opacity="0.3" />
+  </g>
+  
+  <!-- Bottom decorative line with subtle animation -->
+  <rect y="197" width="1200" height="3" fill="url(#accent-gradient)" opacity="0.2">
+    <animate attributeName="opacity" values="0.2;0.4;0.2" dur="4s" repeatCount="indefinite" />
+  </rect>
+</svg>

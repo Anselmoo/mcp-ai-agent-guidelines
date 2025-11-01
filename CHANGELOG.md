@@ -10,8 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - **AI Interaction Tips** (`docs/AI_INTERACTION_TIPS.md`) - Comprehensive guide for asking targeted questions to better utilize specialized tools
 - **Documentation Index** (`docs/README.md`) - Complete documentation TOC with organized categories
-- **Technical Improvements** (`docs/TECHNICAL_IMPROVEMENTS.md`) - Consolidated refactoring and enhancement documentation
-- **Migration Strategy** (`docs/MIGRATION_STRATEGY.md`) - Comprehensive documentation migration plan and execution guide
+- **Tools Reference** (`docs/TOOLS_REFERENCE.md`) - Complete reference for all 27 MCP tools with examples
+- **Internal Development Docs** (`docs/internal/`) - Internal documentation for contributors (migration summaries, technical improvements, refactoring notes). See [docs/internal/README.md](./docs/internal/README.md)
 - **Category-Based Template System** - 4 categories (User Guides, Developer Docs, Reference, Specialized Tools) with distinct color schemes
   - Purple/Pink gradient for User Guides (`BD93F9`,`FF79C6`,`8BE9FD`,`50FA7B`)
   - Green/Cyan gradient for Developer Docs (`50FA7B`,`8BE9FD`,`FFB86C`,`FF79C6`)
