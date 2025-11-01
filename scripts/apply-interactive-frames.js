@@ -1,24 +1,23 @@
 #!/usr/bin/env node
 
 /**
- * Apply Interactive Documentation Frames to Markdown Files
+ * Apply Minimalistic Documentation Frames to Markdown Files
  *
- * Idempotently injects HTML iframe references to header and footer files
- * at the beginning and end of markdown files.
- *
- * Features:
- * - Removes old frames before adding new ones
- * - Relative path calculation based on file location
- * - Dry-run mode for preview
- * - Detailed error logging
+ * Idempotently injects iframe references with hardcoded absolute GitHub URLs
+ * for compatibility with GitHub markdown rendering.
  */
 
 import { readFileSync, writeFileSync } from "node:fs";
-import { dirname, join, relative } from "node:path";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+// GitHub repository information
+const GITHUB_REPO = "Anselmoo/mcp-ai-agent-guidelines";
+const GITHUB_BRANCH = "main";
+const FRAMES_BASE_URL = `https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/docs/.frames-interactive`;
 
 // Injection markers
 const HEADER_START = "<!-- AUTO-GENERATED INTERACTIVE HEADER - DO NOT EDIT -->";
@@ -33,19 +32,10 @@ const FILE_MAPPINGS = {
 	"CONTRIBUTING.md": "CONTRIBUTING",
 	"DISCLAIMER.md": "DISCLAIMER",
 	"docs/README.md": "docs-README",
-	"docs/tips/README.md": "tips",
-	"docs/about/README.md": "about",
-	"docs/tools/README.md": "tools",
+	"docs/tips/README.md": "tips-README",
+	"docs/about/README.md": "about-README",
+	"docs/tools/README.md": "tools-README",
 };
-
-/**
- * Calculate relative path from markdown file to frames directory
- */
-function getRelativePath(markdownFile) {
-	const markdownDir = dirname(markdownFile);
-	const framesDir = "docs/.frames-interactive";
-	return relative(markdownDir, framesDir);
-}
 
 /**
  * Remove existing frames from content
@@ -69,15 +59,15 @@ function removeExistingFrames(content) {
 }
 
 /**
- * Create iframe HTML for frame injection
+ * Create iframe HTML with hardcoded absolute URL
  */
-function createFrameHTML(relativePath, frameFile, type) {
-	const height = type === "header" ? "180px" : "400px";
-	const framePath = `${relativePath}/${frameFile}`;
+function createFrameHTML(frameFile, type) {
+	const height = type === "header" ? "120px" : "80px";
+	const frameUrl = `${FRAMES_BASE_URL}/${frameFile}`;
 
 	return `${type === "header" ? HEADER_START : FOOTER_START}
 <iframe
-    src="${framePath}"
+    src="${frameUrl}"
     style="width: 100%; height: ${height}; border: none; display: block; margin: 0; padding: 0;"
     title="${type === "header" ? "Interactive Header" : "Interactive Footer"}"
     loading="lazy"
@@ -103,17 +93,12 @@ function applyFramesToFile(filePath, frameBaseName, dryRun = false) {
 		// Remove existing frames
 		content = removeExistingFrames(content);
 
-		// Calculate relative path
-		const relativePath = getRelativePath(filePath);
-
-		// Create header and footer HTML
+		// Create header and footer HTML with absolute URLs
 		const headerHTML = createFrameHTML(
-			relativePath,
 			`header-${frameBaseName}.html`,
 			"header",
 		);
 		const footerHTML = createFrameHTML(
-			relativePath,
 			`footer-${frameBaseName}.html`,
 			"footer",
 		);
@@ -129,14 +114,24 @@ function applyFramesToFile(filePath, frameBaseName, dryRun = false) {
 
 		if (dryRun) {
 			console.log(`  ⊕ Would update: ${filePath}`);
-			console.log(`    - Header: ${relativePath}/header-${frameBaseName}.html`);
-			console.log(`    - Footer: ${relativePath}/footer-${frameBaseName}.html`);
+			console.log(
+				`    - Header: ${FRAMES_BASE_URL}/header-${frameBaseName}.html`,
+			);
+			console.log(
+				`    - Footer: ${FRAMES_BASE_URL}/footer-${frameBaseName}.html`,
+			);
 			return true;
 		}
 
 		// Write file
 		writeFileSync(fullPath, newContent, "utf-8");
 		console.log(`  ✓ Updated: ${filePath}`);
+		console.log(
+			`    - Header: ${FRAMES_BASE_URL}/header-${frameBaseName}.html`,
+		);
+		console.log(
+			`    - Footer: ${FRAMES_BASE_URL}/footer-${frameBaseName}.html`,
+		);
 		return true;
 	} catch (error) {
 		console.error(`  ✗ Error processing ${filePath}: ${error.message}`);
@@ -151,7 +146,8 @@ function applyFrames() {
 	// Check for dry-run flag
 	const dryRun = process.argv.includes("--dry-run");
 
-	console.log("🎨 Applying Interactive Documentation Frames...\n");
+	console.log("🎨 Applying Minimalistic Documentation Frames...\n");
+	console.log(`🔗 Base URL: ${FRAMES_BASE_URL}\n`);
 
 	if (dryRun) {
 		console.log("🔍 DRY RUN MODE - No files will be modified\n");
@@ -180,7 +176,8 @@ function applyFrames() {
 			"\n💡 Run without --dry-run flag to apply changes:\n   npm run frames:apply-interactive",
 		);
 	} else {
-		console.log("\n✅ Interactive frames applied successfully!");
+		console.log("\n✅ Minimalistic frames applied successfully!");
+		console.log(`🔗 Frames are hosted at: ${FRAMES_BASE_URL}`);
 	}
 }
 
