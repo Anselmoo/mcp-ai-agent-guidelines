@@ -1,3 +1,35 @@
+<!-- AUTO-GENERATED HEADER - DO NOT EDIT -->
+<div align="center">
+
+<!-- Animated gradient header -->
+<img src="https://capsule-render.vercel.app/api?type=rect&color=gradient&customColorList=50FA7B,8BE9FD,FFB86C,FF79C6&height=3&section=header&animation=twinkling" />
+
+<br/>
+
+<!-- Document Title -->
+<h1>
+  <img src="https://img.shields.io/badge/MCP-AI_Agent_Guidelines-50FA7B?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMyA3VjE3TDEyIDIyTDIxIDE3VjdMMTIgMloiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CjxwYXRoIGQ9Ik0xMiA4VjE2IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8cGF0aCBkPSJNOCAxMkgxNiIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPC9zdmc+" alt="MCP AI Agent Guidelines - Developer Docs" />
+</h1>
+
+<p>
+  <strong>🛠️ Developer Documentation</strong> • Architecture & Quality Standards
+</p>
+
+<!-- Quick Navigation Bar -->
+<div>
+  <a href="../README.md">🏠 Home</a> •
+  <a href="./README.md">📚 Docs Index</a> •
+  <a href="./CLEAN_CODE_INITIATIVE.md">✨ Clean Code</a> •
+  <a href="./ERROR_HANDLING.md">⚠️ Errors</a> •
+  <a href="../CONTRIBUTING.md">🤝 Contributing</a>
+</div>
+
+</div>
+
+---
+<!-- END AUTO-GENERATED HEADER -->
+
+
 # Error Handling Guide
 
 This document describes the centralized error handling patterns and best practices for the MCP AI Agent Guidelines project.
@@ -300,3 +332,52 @@ The following files have been updated to use the new error handling:
 - [ ] Add error rate monitoring
 - [ ] Create error dashboards for production
 - [ ] Add more specific error types as needed
+
+
+<!-- AUTO-GENERATED FOOTER - DO NOT EDIT -->
+
+---
+
+<div align="center">
+
+<!-- Navigation Grid -->
+<table>
+  <tr>
+    <td align="center" width="33%">
+      <strong>🛠️ Code Quality</strong><br/>
+      <a href="./CLEAN_CODE_INITIATIVE.md">Clean Code 100/100</a><br/>
+      <a href="./code-quality-improvements.md">Quality Improvements</a><br/>
+      <a href="./ERROR_HANDLING.md">Error Patterns</a>
+    </td>
+    <td align="center" width="33%">
+      <strong>🏗️ Architecture</strong><br/>
+      <a href="./BRIDGE_CONNECTORS.md">Bridge Connectors</a><br/>
+      <a href="./TECHNICAL_IMPROVEMENTS.md">Refactoring</a><br/>
+      <a href="./design-module-status.md">Module Status</a>
+    </td>
+    <td align="center" width="33%">
+      <strong>📚 Resources</strong><br/>
+      <a href="../CONTRIBUTING.md">Contributing Guide</a><br/>
+      <a href="./REFERENCES.md">References</a><br/>
+      <a href="../.github/copilot-instructions.md">Copilot Guide</a>
+    </td>
+  </tr>
+</table>
+
+<!-- Back to Top -->
+<p>
+  <a href="#top">⬆️ Back to Top</a>
+</p>
+
+<!-- Animated Waving Footer -->
+<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=50FA7B,8BE9FD,FFB86C,FF79C6,BD93F9&height=80&section=footer&animation=twinkling" />
+
+<!-- Metadata Footer -->
+<sub>
+  <strong>MCP AI Agent Guidelines</strong> • Made with ❤️ by <a href="https://github.com/Anselmoo">@Anselmoo</a> and contributors<br/>
+  Licensed under <a href="../LICENSE">MIT</a> • <a href="../DISCLAIMER.md">Disclaimer</a> • <a href="../CONTRIBUTING.md">Contributing</a>
+</sub>
+
+</div>
+
+<!-- END AUTO-GENERATED FOOTER -->

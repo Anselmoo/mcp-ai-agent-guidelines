@@ -20,23 +20,30 @@ This directory contains reusable HTML templates for consistent documentation sty
 
 ## How to Use
 
-### Option 1: Embed via iframe (GitHub Rendering Limitation)
+### Automated Injection (Recommended)
 
-GitHub markdown doesn't support iframes, but you can use them in self-hosted documentation:
+Use the `inject-doc-templates.js` script to automatically add headers and footers to documentation files:
 
-```html
-<!-- At the top of your .md file -->
-<iframe src="./.templates/header.html" width="100%" height="200" frameborder="0"></iframe>
+```bash
+# Process a single file
+node scripts/inject-doc-templates.js docs/YOUR_DOC.md
 
-<!-- Your content here -->
+# Process all documentation files
+node scripts/inject-doc-templates.js --all
 
-<!-- At the bottom of your .md file -->
-<iframe src="./.templates/footer.html" width="100%" height="400" frameborder="0"></iframe>
+# Preview changes without modifying files
+node scripts/inject-doc-templates.js --all --dry-run
 ```
 
-### Option 2: Direct HTML Inclusion (Recommended for GitHub)
+The script will:
+- Automatically inject or update headers/footers
+- Preserve existing content
+- Use markers to identify template sections
+- Skip files that are already up-to-date
 
-Since GitHub markdown supports HTML, you can copy/paste the template content directly:
+### Manual Inclusion
+
+For manual updates, copy the HTML content from the template files and paste it directly into your markdown file:
 
 ```markdown
 <!-- Copy content from header.html here -->
@@ -47,6 +54,8 @@ Your content here...
 
 <!-- Copy content from footer.html here -->
 ```
+
+**Note:** GitHub markdown does not support iframes, so we use direct HTML inclusion instead.
 
 ### Option 3: Automated Script
 

@@ -10,14 +10,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - **AI Interaction Tips** (`docs/AI_INTERACTION_TIPS.md`) - Comprehensive guide for asking targeted questions to better utilize specialized tools
 - **Documentation Index** (`docs/README.md`) - Complete documentation TOC with organized categories
-- **HTML Templates** for documentation headers and footers with animated gradient frames
-- **Documentation Script** (`scripts/inject-doc-templates.js`) - Automated template injection for consistent branding
+- **Technical Improvements** (`docs/TECHNICAL_IMPROVEMENTS.md`) - Consolidated refactoring and enhancement documentation
+- **Migration Strategy** (`docs/MIGRATION_STRATEGY.md`) - Comprehensive documentation migration plan and execution guide
+- **Category-Based Template System** - 4 categories (User Guides, Developer Docs, Reference, Specialized Tools) with distinct color schemes
+  - Purple/Pink gradient for User Guides (`BD93F9`,`FF79C6`,`8BE9FD`,`50FA7B`)
+  - Green/Cyan gradient for Developer Docs (`50FA7B`,`8BE9FD`,`FFB86C`,`FF79C6`)
+  - Orange/Pink gradient for Reference (`FFB86C`,`FF79C6`,`BD93F9`,`8BE9FD`)
+  - Cyan/Green gradient for Specialized Tools (`8BE9FD`,`50FA7B`,`FFB86C`,`BD93F9`)
+- **Animated Headers/Footers** - Capsule-render API integration with:
+  - Twinkling rect animations (3px) for headers
+  - Waving animations (80px) for footers
+  - Category-specific navigation grids
+  - Auto-generated markers for template protection
+- **Template Configuration** (`docs/.templates/TEMPLATE_CONFIG.md`) - Complete category mapping and color scheme documentation
+- **8 Category-Specific Templates**:
+  - `header-user-guide.html` / `footer-user-guide.html`
+  - `header-developer.html` / `footer-developer.html`
+  - `header-reference.html` / `footer-reference.html`
+  - `header-specialized.html` / `footer-specialized.html`
+- **Enhanced Injection Script** (`scripts/inject-doc-templates.js`) with:
+  - Automated category detection by filename patterns
+  - CLI options: `--all`, `--category`, `--file`, `--dry-run`, `--verbose`
+  - Category distribution statistics
+  - Idempotent re-injection support
 
 ### Changed
-- Moved AI interaction tips from root to `docs/` folder for better organization
-- Enhanced README.md with comprehensive documentation section and navigation
-- Improved Contributing section with developer resource links
+- Reorganized documentation structure with cleaner categorization
+- Enhanced README.md with streamlined documentation section and improved demos categorization
+- Fixed table of contents anchor links for proper navigation (e.g., `#vs-code-integration-one-click`)
 - Consolidated References and Acknowledgments section
+- Improved Contributing section with developer resource links
+- **Applied animated templates to all 19 documentation files** with content-specific design
+- Updated injection script from static HTML to dynamic category-based template selection
+
+### Removed
+- Deleted `progress/` folder with implementation summary documents
+- Removed empty documentation subdirectories (`architecture/`, `guides/`, `idea/`, `reference/`, `implementation/`)
+- Consolidated `SCHEMA_IMPROVEMENT.md` and `SEMANTIC_ANALYZER_REFACTORING.md` into `docs/TECHNICAL_IMPROVEMENTS.md`
+- Removed duplicate and outdated implementation status documents
+
+### Fixed
+- Duplicate template markers in documentation files
+- Category detection accuracy for edge cases
+- Template injection idempotency (can run multiple times safely)
 
 ## [0.8.0] - 2025-10-31
 

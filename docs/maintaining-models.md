@@ -1,3 +1,31 @@
+<!-- AUTO-GENERATED HEADER - DO NOT EDIT -->
+
+<div align="center">
+
+<!-- Category Header Animation -->
+<img src="https://capsule-render.vercel.app/api?type=rect&color=gradient&customColorList=8BE9FD,50FA7B,FFB86C,BD93F9&height=3&section=header&animation=twinkling" />
+
+<!-- Title and Badge -->
+<h1>🛠️ MCP AI Agent Guidelines</h1>
+<p>
+  <img src="https://img.shields.io/badge/Category-Specialized_Tools-8BE9FD?style=for-the-badge" alt="Specialized Tools Badge"/>
+</p>
+
+<!-- Quick Navigation -->
+<p>
+  <a href="./visualization-guide.md">📊 Visualization</a> •
+  <a href="./export-formats.md">💾 Export Formats</a> •
+  <a href="./maintaining-models.md">🔧 Model Maintenance</a> •
+  <a href="./sprint-planning.md">⚡ Sprint Planning</a>
+</p>
+
+<hr/>
+
+</div>
+
+<!-- END AUTO-GENERATED HEADER -->
+
+
 # Maintaining AI Model Definitions
 
 This guide explains how to update and maintain the AI model definitions used by the MCP AI Agent Guidelines.
@@ -232,3 +260,52 @@ If you need assistance:
 1. Check the [CONTRIBUTING.md](../CONTRIBUTING.md) guide
 2. Review existing model entries for reference
 3. Open an issue on GitHub with the "documentation" label
+
+
+<!-- AUTO-GENERATED FOOTER - DO NOT EDIT -->
+
+---
+
+<div align="center">
+
+<!-- Navigation Grid -->
+<table>
+  <tr>
+    <td align="center" width="33%">
+      <strong>📊 Visualization</strong><br/>
+      <a href="./visualization-guide.md">Mermaid Guide</a><br/>
+      <a href="./DIAGRAM_GENERATION.md">Diagram Tools</a><br/>
+      <a href="../demos/demo-code-analysis.diagram.md">Examples</a>
+    </td>
+    <td align="center" width="33%">
+      <strong>⚡ Planning</strong><br/>
+      <a href="./sprint-planning.md">Sprint Timelines</a><br/>
+      <a href="./gap-analysis-guide.md">Gap Analysis</a><br/>
+      <a href="./AGILE_WORKFLOW_OPTIMIZATION.md">Agile Optimization</a>
+    </td>
+    <td align="center" width="33%">
+      <strong>🔧 Maintenance</strong><br/>
+      <a href="./maintaining-models.md">Model Updates</a><br/>
+      <a href="./export-formats.md">Export Formats</a><br/>
+      <a href="./TECHNICAL_IMPROVEMENTS.md">Improvements</a>
+    </td>
+  </tr>
+</table>
+
+<!-- Back to Top -->
+<p>
+  <a href="#top">⬆️ Back to Top</a>
+</p>
+
+<!-- Animated Waving Footer -->
+<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=8BE9FD,50FA7B,FFB86C,BD93F9,FF79C6&height=80&section=footer&animation=twinkling" />
+
+<!-- Metadata Footer -->
+<sub>
+  <strong>MCP AI Agent Guidelines</strong> • Made with ❤️ by <a href="https://github.com/Anselmoo">@Anselmoo</a> and contributors<br/>
+  Licensed under <a href="../LICENSE">MIT</a> • <a href="../DISCLAIMER.md">Disclaimer</a> • <a href="../CONTRIBUTING.md">Contributing</a>
+</sub>
+
+</div>
+
+<!-- END AUTO-GENERATED FOOTER -->

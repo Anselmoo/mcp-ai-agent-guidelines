@@ -21,11 +21,9 @@ A Model Context Protocol (MCP) server offering professional tools and templates 
 
 - [Installation](#installation)
 - [Documentation](#documentation)
-  - [User Guides](#user-guides)
-  - [Developer Documentation](#developer-documentation)
-  - [Tools Reference](#tools-reference)
+- [Demos](#demos)
 - [Features](#features)
-- [VS Code Integration](#vs-code-integration-oneclick)
+- [VS Code Integration](#vs-code-integration-one-click)
 - [Agent-Relative Calls](#agent-relative-calls)
 - [Configuration](#configuration)
 - [Development](#development)
@@ -79,81 +77,65 @@ Configuration is in `.mlc_config.json`. Ignored patterns and retries are configu
 
 ## Documentation
 
-### 📖 Complete Documentation Index
+**[� Complete Documentation Index](./docs/README.md)** - Browse all guides, references, and technical docs
 
-**[→ Browse Full Documentation](./docs/README.md)** - Comprehensive documentation index with all guides and references
+### Quick Links
 
-### User Guides
+#### For Users
+- **[🎯 AI Interaction Tips](./docs/AI_INTERACTION_TIPS.md)** - Learn to ask targeted questions for better results
+- **[📊 Prompting Hierarchy](./docs/PROMPTING_HIERARCHY.md)** - Understanding prompt levels and evaluation
+- **[🔗 Agent-Relative Call Patterns](./docs/AGENT_RELATIVE_CALLS.md)** - Invoking tools in workflows
+- **[🌊 Flow-Based Prompting](./docs/FLOW_PROMPTING_EXAMPLES.md)** - Advanced chaining strategies
+- **[🎨 Mermaid Diagrams](./docs/mermaid-diagram-examples.md)** - Visual diagram generation
 
-**Getting Started:**
-- **[🎯 AI Interaction Tips](./docs/AI_INTERACTION_TIPS.md)** ⭐ **NEW** - Learn to ask targeted questions for better tool utilization
-- **[📊 Prompting Hierarchy](./docs/PROMPTING_HIERARCHY.md)** - Understanding prompt levels and evaluation metrics
-- **[🔗 Agent-Relative Call Patterns](./docs/AGENT_RELATIVE_CALLS.md)** - Comprehensive guide to invoking tools in workflows
+#### For Developers
+- **[🤝 Contributing Guidelines](./CONTRIBUTING.md)** - How to contribute
+- **[✨ Clean Code Initiative](./docs/CLEAN_CODE_INITIATIVE.md)** - Quality standards (100/100 scoring)
+- **[� Technical Improvements](./docs/TECHNICAL_IMPROVEMENTS.md)** - Refactoring and enhancements
+- **[⚠️ Error Handling](./docs/ERROR_HANDLING.md)** - Best practices
+- **[🏗️ Bridge Connectors](./docs/BRIDGE_CONNECTORS.md)** - Integration patterns
 
-**Advanced Techniques:**
-- **[🌊 Flow-Based Prompting](./docs/FLOW_PROMPTING_EXAMPLES.md)** - Advanced chaining and orchestration strategies
-- **[🎨 Mermaid Diagram Examples](./docs/mermaid-diagram-examples.md)** - Visual diagram generation patterns
-- **[📦 Export Formats](./docs/export-formats.md)** - LaTeX, CSV, and JSON output options
-
-### Developer Documentation
-
-**Architecture & Contributing:**
-- **[🤝 Contributing Guidelines](./CONTRIBUTING.md)** - How to contribute to the project
-- **[🏗️ Bridge Connectors](./docs/BRIDGE_CONNECTORS.md)** - External system integration patterns
-- **[⚠️ Error Handling](./docs/ERROR_HANDLING.md)** - Error handling patterns and best practices
-
-**Code Quality:**
-- **[✨ Clean Code Initiative](./docs/CLEAN_CODE_INITIATIVE.md)** - 100/100 quality scoring system
-- **[📈 Code Quality Improvements](./docs/code-quality-improvements.md)** - Ongoing quality enhancements
-
-### Tools Reference
-
-**Quick Tool Discovery:**
-- Browse available tools in the [Features](#features) section below
-- See real-world usage in [Demo Reports](./demos/README.md)
-- Learn optimal usage patterns in [AI Interaction Tips](./docs/AI_INTERACTION_TIPS.md)
-
-**All Documentation:** See the [complete documentation index](./docs/README.md) for a full list of guides organized by topic.
+See the **[complete documentation](./docs/README.md)** for the full list of guides organized by topic.
 
 ## Demos
 
-Explore generated demo reports in the repository:
+Explore real-world examples showing the tools in action. All demos are auto-generated and kept in sync with the codebase.
 
-- Code Hygiene Report: [demos/demo-code-analysis.hygiene.md](./demos/demo-code-analysis.hygiene.md)
-- Guidelines Validation: [demos/demo-code-analysis.guidelines.md](./demos/demo-code-analysis.guidelines.md)
-- Hierarchical Prompt (Refactor plan): [demos/demo-code-analysis.hierarchical.prompt.md](./demos/demo-code-analysis.hierarchical.prompt.md)
-- Domain-neutral Prompt Template: [demos/demo-code-analysis.domain-neutral.prompt.md](./demos/demo-code-analysis.domain-neutral.prompt.md)
-- Security Hardening Prompt: [demos/demo-code-analysis.security-hardening.prompt.md](./demos/demo-code-analysis.security-hardening.prompt.md)
-- Spark Prompt Card: [demos/demo-code-analysis.spark.prompt.md](./demos/demo-code-analysis.spark.prompt.md)
-- Memory Context Optimization: [demos/demo-code-analysis.memory.md](./demos/demo-code-analysis.memory.md)
-- Architecture Diagram (Mermaid): [demos/demo-code-analysis.diagram.md](./demos/demo-code-analysis.diagram.md)
-- Model Compatibility Analysis: [demos/demo-code-analysis.model-compat.md](./demos/demo-code-analysis.model-compat.md)
-- Sprint Plan: [demos/demo-code-analysis.sprint.md](./demos/demo-code-analysis.sprint.md)
+**[📖 Complete Demo Index](./demos/README.md)** - Full list of all demos with descriptions
 
-See more in [demos/README.md](./demos/README.md).
+### Featured Examples
 
-### Demo scripts (.js)
+**Code Analysis & Quality:**
+- [Code Hygiene Report](./demos/demo-code-analysis.hygiene.md) - Pattern detection and best practices
+- [Guidelines Validation](./demos/demo-code-analysis.guidelines.md) - AI agent development standards
+- [Clean Code Scoring](./demos/demo-clean-code-score.md) - Comprehensive quality metrics (0-100)
 
-Run demo scripts to generate or test artifacts:
+**Prompt Engineering:**
+- [Hierarchical Prompt](./demos/demo-code-analysis.hierarchical.prompt.md) - Structured refactoring plan
+- [Domain-Neutral Prompt](./demos/demo-code-analysis.domain-neutral.prompt.md) - Generic template
+- [Security Hardening Prompt](./demos/demo-code-analysis.security-hardening.prompt.md) - OWASP-focused analysis
+- [Flow-Based Prompting](./demos/demo-design-session.md) - Multi-step workflows
+
+**Visualization & Planning:**
+- [Architecture Diagram](./demos/demo-code-analysis.diagram.md) - Mermaid system diagrams
+- [Sprint Planning](./demos/demo-code-analysis.sprint.md) - Dependency-aware timeline
+- [Model Compatibility](./demos/demo-code-analysis.model-compat.md) - AI model selection
+
+**Advanced Features:**
+- [Memory Context Optimization](./demos/demo-code-analysis.memory.md) - Token efficiency
+- [Strategy Frameworks](./demos/demo-strategy-frameworks.md) - SWOT, BCG, Porter's Five Forces
+- [Gap Analysis](./demos/demo-gap-analysis.md) - Current vs. desired state
+
+### Running Demos Locally
 
 ```bash
-# Build first
 npm run build
-
-# Run sample tool calls
-node demos/demo-tools.js
-
-# Generate demo reports
-node demos/demo-tools.js
+node demos/demo-tools.js  # Generate sample tool outputs
 ```
 
-Scripts:
+Demos are automatically regenerated when tool code changes via GitHub Actions.
 
-- `demos/demo-tools.js` — invokes several tools with sample inputs
-- `demos/generate-demo-reports.js` — produces end-to-end demo outputs
-- `demos/generate-hygiene-reports.js` — hygiene-focused reports
-
-## VS Code Integration (One‑Click)
+## VS Code Integration (One-Click)
 
 Use buttons below to add this MCP server to VS Code (User Settings → mcp.servers):
 
@@ -296,28 +278,8 @@ Or access programmatically:
 
 ## Features
 
-> **✨ NEW: Export Formats & Model Management** — Enhanced output format support with LaTeX, CSV, and JSON exports. Models now managed via YAML for easy updates.
->
-> - **Export Formats**: Full LaTeX documents, CSV data export, JSON structured output
-> - **Header Control**: Suppress headers for cleaner chat outputs
-> - **YAML Models**: AI model definitions in easy-to-edit YAML format
-> - **Documentation**: See [docs/export-formats.md](./docs/export-formats.md) and [docs/maintaining-models.md](./docs/maintaining-models.md)
-
-> **🏆 NEW: Clean Code 100/100 Initiative** — Comprehensive code quality scoring system with automated dashboard generation. Track and achieve perfect code quality across coverage, TypeScript, linting, and security. See [docs/CLEAN_CODE_INITIATIVE.md](./docs/CLEAN_CODE_INITIATIVE.md) for the complete guide.
->
-> - **Dashboard**: Run `npm run clean-code-dashboard` to generate score report
-> - **MCP Tool**: `clean-code-scorer` for on-demand quality analysis
-> - **Automated Gates**: Lefthook quality gates enforce standards on every commit
-
-> **🆕 NEW: Serena-Inspired Strategies** — We've integrated effective agent strategies from [@oraios/serena](https://github.com/oraios/serena) including semantic code analysis, project onboarding, and flexible mode switching. See [docs/SERENA_STRATEGIES.md](./docs/SERENA_STRATEGIES.md) for details.
-
-> **🌊 NEW: Flow-Based Prompting** — Advanced prompting strategies inspired by [@ruvnet/claude-flow](https://github.com/ruvnet/claude-flow) including prompt chaining, declarative flows, and dynamic orchestration.
->
-> - **Examples**: [docs/FLOW_PROMPTING_EXAMPLES.md](./docs/FLOW_PROMPTING_EXAMPLES.md)
-> - **Integration Guide**: [docs/FLOW_SERENA_INTEGRATION.md](./docs/FLOW_SERENA_INTEGRATION.md) - Combining flow-based prompting with Serena memory patterns
-
 <details>
-<summary><strong>🔗 Prompt Chaining Builder</strong> — Multi-step prompts with output passing (NEW)</summary>
+<summary><strong>🔗 Prompt Chaining Builder</strong> — Multi-step prompts with output passing</summary>
 
 Usage: `prompt-chaining-builder`
 
@@ -356,7 +318,7 @@ Build sophisticated multi-step prompt workflows where each step can depend on ou
 </details>
 
 <details>
-<summary><strong>🌊 Prompt Flow Builder</strong> — Declarative flows with branching/loops (NEW)</summary>
+<summary><strong>🌊 Prompt Flow Builder</strong> — Declarative flows with branching/loops</summary>
 
 Usage: `prompt-flow-builder`
 
@@ -394,7 +356,7 @@ Create complex adaptive prompt flows with conditional branching, loops, parallel
 </details>
 
 <details>
-<summary><strong>🔍 Semantic Code Analyzer</strong> — Symbol-based code understanding (NEW)</summary>
+<summary><strong>🔍 Semantic Code Analyzer</strong> — Symbol-based code understanding</summary>
 
 Usage: `semantic-code-analyzer`
 
@@ -409,7 +371,7 @@ Performs semantic analysis to identify symbols, dependencies, patterns, and stru
 </details>
 
 <details>
-<summary><strong>🚀 Project Onboarding</strong> — Comprehensive project familiarization (NEW)</summary>
+<summary><strong>🚀 Project Onboarding</strong> — Comprehensive project familiarization</summary>
 
 Usage: `project-onboarding`
 
@@ -426,7 +388,7 @@ Analyzes project structure, detects technologies, and generates memories for con
 </details>
 
 <details>
-<summary><strong>🔄 Mode Switcher</strong> — Flexible agent operation modes (NEW)</summary>
+<summary><strong>🔄 Mode Switcher</strong> — Flexible agent operation modes</summary>
 
 Usage: `mode-switcher`
 

@@ -19,7 +19,7 @@
 **Essential reading for new users**
 
 - **[Main README](../README.md)** - Project overview, installation, and quick start
-- **[AI Interaction Tips](./AI_INTERACTION_TIPS.md)** ⭐ **NEW** - Learn to ask targeted questions for better tool utilization
+- **[AI Interaction Tips](./AI_INTERACTION_TIPS.md)** - Learn to ask targeted questions for better tool utilization
 - **[Contributing Guidelines](../CONTRIBUTING.md)** - How to contribute to the project
 - **[Disclaimer](../DISCLAIMER.md)** - Important information about external references
 
@@ -34,10 +34,8 @@
 
 #### Advanced Techniques
 - **[Flow-Based Prompting](./FLOW_PROMPTING_EXAMPLES.md)** - Advanced chaining and orchestration strategies
-- **[Flow Prompting Follow-up](./FLOW_PROMPTING_FOLLOWUP.md)** - Extended flow patterns
 - **[Flow + Serena Integration](./FLOW_SERENA_INTEGRATION.md)** - Combining flow-based prompting with memory patterns
 - **[Serena Strategies](./SERENA_STRATEGIES.md)** - Effective agent strategies from Serena
-- **[Serena Integration Summary](./SERENA_INTEGRATION_SUMMARY.md)** - Overview of Serena integration
 
 #### Specialized Tools
 - **[Mermaid Diagram Examples](./mermaid-diagram-examples.md)** - Visual diagram generation patterns
@@ -51,19 +49,14 @@
 
 #### Architecture & Design
 - **[Bridge Connectors](./BRIDGE_CONNECTORS.md)** - External system integration patterns
+- **[Technical Improvements](./TECHNICAL_IMPROVEMENTS.md)** - Refactoring and system enhancements
 - **[Design Module Status](./design-module-status.md)** - Design workflow orchestrator status
 - **[Error Handling](./ERROR_HANDLING.md)** - Error handling patterns and best practices
-- **[Type Organization Extension](./TYPE_ORGANIZATION_EXTENSION.md)** - TypeScript type system organization
-- **[Type Refactoring Summary](./TYPE_REFACTORING_SUMMARY.md)** - Type system improvements
 
 #### Code Quality
 - **[Clean Code Initiative](./CLEAN_CODE_INITIATIVE.md)** - 100/100 quality scoring system
-- **[Clean Code Implementation](./CLEAN_CODE_IMPLEMENTATION_SUMMARY.md)** - Implementation details
 - **[Code Quality Improvements](./code-quality-improvements.md)** - Ongoing quality enhancements
 - **[Sprint Planning Reliability](./sprint-planning-reliability.md)** - Sprint calculation improvements
-
-#### Implementation Guides
-- **[Enterprise Architect 2025](./ENTERPRISE_ARCHITECT_2025_COMPLETION.md)** - Enterprise-level prompt builder
 
 ### Reference
 

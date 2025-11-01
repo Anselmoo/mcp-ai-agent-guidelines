@@ -1,3 +1,35 @@
+<!-- AUTO-GENERATED HEADER - DO NOT EDIT -->
+<div align="center">
+
+<!-- Animated gradient header -->
+<img src="https://capsule-render.vercel.app/api?type=rect&color=gradient&customColorList=BD93F9,FF79C6,8BE9FD,50FA7B&height=3&section=header&animation=twinkling" />
+
+<br/>
+
+<!-- Document Title (to be replaced with actual title) -->
+<h1>
+  <img src="https://img.shields.io/badge/MCP-AI_Agent_Guidelines-BD93F9?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMyA3VjE3TDEyIDIyTDIxIDE3VjdMMTIgMloiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CjxwYXRoIGQ9Ik0xMiA4VjE2IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8cGF0aCBkPSJNOCAxMkgxNiIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPC9zdmc+" alt="MCP AI Agent Guidelines - User Guide" />
+</h1>
+
+<p>
+  <strong>📚 User Guide</strong> • Prompting Strategies & Best Practices
+</p>
+
+<!-- Quick Navigation Bar -->
+<div>
+  <a href="../README.md">🏠 Home</a> •
+  <a href="./README.md">📚 Docs Index</a> •
+  <a href="./AI_INTERACTION_TIPS.md">💡 Tips</a> •
+  <a href="./PROMPTING_HIERARCHY.md">📊 Hierarchy</a> •
+  <a href="./AGENT_RELATIVE_CALLS.md">🔗 Patterns</a>
+</div>
+
+</div>
+
+---
+<!-- END AUTO-GENERATED HEADER -->
+
+
 # Agent-Relative Call Patterns for MCP AI Agent Guidelines
 
 ## Overview
@@ -852,3 +884,53 @@ To suggest improvements to agent-relative call patterns or add new examples:
 **Version:** 1.0.0
 **Last Updated:** 2025-10-27
 **Maintainer:** Anselmoo
+
+
+<!-- AUTO-GENERATED FOOTER - DO NOT EDIT -->
+
+---
+
+<div align="center">
+
+<!-- Navigation Grid -->
+<table>
+  <tr>
+    <td align="center" width="33%">
+      <strong>📚 User Guides</strong><br/>
+      <a href="./AI_INTERACTION_TIPS.md">AI Interaction Tips</a><br/>
+      <a href="./PROMPTING_HIERARCHY.md">Prompting Hierarchy</a><br/>
+      <a href="./AGENT_RELATIVE_CALLS.md">Agent Patterns</a><br/>
+      <a href="./FLOW_PROMPTING_EXAMPLES.md">Flow Prompting</a>
+    </td>
+    <td align="center" width="33%">
+      <strong>🛠️ Developer Docs</strong><br/>
+      <a href="./CLEAN_CODE_INITIATIVE.md">Clean Code</a><br/>
+      <a href="./ERROR_HANDLING.md">Error Handling</a><br/>
+      <a href="./TECHNICAL_IMPROVEMENTS.md">Tech Improvements</a>
+    </td>
+    <td align="center" width="33%">
+      <strong>📖 Reference</strong><br/>
+      <a href="./REFERENCES.md">References</a><br/>
+      <a href="./BRIDGE_CONNECTORS.md">Architecture</a><br/>
+      <a href="../demos/README.md">Demos</a>
+    </td>
+  </tr>
+</table>
+
+<!-- Back to Top -->
+<p>
+  <a href="#top">⬆️ Back to Top</a>
+</p>
+
+<!-- Animated Waving Footer -->
+<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=BD93F9,FF79C6,8BE9FD,50FA7B,FFB86C&height=80&section=footer&animation=twinkling" />
+
+<!-- Metadata Footer -->
+<sub>
+  <strong>MCP AI Agent Guidelines</strong> • Made with ❤️ by <a href="https://github.com/Anselmoo">@Anselmoo</a> and contributors<br/>
+  Licensed under <a href="../LICENSE">MIT</a> • <a href="../DISCLAIMER.md">Disclaimer</a> • <a href="../CONTRIBUTING.md">Contributing</a>
+</sub>
+
+</div>
+
+<!-- END AUTO-GENERATED FOOTER -->
