@@ -2,19 +2,19 @@
 // Target: Push from 68% towards 85% by testing critical uncovered paths
 
 import { describe, expect, it } from "vitest";
-import { gapFrameworksAnalyzers } from "../../src/tools/analysis/gap-frameworks-analyzers.js";
+import { codeHygieneAnalyzer } from "../../src/tools/analysis/code-hygiene-analyzer.js";
+import { gapFrameworksAnalyzer } from "../../src/tools/analysis/gap-frameworks-analyzer.js";
+import { iterativeCoverageEnhancer } from "../../src/tools/analysis/iterative-coverage-enhancer.js";
 import { strategyFrameworksBuilder } from "../../src/tools/analysis/strategy-frameworks-builder.js";
-import { codeHygieneAnalyzer } from "../../src/tools/code-hygiene-analyzer.js";
-import { guidelinesValidator } from "../../src/tools/guidelines-validator.js";
-import { iterativeCoverageEnhancer } from "../../src/tools/iterative-coverage-enhancer.js";
-import { memoryContextOptimizer } from "../../src/tools/memory-context-optimizer.js";
-import { mermaidDiagramGenerator } from "../../src/tools/mermaid-diagram-generator.js";
-import { modelCompatibilityChecker } from "../../src/tools/model-compatibility-checker.js";
 import { domainNeutralPromptBuilder } from "../../src/tools/prompt/domain-neutral-prompt-builder.js";
 import { hierarchicalPromptBuilder } from "../../src/tools/prompt/hierarchical-prompt-builder.js";
 import { securityHardeningPromptBuilder } from "../../src/tools/prompt/security-hardening-prompt-builder.js";
 import { sparkPromptBuilder } from "../../src/tools/prompt/spark-prompt-builder.js";
-import { sprintTimelineCalculator } from "../../src/tools/sprint-timeline-calculator.js";
+import { guidelinesValidator } from "../../src/tools/utility/guidelines-validator.js";
+import { memoryContextOptimizer } from "../../src/tools/utility/memory-context-optimizer.js";
+import { mermaidDiagramGenerator } from "../../src/tools/utility/mermaid-diagram-generator.js";
+import { modelCompatibilityChecker } from "../../src/tools/utility/model-compatibility-checker.js";
+import { sprintTimelineCalculator } from "../../src/tools/utility/sprint-timeline-calculator.js";
 
 describe("Final Coverage Push - Core Tools", () => {
 	it("should test iterative coverage enhancer with all features", async () => {
@@ -299,7 +299,7 @@ describe("Final Coverage Push - Analysis Tools", () => {
 	});
 
 	it("should test gap frameworks analyzers comprehensive", async () => {
-		const result = await gapFrameworksAnalyzers({
+		const result = await gapFrameworksAnalyzer({
 			frameworks: [
 				"capability",
 				"performance",

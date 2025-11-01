@@ -4,13 +4,13 @@
 import { describe, expect, it } from "vitest";
 
 // Import analysis tools
-import { gapFrameworksAnalyzers } from "../../src/tools/analysis/gap-frameworks-analyzers.ts";
+import { gapFrameworksAnalyzer } from "../../src/tools/analysis/gap-frameworks-analyzer.js";
 import { strategyFrameworksBuilder } from "../../src/tools/analysis/strategy-frameworks-builder.ts";
 
 describe("Analysis Tools Coverage Tests", () => {
 	describe("Gap Frameworks Analyzers", () => {
 		it("should test capability gap analysis", async () => {
-			const result = await gapFrameworksAnalyzers({
+			const result = await gapFrameworksAnalyzer({
 				context: "Software development team",
 				currentState: "Basic testing practices",
 				desiredState: "Comprehensive TDD and automated testing",
@@ -22,7 +22,7 @@ describe("Analysis Tools Coverage Tests", () => {
 		});
 
 		it("should test process gap analysis", async () => {
-			const result = await gapFrameworksAnalyzers({
+			const result = await gapFrameworksAnalyzer({
 				context: "Development workflow",
 				currentState: "Manual deployment process",
 				desiredState: "Fully automated CI/CD pipeline",
@@ -33,7 +33,7 @@ describe("Analysis Tools Coverage Tests", () => {
 		});
 
 		it("should test compliance gap analysis", async () => {
-			const result = await gapFrameworksAnalyzers({
+			const result = await gapFrameworksAnalyzer({
 				context: "Security compliance",
 				currentState: "Basic security measures",
 				desiredState: "SOC 2 Type II compliance",
@@ -44,7 +44,7 @@ describe("Analysis Tools Coverage Tests", () => {
 		});
 
 		it("should test multiple framework analysis", async () => {
-			const result = await gapFrameworksAnalyzers({
+			const result = await gapFrameworksAnalyzer({
 				context: "Technology transformation",
 				currentState: "Legacy monolithic architecture",
 				desiredState: "Modern microservices architecture",
@@ -56,7 +56,7 @@ describe("Analysis Tools Coverage Tests", () => {
 		});
 
 		it("should test performance gap analysis", async () => {
-			const result = await gapFrameworksAnalyzers({
+			const result = await gapFrameworksAnalyzer({
 				context: "Application performance",
 				currentState: "Response times > 2 seconds",
 				desiredState: "Response times < 200ms",
@@ -67,7 +67,7 @@ describe("Analysis Tools Coverage Tests", () => {
 		});
 
 		it("should test skills gap analysis", async () => {
-			const result = await gapFrameworksAnalyzers({
+			const result = await gapFrameworksAnalyzer({
 				context: "Development team capabilities",
 				currentState: "Junior developers with basic skills",
 				desiredState: "Senior team with specialized expertise",
@@ -78,7 +78,7 @@ describe("Analysis Tools Coverage Tests", () => {
 		});
 
 		it("should test market gap analysis", async () => {
-			const result = await gapFrameworksAnalyzers({
+			const result = await gapFrameworksAnalyzer({
 				context: "Product market fit",
 				currentState: "Niche market presence",
 				desiredState: "Market leader position",
@@ -89,7 +89,7 @@ describe("Analysis Tools Coverage Tests", () => {
 		});
 
 		it("should test strategic gap analysis", async () => {
-			const result = await gapFrameworksAnalyzers({
+			const result = await gapFrameworksAnalyzer({
 				context: "Business strategy",
 				currentState: "Regional player",
 				desiredState: "Global enterprise solution",
@@ -100,7 +100,7 @@ describe("Analysis Tools Coverage Tests", () => {
 		});
 
 		it("should test operational gap analysis", async () => {
-			const result = await gapFrameworksAnalyzers({
+			const result = await gapFrameworksAnalyzer({
 				context: "Operations efficiency",
 				currentState: "Manual operations with high error rate",
 				desiredState: "Automated operations with 99.9% accuracy",
@@ -111,7 +111,7 @@ describe("Analysis Tools Coverage Tests", () => {
 		});
 
 		it("should test cultural gap analysis", async () => {
-			const result = await gapFrameworksAnalyzers({
+			const result = await gapFrameworksAnalyzer({
 				context: "Organizational culture",
 				currentState: "Siloed departments with poor communication",
 				desiredState: "Collaborative cross-functional teams",
@@ -225,7 +225,7 @@ describe("Analysis Tools Coverage Tests", () => {
 	describe("Edge Cases and Error Handling", () => {
 		it("should handle missing required fields gracefully", async () => {
 			try {
-				await gapFrameworksAnalyzers({
+				await gapFrameworksAnalyzer({
 					// Missing required context, currentState, desiredState
 					frameworks: ["capability"],
 				});
@@ -236,7 +236,7 @@ describe("Analysis Tools Coverage Tests", () => {
 
 		it("should handle invalid frameworks", async () => {
 			try {
-				await gapFrameworksAnalyzers({
+				await gapFrameworksAnalyzer({
 					context: "Test context",
 					currentState: "Current",
 					desiredState: "Desired",
@@ -261,7 +261,7 @@ describe("Analysis Tools Coverage Tests", () => {
 
 	describe("Framework Combinations", () => {
 		it("should test comprehensive gap analysis", async () => {
-			const result = await gapFrameworksAnalyzers({
+			const result = await gapFrameworksAnalyzer({
 				context: "Digital transformation initiative",
 				currentState: "Traditional on-premise infrastructure",
 				desiredState: "Cloud-native, AI-powered platform",

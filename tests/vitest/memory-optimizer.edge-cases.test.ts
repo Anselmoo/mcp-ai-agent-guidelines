@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { memoryContextOptimizer } from "../../src/tools/memory-context-optimizer";
+import { memoryContextOptimizer } from "../../src/tools/utility/memory-context-optimizer.js";
 
 describe("memory-context-optimizer additional edge cases", () => {
 	it("handles different cache strategy branches", async () => {

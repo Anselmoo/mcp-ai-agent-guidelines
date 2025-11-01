@@ -310,7 +310,7 @@ describe("Targeted Function Coverage Improvement", () => {
 	describe("Performance and Edge Case Testing", () => {
 		it("should test performance with large datasets", async () => {
 			const { mermaidDiagramGenerator } = await import(
-				"../../src/tools/mermaid-diagram-generator.js"
+				"../../src/tools/utility/mermaid-diagram-generator.js"
 			);
 
 			// Test with very large descriptions
@@ -330,7 +330,7 @@ describe("Targeted Function Coverage Improvement", () => {
 
 		it("should test error handling and edge cases", async () => {
 			const { iterativeCoverageEnhancer } = await import(
-				"../../src/tools/iterative-coverage-enhancer.js"
+				"../../src/tools/analysis/iterative-coverage-enhancer.js"
 			);
 
 			// Test with edge case coverage values
@@ -400,10 +400,10 @@ describe("Targeted Function Coverage Improvement", () => {
 				"../../src/tools/prompt/hierarchical-prompt-builder.js"
 			);
 			const { mermaidDiagramGenerator } = await import(
-				"../../src/tools/mermaid-diagram-generator.js"
+				"../../src/tools/utility/mermaid-diagram-generator.js"
 			);
 			const { memoryContextOptimizer } = await import(
-				"../../src/tools/memory-context-optimizer.js"
+				"../../src/tools/utility/memory-context-optimizer.js"
 			);
 
 			// Step 1: Generate a hierarchical prompt
@@ -440,8 +440,8 @@ describe("Targeted Function Coverage Improvement", () => {
 			const { strategyFrameworksBuilder } = await import(
 				"../../src/tools/analysis/strategy-frameworks-builder.js"
 			);
-			const { gapFrameworksAnalyzers } = await import(
-				"../../src/tools/analysis/gap-frameworks-analyzers.js"
+			const { gapFrameworksAnalyzer } = await import(
+				"../../src/tools/analysis/gap-frameworks-analyzer.js"
 			);
 
 			// Comprehensive analysis workflow
@@ -458,7 +458,7 @@ describe("Targeted Function Coverage Improvement", () => {
 
 			expect(strategyResult).toBeDefined();
 
-			const gapResult = await gapFrameworksAnalyzers({
+			const gapResult = await gapFrameworksAnalyzer({
 				currentState: "Legacy systems with manual processes",
 				desiredState: "Automated digital platform with AI capabilities",
 				context: "Enterprise modernization",

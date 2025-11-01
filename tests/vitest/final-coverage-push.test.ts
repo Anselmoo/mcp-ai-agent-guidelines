@@ -4,22 +4,22 @@
 import { describe, expect, it } from "vitest";
 
 // Import tools using working patterns from existing tests
-import { codeHygieneAnalyzer } from "../../src/tools/code-hygiene-analyzer.ts";
+import { codeHygieneAnalyzer } from "../../src/tools/analysis/code-hygiene-analyzer.js";
 import { constraintManager } from "../../src/tools/design/constraint-manager.ts";
 import { coverageEnforcer } from "../../src/tools/design/coverage-enforcer.ts";
 import { designAssistant } from "../../src/tools/design/design-assistant.ts";
 import { pivotModule } from "../../src/tools/design/pivot-module.ts";
 import { specGenerator } from "../../src/tools/design/spec-generator.ts";
 import type { DesignSessionState } from "../../src/tools/design/types.ts";
-import { guidelinesValidator } from "../../src/tools/guidelines-validator.ts";
-import { memoryContextOptimizer } from "../../src/tools/memory-context-optimizer.ts";
-import { mermaidDiagramGenerator } from "../../src/tools/mermaid-diagram-generator.ts";
-import { modelCompatibilityChecker } from "../../src/tools/model-compatibility-checker.ts";
 import { domainNeutralPromptBuilder } from "../../src/tools/prompt/domain-neutral-prompt-builder.ts";
 import { hierarchicalPromptBuilder } from "../../src/tools/prompt/hierarchical-prompt-builder.ts";
 import { securityHardeningPromptBuilder } from "../../src/tools/prompt/security-hardening-prompt-builder.ts";
 import { sparkPromptBuilder } from "../../src/tools/prompt/spark-prompt-builder.ts";
-import { sprintTimelineCalculator } from "../../src/tools/sprint-timeline-calculator.ts";
+import { guidelinesValidator } from "../../src/tools/utility/guidelines-validator.js";
+import { memoryContextOptimizer } from "../../src/tools/utility/memory-context-optimizer.js";
+import { mermaidDiagramGenerator } from "../../src/tools/utility/mermaid-diagram-generator.js";
+import { modelCompatibilityChecker } from "../../src/tools/utility/model-compatibility-checker.js";
+import { sprintTimelineCalculator } from "../../src/tools/utility/sprint-timeline-calculator.js";
 
 describe("Final Coverage Push - 70% Target", () => {
 	const createSessionState = (): DesignSessionState => ({
