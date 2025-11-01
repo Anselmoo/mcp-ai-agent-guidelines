@@ -176,71 +176,83 @@ Demos are automatically regenerated when tool code changes via GitHub Actions.
 
 ## Features & Tools
 
-This MCP server provides **27 specialized tools** organized into 5 categories. **[📖 View Complete Tools Reference](./docs/TOOLS_REFERENCE.md)**
+**27 professional tools** for AI-powered development workflows. Each tool is rated by complexity:
+
+**⭐ Complexity Ratings:**
+
+- ⭐ **Simple** - Single input, immediate output (5-10 min to master)
+- ⭐⭐ **Moderate** - Multiple parameters, straightforward usage (15-30 min)
+- ⭐⭐⭐ **Advanced** - Complex inputs, requires understanding of domain (1-2 hours)
+- ⭐⭐⭐⭐ **Expert** - Multi-phase workflows, deep domain knowledge (half day)
+- ⭐⭐⭐⭐⭐ **Master** - Enterprise-scale, comprehensive orchestration (1-2 days)
+
+**📖 [Complete Tools Reference](./docs/TOOLS_REFERENCE.md)** - Detailed documentation with examples
+
+---
 
 ### 🎨 Prompt Builders (9 tools)
 
-Build structured, effective prompts for various use cases:
+Build structured, effective prompts for various use cases.
 
-| Tool                                            | Purpose                                                        | Complexity |
-| ----------------------------------------------- | -------------------------------------------------------------- | ---------- |
-| **hierarchical-prompt-builder**                 | Structured prompts with context → goal → requirements          | ⭐⭐       |
-| **code-analysis-prompt-builder**                | Code analysis prompts (security, performance, maintainability) | ⭐⭐       |
-| **architecture-design-prompt-builder**          | Architecture design with scale-appropriate guidance            | ⭐⭐⭐     |
-| **digital-enterprise-architect-prompt-builder** | Enterprise architecture strategy with mentor perspectives      | ⭐⭐⭐⭐   |
-| **debugging-assistant-prompt-builder**          | Systematic debugging prompts with structured analysis          | ⭐⭐       |
-| **l9-distinguished-engineer-prompt-builder**    | L9 (Distinguished Engineer) level technical design             | ⭐⭐⭐⭐⭐ |
-| **documentation-generator-prompt-builder**      | Technical documentation tailored to audience                   | ⭐⭐       |
-| **domain-neutral-prompt-builder**               | Generic templates with objectives and workflows                | ⭐⭐⭐     |
-| **security-hardening-prompt-builder**           | Security analysis with OWASP/compliance focus                  | ⭐⭐⭐     |
+| Tool                                          | Purpose                                                         | Complexity | Learn More                                                           |
+| --------------------------------------------- | --------------------------------------------------------------- | ---------- | -------------------------------------------------------------------- |
+| `hierarchical-prompt-builder`                 | Multi-level specificity prompts (context → goal → requirements) | ⭐⭐       | [Guide](./docs/tools/hierarchical-prompt-builder.md)                 |
+| `code-analysis-prompt-builder`                | Code review prompts (security, performance, maintainability)    | ⭐⭐       | [Guide](./docs/tools/code-analysis-prompt-builder.md)                |
+| `architecture-design-prompt-builder`          | Architecture design with scale-appropriate guidance             | ⭐⭐⭐     | [Guide](./docs/tools/architecture-design-prompt-builder.md)          |
+| `digital-enterprise-architect-prompt-builder` | Enterprise architecture with mentor perspectives & research     | ⭐⭐⭐⭐   | [Guide](./docs/tools/digital-enterprise-architect-prompt-builder.md) |
+| `debugging-assistant-prompt-builder`          | Systematic debugging prompts with structured analysis           | ⭐⭐       | [Guide](./docs/tools/debugging-assistant-prompt-builder.md)          |
+| `l9-distinguished-engineer-prompt-builder`    | L9 (Distinguished Engineer) high-level technical design         | ⭐⭐⭐⭐⭐ | [Guide](./docs/tools/l9-distinguished-engineer-prompt-builder.md)    |
+| `documentation-generator-prompt-builder`      | Technical docs tailored to audience (API, user guide, spec)     | ⭐⭐       | [Guide](./docs/tools/documentation-generator-prompt-builder.md)      |
+| `domain-neutral-prompt-builder`               | Generic templates with objectives and workflows                 | ⭐⭐⭐     | [Guide](./docs/tools/domain-neutral-prompt-builder.md)               |
+| `security-hardening-prompt-builder`           | Security analysis with OWASP/compliance focus                   | ⭐⭐⭐     | [Guide](./docs/tools/security-hardening-prompt-builder.md)           |
 
 ### 🔍 Code Analysis & Quality (7 tools)
 
-Analyze and improve code quality:
+Analyze and improve code quality with automated insights.
 
-| Tool                            | Purpose                                                  | Complexity |
-| ------------------------------- | -------------------------------------------------------- | ---------- |
-| **clean-code-scorer**           | Comprehensive Clean Code score (0-100) with breakdown    | ⭐⭐⭐     |
-| **code-hygiene-analyzer**       | Detect outdated patterns, unused dependencies            | ⭐⭐       |
-| **dependency-auditor**          | Audit package.json for security and modernization        | ⭐         |
-| **iterative-coverage-enhancer** | Analyze coverage gaps, generate test suggestions         | ⭐⭐⭐     |
-| **semantic-code-analyzer**      | Identify symbols, structure, dependencies, patterns      | ⭐⭐       |
-| **guidelines-validator**        | Validate practices against AI agent guidelines           | ⭐         |
-| **mermaid-diagram-generator**   | Generate visual diagrams (flowchart, sequence, ER, etc.) | ⭐⭐       |
+| Tool                          | Purpose                                                            | Complexity | Learn More                                           |
+| ----------------------------- | ------------------------------------------------------------------ | ---------- | ---------------------------------------------------- |
+| `clean-code-scorer`           | Comprehensive 0-100 quality score with metric breakdown            | ⭐⭐⭐     | [Guide](./docs/tools/clean-code-scorer.md)           |
+| `code-hygiene-analyzer`       | Detect outdated patterns, unused dependencies, code smells         | ⭐⭐       | [Guide](./docs/tools/code-hygiene-analyzer.md)       |
+| `dependency-auditor`          | Audit package.json for security, deprecation, ESM compatibility    | ⭐         | [Guide](./docs/tools/dependency-auditor.md)          |
+| `iterative-coverage-enhancer` | Analyze coverage gaps, generate test suggestions, adapt thresholds | ⭐⭐⭐     | [Guide](./docs/tools/iterative-coverage-enhancer.md) |
+| `semantic-code-analyzer`      | Identify symbols, structure, dependencies, patterns (LSP-based)    | ⭐⭐       | [Guide](./docs/tools/semantic-code-analyzer.md)      |
+| `guidelines-validator`        | Validate practices against AI agent development guidelines         | ⭐         | [Guide](./docs/tools/guidelines-validator.md)        |
+| `mermaid-diagram-generator`   | Generate visual diagrams (flowchart, sequence, ER, class, etc.)    | ⭐⭐       | [Guide](./docs/tools/mermaid-diagram-generator.md)   |
 
 ### 📊 Strategy & Planning (5 tools)
 
-Business strategy and project planning:
+Business strategy analysis and agile project planning.
 
-| Tool                            | Purpose                                               | Complexity |
-| ------------------------------- | ----------------------------------------------------- | ---------- |
-| **strategy-frameworks-builder** | SWOT, BSC, VRIO, Porter's Five Forces analysis        | ⭐⭐⭐     |
-| **gap-frameworks-analyzers**    | Gap analysis (capability, technology, maturity, etc.) | ⭐⭐⭐     |
-| **sprint-timeline-calculator**  | Dependency-aware sprint planning and scheduling       | ⭐⭐       |
-| **model-compatibility-checker** | Recommend best AI models for specific tasks           | ⭐         |
-| **project-onboarding**          | Comprehensive project structure analysis and docs     | ⭐⭐       |
+| Tool                          | Purpose                                                               | Complexity | Learn More                                           |
+| ----------------------------- | --------------------------------------------------------------------- | ---------- | ---------------------------------------------------- |
+| `strategy-frameworks-builder` | SWOT, BSC, VRIO, Porter's Five Forces, market analysis                | ⭐⭐⭐     | [Guide](./docs/tools/strategy-frameworks-builder.md) |
+| `gap-frameworks-analyzers`    | Capability, technology, maturity, skills gap analysis                 | ⭐⭐⭐     | [Guide](./docs/tools/gap-frameworks-analyzers.md)    |
+| `sprint-timeline-calculator`  | Dependency-aware sprint planning with bin-packing optimization        | ⭐⭐       | [Guide](./docs/tools/sprint-timeline-calculator.md)  |
+| `model-compatibility-checker` | Recommend best AI models for task requirements and budget             | ⭐         | [Guide](./docs/tools/model-compatibility-checker.md) |
+| `project-onboarding`          | Comprehensive project structure analysis and documentation generation | ⭐⭐       | [Guide](./docs/tools/project-onboarding.md)          |
 
 ### 🎨 Design Workflow (1 tool)
 
-Multi-phase design orchestration:
+Multi-phase design orchestration with constraint enforcement.
 
-| Tool                 | Purpose                                                                            | Complexity |
-| -------------------- | ---------------------------------------------------------------------------------- | ---------- |
-| **design-assistant** | Constraint-driven design workflow with artifact generation (ADRs, specs, roadmaps) | ⭐⭐⭐⭐   |
+| Tool               | Purpose                                                                            | Complexity | Learn More                                |
+| ------------------ | ---------------------------------------------------------------------------------- | ---------- | ----------------------------------------- |
+| `design-assistant` | Constraint-driven design sessions with artifact generation (ADRs, specs, roadmaps) | ⭐⭐⭐⭐   | [Guide](./docs/tools/design-assistant.md) |
 
 ### 🛠️ Utilities (5 tools)
 
-Workflow optimization and evaluation:
+Supporting tools for workflow optimization.
 
-| Tool                              | Purpose                                                | Complexity |
-| --------------------------------- | ------------------------------------------------------ | ---------- |
-| **memory-context-optimizer**      | Optimize prompt caching and context window usage       | ⭐⭐       |
-| **mode-switcher**                 | Switch between agent modes (planning, debugging, etc.) | ⭐         |
-| **prompting-hierarchy-evaluator** | Evaluate prompts with numeric scoring                  | ⭐⭐       |
-| **hierarchy-level-selector**      | Select optimal prompting level for task complexity     | ⭐         |
-| **spark-prompt-builder**          | Build UI/UX product prompts with structured inputs     | ⭐⭐⭐     |
+| Tool                            | Purpose                                                                             | Complexity | Learn More                                             |
+| ------------------------------- | ----------------------------------------------------------------------------------- | ---------- | ------------------------------------------------------ |
+| `memory-context-optimizer`      | Optimize prompt caching and context window usage                                    | ⭐⭐       | [Guide](./docs/tools/memory-context-optimizer.md)      |
+| `mode-switcher`                 | Switch between agent operation modes (planning, debugging, refactoring)             | ⭐         | [Guide](./docs/tools/mode-switcher.md)                 |
+| `prompting-hierarchy-evaluator` | Evaluate prompts with numeric scoring (clarity, specificity, completeness)          | ⭐⭐       | [Guide](./docs/tools/prompting-hierarchy-evaluator.md) |
+| `hierarchy-level-selector`      | Select optimal prompting level for task complexity                                  | ⭐         | [Guide](./docs/tools/hierarchy-level-selector.md)      |
+| `spark-prompt-builder`          | Build UI/UX product prompts with structured inputs (colors, typography, components) | ⭐⭐⭐     | [Guide](./docs/tools/spark-prompt-builder.md)          |
 
-**Complexity Legend**: ⭐ Simple → ⭐⭐⭐⭐⭐ Advanced
+**💡 Pro Tip**: Start with ⭐ tools to learn the basics, then progress to ⭐⭐⭐+ tools for advanced workflows.
 
 ---
 

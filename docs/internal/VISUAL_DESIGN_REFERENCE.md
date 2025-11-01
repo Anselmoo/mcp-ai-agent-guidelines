@@ -14,43 +14,44 @@
 
 Following GitHub's official brand guidelines ([brand.github.com/foundations/color](https://brand.github.com/foundations/color)):
 
-| Color Name | Hex Code | RGB | Usage | WCAG AAA Contrast |
-|------------|----------|-----|-------|-------------------|
-| **Black** | `#000000` | 0/0/0 | Primary text, backgrounds (dark mode) | ✅ 21:1 with white |
-| **White** | `#FFFFFF` | 255/255/255 | Backgrounds (light mode), text (dark mode) | ✅ 21:1 with black |
+| Color Name | Hex Code  | RGB         | Usage                                      | WCAG AAA Contrast  |
+| ---------- | --------- | ----------- | ------------------------------------------ | ------------------ |
+| **Black**  | `#000000` | 0/0/0       | Primary text, backgrounds (dark mode)      | ✅ 21:1 with white |
+| **White**  | `#FFFFFF` | 255/255/255 | Backgrounds (light mode), text (dark mode) | ✅ 21:1 with black |
 
 ### Accent & Semantic Colors
 
 Based on GitHub Primer design system:
 
-| Color Name | Hex Code | RGB | Usage | Contrast (on white) |
-|------------|----------|-----|-------|---------------------|
-| **Accent Blue** | `#0969DA` | 9/105/218 | Links, interactive elements, focus states | ✅ 7.1:1 |
-| **Success Green** | `#1a7f37` | 26/127/55 | Success states, positive feedback | ✅ 7.5:1 |
-| **Attention Yellow** | `#bf8700` | 191/135/0 | Warnings, important notices | ✅ 7.2:1 |
-| **Danger Red** | `#d1242f` | 209/36/47 | Errors, destructive actions | ✅ 7.3:1 |
-| **Done Purple** | `#8250df` | 130/80/223 | Completion, finished states | ✅ 7.1:1 |
-| **Sponsors Pink** | `#bf3989` | 191/57/137 | Special highlights, sponsors | ✅ 7.4:1 |
+| Color Name           | Hex Code  | RGB        | Usage                                     | Contrast (on white) |
+| -------------------- | --------- | ---------- | ----------------------------------------- | ------------------- |
+| **Accent Blue**      | `#0969DA` | 9/105/218  | Links, interactive elements, focus states | ✅ 7.1:1            |
+| **Success Green**    | `#1a7f37` | 26/127/55  | Success states, positive feedback         | ✅ 7.5:1            |
+| **Attention Yellow** | `#bf8700` | 191/135/0  | Warnings, important notices               | ✅ 7.2:1            |
+| **Danger Red**       | `#d1242f` | 209/36/47  | Errors, destructive actions               | ✅ 7.3:1            |
+| **Done Purple**      | `#8250df` | 130/80/223 | Completion, finished states               | ✅ 7.1:1            |
+| **Sponsors Pink**    | `#bf3989` | 191/57/137 | Special highlights, sponsors              | ✅ 7.4:1            |
 
 ### Brand Greens (Extended Palette)
 
 From official GitHub brand toolkit:
 
-| Green Variant | Hex Code | RGB | CMYK | Pantone | Usage |
-|---------------|----------|-----|------|---------|-------|
-| **Green 1** | `#BFFFD1` | 191/255/209 | 20/0/30/0 | 7486 | Light backgrounds, gradients |
-| **Green 2** | `#5FED83` | 95/237/131 | 43/0/60/0 | 2268 | Accent elements, highlights |
-| **Green 3** | `#1a7f37` | 26/127/55 | - | - | Primary success color |
+| Green Variant | Hex Code  | RGB         | CMYK      | Pantone | Usage                        |
+| ------------- | --------- | ----------- | --------- | ------- | ---------------------------- |
+| **Green 1**   | `#BFFFD1` | 191/255/209 | 20/0/30/0 | 7486    | Light backgrounds, gradients |
+| **Green 2**   | `#5FED83` | 95/237/131  | 43/0/60/0 | 2268    | Accent elements, highlights  |
+| **Green 3**   | `#1a7f37` | 26/127/55   | -         | -       | Primary success color        |
 
 ### Gradient Combinations
 
 **GitHub-Brand Gradients** (for headers/illustrations):
+
 ```css
 /* Accent Gradient (Blue → Green) */
-background: linear-gradient(135deg, #0969DA 0%, #1a7f37 100%);
+background: linear-gradient(135deg, #0969da 0%, #1a7f37 100%);
 
 /* Success Gradient (Light Green → Dark Green) */
-background: linear-gradient(135deg, #BFFFD1 0%, #1a7f37 100%);
+background: linear-gradient(135deg, #bfffd1 0%, #1a7f37 100%);
 
 /* Neutral Gradient (Dark → Light) */
 background: linear-gradient(135deg, #24292f 0%, #57606a 100%);
@@ -72,32 +73,41 @@ background: linear-gradient(135deg, #8250df 0%, #bf3989 100%);
 **Brand Usage**: Mona Sans SemiBold (600 weight) for headings and titles
 
 **CDN Integration**:
+
 ```html
 <!-- Google Fonts CDN -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Mona+Sans:wght@200..900&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Mona+Sans:wght@200..900&display=swap"
+  rel="stylesheet"
+/>
 ```
 
 **CSS Usage**:
+
 ```css
 @font-face {
-  font-family: 'Mona Sans';
-  src: url('https://fonts.googleapis.com/css2?family=Mona+Sans:wght@200..900&display=swap');
+  font-family: "Mona Sans";
+  src: url("https://fonts.googleapis.com/css2?family=Mona+Sans:wght@200..900&display=swap");
   font-weight: 200 900;
   font-display: swap;
 }
 
 /* Headings */
-h1, h2, h3 {
-  font-family: 'Mona Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+h1,
+h2,
+h3 {
+  font-family: "Mona Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue",
+    sans-serif;
   font-weight: 600; /* SemiBold */
   -webkit-font-smoothing: antialiased;
 }
 
 /* Body text */
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue",
+    sans-serif;
   font-weight: 400;
 }
 ```
@@ -111,17 +121,18 @@ body {
 **Brand Usage**: Hubot Sans Medium (500 weight) for technical callouts
 
 **CSS Usage**:
+
 ```css
 @font-face {
-  font-family: 'Hubot Sans';
-  src: url('Hubot-Sans.woff2') format('woff2');
+  font-family: "Hubot Sans";
+  src: url("Hubot-Sans.woff2") format("woff2");
   font-weight: 200 900;
   font-stretch: 75% 125%;
 }
 
 /* Technical headers */
 .tech-header {
-  font-family: 'Hubot Sans', monospace;
+  font-family: "Hubot Sans", monospace;
   font-weight: 500; /* Medium */
   font-stretch: 100%;
 }
@@ -131,16 +142,16 @@ body {
 
 Following GitHub's brand type system:
 
-| Style | Font | Weight | Size | Line Height | Usage |
-|-------|------|--------|------|-------------|-------|
-| **Title 1** | Mona Sans | 700 | 48px | 1.2 | Hero headers (README main) |
-| **Title 2** | Mona Sans | 600 | 36px | 1.3 | Section headers |
-| **Headline 1** | Mona Sans | 600 | 24px | 1.4 | Doc page titles |
-| **Headline 2** | Mona Sans | 600 | 20px | 1.4 | Subsections |
-| **Body Large** | System | 400 | 16px | 1.6 | Introduction text |
-| **Body** | System | 400 | 14px | 1.5 | Default body text |
-| **Caption** | System | 400 | 12px | 1.4 | Metadata, footnotes |
-| **Code** | Hubot Sans | 500 | 14px | 1.5 | Code snippets, tech terms |
+| Style          | Font       | Weight | Size | Line Height | Usage                      |
+| -------------- | ---------- | ------ | ---- | ----------- | -------------------------- |
+| **Title 1**    | Mona Sans  | 700    | 48px | 1.2         | Hero headers (README main) |
+| **Title 2**    | Mona Sans  | 600    | 36px | 1.3         | Section headers            |
+| **Headline 1** | Mona Sans  | 600    | 24px | 1.4         | Doc page titles            |
+| **Headline 2** | Mona Sans  | 600    | 20px | 1.4         | Subsections                |
+| **Body Large** | System     | 400    | 16px | 1.6         | Introduction text          |
+| **Body**       | System     | 400    | 14px | 1.5         | Default body text          |
+| **Caption**    | System     | 400    | 12px | 1.4         | Metadata, footnotes        |
+| **Code**       | Hubot Sans | 500    | 14px | 1.5         | Code snippets, tech terms  |
 
 ---
 
@@ -163,6 +174,7 @@ Following GitHub's brand type system:
 ### Icon Categories for MCP Docs
 
 **Prompt & Workflow Icons**:
+
 ```
 📝 prompt-builder: comment-discussion (16px)
 🔗 chaining: git-branch (16px)
@@ -171,6 +183,7 @@ Following GitHub's brand type system:
 ```
 
 **Code & Analysis Icons**:
+
 ```
 🔍 analyzer: search (16px)
 📈 metrics: graph (16px)
@@ -179,6 +192,7 @@ Following GitHub's brand type system:
 ```
 
 **Strategy & Planning Icons**:
+
 ```
 📅 sprint: calendar (16px)
 🎨 design: paintbrush (16px)
@@ -216,6 +230,7 @@ Based on [brand.github.com/graphic-elements](https://brand.github.com/graphic-el
 ### Illustration Principles for MCP Docs
 
 **Tool Workflow Diagrams**:
+
 ```
 Input → Processing (MCP Tool) → Output
   ↓         ↓                      ↓
@@ -224,6 +239,7 @@ Icon      Icon with               Icon
 ```
 
 **Category Visual Motifs**:
+
 - **Prompt Builders**: Lightbulb, brain, speech bubbles
 - **Code Analysis**: Magnifying glass, charts, code brackets
 - **Strategy**: Chess pieces, flowcharts, timelines
@@ -271,6 +287,7 @@ Icon      Icon with               Icon
 ### CSS Animation Patterns
 
 **Fade In (Headers)**:
+
 ```css
 @keyframes github-fade-in {
   from {
@@ -295,10 +312,18 @@ Icon      Icon with               Icon
 ```
 
 **Pulse (Icons)**:
+
 ```css
 @keyframes github-pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.8; transform: scale(1.05); }
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
 }
 
 .gh-icon:hover {
@@ -307,6 +332,7 @@ Icon      Icon with               Icon
 ```
 
 **Slide In (Footers)**:
+
 ```css
 @keyframes github-slide {
   from {
@@ -328,6 +354,7 @@ Icon      Icon with               Icon
 ### SMIL Animations (SVG)
 
 **Gitline Animation** (branching visualization):
+
 ```svg
 <svg xmlns="http://www.w3.org/2000/svg" width="200" height="100">
   <path d="M10,50 Q50,10 100,50 T190,50"
@@ -355,6 +382,7 @@ Icon      Icon with               Icon
 **Base Grid**: 8px (GitHub Primer spacing scale)
 
 **Spacing Scale**:
+
 ```
 4px  (0.5 units) - Tight spacing
 8px  (1 unit)    - Default spacing
@@ -367,16 +395,19 @@ Icon      Icon with               Icon
 ### Template Dimensions
 
 **Header**:
+
 - Height: 120px (desktop), 80px (mobile)
 - Padding: 32px horizontal, 24px vertical
 - Content: Logo/title (left), navigation (center), metadata (right)
 
 **Footer**:
+
 - Height: 100px + dynamic content
 - Sections: 3 columns (desktop), stacked (mobile)
 - Padding: 32px all sides
 
 **Content Area**:
+
 - Max width: 1280px (aligned to GitHub.com)
 - Padding: 48px (desktop), 24px (mobile)
 - Line length: 65-75 characters (optimal readability)
@@ -387,10 +418,18 @@ Following GitHub Primer responsive system:
 
 ```css
 /* Mobile first */
-@media (min-width: 544px) { /* sm */ }
-@media (min-width: 768px) { /* md */ }
-@media (min-width: 1012px) { /* lg */ }
-@media (min-width: 1280px) { /* xl */ }
+@media (min-width: 544px) {
+  /* sm */
+}
+@media (min-width: 768px) {
+  /* md */
+}
+@media (min-width: 1012px) {
+  /* lg */
+}
+@media (min-width: 1280px) {
+  /* xl */
+}
 ```
 
 ---
@@ -400,23 +439,28 @@ Following GitHub Primer responsive system:
 ### WCAG AAA Compliance
 
 **Color Contrast**:
+
 - Normal text: 7:1 minimum ✅
 - Large text (18px+): 4.5:1 minimum ✅
 - UI components: 3:1 minimum ✅
 
 **Focus Indicators**:
+
 ```css
 :focus-visible {
-  outline: 2px solid #0969DA;
+  outline: 2px solid #0969da;
   outline-offset: 2px;
   border-radius: 4px;
 }
 ```
 
 **Motion Sensitivity**:
+
 ```css
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
@@ -425,12 +469,14 @@ Following GitHub Primer responsive system:
 ```
 
 **Semantic HTML**:
+
 - Use `<header>`, `<nav>`, `<main>`, `<footer>`, `<article>`, `<section>`
 - All images have `alt` text
 - All SVG icons have `<title>` and `aria-hidden="true"` if decorative
 - Headings follow logical hierarchy (h1 → h2 → h3)
 
 **Screen Reader Support**:
+
 ```html
 <!-- Skip to content link -->
 <a href="#main-content" class="sr-only sr-only-focusable">
@@ -449,12 +495,17 @@ Following GitHub Primer responsive system:
 ### SVG Template Structure
 
 **Header Template** (`header-github-brand.html`):
+
 ```html
 <!-- BEGIN AUTO-GENERATED HEADER - DO NOT EDIT -->
 <div align="center">
-
   <!-- Animated SVG Header -->
-  <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="120" viewBox="0 0 1280 120">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="100%"
+    height="120"
+    viewBox="0 0 1280 120"
+  >
     <defs>
       <linearGradient id="gh-header-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
         <stop offset="0%" style="stop-color:#0969DA;stop-opacity:1" />
@@ -462,89 +513,129 @@ Following GitHub Primer responsive system:
       </linearGradient>
     </defs>
 
-    <rect width="1280" height="120" fill="url(#gh-header-gradient)" opacity="0.05" />
+    <rect
+      width="1280"
+      height="120"
+      fill="url(#gh-header-gradient)"
+      opacity="0.05"
+    />
 
     <!-- Title with Mona Sans -->
-    <text x="640" y="60" text-anchor="middle"
-          font-family="Mona Sans, sans-serif" font-weight="600" font-size="32"
-          fill="#000000">
+    <text
+      x="640"
+      y="60"
+      text-anchor="middle"
+      font-family="Mona Sans, sans-serif"
+      font-weight="600"
+      font-size="32"
+      fill="#000000"
+    >
       {{DOCUMENT_TITLE}}
     </text>
 
     <!-- Category badge -->
-    <rect x="520" y="80" width="240" height="28" rx="14"
-          fill="#0969DA" opacity="0.1" />
-    <text x="640" y="98" text-anchor="middle"
-          font-family="Hubot Sans, monospace" font-weight="500" font-size="14"
-          fill="#0969DA">
+    <rect
+      x="520"
+      y="80"
+      width="240"
+      height="28"
+      rx="14"
+      fill="#0969DA"
+      opacity="0.1"
+    />
+    <text
+      x="640"
+      y="98"
+      text-anchor="middle"
+      font-family="Hubot Sans, monospace"
+      font-weight="500"
+      font-size="14"
+      fill="#0969DA"
+    >
       {{CATEGORY}}
     </text>
   </svg>
 
   <!-- Quick navigation -->
   <p>
-    <a href="../README.md">🏠 Home</a> •
-    <a href="./README.md">📖 Docs</a> •
+    <a href="../README.md">🏠 Home</a> • <a href="./README.md">📖 Docs</a> •
     <a href="../demos/README.md">🎯 Demos</a> •
     <a href="./REFERENCES.md">📚 References</a>
   </p>
-
 </div>
 <!-- END AUTO-GENERATED HEADER -->
 ```
 
 **Footer Template** (`footer-github-brand.html`):
+
 ```html
 <!-- BEGIN AUTO-GENERATED FOOTER - DO NOT EDIT -->
 
 ---
 
 <div align="center">
+  ## 🔗 Related Documentation
 
-## 🔗 Related Documentation
+  <table>
+    <tr>
+      <td align="center" width="33%">
+        <strong>🎯 Getting Started</strong><br />
+        <a href="./AI_INTERACTION_TIPS.md">AI Tips</a> •
+        <a href="./PROMPTING_HIERARCHY.md">Hierarchy</a>
+      </td>
+      <td align="center" width="33%">
+        <strong>🛠️ Tools & Features</strong><br />
+        <a href="{{TOOL_LINKS}}">View All Tools</a>
+      </td>
+      <td align="center" width="33%">
+        <strong>📚 References</strong><br />
+        <a href="./REFERENCES.md">Credits</a> •
+        <a href="../DISCLAIMER.md">Disclaimer</a>
+      </td>
+    </tr>
+  </table>
 
-<table>
-  <tr>
-    <td align="center" width="33%">
-      <strong>🎯 Getting Started</strong><br>
-      <a href="./AI_INTERACTION_TIPS.md">AI Tips</a> •
-      <a href="./PROMPTING_HIERARCHY.md">Hierarchy</a>
-    </td>
-    <td align="center" width="33%">
-      <strong>🛠️ Tools & Features</strong><br>
-      <a href="{{TOOL_LINKS}}">View All Tools</a>
-    </td>
-    <td align="center" width="33%">
-      <strong>📚 References</strong><br>
-      <a href="./REFERENCES.md">Credits</a> •
-      <a href="../DISCLAIMER.md">Disclaimer</a>
-    </td>
-  </tr>
-</table>
+  ---
 
----
+  <!-- Animated footer decoration -->
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="100%"
+    height="4"
+    viewBox="0 0 1280 4"
+  >
+    <defs>
+      <linearGradient id="gh-footer-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" style="stop-color:#0969DA;stop-opacity:0.3">
+          <animate
+            attributeName="stop-opacity"
+            values="0.3;0.7;0.3"
+            dur="3s"
+            repeatCount="indefinite"
+          />
+        </stop>
+        <stop offset="100%" style="stop-color:#1a7f37;stop-opacity:0.3">
+          <animate
+            attributeName="stop-opacity"
+            values="0.3;0.7;0.3"
+            dur="3s"
+            repeatCount="indefinite"
+            begin="1.5s"
+          />
+        </stop>
+      </linearGradient>
+    </defs>
+    <rect width="1280" height="4" fill="url(#gh-footer-gradient)" />
+  </svg>
 
-<!-- Animated footer decoration -->
-<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="4" viewBox="0 0 1280 4">
-  <defs>
-    <linearGradient id="gh-footer-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#0969DA;stop-opacity:0.3">
-        <animate attributeName="stop-opacity" values="0.3;0.7;0.3" dur="3s" repeatCount="indefinite" />
-      </stop>
-      <stop offset="100%" style="stop-color:#1a7f37;stop-opacity:0.3">
-        <animate attributeName="stop-opacity" values="0.3;0.7;0.3" dur="3s" repeatCount="indefinite" begin="1.5s" />
-      </stop>
-    </linearGradient>
-  </defs>
-  <rect width="1280" height="4" fill="url(#gh-footer-gradient)" />
-</svg>
-
-<sub>
-  Built with ❤️ using GitHub's design system •
-  <a href="https://github.com/Anselmoo/mcp-ai-agent-guidelines">View on GitHub</a> •
-  <a href="../LICENSE">MIT License</a>
-</sub>
-
+  <sub>
+    Built with ❤️ using GitHub's design system •
+    <a href="https://github.com/Anselmoo/mcp-ai-agent-guidelines"
+      >View on GitHub</a
+    >
+    •
+    <a href="../LICENSE">MIT License</a>
+  </sub>
 </div>
 
 <!-- END AUTO-GENERATED FOOTER -->
@@ -553,6 +644,7 @@ Following GitHub Primer responsive system:
 ### File Naming Conventions
 
 **Templates**: `{type}-{category}-github-brand.html`
+
 - `header-tips-github-brand.html`
 - `footer-tools-github-brand.html`
 - `illustration-workflow-github-brand.svg`
@@ -564,18 +656,21 @@ Following GitHub Primer responsive system:
 ## 📊 Category-Specific Visual Themes
 
 ### Tips Section (Purple/Blue)
+
 - **Primary**: `#8250df` (Done Purple)
 - **Accent**: `#0969DA` (Accent Blue)
 - **Icons**: Lightbulb, star, bookmark
 - **Gradient**: Purple → Blue
 
 ### Tools Section (Green/Blue)
+
 - **Primary**: `#1a7f37` (Success Green)
 - **Accent**: `#0969DA` (Accent Blue)
 - **Icons**: Wrench, gear, tools
 - **Gradient**: Green → Blue
 
 ### Credits/Disclaimer Section (Neutral)
+
 - **Primary**: `#000000` (Black)
 - **Accent**: `#57606a` (Gray)
 - **Icons**: Heart, shield, info
@@ -586,11 +681,13 @@ Following GitHub Primer responsive system:
 ## 🚀 Migration Path from Capsule-Render
 
 ### Current State (Capsule-Render API)
+
 ```markdown
 ![Header](https://capsule-render.vercel.app/api?type=rect&color=gradient&...)
 ```
 
 ### New State (Self-Hosted GitHub SVG)
+
 ```markdown
 <div align="center">
 <picture>
@@ -602,6 +699,7 @@ Following GitHub Primer responsive system:
 ```
 
 ### Benefits
+
 1. **No External Dependencies**: Self-hosted, no API rate limits
 2. **Version Control**: SVGs committed to repo, trackable changes
 3. **Brand Compliance**: Full GitHub brand alignment
@@ -634,7 +732,9 @@ Following GitHub Primer responsive system:
 Content here...
 
 <!-- BEGIN AUTO-GENERATED FOOTER -->
+
 [Footer content as shown above]
+
 <!-- END AUTO-GENERATED FOOTER -->
 ```
 
@@ -695,11 +795,13 @@ Before committing new templates:
 Inspired by contemporary animation best practices and purposeful motion design:
 
 **Core Principles**:
+
 1. **Facilitate** - Motion should inform and guide users
 2. **Engage** - Attract attention without distraction
 3. **Impact** - Be memorable and meaningful
 
 **Timing & Easing**:
+
 ```css
 /* Smooth eases for organic motion */
 transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -714,12 +816,14 @@ animation-duration: 600ms; /* Complex sequences */
 ```
 
 **Animation Do's**:
+
 - ✅ Support the overall message
 - ✅ Be quick but legible - consider attention span
 - ✅ Add polish and personality
 - ✅ Balance work for audience context (technical demos = precise, promos = delightful)
 
 **Animation Don'ts**:
+
 - ❌ Create obstacles or distractions
 - ❌ Use out-of-the-box presentation effects (slapping, rolling, bouncing)
 - ❌ Ship unpolished work - simplify if time-constrained
@@ -728,6 +832,7 @@ animation-duration: 600ms; /* Complex sequences */
 ### Text Animation Patterns
 
 **Title Reveals**:
+
 ```css
 /* Fade + slide from bottom */
 @keyframes revealTitle {
@@ -747,6 +852,7 @@ animation-duration: 600ms; /* Complex sequences */
 ```
 
 **Block Text Reveals**:
+
 ```css
 /* Progressive reveal for longer content */
 @keyframes revealBlock {
@@ -782,7 +888,7 @@ Inspired by branching/merging visualization:
 }
 
 .gitline-path {
-  stroke: #0969DA;
+  stroke: #0969da;
   stroke-width: 1.5px;
   fill: none;
   animation: drawGitline 2s ease-in-out forwards;
@@ -790,9 +896,11 @@ Inspired by branching/merging visualization:
 ```
 
 **Node Pulse** (for commit points):
+
 ```css
 @keyframes nodePulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.6;
     transform: scale(1);
   }
@@ -814,6 +922,7 @@ Inspired by branching/merging visualization:
 ### Key Art Style
 
 **Geometric Shapes** - Abstract, optimistic, future-facing:
+
 - Use 6 shape lockups across different contexts
 - Emphasize products/features conceptually
 - Light mode and dark mode variants
@@ -822,10 +931,12 @@ Inspired by branching/merging visualization:
 **Background Gradients**:
 
 Light Mode:
+
 - **Green 2** (#8CF2A6 / RGB 191,255,209 / CMYK 30,0,45,0)
 - **Cyan 1** (#DEFEFA / RGB 222,254,250 / CMYK 13,0,2,0)
 
 Dark Mode:
+
 - **Gray 6** (#101411 / RGB 16,20,17 / CMYK 20,0,15,92)
 - **Purple 6** (#000240 / RGB 0,2,64 / CMYK 99,99,0,5)
 
@@ -834,20 +945,24 @@ Dark Mode:
 ### Application Guidelines
 
 **Main Content** (ebooks, headers, key pages):
+
 - Use parts of key art, not full monuments
 - Keep focused - max 3 shape colorways
 - Improve hierarchy by reducing to 1 color when needed
 
 **Informational Content** (docs, guides):
+
 - Use enlarged shape details to reduce noise
 - Remove Gitlines to emphasize text
 - Blow up abstract shapes large enough to fill screen
 - Overlay text clearly
 
 **Philosophy**:
+
 > "If everything is a monument, nothing is a monument."
 
 Vary illustration style and complexity by asset importance:
+
 - **Quiet outlines** - Supportive, background elements
 - **Full renders** - Attention-grabbing, hero sections
 - **Balanced mix** - Allow text and content to stand out
@@ -855,12 +970,14 @@ Vary illustration style and complexity by asset importance:
 ### Shape Library
 
 **Geometric Elements**:
+
 - Built on 16px grid for cohesion
 - Abstract representations (not literal)
 - Playful and conceptual
 - Can include representational elements (characters, objects, world-building)
 
 **Example Compositions**:
+
 ```svg
 <!-- Abstract shape with gradient -->
 <svg viewBox="0 0 200 200">
@@ -893,6 +1010,7 @@ Vary illustration style and complexity by asset importance:
    - Semantic structure with ARIA labels
 
 **Key Takeaways**:
+
 - READMEs are landing pages - make them count
 - Interactive elements drive exploration
 - Animation adds polish when purposeful
@@ -903,6 +1021,7 @@ Vary illustration style and complexity by asset importance:
 ## 📚 References
 
 **Design Inspiration** (not copied):
+
 - [GitHub Brand Foundations](https://brand.github.com/foundations)
 - [Color Guidelines](https://brand.github.com/foundations/color)
 - [Typography Guidelines](https://brand.github.com/foundations/typography)
@@ -915,18 +1034,21 @@ Vary illustration style and complexity by asset importance:
 - [Logo Animation](https://brand.github.com/motion-identity/logo-animation)
 
 **Open Source Resources**:
+
 - [Mona Sans Font](https://github.com/github/mona-sans)
 - [Hubot Sans Font](https://github.com/github/hubot-sans)
 - [Octicons Library](https://primer.github.io/octicons/)
 - [GitHub Primer Design System](https://primer.style/)
 
 **Community Examples**:
+
 - [Scalar Blog - Animated README](https://blog.scalar.com/)
 - [Dev.to - SVG Animation Guide](https://dev.to/)
 - [Asciinema - Terminal Recording](https://asciinema.org/)
 - [YouTube - SVG Animation Tutorials](https://www.youtube.com/)
 
 **Web Standards**:
+
 - [WCAG 2.1 AAA Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
 - [MDN SVG Reference](https://developer.mozilla.org/en-US/docs/Web/SVG)
 - [CSS Animations Best Practices](https://web.dev/animations/)

@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
 - **AI Interaction Tips** (`docs/AI_INTERACTION_TIPS.md`) - Comprehensive guide for asking targeted questions to better utilize specialized tools
 - **Documentation Index** (`docs/README.md`) - Complete documentation TOC with organized categories
 - **Tools Reference** (`docs/TOOLS_REFERENCE.md`) - Complete reference for all 27 MCP tools with examples
@@ -35,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Idempotent re-injection support
 
 ### Changed
+
 - Reorganized documentation structure with cleaner categorization
 - Enhanced README.md with streamlined documentation section and improved demos categorization
 - Fixed table of contents anchor links for proper navigation (e.g., `#vs-code-integration-one-click`)
@@ -44,12 +46,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated injection script from static HTML to dynamic category-based template selection
 
 ### Removed
+
 - Deleted `progress/` folder with implementation summary documents
 - Removed empty documentation subdirectories (`architecture/`, `guides/`, `idea/`, `reference/`, `implementation/`)
 - Consolidated `SCHEMA_IMPROVEMENT.md` and `SEMANTIC_ANALYZER_REFACTORING.md` into `docs/TECHNICAL_IMPROVEMENTS.md`
 - Removed duplicate and outdated implementation status documents
 
 ### Fixed
+
 - Duplicate template markers in documentation files
 - Category detection accuracy for edge cases
 - Template injection idempotency (can run multiple times safely)
@@ -57,6 +61,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.8.0] - 2025-10-31
 
 ### Added
+
 - Context-aware design guidance exposed in MCP server schema
 - Type-specific config requirements documentation in prompt-flow-builder schema
 - Comprehensive acknowledgments and references documentation
@@ -65,6 +70,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.7.0] - Previous Release
 
 ### Features
+
 - Export formats (LaTeX, CSV, JSON)
 - YAML-based model management
 - Clean Code 100/100 Initiative
