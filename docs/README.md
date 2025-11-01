@@ -38,25 +38,24 @@
 - **[Serena Strategies](./SERENA_STRATEGIES.md)** - Effective agent strategies from Serena
 
 #### Specialized Tools
-- **[Mermaid Diagram Examples](./mermaid-diagram-examples.md)** - Visual diagram generation patterns
+- **[Mermaid Diagram Examples](./MERMAID_DIAGRAM_EXAMPLES.md)** - Visual diagram generation patterns
 - **[Context-Aware Guidance](./CONTEXT_AWARE_GUIDANCE.md)** - Contextual design guidance
-- **[Export Formats](./export-formats.md)** - LaTeX, CSV, and JSON output options
-- **[Maintaining Models](./maintaining-models.md)** - YAML-based model configuration
+- **[Export Formats](./EXPORT_FORMATS.md)** - LaTeX, CSV, and JSON output options
+- **[Maintaining Models](./MAINTAINING_MODELS.md)** - YAML-based model configuration
 
 ### Developer Documentation
 
-**For contributors and developers**
+**For contributors and developers extending the codebase**
 
 #### Architecture & Design
 - **[Bridge Connectors](./BRIDGE_CONNECTORS.md)** - External system integration patterns
-- **[Technical Improvements](./TECHNICAL_IMPROVEMENTS.md)** - Refactoring and system enhancements
-- **[Design Module Status](./design-module-status.md)** - Design workflow orchestrator status
+- **[Design Module Status](./DESIGN_MODULE_STATUS.md)** - Design workflow orchestrator status
 - **[Error Handling](./ERROR_HANDLING.md)** - Error handling patterns and best practices
 
 #### Code Quality
 - **[Clean Code Initiative](./CLEAN_CODE_INITIATIVE.md)** - 100/100 quality scoring system
-- **[Code Quality Improvements](./code-quality-improvements.md)** - Ongoing quality enhancements
-- **[Sprint Planning Reliability](./sprint-planning-reliability.md)** - Sprint calculation improvements
+- **[Code Quality Improvements](./CODE_QUALITY_IMPROVEMENTS.md)** - Ongoing quality enhancements
+- **[Sprint Planning Reliability](./SPRINT_PLANNING_RELIABILITY.md)** - Sprint calculation improvements
 
 ### Reference
 
@@ -83,21 +82,16 @@
 - Try [Flow-Based Prompting](./FLOW_PROMPTING_EXAMPLES.md)
 
 **...use specific tools**
-- Generate diagrams: [Mermaid Examples](./mermaid-diagram-examples.md)
+- Generate diagrams: [Mermaid Examples](./MERMAID_DIAGRAM_EXAMPLES.md)
 - Check code quality: [Clean Code Initiative](./CLEAN_CODE_INITIATIVE.md)
-- Plan sprints: [Sprint Planning](./sprint-planning-reliability.md)
-- Export data: [Export Formats](./export-formats.md)
+- Plan sprints: [Sprint Planning](./SPRINT_PLANNING_RELIABILITY.md)
+- Export data: [Export Formats](./EXPORT_FORMATS.md)
 
 **...contribute to the project**
 - Read [Contributing Guidelines](../CONTRIBUTING.md)
 - Review [Code Quality Standards](./CLEAN_CODE_INITIATIVE.md)
 - Check [Error Handling Patterns](./ERROR_HANDLING.md)
 - Understand [Architecture](./BRIDGE_CONNECTORS.md)
-
-**...integrate with other systems**
-- Use [Bridge Connectors](./BRIDGE_CONNECTORS.md)
-- Try [Serena Integration](./SERENA_INTEGRATION_SUMMARY.md)
-- Explore [Context-Aware Guidance](./CONTEXT_AWARE_GUIDANCE.md)
 
 ---
 

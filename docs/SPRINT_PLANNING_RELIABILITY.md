@@ -1,28 +1,32 @@
 <!-- AUTO-GENERATED HEADER - DO NOT EDIT -->
-
 <div align="center">
 
-<!-- Category Header Animation -->
-<img src="https://capsule-render.vercel.app/api?type=rect&color=gradient&customColorList=8BE9FD,50FA7B,FFB86C,BD93F9&height=3&section=header&animation=twinkling" />
+<!-- Animated gradient header -->
+<img src="https://capsule-render.vercel.app/api?type=rect&color=gradient&customColorList=FFB86C,FF79C6,BD93F9,8BE9FD&height=3&section=header&animation=twinkling" />
 
-<!-- Title and Badge -->
-<h1>🛠️ MCP AI Agent Guidelines</h1>
+<br/>
+
+<!-- Document Title -->
+<h1>
+  <img src="https://img.shields.io/badge/MCP-AI_Agent_Guidelines-FFB86C?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMyA3VjE3TDEyIDIyTDIxIDE3VjdMMTIgMloiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CjxwYXRoIGQ9Ik0xMiA4VjE2IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8cGF0aCBkPSJNOCAxMkgxNiIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPC9zdmc+" alt="MCP AI Agent Guidelines - Reference" />
+</h1>
+
 <p>
-  <img src="https://img.shields.io/badge/Category-Specialized_Tools-8BE9FD?style=for-the-badge" alt="Specialized Tools Badge"/>
+  <strong>📖 Reference Documentation</strong> • Architecture & Integration Patterns
 </p>
 
-<!-- Quick Navigation -->
-<p>
-  <a href="./visualization-guide.md">📊 Visualization</a> •
-  <a href="./export-formats.md">💾 Export Formats</a> •
-  <a href="./maintaining-models.md">🔧 Model Maintenance</a> •
-  <a href="./sprint-planning.md">⚡ Sprint Planning</a>
-</p>
-
-<hr/>
+<!-- Quick Navigation Bar -->
+<div>
+  <a href="../README.md">🏠 Home</a> •
+  <a href="./README.md">📚 Docs Index</a> •
+  <a href="./REFERENCES.md">📚 References</a> •
+  <a href="./BRIDGE_CONNECTORS.md">🏗️ Architecture</a> •
+  <a href="./SERENA_STRATEGIES.md">🔄 Serena</a>
+</div>
 
 </div>
 
+---
 <!-- END AUTO-GENERATED HEADER -->
 
 
@@ -287,22 +291,22 @@ All tests pass with 100% backward compatibility.
 <table>
   <tr>
     <td align="center" width="33%">
-      <strong>📊 Visualization</strong><br/>
-      <a href="./visualization-guide.md">Mermaid Guide</a><br/>
-      <a href="./DIAGRAM_GENERATION.md">Diagram Tools</a><br/>
-      <a href="../demos/demo-code-analysis.diagram.md">Examples</a>
+      <strong>📖 References</strong><br/>
+      <a href="./REFERENCES.md">Credits & Research</a><br/>
+      <a href="./SERENA_STRATEGIES.md">Serena Integration</a><br/>
+      <a href="./CONTEXT_AWARE_GUIDANCE.md">Context Guidance</a>
     </td>
     <td align="center" width="33%">
-      <strong>⚡ Planning</strong><br/>
-      <a href="./sprint-planning.md">Sprint Timelines</a><br/>
-      <a href="./gap-analysis-guide.md">Gap Analysis</a><br/>
-      <a href="./AGILE_WORKFLOW_OPTIMIZATION.md">Agile Optimization</a>
-    </td>
-    <td align="center" width="33%">
-      <strong>🔧 Maintenance</strong><br/>
-      <a href="./maintaining-models.md">Model Updates</a><br/>
-      <a href="./export-formats.md">Export Formats</a><br/>
+      <strong>🏗️ Architecture</strong><br/>
+      <a href="./BRIDGE_CONNECTORS.md">Bridge Connectors</a><br/>
+      <a href="./design-module-status.md">Module Status</a><br/>
       <a href="./TECHNICAL_IMPROVEMENTS.md">Improvements</a>
+    </td>
+    <td align="center" width="33%">
+      <strong>🚀 Get Started</strong><br/>
+      <a href="../README.md">Main README</a><br/>
+      <a href="./AI_INTERACTION_TIPS.md">Interaction Tips</a><br/>
+      <a href="../demos/README.md">Demo Examples</a>
     </td>
   </tr>
 </table>
@@ -313,7 +317,7 @@ All tests pass with 100% backward compatibility.
 </p>
 
 <!-- Animated Waving Footer -->
-<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=8BE9FD,50FA7B,FFB86C,BD93F9,FF79C6&height=80&section=footer&animation=twinkling" />
+<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=FFB86C,FF79C6,BD93F9,8BE9FD,50FA7B&height=80&section=footer&animation=twinkling" />
 
 <!-- Metadata Footer -->
 <sub>

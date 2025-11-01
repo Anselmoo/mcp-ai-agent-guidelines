@@ -77,7 +77,30 @@ Configuration is in `.mlc_config.json`. Ignored patterns and retries are configu
 
 ## Documentation
 
-**[� Complete Documentation Index](./docs/README.md)** - Browse all guides, references, and technical docs
+## Documentation
+
+**[📖 Complete Documentation Index](./docs/README.md)** - Full guide to all tools and features
+
+### Getting Started Guides
+
+- **[🎯 AI Interaction Tips](./docs/AI_INTERACTION_TIPS.md)** - Learn to ask targeted questions for better results
+- **[📊 Prompting Hierarchy](./docs/PROMPTING_HIERARCHY.md)** - Understanding prompt levels and evaluation
+- **[🔗 Agent-Relative Call Patterns](./docs/AGENT_RELATIVE_CALLS.md)** - Invoking tools in workflows
+
+### Advanced Features
+
+- **[🌊 Flow-Based Prompting](./docs/FLOW_PROMPTING_EXAMPLES.md)** - Multi-step prompt workflows
+- **[🎨 Mermaid Diagram Generation](./docs/MERMAID_DIAGRAM_EXAMPLES.md)** - Create flowcharts, sequences, ER diagrams
+- **[🔍 Code Quality Analysis](./docs/CODE_QUALITY_IMPROVEMENTS.md)** - Hygiene scoring and best practices
+- **[⚡ Sprint Planning](./docs/SPRINT_PLANNING_RELIABILITY.md)** - Dependency-aware timeline calculation
+
+### Integration & Reference
+
+- **[🏗️ Bridge Connectors](./docs/BRIDGE_CONNECTORS.md)** - Integration patterns for external systems
+- **[🔄 Serena Integration](./docs/SERENA_STRATEGIES.md)** - Semantic analysis strategies
+- **[📚 Complete Reference](./docs/REFERENCES.md)** - Credits, research papers, and citations
+
+See **[docs/README.md](./docs/README.md)** for the complete documentation index.
 
 ### Quick Links
 
