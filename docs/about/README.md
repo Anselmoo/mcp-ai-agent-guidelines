@@ -9,7 +9,9 @@ This folder contains information about the MCP AI Agent Guidelines project, incl
 ## 📄 Project Information
 
 ### Overview
-MCP AI Agent Guidelines is a TypeScript-based Model Context Protocol (MCP) server that delivers professional tools for:
+
+MCP AI Agent Guidelines is a TypeScript-based Model Context Protocol (MCP) server that delivers advanced tools for:
+
 - Hierarchical prompting and workflow orchestration
 - Code hygiene analysis and quality scoring
 - Design workflows and architecture planning
@@ -17,6 +19,7 @@ MCP AI Agent Guidelines is a TypeScript-based Model Context Protocol (MCP) serve
 - Agile sprint planning and timeline estimation
 
 ### Status
+
 **Experimental / Early Stage Research Demonstrator**
 
 This project references third-party models, tools, pricing, and documentation that evolve quickly. All outputs should be treated as recommendations and verified against official documentation and your own benchmarks before production use.
@@ -28,6 +31,7 @@ This project references third-party models, tools, pricing, and documentation th
 **➡️ [Complete References](../REFERENCES.md)**
 
 Key areas of research and inspiration:
+
 - **Model Context Protocol** - Anthropic's MCP specification
 - **Prompt Engineering** - Hierarchical prompting, flow-based design
 - **Code Analysis** - Static analysis, semantic understanding
@@ -62,6 +66,7 @@ Key areas of research and inspiration:
 See **[LICENSE](../../LICENSE)** for full details.
 
 ### Key Points
+
 - ✅ Free to use, modify, and distribute
 - ✅ Commercial use allowed
 - ✅ Attribution required
@@ -83,6 +88,7 @@ This is a **research demonstrator** project. Important considerations:
 5. **Rapid Evolution** - Features and APIs may change without notice
 
 **Best Practices**:
+
 - Treat all outputs as recommendations, not facts
 - Verify against authoritative sources
 - Test in staging environments first

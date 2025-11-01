@@ -3,7 +3,7 @@
 <!-- Interactive SVG Header -->
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="./docs/assets/readme-header.svg">
-  <img alt="MCP AI Agent Guidelines Server - Professional tools for AI development" src="./docs/assets/readme-header.svg" width="100%">
+  <img alt="MCP AI Agent Guidelines Server - advanced tools for AI development" src="./docs/assets/readme-header.svg" width="100%">
 </picture>
 
 </div>
@@ -25,7 +25,7 @@
 [![GitHub Issues](https://img.shields.io/github/issues/Anselmoo/mcp-ai-agent-guidelines?label=issues&logo=github&logoColor=white)](https://github.com/Anselmoo/mcp-ai-agent-guidelines/issues)
 [![GitHub Last Commit](https://img.shields.io/github/last-commit/Anselmoo/mcp-ai-agent-guidelines?logo=github&logoColor=white)](https://github.com/Anselmoo/mcp-ai-agent-guidelines/commits/main)
 
-A Model Context Protocol (MCP) server offering professional tools and templates for hierarchical prompting, code hygiene, visualization, memory optimization, and agile planning.
+A Model Context Protocol (MCP) server offering advanced tools and templates for hierarchical prompting, code hygiene, visualization, memory optimization, and agile planning.
 
 ## 📚 Table of Contents
 
@@ -115,6 +115,7 @@ See **[docs/README.md](./docs/README.md)** for the complete documentation index.
 ### Quick Links
 
 #### For Users
+
 - **[🎯 AI Interaction Tips](./docs/AI_INTERACTION_TIPS.md)** - Learn to ask targeted questions for better results
 - **[📊 Prompting Hierarchy](./docs/PROMPTING_HIERARCHY.md)** - Understanding prompt levels and evaluation
 - **[🔗 Agent-Relative Call Patterns](./docs/AGENT_RELATIVE_CALLS.md)** - Invoking tools in workflows
@@ -122,6 +123,7 @@ See **[docs/README.md](./docs/README.md)** for the complete documentation index.
 - **[🎨 Mermaid Diagrams](./docs/mermaid-diagram-examples.md)** - Visual diagram generation
 
 #### For Developers
+
 - **[🤝 Contributing Guidelines](./CONTRIBUTING.md)** - How to contribute
 - **[✨ Clean Code Initiative](./docs/CLEAN_CODE_INITIATIVE.md)** - Quality standards (100/100 scoring)
 - **[� Technical Improvements](./docs/TECHNICAL_IMPROVEMENTS.md)** - Refactoring and enhancements
@@ -139,22 +141,26 @@ Explore real-world examples showing the tools in action. All demos are auto-gene
 ### Featured Examples
 
 **Code Analysis & Quality:**
+
 - [Code Hygiene Report](./demos/demo-code-analysis.hygiene.md) - Pattern detection and best practices
 - [Guidelines Validation](./demos/demo-code-analysis.guidelines.md) - AI agent development standards
 - [Clean Code Scoring](./demos/demo-clean-code-score.md) - Comprehensive quality metrics (0-100)
 
 **Prompt Engineering:**
+
 - [Hierarchical Prompt](./demos/demo-code-analysis.hierarchical.prompt.md) - Structured refactoring plan
 - [Domain-Neutral Prompt](./demos/demo-code-analysis.domain-neutral.prompt.md) - Generic template
 - [Security Hardening Prompt](./demos/demo-code-analysis.security-hardening.prompt.md) - OWASP-focused analysis
 - [Flow-Based Prompting](./demos/demo-design-session.md) - Multi-step workflows
 
 **Visualization & Planning:**
+
 - [Architecture Diagram](./demos/demo-code-analysis.diagram.md) - Mermaid system diagrams
 - [Sprint Planning](./demos/demo-code-analysis.sprint.md) - Dependency-aware timeline
 - [Model Compatibility](./demos/demo-code-analysis.model-compat.md) - AI model selection
 
 **Advanced Features:**
+
 - [Memory Context Optimization](./demos/demo-code-analysis.memory.md) - Token efficiency
 - [Strategy Frameworks](./demos/demo-strategy-frameworks.md) - SWOT, BCG, Porter's Five Forces
 - [Gap Analysis](./demos/demo-gap-analysis.md) - Current vs. desired state
@@ -176,63 +182,63 @@ This MCP server provides **27 specialized tools** organized into 5 categories. *
 
 Build structured, effective prompts for various use cases:
 
-| Tool | Purpose | Complexity |
-|------|---------|------------|
-| **hierarchical-prompt-builder** | Structured prompts with context → goal → requirements | ⭐⭐ |
-| **code-analysis-prompt-builder** | Code analysis prompts (security, performance, maintainability) | ⭐⭐ |
-| **architecture-design-prompt-builder** | Architecture design with scale-appropriate guidance | ⭐⭐⭐ |
-| **digital-enterprise-architect-prompt-builder** | Enterprise architecture strategy with mentor perspectives | ⭐⭐⭐⭐ |
-| **debugging-assistant-prompt-builder** | Systematic debugging prompts with structured analysis | ⭐⭐ |
-| **l9-distinguished-engineer-prompt-builder** | L9 (Distinguished Engineer) level technical design | ⭐⭐⭐⭐⭐ |
-| **documentation-generator-prompt-builder** | Technical documentation tailored to audience | ⭐⭐ |
-| **domain-neutral-prompt-builder** | Generic templates with objectives and workflows | ⭐⭐⭐ |
-| **security-hardening-prompt-builder** | Security analysis with OWASP/compliance focus | ⭐⭐⭐ |
+| Tool                                            | Purpose                                                        | Complexity |
+| ----------------------------------------------- | -------------------------------------------------------------- | ---------- |
+| **hierarchical-prompt-builder**                 | Structured prompts with context → goal → requirements          | ⭐⭐       |
+| **code-analysis-prompt-builder**                | Code analysis prompts (security, performance, maintainability) | ⭐⭐       |
+| **architecture-design-prompt-builder**          | Architecture design with scale-appropriate guidance            | ⭐⭐⭐     |
+| **digital-enterprise-architect-prompt-builder** | Enterprise architecture strategy with mentor perspectives      | ⭐⭐⭐⭐   |
+| **debugging-assistant-prompt-builder**          | Systematic debugging prompts with structured analysis          | ⭐⭐       |
+| **l9-distinguished-engineer-prompt-builder**    | L9 (Distinguished Engineer) level technical design             | ⭐⭐⭐⭐⭐ |
+| **documentation-generator-prompt-builder**      | Technical documentation tailored to audience                   | ⭐⭐       |
+| **domain-neutral-prompt-builder**               | Generic templates with objectives and workflows                | ⭐⭐⭐     |
+| **security-hardening-prompt-builder**           | Security analysis with OWASP/compliance focus                  | ⭐⭐⭐     |
 
 ### 🔍 Code Analysis & Quality (7 tools)
 
 Analyze and improve code quality:
 
-| Tool | Purpose | Complexity |
-|------|---------|------------|
-| **clean-code-scorer** | Comprehensive Clean Code score (0-100) with breakdown | ⭐⭐⭐ |
-| **code-hygiene-analyzer** | Detect outdated patterns, unused dependencies | ⭐⭐ |
-| **dependency-auditor** | Audit package.json for security and modernization | ⭐ |
-| **iterative-coverage-enhancer** | Analyze coverage gaps, generate test suggestions | ⭐⭐⭐ |
-| **semantic-code-analyzer** | Identify symbols, structure, dependencies, patterns | ⭐⭐ |
-| **guidelines-validator** | Validate practices against AI agent guidelines | ⭐ |
-| **mermaid-diagram-generator** | Generate visual diagrams (flowchart, sequence, ER, etc.) | ⭐⭐ |
+| Tool                            | Purpose                                                  | Complexity |
+| ------------------------------- | -------------------------------------------------------- | ---------- |
+| **clean-code-scorer**           | Comprehensive Clean Code score (0-100) with breakdown    | ⭐⭐⭐     |
+| **code-hygiene-analyzer**       | Detect outdated patterns, unused dependencies            | ⭐⭐       |
+| **dependency-auditor**          | Audit package.json for security and modernization        | ⭐         |
+| **iterative-coverage-enhancer** | Analyze coverage gaps, generate test suggestions         | ⭐⭐⭐     |
+| **semantic-code-analyzer**      | Identify symbols, structure, dependencies, patterns      | ⭐⭐       |
+| **guidelines-validator**        | Validate practices against AI agent guidelines           | ⭐         |
+| **mermaid-diagram-generator**   | Generate visual diagrams (flowchart, sequence, ER, etc.) | ⭐⭐       |
 
 ### 📊 Strategy & Planning (5 tools)
 
 Business strategy and project planning:
 
-| Tool | Purpose | Complexity |
-|------|---------|------------|
-| **strategy-frameworks-builder** | SWOT, BSC, VRIO, Porter's Five Forces analysis | ⭐⭐⭐ |
-| **gap-frameworks-analyzers** | Gap analysis (capability, technology, maturity, etc.) | ⭐⭐⭐ |
-| **sprint-timeline-calculator** | Dependency-aware sprint planning and scheduling | ⭐⭐ |
-| **model-compatibility-checker** | Recommend best AI models for specific tasks | ⭐ |
-| **project-onboarding** | Comprehensive project structure analysis and docs | ⭐⭐ |
+| Tool                            | Purpose                                               | Complexity |
+| ------------------------------- | ----------------------------------------------------- | ---------- |
+| **strategy-frameworks-builder** | SWOT, BSC, VRIO, Porter's Five Forces analysis        | ⭐⭐⭐     |
+| **gap-frameworks-analyzers**    | Gap analysis (capability, technology, maturity, etc.) | ⭐⭐⭐     |
+| **sprint-timeline-calculator**  | Dependency-aware sprint planning and scheduling       | ⭐⭐       |
+| **model-compatibility-checker** | Recommend best AI models for specific tasks           | ⭐         |
+| **project-onboarding**          | Comprehensive project structure analysis and docs     | ⭐⭐       |
 
 ### 🎨 Design Workflow (1 tool)
 
 Multi-phase design orchestration:
 
-| Tool | Purpose | Complexity |
-|------|---------|------------|
-| **design-assistant** | Constraint-driven design workflow with artifact generation (ADRs, specs, roadmaps) | ⭐⭐⭐⭐ |
+| Tool                 | Purpose                                                                            | Complexity |
+| -------------------- | ---------------------------------------------------------------------------------- | ---------- |
+| **design-assistant** | Constraint-driven design workflow with artifact generation (ADRs, specs, roadmaps) | ⭐⭐⭐⭐   |
 
 ### 🛠️ Utilities (5 tools)
 
 Workflow optimization and evaluation:
 
-| Tool | Purpose | Complexity |
-|------|---------|------------|
-| **memory-context-optimizer** | Optimize prompt caching and context window usage | ⭐⭐ |
-| **mode-switcher** | Switch between agent modes (planning, debugging, etc.) | ⭐ |
-| **prompting-hierarchy-evaluator** | Evaluate prompts with numeric scoring | ⭐⭐ |
-| **hierarchy-level-selector** | Select optimal prompting level for task complexity | ⭐ |
-| **spark-prompt-builder** | Build UI/UX product prompts with structured inputs | ⭐⭐⭐ |
+| Tool                              | Purpose                                                | Complexity |
+| --------------------------------- | ------------------------------------------------------ | ---------- |
+| **memory-context-optimizer**      | Optimize prompt caching and context window usage       | ⭐⭐       |
+| **mode-switcher**                 | Switch between agent modes (planning, debugging, etc.) | ⭐         |
+| **prompting-hierarchy-evaluator** | Evaluate prompts with numeric scoring                  | ⭐⭐       |
+| **hierarchy-level-selector**      | Select optimal prompting level for task complexity     | ⭐         |
+| **spark-prompt-builder**          | Build UI/UX product prompts with structured inputs     | ⭐⭐⭐     |
 
 **Complexity Legend**: ⭐ Simple → ⭐⭐⭐⭐⭐ Advanced
 
