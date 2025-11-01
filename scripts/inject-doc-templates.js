@@ -106,7 +106,7 @@ function detectCategory(filePath) {
 /**
  * Load template content for specific category
  */
-function loadTemplate(category, type, docPath) {
+function loadTemplate(category, type, _docPath) {
 	const templateName = `${type}-${category}.html`;
 	const templatePath = join(templatesDir, templateName);
 
@@ -142,7 +142,7 @@ function injectHeader(content, docPath, category = null) {
 		return content.replace(regex, header.trim());
 	} else {
 		// Add header at the beginning
-		return header + "\n\n" + content;
+		return `${header}\n\n${content}`;
 	}
 }
 
@@ -163,7 +163,7 @@ function injectFooter(content, docPath, category = null) {
 		return content.replace(regex, footer.trim());
 	} else {
 		// Add footer at the end
-		return content + "\n\n" + footer;
+		return `${content}\n\n${footer}`;
 	}
 }
 
