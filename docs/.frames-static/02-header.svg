@@ -1,0 +1,71 @@
+<svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    @media (prefers-color-scheme: dark) {
+      .text-primary { fill: #ffffff; }
+      .text-secondary { fill: #999999; }
+      .accent-green { fill: #6cc644; }
+      .accent-purple { fill: #6e5494; }
+      .node { stroke: #666666; fill: none; }
+      .branch-line { stroke: #666666; }
+    }
+    @media (prefers-color-scheme: light) {
+      .text-primary { fill: #24292e; }
+      .text-secondary { fill: #666666; }
+      .accent-green { fill: #2dba4e; }
+      .accent-purple { fill: #6e5494; }
+      .node { stroke: #999999; fill: none; }
+      .branch-line { stroke: #999999; }
+    }
+
+    .title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 700; font-size: 36px; }
+    .subtitle { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 400; font-size: 14px; }
+
+    /* Branch merge animation */
+    .branch-1 { animation: grow 3s ease-out infinite; stroke-dasharray: 100; stroke-dashoffset: 100; }
+    .branch-2 { animation: grow 3s ease-out 1s infinite; stroke-dasharray: 100; stroke-dashoffset: 100; }
+    @keyframes grow {
+      0% { stroke-dashoffset: 100; opacity: 0.3; }
+      60% { stroke-dashoffset: 0; opacity: 1; }
+      100% { stroke-dashoffset: 0; opacity: 0.5; }
+    }
+
+    /* Merge node pulse */
+    .merge-pulse { animation: merge-pulse 3s ease-in-out infinite; }
+    @keyframes merge-pulse {
+      0%, 100% { r: 5; opacity: 0.7; }
+      50% { r: 7; opacity: 1; }
+    }
+
+    /* Commit sequence */
+    .commit-seq { animation: commit-seq 6s ease-in-out infinite; }
+    @keyframes commit-seq {
+      0%, 20%, 100% { opacity: 0.4; }
+      10% { opacity: 1; }
+    }
+
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  </style>
+
+  <!-- Git branch visualization -->
+  <g opacity="0.6">
+    <!-- Main branch -->
+    <line x1="80" y1="120" x2="80" y2="40" class="branch-line branch-1" stroke-width="2.5"/>
+    <!-- Feature branch -->
+    <path d="M 80 80 Q 100 80, 120 60 L 120 40" class="branch-line branch-2" fill="none" stroke-width="2.5"/>
+
+    <!-- Commit nodes -->
+    <circle cx="80" cy="40" r="5" class="accent-green"/>
+    <circle cx="80" cy="80" r="5" class="accent-purple commit-seq" style="animation-delay: 0s"/>
+    <circle cx="80" cy="120" r="5" class="accent-green merge-pulse"/>
+    <circle cx="120" cy="40" r="5" class="accent-purple commit-seq" style="animation-delay: 2s"/>
+  </g>
+
+  <!-- PR check icon (right) -->
+  <g transform="translate(1100, 70)" opacity="0.5">
+    <circle r="20" fill="none" class="node" stroke-width="2"/>
+    <path d="M -6 0 L -2 4 L 6 -4" stroke="#5FED83" stroke-width="2.5" fill="none" stroke-linecap="round" class="commit-seq"/>
+  </g>
+
+  <text x="600" y="70" text-anchor="middle" class="title text-primary">MCP AI Agent Guidelines Server</text>
+  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary">Hierarchical Prompting • Code Quality • Agile Planning</text>
+</svg>

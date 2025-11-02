@@ -1,0 +1,50 @@
+<svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    @media (prefers-color-scheme: dark) {
+      .text-primary { fill: #ffffff; }
+      .text-secondary { fill: #999999; }
+      .accent-green { fill: #6cc644; }
+      .line { stroke: #666666; }
+    }
+    @media (prefers-color-scheme: light) {
+      .text-primary { fill: #24292e; }
+      .text-secondary { fill: #666666; }
+      .accent-green { fill: #2dba4e; }
+      .line { stroke: #999999; }
+    }
+
+    .title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 700; font-size: 36px; }
+    .subtitle { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 400; font-size: 14px; }
+
+    /* Contribution graph cells appearing */
+    .cell-1 { animation: cell-appear 8s ease-in-out infinite; }
+    .cell-2 { animation: cell-appear 8s ease-in-out 0.5s infinite; }
+    .cell-3 { animation: cell-appear 8s ease-in-out 1s infinite; }
+    .cell-4 { animation: cell-appear 8s ease-in-out 1.5s infinite; }
+    @keyframes cell-appear {
+      0%, 20%, 100% { opacity: 0; }
+      10% { opacity: 1; }
+    }
+
+    /* Connection line flow */
+    .flow-line { animation: flow-line 18s linear infinite; stroke-dasharray: 15 10; }
+    @keyframes flow-line { to { stroke-dashoffset: -250; } }
+
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  </style>
+
+  <!-- Repository insight graph (left) -->
+  <g transform="translate(60, 70)">
+    <rect x="0" y="0" width="10" height="10" rx="2" class="accent-green cell-1"/>
+    <rect x="15" y="0" width="10" height="10" rx="2" class="accent-green cell-2"/>
+    <rect x="30" y="0" width="10" height="10" rx="2" class="accent-green cell-3"/>
+    <rect x="45" y="0" width="10" height="10" rx="2" class="accent-green cell-4"/>
+  </g>
+
+  <!-- Flowing connection line (top) -->
+  <path class="line flow-line" d="M 0 30 L 200 30 L 230 50 L 300 50" fill="none" stroke-width="1" opacity="0.4"/>
+  <circle cx="300" cy="50" r="3" class="accent-green" opacity="0.6"/>
+
+  <text x="600" y="75" text-anchor="middle" class="title text-primary">MCP AI Agent Guidelines Server</text>
+  <text x="600" y="100" text-anchor="middle" class="subtitle text-secondary">Code Analysis • Prompt Engineering • Sprint Planning</text>
+</svg>

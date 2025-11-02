@@ -1,0 +1,38 @@
+<svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    @media (prefers-color-scheme: dark) {
+      .text-primary { fill: #ffffff; }
+      .text-secondary { fill: #999999; }
+      .accent-green { fill: #6cc644; }
+      .accent-blue { fill: #4183c4; }
+      .line { stroke: #666666; }
+    }
+    @media (prefers-color-scheme: light) {
+      .text-primary { fill: #24292e; }
+      .text-secondary { fill: #666666; }
+      .accent-green { fill: #2dba4e; }
+      .accent-blue { fill: #4183c4; }
+      .line { stroke: #999999; }
+    }
+
+    .title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 700; font-size: 36px; }
+    .subtitle { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 400; font-size: 14px; }
+
+    .network { animation: network-pulse 5s ease-in-out infinite; }
+    @keyframes network-pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.6; } }
+
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  </style>
+
+  <!-- Connection network (left) -->
+  <g class="network">
+    <line x1="60" y1="50" x2="100" y2="80" class="line" stroke-width="1"/>
+    <line x1="100" y1="80" x2="60" y2="110" class="line" stroke-width="1"/>
+    <circle cx="60" cy="50" r="4" class="accent-green"/>
+    <circle cx="100" cy="80" r="4" class="accent-blue"/>
+    <circle cx="60" cy="110" r="4" class="accent-green"/>
+  </g>
+
+  <text x="600" y="70" text-anchor="middle" class="title text-primary">MCP AI Agent Guidelines Server</text>
+  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary">Developer Tools for Modern AI</text>
+</svg>

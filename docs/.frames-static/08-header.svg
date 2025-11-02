@@ -1,0 +1,44 @@
+<svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    @media (prefers-color-scheme: dark) {
+      .text-primary { fill: #ffffff; }
+      .text-secondary { fill: #999999; }
+      .accent { fill: #6cc644; }
+      .vuln-wave { stroke: #6e5494; }
+    }
+    @media (prefers-color-scheme: light) {
+      .text-primary { fill: #24292e; }
+      .text-secondary { fill: #666666; }
+      .accent { fill: #2dba4e; }
+      .vuln-wave { stroke: #6e5494; }
+    }
+
+    .title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 700; font-size: 36px; }
+    .subtitle { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 400; font-size: 14px; }
+
+    /* Security scan waves */
+    .scan-wave { animation: scan-wave 10s ease-in-out infinite; }
+    @keyframes scan-wave {
+      0%, 100% { d: path('M 900 60 Q 960 50, 1020 60 Q 1080 70, 1140 60'); }
+      50% { d: path('M 900 60 Q 960 70, 1020 60 Q 1080 50, 1140 60'); }
+    }
+
+    /* Expanding shield accent */
+    .shield { animation: shield-pulse 5s ease-in-out infinite; transform-origin: center; }
+    @keyframes shield-pulse {
+      0%, 100% { transform: scale(1); opacity: 0.3; }
+      50% { transform: scale(1.15); opacity: 0.5; }
+    }
+
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  </style>
+
+  <!-- Security scan wave (right) -->
+  <path class="vuln-wave scan-wave" d="M 900 60 Q 960 50, 1020 60 Q 1080 70, 1140 60" fill="none" stroke-width="2" opacity="0.4"/>
+
+  <!-- Shield accent (center bottom) -->
+  <circle cx="600" cy="130" r="30" class="accent shield" fill="none" stroke-width="1.5"/>
+
+  <text x="600" y="65" text-anchor="middle" class="title text-primary">MCP AI Agent Guidelines Server</text>
+  <text x="600" y="90" text-anchor="middle" class="subtitle text-secondary">Professional AI Development Tools</text>
+</svg>

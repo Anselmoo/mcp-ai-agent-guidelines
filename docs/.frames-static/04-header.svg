@@ -1,0 +1,56 @@
+<svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    @media (prefers-color-scheme: dark) {
+      .text-primary { fill: #ffffff; }
+      .text-secondary { fill: #999999; }
+      .accent-green { fill: #6cc644; }
+      .coverage-track { stroke: #666666; }
+    }
+    @media (prefers-color-scheme: light) {
+      .text-primary { fill: #24292e; }
+      .text-secondary { fill: #666666; }
+      .accent-green { fill: #2dba4e; }
+      .coverage-track { stroke: #999999; }
+    }
+
+    .title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 700; font-size: 36px; }
+    .subtitle { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 400; font-size: 14px; }
+
+    /* Coverage bar filling */
+    .coverage-fill { animation: coverage-grow 6s ease-in-out infinite; transform-origin: 60px 120px; }
+    @keyframes coverage-grow {
+      0%, 100% { transform: scaleX(0.5); }
+      50% { transform: scaleX(1); }
+    }
+
+    /* Test badges appearing */
+    .badge-1 { animation: badge-appear 4s ease-in-out infinite; }
+    .badge-2 { animation: badge-appear 4s ease-in-out 1s infinite; }
+    .badge-3 { animation: badge-appear 4s ease-in-out 2s infinite; }
+    @keyframes badge-appear {
+      0%, 25%, 100% { opacity: 0; transform: translateY(10px); }
+      12.5% { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  </style>
+
+  <!-- Coverage progress bar (left) -->
+  <g transform="translate(60, 120)">
+    <rect width="200" height="8" rx="4" class="coverage-track" fill="none" stroke-width="2"/>
+    <rect width="200" height="8" rx="4" class="accent-green coverage-fill" opacity="0.6"/>
+  </g>
+
+  <!-- Test badges (right) -->
+  <g transform="translate(1000, 70)">
+    <circle cx="0" cy="0" r="6" class="accent-green badge-1"/>
+    <circle cx="25" cy="0" r="6" class="accent-green badge-2"/>
+    <circle cx="50" cy="0" r="6" class="accent-green badge-3"/>
+  </g>
+
+  <text x="600" y="60" text-anchor="middle" class="title text-primary">MCP AI Agent Guidelines Server</text>
+  <text x="600" y="85" text-anchor="middle" class="subtitle text-secondary">Model Context Protocol Tools</text>
+
+  <!-- Minimal accent -->
+  <rect x="590" y="110" width="20" height="2" class="accent-green" rx="1"/>
+</svg>

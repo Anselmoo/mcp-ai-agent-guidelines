@@ -1,0 +1,32 @@
+<svg width="1200" height="80" viewBox="0 0 1200 80" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    @media (prefers-color-scheme: dark) {
+      .text-link { fill: #999999; }
+      .divider { stroke: #666666; }
+      .accent { fill: #6cc644; }
+    }
+    @media (prefers-color-scheme: light) {
+      .text-link { fill: #666666; }
+      .divider { stroke: #999999; }
+      .accent { fill: #2dba4e; }
+    }
+
+    .link { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 13px; }
+
+    .dot-trail { animation: dot-trail 4s ease-in-out infinite; }
+    @keyframes dot-trail { 0% { opacity: 0; transform: translateX(0); } 50% { opacity: 1; } 100% { opacity: 0; transform: translateX(50px); } }
+
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  </style>
+
+  <line x1="0" y1="1" x2="1200" y2="1" class="divider" stroke-width="1"/>
+
+  <circle cx="100" cy="70" r="2" class="accent dot-trail"/>
+
+  <text x="300" y="40" class="link text-link">Contributing</text>
+  <text x="450" y="40" class="link text-link">Documentation</text>
+  <text x="620" y="40" class="link text-link">License (MIT)</text>
+  <text x="800" y="40" class="link text-link">GitHub</text>
+
+  <text x="600" y="65" text-anchor="middle" class="link text-link" font-size="11px">AI-Powered Development</text>
+</svg>
