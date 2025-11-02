@@ -2,11 +2,11 @@
   <defs>
     <linearGradient id="bgPipelineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#0d1117;stop-opacity:1">
-        <animate attributeName="stop-color" values="#0d1117;#1c2128;#0d1117" dur="8s" repeatCount="indefinite"/>
+        <animate attributeName="stop-color" values="#0d1117;#1c2128;#0d1117" dur="4.0s" repeatCount="indefinite"/>
       </stop>
       <stop offset="50%" style="stop-color:#161b22;stop-opacity:1"/>
       <stop offset="100%" style="stop-color:#1c2128;stop-opacity:1">
-        <animate attributeName="stop-color" values="#1c2128;#0d1117;#1c2128" dur="8s" repeatCount="indefinite"/>
+        <animate attributeName="stop-color" values="#1c2128;#0d1117;#1c2128" dur="4.0s" repeatCount="indefinite"/>
       </stop>
     </linearGradient>
     
@@ -40,8 +40,8 @@
       <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0"/>
       <stop offset="50%" style="stop-color:#ffffff;stop-opacity:0.8"/>
       <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0"/>
-      <animate attributeName="x1" values="-100%;200%" dur="3s" repeatCount="indefinite"/>
-      <animate attributeName="x2" values="0%;300%" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="x1" values="-100%;200%" dur="1.5s" repeatCount="indefinite"/>
+      <animate attributeName="x2" values="0%;300%" dur="1.5s" repeatCount="indefinite"/>
     </linearGradient>
     
     <pattern id="pipelinePattern" x="0" y="0" width="50" height="50" patternUnits="userSpaceOnUse">
@@ -65,8 +65,8 @@
       transform-origin: center;
     }
     @keyframes stage-activate {
-      0%, 100% { opacity: 0.4; transform: scale(1); }
-      50% { opacity: 1; transform: scale(1.1); }
+      0%, 100% { opacity: 0.4; transform: scale(2.0); }
+      50% { opacity: 1; transform: scale(2.2); }
     }
     
     .stage-flow {
@@ -99,15 +99,92 @@
       transform-origin: center;
     }
     @keyframes check-pop {
-      0% { opacity: 0; transform: scale(0); }
-      50% { opacity: 1; transform: scale(1.2); }
-      100% { opacity: 0.7; transform: scale(1); }
+      0% { opacity: 0; transform: scale(0.0); }
+      50% { opacity: 1; transform: scale(2.4); }
+      100% { opacity: 0.7; transform: scale(2.0); }
     }
     
     @media (prefers-reduced-motion: reduce) { 
       * { animation: none !important; } 
     }
-  </style>
+  
+    /* Enhanced header particle effects */
+    .h-particle {
+      animation: h-particle-rise 5s ease-out infinite;
+    }
+    @keyframes h-particle-rise {
+      0% { opacity: 0; transform: translateY(60px) scale(0); }
+      50% { opacity: 1; transform: translateY(30px) scale(2.5); }
+      100% { opacity: 0; transform: translateY(0) scale(0); }
+    }
+    
+    .h-sparkle {
+      animation: h-sparkle-twinkle 2s ease-in-out infinite;
+      transform-origin: center;
+    }
+    @keyframes h-sparkle-twinkle {
+      0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+      50% { opacity: 1; transform: scale(3) rotate(180deg); }
+    }
+    
+    /* Energy waves */
+    .h-energy {
+      stroke-dasharray: 10 20;
+      animation: h-energy-pulse 4s linear infinite;
+    }
+    @keyframes h-energy-pulse {
+      to { stroke-dashoffset: -200; }
+    }
+    
+    /* Orbital elements */
+    .h-orbit {
+      animation: h-orbit-spin 15s linear infinite;
+      transform-origin: center;
+    }
+    @keyframes h-orbit-spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Glow intensity */
+    .h-glow-intense {
+      animation: h-glow-pulse 3s ease-in-out infinite;
+    }
+    @keyframes h-glow-pulse {
+      0%, 100% { filter: drop-shadow(0 0 5px currentColor); opacity: 0.6; }
+      50% { filter: drop-shadow(0 0 15px currentColor); opacity: 1; }
+    }
+    
+    /* Beam effect */
+    .h-beam {
+      animation: h-beam-sweep 5s ease-in-out infinite;
+      transform-origin: center;
+    }
+    @keyframes h-beam-sweep {
+      0%, 100% { opacity: 0; transform: scaleX(0); }
+      50% { opacity: 0.8; transform: scaleX(4); }
+    }
+    
+    /* Constellation effect */
+    .h-star {
+      animation: h-star-blink 4s ease-in-out infinite;
+    }
+    @keyframes h-star-blink {
+      0%, 100% { opacity: 0.2; r: 1px; }
+      50% { opacity: 1; r: 3px; }
+    }
+    
+    /* Network lines */
+    .h-network {
+      stroke-dasharray: 5 15;
+      animation: h-network-pulse 6s linear infinite;
+      opacity: 0.4;
+    }
+    @keyframes h-network-pulse {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 0.8; stroke-dashoffset: -100; }
+    }
+    
+    </style>
   
   <rect width="1200" height="160" fill="url(#bgPipelineGrad)"/>
   <rect width="1200" height="160" fill="url(#pipelinePattern)" opacity="0.3"/>
@@ -182,4 +259,81 @@
   <text x="600" y="70" text-anchor="middle" class="text-primary" font-size="36" filter="url(#dropShadow)">MCP AI Agent Guidelines Server</text>
   <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" font-size="14">Guidelines • Patterns • Best Practices</text>
   <rect x="400" y="84" width="400" height="16" fill="url(#shine02)" opacity="0.15"/>
+
+  <!-- Enhanced header particle system -->
+  <g opacity="0.7">
+    <circle class="h-particle" cx="220" cy="80" r="3" fill="#5FED83" style="animation-delay: 0s"/>
+    <circle class="h-particle" cx="310" cy="80" r="2.5" fill="#3094FF" style="animation-delay: 0.7s"/>
+    <circle class="h-particle" cx="400" cy="80" r="3.5" fill="#C06EFF" style="animation-delay: 1.4s"/>
+    <circle class="h-particle" cx="490" cy="80" r="2.8" fill="#5FED83" style="animation-delay: 2.1s"/>
+    <circle class="h-particle" cx="580" cy="80" r="3.2" fill="#3094FF" style="animation-delay: 2.8s"/>
+    <circle class="h-particle" cx="670" cy="80" r="2.6" fill="#C06EFF" style="animation-delay: 3.5s"/>
+  </g>
+  
+  <!-- Sparkle effects -->
+  <g opacity="0.8">
+    <path class="h-sparkle" d="M 280 60 L 284 60 M 282 58 L 282 62" 
+          stroke="#5FED83" stroke-width="1.5" style="animation-delay: 0s"/>
+    <path class="h-sparkle" d="M 470 70 L 474 70 M 472 68 L 472 72" 
+          stroke="#3094FF" stroke-width="1.5" style="animation-delay: 0.5s"/>
+    <path class="h-sparkle" d="M 660 55 L 664 55 M 662 53 L 662 57" 
+          stroke="#C06EFF" stroke-width="1.5" style="animation-delay: 1s"/>
+    <path class="h-sparkle" d="M 850 65 L 854 65 M 852 63 L 852 67" 
+          stroke="#5FED83" stroke-width="1.5" style="animation-delay: 1.5s"/>
+  </g>
+  
+  <!-- Energy waves -->
+  <g opacity="0.5">
+    <path class="h-energy" d="M 50 82 Q 200 62, 400 82 T 750 82" 
+          stroke="#5FED83" stroke-width="2" fill="none" style="animation-delay: 0s"/>
+    <path class="h-energy" d="M 100 102 Q 300 122, 500 102 T 900 102" 
+          stroke="#3094FF" stroke-width="2" fill="none" style="animation-delay: 1s"/>
+    <path class="h-energy" d="M 150 122 Q 350 102, 650 122 T 1100 122" 
+          stroke="#C06EFF" stroke-width="2" fill="none" style="animation-delay: 2s"/>
+  </g>
+  
+  <!-- Orbital elements -->
+  <g opacity="0.6">
+    <g class="h-orbit" transform="translate(360, 80)">
+      <circle cx="20" cy="0" r="2" fill="#5FED83"/>
+      <circle cx="-20" cy="0" r="2" fill="#3094FF"/>
+      <circle cx="0" cy="20" r="2" fill="#C06EFF"/>
+      <circle cx="0" cy="-20" r="2" fill="#5FED83"/>
+    </g>
+    <g class="h-orbit" transform="translate(850, 90)" style="animation-direction: reverse; animation-duration: 20s;">
+      <ellipse cx="25" cy="0" rx="2" ry="1.5" fill="#3094FF" opacity="0.7"/>
+      <ellipse cx="-25" cy="0" rx="2" ry="1.5" fill="#C06EFF" opacity="0.7"/>
+    </g>
+  </g>
+  
+  <!-- Beam effects -->
+  <g opacity="0.4">
+    <rect class="h-beam" x="100" y="52" width="200" height="2" fill="url(#shine02)" style="animation-delay: 0s"/>
+    <rect class="h-beam" x="500" y="72" width="250" height="2" fill="url(#shine02)" style="animation-delay: 1.5s"/>
+    <rect class="h-beam" x="850" y="92" width="200" height="2" fill="url(#shine02)" style="animation-delay: 3s"/>
+  </g>
+  
+  <!-- Constellation stars -->
+  <g class="h-glow-intense" opacity="0.6">
+    <circle class="h-star" cx="270" cy="42" r="1" fill="#5FED83" style="animation-delay: 0s"/>
+    <circle class="h-star" cx="360" cy="57" r="1" fill="#3094FF" style="animation-delay: 0.4s"/>
+    <circle class="h-star" cx="450" cy="47" r="1" fill="#C06EFF" style="animation-delay: 0.8s"/>
+    <circle class="h-star" cx="540" cy="62" r="1" fill="#5FED83" style="animation-delay: 1.2s"/>
+    <circle class="h-star" cx="630" cy="52" r="1" fill="#3094FF" style="animation-delay: 1.6s"/>
+    <circle class="h-star" cx="720" cy="67" r="1" fill="#C06EFF" style="animation-delay: 2s"/>
+    <circle class="h-star" cx="810" cy="57" r="1" fill="#5FED83" style="animation-delay: 2.4s"/>
+    <circle class="h-star" cx="900" cy="72" r="1" fill="#3094FF" style="animation-delay: 2.8s"/>
+  </g>
+  
+  <!-- Network connection lines -->
+  <g class="h-network">
+    <line x1="270" y1="42" x2="360" y2="57" stroke="#5FED83" stroke-width="0.5"/>
+    <line x1="360" y1="57" x2="450" y2="47" stroke="#3094FF" stroke-width="0.5"/>
+    <line x1="450" y1="47" x2="540" y2="62" stroke="#C06EFF" stroke-width="0.5"/>
+    <line x1="540" y1="62" x2="630" y2="52" stroke="#5FED83" stroke-width="0.5"/>
+    <line x1="630" y1="52" x2="720" y2="67" stroke="#3094FF" stroke-width="0.5"/>
+    <line x1="720" y1="67" x2="810" y2="57" stroke="#C06EFF" stroke-width="0.5"/>
+    <line x1="810" y1="57" x2="900" y2="72" stroke="#5FED83" stroke-width="0.5"/>
+  </g>
+
 </svg>

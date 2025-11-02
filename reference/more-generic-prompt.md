@@ -92,5 +92,5 @@ Use this block for each feature/capability.
 - [Immediate action 2]
 
 <!-- FOOTER:START -->
-![Footer](../docs/.frames-static/09-footer.svg)
+xf
 <!-- FOOTER:END -->
