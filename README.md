@@ -1,21 +1,5 @@
-<!-- AUTO-GENERATED INTERACTIVE HEADER - DO NOT EDIT -->
-<iframe
-    src="https://raw.githubusercontent.com/Anselmoo/mcp-ai-agent-guidelines/main/docs/.frames-interactive/header-README.html"
-    style="width: 100%; height: 120px; border: none; display: block; margin: 0; padding: 0;"
-    title="Interactive Header"
-    loading="lazy"
-    sandbox="allow-scripts allow-same-origin"
-></iframe>
-<!-- END AUTO-GENERATED INTERACTIVE HEADER -->
-
 <div align="center">
-
-<!-- Interactive SVG Header -->
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./docs/assets/readme-header.svg">
-  <img alt="MCP AI Agent Guidelines Server - advanced tools for AI development" src="./docs/assets/readme-header.svg" width="100%">
-</picture>
-
+  <img src="./docs/.frames-static/readme-header.svg" alt="MCP AI Agent Guidelines Header" width="100%"/>
 </div>
 
 # MCP AI Agent Guidelines Server
@@ -949,15 +933,6 @@ For a comprehensive list of references, research papers, and detailed attributio
 
 ---
 
-<div align="center">
-
-<!-- Interactive SVG Footer -->
-<img src="./docs/assets/readme-footer.svg" alt="" width="100%" aria-hidden="true">
-
-**[⭐ Star this project](https://github.com/Anselmoo/mcp-ai-agent-guidelines)** • **[🐛 Report issues](https://github.com/Anselmoo/mcp-ai-agent-guidelines/issues)** • **[💡 Request features](https://github.com/Anselmoo/mcp-ai-agent-guidelines/issues/new)**
-
-</div>
-
 - **Model Context Protocol team** for the specification
 - **Anthropic** for prompt caching research
 - **Mermaid community** for diagram tooling
@@ -967,15 +942,8 @@ For a comprehensive list of references, research papers, and detailed attributio
 
 See [docs/REFERENCES.md](./docs/REFERENCES.md) for the complete list of research papers, projects, and inspirations.
 
+---
 
-
-<!-- AUTO-GENERATED INTERACTIVE FOOTER - DO NOT EDIT -->
-<iframe
-    src="https://raw.githubusercontent.com/Anselmoo/mcp-ai-agent-guidelines/main/docs/.frames-interactive/footer-README.html"
-    style="width: 100%; height: 80px; border: none; display: block; margin: 0; padding: 0;"
-    title="Interactive Footer"
-    loading="lazy"
-    sandbox="allow-scripts allow-same-origin"
-></iframe>
-<!-- END AUTO-GENERATED INTERACTIVE FOOTER -->
-
+<div align="center">
+  <img src="./docs/.frames-static/readme-footer.svg" alt="MCP AI Agent Guidelines Footer" width="100%"/>
+</div>
