@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](09-header.svg)
+<!-- HEADER:END -->
+
 # SVG Animation Enhancement Status
 
 ## ✅ COMPLETED
@@ -150,3 +154,7 @@ To make each pair visually distinct, each should have a **unique animation theme
 - SVG element types (circles, rects, paths)
 - Animation timing offsets
 - Visual metaphors
+
+<!-- FOOTER:START -->
+![Footer](09-footer.svg)
+<!-- FOOTER:END -->

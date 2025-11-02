@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](../docs/.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # [Project/Initiative Name]
 
 [One-paragraph summary: problem, audience, value, and desired outcome]
@@ -86,3 +90,7 @@ Use this block for each feature/capability.
 ## Next Steps
 - [Immediate action 1]
 - [Immediate action 2]
+
+<!-- FOOTER:START -->
+![Footer](../docs/.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

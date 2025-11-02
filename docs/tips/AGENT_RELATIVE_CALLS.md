@@ -1,3 +1,9 @@
+<!-- HEADER:START -->
+
+![Header](../.frames-static/09-header.svg)
+
+<!-- HEADER:END -->
+
 # Agent-Relative Call Patterns
 
 > **Invoking Tools in Workflows**
@@ -1057,6 +1063,10 @@ To suggest improvements to agent-relative call patterns or add new examples:
 
 </details>
 
-<sub>**MCP AI Agent Guidelines** • Licensed under [MIT](../LICENSE) • [Disclaimer](../DISCLAIMER.md) • [Contributing](../CONTRIBUTING.md)</sub>
-
 <!-- END AUTO-GENERATED FOOTER -->
+
+<!-- FOOTER:START -->
+
+![Footer](../.frames-static/09-footer.svg)
+
+<!-- FOOTER:END -->

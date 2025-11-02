@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](../.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # Visual Design Reference for MCP Documentation
 
 **Version**: 2.0.0
@@ -1060,3 +1064,7 @@ Vary illustration style and complexity by asset importance:
 **Next Steps**: Create inline SVG diagrams and interactive illustrations
 **Maintainer**: @Anselmoo
 **Last Updated**: 2025-11-01
+
+<!-- FOOTER:START -->
+![Footer](../.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

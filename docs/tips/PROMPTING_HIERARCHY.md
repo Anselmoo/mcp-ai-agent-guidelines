@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](../.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # Prompting Hierarchy
 
 > **Understanding Prompt Levels & Evaluation**
@@ -314,3 +318,7 @@ Comprehensive tests are available in:
 </div>
 
 <!-- END AUTO-GENERATED FOOTER -->
+
+<!-- FOOTER:START -->
+![Footer](../.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](09-header.svg)
+<!-- HEADER:END -->
+
 # .frames-static Directory
 
 This directory contains 15 pairs of animated SVG headers and footers (30 files total) designed for the MCP AI Agent Guidelines project.
@@ -315,3 +319,7 @@ These SVG frames are part of the MCP AI Agent Guidelines project. See the projec
 **Performance**: Optimized for web delivery
 
 For detailed design rationale, see [DESIGN_CATALOG.md](DESIGN_CATALOG.md).
+
+<!-- FOOTER:START -->
+![Footer](09-footer.svg)
+<!-- FOOTER:END -->

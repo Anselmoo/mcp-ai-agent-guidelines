@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](../.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # Complete Tools Reference
 
 > **All Available Tools & Capabilities**
@@ -834,3 +838,7 @@
 <div align="center">
   <sub>Built with ❤️ for the MCP community</sub>
 </div>
+
+<!-- FOOTER:START -->
+![Footer](../.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

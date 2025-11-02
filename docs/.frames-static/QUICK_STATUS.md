@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](09-header.svg)
+<!-- HEADER:END -->
+
 # Status: 15 Unique Animated SVG Pairs
 
 ## Summary
@@ -128,3 +132,7 @@ The fastest way is to:
 **Status**: Ready for implementation
 **Effort**: ~2-3 hours to create 14 unique animations
 **Priority**: High (visual diversity is key requirement)
+
+<!-- FOOTER:START -->
+![Footer](09-footer.svg)
+<!-- FOOTER:END -->

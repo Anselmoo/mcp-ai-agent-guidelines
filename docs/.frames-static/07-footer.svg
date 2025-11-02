@@ -102,11 +102,21 @@
     <path d="M 12 10 L 15 7 L 15 13 Z" fill="#C06EFF"/>
   </g>
 
-  <text x="300" y="30" class="link text-link">Contributing</text>
-  <text x="450" y="30" class="link text-link">Documentation</text>
-  <text x="620" y="30" class="link text-link">License (MIT)</text>
-  <text x="800" y="30" class="link text-link">GitHub</text>
-  <text x="950" y="30" class="link text-link">Issues</text>
+  <a href="CONTRIBUTING.md" target="_blank">
+    <text x="700" y="30" class="link text-link" style="cursor: pointer;">Contributing</text>
+  </a>
+  <a href="docs/" target="_blank">
+    <text x="850" y="30" class="link text-link" style="cursor: pointer;">Documentation</text>
+  </a>
+  <a href="LICENSE" target="_blank">
+    <text x="700" y="60" class="link text-link" style="cursor: pointer;">License (MIT)</text>
+  </a>
+  <a href="https://github.com/HahnJustin/mcp-ai-agent-guidelines" target="_blank">
+    <text x="850" y="60" class="link text-link" style="cursor: pointer;">GitHub</text>
+  </a>
+  <a href="https://github.com/HahnJustin/mcp-ai-agent-guidelines/issues" target="_blank">
+    <text x="1000" y="60" class="link text-link" style="cursor: pointer;">Issues</text>
+  </a>
   
   <text x="1100" y="30" text-anchor="end" class="link text-link" font-size="11px" opacity="0.7">© 2024-2025</text>
 </svg>

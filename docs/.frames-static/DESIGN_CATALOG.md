@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](09-header.svg)
+<!-- HEADER:END -->
+
 # GitHub-Authentic Frame Designs# Design Catalog: MCP AI Agent Guidelines SVG Frames
 
 ## OverviewThis catalog documents all 15 SVG header/footer pairs designed for the MCP AI Agent Guidelines project, following strict GitHub brand compliance.
@@ -560,3 +564,7 @@ Each pair tells a story about the MCP AI Agent Guidelines project while maintain
 - footer-dashboard-style.svg
 ```
 ````
+
+<!-- FOOTER:START -->
+![Footer](09-footer.svg)
+<!-- FOOTER:END -->

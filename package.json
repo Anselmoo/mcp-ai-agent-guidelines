@@ -43,6 +43,7 @@
 		"frames:generate-interactive": "node scripts/generate-interactive-frames.js",
 		"frames:apply-interactive": "node scripts/apply-interactive-frames.js",
 		"frames:preview-interactive": "echo 'Preview: open docs/.frames-interactive/header-README.html and footer-README.html in your browser'",
+		"frames:apply": "node scripts/apply-frames.js",
 		"prepare": "if [ -d .git ]; then lefthook install; else echo 'Skipping lefthook install (no Git repository)'; fi"
 	},
 	"keywords": [

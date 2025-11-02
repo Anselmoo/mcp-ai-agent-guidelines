@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](../.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 <!-- AUTO-GENERATED INTERACTIVE HEADER - DO NOT EDIT -->
 <iframe
     src="https://raw.githubusercontent.com/Anselmoo/mcp-ai-agent-guidelines/main/docs/.frames-interactive/header-tips-README.html"
@@ -77,3 +81,6 @@ This folder contains practical tips, best practices, and quick reference guides 
 ></iframe>
 <!-- END AUTO-GENERATED INTERACTIVE FOOTER -->
 
+<!-- FOOTER:START -->
+![Footer](../.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

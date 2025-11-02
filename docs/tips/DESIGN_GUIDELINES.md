@@ -1,3 +1,9 @@
+<!-- HEADER:START -->
+
+![Header](../.frames-static/09-header.svg)
+
+<!-- HEADER:END -->
+
 # Design Guidelines
 
 > **Documentation Design Principles**
@@ -10,6 +16,7 @@
 <summary><strong>📍 Quick Navigation</strong></summary>
 
 **Related Guides:**
+
 - [Documentation Index](#documentation-index)
 - [Contributing](#contributing)
 - [Design Module Status](#design-module-status)
@@ -58,18 +65,18 @@ Reduce cognitive load through collapsible sections:
 
 ```css
 /* Primary - GitHub Green */
---github-green: #1a7f37;      /* 7.5:1 contrast ratio (WCAG AA+) */
+--github-green: #1a7f37; /* 7.5:1 contrast ratio (WCAG AA+) */
 
 /* Gradients */
---github-green-light: #5FED83;  /* Gradient midpoint */
---github-green-lighter: #BFFFD1; /* Gradient highlight */
+--github-green-light: #5fed83; /* Gradient midpoint */
+--github-green-lighter: #bfffd1; /* Gradient highlight */
 
 /* Supporting Colors */
---github-blue: #0969da;         /* Links, accents */
---github-black: #24292f;        /* Text */
---github-gray: #57606a;         /* Secondary text */
---github-gray-light: #d0d7de;   /* Borders */
---github-bg: #f6f8fa;           /* Backgrounds */
+--github-blue: #0969da; /* Links, accents */
+--github-black: #24292f; /* Text */
+--github-gray: #57606a; /* Secondary text */
+--github-gray-light: #d0d7de; /* Borders */
+--github-bg: #f6f8fa; /* Backgrounds */
 ```
 
 ### Typography
@@ -78,11 +85,11 @@ Reduce cognitive load through collapsible sections:
 
 ```css
 font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans",
-             Helvetica, Arial, sans-serif, "Apple Color Emoji",
-             "Segoe UI Emoji";
+  Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
 ```
 
 **Type Scale**:
+
 - **48px / 600**: Page headers (rarely used)
 - **32px / 600**: Section headers
 - **20px / 600**: Subsection headers
@@ -106,25 +113,19 @@ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans",
 ### Header Pattern (All Documentation Files)
 
 ```html
-
-
-![Document Title](https://img.shields.io/badge/Document_Title-1a7f37?style=for-the-badge&logo=...)
-
+![Document
+Title](https://img.shields.io/badge/Document_Title-1a7f37?style=for-the-badge&logo=...)
 **Category** • Subcategory / Additional Context
 
 <details>
-<summary><strong>📍 Quick Navigation</strong></summary>
+  <summary><strong>📍 Quick Navigation</strong></summary>
 
-- [Link 1](./file1.md)
-- [Link 2](./file2.md)
-- [Link 3](./file3.md)
-
+  - [Link 1](./file1.md) - [Link 2](./file2.md) - [Link 3](./file3.md)
 </details>
-
-
 ```
 
 **Key Elements**:
+
 1. **4px gradient header** (135deg, top accent)
 2. **Badge** with GitHub Green (#1a7f37)
 3. **Category line** with bullet separator (•)
@@ -136,20 +137,16 @@ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans",
 ```html
 ---
 
-
 <details>
-<summary><strong>📚 Related Documentation</strong></summary>
+  <summary><strong>📚 Related Documentation</strong></summary>
 
-- [Related Doc 1](./file1.md)
-- [Related Doc 2](./file2.md)
-- [Related Doc 3](./file3.md)
-
+  - [Related Doc 1](./file1.md) - [Related Doc 2](./file2.md) - [Related Doc
+  3](./file3.md)
 </details>
-
-<sub>**MCP AI Agent Guidelines** • Licensed under [MIT](../LICENSE) • [Disclaimer](../DISCLAIMER.md) • [Contributing](../CONTRIBUTING.md)</sub>
 ```
 
 **Key Elements**:
+
 1. **Horizontal rule** (markdown separator)
 2. **2px gradient separator** (visual accent)
 3. **Related Documentation** (collapsible, contextual links)
@@ -159,17 +156,14 @@ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans",
 
 ```html
 <details>
-<summary><strong>Section Title</strong></summary>
+  <summary><strong>Section Title</strong></summary>
 
-Content here remains in standard markdown:
-- List items
-- Code blocks
-- Tables
-
+  Content here remains in standard markdown: - List items - Code blocks - Tables
 </details>
 ```
 
 **Usage**:
+
 - Badge groups in README
 - Long navigation menus
 - Related documentation links
@@ -184,14 +178,15 @@ Content here remains in standard markdown:
 **Critical**: Always include blank lines around HTML blocks for GitHub Flavored Markdown compatibility.
 
 **✅ Correct**:
+
 ```markdown
 Some markdown text.
-
 
 More markdown text.
 ```
 
 **❌ Incorrect**:
+
 ```markdown
 Some markdown text.
 
@@ -207,6 +202,7 @@ Use inline `style` attributes for all CSS (no external stylesheets):
 ```
 
 **Rationale**:
+
 - GitHub sanitizes most external CSS
 - Inline styles are portable and self-contained
 - No dependencies on external resources
@@ -214,11 +210,13 @@ Use inline `style` attributes for all CSS (no external stylesheets):
 ### Performance Considerations
 
 **Zero External API Calls**:
+
 - ❌ **Removed**: `capsule-render.vercel.app` animated headers
 - ✅ **Use**: Inline HTML gradients with CSS
 - **Result**: Instant rendering, no network dependencies
 
 **Benefits**:
+
 - Faster page load (no API latency)
 - Works offline
 - No rate limiting
@@ -229,11 +227,13 @@ Use inline `style` attributes for all CSS (no external stylesheets):
 ## 📊 Files Updated
 
 ### Main Documentation (3 files)
+
 - ✅ `README.md` - Collapsible badges, Quick Start, Documentation/Demos sections
 - ✅ `CONTRIBUTING.md` - Previous session
 - ✅ `DISCLAIMER.md` - Previous session
 
 ### docs/ Files (19 files)
+
 1. ✅ `AI_INTERACTION_TIPS.md`
 2. ✅ `AGENT_RELATIVE_CALLS.md`
 3. ✅ `BRIDGE_CONNECTORS.md`
@@ -255,6 +255,7 @@ Use inline `style` attributes for all CSS (no external stylesheets):
 19. ✅ `TOOLS_REFERENCE.md`
 
 ### docs/tools/ Files (In Progress)
+
 - ✅ `hierarchical-prompt-builder.md`
 - ✅ `dependency-auditor.md`
 - �� Remaining 25+ tool documentation files
@@ -264,12 +265,14 @@ Use inline `style` attributes for all CSS (no external stylesheets):
 ## ✅ Verification Checklist
 
 ### Brand Compliance
+
 - [x] GitHub Green (#1a7f37) as primary color
 - [x] WCAG AA contrast (7.5:1 ratio minimum)
 - [x] Official color palette throughout
 - [x] System font stack
 
 ### Technical Compliance
+
 - [x] Zero external API calls
 - [x] Instant rendering (no network dependencies)
 - [x] Inline styles only
@@ -277,6 +280,7 @@ Use inline `style` attributes for all CSS (no external stylesheets):
 - [x] Progressive disclosure implemented
 
 ### Markdown Structure
+
 - [x] 100% markdown preserved
 - [x] All headings use markdown `#` syntax
 - [x] Lists use markdown `-` or `1.` syntax
@@ -292,9 +296,9 @@ Use inline `style` attributes for all CSS (no external stylesheets):
 **Finding**: GitHub Flavored Markdown excellently supports inline HTML when blank lines are respected.
 
 **Best Practice**:
+
 ```markdown
 Regular markdown content.
-
 
 Back to markdown.
 ```
@@ -304,6 +308,7 @@ Back to markdown.
 **Impact**: `<details>/<summary>` dramatically improves navigation in long documents.
 
 **Data**:
+
 - README.md: 12 badges → 3 collapsible groups (75% reduction in vertical space)
 - Navigation menus: 5-10 links collapsed by default
 - Related Documentation: Contextual links without clutter
@@ -313,6 +318,7 @@ Back to markdown.
 **Result**: Official GitHub Green creates professional, cohesive appearance.
 
 **Metrics**:
+
 - Consistency: 100% of files use identical color palette
 - Recognition: GitHub Green immediately recognizable
 - Trust: Official brand colors increase perceived authority
@@ -322,6 +328,7 @@ Back to markdown.
 **Achievement**: Eliminated all external API calls.
 
 **Benefits**:
+
 - Load time: Instant (0ms network delay)
 - Reliability: No third-party dependencies
 - Offline: Works without internet connection
@@ -332,6 +339,7 @@ Back to markdown.
 **Core Insight**: HTML should enhance, never replace, markdown structure.
 
 **Implementation**:
+
 - Gradients → HTML divs with inline styles
 - Badges → shields.io with GitHub Green
 - Navigation → `<details>` wrapping markdown lists
@@ -379,5 +387,10 @@ Potential scripts to maintain consistency:
 
 ---
 
-
 <sub>**MCP AI Agent Guidelines** • Design Guidelines v1.0 • Updated November 1, 2025</sub>
+
+<!-- FOOTER:START -->
+
+![Footer](../.frames-static/09-footer.svg)
+
+<!-- FOOTER:END -->

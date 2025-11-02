@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](../.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # Clean Code Initiative
 
 > **Quality Standards & Best Practices**
@@ -475,3 +479,7 @@ Help improve the Clean Code initiative:
 </sub>
 
 </div>
+
+<!-- FOOTER:START -->
+![Footer](../.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

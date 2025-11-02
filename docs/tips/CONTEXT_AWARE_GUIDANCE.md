@@ -1,3 +1,9 @@
+<!-- HEADER:START -->
+
+![Header](../.frames-static/09-header.svg)
+
+<!-- HEADER:END -->
+
 # Context-Aware Guidance
 
 > **Adaptive Tool Recommendations**
@@ -412,4 +418,8 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for details.
 
 </details>
 
-<sub>**MCP AI Agent Guidelines** • Licensed under [MIT](../LICENSE) • [Disclaimer](../DISCLAIMER.md) • [Contributing](../CONTRIBUTING.md)</sub>
+<!-- FOOTER:START -->
+
+![Footer](../.frames-static/09-footer.svg)
+
+<!-- FOOTER:END -->

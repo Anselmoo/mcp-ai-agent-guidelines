@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](../.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # Sprint Planning Reliability
 
 > **Dependency-Aware Timeline Calculation**
@@ -294,3 +298,7 @@ All tests pass with 100% backward compatibility.
 <!-- Gradient accent line (footer) -->
 
 </div>
+
+<!-- FOOTER:START -->
+![Footer](../.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

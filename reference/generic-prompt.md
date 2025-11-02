@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](../docs/.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # [Application/Tool Name]
 
 [Brief description of what the application does and its primary value proposition]
@@ -94,3 +98,7 @@
 - **Icon Selection**: [Icon 1], [Icon 2], [Icon 3], [Icon 4], [Icon 5] for various states
 - **Spacing**: [Consistent spacing rule] between [element type], [secondary spacing] for [element type]
 - **Mobile**: [Layout approach],
+
+<!-- FOOTER:START -->
+![Footer](../docs/.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

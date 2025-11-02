@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](../.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # Internal Development Documentation
 
 This folder contains internal development documentation, implementation summaries, and refactoring notes. These documents are for contributors and maintainers, not end users of the MCP server.
@@ -20,3 +24,7 @@ If you're looking for user-facing documentation, see:
 ## For Contributors
 
 These internal docs supplement the main [Contributing Guide](../../CONTRIBUTING.md) with detailed implementation notes and migration histories.
+
+<!-- FOOTER:START -->
+![Footer](../.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

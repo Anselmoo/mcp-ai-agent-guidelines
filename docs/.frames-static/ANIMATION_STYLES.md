@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](09-header.svg)
+<!-- HEADER:END -->
+
 # GitHub-Style Animation Catalog
 
 ## Design Consistency
@@ -90,3 +94,7 @@
 - **Animation Duration**: 8-20 seconds per cycle
 - **Color Palette**: GitHub primer colors (green, blue, purple)
 - **Performance**: GPU-accelerated transforms, optimized keyframes
+
+<!-- FOOTER:START -->
+![Footer](09-footer.svg)
+<!-- FOOTER:END -->

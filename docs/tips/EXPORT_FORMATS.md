@@ -1,3 +1,9 @@
+<!-- HEADER:START -->
+
+![Header](../.frames-static/09-header.svg)
+
+<!-- HEADER:END -->
+
 # Export Formats
 
 > **Output Format Options & Usage**
@@ -422,4 +428,8 @@ For issues or questions:
 
 </details>
 
-<sub>**MCP AI Agent Guidelines** • Licensed under [MIT](../LICENSE) • [Disclaimer](../DISCLAIMER.md) • [Contributing](../CONTRIBUTING.md)</sub>
+<!-- FOOTER:START -->
+
+![Footer](../.frames-static/09-footer.svg)
+
+<!-- FOOTER:END -->

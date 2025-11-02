@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](../../../docs/.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # Semantic Analyzer Module
 
 A modular, extensible semantic code analysis system for analyzing code structure, patterns, dependencies, and symbols across multiple programming languages.
@@ -281,3 +285,7 @@ Potential areas for expansion:
 - Visualization of code structure
 - Integration with linting tools
 - Support for more languages (Kotlin, Scala, Haskell, etc.)
+
+<!-- FOOTER:START -->
+![Footer](../../../docs/.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

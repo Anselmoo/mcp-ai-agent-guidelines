@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](09-header.svg)
+<!-- HEADER:END -->
+
 # ✅ SVG Animation Enhancement - COMPLETE
 
 ## Summary
@@ -13,3 +17,7 @@ All 15 SVG pairs now have consistent titles/subtitles and complete full-width an
 ✅ Accessibility features
 
 **Status**: PRODUCTION READY 🚀
+
+<!-- FOOTER:START -->
+![Footer](09-footer.svg)
+<!-- FOOTER:END -->

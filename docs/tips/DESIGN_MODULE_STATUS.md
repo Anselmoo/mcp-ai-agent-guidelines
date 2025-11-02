@@ -1,3 +1,9 @@
+<!-- HEADER:START -->
+
+![Header](../.frames-static/09-header.svg)
+
+<!-- HEADER:END -->
+
 # Design Module Status
 
 > **Design System Implementation Status**
@@ -193,4 +199,8 @@ All modules maintain backwards compatibility through:
 
 </details>
 
-<sub>**MCP AI Agent Guidelines** • Licensed under [MIT](../LICENSE) • [Disclaimer](../DISCLAIMER.md) • [Contributing](../CONTRIBUTING.md)</sub>
+<!-- FOOTER:START -->
+
+![Footer](../.frames-static/09-footer.svg)
+
+<!-- FOOTER:END -->

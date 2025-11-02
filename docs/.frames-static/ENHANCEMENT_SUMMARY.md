@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](09-header.svg)
+<!-- HEADER:END -->
+
 # SVG Animation Enhancement - Final Summary
 
 ## ✅ COMPLETED TASKS
@@ -145,3 +149,7 @@ Given the emphasis on "fixed text for both header and footer" and "complete anim
 **Files Modified**: 15 header SVGs
 **Documentation Added**: 2 new MD files
 **Animation Coverage**: 100% (all pairs have full animations spanning complete width)
+
+<!-- FOOTER:START -->
+![Footer](09-footer.svg)
+<!-- FOOTER:END -->

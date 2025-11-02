@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](../../../../docs/.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # Design Tool Types - Modular Organization
 
 This directory contains the type definitions for the Design Assistant Framework, organized by domain for better maintainability and navigation.
@@ -72,3 +76,7 @@ This modular structure replaces the monolithic `types.ts` file. All imports have
 3. **Easier Maintenance** - Changes are isolated to specific type files
 4. **Improved Discoverability** - New contributors can find types more easily
 5. **Lower Risk of Circular Dependencies** - Clear boundaries between type domains
+
+<!-- FOOTER:START -->
+![Footer](../../../../docs/.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

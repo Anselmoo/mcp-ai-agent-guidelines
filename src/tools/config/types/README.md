@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](../../../../docs/.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # Config Module Types
 
 This directory contains type definitions for the config module, organized by domain.
@@ -30,3 +34,7 @@ import type { ModelDefinition } from "./types/model.types.js";
 - **Better Organization** - Types grouped by domain (guidelines, models)
 - **Easier Maintenance** - Changes isolated to specific type files
 - **Improved Discoverability** - Clear file structure
+
+<!-- FOOTER:START -->
+![Footer](../../../../docs/.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

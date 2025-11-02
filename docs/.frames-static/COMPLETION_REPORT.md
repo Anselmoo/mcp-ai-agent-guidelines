@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](09-header.svg)
+<!-- HEADER:END -->
+
 # ✅ COMPLETE: 15 Unique Animated SVG Pairs
 
 ## Summary
@@ -133,3 +137,7 @@ All 15 SVG pairs are complete with:
 **Date Completed**: November 2, 2025
 **Files Modified**: 15 header SVGs
 **Total Unique Keyframes**: 45+ across all pairs
+
+<!-- FOOTER:START -->
+![Footer](09-footer.svg)
+<!-- FOOTER:END -->

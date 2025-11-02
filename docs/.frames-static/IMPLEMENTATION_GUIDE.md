@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](09-header.svg)
+<!-- HEADER:END -->
+
 # 15 Unique GitHub Animated SVG Pairs - Implementation Guide
 
 ## Current Status
@@ -172,3 +176,7 @@ If you need help creating specific animation patterns, refer to:
 - `ANIMATION_STYLES.md` - Catalog of 15 unique concepts
 - `DESIGN_CATALOG.md` - Design system reference
 - `01-header.svg` - Working example template
+
+<!-- FOOTER:START -->
+![Footer](09-footer.svg)
+<!-- FOOTER:END -->

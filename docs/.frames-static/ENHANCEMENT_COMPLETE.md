@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](09-header.svg)
+<!-- HEADER:END -->
+
 # SVG Frame Enhancement - COMPLETE ✅
 
 ## Overview
@@ -152,3 +156,7 @@ Expected output: Each header has 9 keyframes, each footer has 8 keyframes.
 **Files modified**: 30 (all 15 header + footer pairs)
 **Animation density increase**: 4.5x
 **Status**: ✅ COMPLETE
+
+<!-- FOOTER:START -->
+![Footer](09-footer.svg)
+<!-- FOOTER:END -->

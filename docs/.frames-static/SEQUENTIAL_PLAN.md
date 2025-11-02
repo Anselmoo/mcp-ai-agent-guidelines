@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](09-header.svg)
+<!-- HEADER:END -->
+
 # Sequential Enhancement Plan - 15 SVG Headers
 
 ## Phase 1: Analysis & Template (COMPLETED)
@@ -101,3 +105,7 @@
 
 ---
 **Next**: Begin sequential creation starting with #01
+
+<!-- FOOTER:START -->
+![Footer](09-footer.svg)
+<!-- FOOTER:END -->

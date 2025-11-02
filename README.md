@@ -1,6 +1,6 @@
-<div align="center">
-  <img src="./docs/.frames-static/readme-header.svg" alt="MCP AI Agent Guidelines Header" width="100%"/>
-</div>
+<!-- HEADER:START -->
+![Header](docs/.frames-static/09-header.svg)
+<!-- HEADER:END -->
 
 # MCP AI Agent Guidelines Server
 
@@ -942,8 +942,6 @@ For a comprehensive list of references, research papers, and detailed attributio
 
 See [docs/REFERENCES.md](./docs/REFERENCES.md) for the complete list of research papers, projects, and inspirations.
 
----
-
-<div align="center">
-  <img src="./docs/.frames-static/readme-footer.svg" alt="MCP AI Agent Guidelines Footer" width="100%"/>
-</div>
+<!-- FOOTER:START -->
+![Footer](docs/.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

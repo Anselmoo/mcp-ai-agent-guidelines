@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](09-header.svg)
+<!-- HEADER:END -->
+
 # 🎨 Enhanced SVG Animation Strategy - All 15 Pairs
 
 ## Current Status
@@ -211,3 +215,7 @@ Each theme needs **custom SVG icons**:
 6. Document each theme
 
 **Estimated time**: 3-4 hours for all 15 pairs
+
+<!-- FOOTER:START -->
+![Footer](09-footer.svg)
+<!-- FOOTER:END -->

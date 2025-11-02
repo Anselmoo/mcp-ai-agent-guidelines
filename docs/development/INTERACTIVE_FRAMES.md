@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](../.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # Interactive GitHub-Inspired Documentation System
 
 ## 🎨 Overview
@@ -255,3 +259,7 @@ The system is **fully operational**. All interactive frames have been:
 **Type**: Interactive GitHub-Inspired
 **Last Updated**: 2025-11-01
 **Maintainer**: @Anselmoo
+
+<!-- FOOTER:START -->
+![Footer](../.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

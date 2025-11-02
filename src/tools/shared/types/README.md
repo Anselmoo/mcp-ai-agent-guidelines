@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](../../../../docs/.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # Shared Module Types
 
 This directory contains type definitions for shared utilities, organized by domain.
@@ -31,3 +35,7 @@ import type { FrontmatterOptions } from "./types/prompt-utils.types.js";
 - **Consistent Organization** - Types grouped logically
 - **Easier Maintenance** - Clear separation of concerns
 - **Reusability** - Shared types available across modules
+
+<!-- FOOTER:START -->
+![Footer](../../../../docs/.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

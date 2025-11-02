@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](../.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # Bridge Connectors
 
 > **Integration Patterns for External Systems**
@@ -417,3 +421,7 @@ const strategy = await strategyFrameworksBuilder({
 </sub>
 
 </div>
+
+<!-- FOOTER:START -->
+![Footer](../.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

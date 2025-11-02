@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](docs/.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 <!-- AUTO-GENERATED INTERACTIVE HEADER - DO NOT EDIT -->
 <iframe
     src="https://raw.githubusercontent.com/Anselmoo/mcp-ai-agent-guidelines/main/docs/.frames-interactive/header-CHANGELOG.html"
@@ -122,3 +126,6 @@ For detailed history before v0.7.0, see the [Git commit history](https://github.
 ></iframe>
 <!-- END AUTO-GENERATED INTERACTIVE FOOTER -->
 
+<!-- FOOTER:START -->
+![Footer](docs/.frames-static/09-footer.svg)
+<!-- FOOTER:END -->
