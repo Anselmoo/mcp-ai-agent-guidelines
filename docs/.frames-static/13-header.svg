@@ -1,70 +1,200 @@
-<svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Test Coverage">
+<svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Test Coverage Analysis">
   <defs>
-    <linearGradient id="bgGrad13H" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" class="bg-start"/>
-      <stop offset="100%" class="bg-end"/>
+    <linearGradient id="bgCoverageGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d1117;stop-opacity:1">
+        <animate attributeName="stop-color" values="#0d1117;#161b22;#0d1117" dur="10s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="50%" style="stop-color:#1c2128;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#161b22;stop-opacity:1">
+        <animate attributeName="stop-color" values="#161b22;#0d1117;#161b22" dur="10s" repeatCount="indefinite"/>
+      </stop>
     </linearGradient>
+    
+    <radialGradient id="coverageGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#5FED83;stop-opacity:1"/>
+      <stop offset="50%" style="stop-color:#3094FF;stop-opacity:0.6"/>
+      <stop offset="100%" style="stop-color:#C06EFF;stop-opacity:0"/>
+    </radialGradient>
+    
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 8 0" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <filter id="dropShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+      <feOffset dx="0" dy="2" result="offsetblur"/>
+      <feFlood flood-color="#000000" flood-opacity="0.5"/>
+      <feComposite in2="offsetblur" operator="in"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <linearGradient id="shine13" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0"/>
+      <stop offset="50%" style="stop-color:#ffffff;stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0"/>
+      <animate attributeName="x1" values="-100%;200%" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="x2" values="0%;300%" dur="3s" repeatCount="indefinite"/>
+    </linearGradient>
+    
+    <linearGradient id="coverageFill" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#5FED83;stop-opacity:1"/>
+      <stop offset="60%" style="stop-color:#5FED83;stop-opacity:1"/>
+      <stop offset="85%" style="stop-color:#3094FF;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#C06EFF;stop-opacity:1"/>
+    </linearGradient>
+    
+    <pattern id="coverageHeatmap" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="10" height="10" fill="#5FED83" opacity="0.1"/>
+      <rect x="10" y="0" width="10" height="10" fill="#3094FF" opacity="0.05"/>
+      <rect x="0" y="10" width="10" height="10" fill="#3094FF" opacity="0.05"/>
+      <rect x="10" y="10" width="10" height="10" fill="#C06EFF" opacity="0.02"/>
+    </pattern>
   </defs>
+  
   <style>
     @media (prefers-color-scheme: dark) {
-      .bg-start { stop-color: #0d1117; } .bg-end { stop-color: #161b22; }
-      .text-primary { fill: #f0f6fc; } .text-secondary { fill: #8b949e; }
-      .accent-green { fill: #5FED83; stroke: #5FED83; }
-      .accent-purple { fill: #C06EFF; stroke: #C06EFF; }
-      .accent-blue { fill: #3094FF; stroke: #3094FF; }
-      .gitline { stroke: #30363d; } .node-bg { fill: #21262d; }
+      .text-primary { fill: #f0f6fc; font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.5px; }
+      .text-secondary { fill: #8b949e; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; letter-spacing: 0.5px; }
     }
     @media (prefers-color-scheme: light) {
-      .bg-start { stop-color: #f6f8fa; } .bg-end { stop-color: #ffffff; }
-      .text-primary { fill: #24292f; } .text-secondary { fill: #57606a; }
-      .accent-green { fill: #08872B; stroke: #08872B; }
-      .accent-purple { fill: #501DAF; stroke: #501DAF; }
-      .accent-blue { fill: #0969DA; stroke: #0969DA; }
-      .gitline { stroke: #d0d7de; } .node-bg { fill: #e1e4e8; }
+      .text-primary { fill: #24292f; font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.5px; }
+      .text-secondary { fill: #57606a; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; letter-spacing: 0.5px; }
     }
-    .title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 700; font-size: 36px; }
-    .subtitle { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 400; font-size: 14px; }
     
-    .test-run { animation: test-execute 5s ease-in-out infinite; }
-    @keyframes test-execute {
-      0%, 100% { width: 0; opacity: 0.2; }
-      50% { width: 150; opacity: 1; }
+    .coverage-fill { 
+      animation: coverage-progress 5s ease-in-out infinite; 
     }
-    .coverage-fill { animation: coverage-grow 8s ease-in-out infinite; }
-    @keyframes coverage-grow {
-      0% { width: 0; }
-      100% { width: 1000; }
+    @keyframes coverage-progress {
+      0% { width: 0; opacity: 0.5; }
+      50% { width: 850px; opacity: 1; }
+      100% { width: 850px; opacity: 0.7; }
     }
-    .assertion { animation: assert-check 3s ease-in-out infinite; }
-    @keyframes assert-check {
-      0%, 100% { opacity: 0; transform: scale(0); }
+    
+    .test-execute {
+      animation: test-run 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      transform-origin: center;
+    }
+    @keyframes test-run {
+      0% { opacity: 0; transform: scale(0); }
       50% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0.7; transform: scale(1); }
     }
     
-    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+    .assertion-flash {
+      animation: assert-check 2.5s ease-in-out infinite;
+    }
+    @keyframes assert-check {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+    
+    .bar-shine {
+      animation: bar-shimmer 4s ease-in-out infinite;
+    }
+    @keyframes bar-shimmer {
+      0%, 100% { opacity: 0.1; }
+      50% { opacity: 0.4; }
+    }
+    
+    .test-pass {
+      animation: pass-glow 2s ease-in-out infinite;
+    }
+    @keyframes pass-glow {
+      0%, 100% { opacity: 0.5; filter: drop-shadow(0 0 2px #5FED83); }
+      50% { opacity: 1; filter: drop-shadow(0 0 6px #5FED83); }
+    }
+    
+    @media (prefers-reduced-motion: reduce) { 
+      * { animation: none !important; } 
+    }
   </style>
-  <rect width="1200" height="160" fill="url(#bgGrad13H)"/>
   
-  <rect x="100" y="60" width="1000" height="30" rx="15" class="gitline" opacity="0.2"/>
-  <rect class="accent-green coverage-fill" x="100" y="60" height="30" rx="15" opacity="0.6"/>
+  <rect width="1200" height="160" fill="url(#bgCoverageGrad)"/>
+  <rect width="1200" height="160" fill="url(#coverageHeatmap)" opacity="0.3"/>
   
-  <rect class="accent-blue test-run" x="150" y="100" height="8" rx="4"/>
-  <rect class="accent-purple test-run" x="400" y="100" height="8" rx="4" style="animation-delay: 1s"/>
-  <rect class="accent-green test-run" x="650" y="100" height="8" rx="4" style="animation-delay: 2s"/>
-  <rect class="accent-blue test-run" x="900" y="100" height="8" rx="4" style="animation-delay: 3s"/>
-  
-  <g class="assertion" transform-origin="200 75">
-    <path d="M195,75 L200,80 L210,70" class="accent-green" fill="none" stroke-width="2" stroke-linecap="round"/>
+  <!-- Coverage bars -->
+  <g>
+    <!-- Lines coverage -->
+    <rect x="150" y="25" width="900" height="20" rx="10" fill="#30363d" opacity="0.5"/>
+    <rect class="coverage-fill" x="150" y="25" height="20" rx="10" fill="url(#coverageFill)" style="animation-delay: 0s"/>
+    <rect class="bar-shine" x="150" y="25" width="900" height="20" rx="10" fill="url(#shine13)" opacity="0.1"/>
+    <text x="130" y="39" text-anchor="end" class="text-secondary" font-size="11">Lines</text>
+    <text x="1070" y="39" class="text-secondary" font-size="11" opacity="0.8">94.2%</text>
+    
+    <!-- Branches coverage -->
+    <rect x="150" y="55" width="900" height="20" rx="10" fill="#30363d" opacity="0.5"/>
+    <rect class="coverage-fill" x="150" y="55" height="20" rx="10" fill="url(#coverageFill)" style="width: 720px; animation-delay: 0.5s"/>
+    <rect class="bar-shine" x="150" y="55" width="900" height="20" rx="10" fill="url(#shine13)" opacity="0.1"/>
+    <text x="130" y="69" text-anchor="end" class="text-secondary" font-size="11">Branches</text>
+    <text x="1070" y="69" class="text-secondary" font-size="11" opacity="0.8">80.0%</text>
+    
+    <!-- Functions coverage -->
+    <rect x="150" y="85" width="900" height="20" rx="10" fill="#30363d" opacity="0.5"/>
+    <rect class="coverage-fill" x="150" y="85" height="20" rx="10" fill="url(#coverageFill)" style="width: 810px; animation-delay: 1s"/>
+    <rect class="bar-shine" x="150" y="85" width="900" height="20" rx="10" fill="url(#shine13)" opacity="0.1"/>
+    <text x="130" y="99" text-anchor="end" class="text-secondary" font-size="11">Functions</text>
+    <text x="1070" y="99" class="text-secondary" font-size="11" opacity="0.8">90.0%</text>
+    
+    <!-- Statements coverage -->
+    <rect x="150" y="115" width="900" height="20" rx="10" fill="#30363d" opacity="0.5"/>
+    <rect class="coverage-fill" x="150" y="115" height="20" rx="10" fill="url(#coverageFill)" style="width: 873px; animation-delay: 1.5s"/>
+    <rect class="bar-shine" x="150" y="115" width="900" height="20" rx="10" fill="url(#shine13)" opacity="0.1"/>
+    <text x="130" y="129" text-anchor="end" class="text-secondary" font-size="11">Statements</text>
+    <text x="1070" y="129" class="text-secondary" font-size="11" opacity="0.8">97.0%</text>
   </g>
-  <g class="assertion" transform-origin="500 75" style="animation-delay: 1.5s">
-    <path d="M495,75 L500,80 L510,70" class="accent-blue" fill="none" stroke-width="2" stroke-linecap="round"/>
-  </g>
-  <g class="assertion" transform-origin="800 75" style="animation-delay: 3s">
-    <path d="M795,75 L800,80 L810,70" class="accent-purple" fill="none" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- Test execution indicators -->
+  <g filter="url(#glow)">
+    <circle class="test-execute" cx="200" cy="35" r="5" fill="#5FED83" style="animation-delay: 0s"/>
+    <circle class="test-execute" cx="400" cy="35" r="5" fill="#5FED83" style="animation-delay: 0.5s"/>
+    <circle class="test-execute" cx="600" cy="35" r="5" fill="#5FED83" style="animation-delay: 1s"/>
+    <circle class="test-execute" cx="800" cy="35" r="5" fill="#5FED83" style="animation-delay: 1.5s"/>
+    <circle class="test-execute" cx="1000" cy="35" r="5" fill="#5FED83" style="animation-delay: 2s"/>
   </g>
   
-  <text x="600" y="80" text-anchor="middle" class="text-primary" font-size="12" font-weight="600">Coverage: 87%</text>
+  <!-- Checkmark indicators (test passing) -->
+  <g class="test-pass" style="animation-delay: 0s">
+    <path d="M 195 30 L 198 33 L 205 25" fill="none" stroke="#5FED83" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+  </g>
+  <g class="test-pass" style="animation-delay: 0.5s">
+    <path d="M 595 30 L 598 33 L 605 25" fill="none" stroke="#5FED83" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+  </g>
+  <g class="test-pass" style="animation-delay: 1s">
+    <path d="M 995 30 L 998 33 L 1005 25" fill="none" stroke="#5FED83" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+  </g>
   
-  <text x="600" y="70" text-anchor="middle" class="title text-primary">MCP AI Agent Guidelines Server</text>
-  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary">Guidelines • Patterns • Best Practices</text>
+  <!-- Assertion flashes -->
+  <circle class="assertion-flash" cx="300" cy="65" r="3" fill="#3094FF" style="animation-delay: 0s"/>
+  <circle class="assertion-flash" cx="500" cy="65" r="3" fill="#3094FF" style="animation-delay: 0.8s"/>
+  <circle class="assertion-flash" cx="700" cy="95" r="3" fill="#3094FF" style="animation-delay: 1.6s"/>
+  <circle class="assertion-flash" cx="900" cy="125" r="3" fill="#3094FF" style="animation-delay: 2.4s"/>
+  
+  <!-- Test tube icon (left) -->
+  <g transform="translate(25, 30)" opacity="0.7">
+    <rect x="8" y="5" width="10" height="25" rx="1" fill="none" stroke="#5FED83" stroke-width="2"/>
+    <rect x="8" y="20" width="10" height="10" fill="#5FED83" opacity="0.3"/>
+    <circle cx="13" cy="3" r="2" fill="none" stroke="#5FED83" stroke-width="1.5"/>
+    <path d="M 11 3 L 15 3" stroke="#5FED83" stroke-width="1"/>
+  </g>
+  
+  <!-- Coverage shield icon (right) -->
+  <g transform="translate(1150, 30)" opacity="0.7">
+    <path d="M 12 0 L 24 5 L 24 15 Q 24 25, 12 30 Q 0 25, 0 15 L 0 5 Z" fill="none" stroke="#5FED83" stroke-width="2"/>
+    <path d="M 7 12 L 10 15 L 17 8" fill="none" stroke="#5FED83" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Test stats -->
+  <text x="600" y="150" text-anchor="middle" class="text-secondary" font-size="9" opacity="0.5">Tests: 247 passed, 0 failed • Duration: 12.4s • Threshold: 80%</text>
+  
+  <text x="600" y="70" text-anchor="middle" class="text-primary" font-size="36" filter="url(#dropShadow)">MCP AI Agent Guidelines Server</text>
+  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" font-size="14">Guidelines • Patterns • Best Practices</text>
+  <rect x="400" y="84" width="400" height="16" fill="url(#shine13)" opacity="0.15"/>
 </svg>

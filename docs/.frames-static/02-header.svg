@@ -1,67 +1,185 @@
 <svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="CI/CD Pipeline">
   <defs>
-    <linearGradient id="bgGrad02H" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" class="bg-start"/>
-      <stop offset="100%" class="bg-end"/>
+    <linearGradient id="bgPipelineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d1117;stop-opacity:1">
+        <animate attributeName="stop-color" values="#0d1117;#1c2128;#0d1117" dur="8s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="50%" style="stop-color:#161b22;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#1c2128;stop-opacity:1">
+        <animate attributeName="stop-color" values="#1c2128;#0d1117;#1c2128" dur="8s" repeatCount="indefinite"/>
+      </stop>
     </linearGradient>
+    
+    <radialGradient id="stageGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#3094FF;stop-opacity:1"/>
+      <stop offset="50%" style="stop-color:#5FED83;stop-opacity:0.6"/>
+      <stop offset="100%" style="stop-color:#C06EFF;stop-opacity:0"/>
+    </radialGradient>
+    
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 8 0" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <filter id="dropShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+      <feOffset dx="0" dy="2" result="offsetblur"/>
+      <feFlood flood-color="#000000" flood-opacity="0.5"/>
+      <feComposite in2="offsetblur" operator="in"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <linearGradient id="shine02" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0"/>
+      <stop offset="50%" style="stop-color:#ffffff;stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0"/>
+      <animate attributeName="x1" values="-100%;200%" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="x2" values="0%;300%" dur="3s" repeatCount="indefinite"/>
+    </linearGradient>
+    
+    <pattern id="pipelinePattern" x="0" y="0" width="50" height="50" patternUnits="userSpaceOnUse">
+      <rect x="10" y="10" width="8" height="8" fill="none" stroke="#3094FF" stroke-width="1" opacity="0.2"/>
+      <circle cx="14" cy="14" r="2" fill="#3094FF" opacity="0.3"/>
+    </pattern>
   </defs>
+  
   <style>
     @media (prefers-color-scheme: dark) {
-      .bg-start { stop-color: #0d1117; } .bg-end { stop-color: #161b22; }
-      .text-primary { fill: #f0f6fc; } .text-secondary { fill: #8b949e; }
-      .accent-green { fill: #5FED83; stroke: #5FED83; }
-      .accent-purple { fill: #C06EFF; stroke: #C06EFF; }
-      .accent-blue { fill: #3094FF; stroke: #3094FF; }
-      .gitline { stroke: #30363d; } .node-bg { fill: #21262d; }
+      .text-primary { fill: #f0f6fc; font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.5px; }
+      .text-secondary { fill: #8b949e; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; letter-spacing: 0.5px; }
     }
     @media (prefers-color-scheme: light) {
-      .bg-start { stop-color: #f6f8fa; } .bg-end { stop-color: #ffffff; }
-      .text-primary { fill: #24292f; } .text-secondary { fill: #57606a; }
-      .accent-green { fill: #08872B; stroke: #08872B; }
-      .accent-purple { fill: #501DAF; stroke: #501DAF; }
-      .accent-blue { fill: #0969DA; stroke: #0969DA; }
-      .gitline { stroke: #d0d7de; } .node-bg { fill: #e1e4e8; }
+      .text-primary { fill: #24292f; font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.5px; }
+      .text-secondary { fill: #57606a; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; letter-spacing: 0.5px; }
     }
-    .title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 700; font-size: 36px; }
-    .subtitle { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 400; font-size: 14px; }
     
-    .stage { animation: stage-activate 12s ease-in-out infinite; }
+    .pipeline-stage { 
+      animation: stage-activate 4s cubic-bezier(0.4, 0, 0.2, 1) infinite; 
+      transform-origin: center;
+    }
     @keyframes stage-activate {
-      0%, 15%, 100% { opacity: 0.2; transform: scale(1); }
-      10% { opacity: 1; transform: scale(1.1); }
+      0%, 100% { opacity: 0.4; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.1); }
     }
-    .pipeline-arrow { animation: pipeline-flow 2s linear infinite; }
-    @keyframes pipeline-flow { 0% { stroke-dashoffset: 20; } 100% { stroke-dashoffset: 0; } }
     
-    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+    .stage-flow {
+      animation: flow-progress 3s linear infinite;
+      stroke-dasharray: 10 5;
+    }
+    @keyframes flow-progress {
+      to { stroke-dashoffset: -100; }
+    }
+    
+    .gear-rotate {
+      animation: gear-spin 8s linear infinite;
+      transform-origin: center;
+    }
+    @keyframes gear-spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .progress-bar {
+      animation: progress-fill 5s ease-in-out infinite;
+    }
+    @keyframes progress-fill {
+      0% { width: 0; opacity: 0.5; }
+      50% { width: 100%; opacity: 1; }
+      100% { width: 100%; opacity: 0.5; }
+    }
+    
+    .check-appear {
+      animation: check-pop 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      transform-origin: center;
+    }
+    @keyframes check-pop {
+      0% { opacity: 0; transform: scale(0); }
+      50% { opacity: 1; transform: scale(1.2); }
+      100% { opacity: 0.7; transform: scale(1); }
+    }
+    
+    @media (prefers-reduced-motion: reduce) { 
+      * { animation: none !important; } 
+    }
   </style>
-  <rect width="1200" height="160" fill="url(#bgGrad02H)"/>
   
-  <g class="stage">
-    <rect x="100" y="60" width="80" height="40" rx="8" class="node-bg" opacity="0.5"/>
-    <circle cx="140" cy="80" r="12" class="accent-green" opacity="0.3"/>
-    <text x="140" y="85" text-anchor="middle" class="text-secondary" font-size="10">Build</text>
-  </g>
-  <g class="stage" style="animation-delay: 2s">
-    <rect x="400" y="60" width="80" height="40" rx="8" class="node-bg" opacity="0.5"/>
-    <circle cx="440" cy="80" r="12" class="accent-blue" opacity="0.3"/>
-    <text x="440" y="85" text-anchor="middle" class="text-secondary" font-size="10">Test</text>
-  </g>
-  <g class="stage" style="animation-delay: 4s">
-    <rect x="700" y="60" width="80" height="40" rx="8" class="node-bg" opacity="0.5"/>
-    <circle cx="740" cy="80" r="12" class="accent-purple" opacity="0.3"/>
-    <text x="740" y="85" text-anchor="middle" class="text-secondary" font-size="10">Deploy</text>
-  </g>
-  <g class="stage" style="animation-delay: 6s">
-    <rect x="1000" y="60" width="80" height="40" rx="8" class="node-bg" opacity="0.5"/>
-    <circle cx="1040" cy="80" r="12" class="accent-green" opacity="0.3"/>
-    <text x="1040" y="85" text-anchor="middle" class="text-secondary" font-size="10">Monitor</text>
+  <rect width="1200" height="160" fill="url(#bgPipelineGrad)"/>
+  <rect width="1200" height="160" fill="url(#pipelinePattern)" opacity="0.3"/>
+  
+  <!-- Pipeline stages -->
+  <g filter="url(#glow)">
+    <rect class="pipeline-stage" x="100" y="60" width="120" height="40" rx="5" fill="none" stroke="#3094FF" stroke-width="2" style="animation-delay: 0s"/>
+    <rect class="pipeline-stage" x="300" y="60" width="120" height="40" rx="5" fill="none" stroke="#3094FF" stroke-width="2" style="animation-delay: 0.8s"/>
+    <rect class="pipeline-stage" x="500" y="60" width="120" height="40" rx="5" fill="none" stroke="#5FED83" stroke-width="2" style="animation-delay: 1.6s"/>
+    <rect class="pipeline-stage" x="700" y="60" width="120" height="40" rx="5" fill="none" stroke="#5FED83" stroke-width="2" style="animation-delay: 2.4s"/>
+    <rect class="pipeline-stage" x="900" y="60" width="120" height="40" rx="5" fill="none" stroke="#C06EFF" stroke-width="2" style="animation-delay: 3.2s"/>
   </g>
   
-  <line x1="180" y1="80" x2="400" y2="80" class="gitline pipeline-arrow" stroke-dasharray="10 10" stroke-width="2"/>
-  <line x1="480" y1="80" x2="700" y2="80" class="gitline pipeline-arrow" stroke-dasharray="10 10" stroke-width="2" style="animation-delay: 0.5s"/>
-  <line x1="780" y1="80" x2="1000" y2="80" class="gitline pipeline-arrow" stroke-dasharray="10 10" stroke-width="2" style="animation-delay: 1s"/>
+  <!-- Flow arrows between stages -->
+  <path class="stage-flow" d="M 220 80 L 300 80" stroke="#3094FF" stroke-width="2" marker-end="url(#arrow)" style="animation-delay: 0s"/>
+  <path class="stage-flow" d="M 420 80 L 500 80" stroke="#3094FF" stroke-width="2" marker-end="url(#arrow)" style="animation-delay: 0.8s"/>
+  <path class="stage-flow" d="M 620 80 L 700 80" stroke="#5FED83" stroke-width="2" marker-end="url(#arrow)" style="animation-delay: 1.6s"/>
+  <path class="stage-flow" d="M 820 80 L 900 80" stroke="#5FED83" stroke-width="2" marker-end="url(#arrow)" style="animation-delay: 2.4s"/>
   
-  <text x="600" y="70" text-anchor="middle" class="title text-primary">MCP AI Agent Guidelines Server</text>
-  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary">Guidelines • Patterns • Best Practices</text>
+  <!-- Stage labels -->
+  <text x="160" y="85" text-anchor="middle" class="text-secondary" font-size="11">Build</text>
+  <text x="360" y="85" text-anchor="middle" class="text-secondary" font-size="11">Test</text>
+  <text x="560" y="85" text-anchor="middle" class="text-secondary" font-size="11">Deploy</text>
+  <text x="760" y="85" text-anchor="middle" class="text-secondary" font-size="11">Verify</text>
+  <text x="960" y="85" text-anchor="middle" class="text-secondary" font-size="11">Release</text>
+  
+  <!-- Gear icons (rotating) -->
+  <g class="gear-rotate" transform="translate(160, 80)" opacity="0.6">
+    <circle r="12" fill="none" stroke="#3094FF" stroke-width="1.5"/>
+    <path d="M -12 0 L -8 0 M 12 0 L 8 0 M 0 -12 L 0 -8 M 0 12 L 0 8" stroke="#3094FF" stroke-width="2"/>
+    <circle r="4" fill="#3094FF"/>
+  </g>
+  
+  <g class="gear-rotate" transform="translate(360, 80)" opacity="0.6" style="animation-delay: -2s">
+    <circle r="12" fill="none" stroke="#3094FF" stroke-width="1.5"/>
+    <path d="M -12 0 L -8 0 M 12 0 L 8 0 M 0 -12 L 0 -8 M 0 12 L 0 8" stroke="#3094FF" stroke-width="2"/>
+    <circle r="4" fill="#3094FF"/>
+  </g>
+  
+  <!-- Checkmarks (appearing) -->
+  <g class="check-appear" transform="translate(560, 80)" filter="url(#glow)" style="animation-delay: 0s">
+    <path d="M -6 0 L -2 4 L 6 -4" fill="none" stroke="#5FED83" stroke-width="3" stroke-linecap="round"/>
+  </g>
+  
+  <g class="check-appear" transform="translate(760, 80)" filter="url(#glow)" style="animation-delay: 1s">
+    <path d="M -6 0 L -2 4 L 6 -4" fill="none" stroke="#5FED83" stroke-width="3" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Rocket icon (deploy stage) -->
+  <g transform="translate(1080, 30)" opacity="0.7">
+    <path d="M 0 20 L 5 0 L 10 20 Z" fill="#C06EFF"/>
+    <rect x="3" y="12" width="4" height="8" fill="#C06EFF"/>
+    <circle cx="5" cy="10" r="2" fill="#ffffff"/>
+    <path d="M 0 20 L -3 25 L 3 22 Z" fill="#5FED83"/>
+    <path d="M 10 20 L 13 25 L 7 22 Z" fill="#5FED83"/>
+  </g>
+  
+  <!-- Progress indicator at bottom -->
+  <g opacity="0.5">
+    <rect x="100" y="130" width="920" height="4" rx="2" fill="#30363d"/>
+    <rect class="progress-bar" x="100" y="130" height="4" rx="2" fill="url(#stageGlow)" style="animation-delay: 0s"/>
+  </g>
+  
+  <!-- CI/CD icon (left) -->
+  <g transform="translate(25, 30)" opacity="0.6">
+    <circle cx="15" cy="15" r="12" fill="none" stroke="#3094FF" stroke-width="2"/>
+    <path d="M 15 7 L 15 23 M 10 15 L 20 15" stroke="#3094FF" stroke-width="2"/>
+    <path d="M 12 10 L 8 15 L 12 20" fill="none" stroke="#5FED83" stroke-width="2" stroke-linecap="round"/>
+    <path d="M 18 10 L 22 15 L 18 20" fill="none" stroke="#5FED83" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  
+  <text x="600" y="70" text-anchor="middle" class="text-primary" font-size="36" filter="url(#dropShadow)">MCP AI Agent Guidelines Server</text>
+  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" font-size="14">Guidelines • Patterns • Best Practices</text>
+  <rect x="400" y="84" width="400" height="16" fill="url(#shine02)" opacity="0.15"/>
 </svg>

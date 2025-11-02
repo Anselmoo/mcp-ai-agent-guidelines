@@ -1,80 +1,219 @@
-<svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Kubernetes">
+<svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Kubernetes Orchestration">
   <defs>
-    <linearGradient id="bgGrad10H" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" class="bg-start"/>
-      <stop offset="100%" class="bg-end"/>
+    <linearGradient id="bgK8sGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d1117;stop-opacity:1">
+        <animate attributeName="stop-color" values="#0d1117;#1c2128;#0d1117" dur="11s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="50%" style="stop-color:#161b22;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#1c2128;stop-opacity:1">
+        <animate attributeName="stop-color" values="#1c2128;#0d1117;#1c2128" dur="11s" repeatCount="indefinite"/>
+      </stop>
     </linearGradient>
+    
+    <radialGradient id="podGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#3094FF;stop-opacity:1"/>
+      <stop offset="50%" style="stop-color:#C06EFF;stop-opacity:0.6"/>
+      <stop offset="100%" style="stop-color:#5FED83;stop-opacity:0"/>
+    </radialGradient>
+    
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 8 0" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <filter id="dropShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+      <feOffset dx="0" dy="2" result="offsetblur"/>
+      <feFlood flood-color="#000000" flood-opacity="0.5"/>
+      <feComposite in2="offsetblur" operator="in"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <linearGradient id="shine10" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0"/>
+      <stop offset="50%" style="stop-color:#ffffff;stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0"/>
+      <animate attributeName="x1" values="-100%;200%" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="x2" values="0%;300%" dur="3s" repeatCount="indefinite"/>
+    </linearGradient>
+    
+    <pattern id="clusterPattern" x="0" y="0" width="50" height="50" patternUnits="userSpaceOnUse">
+      <path d="M 25 0 L 25 50 M 0 25 L 50 25" stroke="#30363d" stroke-width="0.5" opacity="0.2"/>
+      <circle cx="25" cy="25" r="2" fill="#3094FF" opacity="0.3"/>
+    </pattern>
+    
+    <symbol id="pod" viewBox="0 0 20 20">
+      <rect x="2" y="2" width="16" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <circle cx="10" cy="10" r="4" fill="currentColor" opacity="0.3"/>
+    </symbol>
   </defs>
+  
   <style>
     @media (prefers-color-scheme: dark) {
-      .bg-start { stop-color: #0d1117; } .bg-end { stop-color: #161b22; }
-      .text-primary { fill: #f0f6fc; } .text-secondary { fill: #8b949e; }
-      .accent-green { fill: #5FED83; stroke: #5FED83; }
-      .accent-purple { fill: #C06EFF; stroke: #C06EFF; }
-      .accent-blue { fill: #3094FF; stroke: #3094FF; }
-      .gitline { stroke: #30363d; } .node-bg { fill: #21262d; }
+      .text-primary { fill: #f0f6fc; font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.5px; }
+      .text-secondary { fill: #8b949e; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; letter-spacing: 0.5px; }
     }
     @media (prefers-color-scheme: light) {
-      .bg-start { stop-color: #f6f8fa; } .bg-end { stop-color: #ffffff; }
-      .text-primary { fill: #24292f; } .text-secondary { fill: #57606a; }
-      .accent-green { fill: #08872B; stroke: #08872B; }
-      .accent-purple { fill: #501DAF; stroke: #501DAF; }
-      .accent-blue { fill: #0969DA; stroke: #0969DA; }
-      .gitline { stroke: #d0d7de; } .node-bg { fill: #e1e4e8; }
+      .text-primary { fill: #24292f; font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.5px; }
+      .text-secondary { fill: #57606a; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; letter-spacing: 0.5px; }
     }
-    .title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 700; font-size: 36px; }
-    .subtitle { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 400; font-size: 14px; }
     
-    .pod { animation: pod-scale 5s ease-in-out infinite; }
-    @keyframes pod-scale {
-      0%, 100% { transform: scale(0); opacity: 0; }
-      50% { transform: scale(1); opacity: 1; }
+    .pod-scale { 
+      animation: pod-scaling 3s cubic-bezier(0.4, 0, 0.2, 1) infinite; 
+      transform-origin: center;
     }
-    .rolling { animation: rolling-update 10s linear infinite; }
-    @keyframes rolling-update {
-      0% { x: 100; opacity: 0; }
-      10%, 90% { opacity: 1; }
-      100% { x: 1100; opacity: 0; }
+    @keyframes pod-scaling {
+      0% { opacity: 0; transform: scale(0); }
+      50% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0.7; transform: scale(1); }
     }
-    .health-pulse { animation: health-beat 2s ease-in-out infinite; }
+    
+    .rolling-update {
+      animation: roll-wave 4s ease-in-out infinite;
+      transform-origin: center;
+    }
+    @keyframes roll-wave {
+      0%, 100% { opacity: 0.4; transform: translateY(0); }
+      50% { opacity: 1; transform: translateY(-5px); }
+    }
+    
+    .health-pulse {
+      animation: health-beat 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
     @keyframes health-beat {
-      0%, 100% { r: 4; opacity: 0.3; }
-      50% { r: 7; opacity: 1; }
+      0%, 100% { opacity: 0.3; r: 3; }
+      50% { opacity: 1; r: 5; }
     }
     
-    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+    .deploy-wave {
+      stroke-dasharray: 400;
+      stroke-dashoffset: 400;
+      animation: deploy-flow 5s linear infinite;
+    }
+    @keyframes deploy-flow {
+      to { stroke-dashoffset: 0; }
+    }
+    
+    .kubectl-spin {
+      animation: kubectl-rotate 12s linear infinite;
+      transform-origin: center;
+    }
+    @keyframes kubectl-rotate {
+      to { transform: rotate(360deg); }
+    }
+    
+    .helm-icon {
+      animation: helm-float 4s ease-in-out infinite;
+    }
+    @keyframes helm-float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    
+    @media (prefers-reduced-motion: reduce) { 
+      * { animation: none !important; } 
+    }
   </style>
-  <rect width="1200" height="160" fill="url(#bgGrad10H)"/>
   
-  <g class="pod" transform-origin="200 70">
-    <rect x="180" y="50" width="40" height="40" rx="6" class="accent-blue" opacity="0.3"/>
-    <circle cx="200" cy="70" r="3" class="accent-blue"/>
-  </g>
-  <g class="pod" transform-origin="400 70" style="animation-delay: 1s">
-    <rect x="380" y="50" width="40" height="40" rx="6" class="accent-green" opacity="0.3"/>
-    <circle cx="400" cy="70" r="3" class="accent-green"/>
-  </g>
-  <g class="pod" transform-origin="600 70" style="animation-delay: 2s">
-    <rect x="580" y="50" width="40" height="40" rx="6" class="accent-purple" opacity="0.3"/>
-    <circle cx="600" cy="70" r="3" class="accent-purple"/>
-  </g>
-  <g class="pod" transform-origin="800 70" style="animation-delay: 3s">
-    <rect x="780" y="50" width="40" height="40" rx="6" class="accent-blue" opacity="0.3"/>
-    <circle cx="800" cy="70" r="3" class="accent-blue"/>
-  </g>
-  <g class="pod" transform-origin="1000 70" style="animation-delay: 4s">
-    <rect x="980" y="50" width="40" height="40" rx="6" class="accent-green" opacity="0.3"/>
-    <circle cx="1000" cy="70" r="3" class="accent-green"/>
+  <rect width="1200" height="160" fill="url(#bgK8sGrad)"/>
+  <rect width="1200" height="160" fill="url(#clusterPattern)" opacity="0.3"/>
+  
+  <!-- Kubernetes hexagon in center -->
+  <g class="kubectl-spin" transform="translate(600, 80)" filter="url(#glow)">
+    <path d="M 0,-25 L 22,-12 L 22,12 L 0,25 L -22,12 L -22,-12 Z" fill="none" stroke="#3094FF" stroke-width="2" opacity="0.5"/>
+    <path d="M 0,-20 L 17,-10 L 17,10 L 0,20 L -17,10 L -17,-10 Z" fill="none" stroke="#3094FF" stroke-width="1" opacity="0.3"/>
+    <circle cx="0" cy="0" r="6" fill="#3094FF"/>
   </g>
   
-  <rect class="rolling" y="110" width="60" height="8" rx="4" class="accent-purple" opacity="0.5"/>
+  <!-- Pod replicas (scaling) -->
+  <g filter="url(#glow)">
+    <!-- Row 1 -->
+    <g class="pod-scale" style="animation-delay: 0s">
+      <use href="#pod" x="150" y="25" width="35" height="35" color="#3094FF" opacity="0.7"/>
+    </g>
+    <g class="pod-scale" style="animation-delay: 0.5s">
+      <use href="#pod" x="250" y="25" width="35" height="35" color="#5FED83" opacity="0.7"/>
+    </g>
+    <g class="pod-scale" style="animation-delay: 1s">
+      <use href="#pod" x="350" y="25" width="35" height="35" color="#C06EFF" opacity="0.7"/>
+    </g>
+    
+    <!-- Row 2 -->
+    <g class="pod-scale" style="animation-delay: 1.5s">
+      <use href="#pod" x="850" y="25" width="35" height="35" color="#3094FF" opacity="0.7"/>
+    </g>
+    <g class="pod-scale" style="animation-delay: 2s">
+      <use href="#pod" x="950" y="25" width="35" height="35" color="#5FED83" opacity="0.7"/>
+    </g>
+    <g class="pod-scale" style="animation-delay: 2.5s">
+      <use href="#pod" x="1050" y="25" width="35" height="35" color="#C06EFF" opacity="0.7"/>
+    </g>
+    
+    <!-- Row 3 (bottom) -->
+    <g class="rolling-update" style="animation-delay: 0s">
+      <use href="#pod" x="150" y="100" width="35" height="35" color="#5FED83" opacity="0.7"/>
+    </g>
+    <g class="rolling-update" style="animation-delay: 1s">
+      <use href="#pod" x="250" y="100" width="35" height="35" color="#3094FF" opacity="0.7"/>
+    </g>
+    <g class="rolling-update" style="animation-delay: 2s">
+      <use href="#pod" x="350" y="100" width="35" height="35" color="#C06EFF" opacity="0.7"/>
+    </g>
+    <g class="rolling-update" style="animation-delay: 3s">
+      <use href="#pod" x="850" y="100" width="35" height="35" color="#5FED83" opacity="0.7"/>
+    </g>
+    <g class="rolling-update" style="animation-delay: 4s">
+      <use href="#pod" x="950" y="100" width="35" height="35" color="#3094FF" opacity="0.7"/>
+    </g>
+  </g>
   
-  <circle class="accent-green health-pulse" cx="200" cy="120"/>
-  <circle class="accent-green health-pulse" cx="400" cy="120" style="animation-delay: 0.4s"/>
-  <circle class="accent-green health-pulse" cx="600" cy="120" style="animation-delay: 0.8s"/>
-  <circle class="accent-green health-pulse" cx="800" cy="120" style="animation-delay: 1.2s"/>
-  <circle class="accent-green health-pulse" cx="1000" cy="120" style="animation-delay: 1.6s"/>
+  <!-- Deployment waves -->
+  <path class="deploy-wave" d="M 200 80 L 580 80" fill="none" stroke="#3094FF" stroke-width="2" opacity="0.4" style="animation-delay: 0s"/>
+  <path class="deploy-wave" d="M 620 80 L 1000 80" fill="none" stroke="#5FED83" stroke-width="2" opacity="0.4" style="animation-delay: 2s"/>
   
-  <text x="600" y="70" text-anchor="middle" class="title text-primary">MCP AI Agent Guidelines Server</text>
-  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary">Guidelines • Patterns • Best Practices</text>
+  <!-- Health indicators -->
+  <circle class="health-pulse" cx="167" cy="32" r="3" fill="#5FED83" style="animation-delay: 0s"/>
+  <circle class="health-pulse" cx="267" cy="32" r="3" fill="#5FED83" style="animation-delay: 0.5s"/>
+  <circle class="health-pulse" cx="367" cy="32" r="3" fill="#5FED83" style="animation-delay: 1s"/>
+  <circle class="health-pulse" cx="867" cy="32" r="3" fill="#5FED83" style="animation-delay: 1.5s"/>
+  <circle class="health-pulse" cx="967" cy="32" r="3" fill="#5FED83" style="animation-delay: 2s"/>
+  <circle class="health-pulse" cx="1067" cy="32" r="3" fill="#5FED83" style="animation-delay: 2.5s"/>
+  
+  <!-- Labels -->
+  <text x="167" y="75" text-anchor="middle" class="text-secondary" font-size="8">web-1</text>
+  <text x="267" y="75" text-anchor="middle" class="text-secondary" font-size="8">web-2</text>
+  <text x="367" y="75" text-anchor="middle" class="text-secondary" font-size="8">web-3</text>
+  
+  <text x="867" y="75" text-anchor="middle" class="text-secondary" font-size="8">api-1</text>
+  <text x="967" y="75" text-anchor="middle" class="text-secondary" font-size="8">api-2</text>
+  <text x="1067" y="75" text-anchor="middle" class="text-secondary" font-size="8">api-3</text>
+  
+  <!-- K8s helm icon (left) -->
+  <g class="helm-icon" transform="translate(25, 30)" opacity="0.7">
+    <path d="M 15 5 L 25 10 L 25 20 L 15 25 L 5 20 L 5 10 Z" fill="none" stroke="#3094FF" stroke-width="2"/>
+    <circle cx="15" cy="15" r="5" fill="none" stroke="#3094FF" stroke-width="1.5"/>
+    <path d="M 15 10 L 15 20 M 10 15 L 20 15" stroke="#3094FF" stroke-width="1.5"/>
+  </g>
+  
+  <!-- Container icon (right) -->
+  <g transform="translate(1150, 30)" opacity="0.7">
+    <rect x="0" y="5" width="25" height="20" rx="2" fill="none" stroke="#C06EFF" stroke-width="2"/>
+    <rect x="5" y="10" width="15" height="10" rx="1" fill="#C06EFF" opacity="0.3"/>
+    <line x1="12.5" y1="5" x2="12.5" y2="0" stroke="#C06EFF" stroke-width="2"/>
+    <circle cx="12.5" cy="0" r="2" fill="#5FED83"/>
+  </g>
+  
+  <!-- Cluster status -->
+  <text x="600" y="140" text-anchor="middle" class="text-secondary" font-size="9" opacity="0.5">Cluster: 11/15 pods running • 2 deployments • 3 services</text>
+  
+  <text x="600" y="70" text-anchor="middle" class="text-primary" font-size="36" filter="url(#dropShadow)">MCP AI Agent Guidelines Server</text>
+  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" font-size="14">Guidelines • Patterns • Best Practices</text>
+  <rect x="400" y="84" width="400" height="16" fill="url(#shine10)" opacity="0.15"/>
 </svg>

@@ -1,70 +1,237 @@
-<svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Matrix Rain">
+<svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Matrix Code Rain">
   <defs>
-    <linearGradient id="bgGrad08H" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" class="bg-start"/>
-      <stop offset="100%" class="bg-end"/>
+    <linearGradient id="bgMatrixGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#001a00;stop-opacity:1">
+        <animate attributeName="stop-color" values="#001a00;#002200;#001a00" dur="8s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="100%" style="stop-color:#000d00;stop-opacity:1"/>
+    </linearGradient>
+    
+    <radialGradient id="matrixGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#5FED83;stop-opacity:1"/>
+      <stop offset="50%" style="stop-color:#5FED83;stop-opacity:0.6"/>
+      <stop offset="100%" style="stop-color:#00ff00;stop-opacity:0"/>
+    </radialGradient>
+    
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0  1 0 0 0 0.9  0 0 0 0 0  0 0 0 5 0" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <filter id="dropShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+      <feOffset dx="0" dy="2" result="offsetblur"/>
+      <feFlood flood-color="#000000" flood-opacity="0.8"/>
+      <feComposite in2="offsetblur" operator="in"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <filter id="motionBlur">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="0,2"/>
+    </filter>
+    
+    <linearGradient id="shine08" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#5FED83;stop-opacity:0"/>
+      <stop offset="50%" style="stop-color:#5FED83;stop-opacity:0.6"/>
+      <stop offset="100%" style="stop-color:#5FED83;stop-opacity:0"/>
+      <animate attributeName="x1" values="-100%;200%" dur="2s" repeatCount="indefinite"/>
+      <animate attributeName="x2" values="0%;300%" dur="2s" repeatCount="indefinite"/>
     </linearGradient>
   </defs>
+  
   <style>
+    @import url('data:text/css;base64,QGZvbnQtZmFjZXtmb250LWZhbWlseTonTWF0cml4Q29kZSc7c3JjOmxvY2FsKCdDb3VyaWVyIE5ldycpLGxvY2FsKCdDb3VyaWVyJyl9');
+    
     @media (prefers-color-scheme: dark) {
-      .bg-start { stop-color: #0d1117; } .bg-end { stop-color: #161b22; }
-      .text-primary { fill: #f0f6fc; } .text-secondary { fill: #8b949e; }
-      .accent-green { fill: #5FED83; stroke: #5FED83; }
-      .accent-purple { fill: #C06EFF; stroke: #C06EFF; }
-      .accent-blue { fill: #3094FF; stroke: #3094FF; }
-      .gitline { stroke: #30363d; } .node-bg { fill: #21262d; }
+      .text-primary { fill: #5FED83; font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.5px; }
+      .text-secondary { fill: #4a9960; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; letter-spacing: 0.5px; }
     }
     @media (prefers-color-scheme: light) {
-      .bg-start { stop-color: #f6f8fa; } .bg-end { stop-color: #ffffff; }
-      .text-primary { fill: #24292f; } .text-secondary { fill: #57606a; }
-      .accent-green { fill: #08872B; stroke: #08872B; }
-      .accent-purple { fill: #501DAF; stroke: #501DAF; }
-      .accent-blue { fill: #0969DA; stroke: #0969DA; }
-      .gitline { stroke: #d0d7de; } .node-bg { fill: #e1e4e8; }
-    }
-    .title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 700; font-size: 36px; }
-    .subtitle { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 400; font-size: 14px; }
-    
-    .rain-1 { animation: rain-fall-1 8s linear infinite; }
-    @keyframes rain-fall-1 {
-      0% { y: -20; opacity: 0; }
-      10%, 90% { opacity: 1; }
-      100% { y: 180; opacity: 0; }
-    }
-    .rain-2 { animation: rain-fall-2 10s linear infinite; }
-    @keyframes rain-fall-2 {
-      0% { y: -20; opacity: 0; }
-      10%, 90% { opacity: 0.7; }
-      100% { y: 180; opacity: 0; }
-    }
-    .rain-3 { animation: rain-fall-3 12s linear infinite; }
-    @keyframes rain-fall-3 {
-      0% { y: -20; opacity: 0; }
-      10%, 90% { opacity: 0.5; }
-      100% { y: 180; opacity: 0; }
-    }
-    .matrix-glow { animation: glow-pulse 3s ease-in-out infinite; }
-    @keyframes glow-pulse {
-      0%, 100% { opacity: 0.2; }
-      50% { opacity: 0.8; }
+      .text-primary { fill: #24292f; font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.5px; }
+      .text-secondary { fill: #57606a; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; letter-spacing: 0.5px; }
     }
     
-    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+    .matrix-char {
+      font-family: 'Courier New', 'Courier', monospace;
+      font-weight: bold;
+      fill: #5FED83;
+    }
+    
+    .rain-1 { animation: rain-fall 2s linear infinite; filter: url(#motionBlur); }
+    .rain-2 { animation: rain-fall 2.5s linear infinite; filter: url(#motionBlur); }
+    .rain-3 { animation: rain-fall 3s linear infinite; filter: url(#motionBlur); }
+    .rain-4 { animation: rain-fall 2.2s linear infinite; filter: url(#motionBlur); }
+    .rain-5 { animation: rain-fall 2.8s linear infinite; filter: url(#motionBlur); }
+    
+    @keyframes rain-fall {
+      0% { transform: translateY(-160px); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 0.8; }
+      100% { transform: translateY(160px); opacity: 0; }
+    }
+    
+    .leading-char {
+      animation: leading-glow 1s ease-in-out infinite;
+      fill: #ffffff;
+      filter: url(#glow);
+    }
+    @keyframes leading-glow {
+      0%, 100% { opacity: 1; fill: #ffffff; }
+      50% { opacity: 0.7; fill: #5FED83; }
+    }
+    
+    .trail-char {
+      animation: trail-fade 2s linear infinite;
+    }
+    @keyframes trail-fade {
+      0% { opacity: 0.9; fill: #5FED83; }
+      100% { opacity: 0.1; fill: #003300; }
+    }
+    
+    .grid-flash {
+      animation: grid-blink 3s ease-in-out infinite;
+    }
+    @keyframes grid-blink {
+      0%, 100% { opacity: 0.05; }
+      50% { opacity: 0.15; }
+    }
+    
+    @media (prefers-reduced-motion: reduce) { 
+      * { animation: none !important; } 
+    }
   </style>
-  <rect width="1200" height="160" fill="url(#bgGrad08H)"/>
   
-  <text class="accent-green rain-1" x="100" font-family="monospace" font-size="14">git commit</text>
-  <text class="accent-green rain-2" x="250" font-family="monospace" font-size="14" style="animation-delay: 1s">push</text>
-  <text class="accent-blue rain-1" x="400" font-family="monospace" font-size="14" style="animation-delay: 2s">merge</text>
-  <text class="accent-purple rain-3" x="550" font-family="monospace" font-size="14" style="animation-delay: 3s">branch</text>
-  <text class="accent-green rain-2" x="700" font-family="monospace" font-size="14" style="animation-delay: 4s">pull</text>
-  <text class="accent-blue rain-1" x="850" font-family="monospace" font-size="14" style="animation-delay: 5s">rebase</text>
-  <text class="accent-purple rain-3" x="1000" font-family="monospace" font-size="14" style="animation-delay: 6s">tag</text>
+  <rect width="1200" height="160" fill="url(#bgMatrixGrad)"/>
   
-  <circle class="accent-green matrix-glow" cx="100" cy="120" r="20" opacity="0.1"/>
-  <circle class="accent-blue matrix-glow" cx="600" cy="120" r="25" opacity="0.1" style="animation-delay: 1s"/>
-  <circle class="accent-purple matrix-glow" cx="1100" cy="120" r="22" opacity="0.1" style="animation-delay: 2s"/>
+  <!-- Grid overlay -->
+  <g class="grid-flash">
+    <line x1="0" y1="40" x2="1200" y2="40" stroke="#5FED83" stroke-width="0.5" opacity="0.1"/>
+    <line x1="0" y1="80" x2="1200" y2="80" stroke="#5FED83" stroke-width="0.5" opacity="0.1"/>
+    <line x1="0" y1="120" x2="1200" y2="120" stroke="#5FED83" stroke-width="0.5" opacity="0.1"/>
+  </g>
   
-  <text x="600" y="70" text-anchor="middle" class="title text-primary">MCP AI Agent Guidelines Server</text>
-  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary">Guidelines • Patterns • Best Practices</text>
+  <!-- Matrix rain columns - Column 1 -->
+  <g class="rain-1" style="animation-delay: 0s">
+    <text class="leading-char" x="80" y="0" font-size="14">ア</text>
+    <text class="matrix-char" x="80" y="15" font-size="12" opacity="0.8">M</text>
+    <text class="matrix-char" x="80" y="28" font-size="12" opacity="0.6">C</text>
+    <text class="matrix-char" x="80" y="41" font-size="12" opacity="0.4">P</text>
+    <text class="matrix-char" x="80" y="54" font-size="12" opacity="0.2">3</text>
+  </g>
+  
+  <!-- Column 2 -->
+  <g class="rain-2" style="animation-delay: -0.3s">
+    <text class="leading-char" x="180" y="0" font-size="14">タ</text>
+    <text class="matrix-char" x="180" y="15" font-size="12" opacity="0.8">A</text>
+    <text class="matrix-char" x="180" y="28" font-size="12" opacity="0.6">I</text>
+    <text class="matrix-char" x="180" y="41" font-size="12" opacity="0.4">7</text>
+    <text class="matrix-char" x="180" y="54" font-size="12" opacity="0.2">ン</text>
+  </g>
+  
+  <!-- Column 3 -->
+  <g class="rain-3" style="animation-delay: -0.6s">
+    <text class="leading-char" x="280" y="0" font-size="14">ナ</text>
+    <text class="matrix-char" x="280" y="15" font-size="12" opacity="0.8">G</text>
+    <text class="matrix-char" x="280" y="28" font-size="12" opacity="0.6">E</text>
+    <text class="matrix-char" x="280" y="41" font-size="12" opacity="0.4">N</text>
+    <text class="matrix-char" x="280" y="54" font-size="12" opacity="0.2">2</text>
+  </g>
+  
+  <!-- Column 4 -->
+  <g class="rain-4" style="animation-delay: -0.9s">
+    <text class="leading-char" x="380" y="0" font-size="14">カ</text>
+    <text class="matrix-char" x="380" y="15" font-size="12" opacity="0.8">T</text>
+    <text class="matrix-char" x="380" y="28" font-size="12" opacity="0.6">5</text>
+    <text class="matrix-char" x="380" y="41" font-size="12" opacity="0.4">ラ</text>
+    <text class="matrix-char" x="380" y="54" font-size="12" opacity="0.2">9</text>
+  </g>
+  
+  <!-- Column 5 -->
+  <g class="rain-5" style="animation-delay: -1.2s">
+    <text class="leading-char" x="480" y="0" font-size="14">サ</text>
+    <text class="matrix-char" x="480" y="15" font-size="12" opacity="0.8">4</text>
+    <text class="matrix-char" x="480" y="28" font-size="12" opacity="0.6">イ</text>
+    <text class="matrix-char" x="480" y="41" font-size="12" opacity="0.4">D</text>
+    <text class="matrix-char" x="480" y="54" font-size="12" opacity="0.2">E</text>
+  </g>
+  
+  <!-- Column 6 -->
+  <g class="rain-1" style="animation-delay: -1.5s">
+    <text class="leading-char" x="580" y="0" font-size="14">ツ</text>
+    <text class="matrix-char" x="580" y="15" font-size="12" opacity="0.8">L</text>
+    <text class="matrix-char" x="580" y="28" font-size="12" opacity="0.6">I</text>
+    <text class="matrix-char" x="580" y="41" font-size="12" opacity="0.4">N</text>
+    <text class="matrix-char" x="580" y="54" font-size="12" opacity="0.2">E</text>
+  </g>
+  
+  <!-- Column 7 -->
+  <g class="rain-2" style="animation-delay: -1.8s">
+    <text class="leading-char" x="680" y="0" font-size="14">ハ</text>
+    <text class="matrix-char" x="680" y="15" font-size="12" opacity="0.8">8</text>
+    <text class="matrix-char" x="680" y="28" font-size="12" opacity="0.6">ミ</text>
+    <text class="matrix-char" x="680" y="41" font-size="12" opacity="0.4">S</text>
+    <text class="matrix-char" x="680" y="54" font-size="12" opacity="0.2">6</text>
+  </g>
+  
+  <!-- Column 8 -->
+  <g class="rain-3" style="animation-delay: -2.1s">
+    <text class="leading-char" x="780" y="0" font-size="14">ヤ</text>
+    <text class="matrix-char" x="780" y="15" font-size="12" opacity="0.8">R</text>
+    <text class="matrix-char" x="780" y="28" font-size="12" opacity="0.6">V</text>
+    <text class="matrix-char" x="780" y="41" font-size="12" opacity="0.4">E</text>
+    <text class="matrix-char" x="780" y="54" font-size="12" opacity="0.2">R</text>
+  </g>
+  
+  <!-- Column 9 -->
+  <g class="rain-4" style="animation-delay: -2.4s">
+    <text class="leading-char" x="880" y="0" font-size="14">ワ</text>
+    <text class="matrix-char" x="880" y="15" font-size="12" opacity="0.8">1</text>
+    <text class="matrix-char" x="880" y="28" font-size="12" opacity="0.6">ル</text>
+    <text class="matrix-char" x="880" y="41" font-size="12" opacity="0.4">K</text>
+    <text class="matrix-char" x="880" y="54" font-size="12" opacity="0.2">3</text>
+  </g>
+  
+  <!-- Column 10 -->
+  <g class="rain-5" style="animation-delay: -2.7s">
+    <text class="leading-char" x="980" y="0" font-size="14">ヲ</text>
+    <text class="matrix-char" x="980" y="15" font-size="12" opacity="0.8">P</text>
+    <text class="matrix-char" x="980" y="28" font-size="12" opacity="0.6">T</text>
+    <text class="matrix-char" x="980" y="41" font-size="12" opacity="0.4">テ</text>
+    <text class="matrix-char" x="980" y="54" font-size="12" opacity="0.2">R</text>
+  </g>
+  
+  <!-- Column 11 -->
+  <g class="rain-1" style="animation-delay: -3s">
+    <text class="leading-char" x="1080" y="0" font-size="14">ン</text>
+    <text class="matrix-char" x="1080" y="15" font-size="12" opacity="0.8">N</text>
+    <text class="matrix-char" x="1080" y="28" font-size="12" opacity="0.6">S</text>
+    <text class="matrix-char" x="1080" y="41" font-size="12" opacity="0.4">7</text>
+    <text class="matrix-char" x="1080" y="54" font-size="12" opacity="0.2">レ</text>
+  </g>
+  
+  <!-- Matrix code icon (left) -->
+  <g transform="translate(20, 25)" opacity="0.8" filter="url(#glow)">
+    <rect x="0" y="0" width="30" height="35" rx="2" fill="none" stroke="#5FED83" stroke-width="2"/>
+    <text x="7" y="14" class="matrix-char" font-size="10">01</text>
+    <text x="7" y="24" class="matrix-char" font-size="10">10</text>
+    <text x="7" y="34" class="matrix-char" font-size="10">11</text>
+  </g>
+  
+  <!-- Digital icon (right) -->
+  <g transform="translate(1150, 25)" opacity="0.8" filter="url(#glow)">
+    <circle cx="12" cy="12" r="10" fill="none" stroke="#5FED83" stroke-width="2"/>
+    <path d="M 12 7 L 12 17 M 7 12 L 17 12" stroke="#5FED83" stroke-width="2"/>
+    <circle cx="12" cy="12" r="3" fill="#5FED83"/>
+  </g>
+  
+  <text x="600" y="70" text-anchor="middle" class="text-primary" font-size="36" filter="url(#dropShadow)">MCP AI Agent Guidelines Server</text>
+  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" font-size="14">Guidelines • Patterns • Best Practices</text>
+  <rect x="400" y="84" width="400" height="16" fill="url(#shine08)" opacity="0.2"/>
 </svg>

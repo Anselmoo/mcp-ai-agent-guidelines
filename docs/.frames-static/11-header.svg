@@ -1,70 +1,210 @@
-<svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="GraphQL">
+<svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="GraphQL Query Resolution">
   <defs>
-    <linearGradient id="bgGrad11H" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" class="bg-start"/>
-      <stop offset="100%" class="bg-end"/>
+    <linearGradient id="bgGraphQLGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d1117;stop-opacity:1">
+        <animate attributeName="stop-color" values="#0d1117;#161b22;#0d1117" dur="10s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="50%" style="stop-color:#1c2128;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#161b22;stop-opacity:1">
+        <animate attributeName="stop-color" values="#161b22;#0d1117;#161b22" dur="10s" repeatCount="indefinite"/>
+      </stop>
     </linearGradient>
+    
+    <radialGradient id="queryGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#C06EFF;stop-opacity:1"/>
+      <stop offset="50%" style="stop-color:#5FED83;stop-opacity:0.6"/>
+      <stop offset="100%" style="stop-color:#3094FF;stop-opacity:0"/>
+    </radialGradient>
+    
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 8 0" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <filter id="dropShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+      <feOffset dx="0" dy="2" result="offsetblur"/>
+      <feFlood flood-color="#000000" flood-opacity="0.5"/>
+      <feComposite in2="offsetblur" operator="in"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <linearGradient id="shine11" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0"/>
+      <stop offset="50%" style="stop-color:#ffffff;stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0"/>
+      <animate attributeName="x1" values="-100%;200%" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="x2" values="0%;300%" dur="3s" repeatCount="indefinite"/>
+    </linearGradient>
+    
+    <pattern id="treePattern" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 40 40 M 40 40 L 20 60 M 40 40 L 60 60" stroke="#30363d" stroke-width="0.5" opacity="0.2"/>
+    </pattern>
   </defs>
+  
   <style>
     @media (prefers-color-scheme: dark) {
-      .bg-start { stop-color: #0d1117; } .bg-end { stop-color: #161b22; }
-      .text-primary { fill: #f0f6fc; } .text-secondary { fill: #8b949e; }
-      .accent-green { fill: #5FED83; stroke: #5FED83; }
-      .accent-purple { fill: #C06EFF; stroke: #C06EFF; }
-      .accent-blue { fill: #3094FF; stroke: #3094FF; }
-      .gitline { stroke: #30363d; } .node-bg { fill: #21262d; }
+      .text-primary { fill: #f0f6fc; font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.5px; }
+      .text-secondary { fill: #8b949e; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; letter-spacing: 0.5px; }
     }
     @media (prefers-color-scheme: light) {
-      .bg-start { stop-color: #f6f8fa; } .bg-end { stop-color: #ffffff; }
-      .text-primary { fill: #24292f; } .text-secondary { fill: #57606a; }
-      .accent-green { fill: #08872B; stroke: #08872B; }
-      .accent-purple { fill: #501DAF; stroke: #501DAF; }
-      .accent-blue { fill: #0969DA; stroke: #0969DA; }
-      .gitline { stroke: #d0d7de; } .node-bg { fill: #e1e4e8; }
+      .text-primary { fill: #24292f; font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.5px; }
+      .text-secondary { fill: #57606a; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; letter-spacing: 0.5px; }
     }
-    .title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 700; font-size: 36px; }
-    .subtitle { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 400; font-size: 14px; }
     
-    .resolver { animation: resolve-expand 6s ease-in-out infinite; }
-    @keyframes resolve-expand {
-      0%, 100% { r: 3; opacity: 0.2; }
-      50% { r: 8; opacity: 1; }
+    .query-node { 
+      animation: node-resolve 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite; 
+      transform-origin: center;
     }
-    .fetch-line { animation: data-fetch 4s ease-in-out infinite; }
-    @keyframes data-fetch {
-      0%, 100% { stroke-dashoffset: 100; opacity: 0; }
-      50% { stroke-dashoffset: 0; opacity: 1; }
+    @keyframes node-resolve {
+      0%, 100% { opacity: 0.4; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.15); }
     }
-    .field { animation: field-highlight 5s ease-in-out infinite; }
+    
+    .resolver-path {
+      stroke-dasharray: 200;
+      stroke-dashoffset: 200;
+      animation: resolve-trace 4s ease-out infinite;
+    }
+    @keyframes resolve-trace {
+      to { stroke-dashoffset: 0; }
+    }
+    
+    .field-pulse {
+      animation: field-highlight 2.5s ease-in-out infinite;
+    }
     @keyframes field-highlight {
-      0%, 100% { opacity: 0.2; fill-opacity: 0.05; }
-      50% { opacity: 1; fill-opacity: 0.2; }
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
     }
     
-    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+    .data-fetch {
+      animation: fetch-travel 3s linear infinite;
+    }
+    @keyframes fetch-travel {
+      0% { opacity: 0; transform: translateX(0); }
+      20% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { opacity: 0; transform: translateX(300px); }
+    }
+    
+    .graphql-logo {
+      animation: logo-rotate 20s linear infinite;
+      transform-origin: center;
+    }
+    @keyframes logo-rotate {
+      to { transform: rotate(360deg); }
+    }
+    
+    @media (prefers-reduced-motion: reduce) { 
+      * { animation: none !important; } 
+    }
   </style>
-  <rect width="1200" height="160" fill="url(#bgGrad11H)"/>
   
-  <line x1="600" y1="30" x2="300" y2="80" class="gitline fetch-line" stroke-width="1.5" stroke-dasharray="4 4"/>
-  <line x1="600" y1="30" x2="600" y2="80" class="gitline fetch-line" stroke-width="1.5" stroke-dasharray="4 4" style="animation-delay: 0.5s"/>
-  <line x1="600" y1="30" x2="900" y2="80" class="gitline fetch-line" stroke-width="1.5" stroke-dasharray="4 4" style="animation-delay: 1s"/>
+  <rect width="1200" height="160" fill="url(#bgGraphQLGrad)"/>
+  <rect width="1200" height="160" fill="url(#treePattern)" opacity="0.3"/>
   
-  <line x1="300" y1="80" x2="200" y2="130" class="gitline fetch-line" stroke-width="1" stroke-dasharray="4 4" style="animation-delay: 1.5s"/>
-  <line x1="300" y1="80" x2="400" y2="130" class="gitline fetch-line" stroke-width="1" stroke-dasharray="4 4" style="animation-delay: 2s"/>
+  <!-- Query root -->
+  <g filter="url(#glow)">
+    <circle class="query-node" cx="200" cy="80" r="20" fill="none" stroke="#C06EFF" stroke-width="3" style="animation-delay: 0s"/>
+    <text x="200" y="110" text-anchor="middle" class="text-secondary" font-size="10">Query</text>
+  </g>
   
-  <circle class="accent-purple resolver" cx="600" cy="30"/>
+  <!-- Field resolvers (tree structure) -->
+  <g filter="url(#glow)">
+    <!-- Level 1 -->
+    <circle class="query-node" cx="400" cy="40" r="14" fill="none" stroke="#5FED83" stroke-width="2" style="animation-delay: 0.5s"/>
+    <circle class="query-node" cx="400" cy="80" r="14" fill="none" stroke="#5FED83" stroke-width="2" style="animation-delay: 1s"/>
+    <circle class="query-node" cx="400" cy="120" r="14" fill="none" stroke="#5FED83" stroke-width="2" style="animation-delay: 1.5s"/>
+    
+    <!-- Level 2 -->
+    <circle class="query-node" cx="600" cy="30" r="10" fill="none" stroke="#3094FF" stroke-width="1.5" style="animation-delay: 2s"/>
+    <circle class="query-node" cx="600" cy="50" r="10" fill="none" stroke="#3094FF" stroke-width="1.5" style="animation-delay: 2.5s"/>
+    <circle class="query-node" cx="600" cy="70" r="10" fill="none" stroke="#3094FF" stroke-width="1.5" style="animation-delay: 3s"/>
+    <circle class="query-node" cx="600" cy="90" r="10" fill="none" stroke="#3094FF" stroke-width="1.5" style="animation-delay: 3.5s"/>
+    <circle class="query-node" cx="600" cy="110" r="10" fill="none" stroke="#3094FF" stroke-width="1.5" style="animation-delay: 4s"/>
+    <circle class="query-node" cx="600" cy="130" r="10" fill="none" stroke="#3094FF" stroke-width="1.5" style="animation-delay: 4.5s"/>
+    
+    <!-- Level 3 (data sources) -->
+    <rect class="query-node" x="770" y="65" width="80" height="30" rx="5" fill="none" stroke="#C06EFF" stroke-width="2" style="animation-delay: 5s"/>
+  </g>
   
-  <circle class="accent-blue resolver" cx="300" cy="80" style="animation-delay: 1s"/>
-  <circle class="accent-green resolver" cx="600" cy="80" style="animation-delay: 1.5s"/>
-  <circle class="accent-purple resolver" cx="900" cy="80" style="animation-delay: 2s"/>
+  <!-- Resolver paths -->
+  <path class="resolver-path" d="M 220 80 L 386 40" fill="none" stroke="#C06EFF" stroke-width="2" opacity="0.4" style="animation-delay: 0s"/>
+  <path class="resolver-path" d="M 220 80 L 386 80" fill="none" stroke="#C06EFF" stroke-width="2" opacity="0.4" style="animation-delay: 0.5s"/>
+  <path class="resolver-path" d="M 220 80 L 386 120" fill="none" stroke="#C06EFF" stroke-width="2" opacity="0.4" style="animation-delay: 1s"/>
   
-  <circle class="accent-green resolver" cx="200" cy="130" style="animation-delay: 2.5s"/>
-  <circle class="accent-blue resolver" cx="400" cy="130" style="animation-delay: 3s"/>
+  <path class="resolver-path" d="M 414 40 L 590 30" fill="none" stroke="#5FED83" stroke-width="1.5" opacity="0.4" style="animation-delay: 1.5s"/>
+  <path class="resolver-path" d="M 414 40 L 590 50" fill="none" stroke="#5FED83" stroke-width="1.5" opacity="0.4" style="animation-delay: 2s"/>
+  <path class="resolver-path" d="M 414 80 L 590 70" fill="none" stroke="#5FED83" stroke-width="1.5" opacity="0.4" style="animation-delay: 2.5s"/>
+  <path class="resolver-path" d="M 414 80 L 590 90" fill="none" stroke="#5FED83" stroke-width="1.5" opacity="0.4" style="animation-delay: 3s"/>
+  <path class="resolver-path" d="M 414 120 L 590 110" fill="none" stroke="#5FED83" stroke-width="1.5" opacity="0.4" style="animation-delay: 3.5s"/>
+  <path class="resolver-path" d="M 414 120 L 590 130" fill="none" stroke="#5FED83" stroke-width="1.5" opacity="0.4" style="animation-delay: 4s"/>
   
-  <text x="600" y="20" text-anchor="middle" class="field text-secondary" font-size="10">query</text>
-  <text x="300" y="100" text-anchor="middle" class="field text-secondary" font-size="9" style="animation-delay: 1s">user</text>
-  <text x="900" y="100" text-anchor="middle" class="field text-secondary" font-size="9" style="animation-delay: 2s">posts</text>
+  <path class="resolver-path" d="M 610 80 L 770 80" fill="none" stroke="#3094FF" stroke-width="2" opacity="0.4" style="animation-delay: 4.5s"/>
   
-  <text x="600" y="70" text-anchor="middle" class="title text-primary">MCP AI Agent Guidelines Server</text>
-  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary">Guidelines • Patterns • Best Practices</text>
+  <!-- Data fetching particles -->
+  <g class="data-fetch" style="animation-delay: 0s">
+    <circle cx="700" cy="80" r="4" fill="#C06EFF" opacity="0.8" filter="url(#glow)"/>
+  </g>
+  <g class="data-fetch" style="animation-delay: 1.5s">
+    <circle cx="700" cy="80" r="4" fill="#5FED83" opacity="0.8" filter="url(#glow)"/>
+  </g>
+  <g class="data-fetch" style="animation-delay: 3s">
+    <circle cx="700" cy="80" r="4" fill="#3094FF" opacity="0.8" filter="url(#glow)"/>
+  </g>
+  
+  <!-- Field labels -->
+  <text x="400" y="35" text-anchor="middle" class="text-secondary" font-size="8">user</text>
+  <text x="400" y="75" text-anchor="middle" class="text-secondary" font-size="8">posts</text>
+  <text x="400" y="115" text-anchor="middle" class="text-secondary" font-size="8">comments</text>
+  
+  <text x="810" y="83" text-anchor="middle" class="text-secondary" font-size="9">Database</text>
+  
+  <!-- Field indicators -->
+  <g opacity="0.6">
+    <circle class="field-pulse" cx="600" cy="30" r="2" fill="#3094FF" style="animation-delay: 0s"/>
+    <text x="615" y="33" class="text-secondary" font-size="7">id</text>
+    
+    <circle class="field-pulse" cx="600" cy="50" r="2" fill="#3094FF" style="animation-delay: 0.5s"/>
+    <text x="615" y="53" class="text-secondary" font-size="7">name</text>
+    
+    <circle class="field-pulse" cx="600" cy="70" r="2" fill="#3094FF" style="animation-delay: 1s"/>
+    <text x="615" y="73" class="text-secondary" font-size="7">email</text>
+  </g>
+  
+  <!-- GraphQL logo (left) -->
+  <g class="graphql-logo" transform="translate(37, 47)" opacity="0.7">
+    <path d="M 0,-15 L 13,-7.5 L 13,7.5 L 0,15 L -13,7.5 L -13,-7.5 Z" fill="none" stroke="#C06EFF" stroke-width="2"/>
+    <circle cx="0" cy="0" r="4" fill="#C06EFF"/>
+    <circle cx="0" cy="-15" r="2" fill="#C06EFF"/>
+    <circle cx="13" cy="-7.5" r="2" fill="#C06EFF"/>
+    <circle cx="13" cy="7.5" r="2" fill="#C06EFF"/>
+    <circle cx="0" cy="15" r="2" fill="#C06EFF"/>
+    <circle cx="-13" cy="7.5" r="2" fill="#C06EFF"/>
+    <circle cx="-13" cy="-7.5" r="2" fill="#C06EFF"/>
+  </g>
+  
+  <!-- Query icon (right) -->
+  <g transform="translate(1150, 30)" opacity="0.7">
+    <rect x="0" y="0" width="25" height="30" rx="2" fill="none" stroke="#5FED83" stroke-width="2"/>
+    <line x1="5" y1="8" x2="20" y2="8" stroke="#5FED83" stroke-width="1.5"/>
+    <line x1="5" y1="14" x2="20" y2="14" stroke="#5FED83" stroke-width="1.5"/>
+    <line x1="5" y1="20" x2="15" y2="20" stroke="#5FED83" stroke-width="1.5"/>
+    <circle cx="8" cy="24" r="2" fill="#3094FF"/>
+  </g>
+  
+  <!-- Query stats -->
+  <text x="600" y="145" text-anchor="middle" class="text-secondary" font-size="9" opacity="0.5">Resolved 12 fields • 3 data sources • 45ms</text>
+  
+  <text x="600" y="70" text-anchor="middle" class="text-primary" font-size="36" filter="url(#dropShadow)">MCP AI Agent Guidelines Server</text>
+  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" font-size="14">Guidelines • Patterns • Best Practices</text>
+  <rect x="400" y="84" width="400" height="16" fill="url(#shine11)" opacity="0.15"/>
 </svg>

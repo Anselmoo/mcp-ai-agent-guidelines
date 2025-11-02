@@ -1,77 +1,223 @@
-<svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="WebSocket">
+<svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="WebSocket Real-time Communication">
   <defs>
-    <linearGradient id="bgGrad15H" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" class="bg-start"/>
-      <stop offset="100%" class="bg-end"/>
+    <linearGradient id="bgWSGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d1117;stop-opacity:1">
+        <animate attributeName="stop-color" values="#0d1117;#161b22;#0d1117" dur="10s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="50%" style="stop-color:#1c2128;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#161b22;stop-opacity:1">
+        <animate attributeName="stop-color" values="#161b22;#0d1117;#161b22" dur="10s" repeatCount="indefinite"/>
+      </stop>
     </linearGradient>
+    
+    <radialGradient id="wsGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#C06EFF;stop-opacity:1"/>
+      <stop offset="50%" style="stop-color:#3094FF;stop-opacity:0.6"/>
+      <stop offset="100%" style="stop-color:#5FED83;stop-opacity:0"/>
+    </radialGradient>
+    
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 8 0" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <filter id="dropShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+      <feOffset dx="0" dy="2" result="offsetblur"/>
+      <feFlood flood-color="#000000" flood-opacity="0.5"/>
+      <feComposite in2="offsetblur" operator="in"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <linearGradient id="shine15" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0"/>
+      <stop offset="50%" style="stop-color:#ffffff;stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0"/>
+      <animate attributeName="x1" values="-100%;200%" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="x2" values="0%;300%" dur="3s" repeatCount="indefinite"/>
+    </linearGradient>
+    
+    <pattern id="connectionGrid" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+      <path d="M 30 0 L 30 60 M 0 30 L 60 30" stroke="#30363d" stroke-width="0.5" opacity="0.2"/>
+      <circle cx="30" cy="30" r="2" fill="#C06EFF" opacity="0.3"/>
+    </pattern>
+    
+    <marker id="arrowRight" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#C06EFF"/>
+    </marker>
+    
+    <marker id="arrowLeft" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M9,0 L9,6 L0,3 z" fill="#5FED83"/>
+    </marker>
   </defs>
+  
   <style>
     @media (prefers-color-scheme: dark) {
-      .bg-start { stop-color: #0d1117; } .bg-end { stop-color: #161b22; }
-      .text-primary { fill: #f0f6fc; } .text-secondary { fill: #8b949e; }
-      .accent-green { fill: #5FED83; stroke: #5FED83; }
-      .accent-purple { fill: #C06EFF; stroke: #C06EFF; }
-      .accent-blue { fill: #3094FF; stroke: #3094FF; }
-      .gitline { stroke: #30363d; } .node-bg { fill: #21262d; }
+      .text-primary { fill: #f0f6fc; font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.5px; }
+      .text-secondary { fill: #8b949e; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; letter-spacing: 0.5px; }
     }
     @media (prefers-color-scheme: light) {
-      .bg-start { stop-color: #f6f8fa; } .bg-end { stop-color: #ffffff; }
-      .text-primary { fill: #24292f; } .text-secondary { fill: #57606a; }
-      .accent-green { fill: #08872B; stroke: #08872B; }
-      .accent-purple { fill: #501DAF; stroke: #501DAF; }
-      .accent-blue { fill: #0969DA; stroke: #0969DA; }
-      .gitline { stroke: #d0d7de; } .node-bg { fill: #e1e4e8; }
-    }
-    .title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 700; font-size: 36px; }
-    .subtitle { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 400; font-size: 14px; }
-    
-    .msg-send { animation: send-message 4s ease-in-out infinite; }
-    @keyframes send-message {
-      0% { cx: 200; opacity: 0; }
-      10%, 40% { opacity: 1; }
-      50% { cx: 1000; opacity: 0; }
-      100% { cx: 200; opacity: 0; }
-    }
-    .msg-receive { animation: receive-message 4s ease-in-out infinite; }
-    @keyframes receive-message {
-      0%, 50% { cx: 1000; opacity: 0; }
-      60%, 90% { opacity: 1; }
-      100% { cx: 200; opacity: 0; }
-    }
-    .heartbeat { animation: ws-heartbeat 2s ease-in-out infinite; }
-    @keyframes ws-heartbeat {
-      0%, 100% { r: 4; opacity: 0.3; }
-      50% { r: 8; opacity: 1; }
-    }
-    .connection { animation: connection-active 5s ease-in-out infinite; }
-    @keyframes connection-active {
-      0%, 100% { stroke-dasharray: 1200 0; }
-      50% { stroke-dasharray: 0 1200; }
+      .text-primary { fill: #24292f; font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.5px; }
+      .text-secondary { fill: #57606a; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; letter-spacing: 0.5px; }
     }
     
-    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+    .ws-endpoint { 
+      animation: endpoint-pulse 3s cubic-bezier(0.4, 0, 0.2, 1) infinite; 
+      transform-origin: center;
+    }
+    @keyframes endpoint-pulse {
+      0%, 100% { opacity: 0.5; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.1); }
+    }
+    
+    .message-send {
+      animation: msg-to-server 3s ease-in-out infinite;
+    }
+    @keyframes msg-to-server {
+      0% { opacity: 0; transform: translateX(0); }
+      20% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { opacity: 0; transform: translateX(400px); }
+    }
+    
+    .message-receive {
+      animation: msg-to-client 3s ease-in-out infinite;
+    }
+    @keyframes msg-to-client {
+      0% { opacity: 0; transform: translateX(0); }
+      20% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { opacity: 0; transform: translateX(-400px); }
+    }
+    
+    .heartbeat-ping {
+      animation: ping-pong 2.5s ease-in-out infinite;
+    }
+    @keyframes ping-pong {
+      0%, 100% { opacity: 0.3; r: 4; }
+      50% { opacity: 1; r: 7; }
+    }
+    
+    .connection-wave {
+      stroke-dasharray: 600;
+      stroke-dashoffset: 600;
+      animation: wave-propagate 5s ease-out infinite;
+    }
+    @keyframes wave-propagate {
+      to { stroke-dashoffset: 0; }
+    }
+    
+    .socket-icon {
+      animation: socket-glow 4s ease-in-out infinite;
+    }
+    @keyframes socket-glow {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+    
+    @media (prefers-reduced-motion: reduce) { 
+      * { animation: none !important; } 
+    }
   </style>
-  <rect width="1200" height="160" fill="url(#bgGrad15H)"/>
   
-  <line x1="200" y1="60" x2="1000" y2="60" class="accent-blue connection" stroke-width="2" opacity="0.4"/>
-  <line x1="200" y1="100" x2="1000" y2="100" class="accent-green connection" stroke-width="2" opacity="0.4" style="animation-delay: 2.5s"/>
+  <rect width="1200" height="160" fill="url(#bgWSGrad)"/>
+  <rect width="1200" height="160" fill="url(#connectionGrid)" opacity="0.3"/>
   
-  <rect x="150" y="40" width="100" height="80" rx="8" class="accent-blue" opacity="0.15"/>
-  <text x="200" y="85" text-anchor="middle" class="text-secondary" font-size="11">Client</text>
+  <!-- Client (left) -->
+  <g filter="url(#glow)">
+    <rect class="ws-endpoint" x="150" y="50" width="100" height="60" rx="8" fill="none" stroke="#C06EFF" stroke-width="3" style="animation-delay: 0s"/>
+    <text x="200" y="77" text-anchor="middle" class="text-secondary" font-size="12">Client</text>
+    <text x="200" y="92" text-anchor="middle" class="text-secondary" font-size="9" opacity="0.7">Browser</text>
+  </g>
   
-  <rect x="950" y="40" width="100" height="80" rx="8" class="accent-green" opacity="0.15"/>
-  <text x="1000" y="85" text-anchor="middle" class="text-secondary" font-size="11">Server</text>
+  <!-- Server (right) -->
+  <g filter="url(#glow)">
+    <rect class="ws-endpoint" x="950" y="50" width="100" height="60" rx="8" fill="none" stroke="#3094FF" stroke-width="3" style="animation-delay: 1s"/>
+    <text x="1000" y="77" text-anchor="middle" class="text-secondary" font-size="12">Server</text>
+    <text x="1000" y="92" text-anchor="middle" class="text-secondary" font-size="9" opacity="0.7">WebSocket</text>
+  </g>
   
-  <circle class="accent-blue msg-send" cy="60" r="5"/>
-  <circle class="accent-green msg-receive" cy="100" r="5"/>
-  <circle class="accent-purple msg-send" cy="80" r="5" style="animation-delay: 2s"/>
+  <!-- Bidirectional connection paths -->
+  <path class="connection-wave" d="M 250 60 Q 600 40, 950 60" fill="none" stroke="#C06EFF" stroke-width="2" opacity="0.4" style="animation-delay: 0s"/>
+  <path class="connection-wave" d="M 250 100 Q 600 120, 950 100" fill="none" stroke="#5FED83" stroke-width="2" opacity="0.4" style="animation-delay: 2s"/>
   
-  <circle class="accent-green heartbeat" cx="200" cy="130"/>
-  <circle class="accent-blue heartbeat" cx="1000" cy="130" style="animation-delay: 1s"/>
+  <!-- Messages flowing (client to server) -->
+  <g class="message-send" filter="url(#glow)" style="animation-delay: 0s">
+    <rect x="250" y="55" width="60" height="20" rx="4" fill="#C06EFF" opacity="0.7"/>
+    <text x="280" y="69" text-anchor="middle" font-size="8" fill="#ffffff">emit</text>
+  </g>
   
-  <text x="600" y="40" text-anchor="middle" class="text-secondary" font-size="10">~15ms</text>
-  <rect x="570" y="45" width="60" height="4" rx="2" class="accent-purple" opacity="0.4"/>
+  <g class="message-send" filter="url(#glow)" style="animation-delay: 2s">
+    <rect x="250" y="55" width="60" height="20" rx="4" fill="#C06EFF" opacity="0.7"/>
+    <text x="280" y="69" text-anchor="middle" font-size="8" fill="#ffffff">data</text>
+  </g>
   
-  <text x="600" y="70" text-anchor="middle" class="title text-primary">MCP AI Agent Guidelines Server</text>
-  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary">Guidelines • Patterns • Best Practices</text>
+  <!-- Messages flowing (server to client) -->
+  <g class="message-receive" filter="url(#glow)" style="animation-delay: 1s">
+    <rect x="890" y="85" width="60" height="20" rx="4" fill="#5FED83" opacity="0.7"/>
+    <text x="920" y="99" text-anchor="middle" font-size="8" fill="#0d1117">push</text>
+  </g>
+  
+  <g class="message-receive" filter="url(#glow)" style="animation-delay: 3s">
+    <rect x="890" y="85" width="60" height="20" rx="4" fill="#5FED83" opacity="0.7"/>
+    <text x="920" y="99" text-anchor="middle" font-size="8" fill="#0d1117">event</text>
+  </g>
+  
+  <!-- Heartbeat indicators -->
+  <circle class="heartbeat-ping" cx="600" cy="60" r="4" fill="#C06EFF" filter="url(#glow)" style="animation-delay: 0s"/>
+  <circle class="heartbeat-ping" cx="600" cy="100" r="4" fill="#5FED83" filter="url(#glow)" style="animation-delay: 1.25s"/>
+  
+  <!-- Connection status indicators -->
+  <g opacity="0.6">
+    <circle cx="190" cy="125" r="4" fill="#5FED83"/>
+    <text x="200" y="129" class="text-secondary" font-size="9">Connected</text>
+    
+    <circle cx="990" cy="125" r="4" fill="#5FED83"/>
+    <text x="1000" y="129" class="text-secondary" font-size="9">Active</text>
+  </g>
+  
+  <!-- WebSocket protocol arrows -->
+  <path d="M 250 70 L 650 70" stroke="#C06EFF" stroke-width="1" opacity="0.3" marker-end="url(#arrowRight)"/>
+  <path d="M 950 90 L 550 90" stroke="#5FED83" stroke-width="1" opacity="0.3" marker-end="url(#arrowLeft)"/>
+  
+  <!-- Connection establishment animation -->
+  <g transform="translate(600, 80)" opacity="0.5">
+    <path class="connection-wave" d="M -30 -10 Q -15 -20, 0 -10 T 30 -10" fill="none" stroke="#C06EFF" stroke-width="1" style="animation-delay: 0s"/>
+    <path class="connection-wave" d="M -30 0 Q -15 -10, 0 0 T 30 0" fill="none" stroke="#3094FF" stroke-width="1" style="animation-delay: 1s"/>
+    <path class="connection-wave" d="M -30 10 Q -15 0, 0 10 T 30 10" fill="none" stroke="#5FED83" stroke-width="1" style="animation-delay: 2s"/>
+  </g>
+  
+  <!-- WebSocket icon (left) -->
+  <g class="socket-icon" transform="translate(25, 30)" opacity="0.7">
+    <circle cx="15" cy="15" r="12" fill="none" stroke="#C06EFF" stroke-width="2"/>
+    <path d="M 8 12 L 12 8 L 18 8 L 22 12" fill="none" stroke="#C06EFF" stroke-width="2" stroke-linecap="round"/>
+    <path d="M 8 18 L 12 22 L 18 22 L 22 18" fill="none" stroke="#C06EFF" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="15" cy="15" r="3" fill="#C06EFF"/>
+  </g>
+  
+  <!-- Realtime icon (right) -->
+  <g transform="translate(1150, 30)" opacity="0.7">
+    <circle cx="12" cy="15" r="10" fill="none" stroke="#5FED83" stroke-width="2"/>
+    <path d="M 12 8 L 12 15 L 17 18" stroke="#5FED83" stroke-width="2" stroke-linecap="round"/>
+    <path d="M 18 6 Q 21 9, 18 12" fill="none" stroke="#3094FF" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M 22 4 Q 26 9, 22 14" fill="none" stroke="#3094FF" stroke-width="1.5" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Protocol labels -->
+  <text x="450" y="50" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.5">ws://</text>
+  <text x="750" y="130" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.5">Full-duplex communication</text>
+  
+  <!-- Connection stats -->
+  <text x="600" y="145" text-anchor="middle" class="text-secondary" font-size="9" opacity="0.5">Latency: 12ms • Messages/sec: 847 • Connections: 1,234</text>
+  
+  <text x="600" y="70" text-anchor="middle" class="text-primary" font-size="36" filter="url(#dropShadow)">MCP AI Agent Guidelines Server</text>
+  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" font-size="14">Guidelines • Patterns • Best Practices</text>
+  <rect x="400" y="84" width="400" height="16" fill="url(#shine15)" opacity="0.15"/>
 </svg>

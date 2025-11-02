@@ -1,64 +1,189 @@
 <svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Git Rebase">
   <defs>
-    <linearGradient id="bgGrad07H" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" class="bg-start"/>
-      <stop offset="100%" class="bg-end"/>
+    <linearGradient id="bgRebaseGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d1117;stop-opacity:1">
+        <animate attributeName="stop-color" values="#0d1117;#161b22;#0d1117" dur="9s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="50%" style="stop-color:#1c2128;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#161b22;stop-opacity:1">
+        <animate attributeName="stop-color" values="#161b22;#0d1117;#161b22" dur="9s" repeatCount="indefinite"/>
+      </stop>
     </linearGradient>
+    
+    <radialGradient id="rebaseGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#C06EFF;stop-opacity:1"/>
+      <stop offset="50%" style="stop-color:#3094FF;stop-opacity:0.6"/>
+      <stop offset="100%" style="stop-color:#5FED83;stop-opacity:0"/>
+    </radialGradient>
+    
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 8 0" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <filter id="dropShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+      <feOffset dx="0" dy="2" result="offsetblur"/>
+      <feFlood flood-color="#000000" flood-opacity="0.5"/>
+      <feComposite in2="offsetblur" operator="in"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <linearGradient id="shine07" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0"/>
+      <stop offset="50%" style="stop-color:#ffffff;stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0"/>
+      <animate attributeName="x1" values="-100%;200%" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="x2" values="0%;300%" dur="3s" repeatCount="indefinite"/>
+    </linearGradient>
+    
+    <pattern id="timelinePattern" x="0" y="0" width="100" height="40" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="20" x2="100" y2="20" stroke="#30363d" stroke-width="1" opacity="0.2"/>
+      <circle cx="50" cy="20" r="2" fill="#C06EFF" opacity="0.3"/>
+    </pattern>
+    
+    <marker id="rebaseArrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#C06EFF"/>
+    </marker>
   </defs>
+  
   <style>
     @media (prefers-color-scheme: dark) {
-      .bg-start { stop-color: #0d1117; } .bg-end { stop-color: #161b22; }
-      .text-primary { fill: #f0f6fc; } .text-secondary { fill: #8b949e; }
-      .accent-green { fill: #5FED83; stroke: #5FED83; }
-      .accent-purple { fill: #C06EFF; stroke: #C06EFF; }
-      .accent-blue { fill: #3094FF; stroke: #3094FF; }
-      .gitline { stroke: #30363d; } .node-bg { fill: #21262d; }
+      .text-primary { fill: #f0f6fc; font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.5px; }
+      .text-secondary { fill: #8b949e; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; letter-spacing: 0.5px; }
     }
     @media (prefers-color-scheme: light) {
-      .bg-start { stop-color: #f6f8fa; } .bg-end { stop-color: #ffffff; }
-      .text-primary { fill: #24292f; } .text-secondary { fill: #57606a; }
-      .accent-green { fill: #08872B; stroke: #08872B; }
-      .accent-purple { fill: #501DAF; stroke: #501DAF; }
-      .accent-blue { fill: #0969DA; stroke: #0969DA; }
-      .gitline { stroke: #d0d7de; } .node-bg { fill: #e1e4e8; }
-    }
-    .title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 700; font-size: 36px; }
-    .subtitle { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 400; font-size: 14px; }
-    
-    .rebase-commit { animation: rebase-jump 8s ease-in-out infinite; }
-    @keyframes rebase-jump {
-      0%, 30%, 100% { cy: 80; opacity: 0.5; }
-      15% { cy: 40; opacity: 1; transform: scale(1.2); }
-    }
-    .squash { animation: squash-merge 6s ease-in-out infinite; }
-    @keyframes squash-merge {
-      0%, 100% { cx: 400; opacity: 1; r: 6; }
-      50% { cx: 600; opacity: 0; r: 0; }
-    }
-    .timeline-shift { animation: shift-timeline 10s linear infinite; }
-    @keyframes shift-timeline {
-      from { stroke-dashoffset: 0; }
-      to { stroke-dashoffset: -200; }
+      .text-primary { fill: #24292f; font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.5px; }
+      .text-secondary { fill: #57606a; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; letter-spacing: 0.5px; }
     }
     
-    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+    .commit-jump { 
+      animation: jump-rebase 4s cubic-bezier(0.4, 0, 0.2, 1) infinite; 
+    }
+    @keyframes jump-rebase {
+      0%, 100% { transform: translateY(0); opacity: 0.5; }
+      50% { transform: translateY(-20px); opacity: 1; }
+    }
+    
+    .timeline-rewrite {
+      stroke-dasharray: 600;
+      stroke-dashoffset: 600;
+      animation: timeline-draw 5s ease-in-out infinite;
+    }
+    @keyframes timeline-draw {
+      to { stroke-dashoffset: 0; }
+    }
+    
+    .squash-merge {
+      animation: squash-compress 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      transform-origin: center;
+    }
+    @keyframes squash-compress {
+      0%, 100% { transform: scaleX(1); opacity: 0.6; }
+      50% { transform: scaleX(0.5); opacity: 1; }
+    }
+    
+    .rebase-arc {
+      stroke-dasharray: 200;
+      stroke-dashoffset: 200;
+      animation: arc-trace 4s ease-out infinite;
+    }
+    @keyframes arc-trace {
+      to { stroke-dashoffset: 0; }
+    }
+    
+    .commit-glow {
+      animation: commit-intense-glow 2.5s ease-in-out infinite;
+    }
+    @keyframes commit-intense-glow {
+      0%, 100% { opacity: 0.4; filter: drop-shadow(0 0 2px currentColor); }
+      50% { opacity: 1; filter: drop-shadow(0 0 8px currentColor); }
+    }
+    
+    @media (prefers-reduced-motion: reduce) { 
+      * { animation: none !important; } 
+    }
   </style>
-  <rect width="1200" height="160" fill="url(#bgGrad07H)"/>
   
-  <line x1="0" y1="80" x2="1200" y2="80" class="gitline timeline-shift" stroke-width="2" stroke-dasharray="20 10"/>
-  <line x1="0" y1="40" x2="1200" y2="40" class="gitline timeline-shift" stroke-width="1.5" stroke-dasharray="15 8" style="animation-delay: 1s"/>
+  <rect width="1200" height="160" fill="url(#bgRebaseGrad)"/>
+  <rect width="1200" height="160" fill="url(#timelinePattern)" opacity="0.4"/>
   
-  <circle class="accent-blue rebase-commit" cx="200" r="7"/>
-  <circle class="accent-green rebase-commit" cx="400" r="7" style="animation-delay: 1s"/>
-  <circle class="accent-purple rebase-commit" cx="600" r="7" style="animation-delay: 2s"/>
-  <circle class="accent-blue rebase-commit" cx="800" r="7" style="animation-delay: 3s"/>
-  <circle class="accent-green rebase-commit" cx="1000" r="7" style="animation-delay: 4s"/>
+  <!-- Original timeline (top, fading out) -->
+  <line x1="100" y1="40" x2="1100" y2="40" stroke="#30363d" stroke-width="2" opacity="0.3"/>
+  <g opacity="0.4">
+    <circle cx="200" cy="40" r="6" fill="#C06EFF"/>
+    <circle cx="400" cy="40" r="6" fill="#C06EFF"/>
+    <circle cx="600" cy="40" r="6" fill="#C06EFF"/>
+    <circle cx="800" cy="40" r="6" fill="#C06EFF"/>
+  </g>
   
-  <circle class="accent-purple squash" cy="80" r="6"/>
-  <circle class="accent-green squash" cy="80" r="6" style="animation-delay: 2s"/>
+  <!-- New rebased timeline (bottom) -->
+  <line class="timeline-rewrite" x1="100" y1="120" x2="1100" y2="120" stroke="#5FED83" stroke-width="3" opacity="0.5"/>
   
-  <text x="600" y="135" text-anchor="middle" class="text-secondary" font-size="11" opacity="0.5">Rewriting history...</text>
+  <!-- Rebased commits -->
+  <g filter="url(#glow)">
+    <circle class="commit-glow" cx="250" cy="120" r="8" fill="#3094FF" style="animation-delay: 0s"/>
+    <circle class="commit-glow" cx="450" cy="120" r="8" fill="#3094FF" style="animation-delay: 0.5s"/>
+    <circle class="commit-glow" cx="650" cy="120" r="8" fill="#3094FF" style="animation-delay: 1s"/>
+    <circle class="commit-glow" cx="850" cy="120" r="8" fill="#3094FF" style="animation-delay: 1.5s"/>
+    <circle class="commit-glow" cx="1000" cy="120" r="8" fill="#5FED83" style="animation-delay: 2s"/>
+  </g>
   
-  <text x="600" y="70" text-anchor="middle" class="title text-primary">MCP AI Agent Guidelines Server</text>
-  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary">Guidelines • Patterns • Best Practices</text>
+  <!-- Rebase arc paths showing commit movement -->
+  <path class="rebase-arc" d="M 200 40 Q 225 70, 250 120" fill="none" stroke="#C06EFF" stroke-width="2" marker-end="url(#rebaseArrow)" style="animation-delay: 0s"/>
+  <path class="rebase-arc" d="M 400 40 Q 425 70, 450 120" fill="none" stroke="#C06EFF" stroke-width="2" marker-end="url(#rebaseArrow)" style="animation-delay: 1s"/>
+  <path class="rebase-arc" d="M 600 40 Q 625 70, 650 120" fill="none" stroke="#C06EFF" stroke-width="2" marker-end="url(#rebaseArrow)" style="animation-delay: 2s"/>
+  <path class="rebase-arc" d="M 800 40 Q 825 70, 850 120" fill="none" stroke="#C06EFF" stroke-width="2" marker-end="url(#rebaseArrow)" style="animation-delay: 3s"/>
+  
+  <!-- Jumping commits animation -->
+  <g class="commit-jump" style="animation-delay: 0s">
+    <circle cx="200" cy="80" r="5" fill="#C06EFF" opacity="0.8" filter="url(#glow)"/>
+  </g>
+  <g class="commit-jump" style="animation-delay: 1s">
+    <circle cx="400" cy="80" r="5" fill="#C06EFF" opacity="0.8" filter="url(#glow)"/>
+  </g>
+  <g class="commit-jump" style="animation-delay: 2s">
+    <circle cx="600" cy="80" r="5" fill="#C06EFF" opacity="0.8" filter="url(#glow)"/>
+  </g>
+  
+  <!-- Squash indicator -->
+  <g class="squash-merge" transform="translate(950, 80)">
+    <rect x="-15" y="-5" width="30" height="10" rx="2" fill="none" stroke="#5FED83" stroke-width="2" opacity="0.6"/>
+    <text x="0" y="3" text-anchor="middle" class="text-secondary" font-size="8">squash</text>
+  </g>
+  
+  <!-- Time direction arrow -->
+  <path d="M 100 150 L 1100 150" stroke="#30363d" stroke-width="1" opacity="0.3" marker-end="url(#rebaseArrow)"/>
+  <text x="1110" y="153" class="text-secondary" font-size="9" opacity="0.5">time →</text>
+  
+  <!-- Commit hash labels -->
+  <text x="200" y="30" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.5">old</text>
+  <text x="250" y="140" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.6">new</text>
+  <text x="1000" y="140" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7">HEAD</text>
+  
+  <!-- Git rebase icon (left) -->
+  <g transform="translate(25, 30)" opacity="0.7">
+    <circle cx="10" cy="10" r="6" fill="none" stroke="#C06EFF" stroke-width="2"/>
+    <path d="M 10 16 L 10 25" stroke="#C06EFF" stroke-width="2"/>
+    <path d="M 16 10 Q 20 15, 16 20" fill="none" stroke="#5FED83" stroke-width="2"/>
+    <circle cx="16" cy="20" r="4" fill="#5FED83"/>
+  </g>
+  
+  <!-- History rewrite icon (right) -->
+  <g transform="translate(1150, 30)" opacity="0.7">
+    <path d="M 5 10 Q 10 5, 15 10 T 25 10" fill="none" stroke="#3094FF" stroke-width="2"/>
+    <path d="M 15 0 L 15 20" stroke="#3094FF" stroke-width="2"/>
+    <path d="M 20 10 L 15 5 L 10 10" fill="none" stroke="#3094FF" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  
+  <text x="600" y="70" text-anchor="middle" class="text-primary" font-size="36" filter="url(#dropShadow)">MCP AI Agent Guidelines Server</text>
+  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" font-size="14">Guidelines • Patterns • Best Practices</text>
+  <rect x="400" y="84" width="400" height="16" fill="url(#shine07)" opacity="0.15"/>
 </svg>
