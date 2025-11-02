@@ -1,103 +1,153 @@
-<svg width="1200" height="80" viewBox="0 0 1200 80" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Footer">
+<svg width="1200" height="80" viewBox="0 0 1200 80" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Matrix Code Rain Footer">
   <defs>
-    <linearGradient id="bgGrad08F" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" class="bg-start"/>
-      <stop offset="100%" class="bg-end"/>
+    <linearGradient id="bgMatrix08F" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#001a00;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#000d00;stop-opacity:1"/>
     </linearGradient>
+    
+    <radialGradient id="matrixGlow08F" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#5FED83;stop-opacity:1"/>
+      <stop offset="50%" style="stop-color:#5FED83;stop-opacity:0.6"/>
+      <stop offset="100%" style="stop-color:#00ff00;stop-opacity:0"/>
+    </radialGradient>
+    
+    <filter id="matrixFilter08F" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0  1 0 0 0 0.9  0 0 0 0 0  0 0 0 5 0" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <filter id="motionBlur08F">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="0,2"/>
+    </filter>
   </defs>
 
   <style>
     @media (prefers-color-scheme: dark) {
-      .bg-start { stop-color: #0d1117; }
-      .bg-end { stop-color: #161b22; }
-      .text-link { fill: #8b949e; }
-      .divider { stroke: #30363d; }
-      .accent-green { fill: #5FED83; stroke: #5FED83; }
-      .accent-blue { fill: #3094FF; stroke: #3094FF; }
-      .accent-purple { fill: #C06EFF; stroke: #C06EFF; }
-      .gitline { stroke: #30363d; }
+      .text-link { fill: #4a9960; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; }
+      .divider { stroke: #003300; }
+      .matrix-char { fill: #5FED83; }
     }
     @media (prefers-color-scheme: light) {
-      .bg-start { stop-color: #f6f8fa; }
-      .bg-end { stop-color: #ffffff; }
-      .text-link { fill: #57606a; }
+      .text-link { fill: #57606a; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; }
       .divider { stroke: #d0d7de; }
-      .accent-green { fill: #08872B; stroke: #08872B; }
-      .accent-blue { fill: #0969DA; stroke: #0969DA; }
-      .accent-purple { fill: #501DAF; stroke: #501DAF; }
-      .gitline { stroke: #d0d7de; }
+      .matrix-char { fill: #08872B; }
     }
 
-    .link { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 13px; }
-
-    /* Full-width timeline flow */
-    .timeline-flow { stroke-dasharray: 10 5; animation: timeline-anim 14s linear infinite; }
-    @keyframes timeline-anim { to { stroke-dashoffset: -150; } }
-
-    /* Timeline dots appearing sequentially */
-    .dot-1 { animation: dot-appear 12s ease-in-out infinite; }
-    .dot-2 { animation: dot-appear 12s ease-in-out 2s infinite; }
-    .dot-3 { animation: dot-appear 12s ease-in-out 4s infinite; }
-    .dot-4 { animation: dot-appear 12s ease-in-out 6s infinite; }
-    .dot-5 { animation: dot-appear 12s ease-in-out 8s infinite; }
-    .dot-6 { animation: dot-appear 12s ease-in-out 10s infinite; }
-    @keyframes dot-appear {
-      0%, 25%, 100% { opacity: 0; r: 0; }
-      15% { opacity: 1; r: 5; }
-      20% { r: 3; }
+    .link { font-size: 13px; letter-spacing: 0.3px; }
+    
+    .code-rain { 
+      animation: rain-fall 2.5s linear infinite; 
+      font-family: 'Courier New', 'Courier', monospace;
+      font-weight: bold;
+      filter: url(#motionBlur08F);
     }
-
-    /* Activity indicator pulse */
-    .footer-pulse { animation: footer-pulse-anim 5s ease-in-out infinite; }
-    @keyframes footer-pulse-anim {
-      0%, 100% { opacity: 0.5; transform: scale(1); }
-      50% { opacity: 1; transform: scale(1.2); }
+    @keyframes rain-fall {
+      0% { transform: translateY(-80px); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 0.8; }
+      100% { transform: translateY(80px); opacity: 0; }
     }
-
-    /* Progress bar expanding */
-    .footer-progress { animation: footer-expand 10s ease-in-out infinite; }
-    @keyframes footer-expand {
-      0% { width: 0; opacity: 0.4; }
-      50% { width: 500; opacity: 0.8; }
-      100% { width: 1000; opacity: 0.5; }
+    
+    .leading-char {
+      animation: leading-glow 1s ease-in-out infinite;
+      fill: #ffffff;
+      filter: url(#matrixFilter08F);
+      font-family: 'Courier New', 'Courier', monospace;
+      font-weight: bold;
+    }
+    @keyframes leading-glow {
+      0%, 100% { opacity: 1; fill: #ffffff; }
+      50% { opacity: 0.7; fill: #5FED83; }
     }
 
     @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
   </style>
 
-  <!-- Full background -->
-  <rect width="1200" height="80" fill="url(#bgGrad08F)"/>
-
-  <!-- Top divider -->
+  <rect width="1200" height="80" fill="url(#bgMatrix08F)"/>
+  
   <line x1="0" y1="1" x2="1200" y2="1" class="divider" stroke-width="2"/>
-
-  <!-- Full-width timeline gitline -->
-  <line x1="40" y1="60" x2="1160" y2="60" class="gitline timeline-flow" stroke-width="2" opacity="0.6"/>
-
-  <!-- Timeline dots appearing across width -->
-  <circle class="accent-blue dot-1" cx="200" cy="60" r="3"/>
-  <circle class="accent-green dot-2" cx="400" cy="60" r="3"/>
-  <circle class="accent-purple dot-3" cx="600" cy="60" r="3"/>
-  <circle class="accent-blue dot-4" cx="800" cy="60" r="3"/>
-  <circle class="accent-green dot-5" cx="1000" cy="60" r="3"/>
-  <circle class="accent-purple dot-6" cx="1100" cy="60" r="3"/>
-
-  <!-- Activity indicator (left) -->
-  <g transform="translate(50, 30)" class="footer-pulse">
-    <circle r="8" class="accent-green" opacity="0.3"/>
-    <path d="M -3 0 L -1 2 L 3 -3" class="accent-green" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Matrix rain columns -->
+  <g style="animation-delay: 0s">
+    <text class="leading-char" x="120" y="0" font-size="14">ア</text>
+    <text class="code-rain matrix-char" x="120" y="15" font-size="12" opacity="0.8">M</text>
+    <text class="code-rain matrix-char" x="120" y="28" font-size="12" opacity="0.6">C</text>
+    <text class="code-rain matrix-char" x="120" y="41" font-size="12" opacity="0.4">P</text>
+  </g>
+  
+  <g style="animation-delay: -0.3s">
+    <text class="leading-char" x="240" y="0" font-size="14">タ</text>
+    <text class="code-rain matrix-char" x="240" y="15" font-size="12" opacity="0.8">A</text>
+    <text class="code-rain matrix-char" x="240" y="28" font-size="12" opacity="0.6">I</text>
+    <text class="code-rain matrix-char" x="240" y="41" font-size="12" opacity="0.4">7</text>
+  </g>
+  
+  <g style="animation-delay: -0.6s">
+    <text class="leading-char" x="360" y="0" font-size="14">ナ</text>
+    <text class="code-rain matrix-char" x="360" y="15" font-size="12" opacity="0.8">G</text>
+    <text class="code-rain matrix-char" x="360" y="28" font-size="12" opacity="0.6">E</text>
+    <text class="code-rain matrix-char" x="360" y="41" font-size="12" opacity="0.4">N</text>
+  </g>
+  
+  <g style="animation-delay: -0.9s">
+    <text class="leading-char" x="480" y="0" font-size="14">カ</text>
+    <text class="code-rain matrix-char" x="480" y="15" font-size="12" opacity="0.8">T</text>
+    <text class="code-rain matrix-char" x="480" y="28" font-size="12" opacity="0.6">5</text>
+    <text class="code-rain matrix-char" x="480" y="41" font-size="12" opacity="0.4">ラ</text>
+  </g>
+  
+  <g style="animation-delay: -1.2s">
+    <text class="leading-char" x="600" y="0" font-size="14">サ</text>
+    <text class="code-rain matrix-char" x="600" y="15" font-size="12" opacity="0.8">4</text>
+    <text class="code-rain matrix-char" x="600" y="28" font-size="12" opacity="0.6">イ</text>
+    <text class="code-rain matrix-char" x="600" y="41" font-size="12" opacity="0.4">D</text>
+  </g>
+  
+  <g style="animation-delay: -1.5s">
+    <text class="leading-char" x="720" y="0" font-size="14">ツ</text>
+    <text class="code-rain matrix-char" x="720" y="15" font-size="12" opacity="0.8">L</text>
+    <text class="code-rain matrix-char" x="720" y="28" font-size="12" opacity="0.6">I</text>
+    <text class="code-rain matrix-char" x="720" y="41" font-size="12" opacity="0.4">N</text>
+  </g>
+  
+  <g style="animation-delay: -1.8s">
+    <text class="leading-char" x="840" y="0" font-size="14">ハ</text>
+    <text class="code-rain matrix-char" x="840" y="15" font-size="12" opacity="0.8">8</text>
+    <text class="code-rain matrix-char" x="840" y="28" font-size="12" opacity="0.6">ミ</text>
+    <text class="code-rain matrix-char" x="840" y="41" font-size="12" opacity="0.4">S</text>
+  </g>
+  
+  <g style="animation-delay: -2.1s">
+    <text class="leading-char" x="960" y="0" font-size="14">ヤ</text>
+    <text class="code-rain matrix-char" x="960" y="15" font-size="12" opacity="0.8">R</text>
+    <text class="code-rain matrix-char" x="960" y="28" font-size="12" opacity="0.6">V</text>
+    <text class="code-rain matrix-char" x="960" y="41" font-size="12" opacity="0.4">E</text>
+  </g>
+  
+  <g style="animation-delay: -2.4s">
+    <text class="leading-char" x="1080" y="0" font-size="14">ワ</text>
+    <text class="code-rain matrix-char" x="1080" y="15" font-size="12" opacity="0.8">1</text>
+    <text class="code-rain matrix-char" x="1080" y="28" font-size="12" opacity="0.6">ル</text>
+    <text class="code-rain matrix-char" x="1080" y="41" font-size="12" opacity="0.4">K</text>
+  </g>
+  
+  <!-- Matrix code icon (left) -->
+  <g transform="translate(20, 25)" opacity="0.8" filter="url(#matrixFilter08F)">
+    <rect x="0" y="0" width="30" height="35" rx="2" fill="none" stroke="#5FED83" stroke-width="2"/>
+    <text x="7" y="14" class="matrix-char" font-size="10" font-family="'Courier New', monospace">01</text>
+    <text x="7" y="24" class="matrix-char" font-size="10" font-family="'Courier New', monospace">10</text>
+    <text x="7" y="34" class="matrix-char" font-size="10" font-family="'Courier New', monospace">11</text>
   </g>
 
-  <!-- Progress bar (bottom left) -->
-  <rect x="40" y="75" class="accent-green footer-progress" height="3" rx="1.5" opacity="0.6"/>
-
-  <!-- Links -->
-  <text x="300" y="30" class="link text-link">Contributing</text>
-  <text x="450" y="30" class="link text-link">Documentation</text>
-  <text x="620" y="30" class="link text-link">License (MIT)</text>
-  <text x="800" y="30" class="link text-link">GitHub</text>
-  <text x="950" y="30" class="link text-link">Issues</text>
-
-  <!-- Copyright -->
-  <text x="1100" y="30" text-anchor="end" class="link text-link" font-size="11px">© 2024-2025</text>
+  <text x="700" y="30" class="link text-link">Contributing</text>
+  <text x="850" y="30" class="link text-link">Documentation</text>
+  <text x="700" y="55" class="link text-link">License (MIT)</text>
+  <text x="850" y="55" class="link text-link">GitHub</text>
+  <text x="1000" y="55" class="link text-link">Issues</text>
+  
+  <text x="1160" y="43" text-anchor="end" class="link text-link" font-size="11px" opacity="0.7">© 2024-2025</text>
 </svg>

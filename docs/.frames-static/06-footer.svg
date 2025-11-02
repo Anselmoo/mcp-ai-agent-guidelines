@@ -1,103 +1,111 @@
-<svg width="1200" height="80" viewBox="0 0 1200 80" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Footer">
+<svg width="1200" height="80" viewBox="0 0 1200 80" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Microservices Architecture Footer">
   <defs>
-    <linearGradient id="bgGrad06F" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" class="bg-start"/>
-      <stop offset="100%" class="bg-end"/>
+    <linearGradient id="bgMicro06F" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d1117;stop-opacity:1">
+        <animate attributeName="stop-color" values="#0d1117;#161b22;#0d1117" dur="8s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="50%" style="stop-color:#1c2128;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#161b22;stop-opacity:1">
+        <animate attributeName="stop-color" values="#161b22;#0d1117;#161b22" dur="8s" repeatCount="indefinite"/>
+      </stop>
     </linearGradient>
+    
+    <filter id="microGlow06F" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 6 0" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <pattern id="meshPattern06F" x="0" y="0" width="50" height="50" patternUnits="userSpaceOnUse">
+      <circle cx="25" cy="25" r="2" fill="#3094FF" opacity="0.3"/>
+      <path d="M 25 0 L 25 50 M 0 25 L 50 25" stroke="#30363d" stroke-width="0.5" opacity="0.2"/>
+    </pattern>
   </defs>
 
   <style>
     @media (prefers-color-scheme: dark) {
-      .bg-start { stop-color: #0d1117; }
-      .bg-end { stop-color: #161b22; }
-      .text-link { fill: #8b949e; }
+      .text-link { fill: #8b949e; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; }
       .divider { stroke: #30363d; }
-      .accent-green { fill: #5FED83; stroke: #5FED83; }
-      .accent-blue { fill: #3094FF; stroke: #3094FF; }
-      .accent-purple { fill: #C06EFF; stroke: #C06EFF; }
-      .gitline { stroke: #30363d; }
     }
     @media (prefers-color-scheme: light) {
-      .bg-start { stop-color: #f6f8fa; }
-      .bg-end { stop-color: #ffffff; }
-      .text-link { fill: #57606a; }
+      .text-link { fill: #57606a; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; }
       .divider { stroke: #d0d7de; }
-      .accent-green { fill: #08872B; stroke: #08872B; }
-      .accent-blue { fill: #0969DA; stroke: #0969DA; }
-      .accent-purple { fill: #501DAF; stroke: #501DAF; }
-      .gitline { stroke: #d0d7de; }
     }
 
-    .link { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 13px; }
-
-    /* Full-width timeline flow */
-    .timeline-flow { stroke-dasharray: 10 5; animation: timeline-anim 14s linear infinite; }
-    @keyframes timeline-anim { to { stroke-dashoffset: -150; } }
-
-    /* Timeline dots appearing sequentially */
-    .dot-1 { animation: dot-appear 12s ease-in-out infinite; }
-    .dot-2 { animation: dot-appear 12s ease-in-out 2s infinite; }
-    .dot-3 { animation: dot-appear 12s ease-in-out 4s infinite; }
-    .dot-4 { animation: dot-appear 12s ease-in-out 6s infinite; }
-    .dot-5 { animation: dot-appear 12s ease-in-out 8s infinite; }
-    .dot-6 { animation: dot-appear 12s ease-in-out 10s infinite; }
-    @keyframes dot-appear {
-      0%, 25%, 100% { opacity: 0; r: 0; }
-      15% { opacity: 1; r: 5; }
-      20% { r: 3; }
+    .link { font-size: 13px; letter-spacing: 0.3px; }
+    
+    .service-node { 
+      animation: service-pulse 3s cubic-bezier(0.4, 0, 0.2, 1) infinite; 
+      transform-origin: center;
     }
-
-    /* Activity indicator pulse */
-    .footer-pulse { animation: footer-pulse-anim 5s ease-in-out infinite; }
-    @keyframes footer-pulse-anim {
-      0%, 100% { opacity: 0.5; transform: scale(1); }
+    @keyframes service-pulse {
+      0%, 100% { opacity: 0.4; transform: scale(1); }
       50% { opacity: 1; transform: scale(1.2); }
     }
-
-    /* Progress bar expanding */
-    .footer-progress { animation: footer-expand 10s ease-in-out infinite; }
-    @keyframes footer-expand {
-      0% { width: 0; opacity: 0.4; }
-      50% { width: 500; opacity: 0.8; }
-      100% { width: 1000; opacity: 0.5; }
+    
+    .api-call {
+      stroke-dasharray: 8 4;
+      animation: api-flow 2s linear infinite;
+    }
+    @keyframes api-flow {
+      to { stroke-dashoffset: -60; }
+    }
+    
+    .mesh-connection {
+      stroke-dasharray: 150;
+      stroke-dashoffset: 150;
+      animation: mesh-draw 3s ease-out infinite;
+    }
+    @keyframes mesh-draw {
+      to { stroke-dashoffset: 0; }
     }
 
     @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
   </style>
 
-  <!-- Full background -->
-  <rect width="1200" height="80" fill="url(#bgGrad06F)"/>
-
-  <!-- Top divider -->
+  <rect width="1200" height="80" fill="url(#bgMicro06F)"/>
+  <rect width="1200" height="80" fill="url(#meshPattern06F)" opacity="0.3"/>
+  
   <line x1="0" y1="1" x2="1200" y2="1" class="divider" stroke-width="2"/>
-
-  <!-- Full-width timeline gitline -->
-  <line x1="40" y1="60" x2="1160" y2="60" class="gitline timeline-flow" stroke-width="2" opacity="0.6"/>
-
-  <!-- Timeline dots appearing across width -->
-  <circle class="accent-blue dot-1" cx="200" cy="60" r="3"/>
-  <circle class="accent-green dot-2" cx="400" cy="60" r="3"/>
-  <circle class="accent-purple dot-3" cx="600" cy="60" r="3"/>
-  <circle class="accent-blue dot-4" cx="800" cy="60" r="3"/>
-  <circle class="accent-green dot-5" cx="1000" cy="60" r="3"/>
-  <circle class="accent-purple dot-6" cx="1100" cy="60" r="3"/>
-
-  <!-- Activity indicator (left) -->
-  <g transform="translate(50, 30)" class="footer-pulse">
-    <circle r="8" class="accent-green" opacity="0.3"/>
-    <path d="M -3 0 L -1 2 L 3 -3" class="accent-green" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- API connections -->
+  <path class="mesh-connection" d="M 150 50 L 300 30 L 450 50 L 600 30" 
+        fill="none" stroke="#3094FF" stroke-width="1.5" opacity="0.5" style="animation-delay: 0s"/>
+  <path class="mesh-connection" d="M 300 30 L 450 50 L 600 30 L 750 50" 
+        fill="none" stroke="#5FED83" stroke-width="1.5" opacity="0.5" style="animation-delay: 0.8s"/>
+  <path class="mesh-connection" d="M 450 50 L 600 30 L 750 50 L 900 30" 
+        fill="none" stroke="#C06EFF" stroke-width="1.5" opacity="0.5" style="animation-delay: 1.6s"/>
+  
+  <!-- Service nodes -->
+  <g filter="url(#microGlow06F)">
+    <rect class="service-node" x="145" y="45" width="10" height="10" rx="2" fill="#3094FF" style="animation-delay: 0s"/>
+    <rect class="service-node" x="295" y="25" width="10" height="10" rx="2" fill="#5FED83" style="animation-delay: 0.5s"/>
+    <rect class="service-node" x="445" y="45" width="10" height="10" rx="2" fill="#3094FF" style="animation-delay: 1s"/>
+    <rect class="service-node" x="595" y="25" width="10" height="10" rx="2" fill="#C06EFF" style="animation-delay: 1.5s"/>
+    <rect class="service-node" x="745" y="45" width="10" height="10" rx="2" fill="#5FED83" style="animation-delay: 2s"/>
+  </g>
+  
+  <!-- API flow indicators -->
+  <line class="api-call" x1="155" y1="50" x2="295" y2="30" stroke="#3094FF" stroke-width="1" opacity="0.6" style="animation-delay: 0s"/>
+  <line class="api-call" x1="305" y1="30" x2="445" y2="50" stroke="#5FED83" stroke-width="1" opacity="0.6" style="animation-delay: 0.4s"/>
+  <line class="api-call" x1="455" y1="50" x2="595" y2="30" stroke="#C06EFF" stroke-width="1" opacity="0.6" style="animation-delay: 0.8s"/>
+  
+  <!-- Microservices icon (left) -->
+  <g transform="translate(25, 30)" opacity="0.5">
+    <rect x="2" y="2" width="8" height="8" rx="1" fill="none" stroke="#3094FF" stroke-width="1.2"/>
+    <rect x="14" y="2" width="8" height="8" rx="1" fill="none" stroke="#5FED83" stroke-width="1.2"/>
+    <rect x="8" y="14" width="8" height="8" rx="1" fill="none" stroke="#C06EFF" stroke-width="1.2"/>
+    <path d="M 6 6 L 12 18" stroke="#30363d" stroke-width="0.8" opacity="0.5"/>
+    <path d="M 18 6 L 12 18" stroke="#30363d" stroke-width="0.8" opacity="0.5"/>
   </g>
 
-  <!-- Progress bar (bottom left) -->
-  <rect x="40" y="75" class="accent-green footer-progress" height="3" rx="1.5" opacity="0.6"/>
-
-  <!-- Links -->
-  <text x="300" y="30" class="link text-link">Contributing</text>
-  <text x="450" y="30" class="link text-link">Documentation</text>
-  <text x="620" y="30" class="link text-link">License (MIT)</text>
-  <text x="800" y="30" class="link text-link">GitHub</text>
-  <text x="950" y="30" class="link text-link">Issues</text>
-
-  <!-- Copyright -->
-  <text x="1100" y="30" text-anchor="end" class="link text-link" font-size="11px">© 2024-2025</text>
+  <text x="950" y="30" class="link text-link">Contributing</text>
+  <text x="1080" y="30" class="link text-link">Documentation</text>
+  <text x="950" y="55" class="link text-link">License (MIT)</text>
+  <text x="1080" y="55" class="link text-link">GitHub</text>
+  
+  <text x="1160" y="70" text-anchor="end" class="link text-link" font-size="11px" opacity="0.7">© 2024-2025</text>
 </svg>
