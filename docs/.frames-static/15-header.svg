@@ -1,34 +1,77 @@
-<svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg">
+<svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="WebSocket">
+  <defs>
+    <linearGradient id="bgGrad15H" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" class="bg-start"/>
+      <stop offset="100%" class="bg-end"/>
+    </linearGradient>
+  </defs>
   <style>
     @media (prefers-color-scheme: dark) {
-      .text-primary { fill: #ffffff; }
-      .text-secondary { fill: #999999; }
-      .accent-green { fill: #6cc644; }
-      .accent-purple { fill: #6e5494; }
-      .gitline { stroke: #666666; }
+      .bg-start { stop-color: #0d1117; } .bg-end { stop-color: #161b22; }
+      .text-primary { fill: #f0f6fc; } .text-secondary { fill: #8b949e; }
+      .accent-green { fill: #5FED83; stroke: #5FED83; }
+      .accent-purple { fill: #C06EFF; stroke: #C06EFF; }
+      .accent-blue { fill: #3094FF; stroke: #3094FF; }
+      .gitline { stroke: #30363d; } .node-bg { fill: #21262d; }
     }
     @media (prefers-color-scheme: light) {
-      .text-primary { fill: #24292e; }
-      .text-secondary { fill: #666666; }
-      .accent-green { fill: #2dba4e; }
-      .accent-purple { fill: #6e5494; }
-      .gitline { stroke: #999999; }
+      .bg-start { stop-color: #f6f8fa; } .bg-end { stop-color: #ffffff; }
+      .text-primary { fill: #24292f; } .text-secondary { fill: #57606a; }
+      .accent-green { fill: #08872B; stroke: #08872B; }
+      .accent-purple { fill: #501DAF; stroke: #501DAF; }
+      .accent-blue { fill: #0969DA; stroke: #0969DA; }
+      .gitline { stroke: #d0d7de; } .node-bg { fill: #e1e4e8; }
     }
-
     .title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 700; font-size: 36px; }
     .subtitle { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 400; font-size: 14px; }
-
-    .launch { animation: launch 3s ease-out forwards; }
-    @keyframes launch { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-30px); opacity: 0; } }
-
+    
+    .msg-send { animation: send-message 4s ease-in-out infinite; }
+    @keyframes send-message {
+      0% { cx: 200; opacity: 0; }
+      10%, 40% { opacity: 1; }
+      50% { cx: 1000; opacity: 0; }
+      100% { cx: 200; opacity: 0; }
+    }
+    .msg-receive { animation: receive-message 4s ease-in-out infinite; }
+    @keyframes receive-message {
+      0%, 50% { cx: 1000; opacity: 0; }
+      60%, 90% { opacity: 1; }
+      100% { cx: 200; opacity: 0; }
+    }
+    .heartbeat { animation: ws-heartbeat 2s ease-in-out infinite; }
+    @keyframes ws-heartbeat {
+      0%, 100% { r: 4; opacity: 0.3; }
+      50% { r: 8; opacity: 1; }
+    }
+    .connection { animation: connection-active 5s ease-in-out infinite; }
+    @keyframes connection-active {
+      0%, 100% { stroke-dasharray: 1200 0; }
+      50% { stroke-dasharray: 0 1200; }
+    }
+    
     @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
   </style>
-
-  <!-- Gitline launch path -->
-  <path class="gitline" d="M 1100 140 Q 1110 120, 1120 100 L 1125 80" fill="none" stroke-width="2" opacity="0.4" stroke-dasharray="8 4"/>
-  <circle cx="1100" cy="140" r="4" class="accent-green"/>
-  <circle cx="1125" cy="80" r="4" class="accent-purple launch"/>
-
+  <rect width="1200" height="160" fill="url(#bgGrad15H)"/>
+  
+  <line x1="200" y1="60" x2="1000" y2="60" class="accent-blue connection" stroke-width="2" opacity="0.4"/>
+  <line x1="200" y1="100" x2="1000" y2="100" class="accent-green connection" stroke-width="2" opacity="0.4" style="animation-delay: 2.5s"/>
+  
+  <rect x="150" y="40" width="100" height="80" rx="8" class="accent-blue" opacity="0.15"/>
+  <text x="200" y="85" text-anchor="middle" class="text-secondary" font-size="11">Client</text>
+  
+  <rect x="950" y="40" width="100" height="80" rx="8" class="accent-green" opacity="0.15"/>
+  <text x="1000" y="85" text-anchor="middle" class="text-secondary" font-size="11">Server</text>
+  
+  <circle class="accent-blue msg-send" cy="60" r="5"/>
+  <circle class="accent-green msg-receive" cy="100" r="5"/>
+  <circle class="accent-purple msg-send" cy="80" r="5" style="animation-delay: 2s"/>
+  
+  <circle class="accent-green heartbeat" cx="200" cy="130"/>
+  <circle class="accent-blue heartbeat" cx="1000" cy="130" style="animation-delay: 1s"/>
+  
+  <text x="600" y="40" text-anchor="middle" class="text-secondary" font-size="10">~15ms</text>
+  <rect x="570" y="45" width="60" height="4" rx="2" class="accent-purple" opacity="0.4"/>
+  
   <text x="600" y="70" text-anchor="middle" class="title text-primary">MCP AI Agent Guidelines Server</text>
-  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary">Accelerate Your AI Development</text>
+  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary">Guidelines • Patterns • Best Practices</text>
 </svg>

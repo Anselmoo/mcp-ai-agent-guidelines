@@ -1,44 +1,70 @@
-<svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg">
+<svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Matrix Rain">
+  <defs>
+    <linearGradient id="bgGrad08H" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" class="bg-start"/>
+      <stop offset="100%" class="bg-end"/>
+    </linearGradient>
+  </defs>
   <style>
     @media (prefers-color-scheme: dark) {
-      .text-primary { fill: #ffffff; }
-      .text-secondary { fill: #999999; }
-      .accent { fill: #6cc644; }
-      .vuln-wave { stroke: #6e5494; }
+      .bg-start { stop-color: #0d1117; } .bg-end { stop-color: #161b22; }
+      .text-primary { fill: #f0f6fc; } .text-secondary { fill: #8b949e; }
+      .accent-green { fill: #5FED83; stroke: #5FED83; }
+      .accent-purple { fill: #C06EFF; stroke: #C06EFF; }
+      .accent-blue { fill: #3094FF; stroke: #3094FF; }
+      .gitline { stroke: #30363d; } .node-bg { fill: #21262d; }
     }
     @media (prefers-color-scheme: light) {
-      .text-primary { fill: #24292e; }
-      .text-secondary { fill: #666666; }
-      .accent { fill: #2dba4e; }
-      .vuln-wave { stroke: #6e5494; }
+      .bg-start { stop-color: #f6f8fa; } .bg-end { stop-color: #ffffff; }
+      .text-primary { fill: #24292f; } .text-secondary { fill: #57606a; }
+      .accent-green { fill: #08872B; stroke: #08872B; }
+      .accent-purple { fill: #501DAF; stroke: #501DAF; }
+      .accent-blue { fill: #0969DA; stroke: #0969DA; }
+      .gitline { stroke: #d0d7de; } .node-bg { fill: #e1e4e8; }
     }
-
     .title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 700; font-size: 36px; }
     .subtitle { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 400; font-size: 14px; }
-
-    /* Security scan waves */
-    .scan-wave { animation: scan-wave 10s ease-in-out infinite; }
-    @keyframes scan-wave {
-      0%, 100% { d: path('M 900 60 Q 960 50, 1020 60 Q 1080 70, 1140 60'); }
-      50% { d: path('M 900 60 Q 960 70, 1020 60 Q 1080 50, 1140 60'); }
+    
+    .rain-1 { animation: rain-fall-1 8s linear infinite; }
+    @keyframes rain-fall-1 {
+      0% { y: -20; opacity: 0; }
+      10%, 90% { opacity: 1; }
+      100% { y: 180; opacity: 0; }
     }
-
-    /* Expanding shield accent */
-    .shield { animation: shield-pulse 5s ease-in-out infinite; transform-origin: center; }
-    @keyframes shield-pulse {
-      0%, 100% { transform: scale(1); opacity: 0.3; }
-      50% { transform: scale(1.15); opacity: 0.5; }
+    .rain-2 { animation: rain-fall-2 10s linear infinite; }
+    @keyframes rain-fall-2 {
+      0% { y: -20; opacity: 0; }
+      10%, 90% { opacity: 0.7; }
+      100% { y: 180; opacity: 0; }
     }
-
+    .rain-3 { animation: rain-fall-3 12s linear infinite; }
+    @keyframes rain-fall-3 {
+      0% { y: -20; opacity: 0; }
+      10%, 90% { opacity: 0.5; }
+      100% { y: 180; opacity: 0; }
+    }
+    .matrix-glow { animation: glow-pulse 3s ease-in-out infinite; }
+    @keyframes glow-pulse {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 0.8; }
+    }
+    
     @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
   </style>
-
-  <!-- Security scan wave (right) -->
-  <path class="vuln-wave scan-wave" d="M 900 60 Q 960 50, 1020 60 Q 1080 70, 1140 60" fill="none" stroke-width="2" opacity="0.4"/>
-
-  <!-- Shield accent (center bottom) -->
-  <circle cx="600" cy="130" r="30" class="accent shield" fill="none" stroke-width="1.5"/>
-
-  <text x="600" y="65" text-anchor="middle" class="title text-primary">MCP AI Agent Guidelines Server</text>
-  <text x="600" y="90" text-anchor="middle" class="subtitle text-secondary">Professional AI Development Tools</text>
+  <rect width="1200" height="160" fill="url(#bgGrad08H)"/>
+  
+  <text class="accent-green rain-1" x="100" font-family="monospace" font-size="14">git commit</text>
+  <text class="accent-green rain-2" x="250" font-family="monospace" font-size="14" style="animation-delay: 1s">push</text>
+  <text class="accent-blue rain-1" x="400" font-family="monospace" font-size="14" style="animation-delay: 2s">merge</text>
+  <text class="accent-purple rain-3" x="550" font-family="monospace" font-size="14" style="animation-delay: 3s">branch</text>
+  <text class="accent-green rain-2" x="700" font-family="monospace" font-size="14" style="animation-delay: 4s">pull</text>
+  <text class="accent-blue rain-1" x="850" font-family="monospace" font-size="14" style="animation-delay: 5s">rebase</text>
+  <text class="accent-purple rain-3" x="1000" font-family="monospace" font-size="14" style="animation-delay: 6s">tag</text>
+  
+  <circle class="accent-green matrix-glow" cx="100" cy="120" r="20" opacity="0.1"/>
+  <circle class="accent-blue matrix-glow" cx="600" cy="120" r="25" opacity="0.1" style="animation-delay: 1s"/>
+  <circle class="accent-purple matrix-glow" cx="1100" cy="120" r="22" opacity="0.1" style="animation-delay: 2s"/>
+  
+  <text x="600" y="70" text-anchor="middle" class="title text-primary">MCP AI Agent Guidelines Server</text>
+  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary">Guidelines • Patterns • Best Practices</text>
 </svg>

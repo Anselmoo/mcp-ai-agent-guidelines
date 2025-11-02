@@ -1,33 +1,70 @@
-<svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg">
+<svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="GraphQL">
+  <defs>
+    <linearGradient id="bgGrad11H" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" class="bg-start"/>
+      <stop offset="100%" class="bg-end"/>
+    </linearGradient>
+  </defs>
   <style>
     @media (prefers-color-scheme: dark) {
-      .text-primary { fill: #ffffff; }
-      .text-secondary { fill: #999999; }
-      .accent { fill: #6cc644; }
-      .line { stroke: #666666; }
+      .bg-start { stop-color: #0d1117; } .bg-end { stop-color: #161b22; }
+      .text-primary { fill: #f0f6fc; } .text-secondary { fill: #8b949e; }
+      .accent-green { fill: #5FED83; stroke: #5FED83; }
+      .accent-purple { fill: #C06EFF; stroke: #C06EFF; }
+      .accent-blue { fill: #3094FF; stroke: #3094FF; }
+      .gitline { stroke: #30363d; } .node-bg { fill: #21262d; }
     }
     @media (prefers-color-scheme: light) {
-      .text-primary { fill: #24292e; }
-      .text-secondary { fill: #666666; }
-      .accent { fill: #2dba4e; }
-      .line { stroke: #999999; }
+      .bg-start { stop-color: #f6f8fa; } .bg-end { stop-color: #ffffff; }
+      .text-primary { fill: #24292f; } .text-secondary { fill: #57606a; }
+      .accent-green { fill: #08872B; stroke: #08872B; }
+      .accent-purple { fill: #501DAF; stroke: #501DAF; }
+      .accent-blue { fill: #0969DA; stroke: #0969DA; }
+      .gitline { stroke: #d0d7de; } .node-bg { fill: #e1e4e8; }
     }
-
     .title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 700; font-size: 36px; }
     .subtitle { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 400; font-size: 14px; }
-
-    .rotate-slow { animation: rotate-slow 30s linear infinite; transform-origin: 120px 80px; }
-    @keyframes rotate-slow { to { transform: rotate(360deg); } }
-
+    
+    .resolver { animation: resolve-expand 6s ease-in-out infinite; }
+    @keyframes resolve-expand {
+      0%, 100% { r: 3; opacity: 0.2; }
+      50% { r: 8; opacity: 1; }
+    }
+    .fetch-line { animation: data-fetch 4s ease-in-out infinite; }
+    @keyframes data-fetch {
+      0%, 100% { stroke-dashoffset: 100; opacity: 0; }
+      50% { stroke-dashoffset: 0; opacity: 1; }
+    }
+    .field { animation: field-highlight 5s ease-in-out infinite; }
+    @keyframes field-highlight {
+      0%, 100% { opacity: 0.2; fill-opacity: 0.05; }
+      50% { opacity: 1; fill-opacity: 0.2; }
+    }
+    
     @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
   </style>
-
-  <!-- Circular connection (left corner) -->
-  <g class="rotate-slow" opacity="0.3">
-    <circle cx="120" cy="80" r="40" class="line" fill="none" stroke-width="1"/>
-    <circle cx="120" cy="40" r="3" class="accent"/>
-  </g>
-
+  <rect width="1200" height="160" fill="url(#bgGrad11H)"/>
+  
+  <line x1="600" y1="30" x2="300" y2="80" class="gitline fetch-line" stroke-width="1.5" stroke-dasharray="4 4"/>
+  <line x1="600" y1="30" x2="600" y2="80" class="gitline fetch-line" stroke-width="1.5" stroke-dasharray="4 4" style="animation-delay: 0.5s"/>
+  <line x1="600" y1="30" x2="900" y2="80" class="gitline fetch-line" stroke-width="1.5" stroke-dasharray="4 4" style="animation-delay: 1s"/>
+  
+  <line x1="300" y1="80" x2="200" y2="130" class="gitline fetch-line" stroke-width="1" stroke-dasharray="4 4" style="animation-delay: 1.5s"/>
+  <line x1="300" y1="80" x2="400" y2="130" class="gitline fetch-line" stroke-width="1" stroke-dasharray="4 4" style="animation-delay: 2s"/>
+  
+  <circle class="accent-purple resolver" cx="600" cy="30"/>
+  
+  <circle class="accent-blue resolver" cx="300" cy="80" style="animation-delay: 1s"/>
+  <circle class="accent-green resolver" cx="600" cy="80" style="animation-delay: 1.5s"/>
+  <circle class="accent-purple resolver" cx="900" cy="80" style="animation-delay: 2s"/>
+  
+  <circle class="accent-green resolver" cx="200" cy="130" style="animation-delay: 2.5s"/>
+  <circle class="accent-blue resolver" cx="400" cy="130" style="animation-delay: 3s"/>
+  
+  <text x="600" y="20" text-anchor="middle" class="field text-secondary" font-size="10">query</text>
+  <text x="300" y="100" text-anchor="middle" class="field text-secondary" font-size="9" style="animation-delay: 1s">user</text>
+  <text x="900" y="100" text-anchor="middle" class="field text-secondary" font-size="9" style="animation-delay: 2s">posts</text>
+  
   <text x="600" y="70" text-anchor="middle" class="title text-primary">MCP AI Agent Guidelines Server</text>
-  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary">Prompt Tools • Code Quality • Visualization</text>
+  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary">Guidelines • Patterns • Best Practices</text>
 </svg>

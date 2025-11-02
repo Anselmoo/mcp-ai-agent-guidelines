@@ -1,38 +1,70 @@
-<svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg">
+<svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Test Coverage">
+  <defs>
+    <linearGradient id="bgGrad13H" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" class="bg-start"/>
+      <stop offset="100%" class="bg-end"/>
+    </linearGradient>
+  </defs>
   <style>
     @media (prefers-color-scheme: dark) {
-      .text-primary { fill: #ffffff; }
-      .text-secondary { fill: #999999; }
-      .accent-green { fill: #6cc644; }
-      .accent-blue { fill: #4183c4; }
-      .line { stroke: #666666; }
+      .bg-start { stop-color: #0d1117; } .bg-end { stop-color: #161b22; }
+      .text-primary { fill: #f0f6fc; } .text-secondary { fill: #8b949e; }
+      .accent-green { fill: #5FED83; stroke: #5FED83; }
+      .accent-purple { fill: #C06EFF; stroke: #C06EFF; }
+      .accent-blue { fill: #3094FF; stroke: #3094FF; }
+      .gitline { stroke: #30363d; } .node-bg { fill: #21262d; }
     }
     @media (prefers-color-scheme: light) {
-      .text-primary { fill: #24292e; }
-      .text-secondary { fill: #666666; }
-      .accent-green { fill: #2dba4e; }
-      .accent-blue { fill: #4183c4; }
-      .line { stroke: #999999; }
+      .bg-start { stop-color: #f6f8fa; } .bg-end { stop-color: #ffffff; }
+      .text-primary { fill: #24292f; } .text-secondary { fill: #57606a; }
+      .accent-green { fill: #08872B; stroke: #08872B; }
+      .accent-purple { fill: #501DAF; stroke: #501DAF; }
+      .accent-blue { fill: #0969DA; stroke: #0969DA; }
+      .gitline { stroke: #d0d7de; } .node-bg { fill: #e1e4e8; }
     }
-
     .title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 700; font-size: 36px; }
     .subtitle { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 400; font-size: 14px; }
-
-    .network { animation: network-pulse 5s ease-in-out infinite; }
-    @keyframes network-pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.6; } }
-
+    
+    .test-run { animation: test-execute 5s ease-in-out infinite; }
+    @keyframes test-execute {
+      0%, 100% { width: 0; opacity: 0.2; }
+      50% { width: 150; opacity: 1; }
+    }
+    .coverage-fill { animation: coverage-grow 8s ease-in-out infinite; }
+    @keyframes coverage-grow {
+      0% { width: 0; }
+      100% { width: 1000; }
+    }
+    .assertion { animation: assert-check 3s ease-in-out infinite; }
+    @keyframes assert-check {
+      0%, 100% { opacity: 0; transform: scale(0); }
+      50% { opacity: 1; transform: scale(1); }
+    }
+    
     @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
   </style>
-
-  <!-- Connection network (left) -->
-  <g class="network">
-    <line x1="60" y1="50" x2="100" y2="80" class="line" stroke-width="1"/>
-    <line x1="100" y1="80" x2="60" y2="110" class="line" stroke-width="1"/>
-    <circle cx="60" cy="50" r="4" class="accent-green"/>
-    <circle cx="100" cy="80" r="4" class="accent-blue"/>
-    <circle cx="60" cy="110" r="4" class="accent-green"/>
+  <rect width="1200" height="160" fill="url(#bgGrad13H)"/>
+  
+  <rect x="100" y="60" width="1000" height="30" rx="15" class="gitline" opacity="0.2"/>
+  <rect class="accent-green coverage-fill" x="100" y="60" height="30" rx="15" opacity="0.6"/>
+  
+  <rect class="accent-blue test-run" x="150" y="100" height="8" rx="4"/>
+  <rect class="accent-purple test-run" x="400" y="100" height="8" rx="4" style="animation-delay: 1s"/>
+  <rect class="accent-green test-run" x="650" y="100" height="8" rx="4" style="animation-delay: 2s"/>
+  <rect class="accent-blue test-run" x="900" y="100" height="8" rx="4" style="animation-delay: 3s"/>
+  
+  <g class="assertion" transform-origin="200 75">
+    <path d="M195,75 L200,80 L210,70" class="accent-green" fill="none" stroke-width="2" stroke-linecap="round"/>
   </g>
-
+  <g class="assertion" transform-origin="500 75" style="animation-delay: 1.5s">
+    <path d="M495,75 L500,80 L510,70" class="accent-blue" fill="none" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <g class="assertion" transform-origin="800 75" style="animation-delay: 3s">
+    <path d="M795,75 L800,80 L810,70" class="accent-purple" fill="none" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  
+  <text x="600" y="80" text-anchor="middle" class="text-primary" font-size="12" font-weight="600">Coverage: 87%</text>
+  
   <text x="600" y="70" text-anchor="middle" class="title text-primary">MCP AI Agent Guidelines Server</text>
-  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary">Developer Tools for Modern AI</text>
+  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary">Guidelines • Patterns • Best Practices</text>
 </svg>

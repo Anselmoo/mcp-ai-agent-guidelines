@@ -1,52 +1,77 @@
-<svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg">
+<svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Microservices">
+  <defs>
+    <linearGradient id="bgGrad06H" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" class="bg-start"/>
+      <stop offset="100%" class="bg-end"/>
+    </linearGradient>
+  </defs>
   <style>
     @media (prefers-color-scheme: dark) {
-      .text-primary { fill: #ffffff; }
-      .text-secondary { fill: #999999; }
-      .accent-green { fill: #6cc644; }
-      .accent-blue { fill: #4183c4; }
-      .accent-purple { fill: #6e5494; }
+      .bg-start { stop-color: #0d1117; } .bg-end { stop-color: #161b22; }
+      .text-primary { fill: #f0f6fc; } .text-secondary { fill: #8b949e; }
+      .accent-green { fill: #5FED83; stroke: #5FED83; }
+      .accent-purple { fill: #C06EFF; stroke: #C06EFF; }
+      .accent-blue { fill: #3094FF; stroke: #3094FF; }
+      .gitline { stroke: #30363d; } .node-bg { fill: #21262d; }
     }
     @media (prefers-color-scheme: light) {
-      .text-primary { fill: #24292e; }
-      .text-secondary { fill: #666666; }
-      .accent-green { fill: #2dba4e; }
-      .accent-blue { fill: #4183c4; }
-      .accent-purple { fill: #6e5494; }
+      .bg-start { stop-color: #f6f8fa; } .bg-end { stop-color: #ffffff; }
+      .text-primary { fill: #24292f; } .text-secondary { fill: #57606a; }
+      .accent-green { fill: #08872B; stroke: #08872B; }
+      .accent-purple { fill: #501DAF; stroke: #501DAF; }
+      .accent-blue { fill: #0969DA; stroke: #0969DA; }
+      .gitline { stroke: #d0d7de; } .node-bg { fill: #e1e4e8; }
     }
-
     .title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 700; font-size: 36px; }
     .subtitle { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 400; font-size: 14px; }
-
-    /* Label status changing */
-    .label-1 { animation: label-change 6s ease-in-out infinite; }
-    .label-2 { animation: label-change 6s ease-in-out 2s infinite; }
-    .label-3 { animation: label-change 6s ease-in-out 4s infinite; }
-    @keyframes label-change {
-      0%, 33%, 100% { opacity: 0.3; transform: scale(0.8); }
-      16.5% { opacity: 1; transform: scale(1.05); }
+    
+    .service { animation: service-health 5s ease-in-out infinite; }
+    @keyframes service-health {
+      0%, 100% { opacity: 0.4; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.15); }
     }
-
-    /* Activity wave */
-    .wave { animation: activity-wave 12s ease-in-out infinite; }
-    @keyframes activity-wave {
-      0%, 100% { opacity: 0.2; }
-      50% { opacity: 0.6; }
+    .api-call { animation: api-flow 4s ease-in-out infinite; }
+    @keyframes api-flow {
+      0% { stroke-dashoffset: 40; opacity: 0; }
+      10%, 90% { opacity: 0.8; }
+      100% { stroke-dashoffset: 0; opacity: 0; }
     }
-
+    .lb-distribute { animation: distribute 6s linear infinite; }
+    @keyframes distribute {
+      0%, 100% { opacity: 0; cy: 80; }
+      25% { opacity: 1; cy: 50; }
+      50% { opacity: 1; cy: 80; }
+      75% { opacity: 1; cy: 110; }
+    }
+    
     @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
   </style>
-
-  <!-- Issue/PR labels animating (left) -->
-  <g transform="translate(60, 80)">
-    <rect x="0" y="-8" width="40" height="16" rx="8" class="accent-green label-1" opacity="0.5"/>
-    <rect x="50" y="-8" width="40" height="16" rx="8" class="accent-blue label-2" opacity="0.5"/>
-    <rect x="100" y="-8" width="40" height="16" rx="8" class="accent-purple label-3" opacity="0.5"/>
+  <rect width="1200" height="160" fill="url(#bgGrad06H)"/>
+  
+  <g class="service">
+    <rect x="150" y="40" width="80" height="60" rx="8" class="accent-blue" opacity="0.15"/>
+    <text x="190" y="75" text-anchor="middle" class="text-secondary" font-size="11">Auth</text>
   </g>
-
-  <!-- Activity wave (right) -->
-  <path d="M 1000 80 Q 1050 70, 1100 80 T 1200 80" stroke="#6cc644" stroke-width="2" fill="none" class="wave" opacity="0.3"/>
-
+  <g class="service" style="animation-delay: 1s">
+    <rect x="400" y="40" width="80" height="60" rx="8" class="accent-green" opacity="0.15"/>
+    <text x="440" y="75" text-anchor="middle" class="text-secondary" font-size="11">API</text>
+  </g>
+  <g class="service" style="animation-delay: 2s">
+    <rect x="650" y="40" width="80" height="60" rx="8" class="accent-purple" opacity="0.15"/>
+    <text x="690" y="75" text-anchor="middle" class="text-secondary" font-size="11">Cache</text>
+  </g>
+  <g class="service" style="animation-delay: 3s">
+    <rect x="900" y="40" width="80" height="60" rx="8" class="accent-blue" opacity="0.15"/>
+    <text x="940" y="75" text-anchor="middle" class="text-secondary" font-size="11">DB</text>
+  </g>
+  
+  <line x1="230" y1="70" x2="400" y2="70" class="accent-green api-call" stroke-width="2" stroke-dasharray="8 4"/>
+  <line x1="480" y1="70" x2="650" y2="70" class="accent-purple api-call" stroke-width="2" stroke-dasharray="8 4" style="animation-delay: 1s"/>
+  <line x1="730" y1="70" x2="900" y2="70" class="accent-blue api-call" stroke-width="2" stroke-dasharray="8 4" style="animation-delay: 2s"/>
+  
+  <circle class="accent-green lb-distribute" cx="50" r="5"/>
+  <circle class="accent-blue lb-distribute" cx="1150" r="5" style="animation-delay: 2s"/>
+  
   <text x="600" y="70" text-anchor="middle" class="title text-primary">MCP AI Agent Guidelines Server</text>
-  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary">Hierarchical Prompting • Design Workflows</text>
+  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary">Guidelines • Patterns • Best Practices</text>
 </svg>

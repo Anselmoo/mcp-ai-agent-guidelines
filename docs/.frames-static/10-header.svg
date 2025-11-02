@@ -1,32 +1,80 @@
-<svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg">
+<svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Kubernetes">
+  <defs>
+    <linearGradient id="bgGrad10H" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" class="bg-start"/>
+      <stop offset="100%" class="bg-end"/>
+    </linearGradient>
+  </defs>
   <style>
     @media (prefers-color-scheme: dark) {
-      .text-primary { fill: #ffffff; }
-      .text-secondary { fill: #999999; }
-      .accent-green { fill: #6cc644; }
-      .accent-blue { fill: #4183c4; }
+      .bg-start { stop-color: #0d1117; } .bg-end { stop-color: #161b22; }
+      .text-primary { fill: #f0f6fc; } .text-secondary { fill: #8b949e; }
+      .accent-green { fill: #5FED83; stroke: #5FED83; }
+      .accent-purple { fill: #C06EFF; stroke: #C06EFF; }
+      .accent-blue { fill: #3094FF; stroke: #3094FF; }
+      .gitline { stroke: #30363d; } .node-bg { fill: #21262d; }
     }
     @media (prefers-color-scheme: light) {
-      .text-primary { fill: #24292e; }
-      .text-secondary { fill: #666666; }
-      .accent-green { fill: #2dba4e; }
-      .accent-blue { fill: #4183c4; }
+      .bg-start { stop-color: #f6f8fa; } .bg-end { stop-color: #ffffff; }
+      .text-primary { fill: #24292f; } .text-secondary { fill: #57606a; }
+      .accent-green { fill: #08872B; stroke: #08872B; }
+      .accent-purple { fill: #501DAF; stroke: #501DAF; }
+      .accent-blue { fill: #0969DA; stroke: #0969DA; }
+      .gitline { stroke: #d0d7de; } .node-bg { fill: #e1e4e8; }
     }
-    
     .title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 700; font-size: 36px; }
     .subtitle { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 400; font-size: 14px; }
     
-    .float-1 { animation: float 6s ease-in-out infinite; }
-    .float-2 { animation: float 6s ease-in-out 2s infinite; }
-    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    .pod { animation: pod-scale 5s ease-in-out infinite; }
+    @keyframes pod-scale {
+      0%, 100% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(1); opacity: 1; }
+    }
+    .rolling { animation: rolling-update 10s linear infinite; }
+    @keyframes rolling-update {
+      0% { x: 100; opacity: 0; }
+      10%, 90% { opacity: 1; }
+      100% { x: 1100; opacity: 0; }
+    }
+    .health-pulse { animation: health-beat 2s ease-in-out infinite; }
+    @keyframes health-beat {
+      0%, 100% { r: 4; opacity: 0.3; }
+      50% { r: 7; opacity: 1; }
+    }
     
     @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
   </style>
+  <rect width="1200" height="160" fill="url(#bgGrad10H)"/>
   
-  <!-- Floating indicators -->
-  <rect x="40" y="130" width="8" height="8" rx="1" class="accent-green float-1" opacity="0.5"/>
-  <rect x="1152" y="130" width="8" height="8" rx="1" class="accent-blue float-2" opacity="0.5"/>
+  <g class="pod" transform-origin="200 70">
+    <rect x="180" y="50" width="40" height="40" rx="6" class="accent-blue" opacity="0.3"/>
+    <circle cx="200" cy="70" r="3" class="accent-blue"/>
+  </g>
+  <g class="pod" transform-origin="400 70" style="animation-delay: 1s">
+    <rect x="380" y="50" width="40" height="40" rx="6" class="accent-green" opacity="0.3"/>
+    <circle cx="400" cy="70" r="3" class="accent-green"/>
+  </g>
+  <g class="pod" transform-origin="600 70" style="animation-delay: 2s">
+    <rect x="580" y="50" width="40" height="40" rx="6" class="accent-purple" opacity="0.3"/>
+    <circle cx="600" cy="70" r="3" class="accent-purple"/>
+  </g>
+  <g class="pod" transform-origin="800 70" style="animation-delay: 3s">
+    <rect x="780" y="50" width="40" height="40" rx="6" class="accent-blue" opacity="0.3"/>
+    <circle cx="800" cy="70" r="3" class="accent-blue"/>
+  </g>
+  <g class="pod" transform-origin="1000 70" style="animation-delay: 4s">
+    <rect x="980" y="50" width="40" height="40" rx="6" class="accent-green" opacity="0.3"/>
+    <circle cx="1000" cy="70" r="3" class="accent-green"/>
+  </g>
+  
+  <rect class="rolling" y="110" width="60" height="8" rx="4" class="accent-purple" opacity="0.5"/>
+  
+  <circle class="accent-green health-pulse" cx="200" cy="120"/>
+  <circle class="accent-green health-pulse" cx="400" cy="120" style="animation-delay: 0.4s"/>
+  <circle class="accent-green health-pulse" cx="600" cy="120" style="animation-delay: 0.8s"/>
+  <circle class="accent-green health-pulse" cx="800" cy="120" style="animation-delay: 1.2s"/>
+  <circle class="accent-green health-pulse" cx="1000" cy="120" style="animation-delay: 1.6s"/>
   
   <text x="600" y="70" text-anchor="middle" class="title text-primary">MCP AI Agent Guidelines Server</text>
-  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary">Build Better AI Agents</text>
+  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary">Guidelines • Patterns • Best Practices</text>
 </svg>

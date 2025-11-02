@@ -1,25 +1,103 @@
-<svg width="1200" height="80" viewBox="0 0 1200 80" xmlns="http://www.w3.org/2000/svg">
+<svg width="1200" height="80" viewBox="0 0 1200 80" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Footer">
+  <defs>
+    <linearGradient id="bgGrad14F" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" class="bg-start"/>
+      <stop offset="100%" class="bg-end"/>
+    </linearGradient>
+  </defs>
+
   <style>
     @media (prefers-color-scheme: dark) {
-      .text-link { fill: #999999; }
-      .divider { stroke: #666666; }
+      .bg-start { stop-color: #0d1117; }
+      .bg-end { stop-color: #161b22; }
+      .text-link { fill: #8b949e; }
+      .divider { stroke: #30363d; }
+      .accent-green { fill: #5FED83; stroke: #5FED83; }
+      .accent-blue { fill: #3094FF; stroke: #3094FF; }
+      .accent-purple { fill: #C06EFF; stroke: #C06EFF; }
+      .gitline { stroke: #30363d; }
     }
     @media (prefers-color-scheme: light) {
-      .text-link { fill: #666666; }
-      .divider { stroke: #999999; }
+      .bg-start { stop-color: #f6f8fa; }
+      .bg-end { stop-color: #ffffff; }
+      .text-link { fill: #57606a; }
+      .divider { stroke: #d0d7de; }
+      .accent-green { fill: #08872B; stroke: #08872B; }
+      .accent-blue { fill: #0969DA; stroke: #0969DA; }
+      .accent-purple { fill: #501DAF; stroke: #501DAF; }
+      .gitline { stroke: #d0d7de; }
     }
 
     .link { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 13px; }
+
+    /* Full-width timeline flow */
+    .timeline-flow { stroke-dasharray: 10 5; animation: timeline-anim 14s linear infinite; }
+    @keyframes timeline-anim { to { stroke-dashoffset: -150; } }
+
+    /* Timeline dots appearing sequentially */
+    .dot-1 { animation: dot-appear 12s ease-in-out infinite; }
+    .dot-2 { animation: dot-appear 12s ease-in-out 2s infinite; }
+    .dot-3 { animation: dot-appear 12s ease-in-out 4s infinite; }
+    .dot-4 { animation: dot-appear 12s ease-in-out 6s infinite; }
+    .dot-5 { animation: dot-appear 12s ease-in-out 8s infinite; }
+    .dot-6 { animation: dot-appear 12s ease-in-out 10s infinite; }
+    @keyframes dot-appear {
+      0%, 25%, 100% { opacity: 0; r: 0; }
+      15% { opacity: 1; r: 5; }
+      20% { r: 3; }
+    }
+
+    /* Activity indicator pulse */
+    .footer-pulse { animation: footer-pulse-anim 5s ease-in-out infinite; }
+    @keyframes footer-pulse-anim {
+      0%, 100% { opacity: 0.5; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+
+    /* Progress bar expanding */
+    .footer-progress { animation: footer-expand 10s ease-in-out infinite; }
+    @keyframes footer-expand {
+      0% { width: 0; opacity: 0.4; }
+      50% { width: 500; opacity: 0.8; }
+      100% { width: 1000; opacity: 0.5; }
+    }
+
     @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
   </style>
 
-  <line x1="0" y1="1" x2="1200" y2="1" class="divider" stroke-width="1"/>
-  <line x1="100" y1="70" x2="1100" y2="70" class="divider" stroke-width="0.5" opacity="0.2"/>
+  <!-- Full background -->
+  <rect width="1200" height="80" fill="url(#bgGrad14F)"/>
 
-  <text x="300" y="40" class="link text-link">Contributing</text>
-  <text x="450" y="40" class="link text-link">Documentation</text>
-  <text x="620" y="40" class="link text-link">License (MIT)</text>
-  <text x="800" y="40" class="link text-link">GitHub</text>
+  <!-- Top divider -->
+  <line x1="0" y1="1" x2="1200" y2="1" class="divider" stroke-width="2"/>
 
-  <text x="600" y="62" text-anchor="middle" class="link text-link" font-size="11px">© 2024-2025 • MIT License</text>
+  <!-- Full-width timeline gitline -->
+  <line x1="40" y1="60" x2="1160" y2="60" class="gitline timeline-flow" stroke-width="2" opacity="0.6"/>
+
+  <!-- Timeline dots appearing across width -->
+  <circle class="accent-blue dot-1" cx="200" cy="60" r="3"/>
+  <circle class="accent-green dot-2" cx="400" cy="60" r="3"/>
+  <circle class="accent-purple dot-3" cx="600" cy="60" r="3"/>
+  <circle class="accent-blue dot-4" cx="800" cy="60" r="3"/>
+  <circle class="accent-green dot-5" cx="1000" cy="60" r="3"/>
+  <circle class="accent-purple dot-6" cx="1100" cy="60" r="3"/>
+
+  <!-- Activity indicator (left) -->
+  <g transform="translate(50, 30)" class="footer-pulse">
+    <circle r="8" class="accent-green" opacity="0.3"/>
+    <path d="M -3 0 L -1 2 L 3 -3" class="accent-green" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Progress bar (bottom left) -->
+  <rect x="40" y="75" class="accent-green footer-progress" height="3" rx="1.5" opacity="0.6"/>
+
+  <!-- Links -->
+  <text x="300" y="30" class="link text-link">Contributing</text>
+  <text x="450" y="30" class="link text-link">Documentation</text>
+  <text x="620" y="30" class="link text-link">License (MIT)</text>
+  <text x="800" y="30" class="link text-link">GitHub</text>
+  <text x="950" y="30" class="link text-link">Issues</text>
+
+  <!-- Copyright -->
+  <text x="1100" y="30" text-anchor="end" class="link text-link" font-size="11px">© 2024-2025</text>
 </svg>
