@@ -2,29 +2,43 @@
 ![Header](../.frames-static/09-header.svg)
 <!-- HEADER:END -->
 
-# Internal Development Documentation
+# Development Documentation
 
-This folder contains internal development documentation, implementation summaries, and refactoring notes. These documents are for contributors and maintainers, not end users of the MCP server.
+This directory contains documentation for developers contributing to the MCP AI Agent Guidelines project.
 
-## Contents
+## Available Guides
 
-- **[MIGRATION_COMPLETION_SUMMARY.md](./MIGRATION_COMPLETION_SUMMARY.md)** - Documentation template migration completion report
-- **[MIGRATION_STRATEGY.md](./MIGRATION_STRATEGY.md)** - Template migration planning and strategy
-- **[TECHNICAL_IMPROVEMENTS.md](./TECHNICAL_IMPROVEMENTS.md)** - Semantic analyzer refactoring and schema improvements
+### [Link Extraction](./LINK_EXTRACTION.md)
 
-## For MCP Users
+Extract and audit all external links from markdown files:
 
-If you're looking for user-facing documentation, see:
+```bash
+# Quick usage
+npm run links:extract              # Table format
+npm run links:extract:json        # JSON output
+npm run links:extract:csv         # CSV output
+npm run links:extract:md          # Markdown report
+```
 
-- **[Main Documentation Index](../README.md)** - Complete guide to using the MCP server
-- **[AI Interaction Tips](../AI_INTERACTION_TIPS.md)** - How to effectively use AI agents with this server
-- **[Tool Reference](../README.md#tools)** - Complete list of available tools
-- **[Examples & Demos](../../demos/README.md)** - Real-world usage examples
+**Use cases**:
+- Link inventory and auditing
+- Broken link detection
+- Security review of external domains
+- Documentation maintenance
+- License compliance
 
-## For Contributors
+See [LINK_EXTRACTION.md](./LINK_EXTRACTION.md) for detailed documentation.
 
-These internal docs supplement the main [Contributing Guide](../../CONTRIBUTING.md) with detailed implementation notes and migration histories.
+## Contributing
 
-<!-- FOOTER:START -->
+See [CONTRIBUTING.md](../../CONTRIBUTING.md) for general contribution guidelines.
+
+## Related Documentation
+
+- [Technical Improvements](../TECHNICAL_IMPROVEMENTS.md) - Refactoring and enhancements
+- [Error Handling](../ERROR_HANDLING.md) - Error patterns and best practices
+- [Type Organization](../TYPE_ORGANIZATION_EXTENSION.md) - TypeScript conventions
+
+!-- FOOTER:START -->
 ![Footer](../.frames-static/09-footer.svg)
 <!-- FOOTER:END -->

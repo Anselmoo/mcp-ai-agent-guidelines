@@ -2,20 +2,20 @@
   <defs>
     <linearGradient id="bgNeural03F" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#0d1117;stop-opacity:1">
-        
+
       </stop>
       <stop offset="50%" style="stop-color:#1c2128;stop-opacity:1"/>
       <stop offset="100%" style="stop-color:#161b22;stop-opacity:1">
-        
+
       </stop>
     </linearGradient>
-    
+
     <radialGradient id="neuronGlow03F" cx="50%" cy="50%" r="50%">
       <stop offset="0%" style="stop-color:#5FED83;stop-opacity:0.9"/>
       <stop offset="50%" style="stop-color:#3094FF;stop-opacity:0.5"/>
       <stop offset="100%" style="stop-color:#C06EFF;stop-opacity:0"/>
     </radialGradient>
-    
+
     <filter id="neuronGlowFilter03F" x="-50%" y="-50%" width="200%" height="200%">
       <feGaussianBlur stdDeviation="2.5" result="blur"/>
       <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 7 0" result="glow"/>
@@ -24,7 +24,7 @@
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
-    
+
     <pattern id="circuitPattern03F" x="0" y="0" width="30" height="30" patternUnits="userSpaceOnUse">
       <path d="M0 15 L8 15 M22 15 L30 15 M15 0 L15 8 M15 22 L15 30" stroke="#30363d" stroke-width="0.5" opacity="0.25"/>
       <circle cx="15" cy="15" r="1.5" fill="#3094FF" opacity="0.4"/>
@@ -42,17 +42,17 @@
     }
 
     .link { font-size: 13px; letter-spacing: 0.3px; }
-    
-    .neuron-node-f { 
-      animation: neuron-pulse-f 4s cubic-bezier(0.4, 0, 0.2, 1) infinite; 
+
+    .neuron-node-f {
+      animation: neuron-pulse-f 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
       transform-origin: center;
     }
     @keyframes neuron-pulse-f {
       0%, 100% { opacity: 0.3; transform: scale(2.0); }
       50% { opacity: 1; transform: scale(2.8); }
     }
-    
-    .signal-particle-f { 
+
+    .signal-particle-f {
       animation: signal-travel-f 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
       filter: url(#neuronGlowFilter03F);
     }
@@ -62,7 +62,7 @@
       80% { opacity: 1; }
       100% { opacity: 0; cx: 1100; r: 2; }
     }
-    
+
     .connection-line-f {
       stroke-dasharray: 200;
       stroke-dashoffset: 200;
@@ -73,7 +73,7 @@
     }
 
     @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
-  
+
     /* Enhanced particle effects */
     .particle {
       animation: particle-float 4s ease-in-out infinite;
@@ -85,7 +85,7 @@
       50% { opacity: 1; transform: translateY(-40px) translateX(5px) scale(2); }
       75% { opacity: 0.6; transform: translateY(-30px) translateX(15px) scale(1.8); }
     }
-    
+
     .particle-2 {
       animation: particle-spin 5s linear infinite;
     }
@@ -94,7 +94,7 @@
       50% { opacity: 1; transform: rotate(180deg) translateX(40px) scale(2); }
       100% { opacity: 0; transform: rotate(360deg) translateX(20px) scale(0); }
     }
-    
+
     /* Wave effects */
     .wave-line {
       stroke-dasharray: 5 10;
@@ -103,7 +103,7 @@
     @keyframes wave-flow {
       to { stroke-dashoffset: -100; }
     }
-    
+
     /* Glow pulse on text */
     .text-link {
       animation: text-glow 3s ease-in-out infinite;
@@ -112,7 +112,7 @@
       0%, 100% { opacity: 0.7; filter: drop-shadow(0 0 0px transparent); }
       50% { opacity: 1; filter: drop-shadow(0 0 8px rgba(95, 237, 131, 0.6)); }
     }
-    
+
     /* Rotating elements */
     .rotate-slow {
       animation: rotate-360 20s linear infinite;
@@ -121,7 +121,7 @@
     @keyframes rotate-360 {
       to { transform: rotate(360deg); }
     }
-    
+
     /* Shimmer effect */
     .shimmer {
       animation: shimmer-pass 4s ease-in-out infinite;
@@ -130,7 +130,7 @@
       0%, 100% { opacity: 0.3; }
       50% { opacity: 1; }
     }
-    
+
     /* Ripple effect */
     .ripple {
       animation: ripple-expand 3s ease-out infinite;
@@ -140,20 +140,20 @@
       0% { opacity: 1; transform: scale(0.5); }
       100% { opacity: 0; transform: scale(3); }
     }
-    
+
     </style>
 
   <rect width="1200" height="80" fill="url(#bgNeural03F)"/>
   <rect width="1200" height="80" fill="url(#circuitPattern03F)" opacity="0.3"/>
-  
+
   <line x1="0" y1="1" x2="1200" y2="1" class="divider" stroke-width="2"/>
-  
+
   <!-- Neural connections -->
-  <path class="connection-line-f" d="M 100 50 L 300 30 L 500 50 L 700 30 L 900 50 L 1100 30" 
+  <path class="connection-line-f" d="M 100 50 L 300 30 L 500 50 L 700 30 L 900 50 L 1100 30"
         fill="none" stroke="#3094FF" stroke-width="1.5" opacity="0.4" style="animation-delay: 0s"/>
-  <path class="connection-line-f" d="M 150 50 L 350 65 L 550 50 L 750 65 L 950 50 L 1050 65" 
+  <path class="connection-line-f" d="M 150 50 L 350 65 L 550 50 L 750 65 L 950 50 L 1050 65"
         fill="none" stroke="#C06EFF" stroke-width="1.5" opacity="0.4" style="animation-delay: 1s"/>
-  
+
   <!-- Neuron nodes -->
   <g filter="url(#neuronGlowFilter03F)">
     <circle class="neuron-node-f" cx="200" cy="50" r="5" fill="#5FED83" style="animation-delay: 0s"/>
@@ -162,34 +162,34 @@
     <circle class="neuron-node-f" cx="800" cy="50" r="5" fill="#C06EFF" style="animation-delay: 2.1s"/>
     <circle class="neuron-node-f" cx="1000" cy="50" r="5" fill="#3094FF" style="animation-delay: 2.8s"/>
   </g>
-  
+
   <!-- Signal particles -->
   <circle class="signal-particle-f" cy="40" r="3" fill="#3094FF" style="animation-delay: 0s"/>
   <circle class="signal-particle-f" cy="50" r="3" fill="#5FED83" style="animation-delay: 1s"/>
   <circle class="signal-particle-f" cy="60" r="3" fill="#C06EFF" style="animation-delay: 2s"/>
-  
+
   <!-- Brain icon (left) -->
   <g transform="translate(25, 35)" opacity="0.5">
-    <path d="M 10 5 Q 15 0, 20 5 T 30 15 Q 32 20, 28 25 L 12 25 Q 8 20, 10 15 Q 7 10, 10 5 Z" 
+    <path d="M 10 5 Q 15 0, 20 5 T 30 15 Q 32 20, 28 25 L 12 25 Q 8 20, 10 15 Q 7 10, 10 5 Z"
           fill="none" stroke="#5FED83" stroke-width="1.5"/>
     <circle cx="15" cy="12" r="2" fill="#3094FF"/>
     <circle cx="25" cy="12" r="2" fill="#C06EFF"/>
     <circle cx="20" cy="18" r="2" fill="#5FED83"/>
   </g>
 
-  
-  
-  
-  
-  
+
+
+
+
+
     <text x="1050" y="72" text-anchor="middle" class="link text-link" font-size="11px" opacity="0.8">License (MIT)</text>
-  
-  
-  
-  
-  
-  
-  <text x="1150" y="72" text-anchor="middle" class="link text-link" font-size="11px" opacity="0.8">© 2024-2025</text>
+
+
+
+
+
+
+  <text x="1150" y="72" text-anchor="middle" class="link text-link" font-size="11px" opacity="0.8">© 2025</text>
 
   <!-- Enhanced particle system -->
   <g opacity="0.6">
@@ -198,32 +198,32 @@
     <circle class="particle" cx="360" cy="50" r="2.5" fill="#C06EFF" style="animation-delay: 1s"/>
     <circle class="particle" cx="445" cy="35" r="1.8" fill="#5FED83" style="animation-delay: 1.5s"/>
     <circle class="particle" cx="530" cy="45" r="2.2" fill="#3094FF" style="animation-delay: 2s"/>
-    
+
     <circle class="particle-2" cx="800" cy="40" r="1.5" fill="#C06EFF" style="animation-delay: 0.3s"/>
     <circle class="particle-2" cx="900" cy="35" r="2" fill="#5FED83" style="animation-delay: 0.8s"/>
     <circle class="particle-2" cx="1000" cy="45" r="1.8" fill="#3094FF" style="animation-delay: 1.3s"/>
   </g>
-  
+
   <!-- Wave patterns -->
   <g opacity="0.4">
-    <path class="wave-line" d="M 50 28 Q 150 18, 250 28 T 450 28" 
+    <path class="wave-line" d="M 50 28 Q 150 18, 250 28 T 450 28"
           stroke="#5FED83" stroke-width="1" fill="none" style="animation-delay: 0s"/>
-    <path class="wave-line" d="M 600 38 Q 700 28, 800 38 T 1000 38" 
+    <path class="wave-line" d="M 600 38 Q 700 28, 800 38 T 1000 38"
           stroke="#3094FF" stroke-width="1" fill="none" style="animation-delay: 0.7s"/>
-    <path class="wave-line" d="M 100 58 Q 300 48, 500 58 T 900 58" 
+    <path class="wave-line" d="M 100 58 Q 300 48, 500 58 T 900 58"
           stroke="#C06EFF" stroke-width="1" fill="none" style="animation-delay: 1.4s"/>
   </g>
-  
+
   <!-- Ripple effects -->
   <g opacity="0.3">
     <circle class="ripple" cx="270" cy="40" r="15" stroke="#5FED83" stroke-width="1.5" fill="none" style="animation-delay: 0s"/>
     <circle class="ripple" cx="270" cy="40" r="15" stroke="#5FED83" stroke-width="1.5" fill="none" style="animation-delay: 1s"/>
     <circle class="ripple" cx="270" cy="40" r="15" stroke="#5FED83" stroke-width="1.5" fill="none" style="animation-delay: 2s"/>
-    
+
     <circle class="ripple" cx="895" cy="45" r="12" stroke="#3094FF" stroke-width="1" fill="none" style="animation-delay: 0.5s"/>
     <circle class="ripple" cx="895" cy="45" r="12" stroke="#3094FF" stroke-width="1" fill="none" style="animation-delay: 1.5s"/>
   </g>
-  
+
   <!-- Rotating accent elements -->
   <g opacity="0.5">
     <g class="rotate-slow" transform="translate(730, 40)">
@@ -233,12 +233,12 @@
       <circle cx="0" cy="0" r="6" fill="none" stroke="#5FED83" stroke-width="1" stroke-dasharray="2 4"/>
     </g>
   </g>
-  
+
   <!-- Shimmering accents around text -->
   <g opacity="0.4">
     <line class="shimmer" x1="550" y1="38" x2="580" y2="38" stroke="#5FED83" stroke-width="1.5" style="animation-delay: 0s"/>
     <line class="shimmer" x1="620" y1="38" x2="650" y2="38" stroke="#5FED83" stroke-width="1.5" style="animation-delay: 0.3s"/>
-    
+
     <line class="shimmer" x1="550" y1="58" x2="575" y2="58" stroke="#3094FF" stroke-width="1.5" style="animation-delay: 0.6s"/>
     <line class="shimmer" x1="625" y1="58" x2="650" y2="58" stroke="#3094FF" stroke-width="1.5" style="animation-delay: 0.9s"/>
   </g>
