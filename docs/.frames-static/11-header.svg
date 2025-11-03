@@ -1,0 +1,364 @@
+<svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="GraphQL Query Resolution">
+  <defs>
+    <linearGradient id="bgGraphQLGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d1117;stop-opacity:1">
+        <animate attributeName="stop-color" values="#0d1117;#161b22;#0d1117" dur="5.0s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="50%" style="stop-color:#1c2128;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#161b22;stop-opacity:1">
+        <animate attributeName="stop-color" values="#161b22;#0d1117;#161b22" dur="5.0s" repeatCount="indefinite"/>
+      </stop>
+    </linearGradient>
+    
+    <radialGradient id="queryGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#C06EFF;stop-opacity:1"/>
+      <stop offset="50%" style="stop-color:#5FED83;stop-opacity:0.6"/>
+      <stop offset="100%" style="stop-color:#3094FF;stop-opacity:0"/>
+    </radialGradient>
+    
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 8 0" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <filter id="dropShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+      <feOffset dx="0" dy="2" result="offsetblur"/>
+      <feFlood flood-color="#000000" flood-opacity="0.5"/>
+      <feComposite in2="offsetblur" operator="in"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <linearGradient id="shine11" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0"/>
+      <stop offset="50%" style="stop-color:#ffffff;stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0"/>
+      <animate attributeName="x1" values="-100%;200%" dur="1.5s" repeatCount="indefinite"/>
+      <animate attributeName="x2" values="0%;300%" dur="1.5s" repeatCount="indefinite"/>
+    </linearGradient>
+    
+    <pattern id="treePattern" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 40 40 M 40 40 L 20 60 M 40 40 L 60 60" stroke="#30363d" stroke-width="0.5" opacity="0.2"/>
+    </pattern>
+  </defs>
+  
+  <style>
+    @media (prefers-color-scheme: dark) {
+      .text-primary { fill: #f0f6fc; font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.5px; }
+      .text-secondary { fill: #8b949e; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; letter-spacing: 0.5px; }
+    }
+    @media (prefers-color-scheme: light) {
+      .text-primary { fill: #24292f; font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.5px; }
+      .text-secondary { fill: #57606a; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; letter-spacing: 0.5px; }
+    }
+    
+    .query-node { 
+      animation: node-resolve 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite; 
+      transform-origin: center;
+    }
+    @keyframes node-resolve {
+      0%, 100% { opacity: 0.4; transform: scale(2.0); }
+      50% { opacity: 1; transform: scale(2.3); }
+    }
+    
+    .resolver-path {
+      stroke-dasharray: 200;
+      stroke-dashoffset: 200;
+      animation: resolve-trace 4s ease-out infinite;
+    }
+    @keyframes resolve-trace {
+      to { stroke-dashoffset: 0; }
+    }
+    
+    .field-pulse {
+      animation: field-highlight 2.5s ease-in-out infinite;
+    }
+    @keyframes field-highlight {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+    
+    .data-fetch {
+      animation: fetch-travel 3s linear infinite;
+    }
+    @keyframes fetch-travel {
+      0% { opacity: 0; transform: translateX(0); }
+      20% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { opacity: 0; transform: translateX(600.0px); }
+    }
+    
+    .graphql-logo {
+      animation: logo-rotate 20s linear infinite;
+      transform-origin: center;
+    }
+    @keyframes logo-rotate {
+      to { transform: rotate(360deg); }
+    }
+    
+    @media (prefers-reduced-motion: reduce) { 
+      * { animation: none !important; } 
+    }
+  
+    /* Enhanced header particle effects */
+    .h-particle {
+      animation: h-particle-rise 5s ease-out infinite;
+    }
+    @keyframes h-particle-rise {
+      0% { opacity: 0; transform: translateY(60px) scale(0); }
+      50% { opacity: 1; transform: translateY(30px) scale(2.5); }
+      100% { opacity: 0; transform: translateY(0) scale(0); }
+    }
+    
+    .h-sparkle {
+      animation: h-sparkle-twinkle 2s ease-in-out infinite;
+      transform-origin: center;
+    }
+    @keyframes h-sparkle-twinkle {
+      0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+      50% { opacity: 1; transform: scale(3) rotate(180deg); }
+    }
+    
+    /* Energy waves */
+    .h-energy {
+      stroke-dasharray: 10 20;
+      animation: h-energy-pulse 4s linear infinite;
+    }
+    @keyframes h-energy-pulse {
+      to { stroke-dashoffset: -200; }
+    }
+    
+    /* Orbital elements */
+    .h-orbit {
+      animation: h-orbit-spin 15s linear infinite;
+      transform-origin: center;
+    }
+    @keyframes h-orbit-spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Glow intensity */
+    .h-glow-intense {
+      animation: h-glow-pulse 3s ease-in-out infinite;
+    }
+    @keyframes h-glow-pulse {
+      0%, 100% { filter: drop-shadow(0 0 5px currentColor); opacity: 0.6; }
+      50% { filter: drop-shadow(0 0 15px currentColor); opacity: 1; }
+    }
+    
+    /* Beam effect */
+    .h-beam {
+      animation: h-beam-sweep 5s ease-in-out infinite;
+      transform-origin: center;
+    }
+    @keyframes h-beam-sweep {
+      0%, 100% { opacity: 0; transform: scaleX(0); }
+      50% { opacity: 0.8; transform: scaleX(4); }
+    }
+    
+    /* Constellation effect */
+    .h-star {
+      animation: h-star-blink 4s ease-in-out infinite;
+    }
+    @keyframes h-star-blink {
+      0%, 100% { opacity: 0.2; r: 1px; }
+      50% { opacity: 1; r: 3px; }
+    }
+    
+    /* Network lines */
+    .h-network {
+      stroke-dasharray: 5 15;
+      animation: h-network-pulse 6s linear infinite;
+      opacity: 0.4;
+    }
+    @keyframes h-network-pulse {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 0.8; stroke-dashoffset: -100; }
+    }
+    
+    </style>
+  
+  <rect width="1200" height="160" fill="url(#bgGraphQLGrad)"/>
+  <rect width="1200" height="160" fill="url(#treePattern)" opacity="0.3"/>
+  
+  <!-- Query root -->
+  <g filter="url(#glow)">
+    <circle class="query-node" cx="200" cy="80" r="20" fill="none" stroke="#C06EFF" stroke-width="3" style="animation-delay: 0s"/>
+    <text x="200" y="110" text-anchor="middle" class="text-secondary" font-size="10">Query</text>
+  </g>
+  
+  <!-- Field resolvers (tree structure) -->
+  <g filter="url(#glow)">
+    <!-- Level 1 -->
+    <circle class="query-node" cx="400" cy="40" r="14" fill="none" stroke="#5FED83" stroke-width="2" style="animation-delay: 0.5s"/>
+    <circle class="query-node" cx="400" cy="80" r="14" fill="none" stroke="#5FED83" stroke-width="2" style="animation-delay: 1s"/>
+    <circle class="query-node" cx="400" cy="120" r="14" fill="none" stroke="#5FED83" stroke-width="2" style="animation-delay: 1.5s"/>
+    
+    <!-- Level 2 -->
+    <circle class="query-node" cx="600" cy="30" r="10" fill="none" stroke="#3094FF" stroke-width="1.5" style="animation-delay: 2s"/>
+    <circle class="query-node" cx="600" cy="50" r="10" fill="none" stroke="#3094FF" stroke-width="1.5" style="animation-delay: 2.5s"/>
+    <circle class="query-node" cx="600" cy="70" r="10" fill="none" stroke="#3094FF" stroke-width="1.5" style="animation-delay: 3s"/>
+    <circle class="query-node" cx="600" cy="90" r="10" fill="none" stroke="#3094FF" stroke-width="1.5" style="animation-delay: 3.5s"/>
+    <circle class="query-node" cx="600" cy="110" r="10" fill="none" stroke="#3094FF" stroke-width="1.5" style="animation-delay: 4s"/>
+    <circle class="query-node" cx="600" cy="130" r="10" fill="none" stroke="#3094FF" stroke-width="1.5" style="animation-delay: 4.5s"/>
+    
+    <!-- Level 3 (data sources) -->
+    <rect class="query-node" x="770" y="65" width="80" height="30" rx="5" fill="none" stroke="#C06EFF" stroke-width="2" style="animation-delay: 5s"/>
+  </g>
+  
+  <!-- Resolver paths -->
+  <path class="resolver-path" d="M 220 80 L 386 40" fill="none" stroke="#C06EFF" stroke-width="2" opacity="0.4" style="animation-delay: 0s"/>
+  <path class="resolver-path" d="M 220 80 L 386 80" fill="none" stroke="#C06EFF" stroke-width="2" opacity="0.4" style="animation-delay: 0.5s"/>
+  <path class="resolver-path" d="M 220 80 L 386 120" fill="none" stroke="#C06EFF" stroke-width="2" opacity="0.4" style="animation-delay: 1s"/>
+  
+  <path class="resolver-path" d="M 414 40 L 590 30" fill="none" stroke="#5FED83" stroke-width="1.5" opacity="0.4" style="animation-delay: 1.5s"/>
+  <path class="resolver-path" d="M 414 40 L 590 50" fill="none" stroke="#5FED83" stroke-width="1.5" opacity="0.4" style="animation-delay: 2s"/>
+  <path class="resolver-path" d="M 414 80 L 590 70" fill="none" stroke="#5FED83" stroke-width="1.5" opacity="0.4" style="animation-delay: 2.5s"/>
+  <path class="resolver-path" d="M 414 80 L 590 90" fill="none" stroke="#5FED83" stroke-width="1.5" opacity="0.4" style="animation-delay: 3s"/>
+  <path class="resolver-path" d="M 414 120 L 590 110" fill="none" stroke="#5FED83" stroke-width="1.5" opacity="0.4" style="animation-delay: 3.5s"/>
+  <path class="resolver-path" d="M 414 120 L 590 130" fill="none" stroke="#5FED83" stroke-width="1.5" opacity="0.4" style="animation-delay: 4s"/>
+  
+  <path class="resolver-path" d="M 610 80 L 770 80" fill="none" stroke="#3094FF" stroke-width="2" opacity="0.4" style="animation-delay: 4.5s"/>
+  
+  <!-- Data fetching particles -->
+  <g class="data-fetch" style="animation-delay: 0s">
+    <circle cx="700" cy="80" r="4" fill="#C06EFF" opacity="0.8" filter="url(#glow)"/>
+  </g>
+  <g class="data-fetch" style="animation-delay: 1.5s">
+    <circle cx="700" cy="80" r="4" fill="#5FED83" opacity="0.8" filter="url(#glow)"/>
+  </g>
+  <g class="data-fetch" style="animation-delay: 3s">
+    <circle cx="700" cy="80" r="4" fill="#3094FF" opacity="0.8" filter="url(#glow)"/>
+  </g>
+  
+  <!-- Field labels -->
+  <text x="400" y="35" text-anchor="middle" class="text-secondary" font-size="8">user</text>
+  <text x="400" y="75" text-anchor="middle" class="text-secondary" font-size="8">posts</text>
+  <text x="400" y="115" text-anchor="middle" class="text-secondary" font-size="8">comments</text>
+  
+  <text x="810" y="83" text-anchor="middle" class="text-secondary" font-size="9">Database</text>
+  
+  <!-- Field indicators -->
+  <g opacity="0.6">
+    <circle class="field-pulse" cx="600" cy="30" r="2" fill="#3094FF" style="animation-delay: 0s"/>
+    <text x="615" y="33" class="text-secondary" font-size="7">id</text>
+    
+    <circle class="field-pulse" cx="600" cy="50" r="2" fill="#3094FF" style="animation-delay: 0.5s"/>
+    <text x="615" y="53" class="text-secondary" font-size="7">name</text>
+    
+    <circle class="field-pulse" cx="600" cy="70" r="2" fill="#3094FF" style="animation-delay: 1s"/>
+    <text x="615" y="73" class="text-secondary" font-size="7">email</text>
+  </g>
+  
+  <!-- GraphQL logo (left) -->
+  <g class="graphql-logo" transform="translate(37, 47)" opacity="0.7">
+    <path d="M 0,-15 L 13,-7.5 L 13,7.5 L 0,15 L -13,7.5 L -13,-7.5 Z" fill="none" stroke="#C06EFF" stroke-width="2"/>
+    <circle cx="0" cy="0" r="4" fill="#C06EFF"/>
+    <circle cx="0" cy="-15" r="2" fill="#C06EFF"/>
+    <circle cx="13" cy="-7.5" r="2" fill="#C06EFF"/>
+    <circle cx="13" cy="7.5" r="2" fill="#C06EFF"/>
+    <circle cx="0" cy="15" r="2" fill="#C06EFF"/>
+    <circle cx="-13" cy="7.5" r="2" fill="#C06EFF"/>
+    <circle cx="-13" cy="-7.5" r="2" fill="#C06EFF"/>
+  </g>
+  
+  <!-- Query icon (right) -->
+  <g transform="translate(1150, 30)" opacity="0.7">
+    <rect x="0" y="0" width="25" height="30" rx="2" fill="none" stroke="#5FED83" stroke-width="2"/>
+    <line x1="5" y1="8" x2="20" y2="8" stroke="#5FED83" stroke-width="1.5"/>
+    <line x1="5" y1="14" x2="20" y2="14" stroke="#5FED83" stroke-width="1.5"/>
+    <line x1="5" y1="20" x2="15" y2="20" stroke="#5FED83" stroke-width="1.5"/>
+    <circle cx="8" cy="24" r="2" fill="#3094FF"/>
+  </g>
+  
+  <!-- Query stats -->
+  <text x="600" y="145" text-anchor="middle" class="text-secondary" font-size="9" opacity="0.5">Resolved 12 fields • 3 data sources • 45ms</text>
+  
+  <text x="600" y="70" text-anchor="middle" class="text-primary" font-size="36" filter="url(#dropShadow)">MCP AI Agent Guidelines Server</text>
+  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" font-size="14">Guidelines • Patterns • Best Practices</text>
+  <rect x="400" y="84" width="400" height="16" fill="url(#shine11)" opacity="0.15"/>
+
+  <!-- Enhanced header particle system -->
+  <g opacity="0.7">
+    <circle class="h-particle" cx="535" cy="80" r="3" fill="#5FED83" style="animation-delay: 0s"/>
+    <circle class="h-particle" cx="580" cy="80" r="2.5" fill="#3094FF" style="animation-delay: 0.7s"/>
+    <circle class="h-particle" cx="625" cy="80" r="3.5" fill="#C06EFF" style="animation-delay: 1.4s"/>
+    <circle class="h-particle" cx="670" cy="80" r="2.8" fill="#5FED83" style="animation-delay: 2.1s"/>
+    <circle class="h-particle" cx="715" cy="80" r="3.2" fill="#3094FF" style="animation-delay: 2.8s"/>
+    <circle class="h-particle" cx="760" cy="80" r="2.6" fill="#C06EFF" style="animation-delay: 3.5s"/>
+  </g>
+  
+  <!-- Sparkle effects -->
+  <g opacity="0.8">
+    <path class="h-sparkle" d="M 640 60 L 644 60 M 642 58 L 642 62" 
+          stroke="#5FED83" stroke-width="1.5" style="animation-delay: 0s"/>
+    <path class="h-sparkle" d="M 785 70 L 789 70 M 787 68 L 787 72" 
+          stroke="#3094FF" stroke-width="1.5" style="animation-delay: 0.5s"/>
+    <path class="h-sparkle" d="M 930 55 L 934 55 M 932 53 L 932 57" 
+          stroke="#C06EFF" stroke-width="1.5" style="animation-delay: 1s"/>
+    <path class="h-sparkle" d="M 1075 65 L 1079 65 M 1077 63 L 1077 67" 
+          stroke="#5FED83" stroke-width="1.5" style="animation-delay: 1.5s"/>
+  </g>
+  
+  <!-- Energy waves -->
+  <g opacity="0.5">
+    <path class="h-energy" d="M 50 91 Q 200 71, 400 91 T 750 91" 
+          stroke="#5FED83" stroke-width="2" fill="none" style="animation-delay: 0s"/>
+    <path class="h-energy" d="M 100 111 Q 300 131, 500 111 T 900 111" 
+          stroke="#3094FF" stroke-width="2" fill="none" style="animation-delay: 1s"/>
+    <path class="h-energy" d="M 150 121 Q 350 101, 650 121 T 1100 121" 
+          stroke="#C06EFF" stroke-width="2" fill="none" style="animation-delay: 2s"/>
+  </g>
+  
+  <!-- Orbital elements -->
+  <g opacity="0.6">
+    <g class="h-orbit" transform="translate(630, 80)">
+      <circle cx="20" cy="0" r="2" fill="#5FED83"/>
+      <circle cx="-20" cy="0" r="2" fill="#3094FF"/>
+      <circle cx="0" cy="20" r="2" fill="#C06EFF"/>
+      <circle cx="0" cy="-20" r="2" fill="#5FED83"/>
+    </g>
+    <g class="h-orbit" transform="translate(625, 90)" style="animation-direction: reverse; animation-duration: 20s;">
+      <ellipse cx="25" cy="0" rx="2" ry="1.5" fill="#3094FF" opacity="0.7"/>
+      <ellipse cx="-25" cy="0" rx="2" ry="1.5" fill="#C06EFF" opacity="0.7"/>
+    </g>
+  </g>
+  
+  <!-- Beam effects -->
+  <g opacity="0.4">
+    <rect class="h-beam" x="100" y="61" width="200" height="2" fill="url(#shine11)" style="animation-delay: 0s"/>
+    <rect class="h-beam" x="500" y="81" width="250" height="2" fill="url(#shine11)" style="animation-delay: 1.5s"/>
+    <rect class="h-beam" x="850" y="101" width="200" height="2" fill="url(#shine11)" style="animation-delay: 3s"/>
+  </g>
+  
+  <!-- Constellation stars -->
+  <g class="h-glow-intense" opacity="0.6">
+    <circle class="h-star" cx="675" cy="51" r="1" fill="#5FED83" style="animation-delay: 0s"/>
+    <circle class="h-star" cx="720" cy="66" r="1" fill="#3094FF" style="animation-delay: 0.4s"/>
+    <circle class="h-star" cx="765" cy="56" r="1" fill="#C06EFF" style="animation-delay: 0.8s"/>
+    <circle class="h-star" cx="810" cy="71" r="1" fill="#5FED83" style="animation-delay: 1.2s"/>
+    <circle class="h-star" cx="855" cy="61" r="1" fill="#3094FF" style="animation-delay: 1.6s"/>
+    <circle class="h-star" cx="900" cy="76" r="1" fill="#C06EFF" style="animation-delay: 2s"/>
+    <circle class="h-star" cx="945" cy="66" r="1" fill="#5FED83" style="animation-delay: 2.4s"/>
+    <circle class="h-star" cx="990" cy="81" r="1" fill="#3094FF" style="animation-delay: 2.8s"/>
+  </g>
+  
+  <!-- Network connection lines -->
+  <g class="h-network">
+    <line x1="675" y1="51" x2="720" y2="66" stroke="#5FED83" stroke-width="0.5"/>
+    <line x1="720" y1="66" x2="765" y2="56" stroke="#3094FF" stroke-width="0.5"/>
+    <line x1="765" y1="56" x2="810" y2="71" stroke="#C06EFF" stroke-width="0.5"/>
+    <line x1="810" y1="71" x2="855" y2="61" stroke="#5FED83" stroke-width="0.5"/>
+    <line x1="855" y1="61" x2="900" y2="76" stroke="#3094FF" stroke-width="0.5"/>
+    <line x1="900" y1="76" x2="945" y2="66" stroke="#C06EFF" stroke-width="0.5"/>
+    <line x1="945" y1="66" x2="990" y2="81" stroke="#5FED83" stroke-width="0.5"/>
+  </g>
+
+</svg>

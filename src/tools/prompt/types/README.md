@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](../../../../docs/.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # Prompt Module Types
 
 This directory contains type definitions for the prompt module, organized by domain.
@@ -39,3 +43,7 @@ The prompting hierarchy is inspired by educational support hierarchies and HPT (
 - **Clear Structure** - Hierarchy levels well-defined
 - **Type Safety** - Strong typing for evaluation metrics
 - **Easier Maintenance** - Types isolated from implementation
+
+<!-- FOOTER:START -->
+![Footer](../../../../docs/.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

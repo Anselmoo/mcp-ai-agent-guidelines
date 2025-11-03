@@ -1,0 +1,230 @@
+<svg width="1200" height="80" viewBox="0 0 1200 80" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Code Compilation Footer">
+  <defs>
+    <linearGradient id="bgCompile05F" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d1117;stop-opacity:1">
+        
+      </stop>
+      <stop offset="50%" style="stop-color:#161b22;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#1c2128;stop-opacity:1">
+        
+      </stop>
+    </linearGradient>
+    
+    <filter id="codeGlow05F" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 6 0" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <pattern id="codePattern05F" x="0" y="0" width="80" height="20" patternUnits="userSpaceOnUse">
+      <text x="0" y="14" font-family="'SF Mono', 'Monaco', 'Courier New', monospace" font-size="10" fill="#30363d" opacity="0.3">const</text>
+    </pattern>
+  </defs>
+
+  <style>
+    @media (prefers-color-scheme: dark) {
+      .text-link { fill: #8b949e; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; }
+      .divider { stroke: #30363d; }
+    }
+    @media (prefers-color-scheme: light) {
+      .text-link { fill: #57606a; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; }
+      .divider { stroke: #d0d7de; }
+    }
+
+    .link { font-size: 13px; letter-spacing: 0.3px; }
+    
+    .bracket-pulse {
+      animation: bracket-scale 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      transform-origin: center;
+    }
+    @keyframes bracket-scale {
+      0%, 100% { opacity: 0.5; transform: scale(2.0); }
+      50% { opacity: 1; transform: scale(2.3); }
+    }
+    
+    .compiler-flash {
+      animation: flash-compile 2s ease-in-out infinite;
+    }
+    @keyframes flash-compile {
+      0%, 100% { opacity: 0; }
+      50% { opacity: 1; }
+    }
+
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  
+    /* Enhanced particle effects */
+    .particle {
+      animation: particle-float 4s ease-in-out infinite;
+      filter: blur(0.5px);
+    }
+    @keyframes particle-float {
+      0%, 100% { opacity: 0; transform: translateY(0) translateX(0) scale(0); }
+      25% { opacity: 0.8; transform: translateY(-20px) translateX(-10px) scale(1.5); }
+      50% { opacity: 1; transform: translateY(-40px) translateX(5px) scale(2); }
+      75% { opacity: 0.6; transform: translateY(-30px) translateX(15px) scale(1.8); }
+    }
+    
+    .particle-2 {
+      animation: particle-spin 5s linear infinite;
+    }
+    @keyframes particle-spin {
+      0% { opacity: 0; transform: rotate(0deg) translateX(20px) scale(0); }
+      50% { opacity: 1; transform: rotate(180deg) translateX(40px) scale(2); }
+      100% { opacity: 0; transform: rotate(360deg) translateX(20px) scale(0); }
+    }
+    
+    /* Wave effects */
+    .wave-line {
+      stroke-dasharray: 5 10;
+      animation: wave-flow 3s linear infinite;
+    }
+    @keyframes wave-flow {
+      to { stroke-dashoffset: -100; }
+    }
+    
+    /* Glow pulse on text */
+    .text-link {
+      animation: text-glow 3s ease-in-out infinite;
+    }
+    @keyframes text-glow {
+      0%, 100% { opacity: 0.7; filter: drop-shadow(0 0 0px transparent); }
+      50% { opacity: 1; filter: drop-shadow(0 0 8px rgba(95, 237, 131, 0.6)); }
+    }
+    
+    /* Rotating elements */
+    .rotate-slow {
+      animation: rotate-360 20s linear infinite;
+      transform-origin: center;
+    }
+    @keyframes rotate-360 {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Shimmer effect */
+    .shimmer {
+      animation: shimmer-pass 4s ease-in-out infinite;
+    }
+    @keyframes shimmer-pass {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+    
+    /* Ripple effect */
+    .ripple {
+      animation: ripple-expand 3s ease-out infinite;
+      transform-origin: center;
+    }
+    @keyframes ripple-expand {
+      0% { opacity: 1; transform: scale(0.5); }
+      100% { opacity: 0; transform: scale(3); }
+    }
+    
+    </style>
+
+  <rect width="1200" height="80" fill="url(#bgCompile05F)"/>
+  <rect width="1200" height="80" fill="url(#codePattern05F)" opacity="0.2"/>
+  
+  <line x1="0" y1="1" x2="1200" y2="1" class="divider" stroke-width="2"/>
+  
+  <!-- Syntax symbols -->
+  <g class="bracket-pulse" transform="translate(100, 25)" filter="url(#codeGlow05F)" style="animation-delay: 0s">
+    <text font-size="30" fill="#5FED83" font-family="'SF Mono', monospace">&lt;</text>
+  </g>
+  <g class="bracket-pulse" transform="translate(180, 25)" filter="url(#codeGlow05F)" style="animation-delay: 0.5s">
+    <text font-size="30" fill="#C06EFF" font-family="'SF Mono', monospace">{</text>
+  </g>
+  <g class="bracket-pulse" transform="translate(260, 25)" filter="url(#codeGlow05F)" style="animation-delay: 1s">
+    <text font-size="30" fill="#3094FF" font-family="'SF Mono', monospace">}</text>
+  </g>
+  <g class="bracket-pulse" transform="translate(340, 25)" filter="url(#codeGlow05F)" style="animation-delay: 1.5s">
+    <text font-size="30" fill="#5FED83" font-family="'SF Mono', monospace">&gt;</text>
+  </g>
+  
+  <!-- Compiler icon (left) -->
+  <g transform="translate(20, 25)" opacity="0.7">
+    <rect x="0" y="0" width="30" height="35" rx="3" fill="none" stroke="#5FED83" stroke-width="2"/>
+    <path d="M 5 10 L 10 15 L 5 20" fill="none" stroke="#5FED83" stroke-width="2" stroke-linecap="round"/>
+    <path d="M 25 10 L 20 15 L 25 20" fill="none" stroke="#5FED83" stroke-width="2" stroke-linecap="round"/>
+    <line x1="12" y1="15" x2="18" y2="15" stroke="#5FED83" stroke-width="2"/>
+    <circle class="compiler-flash" cx="15" cy="28" r="2" fill="#C06EFF"/>
+  </g>
+  
+  <!-- Output icon (right) -->
+  <g transform="translate(1150, 25)" opacity="0.7">
+    <rect x="0" y="5" width="25" height="30" rx="2" fill="none" stroke="#3094FF" stroke-width="2"/>
+    <line x1="5" y1="12" x2="20" y2="12" stroke="#3094FF" stroke-width="1.5"/>
+    <line x1="5" y1="18" x2="20" y2="18" stroke="#3094FF" stroke-width="1.5"/>
+    <line x1="5" y1="24" x2="15" y2="24" stroke="#3094FF" stroke-width="1.5"/>
+    <circle cx="12" cy="30" r="2" fill="#5FED83"/>
+  </g>
+
+  
+  
+  
+  
+  
+    <text x="1050" y="72" text-anchor="middle" class="link text-link" font-size="11px" opacity="0.8">License (MIT)</text>
+  
+  
+  
+  
+  
+  
+  <text x="1160" y="43" text-anchor="end" class="link text-link" font-size="11px" opacity="0.7">© 2024-2025</text>
+
+  <!-- Enhanced particle system -->
+  <g opacity="0.6">
+    <circle class="particle" cx="250" cy="40" r="2" fill="#5FED83" style="animation-delay: 0s"/>
+    <circle class="particle" cx="325" cy="30" r="1.5" fill="#3094FF" style="animation-delay: 0.5s"/>
+    <circle class="particle" cx="400" cy="50" r="2.5" fill="#C06EFF" style="animation-delay: 1s"/>
+    <circle class="particle" cx="475" cy="35" r="1.8" fill="#5FED83" style="animation-delay: 1.5s"/>
+    <circle class="particle" cx="550" cy="45" r="2.2" fill="#3094FF" style="animation-delay: 2s"/>
+    
+    <circle class="particle-2" cx="800" cy="40" r="1.5" fill="#C06EFF" style="animation-delay: 0.3s"/>
+    <circle class="particle-2" cx="900" cy="35" r="2" fill="#5FED83" style="animation-delay: 0.8s"/>
+    <circle class="particle-2" cx="1000" cy="45" r="1.8" fill="#3094FF" style="animation-delay: 1.3s"/>
+  </g>
+  
+  <!-- Wave patterns -->
+  <g opacity="0.4">
+    <path class="wave-line" d="M 50 30 Q 150 20, 250 30 T 450 30" 
+          stroke="#5FED83" stroke-width="1" fill="none" style="animation-delay: 0s"/>
+    <path class="wave-line" d="M 600 40 Q 700 30, 800 40 T 1000 40" 
+          stroke="#3094FF" stroke-width="1" fill="none" style="animation-delay: 0.7s"/>
+    <path class="wave-line" d="M 100 60 Q 300 50, 500 60 T 900 60" 
+          stroke="#C06EFF" stroke-width="1" fill="none" style="animation-delay: 1.4s"/>
+  </g>
+  
+  <!-- Ripple effects -->
+  <g opacity="0.3">
+    <circle class="ripple" cx="350" cy="40" r="15" stroke="#5FED83" stroke-width="1.5" fill="none" style="animation-delay: 0s"/>
+    <circle class="ripple" cx="350" cy="40" r="15" stroke="#5FED83" stroke-width="1.5" fill="none" style="animation-delay: 1s"/>
+    <circle class="ripple" cx="350" cy="40" r="15" stroke="#5FED83" stroke-width="1.5" fill="none" style="animation-delay: 2s"/>
+    
+    <circle class="ripple" cx="825" cy="45" r="12" stroke="#3094FF" stroke-width="1" fill="none" style="animation-delay: 0.5s"/>
+    <circle class="ripple" cx="825" cy="45" r="12" stroke="#3094FF" stroke-width="1" fill="none" style="animation-delay: 1.5s"/>
+  </g>
+  
+  <!-- Rotating accent elements -->
+  <g opacity="0.5">
+    <g class="rotate-slow" transform="translate(750, 40)">
+      <path d="M -8 0 L 0 -8 L 8 0 L 0 8 Z" fill="none" stroke="#C06EFF" stroke-width="1"/>
+    </g>
+    <g class="rotate-slow" transform="translate(910, 35)" style="animation-direction: reverse;">
+      <circle cx="0" cy="0" r="6" fill="none" stroke="#5FED83" stroke-width="1" stroke-dasharray="2 4"/>
+    </g>
+  </g>
+  
+  <!-- Shimmering accents around text -->
+  <g opacity="0.4">
+    <line class="shimmer" x1="550" y1="38" x2="580" y2="38" stroke="#5FED83" stroke-width="1.5" style="animation-delay: 0s"/>
+    <line class="shimmer" x1="620" y1="38" x2="650" y2="38" stroke="#5FED83" stroke-width="1.5" style="animation-delay: 0.3s"/>
+    
+    <line class="shimmer" x1="550" y1="58" x2="575" y2="58" stroke="#3094FF" stroke-width="1.5" style="animation-delay: 0.6s"/>
+    <line class="shimmer" x1="625" y1="58" x2="650" y2="58" stroke="#3094FF" stroke-width="1.5" style="animation-delay: 0.9s"/>
+  </g>
+
+</svg>

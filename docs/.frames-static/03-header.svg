@@ -1,0 +1,433 @@
+<svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Neural Network AI">
+  <defs>
+    <!-- Advanced gradients with multiple stops -->
+    <linearGradient id="bgNeuralGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d1117;stop-opacity:1">
+        <animate attributeName="stop-color" values="#0d1117;#161b22;#0d1117" dur="5.0s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="50%" style="stop-color:#1c2128;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#161b22;stop-opacity:1">
+        <animate attributeName="stop-color" values="#161b22;#0d1117;#161b22" dur="5.0s" repeatCount="indefinite"/>
+      </stop>
+    </linearGradient>
+    
+    <!-- Radial gradient for glow effects -->
+    <radialGradient id="neuronGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#5FED83;stop-opacity:1"/>
+      <stop offset="50%" style="stop-color:#3094FF;stop-opacity:0.6"/>
+      <stop offset="100%" style="stop-color:#C06EFF;stop-opacity:0"/>
+    </radialGradient>
+    
+    <!-- Advanced filters for glow and blur -->
+    <filter id="neuronGlowFilter" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 8 0" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Drop shadow filter -->
+    <filter id="dropShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+      <feOffset dx="0" dy="2" result="offsetblur"/>
+      <feFlood flood-color="#000000" flood-opacity="0.5"/>
+      <feComposite in2="offsetblur" operator="in"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Shine effect -->
+    <linearGradient id="shine" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0"/>
+      <stop offset="50%" style="stop-color:#ffffff;stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0"/>
+      <animate attributeName="x1" values="-100%;200%" dur="1.5s" repeatCount="indefinite"/>
+      <animate attributeName="x2" values="0%;300%" dur="1.5s" repeatCount="indefinite"/>
+    </linearGradient>
+    
+    <!-- Pattern for circuit board background -->
+    <pattern id="circuitPattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M0 20 L10 20 M30 20 L40 20 M20 0 L20 10 M20 30 L20 40" stroke="#30363d" stroke-width="1" opacity="0.3"/>
+      <circle cx="20" cy="20" r="2" fill="#3094FF" opacity="0.5"/>
+    </pattern>
+  </defs>
+  
+  <style>
+    @media (prefers-color-scheme: dark) {
+      .text-primary { fill: #f0f6fc; font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.5px; }
+      .text-secondary { fill: #8b949e; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; letter-spacing: 0.5px; }
+    }
+    @media (prefers-color-scheme: light) {
+      .text-primary { fill: #24292f; font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.5px; }
+      .text-secondary { fill: #57606a; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; letter-spacing: 0.5px; }
+    }
+    
+    /* Complex neuron pulse with scale and opacity */
+    .neuron-node { 
+      animation: neuron-complex-pulse 4s cubic-bezier(0.4, 0, 0.2, 1) infinite; 
+      transform-origin: center;
+    }
+    @keyframes neuron-complex-pulse {
+      0%, 100% { 
+        opacity: 0.4; 
+        transform: scale(2.0); 
+      }
+      50% { 
+        opacity: 1; 
+        transform: scale(2.6); 
+      }
+    }
+    
+    /* Signal particle travel with trail effect */
+    .signal-particle { 
+      animation: signal-travel 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      filter: url(#neuronGlowFilter);
+    }
+    @keyframes signal-travel {
+      0% { 
+        opacity: 0; 
+        cx: 100; 
+        r: 2;
+      }
+      20% { 
+        opacity: 1; 
+        r: 6;
+      }
+      80% { 
+        opacity: 1;
+        r: 6;
+      }
+      100% { 
+        opacity: 0; 
+        cx: 1100;
+        r: 2;
+      }
+    }
+    
+    /* Synapse connection with pulsing thickness */
+    .synapse-line {
+      animation: synapse-pulse 5s ease-in-out infinite;
+      stroke-linecap: round;
+    }
+    @keyframes synapse-pulse {
+      0%, 100% { 
+        opacity: 0.2; 
+        stroke-width: 1;
+        stroke-dasharray: 5 5;
+      }
+      50% { 
+        opacity: 0.9; 
+        stroke-width: 3;
+        stroke-dasharray: 10 5;
+      }
+    }
+    
+    /* Rotating network hub */
+    .network-hub {
+      animation: hub-rotate 20s linear infinite;
+      transform-origin: center;
+    }
+    @keyframes hub-rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Data burst particles */
+    .data-burst {
+      animation: burst-expand 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      transform-origin: center;
+    }
+    @keyframes burst-expand {
+      0% {
+        opacity: 0;
+        transform: scale(0.0);
+      }
+      50% {
+        opacity: 0.8;
+      }
+      100% {
+        opacity: 0;
+        transform: scale(6.0);
+      }
+    }
+    
+    /* Circuit trace animation */
+    .circuit-trace {
+      stroke-dasharray: 1000;
+      stroke-dashoffset: 1000;
+      animation: trace-draw 8s linear infinite;
+    }
+    @keyframes trace-draw {
+      to { stroke-dashoffset: 0; }
+    }
+    
+    @media (prefers-reduced-motion: reduce) { 
+      * { animation: none !important; } 
+    }
+  
+    /* Enhanced header particle effects */
+    .h-particle {
+      animation: h-particle-rise 5s ease-out infinite;
+    }
+    @keyframes h-particle-rise {
+      0% { opacity: 0; transform: translateY(60px) scale(0); }
+      50% { opacity: 1; transform: translateY(30px) scale(2.5); }
+      100% { opacity: 0; transform: translateY(0) scale(0); }
+    }
+    
+    .h-sparkle {
+      animation: h-sparkle-twinkle 2s ease-in-out infinite;
+      transform-origin: center;
+    }
+    @keyframes h-sparkle-twinkle {
+      0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+      50% { opacity: 1; transform: scale(3) rotate(180deg); }
+    }
+    
+    /* Energy waves */
+    .h-energy {
+      stroke-dasharray: 10 20;
+      animation: h-energy-pulse 4s linear infinite;
+    }
+    @keyframes h-energy-pulse {
+      to { stroke-dashoffset: -200; }
+    }
+    
+    /* Orbital elements */
+    .h-orbit {
+      animation: h-orbit-spin 15s linear infinite;
+      transform-origin: center;
+    }
+    @keyframes h-orbit-spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Glow intensity */
+    .h-glow-intense {
+      animation: h-glow-pulse 3s ease-in-out infinite;
+    }
+    @keyframes h-glow-pulse {
+      0%, 100% { filter: drop-shadow(0 0 5px currentColor); opacity: 0.6; }
+      50% { filter: drop-shadow(0 0 15px currentColor); opacity: 1; }
+    }
+    
+    /* Beam effect */
+    .h-beam {
+      animation: h-beam-sweep 5s ease-in-out infinite;
+      transform-origin: center;
+    }
+    @keyframes h-beam-sweep {
+      0%, 100% { opacity: 0; transform: scaleX(0); }
+      50% { opacity: 0.8; transform: scaleX(4); }
+    }
+    
+    /* Constellation effect */
+    .h-star {
+      animation: h-star-blink 4s ease-in-out infinite;
+    }
+    @keyframes h-star-blink {
+      0%, 100% { opacity: 0.2; r: 1px; }
+      50% { opacity: 1; r: 3px; }
+    }
+    
+    /* Network lines */
+    .h-network {
+      stroke-dasharray: 5 15;
+      animation: h-network-pulse 6s linear infinite;
+      opacity: 0.4;
+    }
+    @keyframes h-network-pulse {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 0.8; stroke-dashoffset: -100; }
+    }
+    
+    </style>
+  
+  <!-- Background with pattern -->
+  <rect width="1200" height="160" fill="url(#bgNeuralGrad)"/>
+  <rect width="1200" height="160" fill="url(#circuitPattern)" opacity="0.4"/>
+  
+  <!-- Complex network hub with rotating elements -->
+  <g class="network-hub" transform="translate(600, 80)">
+    <circle r="25" fill="none" stroke="url(#neuronGlow)" stroke-width="2" opacity="0.3"/>
+    <circle r="35" fill="none" stroke="#3094FF" stroke-width="1" opacity="0.2"/>
+    <circle r="45" fill="none" stroke="#C06EFF" stroke-width="1" opacity="0.1"/>
+    <!-- Hub spokes -->
+    <line x1="-40" y1="0" x2="40" y2="0" stroke="#5FED83" stroke-width="1" opacity="0.4"/>
+    <line x1="0" y1="-40" x2="0" y2="40" stroke="#3094FF" stroke-width="1" opacity="0.4"/>
+    <line x1="-28" y1="-28" x2="28" y2="28" stroke="#C06EFF" stroke-width="1" opacity="0.4"/>
+    <line x1="28" y1="-28" x2="-28" y2="28" stroke="#5FED83" stroke-width="1" opacity="0.4"/>
+  </g>
+  
+  <!-- Layer 1: Input neurons (left side) -->
+  <g filter="url(#neuronGlowFilter)">
+    <circle class="neuron-node" cx="100" cy="40" r="8" fill="#5FED83" style="animation-delay: 0s"/>
+    <circle class="neuron-node" cx="100" cy="80" r="8" fill="#3094FF" style="animation-delay: 0.5s"/>
+    <circle class="neuron-node" cx="100" cy="120" r="8" fill="#C06EFF" style="animation-delay: 1s"/>
+    <text x="120" y="45" class="text-secondary" font-size="10">Input</text>
+  </g>
+  
+  <!-- Layer 2: Hidden neurons (left-center) -->
+  <g filter="url(#neuronGlowFilter)">
+    <circle class="neuron-node" cx="300" cy="30" r="7" fill="#3094FF" style="animation-delay: 1.5s"/>
+    <circle class="neuron-node" cx="300" cy="70" r="7" fill="#C06EFF" style="animation-delay: 2s"/>
+    <circle class="neuron-node" cx="300" cy="110" r="7" fill="#5FED83" style="animation-delay: 2.5s"/>
+    <circle class="neuron-node" cx="300" cy="140" r="6" fill="#3094FF" style="animation-delay: 3s"/>
+  </g>
+  
+  <!-- Layer 3: Hidden neurons (right-center) -->
+  <g filter="url(#neuronGlowFilter)">
+    <circle class="neuron-node" cx="900" cy="30" r="7" fill="#C06EFF" style="animation-delay: 3.5s"/>
+    <circle class="neuron-node" cx="900" cy="70" r="7" fill="#5FED83" style="animation-delay: 4s"/>
+    <circle class="neuron-node" cx="900" cy="110" r="7" fill="#3094FF" style="animation-delay: 4.5s"/>
+    <circle class="neuron-node" cx="900" cy="140" r="6" fill="#C06EFF" style="animation-delay: 5s"/>
+  </g>
+  
+  <!-- Layer 4: Output neurons (right side) -->
+  <g filter="url(#neuronGlowFilter)">
+    <circle class="neuron-node" cx="1100" cy="60" r="8" fill="#5FED83" style="animation-delay: 5.5s"/>
+    <circle class="neuron-node" cx="1100" cy="100" r="8" fill="#3094FF" style="animation-delay: 6s"/>
+    <text x="1020" y="85" class="text-secondary" font-size="10">Output</text>
+  </g>
+  
+  <!-- Complex synapse connections -->
+  <line class="synapse-line" x1="100" y1="40" x2="300" y2="70" stroke="#5FED83" style="animation-delay: 0s"/>
+  <line class="synapse-line" x1="100" y1="80" x2="300" y2="70" stroke="#3094FF" style="animation-delay: 0.5s"/>
+  <line class="synapse-line" x1="100" y1="120" x2="300" y2="110" stroke="#C06EFF" style="animation-delay: 1s"/>
+  
+  <line class="synapse-line" x1="300" y1="70" x2="600" y2="80" stroke="#3094FF" style="animation-delay: 1.5s"/>
+  <line class="synapse-line" x1="300" y1="110" x2="600" y2="80" stroke="#5FED83" style="animation-delay: 2s"/>
+  
+  <line class="synapse-line" x1="600" y1="80" x2="900" y2="70" stroke="#C06EFF" style="animation-delay: 2.5s"/>
+  <line class="synapse-line" x1="600" y1="80" x2="900" y2="110" stroke="#3094FF" style="animation-delay: 3s"/>
+  
+  <line class="synapse-line" x1="900" y1="70" x2="1100" y2="80" stroke="#5FED83" style="animation-delay: 3.5s"/>
+  <line class="synapse-line" x1="900" y1="110" x2="1100" y2="80" stroke="#3094FF" style="animation-delay: 4s"/>
+  
+  <!-- Animated signal particles traveling through network -->
+  <circle class="signal-particle" cy="70" r="4" fill="#5FED83" style="animation-delay: 0s"/>
+  <circle class="signal-particle" cy="80" r="4" fill="#3094FF" style="animation-delay: 1s"/>
+  <circle class="signal-particle" cy="90" r="4" fill="#C06EFF" style="animation-delay: 2s"/>
+  <circle class="signal-particle" cy="70" r="4" fill="#5FED83" style="animation-delay: 3s"/>
+  
+  <!-- Data burst effects at key nodes -->
+  <circle class="data-burst" cx="600" cy="80" r="10" fill="none" stroke="#5FED83" stroke-width="2" style="animation-delay: 0s"/>
+  <circle class="data-burst" cx="600" cy="80" r="10" fill="none" stroke="#3094FF" stroke-width="2" style="animation-delay: 0.7s"/>
+  <circle class="data-burst" cx="600" cy="80" r="10" fill="none" stroke="#C06EFF" stroke-width="2" style="animation-delay: 1.4s"/>
+  
+  <!-- Circuit traces -->
+  <path class="circuit-trace" d="M 50 20 L 150 20 L 150 140 L 250 140" 
+        fill="none" stroke="#3094FF" stroke-width="1" opacity="0.3" style="animation-delay: 0s"/>
+  <path class="circuit-trace" d="M 1150 20 L 1050 20 L 1050 140 L 950 140" 
+        fill="none" stroke="#C06EFF" stroke-width="1" opacity="0.3" style="animation-delay: 2s"/>
+  
+  <!-- Decorative AI brain icon (left) -->
+  <g transform="translate(30, 30)" opacity="0.6">
+    <path d="M 0 10 Q 5 0, 15 0 Q 20 0, 20 10 Q 20 15, 15 20 Q 10 20, 5 15 Q 0 15, 0 10" 
+          fill="none" stroke="#5FED83" stroke-width="1.5"/>
+    <circle cx="7" cy="8" r="1.5" fill="#5FED83"/>
+    <circle cx="13" cy="8" r="1.5" fill="#5FED83"/>
+    <path d="M 5 12 Q 10 14, 15 12" fill="none" stroke="#5FED83" stroke-width="1"/>
+  </g>
+  
+  <!-- Decorative chip icon (right) -->
+  <g transform="translate(1150, 30)" opacity="0.6">
+    <rect x="0" y="0" width="20" height="20" rx="2" fill="none" stroke="#3094FF" stroke-width="1.5"/>
+    <line x1="-3" y1="5" x2="0" y2="5" stroke="#3094FF" stroke-width="1"/>
+    <line x1="-3" y1="10" x2="0" y2="10" stroke="#3094FF" stroke-width="1"/>
+    <line x1="-3" y1="15" x2="0" y2="15" stroke="#3094FF" stroke-width="1"/>
+    <line x1="20" y1="5" x2="23" y2="5" stroke="#3094FF" stroke-width="1"/>
+    <line x1="20" y1="10" x2="23" y2="10" stroke="#3094FF" stroke-width="1"/>
+    <line x1="20" y1="15" x2="23" y2="15" stroke="#3094FF" stroke-width="1"/>
+    <circle cx="10" cy="10" r="3" fill="none" stroke="#3094FF" stroke-width="1"/>
+  </g>
+  
+  <!-- Title with drop shadow -->
+  <text x="600" y="70" text-anchor="middle" class="title text-primary" font-size="36" filter="url(#dropShadow)">MCP AI Agent Guidelines Server</text>
+  
+  <!-- Subtitle with shine effect overlay -->
+  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" font-size="14">Guidelines • Patterns • Best Practices</text>
+  <rect x="400" y="84" width="400" height="16" fill="url(#shine)" opacity="0.15"/>
+  
+
+  <!-- Enhanced header particle system -->
+  <g opacity="0.7">
+    <circle class="h-particle" cx="255" cy="80" r="3" fill="#5FED83" style="animation-delay: 0s"/>
+    <circle class="h-particle" cx="340" cy="80" r="2.5" fill="#3094FF" style="animation-delay: 0.7s"/>
+    <circle class="h-particle" cx="425" cy="80" r="3.5" fill="#C06EFF" style="animation-delay: 1.4s"/>
+    <circle class="h-particle" cx="510" cy="80" r="2.8" fill="#5FED83" style="animation-delay: 2.1s"/>
+    <circle class="h-particle" cx="595" cy="80" r="3.2" fill="#3094FF" style="animation-delay: 2.8s"/>
+    <circle class="h-particle" cx="680" cy="80" r="2.6" fill="#C06EFF" style="animation-delay: 3.5s"/>
+  </g>
+  
+  <!-- Sparkle effects -->
+  <g opacity="0.8">
+    <path class="h-sparkle" d="M 320 60 L 324 60 M 322 58 L 322 62" 
+          stroke="#5FED83" stroke-width="1.5" style="animation-delay: 0s"/>
+    <path class="h-sparkle" d="M 505 70 L 509 70 M 507 68 L 507 72" 
+          stroke="#3094FF" stroke-width="1.5" style="animation-delay: 0.5s"/>
+    <path class="h-sparkle" d="M 690 55 L 694 55 M 692 53 L 692 57" 
+          stroke="#C06EFF" stroke-width="1.5" style="animation-delay: 1s"/>
+    <path class="h-sparkle" d="M 875 65 L 879 65 M 877 63 L 877 67" 
+          stroke="#5FED83" stroke-width="1.5" style="animation-delay: 1.5s"/>
+  </g>
+  
+  <!-- Energy waves -->
+  <g opacity="0.5">
+    <path class="h-energy" d="M 50 83 Q 200 63, 400 83 T 750 83" 
+          stroke="#5FED83" stroke-width="2" fill="none" style="animation-delay: 0s"/>
+    <path class="h-energy" d="M 100 103 Q 300 123, 500 103 T 900 103" 
+          stroke="#3094FF" stroke-width="2" fill="none" style="animation-delay: 1s"/>
+    <path class="h-energy" d="M 150 123 Q 350 103, 650 123 T 1100 123" 
+          stroke="#C06EFF" stroke-width="2" fill="none" style="animation-delay: 2s"/>
+  </g>
+  
+  <!-- Orbital elements -->
+  <g opacity="0.6">
+    <g class="h-orbit" transform="translate(390, 80)">
+      <circle cx="20" cy="0" r="2" fill="#5FED83"/>
+      <circle cx="-20" cy="0" r="2" fill="#3094FF"/>
+      <circle cx="0" cy="20" r="2" fill="#C06EFF"/>
+      <circle cx="0" cy="-20" r="2" fill="#5FED83"/>
+    </g>
+    <g class="h-orbit" transform="translate(825, 90)" style="animation-direction: reverse; animation-duration: 20s;">
+      <ellipse cx="25" cy="0" rx="2" ry="1.5" fill="#3094FF" opacity="0.7"/>
+      <ellipse cx="-25" cy="0" rx="2" ry="1.5" fill="#C06EFF" opacity="0.7"/>
+    </g>
+  </g>
+  
+  <!-- Beam effects -->
+  <g opacity="0.4">
+    <rect class="h-beam" x="100" y="53" width="200" height="2" fill="url(#shine03)" style="animation-delay: 0s"/>
+    <rect class="h-beam" x="500" y="73" width="250" height="2" fill="url(#shine03)" style="animation-delay: 1.5s"/>
+    <rect class="h-beam" x="850" y="93" width="200" height="2" fill="url(#shine03)" style="animation-delay: 3s"/>
+  </g>
+  
+  <!-- Constellation stars -->
+  <g class="h-glow-intense" opacity="0.6">
+    <circle class="h-star" cx="315" cy="43" r="1" fill="#5FED83" style="animation-delay: 0s"/>
+    <circle class="h-star" cx="400" cy="58" r="1" fill="#3094FF" style="animation-delay: 0.4s"/>
+    <circle class="h-star" cx="485" cy="48" r="1" fill="#C06EFF" style="animation-delay: 0.8s"/>
+    <circle class="h-star" cx="570" cy="63" r="1" fill="#5FED83" style="animation-delay: 1.2s"/>
+    <circle class="h-star" cx="655" cy="53" r="1" fill="#3094FF" style="animation-delay: 1.6s"/>
+    <circle class="h-star" cx="740" cy="68" r="1" fill="#C06EFF" style="animation-delay: 2s"/>
+    <circle class="h-star" cx="825" cy="58" r="1" fill="#5FED83" style="animation-delay: 2.4s"/>
+    <circle class="h-star" cx="910" cy="73" r="1" fill="#3094FF" style="animation-delay: 2.8s"/>
+  </g>
+  
+  <!-- Network connection lines -->
+  <g class="h-network">
+    <line x1="315" y1="43" x2="400" y2="58" stroke="#5FED83" stroke-width="0.5"/>
+    <line x1="400" y1="58" x2="485" y2="48" stroke="#3094FF" stroke-width="0.5"/>
+    <line x1="485" y1="48" x2="570" y2="63" stroke="#C06EFF" stroke-width="0.5"/>
+    <line x1="570" y1="63" x2="655" y2="53" stroke="#5FED83" stroke-width="0.5"/>
+    <line x1="655" y1="53" x2="740" y2="68" stroke="#3094FF" stroke-width="0.5"/>
+    <line x1="740" y1="68" x2="825" y2="58" stroke="#C06EFF" stroke-width="0.5"/>
+    <line x1="825" y1="58" x2="910" y2="73" stroke="#5FED83" stroke-width="0.5"/>
+  </g>
+
+</svg>

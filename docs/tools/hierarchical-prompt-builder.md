@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](../.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # Hierarchical Prompt Builder
 
 > **Prompt Builders Tool** • **Complexity: Medium**
@@ -332,3 +336,7 @@ graph LR
 **[← Back to Tools](./README.md)** • **[📚 Documentation](../README.md)** • **[�� Home](../../README.md)**
 
 <sub>Part of **[MCP AI Agent Guidelines](../../README.md)** • Licensed under **[MIT](../../LICENSE)** • © 2025</sub>
+
+<!-- FOOTER:START -->
+![Footer](../.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

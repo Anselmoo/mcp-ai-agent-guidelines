@@ -1,12 +1,6 @@
-<div align="center">
-
-<!-- Interactive SVG Header -->
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./docs/assets/readme-header.svg">
-  <img alt="MCP AI Agent Guidelines Server - advanced tools for AI development" src="./docs/assets/readme-header.svg" width="100%">
-</picture>
-
-</div>
+<!-- HEADER:START -->
+![Header](docs/.frames-static/09-header.svg)
+<!-- HEADER:END -->
 
 # MCP AI Agent Guidelines Server
 
@@ -939,15 +933,6 @@ For a comprehensive list of references, research papers, and detailed attributio
 
 ---
 
-<div align="center">
-
-<!-- Interactive SVG Footer -->
-<img src="./docs/assets/readme-footer.svg" alt="" width="100%" aria-hidden="true">
-
-**[⭐ Star this project](https://github.com/Anselmoo/mcp-ai-agent-guidelines)** • **[🐛 Report issues](https://github.com/Anselmoo/mcp-ai-agent-guidelines/issues)** • **[💡 Request features](https://github.com/Anselmoo/mcp-ai-agent-guidelines/issues/new)**
-
-</div>
-
 - **Model Context Protocol team** for the specification
 - **Anthropic** for prompt caching research
 - **Mermaid community** for diagram tooling
@@ -956,3 +941,7 @@ For a comprehensive list of references, research papers, and detailed attributio
 - **All open-source contributors** whose work has shaped this project
 
 See [docs/REFERENCES.md](./docs/REFERENCES.md) for the complete list of research papers, projects, and inspirations.
+
+<!-- FOOTER:START -->
+![Footer](docs/.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

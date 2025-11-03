@@ -1,0 +1,240 @@
+<svg width="1200" height="80" viewBox="0 0 1200 80" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Blockchain Network Footer">
+  <defs>
+    <linearGradient id="bgChain12F" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#0d1117;stop-opacity:1">
+        
+      </stop>
+      <stop offset="50%" style="stop-color:#161b22;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#0d1117;stop-opacity:1">
+        
+      </stop>
+    </linearGradient>
+    
+    <filter id="blockGlow12F" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 8 0" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <pattern id="chainPattern12F" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <rect x="15" y="15" width="10" height="10" fill="none" stroke="#30363d" stroke-width="0.5" opacity="0.2"/>
+      <path d="M 20 5 L 20 15 M 20 25 L 20 35" stroke="#30363d" stroke-width="0.5" opacity="0.15"/>
+    </pattern>
+  </defs>
+
+  <style>
+    @media (prefers-color-scheme: dark) {
+      .text-link { fill: #8b949e; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; }
+      .divider { stroke: #30363d; }
+    }
+    @media (prefers-color-scheme: light) {
+      .text-link { fill: #57606a; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; }
+      .divider { stroke: #d0d7de; }
+    }
+
+    .link { font-size: 13px; letter-spacing: 0.3px; }
+    
+    .block { 
+      animation: block-mine 4s cubic-bezier(0.4, 0, 0.2, 1) infinite; 
+      transform-origin: center;
+    }
+    @keyframes block-mine {
+      0% { opacity: 0.3; transform: scale(2.0) rotateY(0deg); }
+      50% { opacity: 1; transform: scale(2.3) rotateY(180deg); }
+      100% { opacity: 0.5; transform: scale(2.0) rotateY(360deg); }
+    }
+    
+    .chain-link {
+      stroke-dasharray: 80;
+      stroke-dashoffset: 80;
+      animation: chain-connect 3s ease-out infinite;
+    }
+    @keyframes chain-connect {
+      to { stroke-dashoffset: 0; }
+    }
+    
+    .hash-particle {
+      animation: hash-float 2.5s ease-in-out infinite;
+      font-family: 'Courier New', monospace;
+    }
+    @keyframes hash-float {
+      0%, 100% { opacity: 0.2; transform: translateY(0); }
+      50% { opacity: 0.8; transform: translateY(-10.0px); }
+    }
+
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  
+    /* Enhanced particle effects */
+    .particle {
+      animation: particle-float 4s ease-in-out infinite;
+      filter: blur(0.5px);
+    }
+    @keyframes particle-float {
+      0%, 100% { opacity: 0; transform: translateY(0) translateX(0) scale(0); }
+      25% { opacity: 0.8; transform: translateY(-20px) translateX(-10px) scale(1.5); }
+      50% { opacity: 1; transform: translateY(-40px) translateX(5px) scale(2); }
+      75% { opacity: 0.6; transform: translateY(-30px) translateX(15px) scale(1.8); }
+    }
+    
+    .particle-2 {
+      animation: particle-spin 5s linear infinite;
+    }
+    @keyframes particle-spin {
+      0% { opacity: 0; transform: rotate(0deg) translateX(20px) scale(0); }
+      50% { opacity: 1; transform: rotate(180deg) translateX(40px) scale(2); }
+      100% { opacity: 0; transform: rotate(360deg) translateX(20px) scale(0); }
+    }
+    
+    /* Wave effects */
+    .wave-line {
+      stroke-dasharray: 5 10;
+      animation: wave-flow 3s linear infinite;
+    }
+    @keyframes wave-flow {
+      to { stroke-dashoffset: -100; }
+    }
+    
+    /* Glow pulse on text */
+    .text-link {
+      animation: text-glow 3s ease-in-out infinite;
+    }
+    @keyframes text-glow {
+      0%, 100% { opacity: 0.7; filter: drop-shadow(0 0 0px transparent); }
+      50% { opacity: 1; filter: drop-shadow(0 0 8px rgba(95, 237, 131, 0.6)); }
+    }
+    
+    /* Rotating elements */
+    .rotate-slow {
+      animation: rotate-360 20s linear infinite;
+      transform-origin: center;
+    }
+    @keyframes rotate-360 {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Shimmer effect */
+    .shimmer {
+      animation: shimmer-pass 4s ease-in-out infinite;
+    }
+    @keyframes shimmer-pass {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+    
+    /* Ripple effect */
+    .ripple {
+      animation: ripple-expand 3s ease-out infinite;
+      transform-origin: center;
+    }
+    @keyframes ripple-expand {
+      0% { opacity: 1; transform: scale(0.5); }
+      100% { opacity: 0; transform: scale(3); }
+    }
+    
+    </style>
+
+  <rect width="1200" height="80" fill="url(#bgChain12F)"/>
+  <rect width="1200" height="80" fill="url(#chainPattern12F)" opacity="0.3"/>
+  
+  <line x1="0" y1="1" x2="1200" y2="1" class="divider" stroke-width="2"/>
+  
+  <!-- Blockchain links -->
+  <path class="chain-link" d="M 130 45 L 230 45" stroke="#FFD700" stroke-width="2.5" opacity="0.6" style="animation-delay: 0s"/>
+  <path class="chain-link" d="M 280 45 L 380 45" stroke="#FFD700" stroke-width="2.5" opacity="0.6" style="animation-delay: 0.6s"/>
+  <path class="chain-link" d="M 430 45 L 530 45" stroke="#FFD700" stroke-width="2.5" opacity="0.6" style="animation-delay: 1.2s"/>
+  <path class="chain-link" d="M 580 45 L 680 45" stroke="#FFD700" stroke-width="2.5" opacity="0.6" style="animation-delay: 1.8s"/>
+  
+  <!-- Blocks -->
+  <g filter="url(#blockGlow12F)">
+    <rect class="block" x="105" y="35" width="20" height="20" rx="3" fill="none" stroke="#FFD700" stroke-width="2" style="animation-delay: 0s"/>
+    <rect class="block" x="255" y="35" width="20" height="20" rx="3" fill="none" stroke="#3094FF" stroke-width="2" style="animation-delay: 0.6s"/>
+    <rect class="block" x="405" y="35" width="20" height="20" rx="3" fill="none" stroke="#5FED83" stroke-width="2" style="animation-delay: 1.2s"/>
+    <rect class="block" x="555" y="35" width="20" height="20" rx="3" fill="none" stroke="#C06EFF" stroke-width="2" style="animation-delay: 1.8s"/>
+    <rect class="block" x="705" y="35" width="20" height="20" rx="3" fill="none" stroke="#FFD700" stroke-width="2" style="animation-delay: 2.4s"/>
+  </g>
+  
+  <!-- Hash indicators -->
+  <text class="hash-particle" x="115" y="70" fill="#FFD700" font-size="8" opacity="0.5" style="animation-delay: 0s">0x1a2b</text>
+  <text class="hash-particle" x="265" y="70" fill="#3094FF" font-size="8" opacity="0.5" style="animation-delay: 0.6s">0x3c4d</text>
+  <text class="hash-particle" x="415" y="70" fill="#5FED83" font-size="8" opacity="0.5" style="animation-delay: 1.2s">0x5e6f</text>
+  <text class="hash-particle" x="565" y="70" fill="#C06EFF" font-size="8" opacity="0.5" style="animation-delay: 1.8s">0x7g8h</text>
+  
+  <!-- Blockchain icon (left) -->
+  <g transform="translate(25, 30)" opacity="0.5">
+    <rect x="2" y="2" width="10" height="10" rx="2" fill="none" stroke="#FFD700" stroke-width="1.5"/>
+    <rect x="16" y="2" width="10" height="10" rx="2" fill="none" stroke="#3094FF" stroke-width="1.5"/>
+    <path d="M 12 7 L 16 7" stroke="#FFD700" stroke-width="1.5"/>
+    <circle cx="7" cy="7" r="2" fill="#FFD700" opacity="0.5"/>
+    <circle cx="21" cy="7" r="2" fill="#3094FF" opacity="0.5"/>
+  </g>
+
+  
+  
+  
+  
+  
+    <text x="1050" y="72" text-anchor="middle" class="link text-link" font-size="11px" opacity="0.8">License (MIT)</text>
+  
+  
+  
+  
+  
+  
+  <text x="1160" y="70" text-anchor="end" class="link text-link" font-size="11px" opacity="0.7">© 2024-2025</text>
+
+  <!-- Enhanced particle system -->
+  <g opacity="0.6">
+    <circle class="particle" cx="460" cy="40" r="2" fill="#5FED83" style="animation-delay: 0s"/>
+    <circle class="particle" cx="500" cy="30" r="1.5" fill="#3094FF" style="animation-delay: 0.5s"/>
+    <circle class="particle" cx="540" cy="50" r="2.5" fill="#C06EFF" style="animation-delay: 1s"/>
+    <circle class="particle" cx="580" cy="35" r="1.8" fill="#5FED83" style="animation-delay: 1.5s"/>
+    <circle class="particle" cx="620" cy="45" r="2.2" fill="#3094FF" style="animation-delay: 2s"/>
+    
+    <circle class="particle-2" cx="800" cy="40" r="1.5" fill="#C06EFF" style="animation-delay: 0.3s"/>
+    <circle class="particle-2" cx="900" cy="35" r="2" fill="#5FED83" style="animation-delay: 0.8s"/>
+    <circle class="particle-2" cx="1000" cy="45" r="1.8" fill="#3094FF" style="animation-delay: 1.3s"/>
+  </g>
+  
+  <!-- Wave patterns -->
+  <g opacity="0.4">
+    <path class="wave-line" d="M 50 27 Q 150 17, 250 27 T 450 27" 
+          stroke="#5FED83" stroke-width="1" fill="none" style="animation-delay: 0s"/>
+    <path class="wave-line" d="M 600 39 Q 700 29, 800 39 T 1000 39" 
+          stroke="#3094FF" stroke-width="1" fill="none" style="animation-delay: 0.7s"/>
+    <path class="wave-line" d="M 100 55 Q 300 45, 500 55 T 900 55" 
+          stroke="#C06EFF" stroke-width="1" fill="none" style="animation-delay: 1.4s"/>
+  </g>
+  
+  <!-- Ripple effects -->
+  <g opacity="0.3">
+    <circle class="ripple" cx="630" cy="40" r="15" stroke="#5FED83" stroke-width="1.5" fill="none" style="animation-delay: 0s"/>
+    <circle class="ripple" cx="630" cy="40" r="15" stroke="#5FED83" stroke-width="1.5" fill="none" style="animation-delay: 1s"/>
+    <circle class="ripple" cx="630" cy="40" r="15" stroke="#5FED83" stroke-width="1.5" fill="none" style="animation-delay: 2s"/>
+    
+    <circle class="ripple" cx="580" cy="45" r="12" stroke="#3094FF" stroke-width="1" fill="none" style="animation-delay: 0.5s"/>
+    <circle class="ripple" cx="580" cy="45" r="12" stroke="#3094FF" stroke-width="1" fill="none" style="animation-delay: 1.5s"/>
+  </g>
+  
+  <!-- Rotating accent elements -->
+  <g opacity="0.5">
+    <g class="rotate-slow" transform="translate(820, 40)">
+      <path d="M -8 0 L 0 -8 L 8 0 L 0 8 Z" fill="none" stroke="#C06EFF" stroke-width="1"/>
+    </g>
+    <g class="rotate-slow" transform="translate(854, 35)" style="animation-direction: reverse;">
+      <circle cx="0" cy="0" r="6" fill="none" stroke="#5FED83" stroke-width="1" stroke-dasharray="2 4"/>
+    </g>
+  </g>
+  
+  <!-- Shimmering accents around text -->
+  <g opacity="0.4">
+    <line class="shimmer" x1="550" y1="38" x2="580" y2="38" stroke="#5FED83" stroke-width="1.5" style="animation-delay: 0s"/>
+    <line class="shimmer" x1="620" y1="38" x2="650" y2="38" stroke="#5FED83" stroke-width="1.5" style="animation-delay: 0.3s"/>
+    
+    <line class="shimmer" x1="550" y1="58" x2="575" y2="58" stroke="#3094FF" stroke-width="1.5" style="animation-delay: 0.6s"/>
+    <line class="shimmer" x1="625" y1="58" x2="650" y2="58" stroke="#3094FF" stroke-width="1.5" style="animation-delay: 0.9s"/>
+  </g>
+
+</svg>

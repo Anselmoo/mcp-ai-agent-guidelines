@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](../docs/.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # JSON to CSV Converter
 
 A streamlined web application that converts JSON files to CSV format with intuitive file upload and download functionality.
@@ -95,3 +99,7 @@ Subtle and functional animations that provide feedback during file processing an
 - **Spacing**: Consistent 4-unit spacing (16px) between major sections, 2-unit (8px) for related elements
 - **Mobile**: Single column layout with full-width components, touch-friendly upload targets, collapsible preview section
 -
+
+<!-- FOOTER:START -->
+![Footer](../docs/.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

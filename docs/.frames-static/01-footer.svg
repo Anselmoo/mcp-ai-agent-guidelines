@@ -1,0 +1,271 @@
+<svg width="1200" height="80" viewBox="0 0 1200 80" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Git Branch Flow Footer">
+  <defs>
+    <linearGradient id="bgGrad01F" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d1117;stop-opacity:1">
+        
+      </stop>
+      <stop offset="50%" style="stop-color:#1c2128;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#161b22;stop-opacity:1">
+        
+      </stop>
+    </linearGradient>
+    
+    <radialGradient id="branchGlowF" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#5FED83;stop-opacity:0.8"/>
+      <stop offset="50%" style="stop-color:#3094FF;stop-opacity:0.5"/>
+      <stop offset="100%" style="stop-color:#C06EFF;stop-opacity:0"/>
+    </radialGradient>
+    
+    <filter id="glowF" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 6 0" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <pattern id="gitPatternF" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+      <circle cx="30" cy="30" r="2" fill="#5FED83" opacity="0.15"/>
+      <path d="M 15 30 L 30 30 M 30 15 L 30 45" stroke="#30363d" stroke-width="0.5" opacity="0.2"/>
+    </pattern>
+  </defs>
+
+  <style>
+    @media (prefers-color-scheme: dark) {
+      .text-link { fill: #8b949e; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; }
+      .divider { stroke: #30363d; }
+    }
+    @media (prefers-color-scheme: light) {
+      .text-link { fill: #57606a; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; }
+      .divider { stroke: #d0d7de; }
+    }
+
+    .link { font-size: 13px; letter-spacing: 0.3px; }
+    
+    .branch-line-f {
+      stroke-dasharray: 300;
+      stroke-dashoffset: 300;
+      animation: branch-draw-f 4s ease-out infinite;
+    }
+    @keyframes branch-draw-f {
+      to { stroke-dashoffset: 0; }
+    }
+    
+    .commit-node-f { 
+      animation: commit-pulse-f 3s cubic-bezier(0.4, 0, 0.2, 1) infinite; 
+      transform-origin: center;
+    }
+    @keyframes commit-pulse-f {
+      0%, 100% { opacity: 0.4; transform: scale(2.0); }
+      50% { opacity: 1; transform: scale(2.6); }
+    }
+    
+    .merge-flow-f {
+      animation: merge-travel-f 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      filter: url(#glowF);
+    }
+    @keyframes merge-travel-f {
+      0% { opacity: 0; cx: 100; }
+      20% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { opacity: 0; cx: 1100; }
+    }
+    
+    .git-icon-f {
+      animation: icon-float-f 3s ease-in-out infinite;
+    }
+    @keyframes icon-float-f {
+      0%, 100% { transform: translateY(0.0px); }
+      50% { transform: translateY(-6.0px); }
+    }
+
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  
+    /* Enhanced particle effects */
+    .particle {
+      animation: particle-float 4s ease-in-out infinite;
+      filter: blur(0.5px);
+    }
+    @keyframes particle-float {
+      0%, 100% { opacity: 0; transform: translateY(0) translateX(0) scale(0); }
+      25% { opacity: 0.8; transform: translateY(-20px) translateX(-10px) scale(1.5); }
+      50% { opacity: 1; transform: translateY(-40px) translateX(5px) scale(2); }
+      75% { opacity: 0.6; transform: translateY(-30px) translateX(15px) scale(1.8); }
+    }
+    
+    .particle-2 {
+      animation: particle-spin 5s linear infinite;
+    }
+    @keyframes particle-spin {
+      0% { opacity: 0; transform: rotate(0deg) translateX(20px) scale(0); }
+      50% { opacity: 1; transform: rotate(180deg) translateX(40px) scale(2); }
+      100% { opacity: 0; transform: rotate(360deg) translateX(20px) scale(0); }
+    }
+    
+    /* Wave effects */
+    .wave-line {
+      stroke-dasharray: 5 10;
+      animation: wave-flow 3s linear infinite;
+    }
+    @keyframes wave-flow {
+      to { stroke-dashoffset: -100; }
+    }
+    
+    /* Glow pulse on text */
+    .text-link {
+      animation: text-glow 3s ease-in-out infinite;
+    }
+    @keyframes text-glow {
+      0%, 100% { opacity: 0.7; filter: drop-shadow(0 0 0px transparent); }
+      50% { opacity: 1; filter: drop-shadow(0 0 8px rgba(95, 237, 131, 0.6)); }
+    }
+    
+    /* Rotating elements */
+    .rotate-slow {
+      animation: rotate-360 20s linear infinite;
+      transform-origin: center;
+    }
+    @keyframes rotate-360 {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Shimmer effect */
+    .shimmer {
+      animation: shimmer-pass 4s ease-in-out infinite;
+    }
+    @keyframes shimmer-pass {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+    
+    /* Ripple effect */
+    .ripple {
+      animation: ripple-expand 3s ease-out infinite;
+      transform-origin: center;
+    }
+    @keyframes ripple-expand {
+      0% { opacity: 1; transform: scale(0.5); }
+      100% { opacity: 0; transform: scale(3); }
+    }
+    
+    </style>
+
+  <rect width="1200" height="80" fill="url(#bgGrad01F)"/>
+  <rect width="1200" height="80" fill="url(#gitPatternF)" opacity="0.3"/>
+  
+  <line x1="0" y1="1" x2="1200" y2="1" class="divider" stroke-width="2"/>
+  
+  <!-- Main branch line -->
+  <line x1="50" y1="50" x2="1150" y2="50" stroke="#5FED83" stroke-width="2.5" opacity="0.25"/>
+  
+  <!-- Feature branch paths -->
+  <path class="branch-line-f" d="M 200 50 Q 250 35, 300 20 L 500 20 Q 550 30, 600 50" 
+        fill="none" stroke="#3094FF" stroke-width="1.5" opacity="0.6" style="animation-delay: 0s"/>
+  
+  <path class="branch-line-f" d="M 600 50 Q 650 65, 700 75 L 900 75 Q 950 65, 1000 50" 
+        fill="none" stroke="#C06EFF" stroke-width="1.5" opacity="0.6" style="animation-delay: 1s"/>
+  
+  <!-- Commit nodes -->
+  <g filter="url(#glowF)">
+    <circle class="commit-node-f" cx="200" cy="50" r="5" fill="#5FED83" style="animation-delay: 0s"/>
+    <circle class="commit-node-f" cx="400" cy="50" r="5" fill="#5FED83" style="animation-delay: 0.6s"/>
+    <circle class="commit-node-f" cx="600" cy="50" r="5" fill="#5FED83" style="animation-delay: 1.2s"/>
+    <circle class="commit-node-f" cx="800" cy="50" r="5" fill="#5FED83" style="animation-delay: 1.8s"/>
+    <circle class="commit-node-f" cx="1000" cy="50" r="5" fill="#5FED83" style="animation-delay: 2.4s"/>
+    
+    <circle class="commit-node-f" cx="350" cy="20" r="4" fill="#3094FF" style="animation-delay: 0.8s"/>
+    <circle class="commit-node-f" cx="750" cy="75" r="4" fill="#C06EFF" style="animation-delay: 2s"/>
+  </g>
+  
+  <!-- Merge flows -->
+  <circle class="merge-flow-f" cy="20" r="3" fill="#3094FF" style="animation-delay: 0s"/>
+  <circle class="merge-flow-f" cy="50" r="3" fill="#5FED83" style="animation-delay: 1.5s"/>
+  <circle class="merge-flow-f" cy="75" r="3" fill="#C06EFF" style="animation-delay: 2.5s"/>
+  
+  <!-- Branch icon (left) -->
+  <g class="git-icon-f" transform="translate(25, 35)" opacity="0.5">
+    <circle cx="6" cy="6" r="5" fill="none" stroke="#5FED83" stroke-width="1.5"/>
+    <path d="M 6 11 L 6 20" stroke="#5FED83" stroke-width="1.5"/>
+    <path d="M 6 15 L 15 15" stroke="#3094FF" stroke-width="1.5"/>
+    <circle cx="6" cy="20" r="3" fill="#5FED83"/>
+    <circle cx="15" cy="15" r="3" fill="#3094FF"/>
+  </g>
+  
+  <!-- Merge icon (right) -->
+  <g class="git-icon-f" transform="translate(1160, 35)" opacity="0.5">
+    <path d="M 0 6 L 6 6 L 6 12" stroke="#C06EFF" stroke-width="1.5" fill="none"/>
+    <path d="M 6 20 L 6 16" stroke="#C06EFF" stroke-width="1.5" fill="none"/>
+    <path d="M 6 12 L 6 16 L 12 16" stroke="#C06EFF" stroke-width="1.5" fill="none"/>
+    <circle cx="0" cy="6" r="2.5" fill="#C06EFF"/>
+    <circle cx="6" cy="20" r="2.5" fill="#5FED83"/>
+    <circle cx="12" cy="16" r="2.5" fill="#3094FF"/>
+  </g>
+
+  
+  
+  
+  
+  
+    <text x="1050" y="72" text-anchor="middle" class="link text-link" font-size="11px" opacity="0.8">License (MIT)</text>
+  
+  
+  
+  
+  
+  
+  <text x="1150" y="72" text-anchor="middle" class="link text-link" font-size="11px" opacity="0.8">© 2024-2025</text>
+
+  <!-- Enhanced particle system -->
+  <g opacity="0.6">
+    <circle class="particle" cx="130" cy="40" r="2" fill="#5FED83" style="animation-delay: 0s"/>
+    <circle class="particle" cx="225" cy="30" r="1.5" fill="#3094FF" style="animation-delay: 0.5s"/>
+    <circle class="particle" cx="320" cy="50" r="2.5" fill="#C06EFF" style="animation-delay: 1s"/>
+    <circle class="particle" cx="415" cy="35" r="1.8" fill="#5FED83" style="animation-delay: 1.5s"/>
+    <circle class="particle" cx="510" cy="45" r="2.2" fill="#3094FF" style="animation-delay: 2s"/>
+    
+    <circle class="particle-2" cx="800" cy="40" r="1.5" fill="#C06EFF" style="animation-delay: 0.3s"/>
+    <circle class="particle-2" cx="900" cy="35" r="2" fill="#5FED83" style="animation-delay: 0.8s"/>
+    <circle class="particle-2" cx="1000" cy="45" r="1.8" fill="#3094FF" style="animation-delay: 1.3s"/>
+  </g>
+  
+  <!-- Wave patterns -->
+  <g opacity="0.4">
+    <path class="wave-line" d="M 50 26 Q 150 16, 250 26 T 450 26" 
+          stroke="#5FED83" stroke-width="1" fill="none" style="animation-delay: 0s"/>
+    <path class="wave-line" d="M 600 36 Q 700 26, 800 36 T 1000 36" 
+          stroke="#3094FF" stroke-width="1" fill="none" style="animation-delay: 0.7s"/>
+    <path class="wave-line" d="M 100 56 Q 300 46, 500 56 T 900 56" 
+          stroke="#C06EFF" stroke-width="1" fill="none" style="animation-delay: 1.4s"/>
+  </g>
+  
+  <!-- Ripple effects -->
+  <g opacity="0.3">
+    <circle class="ripple" cx="190" cy="40" r="15" stroke="#5FED83" stroke-width="1.5" fill="none" style="animation-delay: 0s"/>
+    <circle class="ripple" cx="190" cy="40" r="15" stroke="#5FED83" stroke-width="1.5" fill="none" style="animation-delay: 1s"/>
+    <circle class="ripple" cx="190" cy="40" r="15" stroke="#5FED83" stroke-width="1.5" fill="none" style="animation-delay: 2s"/>
+    
+    <circle class="ripple" cx="965" cy="45" r="12" stroke="#3094FF" stroke-width="1" fill="none" style="animation-delay: 0.5s"/>
+    <circle class="ripple" cx="965" cy="45" r="12" stroke="#3094FF" stroke-width="1" fill="none" style="animation-delay: 1.5s"/>
+  </g>
+  
+  <!-- Rotating accent elements -->
+  <g opacity="0.5">
+    <g class="rotate-slow" transform="translate(710, 40)">
+      <path d="M -8 0 L 0 -8 L 8 0 L 0 8 Z" fill="none" stroke="#C06EFF" stroke-width="1"/>
+    </g>
+    <g class="rotate-slow" transform="translate(942, 35)" style="animation-direction: reverse;">
+      <circle cx="0" cy="0" r="6" fill="none" stroke="#5FED83" stroke-width="1" stroke-dasharray="2 4"/>
+    </g>
+  </g>
+  
+  <!-- Shimmering accents around text -->
+  <g opacity="0.4">
+    <line class="shimmer" x1="550" y1="38" x2="580" y2="38" stroke="#5FED83" stroke-width="1.5" style="animation-delay: 0s"/>
+    <line class="shimmer" x1="620" y1="38" x2="650" y2="38" stroke="#5FED83" stroke-width="1.5" style="animation-delay: 0.3s"/>
+    
+    <line class="shimmer" x1="550" y1="58" x2="575" y2="58" stroke="#3094FF" stroke-width="1.5" style="animation-delay: 0.6s"/>
+    <line class="shimmer" x1="625" y1="58" x2="650" y2="58" stroke="#3094FF" stroke-width="1.5" style="animation-delay: 0.9s"/>
+  </g>
+
+</svg>

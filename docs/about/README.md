@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](../.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # About MCP AI Agent Guidelines
 
 > **Project information**, credits, references, and acknowledgments
@@ -137,4 +141,6 @@ Our visual design is inspired by modern open source best practices and contempor
 
 ---
 
-**Navigation**: [📁 Docs Home](../README.md) • [💡 Tips](../tips/) • [🛠️ Tools](../tools/)
+<!-- FOOTER:START -->
+![Footer](../.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

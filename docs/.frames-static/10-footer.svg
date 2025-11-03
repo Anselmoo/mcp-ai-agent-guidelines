@@ -1,0 +1,236 @@
+<svg width="1200" height="80" viewBox="0 0 1200 80" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Kubernetes Orchestration Footer">
+  <defs>
+    <linearGradient id="bgK8s10F" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d1117;stop-opacity:1">
+        
+      </stop>
+      <stop offset="50%" style="stop-color:#161b22;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#1c2128;stop-opacity:1">
+        
+      </stop>
+    </linearGradient>
+    
+    <filter id="k8sGlow10F" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 7 0" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <pattern id="clusterPattern10F" x="0" y="0" width="50" height="50" patternUnits="userSpaceOnUse">
+      <path d="M 25 0 L 25 50 M 0 25 L 50 25" stroke="#30363d" stroke-width="0.5" opacity="0.15"/>
+      <circle cx="25" cy="25" r="2" fill="#3094FF" opacity="0.2"/>
+    </pattern>
+  </defs>
+
+  <style>
+    @media (prefers-color-scheme: dark) {
+      .text-link { fill: #8b949e; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; }
+      .divider { stroke: #30363d; }
+    }
+    @media (prefers-color-scheme: light) {
+      .text-link { fill: #57606a; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; }
+      .divider { stroke: #d0d7de; }
+    }
+
+    .link { font-size: 13px; letter-spacing: 0.3px; }
+    
+    .pod-scale { 
+      animation: pod-scaling 3s cubic-bezier(0.4, 0, 0.2, 1) infinite; 
+      transform-origin: center;
+    }
+    @keyframes pod-scaling {
+      0% { opacity: 0; transform: scale(0.0); }
+      50% { opacity: 1; transform: scale(2.0); }
+      100% { opacity: 0.6; transform: scale(2.0); }
+    }
+    
+    .rolling-update {
+      animation: roll-wave 4s ease-in-out infinite;
+      transform-origin: center;
+    }
+    @keyframes roll-wave {
+      0%, 100% { opacity: 0.3; transform: translateY(0); }
+      50% { opacity: 1; transform: translateY(-8.0px); }
+    }
+    
+    .health-pulse {
+      animation: health-beat 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes health-beat {
+      0%, 100% { opacity: 0.2; r: 3; }
+      50% { opacity: 1; r: 5; }
+    }
+
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  
+    /* Enhanced particle effects */
+    .particle {
+      animation: particle-float 4s ease-in-out infinite;
+      filter: blur(0.5px);
+    }
+    @keyframes particle-float {
+      0%, 100% { opacity: 0; transform: translateY(0) translateX(0) scale(0); }
+      25% { opacity: 0.8; transform: translateY(-20px) translateX(-10px) scale(1.5); }
+      50% { opacity: 1; transform: translateY(-40px) translateX(5px) scale(2); }
+      75% { opacity: 0.6; transform: translateY(-30px) translateX(15px) scale(1.8); }
+    }
+    
+    .particle-2 {
+      animation: particle-spin 5s linear infinite;
+    }
+    @keyframes particle-spin {
+      0% { opacity: 0; transform: rotate(0deg) translateX(20px) scale(0); }
+      50% { opacity: 1; transform: rotate(180deg) translateX(40px) scale(2); }
+      100% { opacity: 0; transform: rotate(360deg) translateX(20px) scale(0); }
+    }
+    
+    /* Wave effects */
+    .wave-line {
+      stroke-dasharray: 5 10;
+      animation: wave-flow 3s linear infinite;
+    }
+    @keyframes wave-flow {
+      to { stroke-dashoffset: -100; }
+    }
+    
+    /* Glow pulse on text */
+    .text-link {
+      animation: text-glow 3s ease-in-out infinite;
+    }
+    @keyframes text-glow {
+      0%, 100% { opacity: 0.7; filter: drop-shadow(0 0 0px transparent); }
+      50% { opacity: 1; filter: drop-shadow(0 0 8px rgba(95, 237, 131, 0.6)); }
+    }
+    
+    /* Rotating elements */
+    .rotate-slow {
+      animation: rotate-360 20s linear infinite;
+      transform-origin: center;
+    }
+    @keyframes rotate-360 {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Shimmer effect */
+    .shimmer {
+      animation: shimmer-pass 4s ease-in-out infinite;
+    }
+    @keyframes shimmer-pass {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+    
+    /* Ripple effect */
+    .ripple {
+      animation: ripple-expand 3s ease-out infinite;
+      transform-origin: center;
+    }
+    @keyframes ripple-expand {
+      0% { opacity: 1; transform: scale(0.5); }
+      100% { opacity: 0; transform: scale(3); }
+    }
+    
+    </style>
+
+  <rect width="1200" height="80" fill="url(#bgK8s10F)"/>
+  <rect width="1200" height="80" fill="url(#clusterPattern10F)" opacity="0.3"/>
+  
+  <line x1="0" y1="1" x2="1200" y2="1" class="divider" stroke-width="2"/>
+  
+  <!-- Pod deployment waves -->
+  <g filter="url(#k8sGlow10F)">
+    <rect class="pod-scale" x="120" y="40" width="10" height="10" rx="2" fill="#3094FF" style="animation-delay: 0s"/>
+    <rect class="pod-scale" x="170" y="40" width="10" height="10" rx="2" fill="#3094FF" style="animation-delay: 0.3s"/>
+    <rect class="pod-scale" x="220" y="40" width="10" height="10" rx="2" fill="#3094FF" style="animation-delay: 0.6s"/>
+    
+    <rect class="rolling-update" x="320" y="40" width="10" height="10" rx="2" fill="#5FED83" style="animation-delay: 0s"/>
+    <rect class="rolling-update" x="370" y="40" width="10" height="10" rx="2" fill="#5FED83" style="animation-delay: 0.5s"/>
+    <rect class="rolling-update" x="420" y="40" width="10" height="10" rx="2" fill="#5FED83" style="animation-delay: 1s"/>
+    
+    <rect class="pod-scale" x="520" y="40" width="10" height="10" rx="2" fill="#C06EFF" style="animation-delay: 0.9s"/>
+    <rect class="pod-scale" x="570" y="40" width="10" height="10" rx="2" fill="#C06EFF" style="animation-delay: 1.2s"/>
+  </g>
+  
+  <!-- Health check indicators -->
+  <circle class="health-pulse" cx="125" cy="65" r="3" fill="#5FED83" filter="url(#k8sGlow10F)" style="animation-delay: 0s"/>
+  <circle class="health-pulse" cx="325" cy="65" r="3" fill="#5FED83" filter="url(#k8sGlow10F)" style="animation-delay: 0.6s"/>
+  <circle class="health-pulse" cx="525" cy="65" r="3" fill="#5FED83" filter="url(#k8sGlow10F)" style="animation-delay: 1.2s"/>
+  
+  <!-- Kubernetes wheel icon (left) -->
+  <g transform="translate(25, 30)" opacity="0.5">
+    <circle cx="15" cy="15" r="12" fill="none" stroke="#3094FF" stroke-width="1.5"/>
+    <circle cx="15" cy="15" r="3" fill="#3094FF"/>
+    <path d="M 15 3 L 15 12 M 15 18 L 15 27 M 3 15 L 12 15 M 18 15 L 27 15" stroke="#3094FF" stroke-width="1.5"/>
+    <path d="M 7 7 L 11 11 M 19 19 L 23 23 M 23 7 L 19 11 M 11 19 L 7 23" stroke="#5FED83" stroke-width="1.5"/>
+  </g>
+
+  
+  
+  
+  
+  
+    <text x="1050" y="72" text-anchor="middle" class="link text-link" font-size="11px" opacity="0.8">License (MIT)</text>
+  
+  
+  
+  
+  
+  
+  <text x="1160" y="70" text-anchor="end" class="link text-link" font-size="11px" opacity="0.7">© 2024-2025</text>
+
+  <!-- Enhanced particle system -->
+  <g opacity="0.6">
+    <circle class="particle" cx="400" cy="40" r="2" fill="#5FED83" style="animation-delay: 0s"/>
+    <circle class="particle" cx="450" cy="30" r="1.5" fill="#3094FF" style="animation-delay: 0.5s"/>
+    <circle class="particle" cx="500" cy="50" r="2.5" fill="#C06EFF" style="animation-delay: 1s"/>
+    <circle class="particle" cx="550" cy="35" r="1.8" fill="#5FED83" style="animation-delay: 1.5s"/>
+    <circle class="particle" cx="600" cy="45" r="2.2" fill="#3094FF" style="animation-delay: 2s"/>
+    
+    <circle class="particle-2" cx="800" cy="40" r="1.5" fill="#C06EFF" style="animation-delay: 0.3s"/>
+    <circle class="particle-2" cx="900" cy="35" r="2" fill="#5FED83" style="animation-delay: 0.8s"/>
+    <circle class="particle-2" cx="1000" cy="45" r="1.8" fill="#3094FF" style="animation-delay: 1.3s"/>
+  </g>
+  
+  <!-- Wave patterns -->
+  <g opacity="0.4">
+    <path class="wave-line" d="M 50 25 Q 150 15, 250 25 T 450 25" 
+          stroke="#5FED83" stroke-width="1" fill="none" style="animation-delay: 0s"/>
+    <path class="wave-line" d="M 600 37 Q 700 27, 800 37 T 1000 37" 
+          stroke="#3094FF" stroke-width="1" fill="none" style="animation-delay: 0.7s"/>
+    <path class="wave-line" d="M 100 65 Q 300 55, 500 65 T 900 65" 
+          stroke="#C06EFF" stroke-width="1" fill="none" style="animation-delay: 1.4s"/>
+  </g>
+  
+  <!-- Ripple effects -->
+  <g opacity="0.3">
+    <circle class="ripple" cx="550" cy="40" r="15" stroke="#5FED83" stroke-width="1.5" fill="none" style="animation-delay: 0s"/>
+    <circle class="ripple" cx="550" cy="40" r="15" stroke="#5FED83" stroke-width="1.5" fill="none" style="animation-delay: 1s"/>
+    <circle class="ripple" cx="550" cy="40" r="15" stroke="#5FED83" stroke-width="1.5" fill="none" style="animation-delay: 2s"/>
+    
+    <circle class="ripple" cx="650" cy="45" r="12" stroke="#3094FF" stroke-width="1" fill="none" style="animation-delay: 0.5s"/>
+    <circle class="ripple" cx="650" cy="45" r="12" stroke="#3094FF" stroke-width="1" fill="none" style="animation-delay: 1.5s"/>
+  </g>
+  
+  <!-- Rotating accent elements -->
+  <g opacity="0.5">
+    <g class="rotate-slow" transform="translate(800, 40)">
+      <path d="M -8 0 L 0 -8 L 8 0 L 0 8 Z" fill="none" stroke="#C06EFF" stroke-width="1"/>
+    </g>
+    <g class="rotate-slow" transform="translate(870, 35)" style="animation-direction: reverse;">
+      <circle cx="0" cy="0" r="6" fill="none" stroke="#5FED83" stroke-width="1" stroke-dasharray="2 4"/>
+    </g>
+  </g>
+  
+  <!-- Shimmering accents around text -->
+  <g opacity="0.4">
+    <line class="shimmer" x1="550" y1="38" x2="580" y2="38" stroke="#5FED83" stroke-width="1.5" style="animation-delay: 0s"/>
+    <line class="shimmer" x1="620" y1="38" x2="650" y2="38" stroke="#5FED83" stroke-width="1.5" style="animation-delay: 0.3s"/>
+    
+    <line class="shimmer" x1="550" y1="58" x2="575" y2="58" stroke="#3094FF" stroke-width="1.5" style="animation-delay: 0.6s"/>
+    <line class="shimmer" x1="625" y1="58" x2="650" y2="58" stroke="#3094FF" stroke-width="1.5" style="animation-delay: 0.9s"/>
+  </g>
+
+</svg>
