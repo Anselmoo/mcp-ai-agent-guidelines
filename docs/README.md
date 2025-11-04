@@ -101,7 +101,7 @@
 
 **...contribute to the project**
 
-- Read [Contributing Guidelines](../../CONTRIBUTING.md)
+- Read [Contributing Guidelines](../CONTRIBUTING.md)
 - Review [Code Quality Standards](./tips/CLEAN_CODE_INITIATIVE.md)
 - Check [Error Handling Patterns](./tips/ERROR_HANDLING.md)
 - Understand [Architecture](./BRIDGE_CONNECTORS.md)
