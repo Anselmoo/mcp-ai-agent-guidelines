@@ -180,7 +180,7 @@ Demos are automatically regenerated when tool code changes via GitHub Actions.
 - ⭐⭐⭐⭐ **Expert** - Multi-phase workflows, deep domain knowledge (half day)
 - ⭐⭐⭐⭐⭐ **Master** - Enterprise-scale, comprehensive orchestration (1-2 days)
 
-**📖 [Complete Tools Reference](./docs/TOOLS_REFERENCE.md)** - Detailed documentation with examples
+**📖 [Complete Tools Reference](./docs/tips/TOOLS_REFERENCE.md)** - Detailed documentation with examples
 
 ---
 
@@ -363,7 +363,7 @@ Use the Playwright MCP to create and run automated accessibility tests.
 
 For complete documentation with 20+ detailed examples, workflow patterns, and best practices, see:
 
-📘 **[Agent-Relative Call Patterns Guide](./docs/AGENT_RELATIVE_CALLS.md)**
+📘 **[Agent-Relative Call Patterns Guide](./docs/tips/AGENT_RELATIVE_CALLS.md)**
 
 This guide covers:
 
