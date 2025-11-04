@@ -10,18 +10,19 @@
 <summary><strong>� Quick Navigation</strong></summary>
 
 - [🏠 Main README](../README.md)
-- [💡 AI Interaction Tips](./AI_INTERACTION_TIPS.md)
-- [🛠️ Tools Reference](./TOOLS_REFERENCE.md)
-- [🏗️ Architecture](./BRIDGE_CONNECTORS.md)
-- [📖 References](./REFERENCES.md)
+- [💡 AI Interaction Tips](./tips/AI_INTERACTION_TIPS.md)
+- [🛠️ Tools Reference](./tips/TOOLS_REFERENCE.md)
+- [🏗️ Architecture](./tips/BRIDGE_CONNECTORS.md)
+- [📖 References](./tips/REFERENCES.md)
 
 </details>
 
 # Documentation Index
 
 - **[Main README](../README.md)** - Project overview, installation, and quick start
-- **[Tools Reference](./TOOLS_REFERENCE.md)** - Complete reference for all 27 MCP tools ⭐
-- **[AI Interaction Tips](./tips/)** - Best practices for effective AI collaboration ⭐ **NEW**
+- **[Tools Reference](./tips/TOOLS_REFERENCE.md)** - Complete reference for all 27 MCP tools ⭐
+- **[Tool Documentation](./tools/README.md)** - Individual tool documentation pages
+- **[AI Interaction Tips](./tips/README.md)** - Best practices for effective AI collaboration ⭐ **NEW**
 - **[Contributing Guidelines](../CONTRIBUTING.md)** - How to contribute to the project
 - **[Disclaimer](../DISCLAIMER.md)** - Important information about external references
 
@@ -33,20 +34,20 @@
 
 #### Core Concepts
 
-- **[Prompting Hierarchy](./PROMPTING_HIERARCHY.md)** - Understanding prompt levels and evaluation metrics
-- **[Agent-Relative Call Patterns](./AGENT_RELATIVE_CALLS.md)** - Comprehensive guide to invoking tools in workflows
-- **[AI Interaction Tips](./AI_INTERACTION_TIPS.md)** - Targeted question patterns for specialized tools
+- **[Prompting Hierarchy](./tips/PROMPTING_HIERARCHY.md)** - Understanding prompt levels and evaluation metrics
+- **[Agent-Relative Call Patterns](./tips/AGENT_RELATIVE_CALLS.md)** - Comprehensive guide to invoking tools in workflows
+- **[AI Interaction Tips](./tips/AI_INTERACTION_TIPS.md)** - Targeted question patterns for specialized tools
 
 #### Advanced Techniques
 
-- **[Flow-Based Prompting](./FLOW_PROMPTING_EXAMPLES.md)** - Advanced chaining and orchestration strategies
+- **[Flow-Based Prompting](./tips/FLOW_PROMPTING_EXAMPLES.md)** - Advanced chaining and orchestration strategies
 - **[Flow + Serena Integration](./tips/FLOW_SERENA_INTEGRATION.md)** - Combining flow-based prompting with memory patterns
-- **[Serena Strategies](./SERENA_STRATEGIES.md)** - Effective agent strategies from Serena
+- **[Serena Strategies](./tips/SERENA_STRATEGIES.md)** - Effective agent strategies from Serena
 
 #### Specialized Tools
 
-- **[Mermaid Diagram Examples](./MERMAID_DIAGRAM_EXAMPLES.md)** - Visual diagram generation patterns
-- **[Context-Aware Guidance](./CONTEXT_AWARE_GUIDANCE.md)** - Contextual design guidance
+- **[Mermaid Diagram Examples](./tips/MERMAID_DIAGRAM_EXAMPLES.md)** - Visual diagram generation patterns
+- **[Context-Aware Guidance](./tips/CONTEXT_AWARE_GUIDANCE.md)** - Contextual design guidance
 - **[Export Formats](./tips/EXPORT_FORMATS.md)** - LaTeX, CSV, and JSON output options
 - **[Maintaining Models](./tips/MAINTAINING_MODELS.md)** - YAML-based model configuration
 
@@ -56,22 +57,23 @@
 
 #### Architecture & Design
 
-- **[Bridge Connectors](./BRIDGE_CONNECTORS.md)** - External system integration patterns
+- **[Bridge Connectors](./tips/BRIDGE_CONNECTORS.md)** - External system integration patterns
 - **[Design Module Status](./tips/DESIGN_MODULE_STATUS.md)** - Design workflow orchestrator status
 - **[Error Handling](./tips/ERROR_HANDLING.md)** - Error handling patterns and best practices
 
 #### Code Quality
 
 - **[Clean Code Initiative](./tips/CLEAN_CODE_INITIATIVE.md)** - 100/100 quality scoring system
-- **[Code Quality Improvements](./CODE_QUALITY_IMPROVEMENTS.md)** - Ongoing quality enhancements
-- **[Sprint Planning Reliability](./SPRINT_PLANNING_RELIABILITY.md)** - Sprint calculation improvements
+- **[Code Quality Improvements](./tips/CODE_QUALITY_IMPROVEMENTS.md)** - Ongoing quality enhancements
+- **[Sprint Planning Reliability](./tips/SPRINT_PLANNING_RELIABILITY.md)** - Sprint calculation improvements
 
 ### Reference
 
 **Additional resources and acknowledgments**
 
-- **[References & Acknowledgments](./REFERENCES.md)** - Credits and external resources
+- **[References & Acknowledgments](./tips/REFERENCES.md)** - Credits and external resources
 - **[Demo Reports](../demos/README.md)** - Real-world tool usage examples
+- **[Tools Documentation](./tools/README.md)** - Individual tool pages
 
 ---
 
@@ -83,20 +85,21 @@
 
 - Read the [Main README](../README.md)
 - Try the [Demo Reports](../demos/README.md)
-- Learn [AI Interaction Tips](./AI_INTERACTION_TIPS.md)
+- Learn [AI Interaction Tips](./tips/AI_INTERACTION_TIPS.md)
 
 **...improve my prompting skills**
 
-- Start with [AI Interaction Tips](./AI_INTERACTION_TIPS.md)
-- Learn [Prompting Hierarchy](./PROMPTING_HIERARCHY.md)
-- Explore [Agent-Relative Calls](./AGENT_RELATIVE_CALLS.md)
-- Try [Flow-Based Prompting](./FLOW_PROMPTING_EXAMPLES.md)
+- Start with [AI Interaction Tips](./tips/AI_INTERACTION_TIPS.md)
+- Learn [Prompting Hierarchy](./tips/PROMPTING_HIERARCHY.md)
+- Explore [Agent-Relative Calls](./tips/AGENT_RELATIVE_CALLS.md)
+- Try [Flow-Based Prompting](./tips/FLOW_PROMPTING_EXAMPLES.md)
 
 **...use specific tools**
 
-- Generate diagrams: [Mermaid Examples](./MERMAID_DIAGRAM_EXAMPLES.md)
+- Browse [Tool Documentation](./tools/README.md)
+- Generate diagrams: [Mermaid Examples](./tips/MERMAID_DIAGRAM_EXAMPLES.md)
 - Check code quality: [Clean Code Initiative](./tips/CLEAN_CODE_INITIATIVE.md)
-- Plan sprints: [Sprint Planning](./SPRINT_PLANNING_RELIABILITY.md)
+- Plan sprints: [Sprint Planning](./tips/SPRINT_PLANNING_RELIABILITY.md)
 - Export data: [Export Formats](./tips/EXPORT_FORMATS.md)
 
 **...contribute to the project**
@@ -104,7 +107,7 @@
 - Read [Contributing Guidelines](../CONTRIBUTING.md)
 - Review [Code Quality Standards](./tips/CLEAN_CODE_INITIATIVE.md)
 - Check [Error Handling Patterns](./tips/ERROR_HANDLING.md)
-- Understand [Architecture](./BRIDGE_CONNECTORS.md)
+- Understand [Architecture](./tips/BRIDGE_CONNECTORS.md)
 
 ---
 

@@ -907,15 +907,15 @@ Contributions welcome! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guide
 ### Developer Resources
 
 - **[Complete Documentation](./docs/README.md)** - Full documentation index
-- **[Clean Code Standards](./docs/CLEAN_CODE_INITIATIVE.md)** - Quality requirements and scoring
-- **[Error Handling Patterns](./docs/ERROR_HANDLING.md)** - Best practices for error handling
-- **[Architecture Guide](./docs/BRIDGE_CONNECTORS.md)** - System architecture and integration patterns
-- **[Type System Organization](./docs/TYPE_ORGANIZATION_EXTENSION.md)** - TypeScript conventions
+- **[Clean Code Standards](./docs/tips/CLEAN_CODE_INITIATIVE.md)** - Quality requirements and scoring
+- **[Error Handling Patterns](./docs/tips/ERROR_HANDLING.md)** - Best practices for error handling
+- **[Architecture Guide](./docs/tips/BRIDGE_CONNECTORS.md)** - System architecture and integration patterns
+- **[Type System Organization](./docs/tips/TYPE_ORGANIZATION_EXTENSION.md)** - TypeScript conventions
 
 ### Quality Standards
 
 - **TypeScript strict mode** - All code must pass type checking
-- **100% test coverage goal** - See [Clean Code Initiative](./docs/CLEAN_CODE_INITIATIVE.md)
+- **100% test coverage goal** - See [Clean Code Initiative](./docs/tips/CLEAN_CODE_INITIATIVE.md)
 - **Biome linting** - Code must pass `npm run quality`
 - **Git hooks** - Automated checks via Lefthook (see [lefthook.yml](./lefthook.yml))
 
@@ -927,7 +927,7 @@ MIT © Anselmoo — see [LICENSE](./LICENSE).
 
 ## References & Acknowledgments
 
-For a comprehensive list of references, research papers, and detailed attribution, see **[docs/REFERENCES.md](./docs/REFERENCES.md)**.
+For a comprehensive list of references, research papers, and detailed attribution, see **[docs/tips/REFERENCES.md](./docs/tips/REFERENCES.md)**.
 
 ### Key Acknowledgments
 
@@ -940,7 +940,7 @@ For a comprehensive list of references, research papers, and detailed attributio
 - **[@oraios/serena](https://github.com/oraios/serena)** - Influenced semantic analysis and mode switching
 - **All open-source contributors** whose work has shaped this project
 
-See [docs/REFERENCES.md](./docs/REFERENCES.md) for the complete list of research papers, projects, and inspirations.
+See [docs/tips/REFERENCES.md](./docs/tips/REFERENCES.md) for the complete list of research papers, projects, and inspirations.
 
 <!-- FOOTER:START -->
 ![Footer](docs/.frames-static/09-footer.svg)
