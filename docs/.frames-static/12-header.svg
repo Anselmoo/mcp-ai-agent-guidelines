@@ -1,0 +1,360 @@
+<svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Blockchain Network">
+  <defs>
+    <linearGradient id="bgBlockchainGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d1117;stop-opacity:1">
+        <animate attributeName="stop-color" values="#0d1117;#161b22;#0d1117" dur="6.0s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="50%" style="stop-color:#1c2128;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#161b22;stop-opacity:1">
+        <animate attributeName="stop-color" values="#161b22;#0d1117;#161b22" dur="6.0s" repeatCount="indefinite"/>
+      </stop>
+    </linearGradient>
+    
+    <radialGradient id="blockGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#3094FF;stop-opacity:1"/>
+      <stop offset="50%" style="stop-color:#C06EFF;stop-opacity:0.6"/>
+      <stop offset="100%" style="stop-color:#5FED83;stop-opacity:0"/>
+    </radialGradient>
+    
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 8 0" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <filter id="dropShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+      <feOffset dx="0" dy="2" result="offsetblur"/>
+      <feFlood flood-color="#000000" flood-opacity="0.5"/>
+      <feComposite in2="offsetblur" operator="in"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <linearGradient id="shine12" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0"/>
+      <stop offset="50%" style="stop-color:#ffffff;stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0"/>
+      <animate attributeName="x1" values="-100%;200%" dur="1.5s" repeatCount="indefinite"/>
+      <animate attributeName="x2" values="0%;300%" dur="1.5s" repeatCount="indefinite"/>
+    </linearGradient>
+    
+    <pattern id="blockchainGrid" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="40" height="40" fill="none" stroke="#30363d" stroke-width="0.5" opacity="0.2"/>
+      <circle cx="20" cy="20" r="1.5" fill="#3094FF" opacity="0.3"/>
+    </pattern>
+  </defs>
+  
+  <style>
+    @media (prefers-color-scheme: dark) {
+      .text-primary { fill: #f0f6fc; font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.5px; }
+      .text-secondary { fill: #8b949e; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; letter-spacing: 0.5px; }
+    }
+    @media (prefers-color-scheme: light) {
+      .text-primary { fill: #24292f; font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.5px; }
+      .text-secondary { fill: #57606a; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; letter-spacing: 0.5px; }
+    }
+    
+    .block-mine { 
+      animation: mining-flash 3s cubic-bezier(0.4, 0, 0.2, 1) infinite; 
+      transform-origin: center;
+    }
+    @keyframes mining-flash {
+      0%, 100% { opacity: 0.5; transform: scale(2.0) rotate(0deg); }
+      50% { opacity: 1; transform: scale(2.16) rotate(5deg); }
+    }
+    
+    .chain-link {
+      stroke-dasharray: 100;
+      stroke-dashoffset: 100;
+      animation: chain-form 4s ease-out infinite;
+    }
+    @keyframes chain-form {
+      to { stroke-dashoffset: 0; }
+    }
+    
+    .hash-validate {
+      animation: hash-sparkle 2.5s ease-in-out infinite;
+    }
+    @keyframes hash-sparkle {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 1; }
+    }
+    
+    .mining-particle {
+      animation: particle-rise 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes particle-rise {
+      0% { opacity: 0; transform: translateY(60.0px); }
+      50% { opacity: 1; transform: translateY(-30.0px); }
+      100% { opacity: 0; transform: translateY(-120.0px); }
+    }
+    
+    .block-spin {
+      animation: block-rotate 15s linear infinite;
+      transform-origin: center;
+    }
+    @keyframes block-rotate {
+      to { transform: rotate(360deg); }
+    }
+    
+    @media (prefers-reduced-motion: reduce) { 
+      * { animation: none !important; } 
+    }
+  
+    /* Enhanced header particle effects */
+    .h-particle {
+      animation: h-particle-rise 5s ease-out infinite;
+    }
+    @keyframes h-particle-rise {
+      0% { opacity: 0; transform: translateY(60px) scale(0); }
+      50% { opacity: 1; transform: translateY(30px) scale(2.5); }
+      100% { opacity: 0; transform: translateY(0) scale(0); }
+    }
+    
+    .h-sparkle {
+      animation: h-sparkle-twinkle 2s ease-in-out infinite;
+      transform-origin: center;
+    }
+    @keyframes h-sparkle-twinkle {
+      0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+      50% { opacity: 1; transform: scale(3) rotate(180deg); }
+    }
+    
+    /* Energy waves */
+    .h-energy {
+      stroke-dasharray: 10 20;
+      animation: h-energy-pulse 4s linear infinite;
+    }
+    @keyframes h-energy-pulse {
+      to { stroke-dashoffset: -200; }
+    }
+    
+    /* Orbital elements */
+    .h-orbit {
+      animation: h-orbit-spin 15s linear infinite;
+      transform-origin: center;
+    }
+    @keyframes h-orbit-spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Glow intensity */
+    .h-glow-intense {
+      animation: h-glow-pulse 3s ease-in-out infinite;
+    }
+    @keyframes h-glow-pulse {
+      0%, 100% { filter: drop-shadow(0 0 5px currentColor); opacity: 0.6; }
+      50% { filter: drop-shadow(0 0 15px currentColor); opacity: 1; }
+    }
+    
+    /* Beam effect */
+    .h-beam {
+      animation: h-beam-sweep 5s ease-in-out infinite;
+      transform-origin: center;
+    }
+    @keyframes h-beam-sweep {
+      0%, 100% { opacity: 0; transform: scaleX(0); }
+      50% { opacity: 0.8; transform: scaleX(4); }
+    }
+    
+    /* Constellation effect */
+    .h-star {
+      animation: h-star-blink 4s ease-in-out infinite;
+    }
+    @keyframes h-star-blink {
+      0%, 100% { opacity: 0.2; r: 1px; }
+      50% { opacity: 1; r: 3px; }
+    }
+    
+    /* Network lines */
+    .h-network {
+      stroke-dasharray: 5 15;
+      animation: h-network-pulse 6s linear infinite;
+      opacity: 0.4;
+    }
+    @keyframes h-network-pulse {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 0.8; stroke-dashoffset: -100; }
+    }
+    
+    </style>
+  
+  <rect width="1200" height="160" fill="url(#bgBlockchainGrad)"/>
+  <rect width="1200" height="160" fill="url(#blockchainGrid)" opacity="0.3"/>
+  
+  <!-- Blockchain blocks -->
+  <g filter="url(#glow)">
+    <!-- Block 1 (Genesis) -->
+    <rect class="block-mine" x="120" y="55" width="70" height="50" rx="5" fill="none" stroke="#3094FF" stroke-width="3" style="animation-delay: 0s"/>
+    <text x="155" y="78" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7">Block</text>
+    <text x="155" y="88" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7">#0</text>
+    
+    <!-- Block 2 -->
+    <rect class="block-mine" x="280" y="55" width="70" height="50" rx="5" fill="none" stroke="#5FED83" stroke-width="3" style="animation-delay: 1s"/>
+    <text x="315" y="78" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7">Block</text>
+    <text x="315" y="88" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7">#1</text>
+    
+    <!-- Block 3 -->
+    <rect class="block-mine" x="440" y="55" width="70" height="50" rx="5" fill="none" stroke="#C06EFF" stroke-width="3" style="animation-delay: 2s"/>
+    <text x="475" y="78" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7">Block</text>
+    <text x="475" y="88" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7">#2</text>
+    
+    <!-- Block 4 -->
+    <rect class="block-mine" x="600" y="55" width="70" height="50" rx="5" fill="none" stroke="#3094FF" stroke-width="3" style="animation-delay: 3s"/>
+    <text x="635" y="78" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7">Block</text>
+    <text x="635" y="88" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7">#3</text>
+    
+    <!-- Block 5 -->
+    <rect class="block-mine" x="760" y="55" width="70" height="50" rx="5" fill="none" stroke="#5FED83" stroke-width="3" style="animation-delay: 4s"/>
+    <text x="795" y="78" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7">Block</text>
+    <text x="795" y="88" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7">#4</text>
+    
+    <!-- Block 6 (Latest) -->
+    <rect class="block-mine" x="920" y="55" width="70" height="50" rx="5" fill="none" stroke="#C06EFF" stroke-width="3" style="animation-delay: 5s"/>
+    <text x="955" y="78" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7">Block</text>
+    <text x="955" y="88" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7">#5</text>
+  </g>
+  
+  <!-- Chain links -->
+  <path class="chain-link" d="M 190 80 L 280 80" stroke="#3094FF" stroke-width="4" opacity="0.5" style="animation-delay: 0s"/>
+  <path class="chain-link" d="M 350 80 L 440 80" stroke="#5FED83" stroke-width="4" opacity="0.5" style="animation-delay: 1s"/>
+  <path class="chain-link" d="M 510 80 L 600 80" stroke="#C06EFF" stroke-width="4" opacity="0.5" style="animation-delay: 2s"/>
+  <path class="chain-link" d="M 670 80 L 760 80" stroke="#3094FF" stroke-width="4" opacity="0.5" style="animation-delay: 3s"/>
+  <path class="chain-link" d="M 830 80 L 920 80" stroke="#5FED83" stroke-width="4" opacity="0.5" style="animation-delay: 4s"/>
+  
+  <!-- Hash symbols on blocks -->
+  <g class="hash-validate" style="animation-delay: 0s">
+    <text x="155" y="95" text-anchor="middle" font-family="monospace" font-size="6" fill="#3094FF" opacity="0.5">#abc123</text>
+  </g>
+  <g class="hash-validate" style="animation-delay: 1s">
+    <text x="315" y="95" text-anchor="middle" font-family="monospace" font-size="6" fill="#5FED83" opacity="0.5">#def456</text>
+  </g>
+  <g class="hash-validate" style="animation-delay: 2s">
+    <text x="475" y="95" text-anchor="middle" font-family="monospace" font-size="6" fill="#C06EFF" opacity="0.5">#789ghi</text>
+  </g>
+  <g class="hash-validate" style="animation-delay: 3s">
+    <text x="635" y="95" text-anchor="middle" font-family="monospace" font-size="6" fill="#3094FF" opacity="0.5">#jkl012</text>
+  </g>
+  <g class="hash-validate" style="animation-delay: 4s">
+    <text x="795" y="95" text-anchor="middle" font-family="monospace" font-size="6" fill="#5FED83" opacity="0.5">#mno345</text>
+  </g>
+  <g class="hash-validate" style="animation-delay: 5s">
+    <text x="955" y="95" text-anchor="middle" font-family="monospace" font-size="6" fill="#C06EFF" opacity="0.5">#pqr678</text>
+  </g>
+  
+  <!-- Mining particles -->
+  <g class="mining-particle" filter="url(#glow)" style="animation-delay: 0s">
+    <circle cx="955" cy="80" r="3" fill="#C06EFF" opacity="0.8"/>
+  </g>
+  <g class="mining-particle" filter="url(#glow)" style="animation-delay: 1s">
+    <circle cx="965" cy="80" r="3" fill="#5FED83" opacity="0.8"/>
+  </g>
+  <g class="mining-particle" filter="url(#glow)" style="animation-delay: 2s">
+    <circle cx="945" cy="80" r="3" fill="#3094FF" opacity="0.8"/>
+  </g>
+  
+  <!-- Blockchain icon (left) -->
+  <g class="block-spin" transform="translate(37, 47)" opacity="0.7">
+    <rect x="-10" y="-10" width="20" height="20" rx="3" fill="none" stroke="#3094FF" stroke-width="2"/>
+    <path d="M -10 -4 L 10 -4 M -10 0 L 10 0 M -10 4 L 10 4" stroke="#3094FF" stroke-width="1"/>
+    <circle cx="0" cy="0" r="3" fill="#3094FF"/>
+  </g>
+  
+  <!-- Crypto icon (right) -->
+  <g transform="translate(1150, 30)" opacity="0.7">
+    <circle cx="12" cy="17" r="12" fill="none" stroke="#C06EFF" stroke-width="2"/>
+    <path d="M 12 8 L 12 26" stroke="#C06EFF" stroke-width="2"/>
+    <path d="M 8 11 L 16 11 Q 18 11, 18 14 Q 18 17, 16 17 L 8 17" fill="none" stroke="#C06EFF" stroke-width="2"/>
+    <path d="M 8 17 L 16 17 Q 18 17, 18 20 Q 18 23, 16 23 L 8 23" fill="none" stroke="#C06EFF" stroke-width="2"/>
+  </g>
+  
+  <!-- Network stats -->
+  <text x="600" y="135" text-anchor="middle" class="text-secondary" font-size="9" opacity="0.5">Block height: 5 • Hash rate: 1.2 TH/s • Difficulty: 12.5T</text>
+  
+  <text x="600" y="70" text-anchor="middle" class="text-primary" font-size="36" filter="url(#dropShadow)">MCP AI Agent Guidelines Server</text>
+  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" font-size="14">Guidelines • Patterns • Best Practices</text>
+  <rect x="400" y="84" width="400" height="16" fill="url(#shine12)" opacity="0.15"/>
+
+  <!-- Enhanced header particle system -->
+  <g opacity="0.7">
+    <circle class="h-particle" cx="570" cy="80" r="3" fill="#5FED83" style="animation-delay: 0s"/>
+    <circle class="h-particle" cx="610" cy="80" r="2.5" fill="#3094FF" style="animation-delay: 0.7s"/>
+    <circle class="h-particle" cx="650" cy="80" r="3.5" fill="#C06EFF" style="animation-delay: 1.4s"/>
+    <circle class="h-particle" cx="690" cy="80" r="2.8" fill="#5FED83" style="animation-delay: 2.1s"/>
+    <circle class="h-particle" cx="730" cy="80" r="3.2" fill="#3094FF" style="animation-delay: 2.8s"/>
+    <circle class="h-particle" cx="770" cy="80" r="2.6" fill="#C06EFF" style="animation-delay: 3.5s"/>
+  </g>
+  
+  <!-- Sparkle effects -->
+  <g opacity="0.8">
+    <path class="h-sparkle" d="M 680 60 L 684 60 M 682 58 L 682 62" 
+          stroke="#5FED83" stroke-width="1.5" style="animation-delay: 0s"/>
+    <path class="h-sparkle" d="M 820 70 L 824 70 M 822 68 L 822 72" 
+          stroke="#3094FF" stroke-width="1.5" style="animation-delay: 0.5s"/>
+    <path class="h-sparkle" d="M 960 55 L 964 55 M 962 53 L 962 57" 
+          stroke="#C06EFF" stroke-width="1.5" style="animation-delay: 1s"/>
+    <path class="h-sparkle" d="M 1100 65 L 1104 65 M 1102 63 L 1102 67" 
+          stroke="#5FED83" stroke-width="1.5" style="animation-delay: 1.5s"/>
+  </g>
+  
+  <!-- Energy waves -->
+  <g opacity="0.5">
+    <path class="h-energy" d="M 50 92 Q 200 72, 400 92 T 750 92" 
+          stroke="#5FED83" stroke-width="2" fill="none" style="animation-delay: 0s"/>
+    <path class="h-energy" d="M 100 100 Q 300 120, 500 100 T 900 100" 
+          stroke="#3094FF" stroke-width="2" fill="none" style="animation-delay: 1s"/>
+    <path class="h-energy" d="M 150 122 Q 350 102, 650 122 T 1100 122" 
+          stroke="#C06EFF" stroke-width="2" fill="none" style="animation-delay: 2s"/>
+  </g>
+  
+  <!-- Orbital elements -->
+  <g opacity="0.6">
+    <g class="h-orbit" transform="translate(660, 80)">
+      <circle cx="20" cy="0" r="2" fill="#5FED83"/>
+      <circle cx="-20" cy="0" r="2" fill="#3094FF"/>
+      <circle cx="0" cy="20" r="2" fill="#C06EFF"/>
+      <circle cx="0" cy="-20" r="2" fill="#5FED83"/>
+    </g>
+    <g class="h-orbit" transform="translate(600, 90)" style="animation-direction: reverse; animation-duration: 20s;">
+      <ellipse cx="25" cy="0" rx="2" ry="1.5" fill="#3094FF" opacity="0.7"/>
+      <ellipse cx="-25" cy="0" rx="2" ry="1.5" fill="#C06EFF" opacity="0.7"/>
+    </g>
+  </g>
+  
+  <!-- Beam effects -->
+  <g opacity="0.4">
+    <rect class="h-beam" x="100" y="62" width="200" height="2" fill="url(#shine12)" style="animation-delay: 0s"/>
+    <rect class="h-beam" x="500" y="82" width="250" height="2" fill="url(#shine12)" style="animation-delay: 1.5s"/>
+    <rect class="h-beam" x="850" y="102" width="200" height="2" fill="url(#shine12)" style="animation-delay: 3s"/>
+  </g>
+  
+  <!-- Constellation stars -->
+  <g class="h-glow-intense" opacity="0.6">
+    <circle class="h-star" cx="720" cy="52" r="1" fill="#5FED83" style="animation-delay: 0s"/>
+    <circle class="h-star" cx="760" cy="67" r="1" fill="#3094FF" style="animation-delay: 0.4s"/>
+    <circle class="h-star" cx="800" cy="57" r="1" fill="#C06EFF" style="animation-delay: 0.8s"/>
+    <circle class="h-star" cx="840" cy="72" r="1" fill="#5FED83" style="animation-delay: 1.2s"/>
+    <circle class="h-star" cx="880" cy="62" r="1" fill="#3094FF" style="animation-delay: 1.6s"/>
+    <circle class="h-star" cx="920" cy="77" r="1" fill="#C06EFF" style="animation-delay: 2s"/>
+    <circle class="h-star" cx="960" cy="67" r="1" fill="#5FED83" style="animation-delay: 2.4s"/>
+    <circle class="h-star" cx="1000" cy="82" r="1" fill="#3094FF" style="animation-delay: 2.8s"/>
+  </g>
+  
+  <!-- Network connection lines -->
+  <g class="h-network">
+    <line x1="720" y1="52" x2="760" y2="67" stroke="#5FED83" stroke-width="0.5"/>
+    <line x1="760" y1="67" x2="800" y2="57" stroke="#3094FF" stroke-width="0.5"/>
+    <line x1="800" y1="57" x2="840" y2="72" stroke="#C06EFF" stroke-width="0.5"/>
+    <line x1="840" y1="72" x2="880" y2="62" stroke="#5FED83" stroke-width="0.5"/>
+    <line x1="880" y1="62" x2="920" y2="77" stroke="#3094FF" stroke-width="0.5"/>
+    <line x1="920" y1="77" x2="960" y2="67" stroke="#C06EFF" stroke-width="0.5"/>
+    <line x1="960" y1="67" x2="1000" y2="82" stroke="#5FED83" stroke-width="0.5"/>
+  </g>
+
+</svg>

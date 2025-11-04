@@ -1,0 +1,244 @@
+<svg width="1200" height="80" viewBox="0 0 1200 80" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Test Coverage Analysis Footer">
+  <defs>
+    <linearGradient id="bgCoverageGrad13F" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d1117;stop-opacity:1"/>
+      <stop offset="50%" style="stop-color:#1c2128;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#161b22;stop-opacity:1"/>
+    </linearGradient>
+
+    <linearGradient id="coverageFill13F" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#5FED83;stop-opacity:1"/>
+      <stop offset="60%" style="stop-color:#5FED83;stop-opacity:1"/>
+      <stop offset="85%" style="stop-color:#3094FF;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#C06EFF;stop-opacity:1"/>
+    </linearGradient>
+
+    <pattern id="coverageHeatmap13F" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="10" height="10" fill="#5FED83" opacity="0.05"/>
+      <rect x="10" y="0" width="10" height="10" fill="#3094FF" opacity="0.03"/>
+      <rect x="0" y="10" width="10" height="10" fill="#3094FF" opacity="0.03"/>
+      <rect x="10" y="10" width="10" height="10" fill="#C06EFF" opacity="0.01"/>
+    </pattern>
+
+    <filter id="glow13F" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 6 0" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <style>
+    @media (prefers-color-scheme: dark) {
+      .text-link { fill: #8b949e; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; }
+      .divider { stroke: #30363d; }
+      .accent-green { fill: #5FED83; stroke: #5FED83; }
+      .accent-blue { fill: #3094FF; stroke: #3094FF; }
+      .accent-purple { fill: #C06EFF; stroke: #C06EFF; }
+    }
+    @media (prefers-color-scheme: light) {
+      .text-link { fill: #57606a; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; }
+      .divider { stroke: #d0d7de; }
+      .accent-green { fill: #08872B; stroke: #08872B; }
+      .accent-blue { fill: #0969DA; stroke: #0969DA; }
+      .accent-purple { fill: #501DAF; stroke: #501DAF; }
+    }
+
+    .link { font-size: 13px; letter-spacing: 0.3px; }
+
+    .coverage-bar {
+      animation: coverage-fill 4s ease-in-out infinite;
+    }
+    @keyframes coverage-fill {
+      0% { width: 0; opacity: 0.5; }
+      50% { opacity: 1; }
+      100% { opacity: 0.7; }
+    }
+
+    .test-execute {
+      animation: test-run 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+    @keyframes test-run {
+      0% { opacity: 0; transform: scale(0.0); }
+      50% { opacity: 1; transform: scale(2.0); }
+      100% { opacity: 0.7; transform: scale(2.0); }
+    }
+
+    .test-pass {
+      animation: pass-glow 2s ease-in-out infinite;
+    }
+    @keyframes pass-glow {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+
+    /* Enhanced particle effects */
+    .particle {
+      animation: particle-float 4s ease-in-out infinite;
+      filter: blur(0.5px);
+    }
+    @keyframes particle-float {
+      0%, 100% { opacity: 0; transform: translateY(0) translateX(0) scale(0); }
+      25% { opacity: 0.8; transform: translateY(-20px) translateX(-10px) scale(1.5); }
+      50% { opacity: 1; transform: translateY(-40px) translateX(5px) scale(2); }
+      75% { opacity: 0.6; transform: translateY(-30px) translateX(15px) scale(1.8); }
+    }
+
+    .particle-2 {
+      animation: particle-spin 5s linear infinite;
+    }
+    @keyframes particle-spin {
+      0% { opacity: 0; transform: rotate(0deg) translateX(20px) scale(0); }
+      50% { opacity: 1; transform: rotate(180deg) translateX(40px) scale(2); }
+      100% { opacity: 0; transform: rotate(360deg) translateX(20px) scale(0); }
+    }
+
+    /* Wave effects */
+    .wave-line {
+      stroke-dasharray: 5 10;
+      animation: wave-flow 3s linear infinite;
+    }
+    @keyframes wave-flow {
+      to { stroke-dashoffset: -100; }
+    }
+
+    /* Glow pulse on text */
+    .text-link {
+      animation: text-glow 3s ease-in-out infinite;
+    }
+    @keyframes text-glow {
+      0%, 100% { opacity: 0.7; filter: drop-shadow(0 0 0px transparent); }
+      50% { opacity: 1; filter: drop-shadow(0 0 8px rgba(95, 237, 131, 0.6)); }
+    }
+
+    /* Rotating elements */
+    .rotate-slow {
+      animation: rotate-360 20s linear infinite;
+      transform-origin: center;
+    }
+    @keyframes rotate-360 {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Shimmer effect */
+    .shimmer {
+      animation: shimmer-pass 4s ease-in-out infinite;
+    }
+    @keyframes shimmer-pass {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+
+    /* Ripple effect */
+    .ripple {
+      animation: ripple-expand 3s ease-out infinite;
+      transform-origin: center;
+    }
+    @keyframes ripple-expand {
+      0% { opacity: 1; transform: scale(0.5); }
+      100% { opacity: 0; transform: scale(3); }
+    }
+
+    </style>
+
+  <rect width="1200" height="80" fill="url(#bgCoverageGrad13F)"/>
+  <rect width="1200" height="80" fill="url(#coverageHeatmap13F)" opacity="0.3"/>
+
+  <line x1="0" y1="1" x2="1200" y2="1" class="divider" stroke-width="2"/>
+
+  <!-- Mini coverage bars -->
+  <rect x="40" y="55" width="200" height="4" rx="2" fill="#30363d" opacity="0.5"/>
+  <rect class="coverage-bar" x="40" y="55" height="4" rx="2" fill="url(#coverageFill13F)" style="width: 188px; animation-delay: 0s"/>
+
+  <rect x="40" y="65" width="200" height="4" rx="2" fill="#30363d" opacity="0.5"/>
+  <rect class="coverage-bar" x="40" y="65" height="4" rx="2" fill="url(#coverageFill13F)" style="width: 160px; animation-delay: 0.5s"/>
+
+  <!-- Test execution indicators -->
+  <g filter="url(#glow13F)">
+    <circle class="test-execute" cx="100" cy="40" r="3" fill="#5FED83" style="animation-delay: 0s"/>
+    <circle class="test-execute" cx="150" cy="40" r="3" fill="#5FED83" style="animation-delay: 0.5s"/>
+    <circle class="test-execute" cx="200" cy="40" r="3" fill="#5FED83" style="animation-delay: 1s"/>
+  </g>
+
+  <!-- Test tube icon (left) -->
+  <g transform="translate(25, 30)" opacity="0.7">
+    <rect x="8" y="5" width="10" height="25" rx="1" fill="none" stroke="#5FED83" stroke-width="2"/>
+    <rect x="8" y="20" width="10" height="10" fill="#5FED83" opacity="0.3"/>
+    <circle cx="13" cy="3" r="2" fill="none" stroke="#5FED83" stroke-width="1.5"/>
+    <path d="M 11 3 L 15 3" stroke="#5FED83" stroke-width="1"/>
+  </g>
+
+
+
+
+
+
+    <text x="1050" y="72" text-anchor="middle" class="link text-link" font-size="11px" opacity="0.8">License (MIT)</text>
+
+
+
+
+
+
+  <text x="1160" y="43" text-anchor="end" class="link text-link" font-size="11px" opacity="0.7">© 2025</text>
+
+  <!-- Coverage stats -->
+  <text x="600" y="73" text-anchor="middle" class="text-link" font-size="8" opacity="0.4">94.2% Lines • 80% Branches</text>
+
+  <!-- Enhanced particle system -->
+  <g opacity="0.6">
+    <circle class="particle" cx="490" cy="40" r="2" fill="#5FED83" style="animation-delay: 0s"/>
+    <circle class="particle" cx="525" cy="30" r="1.5" fill="#3094FF" style="animation-delay: 0.5s"/>
+    <circle class="particle" cx="560" cy="50" r="2.5" fill="#C06EFF" style="animation-delay: 1s"/>
+    <circle class="particle" cx="595" cy="35" r="1.8" fill="#5FED83" style="animation-delay: 1.5s"/>
+    <circle class="particle" cx="630" cy="45" r="2.2" fill="#3094FF" style="animation-delay: 2s"/>
+
+    <circle class="particle-2" cx="800" cy="40" r="1.5" fill="#C06EFF" style="animation-delay: 0.3s"/>
+    <circle class="particle-2" cx="900" cy="35" r="2" fill="#5FED83" style="animation-delay: 0.8s"/>
+    <circle class="particle-2" cx="1000" cy="45" r="1.8" fill="#3094FF" style="animation-delay: 1.3s"/>
+  </g>
+
+  <!-- Wave patterns -->
+  <g opacity="0.4">
+    <path class="wave-line" d="M 50 28 Q 150 18, 250 28 T 450 28"
+          stroke="#5FED83" stroke-width="1" fill="none" style="animation-delay: 0s"/>
+    <path class="wave-line" d="M 600 40 Q 700 30, 800 40 T 1000 40"
+          stroke="#3094FF" stroke-width="1" fill="none" style="animation-delay: 0.7s"/>
+    <path class="wave-line" d="M 100 56 Q 300 46, 500 56 T 900 56"
+          stroke="#C06EFF" stroke-width="1" fill="none" style="animation-delay: 1.4s"/>
+  </g>
+
+  <!-- Ripple effects -->
+  <g opacity="0.3">
+    <circle class="ripple" cx="670" cy="40" r="15" stroke="#5FED83" stroke-width="1.5" fill="none" style="animation-delay: 0s"/>
+    <circle class="ripple" cx="670" cy="40" r="15" stroke="#5FED83" stroke-width="1.5" fill="none" style="animation-delay: 1s"/>
+    <circle class="ripple" cx="670" cy="40" r="15" stroke="#5FED83" stroke-width="1.5" fill="none" style="animation-delay: 2s"/>
+
+    <circle class="ripple" cx="545" cy="45" r="12" stroke="#3094FF" stroke-width="1" fill="none" style="animation-delay: 0.5s"/>
+    <circle class="ripple" cx="545" cy="45" r="12" stroke="#3094FF" stroke-width="1" fill="none" style="animation-delay: 1.5s"/>
+  </g>
+
+  <!-- Rotating accent elements -->
+  <g opacity="0.5">
+    <g class="rotate-slow" transform="translate(830, 40)">
+      <path d="M -8 0 L 0 -8 L 8 0 L 0 8 Z" fill="none" stroke="#C06EFF" stroke-width="1"/>
+    </g>
+    <g class="rotate-slow" transform="translate(846, 35)" style="animation-direction: reverse;">
+      <circle cx="0" cy="0" r="6" fill="none" stroke="#5FED83" stroke-width="1" stroke-dasharray="2 4"/>
+    </g>
+  </g>
+
+  <!-- Shimmering accents around text -->
+  <g opacity="0.4">
+    <line class="shimmer" x1="550" y1="38" x2="580" y2="38" stroke="#5FED83" stroke-width="1.5" style="animation-delay: 0s"/>
+    <line class="shimmer" x1="620" y1="38" x2="650" y2="38" stroke="#5FED83" stroke-width="1.5" style="animation-delay: 0.3s"/>
+
+    <line class="shimmer" x1="550" y1="58" x2="575" y2="58" stroke="#3094FF" stroke-width="1.5" style="animation-delay: 0.6s"/>
+    <line class="shimmer" x1="625" y1="58" x2="650" y2="58" stroke="#3094FF" stroke-width="1.5" style="animation-delay: 0.9s"/>
+  </g>
+
+</svg>

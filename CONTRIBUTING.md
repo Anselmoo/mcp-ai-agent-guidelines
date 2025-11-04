@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](docs/.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # Contributing
 
 Thanks for your interest!
@@ -18,11 +22,18 @@ For comprehensive development guidelines when using GitHub Copilot or other AI c
 - Keep docs current (README, demos/README).
 
 ## Commit and PR
+
 - Use clear, conventional commit messages if possible.
 - Link to related issues (e.g., Fixes #123).
 - Fill out the PR template.
 
 ## Releases
+
 - For new releases, use the [Release Setup Issue Form](.github/ISSUE_TEMPLATE/release-setup.yml)
 - The form enables automation and ensures all version updates are captured
 - Maintainers will handle the actual release process after form submission
+---
+
+<!-- FOOTER:START -->
+![Footer](docs/.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

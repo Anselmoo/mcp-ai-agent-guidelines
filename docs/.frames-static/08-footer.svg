@@ -1,0 +1,280 @@
+<svg width="1200" height="80" viewBox="0 0 1200 80" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Matrix Code Rain Footer">
+  <defs>
+    <linearGradient id="bgMatrix08F" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#001a00;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#000d00;stop-opacity:1"/>
+    </linearGradient>
+
+    <radialGradient id="matrixGlow08F" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#5FED83;stop-opacity:1"/>
+      <stop offset="50%" style="stop-color:#5FED83;stop-opacity:0.6"/>
+      <stop offset="100%" style="stop-color:#00ff00;stop-opacity:0"/>
+    </radialGradient>
+
+    <filter id="matrixFilter08F" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0  1 0 0 0 0.9  0 0 0 0 0  0 0 0 5 0" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="motionBlur08F">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="0,2"/>
+    </filter>
+  </defs>
+
+  <style>
+    @media (prefers-color-scheme: dark) {
+      .text-link { fill: #4a9960; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; }
+      .divider { stroke: #003300; }
+      .matrix-char { fill: #5FED83; }
+    }
+    @media (prefers-color-scheme: light) {
+      .text-link { fill: #57606a; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; }
+      .divider { stroke: #d0d7de; }
+      .matrix-char { fill: #08872B; }
+    }
+
+    .link { font-size: 13px; letter-spacing: 0.3px; }
+
+    .code-rain {
+      animation: rain-fall 2.5s linear infinite;
+      font-family: 'Courier New', 'Courier', monospace;
+      font-weight: bold;
+      filter: url(#motionBlur08F);
+    }
+    @keyframes rain-fall {
+      0% { transform: translateY(-160.0px); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 0.8; }
+      100% { transform: translateY(160.0px); opacity: 0; }
+    }
+
+    .leading-char {
+      animation: leading-glow 1s ease-in-out infinite;
+      fill: #ffffff;
+      filter: url(#matrixFilter08F);
+      font-family: 'Courier New', 'Courier', monospace;
+      font-weight: bold;
+    }
+    @keyframes leading-glow {
+      0%, 100% { opacity: 1; fill: #ffffff; }
+      50% { opacity: 0.7; fill: #5FED83; }
+    }
+
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+
+    /* Enhanced particle effects */
+    .particle {
+      animation: particle-float 4s ease-in-out infinite;
+      filter: blur(0.5px);
+    }
+    @keyframes particle-float {
+      0%, 100% { opacity: 0; transform: translateY(0) translateX(0) scale(0); }
+      25% { opacity: 0.8; transform: translateY(-20px) translateX(-10px) scale(1.5); }
+      50% { opacity: 1; transform: translateY(-40px) translateX(5px) scale(2); }
+      75% { opacity: 0.6; transform: translateY(-30px) translateX(15px) scale(1.8); }
+    }
+
+    .particle-2 {
+      animation: particle-spin 5s linear infinite;
+    }
+    @keyframes particle-spin {
+      0% { opacity: 0; transform: rotate(0deg) translateX(20px) scale(0); }
+      50% { opacity: 1; transform: rotate(180deg) translateX(40px) scale(2); }
+      100% { opacity: 0; transform: rotate(360deg) translateX(20px) scale(0); }
+    }
+
+    /* Wave effects */
+    .wave-line {
+      stroke-dasharray: 5 10;
+      animation: wave-flow 3s linear infinite;
+    }
+    @keyframes wave-flow {
+      to { stroke-dashoffset: -100; }
+    }
+
+    /* Glow pulse on text */
+    .text-link {
+      animation: text-glow 3s ease-in-out infinite;
+    }
+    @keyframes text-glow {
+      0%, 100% { opacity: 0.7; filter: drop-shadow(0 0 0px transparent); }
+      50% { opacity: 1; filter: drop-shadow(0 0 8px rgba(95, 237, 131, 0.6)); }
+    }
+
+    /* Rotating elements */
+    .rotate-slow {
+      animation: rotate-360 20s linear infinite;
+      transform-origin: center;
+    }
+    @keyframes rotate-360 {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Shimmer effect */
+    .shimmer {
+      animation: shimmer-pass 4s ease-in-out infinite;
+    }
+    @keyframes shimmer-pass {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+
+    /* Ripple effect */
+    .ripple {
+      animation: ripple-expand 3s ease-out infinite;
+      transform-origin: center;
+    }
+    @keyframes ripple-expand {
+      0% { opacity: 1; transform: scale(0.5); }
+      100% { opacity: 0; transform: scale(3); }
+    }
+
+    </style>
+
+  <rect width="1200" height="80" fill="url(#bgMatrix08F)"/>
+
+  <line x1="0" y1="1" x2="1200" y2="1" class="divider" stroke-width="2"/>
+
+  <!-- Matrix rain columns -->
+  <g style="animation-delay: 0s">
+    <text class="leading-char" x="120" y="0" font-size="14">ア</text>
+    <text class="code-rain matrix-char" x="120" y="15" font-size="12" opacity="0.8">M</text>
+    <text class="code-rain matrix-char" x="120" y="28" font-size="12" opacity="0.6">C</text>
+    <text class="code-rain matrix-char" x="120" y="41" font-size="12" opacity="0.4">P</text>
+  </g>
+
+  <g style="animation-delay: -0.3s">
+    <text class="leading-char" x="240" y="0" font-size="14">タ</text>
+    <text class="code-rain matrix-char" x="240" y="15" font-size="12" opacity="0.8">A</text>
+    <text class="code-rain matrix-char" x="240" y="28" font-size="12" opacity="0.6">I</text>
+    <text class="code-rain matrix-char" x="240" y="41" font-size="12" opacity="0.4">7</text>
+  </g>
+
+  <g style="animation-delay: -0.6s">
+    <text class="leading-char" x="360" y="0" font-size="14">ナ</text>
+    <text class="code-rain matrix-char" x="360" y="15" font-size="12" opacity="0.8">G</text>
+    <text class="code-rain matrix-char" x="360" y="28" font-size="12" opacity="0.6">E</text>
+    <text class="code-rain matrix-char" x="360" y="41" font-size="12" opacity="0.4">N</text>
+  </g>
+
+  <g style="animation-delay: -0.9s">
+    <text class="leading-char" x="480" y="0" font-size="14">カ</text>
+    <text class="code-rain matrix-char" x="480" y="15" font-size="12" opacity="0.8">T</text>
+    <text class="code-rain matrix-char" x="480" y="28" font-size="12" opacity="0.6">5</text>
+    <text class="code-rain matrix-char" x="480" y="41" font-size="12" opacity="0.4">ラ</text>
+  </g>
+
+  <g style="animation-delay: -1.2s">
+    <text class="leading-char" x="600" y="0" font-size="14">サ</text>
+    <text class="code-rain matrix-char" x="600" y="15" font-size="12" opacity="0.8">4</text>
+    <text class="code-rain matrix-char" x="600" y="28" font-size="12" opacity="0.6">イ</text>
+    <text class="code-rain matrix-char" x="600" y="41" font-size="12" opacity="0.4">D</text>
+  </g>
+
+  <g style="animation-delay: -1.5s">
+    <text class="leading-char" x="720" y="0" font-size="14">ツ</text>
+    <text class="code-rain matrix-char" x="720" y="15" font-size="12" opacity="0.8">L</text>
+    <text class="code-rain matrix-char" x="720" y="28" font-size="12" opacity="0.6">I</text>
+    <text class="code-rain matrix-char" x="720" y="41" font-size="12" opacity="0.4">N</text>
+  </g>
+
+  <g style="animation-delay: -1.8s">
+    <text class="leading-char" x="840" y="0" font-size="14">ハ</text>
+    <text class="code-rain matrix-char" x="840" y="15" font-size="12" opacity="0.8">8</text>
+    <text class="code-rain matrix-char" x="840" y="28" font-size="12" opacity="0.6">ミ</text>
+    <text class="code-rain matrix-char" x="840" y="41" font-size="12" opacity="0.4">S</text>
+  </g>
+
+  <g style="animation-delay: -2.1s">
+    <text class="leading-char" x="960" y="0" font-size="14">ヤ</text>
+    <text class="code-rain matrix-char" x="960" y="15" font-size="12" opacity="0.8">R</text>
+    <text class="code-rain matrix-char" x="960" y="28" font-size="12" opacity="0.6">V</text>
+    <text class="code-rain matrix-char" x="960" y="41" font-size="12" opacity="0.4">E</text>
+  </g>
+
+  <g style="animation-delay: -2.4s">
+    <text class="leading-char" x="1080" y="0" font-size="14">ワ</text>
+    <text class="code-rain matrix-char" x="1080" y="15" font-size="12" opacity="0.8">1</text>
+    <text class="code-rain matrix-char" x="1080" y="28" font-size="12" opacity="0.6">ル</text>
+    <text class="code-rain matrix-char" x="1080" y="41" font-size="12" opacity="0.4">K</text>
+  </g>
+
+  <!-- Matrix code icon (left) -->
+  <g transform="translate(20, 25)" opacity="0.8" filter="url(#matrixFilter08F)">
+    <rect x="0" y="0" width="30" height="35" rx="2" fill="none" stroke="#5FED83" stroke-width="2"/>
+    <text x="7" y="14" class="matrix-char" font-size="10" font-family="'Courier New', monospace">01</text>
+    <text x="7" y="24" class="matrix-char" font-size="10" font-family="'Courier New', monospace">10</text>
+    <text x="7" y="34" class="matrix-char" font-size="10" font-family="'Courier New', monospace">11</text>
+  </g>
+
+
+
+
+
+
+    <text x="1050" y="72" text-anchor="middle" class="link text-link" font-size="11px" opacity="0.8">License (MIT)</text>
+
+
+
+
+
+
+  <text x="1160" y="43" text-anchor="end" class="link text-link" font-size="11px" opacity="0.7">© 2025</text>
+
+  <!-- Enhanced particle system -->
+  <g opacity="0.6">
+    <circle class="particle" cx="340" cy="40" r="2" fill="#5FED83" style="animation-delay: 0s"/>
+    <circle class="particle" cx="400" cy="30" r="1.5" fill="#3094FF" style="animation-delay: 0.5s"/>
+    <circle class="particle" cx="460" cy="50" r="2.5" fill="#C06EFF" style="animation-delay: 1s"/>
+    <circle class="particle" cx="520" cy="35" r="1.8" fill="#5FED83" style="animation-delay: 1.5s"/>
+    <circle class="particle" cx="580" cy="45" r="2.2" fill="#3094FF" style="animation-delay: 2s"/>
+
+    <circle class="particle-2" cx="800" cy="40" r="1.5" fill="#C06EFF" style="animation-delay: 0.3s"/>
+    <circle class="particle-2" cx="900" cy="35" r="2" fill="#5FED83" style="animation-delay: 0.8s"/>
+    <circle class="particle-2" cx="1000" cy="45" r="1.8" fill="#3094FF" style="animation-delay: 1.3s"/>
+  </g>
+
+  <!-- Wave patterns -->
+  <g opacity="0.4">
+    <path class="wave-line" d="M 50 33 Q 150 23, 250 33 T 450 33"
+          stroke="#5FED83" stroke-width="1" fill="none" style="animation-delay: 0s"/>
+    <path class="wave-line" d="M 600 35 Q 700 25, 800 35 T 1000 35"
+          stroke="#3094FF" stroke-width="1" fill="none" style="animation-delay: 0.7s"/>
+    <path class="wave-line" d="M 100 63 Q 300 53, 500 63 T 900 63"
+          stroke="#C06EFF" stroke-width="1" fill="none" style="animation-delay: 1.4s"/>
+  </g>
+
+  <!-- Ripple effects -->
+  <g opacity="0.3">
+    <circle class="ripple" cx="470" cy="40" r="15" stroke="#5FED83" stroke-width="1.5" fill="none" style="animation-delay: 0s"/>
+    <circle class="ripple" cx="470" cy="40" r="15" stroke="#5FED83" stroke-width="1.5" fill="none" style="animation-delay: 1s"/>
+    <circle class="ripple" cx="470" cy="40" r="15" stroke="#5FED83" stroke-width="1.5" fill="none" style="animation-delay: 2s"/>
+
+    <circle class="ripple" cx="720" cy="45" r="12" stroke="#3094FF" stroke-width="1" fill="none" style="animation-delay: 0.5s"/>
+    <circle class="ripple" cx="720" cy="45" r="12" stroke="#3094FF" stroke-width="1" fill="none" style="animation-delay: 1.5s"/>
+  </g>
+
+  <!-- Rotating accent elements -->
+  <g opacity="0.5">
+    <g class="rotate-slow" transform="translate(780, 40)">
+      <path d="M -8 0 L 0 -8 L 8 0 L 0 8 Z" fill="none" stroke="#C06EFF" stroke-width="1"/>
+    </g>
+    <g class="rotate-slow" transform="translate(886, 35)" style="animation-direction: reverse;">
+      <circle cx="0" cy="0" r="6" fill="none" stroke="#5FED83" stroke-width="1" stroke-dasharray="2 4"/>
+    </g>
+  </g>
+
+  <!-- Shimmering accents around text -->
+  <g opacity="0.4">
+    <line class="shimmer" x1="550" y1="38" x2="580" y2="38" stroke="#5FED83" stroke-width="1.5" style="animation-delay: 0s"/>
+    <line class="shimmer" x1="620" y1="38" x2="650" y2="38" stroke="#5FED83" stroke-width="1.5" style="animation-delay: 0.3s"/>
+
+    <line class="shimmer" x1="550" y1="58" x2="575" y2="58" stroke="#3094FF" stroke-width="1.5" style="animation-delay: 0.6s"/>
+    <line class="shimmer" x1="625" y1="58" x2="650" y2="58" stroke="#3094FF" stroke-width="1.5" style="animation-delay: 0.9s"/>
+  </g>
+
+</svg>

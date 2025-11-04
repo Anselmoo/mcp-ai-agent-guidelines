@@ -1,0 +1,188 @@
+<svg width="1200" height="180" viewBox="0 0 1200 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="MCP AI Agent Guidelines Header">
+  <style>
+    @media (prefers-color-scheme: dark) {
+      .bg-start { stop-color: #0d1117; }
+      .bg-end { stop-color: #161b22; }
+      .text-primary { fill: #f0f6fc; }
+      .text-secondary { fill: #8b949e; }
+      .accent-green { fill: #5FED83; }
+      .accent-purple { fill: #C06EFF; }
+      .line-color { stroke: #30363d; }
+      .node-green { fill: #08872B; }
+      .node-purple { fill: #501DAF; }
+    }
+    @media (prefers-color-scheme: light) {
+      .bg-start { stop-color: #f6f8fa; }
+      .bg-end { stop-color: #ffffff; }
+      .text-primary { fill: #24292f; }
+      .text-secondary { fill: #57606a; }
+      .accent-green { fill: #08872B; }
+      .accent-purple { fill: #501DAF; }
+      .line-color { stroke: #d0d7de; }
+      .node-green { fill: #5FED83; }
+      .node-purple { fill: #C06EFF; }
+    }
+    
+    .title {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+      font-weight: 700;
+      font-size: 42px;
+      letter-spacing: -1px;
+    }
+    
+    .subtitle {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 400;
+      font-size: 16px;
+    }
+    
+    /* Connection Network Animation */
+    .network-line {
+      stroke-dasharray: 5 10;
+      animation: dashFlow 20s linear infinite;
+    }
+    
+    @keyframes dashFlow {
+      to { stroke-dashoffset: -300; }
+    }
+    
+    /* Pulsing Nodes */
+    .node-pulse-1 {
+      animation: pulse 3s ease-in-out infinite;
+    }
+    
+    .node-pulse-2 {
+      animation: pulse 3s ease-in-out 0.5s infinite;
+    }
+    
+    .node-pulse-3 {
+      animation: pulse 3s ease-in-out 1s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; r: 4; }
+      50% { opacity: 0.6; r: 5; }
+    }
+    
+    /* Floating Icons */
+    .float-icon-left {
+      animation: floatUp 6s ease-in-out infinite;
+    }
+    
+    .float-icon-right {
+      animation: floatUp 6s ease-in-out 3s infinite;
+    }
+    
+    @keyframes floatUp {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    /* Star Fade */
+    .star-fade {
+      animation: starFade 4s ease-in-out infinite;
+    }
+    
+    @keyframes starFade {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+    
+    /* Underline Pulse */
+    .underline-pulse {
+      animation: underlinePulse 3s ease-in-out infinite;
+    }
+    
+    @keyframes underlinePulse {
+      0%, 100% { opacity: 0.8; }
+      50% { opacity: 1; }
+    }
+    
+    /* Bottom Bar Sweep */
+    .bar-sweep {
+      animation: barSweep 8s ease-in-out infinite;
+    }
+    
+    @keyframes barSweep {
+      0%, 100% { width: 800; opacity: 0.3; }
+      50% { width: 1100; opacity: 0.6; }
+    }
+    
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; }
+    }
+  </style>
+  
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" class="bg-start"/>
+      <stop offset="100%" class="bg-end"/>
+    </linearGradient>
+    
+    <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5FED83"/>
+      <stop offset="100%" stop-color="#08872B"/>
+    </linearGradient>
+    
+    <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C06EFF"/>
+      <stop offset="100%" stop-color="#501DAF"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="180" fill="url(#bgGrad)"/>
+  
+  <!-- Connection Network (Background) -->
+  <g opacity="0.4">
+    <line x1="50" y1="30" x2="200" y2="80" class="line-color network-line" stroke-width="1"/>
+    <line x1="200" y1="80" x2="400" y2="60" class="line-color network-line" stroke-width="1"/>
+    <line x1="400" y1="60" x2="600" y2="100" class="line-color network-line" stroke-width="1"/>
+    <line x1="600" y1="100" x2="800" y2="50" class="line-color network-line" stroke-width="1"/>
+    <line x1="800" y1="50" x2="1000" y2="90" class="line-color network-line" stroke-width="1"/>
+    <line x1="1000" y1="90" x2="1150" y2="40" class="line-color network-line" stroke-width="1"/>
+  </g>
+  
+  <!-- Pulsing Network Nodes -->
+  <circle cx="200" cy="80" class="node-green node-pulse-1" r="4"/>
+  <circle cx="600" cy="100" class="node-purple node-pulse-2" r="4"/>
+  <circle cx="1000" cy="90" class="node-green node-pulse-3" r="4"/>
+  
+  <!-- Left Icon: Code Brackets -->
+  <g transform="translate(40, 70)" class="float-icon-left">
+    <path class="accent-green" d="M8 0 L3 6 L8 12 M16 0 L21 6 L16 12" stroke-width="2" fill="none" stroke="currentColor" opacity="0.8"/>
+    <text x="6" y="10" font-size="10" class="accent-green" opacity="0.6">&lt;/&gt;</text>
+  </g>
+  
+  <!-- Left Icon: Git Branch -->
+  <g transform="translate(40, 110)" class="float-icon-left">
+    <circle class="accent-purple" cx="0" cy="0" r="3" opacity="0.8"/>
+    <line x1="0" y1="0" x2="0" y2="15" class="accent-purple" stroke-width="2" opacity="0.6"/>
+    <line x1="0" y1="7" x2="12" y2="7" class="accent-purple" stroke-width="2" opacity="0.6"/>
+    <circle class="accent-purple" cx="12" cy="7" r="3" opacity="0.8"/>
+  </g>
+  
+  <!-- Center Title -->
+  <text x="600" y="75" text-anchor="middle" class="title text-primary">MCP AI Agent Guidelines</text>
+  
+  <!-- Center Subtitle -->
+  <text x="600" y="105" text-anchor="middle" class="subtitle text-secondary">Advanced Tools for Hierarchical Prompting, Code Quality &amp; Agile Planning</text>
+  
+  <!-- Pulsing Underline -->
+  <line x1="450" y1="115" x2="750" y2="115" class="accent-green underline-pulse" stroke-width="2" opacity="0.8"/>
+  
+  <!-- Right Icon: AI Star -->
+  <g transform="translate(1140, 70)" class="float-icon-right star-fade">
+    <path class="accent-purple" d="M12 0 L14.5 8 L23 9 L17 15 L19 23 L12 19 L5 23 L7 15 L1 9 L9.5 8 Z" opacity="0.7"/>
+  </g>
+  
+  <!-- Right Icon: Open Source Heart -->
+  <g transform="translate(1140, 110)" class="float-icon-right">
+    <path class="accent-green" d="M12 21 C12 21 3 14 3 8 C3 5 5 3 8 3 C10 3 11.5 4 12 5.5 C12.5 4 14 3 16 3 C19 3 21 5 21 8 C21 14 12 21 12 21 Z" transform="scale(0.8)" opacity="0.8"/>
+  </g>
+  
+  <!-- Bottom Animated Bar -->
+  <rect x="100" y="165" class="bar-sweep accent-green" height="3" rx="1.5" opacity="0.5" fill="url(#greenGrad)">
+    <animate attributeName="width" values="800;1100;800" dur="8s" repeatCount="indefinite"/>
+  </rect>
+</svg>

@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](docs/.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # Disclaimer
 
 ## External References
@@ -83,3 +87,7 @@ This disclaimer may be updated periodically. Continued use of the project after 
 **Last Updated**: 2025-10-28
 **Project**: mcp-ai-agent-guidelines
 **License**: See [LICENSE](./LICENSE) file in repository root
+
+<!-- FOOTER:START -->
+![Footer](docs/.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

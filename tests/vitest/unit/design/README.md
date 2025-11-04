@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](../../../../docs/.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # Design Module Smoke Tests
 
 This directory contains smoke tests for the Design folder modules to ensure reliable classification and usage.
@@ -131,7 +135,10 @@ expect(NEW_MODULE_STATUS).toBe("IMPLEMENTED");
 
 ## Related Documentation
 
-- [Design Module Status](../../../../docs/design-module-status.md) - Detailed status documentation
 - [Design Tools Index](../../../../src/tools/design/index.ts) - Design framework exports
 <!-- [Design Tools](../../../../src/tools/design/README.md) - File does not exist -->
 - [Contributing Guide](../../../../CONTRIBUTING.md) - Development guidelines
+
+<!-- FOOTER:START -->
+![Footer](../../../../docs/.frames-static/09-footer.svg)
+<!-- FOOTER:END -->
