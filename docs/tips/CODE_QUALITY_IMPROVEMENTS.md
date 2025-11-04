@@ -17,9 +17,9 @@
 
 **Related Guides:**
 
-- [Clean Code Initiative](../CLEAN_CODE_INITIATIVE.md)
-- Clean Code Scorer (see [Tools Reference](../TOOLS_REFERENCE.md))
-- Code Hygiene Analyzer (see [Tools Reference](../TOOLS_REFERENCE.md))
+- [Clean Code Initiative](./CLEAN_CODE_INITIATIVE.md)
+- Clean Code Scorer (see [Tools Reference](./TOOLS_REFERENCE.md))
+- Code Hygiene Analyzer (see [Tools Reference](./TOOLS_REFERENCE.md))
 
 </details>
 

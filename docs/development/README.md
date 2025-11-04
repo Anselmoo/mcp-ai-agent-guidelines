@@ -35,9 +35,9 @@ See [CONTRIBUTING.md](../../CONTRIBUTING.md) for general contribution guidelines
 
 ## Related Documentation
 
-- [Technical Improvements](../TECHNICAL_IMPROVEMENTS.md) - Refactoring and enhancements
-- [Error Handling](../ERROR_HANDLING.md) - Error patterns and best practices
-- [Type Organization](../TYPE_ORGANIZATION_EXTENSION.md) - TypeScript conventions
+- [Technical Improvements](./TECHNICAL_IMPROVEMENTS.md) - Refactoring and enhancements
+- [Error Handling](../tips/ERROR_HANDLING.md) - Error patterns and best practices
+- [Type Organization](../tips/TYPE_ORGANIZATION_EXTENSION.md) - TypeScript conventions
 
 !-- FOOTER:START -->
 ![Footer](../.frames-static/09-footer.svg)

@@ -425,14 +425,14 @@ Help improve the Clean Code initiative:
 
 **User Guides:**
 
-- [AI Interaction Tips](../AI_INTERACTION_TIPS.md)
-- [Prompting Hierarchy](../PROMPTING_HIERARCHY.md)
-- [Agent Patterns](../AGENT_RELATIVE_CALLS.md)
-- [Flow Prompting](../FLOW_PROMPTING_EXAMPLES.md)
+- [AI Interaction Tips](./AI_INTERACTION_TIPS.md)
+- [Prompting Hierarchy](./PROMPTING_HIERARCHY.md)
+- [Agent Patterns](./AGENT_RELATIVE_CALLS.md)
+- [Flow Prompting](./FLOW_PROMPTING_EXAMPLES.md)
 
 **Developer Resources:**
 
-- [Tools Reference](../TOOLS_REFERENCE.md)
+- [Tools Reference](./TOOLS_REFERENCE.md)
 - [Contributing Guidelines](../../CONTRIBUTING.md)
 - [Documentation Index](../README.md)
 
