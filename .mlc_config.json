@@ -1,6 +1,9 @@
 {
 	"ignorePatterns": [
 		{
+			"pattern": "^docs/EXTERNAL_LINKS\\.md$"
+		},
+		{
 			"pattern": "^https://img\\.shields\\.io"
 		},
 		{
