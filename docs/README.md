@@ -22,7 +22,7 @@
 - **[Main README](../README.md)** - Project overview, installation, and quick start
 - **[Tools Reference](./TOOLS_REFERENCE.md)** - Complete reference for all 27 MCP tools ⭐
 - **[AI Interaction Tips](./tips/)** - Best practices for effective AI collaboration ⭐ **NEW**
-- **[Contributing Guidelines](../../CONTRIBUTING.md)** - How to contribute to the project
+- **[Contributing Guidelines](../CONTRIBUTING.md)** - How to contribute to the project
 - **[Disclaimer](../DISCLAIMER.md)** - Important information about external references
 
 > 💡 **Note for Contributors**: Internal development documentation (migration summaries, technical improvements) is located in [`docs/internal/`](./development/README.md). This folder contains contributor-only content and is referenced in the [CHANGELOG](../CHANGELOG.md).
@@ -71,7 +71,7 @@
 **Additional resources and acknowledgments**
 
 - **[References & Acknowledgments](./REFERENCES.md)** - Credits and external resources
-- **[Demo Reports](../../demos/README.md)** - Real-world tool usage examples
+- **[Demo Reports](../demos/README.md)** - Real-world tool usage examples
 
 ---
 
@@ -82,7 +82,7 @@
 **...get started quickly**
 
 - Read the [Main README](../README.md)
-- Try the [Demo Reports](../../demos/README.md)
+- Try the [Demo Reports](../demos/README.md)
 - Learn [AI Interaction Tips](./AI_INTERACTION_TIPS.md)
 
 **...improve my prompting skills**

@@ -163,7 +163,6 @@ No shortened URLs (bit.ly, tinyurl) or suspicious domains detected.
 
 ## Related Documentation
 
-- [Complete Link Inventory](./EXTERNAL_LINKS.md) - Full list of all external links
 - [Link Extraction Guide](./development/LINK_EXTRACTION.md) - How to use link extraction tools
 - [References](./REFERENCES.md) - Credited sources and citations
 
