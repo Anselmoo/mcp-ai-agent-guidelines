@@ -1,5 +1,7 @@
 <!-- HEADER:START -->
+
 ![Header](../.frames-static/09-header.svg)
+
 <!-- HEADER:END -->
 
 # Complete Tools Reference
@@ -830,15 +832,13 @@
 
 - **[AI Interaction Tips](./AI_INTERACTION_TIPS.md)** - How to ask targeted questions
 - **[Prompting Hierarchy](./PROMPTING_HIERARCHY.md)** - Understanding prompt levels
-- **[Demos](../demos/README.md)** - Real-world examples of each tool
+- **[Demos](../../demos/README.md)** - Real-world examples of each tool
 - **[Main README](../README.md)** - Installation and setup
 
 ---
 
-<div align="center">
-  <sub>Built with ❤️ for the MCP community</sub>
-</div>
-
 <!-- FOOTER:START -->
+
 ![Footer](../.frames-static/09-footer.svg)
+
 <!-- FOOTER:END -->

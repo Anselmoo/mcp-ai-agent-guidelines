@@ -1016,55 +1016,6 @@ To suggest improvements to agent-relative call patterns or add new examples:
 
 ---
 
-**Version:** 1.0.0
-**Last Updated:** 2025-10-27
-**Maintainer:** Anselmoo
-
-<!-- AUTO-GENERATED FOOTER - DO NOT EDIT -->
-
----
-
-<div align="center">
-
-<!-- Navigation Grid -->
-<table>
-  <tr>
-    <td align="center" width="33%">
-      <strong>📚 User Guides</strong><br/>
-      <a href="./AI_INTERACTION_TIPS.md">AI Interaction Tips</a><br/>
-      <a href="./PROMPTING_HIERARCHY.md">Prompting Hierarchy</a><br/>
-      <a href="./AGENT_RELATIVE_CALLS.md">Agent Patterns</a><br/>
-      <a href="./FLOW_PROMPTING_EXAMPLES.md">Flow Prompting</a>
-    </td>
-    <td align="center" width="33%">
-      <strong>🛠️ Developer Docs</strong><br/>
-      <a href="./CLEAN_CODE_INITIATIVE.md">Clean Code</a><br/>
-      <a href="./ERROR_HANDLING.md">Error Handling</a><br/>
-      <a href="./TECHNICAL_IMPROVEMENTS.md">Tech Improvements</a>
-    </td>
-    <td align="center" width="33%">
-      <strong>📖 Reference</strong><br/>
-      <a href="./REFERENCES.md">References</a><br/>
-      <a href="./BRIDGE_CONNECTORS.md">Architecture</a><br/>
-      <a href="../demos/README.md">Demos</a>
-    </td>
-  </tr>
-</table>
-
----
-
-<details>
-<summary><strong>📚 Related Documentation</strong></summary>
-
-- [AI Interaction Tips](./AI_INTERACTION_TIPS.md)
-- [Prompting Hierarchy](./PROMPTING_HIERARCHY.md)
-- [Design Assistant](./AI_INTERACTION_TIPS.md#design-assistant)
-- [Tools Reference](./TOOLS_REFERENCE.md)
-
-</details>
-
-<!-- END AUTO-GENERATED FOOTER -->
-
 <!-- FOOTER:START -->
 
 ![Footer](../.frames-static/09-footer.svg)

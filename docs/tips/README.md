@@ -1,5 +1,7 @@
 <!-- HEADER:START -->
+
 ![Header](../.frames-static/09-header.svg)
+
 <!-- HEADER:END -->
 
 <!-- AUTO-GENERATED INTERACTIVE HEADER - DO NOT EDIT -->
@@ -23,15 +25,18 @@ This folder contains practical tips, best practices, and quick reference guides 
 ## 📚 Available Tips
 
 ### Getting Started
+
 - **[AI Interaction Tips](../AI_INTERACTION_TIPS.md)** - Essential strategies for effective AI collaboration
 - **[Prompting Hierarchy](../PROMPTING_HIERARCHY.md)** - Understanding prompt levels and when to use them
 
 ### Advanced Techniques
+
 - **[Context-Aware Guidance](../CONTEXT_AWARE_GUIDANCE.md)** - Leveraging context for better results
 - **[Serena Strategies](../SERENA_STRATEGIES.md)** - Advanced semantic analysis patterns
-- **[Flow & Serena Integration](../FLOW_SERENA_INTEGRATION.md)** - Combining workflow tools
+- **[Flow & Serena Integration](./FLOW_SERENA_INTEGRATION.md)** - Combining workflow tools
 
 ### Visual Communication
+
 - **[Mermaid Diagram Examples](../MERMAID_DIAGRAM_EXAMPLES.md)** - Creating effective diagrams
 - **[Flow Prompting Examples](../FLOW_PROMPTING_EXAMPLES.md)** - Workflow visualization patterns
 
@@ -41,13 +46,13 @@ This folder contains practical tips, best practices, and quick reference guides 
 
 ### When to Use Which Tool?
 
-| Goal | Recommended Tool | Complexity |
-|------|------------------|------------|
-| Create structured prompt | `hierarchical-prompt-builder` | ⭐⭐ |
-| Analyze code quality | `clean-code-scorer` | ⭐⭐⭐ |
-| Plan sprints | `sprint-timeline-calculator` | ⭐⭐⭐⭐ |
-| Design workflows | `design-assistant` | ⭐⭐⭐⭐⭐ |
-| Generate diagrams | `mermaid-diagram-generator` | ⭐ |
+| Goal                     | Recommended Tool              | Complexity |
+| ------------------------ | ----------------------------- | ---------- |
+| Create structured prompt | `hierarchical-prompt-builder` | ⭐⭐       |
+| Analyze code quality     | `clean-code-scorer`           | ⭐⭐⭐     |
+| Plan sprints             | `sprint-timeline-calculator`  | ⭐⭐⭐⭐   |
+| Design workflows         | `design-assistant`            | ⭐⭐⭐⭐⭐ |
+| Generate diagrams        | `mermaid-diagram-generator`   | ⭐         |
 
 ### Best Practices
 
@@ -67,20 +72,8 @@ This folder contains practical tips, best practices, and quick reference guides 
 
 ---
 
-**Navigation**: [📁 Docs Home](../README.md) • [🛠️ Tools Reference](./tools/) • [ℹ️ About](../about/)
-
-
-
-<!-- AUTO-GENERATED INTERACTIVE FOOTER - DO NOT EDIT -->
-<iframe
-    src="https://raw.githubusercontent.com/Anselmoo/mcp-ai-agent-guidelines/main/docs/.frames-interactive/footer-tips-README.html"
-    style="width: 100%; height: 80px; border: none; display: block; margin: 0; padding: 0;"
-    title="Interactive Footer"
-    loading="lazy"
-    sandbox="allow-scripts allow-same-origin"
-></iframe>
-<!-- END AUTO-GENERATED INTERACTIVE FOOTER -->
-
 <!-- FOOTER:START -->
+
 ![Footer](../.frames-static/09-footer.svg)
+
 <!-- FOOTER:END -->

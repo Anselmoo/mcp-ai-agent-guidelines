@@ -114,7 +114,7 @@ See **[docs/README.md](./docs/README.md)** for the complete documentation index.
 - **[📊 Prompting Hierarchy](./docs/PROMPTING_HIERARCHY.md)** - Understanding prompt levels and evaluation
 - **[🔗 Agent-Relative Call Patterns](./docs/AGENT_RELATIVE_CALLS.md)** - Invoking tools in workflows
 - **[🌊 Flow-Based Prompting](./docs/FLOW_PROMPTING_EXAMPLES.md)** - Advanced chaining strategies
-- **[🎨 Mermaid Diagrams](./docs/mermaid-diagram-examples.md)** - Visual diagram generation
+- **[🎨 Mermaid Diagrams](./docs/tips/MERMAID_DIAGRAM_EXAMPLES.md)** - Visual diagram generation
 
 #### For Developers
 

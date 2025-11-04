@@ -16,8 +16,8 @@
 **Related Guides:**
 
 - [AI Interaction Tips](./AI_INTERACTION_TIPS.md)
-- [Hierarchical Prompt Builder](./tools/hierarchical-prompt-builder.md)
-- [Hierarchy Level Selector](./tools/hierarchy-level-selector.md)
+- [Hierarchical Prompt Builder](../tools/hierarchical-prompt-builder.md)
+- [Hierarchy Level Selector](../tools/hierarchy-level-selector.md)
 
 </details>
 
@@ -246,79 +246,10 @@ Comprehensive tests are available in:
   - Integration tests
   - RL-style effectiveness scoring
 
-<!-- AUTO-GENERATED FOOTER - DO NOT EDIT -->
-
 ---
 
-<div align="center">
-
-<!-- Navigation Grid -->
-<table>
-  <tr>
-    <td align="center" width="33%">
-      <strong>📚 User Guides</strong><br/>
-      <a href="./AI_INTERACTION_TIPS.md">AI Interaction Tips</a><br/>
-      <a href="./PROMPTING_HIERARCHY.md">Prompting Hierarchy</a><br/>
-      <a href="./AGENT_RELATIVE_CALLS.md">Agent Patterns</a><br/>
-      <a href="./FLOW_PROMPTING_EXAMPLES.md">Flow Prompting</a>
-    </td>
-    <td align="center" width="33%">
-      <strong>🛠️ Developer Docs</strong><br/>
-      <a href="./CLEAN_CODE_INITIATIVE.md">Clean Code</a><br/>
-      <a href="./ERROR_HANDLING.md">Error Handling</a><br/>
-      <a href="./TECHNICAL_IMPROVEMENTS.md">Tech Improvements</a>
-    </td>
-    <td align="center" width="33%">
-      <strong>📖 Reference</strong><br/>
-      <a href="./REFERENCES.md">References</a><br/>
-      <a href="./BRIDGE_CONNECTORS.md">Architecture</a><br/>
-      <a href="../demos/README.md">Demos</a>
-    </td>
-  </tr>
-</table>
-
-<details>
-<summary><strong>📚 Related Documentation</strong></summary>
-
-<br>
-
-**User Guides:**
-
-- [AI Interaction Tips](./AI_INTERACTION_TIPS.md) - Targeted tool-oriented questions
-- [Agent-Relative Patterns](./AGENT_RELATIVE_CALLS.md) - Tool orchestration workflows
-- [Flow-Based Prompting](./FLOW_PROMPTING_EXAMPLES.md) - Multi-step workflows
-
-**Tool References:**
-
-- [Complete Tools Reference](./TOOLS_REFERENCE.md) - All 27 tools documented
-- [Hierarchy Level Selector](./tools/hierarchy-level-selector.md) - Optimal level selection
-- [Prompting Hierarchy Evaluator](./tools/prompting-hierarchy-evaluator.md) - Numeric scoring
-
-</details>
-
-<div align="center">
-
-<p>
-  <a href="#top">⬆️ Back to Top</a>
-</p>
-
-<sub>
-  <strong>MCP AI Agent Guidelines</strong> • Made with ❤️ by <a href="https://github.com/Anselmoo">@Anselmoo</a> and contributors<br/>
-  Licensed under <a href="../LICENSE">MIT</a> • <a href="../DISCLAIMER.md">Disclaimer</a> • <a href="../CONTRIBUTING.md">Contributing</a>
-</sub>
-
-</div>
-
-<!-- Metadata Footer -->
-<sub>
-  <strong>MCP AI Agent Guidelines</strong> • Made with ❤️ by <a href="https://github.com/Anselmoo">@Anselmoo</a> and contributors<br/>
-  Licensed under <a href="../LICENSE">MIT</a> • <a href="../DISCLAIMER.md">Disclaimer</a> • <a href="../CONTRIBUTING.md">Contributing</a>
-</sub>
-
-</div>
-
-<!-- END AUTO-GENERATED FOOTER -->
-
 <!-- FOOTER:START -->
+
 ![Footer](../.frames-static/09-footer.svg)
+
 <!-- FOOTER:END -->

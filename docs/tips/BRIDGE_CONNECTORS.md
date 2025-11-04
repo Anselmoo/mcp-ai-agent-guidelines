@@ -1,5 +1,7 @@
 <!-- HEADER:START -->
+
 ![Header](../.frames-static/09-header.svg)
+
 <!-- HEADER:END -->
 
 # Bridge Connectors
@@ -358,70 +360,10 @@ const strategy = await strategyFrameworksBuilder({
 ## References
 
 - [Serena Strategies Documentation](./SERENA_STRATEGIES.md)
-- [Integration Summary](./SERENA_INTEGRATION_SUMMARY.md)
+- [Integration Summary](./SERENA_STRATEGIES.md)
 - [Serena Repository](https://github.com/oraios/serena)
-
-<!-- AUTO-GENERATED FOOTER - DO NOT EDIT -->
-
 ---
 
-<div align="center">
-
-<!-- Navigation Grid -->
-<table>
-  <tr>
-    <td align="center" width="33%">
-      <strong>🛠️ Code Quality</strong><br/>
-      <a href="./CLEAN_CODE_INITIATIVE.md">Clean Code 100/100</a><br/>
-      <a href="./code-quality-improvements.md">Quality Improvements</a><br/>
-      <a href="./ERROR_HANDLING.md">Error Patterns</a>
-    </td>
-    <td align="center" width="33%">
-      <strong>🏗️ Architecture</strong><br/>
-      <a href="./BRIDGE_CONNECTORS.md">Bridge Connectors</a><br/>
-      <a href="./TECHNICAL_IMPROVEMENTS.md">Refactoring</a><br/>
-      <a href="./design-module-status.md">Module Status</a>
-    </td>
-    <td align="center" width="33%">
-      <strong>📚 Resources</strong><br/>
-      <a href="../CONTRIBUTING.md">Contributing Guide</a><br/>
-      <a href="./REFERENCES.md">References</a><br/>
-      <a href="../.github/copilot-instructions.md">Copilot Guide</a>
-    </td>
-  </tr>
-</table>
-
-<details>
-<summary><strong>📚 Related Documentation</strong></summary>
-
-<br>
-
-**Developer Resources:**
-
-- [Clean Code Initiative](./CLEAN_CODE_INITIATIVE.md) - Quality standards (100/100 scoring)
-- [Error Handling](./ERROR_HANDLING.md) - Best practices and patterns
-- [Serena Integration](./SERENA_STRATEGIES.md) - Semantic analysis strategies
-
-**Architecture:**
-
-- [Project Onboarding](./tools/project-onboarding.md) - Structure analysis
-- [Semantic Code Analyzer](./tools/semantic-code-analyzer.md) - Symbol-based understanding
-
-</details>
-
-<div align="center">
-
-<p>
-  <a href="#top">⬆️ Back to Top</a>
-</p>
-
-<sub>
-  <strong>MCP AI Agent Guidelines</strong> • Made with ❤️ by <a href="https://github.com/Anselmoo">@Anselmoo</a> and contributors<br/>
-  Licensed under <a href="../LICENSE">MIT</a> • <a href="../DISCLAIMER.md">Disclaimer</a> • <a href="../CONTRIBUTING.md">Contributing</a>
-</sub>
-
-</div>
-
 <!-- FOOTER:START -->
-![Footer](../.frames-static/09-footer.svg)
+![Footer](../../.frames-static/09-footer.svg)
 <!-- FOOTER:END -->

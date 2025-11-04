@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](./.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # Context-Aware Guidance
 
 > Adaptive recommendations and intelligent prompting based on project context
@@ -433,3 +437,8 @@ const result = await tool({
 ## Conclusion
 
 Context-aware guidance makes AI recommendations more relevant, accurate, and aligned with your specific project needs. By leveraging automatic detection and allowing manual context specification, the system adapts to your unique environment and requirements.
+---
+
+<!-- FOOTER:START -->
+![Footer](./.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

@@ -1,5 +1,7 @@
 <!-- HEADER:START -->
+
 ![Header](../.frames-static/09-header.svg)
+
 <!-- HEADER:END -->
 
 # Sprint Planning Reliability
@@ -273,32 +275,10 @@ Comprehensive test coverage includes:
 
 All tests pass with 100% backward compatibility.
 
-<hr />
-
-<div align="center">
-
-<!-- Related Documentation Links -->
-<details>
-<summary>📚 Related Documentation</summary>
-
-</details>
-
-<!-- Back to top -->
-<p>
-  <a href="#" style="color: #0969da; text-decoration: none; font-size: 14px;">↑ Back to top</a>
-</p>
-
-<!-- Metadata footer -->
-<p>
-  Part of <a href="../README.md" style="color: #0969da; text-decoration: none;">MCP AI Agent Guidelines</a> •
-  <a href="../LICENSE" style="color: #0969da; text-decoration: none;">MIT License</a> •
-  <a href="../CONTRIBUTING.md" style="color: #0969da; text-decoration: none;">Contribute</a>
-</p>
-
-<!-- Gradient accent line (footer) -->
-
-</div>
+---
 
 <!-- FOOTER:START -->
+
 ![Footer](../.frames-static/09-footer.svg)
+
 <!-- FOOTER:END -->

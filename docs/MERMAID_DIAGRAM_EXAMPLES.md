@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](./.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # Mermaid Diagram Examples
 
 > Create flowcharts, sequence diagrams, ER diagrams, and more with AI-powered generation
@@ -563,3 +567,8 @@ const detailData = await mermaidDiagramGenerator({
 ## Conclusion
 
 Mermaid diagrams provide powerful visualization capabilities for documentation, design, and communication. By using the diagram generator tool with clear descriptions and appropriate diagram types, you can create professional, maintainable visual documentation efficiently.
+---
+
+<!-- FOOTER:START -->
+![Footer](./.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

@@ -1,5 +1,7 @@
 <!-- HEADER:START -->
+
 ![Header](../.frames-static/09-header.svg)
+
 <!-- HEADER:END -->
 
 # Clean Code Initiative
@@ -417,69 +419,27 @@ Help improve the Clean Code initiative:
 **Goal:** 🏆 100/100 Clean Code Score
 **Last Updated:** 2025-10-15
 
-<!-- AUTO-GENERATED FOOTER - DO NOT EDIT -->
+---
+
+## 📚 Related Documentation
+
+**User Guides:**
+
+- [AI Interaction Tips](../AI_INTERACTION_TIPS.md)
+- [Prompting Hierarchy](../PROMPTING_HIERARCHY.md)
+- [Agent Patterns](../AGENT_RELATIVE_CALLS.md)
+- [Flow Prompting](../FLOW_PROMPTING_EXAMPLES.md)
+
+**Developer Resources:**
+
+- [Tools Reference](../TOOLS_REFERENCE.md)
+- [Contributing Guidelines](../../CONTRIBUTING.md)
+- [Documentation Index](../README.md)
 
 ---
 
-<div align="center">
-
-<!-- Navigation Grid -->
-<table>
-  <tr>
-    <td align="center" width="33%">
-      <strong>🛠️ Code Quality</strong><br/>
-      <a href="./CLEAN_CODE_INITIATIVE.md">Clean Code 100/100</a><br/>
-      <a href="./code-quality-improvements.md">Quality Improvements</a><br/>
-      <a href="./ERROR_HANDLING.md">Error Patterns</a>
-    </td>
-    <td align="center" width="33%">
-      <strong>🏗️ Architecture</strong><br/>
-      <a href="./BRIDGE_CONNECTORS.md">Bridge Connectors</a><br/>
-      <a href="./TECHNICAL_IMPROVEMENTS.md">Refactoring</a><br/>
-      <a href="./design-module-status.md">Module Status</a>
-    </td>
-    <td align="center" width="33%">
-      <strong>📚 Resources</strong><br/>
-      <a href="../CONTRIBUTING.md">Contributing Guide</a><br/>
-      <a href="./REFERENCES.md">References</a><br/>
-      <a href="../.github/copilot-instructions.md">Copilot Guide</a>
-    </td>
-  </tr>
-</table>
-
-<!-- Back to Top -->
-<p>
-  <a href="#top">⬆️ Back to Top</a>
-</p>
-
-<details>
-<summary><strong>📚 Related Documentation</strong></summary>
-
-<br>
-
-**Quality & Standards:**
-
-- [Code Quality Improvements](./CODE_QUALITY_IMPROVEMENTS.md) - Hygiene scoring and analysis
-- [Error Handling](./ERROR_HANDLING.md) - Best practices
-- [Bridge Connectors](./BRIDGE_CONNECTORS.md) - Architecture patterns
-
-**Tools:**
-
-- [Clean Code Scorer](./tools/clean-code-scorer.md) - 0-100 quality metrics
-- [Code Hygiene Analyzer](./tools/code-hygiene-analyzer.md) - Pattern detection
-- [Dependency Auditor](./tools/dependency-auditor.md) - Security & ESM audit
-
-</details>
-
-<div align="center">
-
-<sub>
-  <strong>MCP AI Agent Guidelines</strong> • Made with ❤️ by <a href="https://github.com/Anselmoo">@Anselmoo</a> and contributors<br/>
-  Licensed under <a href="../LICENSE">MIT</a> • <a href="../DISCLAIMER.md">Disclaimer</a> • <a href="../CONTRIBUTING.md">Contributing</a>
-</sub>
-
-</div>
-
 <!-- FOOTER:START -->
+
 ![Footer](../.frames-static/09-footer.svg)
+
 <!-- FOOTER:END -->

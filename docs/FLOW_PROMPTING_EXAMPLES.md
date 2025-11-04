@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](./.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # Flow-Based Prompting Examples
 
 > Advanced chaining strategies and multi-step prompt workflows
@@ -442,3 +446,8 @@ graph TD
 ## Conclusion
 
 Flow-based prompting enables sophisticated, multi-step workflows with proper dependency management, error handling, and execution strategies. Use these patterns to build robust, maintainable AI workflows.
+---
+
+<!-- FOOTER:START -->
+![Footer](./.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

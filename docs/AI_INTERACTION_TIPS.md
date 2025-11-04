@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](./.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # AI Interaction Tips
 
 > Comprehensive guide for asking targeted questions to better utilize specialized tools
@@ -171,3 +175,8 @@ Help the AI understand what works:
 ## Conclusion
 
 Effective AI interaction is about clarity, context, and appropriate tool selection. By following these tips, you'll get more accurate, actionable, and relevant results from this MCP server.
+---
+
+<!-- FOOTER:START -->
+![Footer](./.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

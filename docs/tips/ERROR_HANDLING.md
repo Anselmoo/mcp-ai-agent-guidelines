@@ -353,61 +353,24 @@ The following files have been updated to use the new error handling:
 - [ ] Create error dashboards for production
 - [ ] Add more specific error types as needed
 
-<!-- AUTO-GENERATED FOOTER - DO NOT EDIT -->
-
 ---
 
-<div align="center">
+## 📚 Related Documentation
 
-<!-- Navigation Grid -->
-<table>
-  <tr>
-    <td align="center" width="33%">
-      <strong>🛠️ Code Quality</strong><br/>
-      <a href="./CLEAN_CODE_INITIATIVE.md">Clean Code 100/100</a><br/>
-      <a href="./code-quality-improvements.md">Quality Improvements</a><br/>
-      <a href="./ERROR_HANDLING.md">Error Patterns</a>
-    </td>
-    <td align="center" width="33%">
-      <strong>🏗️ Architecture</strong><br/>
-      <a href="./BRIDGE_CONNECTORS.md">Bridge Connectors</a><br/>
-      <a href="./TECHNICAL_IMPROVEMENTS.md">Refactoring</a><br/>
-      <a href="./design-module-status.md">Module Status</a>
-    </td>
-    <td align="center" width="33%">
-      <strong>📚 Resources</strong><br/>
-      <a href="../CONTRIBUTING.md">Contributing Guide</a><br/>
-      <a href="./REFERENCES.md">References</a><br/>
-      <a href="../.github/copilot-instructions.md">Copilot Guide</a>
-    </td>
-  </tr>
-</table>
+**User Guides:**
 
-<details>
-<summary><strong>📚 Related Documentation</strong></summary>
-
-<br>
+- [AI Interaction Tips](../AI_INTERACTION_TIPS.md)
+- [Prompting Hierarchy](../PROMPTING_HIERARCHY.md)
+- [Agent Patterns](../AGENT_RELATIVE_CALLS.md)
+- [Flow Prompting](../FLOW_PROMPTING_EXAMPLES.md)
 
 **Developer Resources:**
 
-- [Clean Code Initiative](./CLEAN_CODE_INITIATIVE.md) - Quality standards
-- [Bridge Connectors](./BRIDGE_CONNECTORS.md) - Architecture patterns
-- [Contributing Guidelines](../CONTRIBUTING.md) - How to contribute
+- [Tools Reference](../TOOLS_REFERENCE.md)
+- [Contributing Guidelines](../../CONTRIBUTING.md)
+- [Documentation Index](../README.md)
 
-**Error Tools:**
-
-- [Guidelines Validator](./tools/guidelines-validator.md) - Practice validation
-- [Debugging Assistant](./tools/debugging-assistant-prompt-builder.md) - Systematic debugging
-
-</details>
-
-<div align="center">
-
-<p>
-  <a href="#top">⬆️ Back to Top</a>
-</p>
-
-<sub>
+---
 
 <!-- FOOTER:START -->
 

@@ -1,10 +1,14 @@
+<!-- HEADER:START -->
+![Header](./.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # Code Quality Improvements
 
 > Hygiene scoring, best practices, and systematic quality enhancement strategies
 
 ## Overview
 
-This guide provides detailed strategies for improving code quality through systematic analysis, targeted refactoring, and continuous monitoring. It complements the [Clean Code Initiative](./CLEAN_CODE_INITIATIVE.md) with actionable improvement techniques.
+This guide provides detailed strategies for improving code quality through systematic analysis, targeted refactoring, and continuous monitoring. It complements the [Clean Code Initiative](./tips/CLEAN_CODE_INITIATIVE.md) with actionable improvement techniques.
 
 ## Code Hygiene Analysis
 
@@ -338,10 +342,10 @@ npm start
 - Feature 2
 
 ## API Reference
-See [API.md](./API.md)
+See [API.md](../API.md)
 
 ## Contributing
-See [CONTRIBUTING.md](./CONTRIBUTING.md)
+See [CONTRIBUTING.md](../../CONTRIBUTING.md)
 ```
 
 #### 3. Inline Comments for Complex Logic
@@ -544,11 +548,16 @@ console.log(`Improved by ${improvement} points in 6 weeks`);
 
 ## Related Resources
 
-- [Clean Code Initiative](./CLEAN_CODE_INITIATIVE.md) - Quality standards
+- [Clean Code Initiative](./tips/CLEAN_CODE_INITIATIVE.md) - Quality standards
 - [Iterative Coverage Enhancer](./tools/iterative-coverage-enhancer.md) - Coverage tool
-- [Code Hygiene Analyzer](./tools/code-hygiene-analyzer.md) - Hygiene analysis
+- [Code Hygiene Analyzer](../tools/code-hygiene-analyzer.md) - Hygiene analysis
 - [Semantic Code Analyzer](./tools/semantic-code-analyzer.md) - Deep code analysis
 
 ## Conclusion
 
 Code quality improvement is a continuous process requiring systematic assessment, targeted improvements, and ongoing maintenance. By using the tools and techniques in this guide, teams can progressively enhance their codebase quality and maintain high standards over time.
+---
+
+<!-- FOOTER:START -->
+![Footer](./.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

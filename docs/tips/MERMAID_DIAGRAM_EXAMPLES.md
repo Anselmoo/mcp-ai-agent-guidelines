@@ -465,46 +465,7 @@ The generator automatically converts legacy type names:
 - [Mermaid Live Editor](https://mermaid.live/)
 - [MCP Server README](../README.md)
 
-<!-- AUTO-GENERATED FOOTER - DO NOT EDIT -->
-
 ---
-
-<div align="center">
-
-<!-- Navigation Grid -->
-<table>
-  <tr>
-    <td align="center" width="33%">
-      <strong>📊 Visualization</strong><br/>
-      <a href="./visualization-guide.md">Mermaid Guide</a><br/>
-      <a href="./DIAGRAM_GENERATION.md">Diagram Tools</a><br/>
-      <a href="../demos/demo-code-analysis.diagram.md">Examples</a>
-    </td>
-    <td align="center" width="33%">
-      <strong>⚡ Planning</strong><br/>
-      <a href="./sprint-planning.md">Sprint Timelines</a><br/>
-      <a href="./gap-analysis-guide.md">Gap Analysis</a><br/>
-      <a href="./AGILE_WORKFLOW_OPTIMIZATION.md">Agile Optimization</a>
-    </td>
-    <td align="center" width="33%">
-      <strong>🔧 Maintenance</strong><br/>
-      <a href="./maintaining-models.md">Model Updates</a><br/>
-      <a href="./export-formats.md">Export Formats</a><br/>
-      <a href="./TECHNICAL_IMPROVEMENTS.md">Improvements</a>
-    </td>
-  </tr>
-</table>
-
-## <!-- Back to Top -->
-
-<details>
-<summary><strong>📚 Related Documentation</strong></summary>
-
-- [Export Formats](./EXPORT_FORMATS.md)
-- [Sprint Planning Reliability](./SPRINT_PLANNING_RELIABILITY.md)
-- [Tools Reference](./TOOLS_REFERENCE.md)
-
-</details>
 
 <!-- FOOTER:START -->
 

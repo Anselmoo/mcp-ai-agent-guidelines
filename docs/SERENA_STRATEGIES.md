@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](./.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # Serena Strategies
 
 > Semantic analysis strategies and integration patterns inspired by Serena
@@ -369,3 +373,8 @@ function getAnalyzer(language) {
 Serena strategies provide powerful semantic code understanding capabilities. By using language server protocols and structured analysis, these strategies enable precise code inspection, refactoring, and project understanding that goes far beyond text-based approaches.
 
 The patterns and techniques adapted from Serena form the foundation of this MCP server's code analysis capabilities, enabling intelligent, context-aware development assistance.
+---
+
+<!-- FOOTER:START -->
+![Footer](./.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

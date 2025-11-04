@@ -17,7 +17,7 @@
 
 - [Documentation Index](./README.md)
 - [Prompting Hierarchy](./PROMPTING_HIERARCHY.md)
-- [Hierarchical Prompt Builder](./tools/hierarchical-prompt-builder.md)
+- [Hierarchical Prompt Builder](../tools/hierarchical-prompt-builder.md)
 - [Tool Reference](./TOOLS_REFERENCE.md)
 
 </details>
@@ -341,73 +341,9 @@ By following these patterns, you'll unlock the full power of the MCP AI Agent Gu
 - **[Agent-Relative Call Patterns](./AGENT_RELATIVE_CALLS.md)** - Comprehensive guide to invoking tools in workflows
 - **[Prompting Hierarchy](./PROMPTING_HIERARCHY.md)** - Understanding prompt levels and evaluation
 - **[Flow Prompting Examples](./FLOW_PROMPTING_EXAMPLES.md)** - Advanced chaining and orchestration
-- **[Demo Reports](../demos/README.md)** - Real-world tool usage examples
+- **[Demo Reports](../../demos/README.md)** - Real-world tool usage examples
 
 For more information about specific tools, see the main [README.md](../README.md).
-
-<!-- AUTO-GENERATED FOOTER - DO NOT EDIT -->
-
----
-
-<div align="center">
-
-<!-- Navigation Grid -->
-<table>
-  <tr>
-    <td align="center" width="33%">
-      <strong>📚 User Guides</strong><br/>
-      <a href="./AI_INTERACTION_TIPS.md">AI Interaction Tips</a><br/>
-      <a href="./PROMPTING_HIERARCHY.md">Prompting Hierarchy</a><br/>
-      <a href="./AGENT_RELATIVE_CALLS.md">Agent Patterns</a><br/>
-      <a href="./FLOW_PROMPTING_EXAMPLES.md">Flow Prompting</a>
-    </td>
-    <td align="center" width="33%">
-      <strong>🛠️ Developer Docs</strong><br/>
-      <a href="./CLEAN_CODE_INITIATIVE.md">Clean Code</a><br/>
-      <a href="./ERROR_HANDLING.md">Error Handling</a><br/>
-      <a href="./TECHNICAL_IMPROVEMENTS.md">Tech Improvements</a>
-    </td>
-    <td align="center" width="33%">
-      <strong>📖 Reference</strong><br/>
-      <a href="./REFERENCES.md">References</a><br/>
-      <a href="./BRIDGE_CONNECTORS.md">Architecture</a><br/>
-      <a href="../demos/README.md">Demos</a>
-    </td>
-  </tr>
-</table>
-
-<!-- Back to Top -->
-<p>
-  <a href="#top">⬆️ Back to Top</a>
-</p>
-
-<details>
-<summary><strong>📚 Related Documentation</strong></summary>
-
-<br>
-
-**User Guides:**
-
-- [Prompting Hierarchy](./PROMPTING_HIERARCHY.md) - Understanding prompt levels
-- [Agent-Relative Patterns](./AGENT_RELATIVE_CALLS.md) - Tool orchestration workflows
-- [Flow-Based Prompting](./FLOW_PROMPTING_EXAMPLES.md) - Multi-step workflows
-
-**Developer Resources:**
-
-- [Complete Tools Reference](./TOOLS_REFERENCE.md) - All 27 tools documented
-- [Contributing Guidelines](../CONTRIBUTING.md) - How to contribute
-- [Documentation Index](./README.md) - Complete documentation
-
-</details>
-
-<div align="center">
-
-<sub>
-  <strong>MCP AI Agent Guidelines</strong> • Made with ❤️ by <a href="https://github.com/Anselmoo">@Anselmoo</a> and contributors<br/>
-  Licensed under <a href="../LICENSE">MIT</a> • <a href="../DISCLAIMER.md">Disclaimer</a> • <a href="../CONTRIBUTING.md">Contributing</a>
-</sub>
-
-</div>
 
 <!-- FOOTER:START -->
 ![Footer](../.frames-static/09-footer.svg)

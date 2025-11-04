@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](./.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # Error Handling
 
 > Best practices for error handling, validation, and graceful degradation
@@ -457,3 +461,8 @@ async function loadResource(id: string) {
 ## Conclusion
 
 Proper error handling with typed errors, comprehensive validation, and graceful degradation ensures the MCP server provides clear, actionable feedback and maintains reliability even when things go wrong. Always validate inputs, provide context in errors, and handle failures gracefully.
+---
+
+<!-- FOOTER:START -->
+![Footer](./.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

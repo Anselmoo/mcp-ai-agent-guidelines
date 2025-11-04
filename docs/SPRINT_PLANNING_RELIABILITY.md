@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](./.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # Sprint Planning Reliability
 
 > Dependency-aware timeline calculation and agile planning optimization
@@ -468,3 +472,8 @@ Recommendation: Improve task parallelization
 ## Conclusion
 
 The Sprint Timeline Calculator provides realistic, dependency-aware sprint planning that helps teams create achievable plans, identify bottlenecks, and optimize delivery schedules. By accounting for team capacity, task dependencies, and real-world constraints, it produces reliable timelines that teams can confidently commit to.
+---
+
+<!-- FOOTER:START -->
+![Footer](./.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

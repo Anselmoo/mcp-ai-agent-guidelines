@@ -16,7 +16,7 @@
 <summary><strong>📚 Related Documentation</strong></summary>
 
 - [Design & Workflow Tools](./README.md#design-and-workflow-tools)
-- [Design Module Status](../DESIGN_MODULE_STATUS.md)
+- [Design Module Status](../tips/DESIGN_MODULE_STATUS.md)
 - [Mermaid Diagram Examples](../MERMAID_DIAGRAM_EXAMPLES.md)
 - [AI Interaction Tips](../AI_INTERACTION_TIPS.md)
 
@@ -33,10 +33,6 @@
 - [Mermaid Examples](#mermaid-examples)
 
 ---
-
-**[← Back to Tools](./README.md)** • **[📚 Documentation](../README.md)** • **[�� Home](../../README.md)**
-
-<sub>Part of **[MCP AI Agent Guidelines](../../README.md)** • Licensed under **[MIT](../../LICENSE)** • © 2025</sub>
 
 <!-- FOOTER:START -->
 ![Footer](../.frames-static/09-footer.svg)

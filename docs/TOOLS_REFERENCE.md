@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](./.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # Tools Reference
 
 > Complete reference for all 27+ MCP tools with examples and best practices
@@ -83,7 +87,7 @@ Calculates comprehensive 0-100 quality score across multiple dimensions.
 - Documentation: 10 points
 - Security: 5 points
 
-See: [Clean Code Initiative](./CLEAN_CODE_INITIATIVE.md)
+See: [Clean Code Initiative](./tips/CLEAN_CODE_INITIATIVE.md)
 
 #### Code Hygiene Analyzer
 
@@ -407,7 +411,7 @@ if (result.score < threshold) {
 - [AI Interaction Tips](./AI_INTERACTION_TIPS.md) - Effective tool usage
 - [Prompting Hierarchy Guide](./PROMPTING_HIERARCHY.md) - Prompt levels
 - [Flow Prompting Examples](./FLOW_PROMPTING_EXAMPLES.md) - Workflow patterns
-- [Clean Code Initiative](./CLEAN_CODE_INITIATIVE.md) - Quality standards
+- [Clean Code Initiative](./tips/CLEAN_CODE_INITIATIVE.md) - Quality standards
 - [Complete Documentation](./README.md) - Full documentation index
 
 ## Conclusion
@@ -415,3 +419,8 @@ if (result.score < threshold) {
 This MCP server provides a comprehensive toolkit for AI-assisted development, from prompt engineering to code quality analysis to strategic planning. By understanding each tool's capabilities and combining them effectively, you can build sophisticated AI workflows that improve code quality, accelerate development, and enhance decision-making.
 
 For detailed documentation on each tool, see the [complete documentation index](./README.md).
+---
+
+<!-- FOOTER:START -->
+![Footer](./.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

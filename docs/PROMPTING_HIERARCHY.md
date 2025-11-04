@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](./.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # Prompting Hierarchy Guide
 
 > Understanding prompt levels and evaluation for effective AI agent interaction
@@ -411,3 +415,8 @@ const prompt = await hierarchicalPromptBuilder({
 ## Conclusion
 
 The prompting hierarchy provides a framework for choosing the right level of guidance for any task. By understanding these levels and using the evaluation tools, you can craft more effective prompts that balance autonomy with precision.
+---
+
+<!-- FOOTER:START -->
+![Footer](./.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

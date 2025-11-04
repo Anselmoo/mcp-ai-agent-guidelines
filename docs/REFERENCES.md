@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](./.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # References
 
 > Credits, research papers, and citations for the MCP AI Agent Guidelines project
@@ -11,14 +15,17 @@ This document provides attribution and references for the research, frameworks, 
 ### Prompting & AI Interaction
 
 1. **Chain-of-Thought Prompting**
+
    - Wei et al., "Chain-of-Thought Prompting Elicits Reasoning in Large Language Models" (2022)
    - arXiv: 2201.11903
 
 2. **Tree of Thoughts**
+
    - Yao et al., "Tree of Thoughts: Deliberate Problem Solving with Large Language Models" (2023)
    - arXiv: 2305.10601
 
 3. **ReAct: Reasoning and Acting**
+
    - Yao et al., "ReAct: Synergizing Reasoning and Acting in Language Models" (2023)
    - arXiv: 2210.03629
 
@@ -29,9 +36,11 @@ This document provides attribution and references for the research, frameworks, 
 ### Code Analysis & Quality
 
 1. **Static Analysis Techniques**
+
    - Ayewah et al., "Using Static Analysis to Find Bugs" (IEEE Software, 2008)
 
 2. **Test Coverage Metrics**
+
    - Zhu et al., "Software Unit Test Coverage and Adequacy" (ACM Computing Surveys, 1997)
 
 3. **Code Smells & Refactoring**
@@ -42,16 +51,20 @@ This document provides attribution and references for the research, frameworks, 
 ### Strategy Frameworks
 
 1. **SWOT Analysis**
+
    - Learned et al., "Mapping the Future" (1969)
    - Classic strategic planning framework
 
 2. **Porter's Five Forces**
+
    - Porter, Michael E., "How Competitive Forces Shape Strategy" (Harvard Business Review, 1979)
 
 3. **Balanced Scorecard**
+
    - Kaplan & Norton, "The Balanced Scorecard" (Harvard Business Review, 1992)
 
 4. **Blue Ocean Strategy**
+
    - Kim & Mauborgne, "Blue Ocean Strategy" (2005)
 
 5. **VRIO Framework**
@@ -60,6 +73,7 @@ This document provides attribution and references for the research, frameworks, 
 ### Agile & Planning
 
 1. **Scrum Framework**
+
    - Schwaber & Sutherland, "The Scrum Guide" (2020)
 
 2. **Kanban Method**
@@ -70,13 +84,16 @@ This document provides attribution and references for the research, frameworks, 
 ### Inspirations
 
 1. **Serena** - Semantic code analysis and project onboarding patterns
+
    - Influenced: Semantic analyzer bridge, project onboarding tool
 
 2. **Model Context Protocol (MCP)** by Anthropic
+
    - Foundation for server architecture
-   - [https://modelcontextprotocol.io](https://modelcontextprotocol.io)
+   - <https://modelcontextprotocol.io>
 
 3. **TypeScript Language Server**
+
    - Patterns for semantic code analysis
 
 4. **ESLint & Biome**
@@ -85,19 +102,22 @@ This document provides attribution and references for the research, frameworks, 
 ### Tools & Libraries
 
 1. **Zod** - Schema validation
-   - [https://zod.dev](https://zod.dev)
+
+   - <https://zod.dev>
 
 2. **Vitest** - Testing framework
-   - [https://vitest.dev](https://vitest.dev)
+
+   - <https://vitest.dev>
 
 3. **Mermaid** - Diagram generation
-   - [https://mermaid.js.org](https://mermaid.js.org)
+   - <https://mermaid.js.org>
 
 ## Standards & Guidelines
 
 ### Security
 
 1. **OWASP Top 10**
+
    - Open Web Application Security Project
    - [https://owasp.org/www-project-top-ten/](https://owasp.org/www-project-top-ten/)
 
@@ -145,6 +165,7 @@ This document provides attribution and references for the research, frameworks, 
 ### Blogs & Articles
 
 Referenced patterns and ideas from:
+
 - Kent C. Dodds (Testing best practices)
 - Martin Fowler (Refactoring, architecture)
 - Eric Evans (Domain-Driven Design)
@@ -154,7 +175,7 @@ Referenced patterns and ideas from:
 ### This Project
 
 - **License**: MIT
-- **Copyright**: © 2024 MCP AI Agent Guidelines Contributors
+- **Copyright**: © 2025 MCP AI Agent Guidelines Contributors
 
 ### Third-Party Licenses
 
@@ -188,9 +209,14 @@ For additions or corrections, please submit a pull request or open an issue.
 ## Related Documentation
 
 - [README](../README.md) - Project overview
-- [CONTRIBUTING](../CONTRIBUTING.md) - Contribution guidelines
+- [CONTRIBUTING](../../CONTRIBUTING.md) - Contribution guidelines
 - [CHANGELOG](../CHANGELOG.md) - Version history
 
 ---
 
-*Thank you to all researchers, framework creators, and open source contributors whose work made this project possible.*
+_Thank you to all researchers, framework creators, and open source contributors whose work made this project possible._
+---
+
+<!-- FOOTER:START -->
+![Footer](./.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

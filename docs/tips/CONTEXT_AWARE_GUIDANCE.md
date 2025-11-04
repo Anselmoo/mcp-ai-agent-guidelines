@@ -371,52 +371,9 @@ To extend language or framework support:
 2. Add detection patterns to `detectLanguage()` or `detectFramework()`
 3. Add tests to `tests/vitest/design-assistant-context-aware.test.ts`
 
-See [CONTRIBUTING.md](../CONTRIBUTING.md) for details.
-
-<!-- AUTO-GENERATED FOOTER - DO NOT EDIT -->
+See [CONTRIBUTING.md](../../CONTRIBUTING.md) for details.
 
 ---
-
-<div align="center">
-
-<!-- Navigation Grid -->
-<table>
-  <tr>
-    <td align="center" width="33%">
-      <strong>📖 References</strong><br/>
-      <a href="./REFERENCES.md">Credits & Research</a><br/>
-      <a href="./SERENA_STRATEGIES.md">Serena Integration</a><br/>
-      <a href="./CONTEXT_AWARE_GUIDANCE.md">Context Guidance</a>
-    </td>
-    <td align="center" width="33%">
-      <strong>🏗️ Architecture</strong><br/>
-      <a href="./BRIDGE_CONNECTORS.md">Bridge Connectors</a><br/>
-      <a href="./design-module-status.md">Module Status</a><br/>
-      <a href="./TECHNICAL_IMPROVEMENTS.md">Improvements</a>
-    </td>
-    <td align="center" width="33%">
-      <strong>🚀 Get Started</strong><br/>
-      <a href="../README.md">Main README</a><br/>
-      <a href="./AI_INTERACTION_TIPS.md">Interaction Tips</a><br/>
-      <a href="../demos/README.md">Demo Examples</a>
-    </td>
-  </tr>
-</table>
-
-<!-- Back to Top -->
-<p>
-  <a href="#top">⬆️ Back to Top</a>
-</p>
----
-
-<details>
-<summary><strong>📚 Related Documentation</strong></summary>
-
-- [Design Assistant](./AI_INTERACTION_TIPS.md#design-assistant)
-- [Architecture Design Prompt Builder](./AI_INTERACTION_TIPS.md#architecture-design-prompt-builder)
-- [Design Module Status](./DESIGN_MODULE_STATUS.md)
-
-</details>
 
 <!-- FOOTER:START -->
 

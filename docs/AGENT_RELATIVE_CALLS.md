@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](./.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # Agent-Relative Call Patterns
 
 > Invoking tools in workflows and multi-agent systems
@@ -33,7 +37,7 @@ const step3 = await tool3({ input: step2.output });
 const [result1, result2, result3] = await Promise.all([
   tool1({ params1 }),
   tool2({ params2 }),
-  tool3({ params3 })
+  tool3({ params3 }),
 ]);
 ```
 
@@ -45,7 +49,9 @@ const [result1, result2, result3] = await Promise.all([
 const workflow = await promptChainingBuilder({
   chainName: "sequential-workflow",
   executionStrategy: "sequential",
-  steps: [/* steps */]
+  steps: [
+    /* steps */
+  ],
 });
 ```
 
@@ -54,8 +60,12 @@ const workflow = await promptChainingBuilder({
 ```typescript
 const workflow = await promptFlowBuilder({
   flowName: "conditional-workflow",
-  nodes: [/* nodes */],
-  edges: [/* with conditions */]
+  nodes: [
+    /* nodes */
+  ],
+  edges: [
+    /* with conditions */
+  ],
 });
 ```
 
@@ -80,7 +90,7 @@ const coordinator = {
     const design = await designAgent.design(analysis);
     const code = await codingAgent.implement(design);
     return code;
-  }
+  },
 };
 ```
 
@@ -88,12 +98,10 @@ const coordinator = {
 
 ```typescript
 // Pipeline
-const result = await pipelineExecutor([
-  requirementsAgent,
-  designAgent,
-  implementationAgent,
-  testingAgent
-], initialInput);
+const result = await pipelineExecutor(
+  [requirementsAgent, designAgent, implementationAgent, testingAgent],
+  initialInput
+);
 ```
 
 **Swarm Pattern**: Agents work in parallel
@@ -103,7 +111,7 @@ const result = await pipelineExecutor([
 const results = await Promise.all([
   frontendAgent.build(spec),
   backendAgent.build(spec),
-  databaseAgent.build(spec)
+  databaseAgent.build(spec),
 ]);
 ```
 
@@ -149,7 +157,7 @@ const workflowState = {
   currentPhase: "design",
   completedSteps: [],
   pendingSteps: ["implementation", "testing"],
-  artifacts: {}
+  artifacts: {},
 };
 ```
 
@@ -162,7 +170,7 @@ logger.info({
   tool: "design-assistant",
   action: "start-session",
   params: { goal: "..." },
-  timestamp: new Date()
+  timestamp: new Date(),
 });
 ```
 
@@ -175,19 +183,19 @@ async function buildFeature(requirements) {
   // Analysis
   const analysis = await semanticCodeAnalyzer({
     codeContent: existingCode,
-    analysisType: "all"
+    analysisType: "all",
   });
 
   // Design
   const design = await designAssistant({
     action: "start-session",
-    config: { goal: requirements }
+    config: { goal: requirements },
   });
 
   // Implementation planning
   const timeline = await sprintTimelineCalculator({
     tasks: design.tasks,
-    teamSize: 3
+    teamSize: 3,
   });
 
   return { analysis, design, timeline };
@@ -230,7 +238,7 @@ async function comprehensiveAudit(codebase) {
     cleanCodeScorer({ projectPath: codebase }),
     securityHardeningPromptBuilder({ codeContext: codebase }),
     iterativeCoverageEnhancer({ projectPath: codebase }),
-    codeHygieneAnalyzer({ codeContent: codebase })
+    codeHygieneAnalyzer({ codeContent: codebase }),
   ]);
 
   return {
@@ -238,7 +246,12 @@ async function comprehensiveAudit(codebase) {
     security,
     coverage,
     hygiene,
-    overallHealth: calculateOverallHealth({ quality, security, coverage, hygiene })
+    overallHealth: calculateOverallHealth({
+      quality,
+      security,
+      coverage,
+      hygiene,
+    }),
   };
 }
 ```
@@ -252,3 +265,11 @@ async function comprehensiveAudit(codebase) {
 ## Conclusion
 
 Agent-relative call patterns provide structured approaches for tool invocation, workflow orchestration, and multi-agent coordination. By following these patterns, you can build reliable, maintainable AI workflows.
+
+---
+
+<!-- FOOTER:START -->
+
+![Footer](../.frames-static/09-footer.svg)
+
+<!-- FOOTER:END -->

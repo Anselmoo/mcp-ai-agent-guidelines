@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](./.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # Bridge Connectors
 
 > Integration patterns for external systems and services
@@ -321,8 +325,13 @@ describe('SemanticAnalyzerBridge', () => {
 
 - [Project Onboarding](./tools/project-onboarding.md) - Using onboarding bridge
 - [Semantic Code Analyzer](./tools/semantic-code-analyzer.md) - Using analyzer bridge
-- [Error Handling](./ERROR_HANDLING.md) - Error patterns in bridges
+- [Error Handling](./tips/ERROR_HANDLING.md) - Error patterns in bridges
 
 ## Conclusion
 
 Bridge connectors provide clean, testable integration points for external systems. By following these patterns, you can integrate with language servers, build tools, and other services while maintaining loose coupling and high testability.
+---
+
+<!-- FOOTER:START -->
+![Footer](./.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

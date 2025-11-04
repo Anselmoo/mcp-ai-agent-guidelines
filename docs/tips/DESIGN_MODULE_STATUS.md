@@ -150,54 +150,8 @@ All modules maintain backwards compatibility through:
 ## Related Documentation
 
 - [Design Tools Overview](../README.md)
-- [Design Assistant Documentation](./design-module-status.md)
-  <!-- [MCP Design Framework](./design-framework.md) - File does not exist -->
-  <!-- [Test Coverage Report](../coverage/index.html) - Dynamic file, not in repository -->
-
-<!-- AUTO-GENERATED FOOTER - DO NOT EDIT -->
 
 ---
-
-<div align="center">
-
-<!-- Navigation Grid -->
-<table>
-  <tr>
-    <td align="center" width="33%">
-      <strong>📖 References</strong><br/>
-      <a href="./REFERENCES.md">Credits & Research</a><br/>
-      <a href="./SERENA_STRATEGIES.md">Serena Integration</a><br/>
-      <a href="./CONTEXT_AWARE_GUIDANCE.md">Context Guidance</a>
-    </td>
-    <td align="center" width="33%">
-      <strong>🏗️ Architecture</strong><br/>
-      <a href="./BRIDGE_CONNECTORS.md">Bridge Connectors</a><br/>
-      <a href="./design-module-status.md">Module Status</a><br/>
-      <a href="./TECHNICAL_IMPROVEMENTS.md">Improvements</a>
-    </td>
-    <td align="center" width="33%">
-      <strong>🚀 Get Started</strong><br/>
-      <a href="../README.md">Main README</a><br/>
-      <a href="./AI_INTERACTION_TIPS.md">Interaction Tips</a><br/>
-      <a href="../demos/README.md">Demo Examples</a>
-    </td>
-  </tr>
-</table>
-
-<!-- Back to Top -->
-<p>
-  <a href="#top">⬆️ Back to Top</a>
-</p>
----
-
-<details>
-<summary><strong>📚 Related Documentation</strong></summary>
-
-- [Design Assistant](./AI_INTERACTION_TIPS.md#design-assistant)
-- [Context-Aware Guidance](./CONTEXT_AWARE_GUIDANCE.md)
-- [Bridge Connectors](./BRIDGE_CONNECTORS.md)
-
-</details>
 
 <!-- FOOTER:START -->
 

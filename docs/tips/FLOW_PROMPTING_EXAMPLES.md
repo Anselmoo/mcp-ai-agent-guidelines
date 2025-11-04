@@ -717,46 +717,7 @@ await promptFlowBuilder({
 - [Flow-Based Programming](https://en.wikipedia.org/wiki/Flow-based_programming)
 - [Claude Flow GitHub](https://github.com/ruvnet/claude-flow)
 
-<!-- AUTO-GENERATED FOOTER - DO NOT EDIT -->
-
 ---
-
-<div align="center">
-
-<!-- Navigation Grid -->
-<table>
-  <tr>
-    <td align="center" width="33%">
-      <strong>📖 References</strong><br/>
-      <a href="./REFERENCES.md">Credits & Research</a><br/>
-      <a href="./SERENA_STRATEGIES.md">Serena Integration</a><br/>
-      <a href="./CONTEXT_AWARE_GUIDANCE.md">Context Guidance</a>
-    </td>
-    <td align="center" width="33%">
-      <strong>🏗️ Architecture</strong><br/>
-      <a href="./BRIDGE_CONNECTORS.md">Bridge Connectors</a><br/>
-      <a href="./design-module-status.md">Module Status</a><br/>
-      <a href="./TECHNICAL_IMPROVEMENTS.md">Improvements</a>
-    </td>
-    <td align="center" width="33%">
-      <strong>🚀 Get Started</strong><br/>
-      <a href="../README.md">Main README</a><br/>
-      <a href="./AI_INTERACTION_TIPS.md">Interaction Tips</a><br/>
-      <a href="../demos/README.md">Demo Examples</a>
-    </td>
-  </tr>
-</table>
-
-## <!-- Back to Top -->
-
-<details>
-<summary><strong>📚 Related Documentation</strong></summary>
-
-- [Prompting Hierarchy](./PROMPTING_HIERARCHY.md)
-- [Flow & Serena Integration](./FLOW_SERENA_INTEGRATION.md)
-- [AI Interaction Tips](./AI_INTERACTION_TIPS.md)
-
-</details>
 
 <!-- FOOTER:START -->
 

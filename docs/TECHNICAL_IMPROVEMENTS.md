@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](./.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # Technical Improvements
 
 > Refactoring and enhancement documentation
@@ -395,7 +399,7 @@ const symbols = await bridge.inspectSymbols(code);
 ## Related Resources
 
 - [Type Organization Extension](./TYPE_ORGANIZATION_EXTENSION.md) - TypeScript conventions
-- [Error Handling](./ERROR_HANDLING.md) - Error patterns
+- [Error Handling](./tips/ERROR_HANDLING.md) - Error patterns
 - [Bridge Connectors](./BRIDGE_CONNECTORS.md) - Bridge patterns
 
 ## Conclusion
@@ -403,3 +407,8 @@ const symbols = await bridge.inspectSymbols(code);
 These technical improvements have significantly enhanced the MCP server's maintainability, testability, and performance. Ongoing refactoring continues to improve code quality while maintaining backward compatibility.
 
 All improvements follow the project's core principles: type safety, modularity, testability, and developer experience.
+---
+
+<!-- FOOTER:START -->
+![Footer](./.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

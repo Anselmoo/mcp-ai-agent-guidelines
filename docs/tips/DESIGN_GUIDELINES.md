@@ -380,14 +380,9 @@ Potential scripts to maintain consistency:
 
 ## 📚 Related Documentation
 
-- [Visual Design Reference](./.templates/VISUAL_DESIGN_REFERENCE.md) - Color palettes, typography, spacing
-- [Template Config](./.templates/TEMPLATE_CONFIG.md) - Implementation details
-- [Design Overhaul Summary](./.templates/DESIGN_OVERHAUL_SUMMARY.md) - Historical context
 - [GitHub Brand Guidelines](https://primer.style/foundations/color) - Official source
 
 ---
-
-<sub>**MCP AI Agent Guidelines** • Design Guidelines v1.0 • Updated November 1, 2025</sub>
 
 <!-- FOOTER:START -->
 

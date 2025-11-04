@@ -22,10 +22,10 @@
 - **[Main README](../README.md)** - Project overview, installation, and quick start
 - **[Tools Reference](./TOOLS_REFERENCE.md)** - Complete reference for all 27 MCP tools ⭐
 - **[AI Interaction Tips](./tips/)** - Best practices for effective AI collaboration ⭐ **NEW**
-- **[Contributing Guidelines](../CONTRIBUTING.md)** - How to contribute to the project
+- **[Contributing Guidelines](../../CONTRIBUTING.md)** - How to contribute to the project
 - **[Disclaimer](../DISCLAIMER.md)** - Important information about external references
 
-> 💡 **Note for Contributors**: Internal development documentation (migration summaries, technical improvements) is located in [`docs/internal/`](./internal/README.md). This folder contains contributor-only content and is referenced in the [CHANGELOG](../CHANGELOG.md).
+> 💡 **Note for Contributors**: Internal development documentation (migration summaries, technical improvements) is located in [`docs/internal/`](./development/README.md). This folder contains contributor-only content and is referenced in the [CHANGELOG](../CHANGELOG.md).
 
 ### 👥 User Guides
 
@@ -40,15 +40,15 @@
 #### Advanced Techniques
 
 - **[Flow-Based Prompting](./FLOW_PROMPTING_EXAMPLES.md)** - Advanced chaining and orchestration strategies
-- **[Flow + Serena Integration](./FLOW_SERENA_INTEGRATION.md)** - Combining flow-based prompting with memory patterns
+- **[Flow + Serena Integration](./tips/FLOW_SERENA_INTEGRATION.md)** - Combining flow-based prompting with memory patterns
 - **[Serena Strategies](./SERENA_STRATEGIES.md)** - Effective agent strategies from Serena
 
 #### Specialized Tools
 
 - **[Mermaid Diagram Examples](./MERMAID_DIAGRAM_EXAMPLES.md)** - Visual diagram generation patterns
 - **[Context-Aware Guidance](./CONTEXT_AWARE_GUIDANCE.md)** - Contextual design guidance
-- **[Export Formats](./EXPORT_FORMATS.md)** - LaTeX, CSV, and JSON output options
-- **[Maintaining Models](./MAINTAINING_MODELS.md)** - YAML-based model configuration
+- **[Export Formats](./tips/EXPORT_FORMATS.md)** - LaTeX, CSV, and JSON output options
+- **[Maintaining Models](./tips/MAINTAINING_MODELS.md)** - YAML-based model configuration
 
 ### 👨‍💻 Developer Documentation
 
@@ -57,12 +57,12 @@
 #### Architecture & Design
 
 - **[Bridge Connectors](./BRIDGE_CONNECTORS.md)** - External system integration patterns
-- **[Design Module Status](./DESIGN_MODULE_STATUS.md)** - Design workflow orchestrator status
-- **[Error Handling](./ERROR_HANDLING.md)** - Error handling patterns and best practices
+- **[Design Module Status](./tips/DESIGN_MODULE_STATUS.md)** - Design workflow orchestrator status
+- **[Error Handling](./tips/ERROR_HANDLING.md)** - Error handling patterns and best practices
 
 #### Code Quality
 
-- **[Clean Code Initiative](./CLEAN_CODE_INITIATIVE.md)** - 100/100 quality scoring system
+- **[Clean Code Initiative](./tips/CLEAN_CODE_INITIATIVE.md)** - 100/100 quality scoring system
 - **[Code Quality Improvements](./CODE_QUALITY_IMPROVEMENTS.md)** - Ongoing quality enhancements
 - **[Sprint Planning Reliability](./SPRINT_PLANNING_RELIABILITY.md)** - Sprint calculation improvements
 
@@ -71,7 +71,7 @@
 **Additional resources and acknowledgments**
 
 - **[References & Acknowledgments](./REFERENCES.md)** - Credits and external resources
-- **[Demo Reports](../demos/README.md)** - Real-world tool usage examples
+- **[Demo Reports](../../demos/README.md)** - Real-world tool usage examples
 
 ---
 
@@ -82,7 +82,7 @@
 **...get started quickly**
 
 - Read the [Main README](../README.md)
-- Try the [Demo Reports](../demos/README.md)
+- Try the [Demo Reports](../../demos/README.md)
 - Learn [AI Interaction Tips](./AI_INTERACTION_TIPS.md)
 
 **...improve my prompting skills**
@@ -95,15 +95,15 @@
 **...use specific tools**
 
 - Generate diagrams: [Mermaid Examples](./MERMAID_DIAGRAM_EXAMPLES.md)
-- Check code quality: [Clean Code Initiative](./CLEAN_CODE_INITIATIVE.md)
+- Check code quality: [Clean Code Initiative](./tips/CLEAN_CODE_INITIATIVE.md)
 - Plan sprints: [Sprint Planning](./SPRINT_PLANNING_RELIABILITY.md)
-- Export data: [Export Formats](./EXPORT_FORMATS.md)
+- Export data: [Export Formats](./tips/EXPORT_FORMATS.md)
 
 **...contribute to the project**
 
-- Read [Contributing Guidelines](../CONTRIBUTING.md)
-- Review [Code Quality Standards](./CLEAN_CODE_INITIATIVE.md)
-- Check [Error Handling Patterns](./ERROR_HANDLING.md)
+- Read [Contributing Guidelines](../../CONTRIBUTING.md)
+- Review [Code Quality Standards](./tips/CLEAN_CODE_INITIATIVE.md)
+- Check [Error Handling Patterns](./tips/ERROR_HANDLING.md)
 - Understand [Architecture](./BRIDGE_CONNECTORS.md)
 
 ---

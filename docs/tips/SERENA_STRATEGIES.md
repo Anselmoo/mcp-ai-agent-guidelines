@@ -326,50 +326,7 @@ When adding new tools or strategies inspired by Serena:
 4. Update documentation
 5. Consider integration with existing tools
 
-<!-- AUTO-GENERATED FOOTER - DO NOT EDIT -->
-
 ---
-
-<div align="center">
-
-<!-- Navigation Grid -->
-<table>
-  <tr>
-    <td align="center" width="33%">
-      <strong>📖 References</strong><br/>
-      <a href="./REFERENCES.md">Credits & Research</a><br/>
-      <a href="./SERENA_STRATEGIES.md">Serena Integration</a><br/>
-      <a href="./CONTEXT_AWARE_GUIDANCE.md">Context Guidance</a>
-    </td>
-    <td align="center" width="33%">
-      <strong>🏗️ Architecture</strong><br/>
-      <a href="./BRIDGE_CONNECTORS.md">Bridge Connectors</a><br/>
-      <a href="./design-module-status.md">Module Status</a><br/>
-      <a href="./TECHNICAL_IMPROVEMENTS.md">Improvements</a>
-    </td>
-    <td align="center" width="33%">
-      <strong>🚀 Get Started</strong><br/>
-      <a href="../README.md">Main README</a><br/>
-      <a href="./AI_INTERACTION_TIPS.md">Interaction Tips</a><br/>
-      <a href="../demos/README.md">Demo Examples</a>
-    </td>
-  </tr>
-</table>
-
-<!-- Back to Top -->
-<p>
-  <a href="#top">⬆️ Back to Top</a>
-</p>
----
-
-<details>
-<summary><strong>📚 Related Documentation</strong></summary>
-
-- [Bridge Connectors](./BRIDGE_CONNECTORS.md)
-- [Flow & Serena Integration](./FLOW_SERENA_INTEGRATION.md)
-- [Context-Aware Guidance](./CONTEXT_AWARE_GUIDANCE.md)
-
-</details>
 
 <!-- FOOTER:START -->
 

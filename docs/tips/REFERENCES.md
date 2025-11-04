@@ -154,7 +154,7 @@ Serena's approach to semantic code analysis, project onboarding, and mode-based 
 **Related Documentation:**
 
 - [SERENA_STRATEGIES.md](./SERENA_STRATEGIES.md) - Serena-inspired strategies overview
-- [SERENA_INTEGRATION_SUMMARY.md](./SERENA_INTEGRATION_SUMMARY.md) - Integration summary
+- [SERENA_INTEGRATION_SUMMARY.md](./SERENA_STRATEGIES.md) - Integration summary
 
 ### [@upstash/context7](https://github.com/upstash/context7)
 
@@ -228,42 +228,8 @@ This project evolves rapidly alongside the AI ecosystem. We commit to:
 
 ---
 
-For questions about specific references or to suggest additions, please [open an issue](https://github.com/Anselmoo/mcp-ai-agent-guidelines/issues) or see [CONTRIBUTING.md](../CONTRIBUTING.md).
+For questions about specific references or to suggest additions, please [open an issue](https://github.com/Anselmoo/mcp-ai-agent-guidelines/issues) or see [CONTRIBUTING.md](../../CONTRIBUTING.md).
 
-<!-- AUTO-GENERATED FOOTER - DO NOT EDIT -->
-
----
-
-<div align="center">
-
-<!-- Navigation Grid -->
-<table>
-  <tr>
-    <td align="center" width="33%">
-      <strong>📖 References</strong><br/>
-      <a href="./REFERENCES.md">Credits & Research</a><br/>
-      <a href="./SERENA_STRATEGIES.md">Serena Integration</a><br/>
-      <a href="./CONTEXT_AWARE_GUIDANCE.md">Context Guidance</a>
-    </td>
-    <td align="center" width="33%">
-      <strong>🏗️ Architecture</strong><br/>
-      <a href="./BRIDGE_CONNECTORS.md">Bridge Connectors</a><br/>
-      <a href="./design-module-status.md">Module Status</a><br/>
-      <a href="./TECHNICAL_IMPROVEMENTS.md">Improvements</a>
-    </td>
-    <td align="center" width="33%">
-      <strong>🚀 Get Started</strong><br/>
-      <a href="../README.md">Main README</a><br/>
-      <a href="./AI_INTERACTION_TIPS.md">Interaction Tips</a><br/>
-      <a href="../demos/README.md">Demo Examples</a>
-    </td>
-  </tr>
-</table>
-
-<!-- Back to Top -->
-<p>
-  <a href="#top">⬆️ Back to Top</a>
-</p>
 ---
 
 <!-- FOOTER:START -->

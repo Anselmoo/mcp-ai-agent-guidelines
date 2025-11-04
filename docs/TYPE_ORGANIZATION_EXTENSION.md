@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](./.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # Type Organization Extension
 
 > TypeScript conventions and type system organization patterns
@@ -407,7 +411,7 @@ expectType<User>({ id: '123', email: 'test@example.com', name: 'Test' });
 ## Related Resources
 
 - [Technical Improvements](./TECHNICAL_IMPROVEMENTS.md) - Refactoring patterns
-- [Error Handling](./ERROR_HANDLING.md) - Error type patterns
+- [Error Handling](./tips/ERROR_HANDLING.md) - Error type patterns
 - [Code Quality](./CODE_QUALITY_IMPROVEMENTS.md) - TypeScript best practices
 
 ## Conclusion
@@ -420,3 +424,8 @@ Key principles:
 - Prefer `unknown` over `any`
 - Document complex types
 - Test type definitions
+---
+
+<!-- FOOTER:START -->
+![Footer](./.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

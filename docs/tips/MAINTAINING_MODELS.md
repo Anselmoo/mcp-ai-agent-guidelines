@@ -256,53 +256,11 @@ Complete example of adding "Claude Sonnet 5":
 
 If you need assistance:
 
-1. Check the [CONTRIBUTING.md](../CONTRIBUTING.md) guide
+1. Check the [CONTRIBUTING.md](../../CONTRIBUTING.md) guide
 2. Review existing model entries for reference
 3. Open an issue on GitHub with the "documentation" label
 
-<!-- AUTO-GENERATED FOOTER - DO NOT EDIT -->
-
 ---
-
-<div align="center">
-
-<!-- Navigation Grid -->
-<table>
-  <tr>
-    <td align="center" width="33%">
-      <strong>📖 References</strong><br/>
-      <a href="./REFERENCES.md">Credits & Research</a><br/>
-      <a href="./SERENA_STRATEGIES.md">Serena Integration</a><br/>
-      <a href="./CONTEXT_AWARE_GUIDANCE.md">Context Guidance</a>
-    </td>
-    <td align="center" width="33%">
-      <strong>🏗️ Architecture</strong><br/>
-      <a href="./BRIDGE_CONNECTORS.md">Bridge Connectors</a><br/>
-      <a href="./design-module-status.md">Module Status</a><br/>
-      <a href="./TECHNICAL_IMPROVEMENTS.md">Improvements</a>
-    </td>
-    <td align="center" width="33%">
-      <strong>🚀 Get Started</strong><br/>
-      <a href="../README.md">Main README</a><br/>
-      <a href="./AI_INTERACTION_TIPS.md">Interaction Tips</a><br/>
-      <a href="../demos/README.md">Demo Examples</a>
-    </td>
-  </tr>
-</table>
-
-<!-- Back to Top -->
-<p>
-  <a href="#top">⬆️ Back to Top</a>
-</p>
----
-
-<details>
-<summary><strong>📚 Related Documentation</strong></summary>
-
-- [Model Compatibility Checker](./AI_INTERACTION_TIPS.md#model-compatibility-checker)
-- [Tools Reference](./TOOLS_REFERENCE.md)
-
-</details>
 
 <!-- FOOTER:START -->
 

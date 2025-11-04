@@ -119,8 +119,6 @@ For complete parameter schemas, examples, and best practices:
 
 **Navigation**: [📁 Docs Home](../README.md) • [💡 Tips](../tips/) • [ℹ️ About](../about/)
 
-
-
 <!-- AUTO-GENERATED INTERACTIVE FOOTER - DO NOT EDIT -->
 <iframe
     src="https://raw.githubusercontent.com/Anselmoo/mcp-ai-agent-guidelines/main/docs/.frames-interactive/footer-tools-README.html"

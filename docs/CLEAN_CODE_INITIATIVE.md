@@ -1,3 +1,7 @@
+<!-- HEADER:START -->
+![Header](./.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
 # Clean Code Initiative
 
 > Quality standards and 100/100 scoring system for maintainable, professional codebases
@@ -447,7 +451,7 @@ Overall Trend: ↗ +12 points this quarter
 
 - [Code Quality Improvements](./CODE_QUALITY_IMPROVEMENTS.md) - Detailed improvement strategies
 - [Iterative Coverage Enhancer](./tools/iterative-coverage-enhancer.md) - Test coverage tool
-- [Code Hygiene Analyzer](./tools/code-hygiene-analyzer.md) - Hygiene analysis
+- [Code Hygiene Analyzer](../tools/code-hygiene-analyzer.md) - Hygiene analysis
 - [AI Interaction Tips](./AI_INTERACTION_TIPS.md) - Using quality tools effectively
 
 ## Conclusion
@@ -455,3 +459,8 @@ Overall Trend: ↗ +12 points this quarter
 The Clean Code Initiative provides a structured, measurable approach to code quality. By establishing clear standards, automating checks, and tracking progress, teams can systematically improve and maintain high-quality codebases that are easier to understand, test, and evolve.
 
 **Goal**: 100/100 scoring for all production code. Quality is not optional—it's the foundation of sustainable software development.
+---
+
+<!-- FOOTER:START -->
+![Footer](./.frames-static/09-footer.svg)
+<!-- FOOTER:END -->

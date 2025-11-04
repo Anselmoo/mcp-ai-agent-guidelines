@@ -2,15 +2,6 @@
 ![Header](docs/.frames-static/09-header.svg)
 <!-- HEADER:END -->
 
-<!-- AUTO-GENERATED INTERACTIVE HEADER - DO NOT EDIT -->
-<iframe
-    src="https://raw.githubusercontent.com/Anselmoo/mcp-ai-agent-guidelines/main/docs/.frames-interactive/header-CHANGELOG.html"
-    style="width: 100%; height: 120px; border: none; display: block; margin: 0; padding: 0;"
-    title="Interactive Header"
-    loading="lazy"
-    sandbox="allow-scripts allow-same-origin"
-></iframe>
-<!-- END AUTO-GENERATED INTERACTIVE HEADER -->
 
 # Changelog
 
@@ -26,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **AI Interaction Tips** (`docs/AI_INTERACTION_TIPS.md`) - Comprehensive guide for asking targeted questions to better utilize specialized tools
 - **Documentation Index** (`docs/README.md`) - Complete documentation TOC with organized categories
 - **Tools Reference** (`docs/TOOLS_REFERENCE.md`) - Complete reference for all 27 MCP tools with examples
-- **Internal Development Docs** (`docs/internal/`) - Internal documentation for contributors (migration summaries, technical improvements, refactoring notes). See [docs/internal/README.md](./docs/internal/README.md)
+- **Internal Development Docs** (`docs/internal/`) - Internal documentation for contributors (migration summaries, technical improvements, refactoring notes). See [docs/internal/README.md](./docs/development/README.md)
 - **Category-Based Template System** - 4 categories (User Guides, Developer Docs, Reference, Specialized Tools) with distinct color schemes
   - Purple/Pink gradient for User Guides (`BD93F9`,`FF79C6`,`8BE9FD`,`50FA7B`)
   - Green/Cyan gradient for Developer Docs (`50FA7B`,`8BE9FD`,`FFB86C`,`FF79C6`)
@@ -129,3 +120,12 @@ For detailed history before v0.7.0, see the [Git commit history](https://github.
 <!-- FOOTER:START -->
 ![Footer](docs/.frames-static/09-footer.svg)
 <!-- FOOTER:END -->
+
+---
+
+<div align="center">
+<sub>
+Made with ❤️ by <a href="https://github.com/Anselmoo">@Anselmoo</a> and contributors<br/>
+Licensed under <a href="./LICENSE">MIT</a> • <a href="./DISCLAIMER.md">Disclaimer</a>
+</sub>
+</div>

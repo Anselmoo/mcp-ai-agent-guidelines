@@ -128,7 +128,7 @@ Our visual design is inspired by modern open source best practices and contempor
 - **Gitlines** - Branching/merging visualization concepts
 - **Community Examples** - Scalar, Asciinema, awesome-readme
 
-**Note**: We use design principles as inspiration without explicit branding or copying. See **[Visual Design Reference](./internal/VISUAL_DESIGN_REFERENCE.md)** for details.
+**Note**: We use design principles as inspiration without explicit branding or copying. See **[Visual Design Reference](../development/VISUAL_DESIGN_REFERENCE.md)** for details.
 
 ---
 
