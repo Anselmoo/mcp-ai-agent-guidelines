@@ -451,7 +451,7 @@ Overall Trend: ↗ +12 points this quarter
 
 - [Code Quality Improvements](./CODE_QUALITY_IMPROVEMENTS.md) - Detailed improvement strategies
 - [Iterative Coverage Enhancer](./tools/iterative-coverage-enhancer.md) - Test coverage tool
-- [Code Hygiene Analyzer](../tools/code-hygiene-analyzer.md) - Hygiene analysis
+- Code Hygiene Analyzer - Hygiene analysis (see [Tools Reference](./TOOLS_REFERENCE.md))
 - [AI Interaction Tips](./AI_INTERACTION_TIPS.md) - Using quality tools effectively
 
 ## Conclusion

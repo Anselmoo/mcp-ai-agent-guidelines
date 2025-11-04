@@ -270,6 +270,6 @@ Agent-relative call patterns provide structured approaches for tool invocation, 
 
 <!-- FOOTER:START -->
 
-![Footer](../.frames-static/09-footer.svg)
+![Footer](./.frames-static/09-footer.svg)
 
 <!-- FOOTER:END -->

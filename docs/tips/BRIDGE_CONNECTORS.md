@@ -365,5 +365,5 @@ const strategy = await strategyFrameworksBuilder({
 ---
 
 <!-- FOOTER:START -->
-![Footer](../../.frames-static/09-footer.svg)
+![Footer](../.frames-static/09-footer.svg)
 <!-- FOOTER:END -->

@@ -209,7 +209,7 @@ For additions or corrections, please submit a pull request or open an issue.
 ## Related Documentation
 
 - [README](../README.md) - Project overview
-- [CONTRIBUTING](../../CONTRIBUTING.md) - Contribution guidelines
+- [CONTRIBUTING](../CONTRIBUTING.md) - Contribution guidelines
 - [CHANGELOG](../CHANGELOG.md) - Version history
 
 ---

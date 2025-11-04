@@ -548,10 +548,10 @@ console.log(`Improved by ${improvement} points in 6 weeks`);
 
 ## Related Resources
 
-- [Clean Code Initiative](./tips/CLEAN_CODE_INITIATIVE.md) - Quality standards
-- [Iterative Coverage Enhancer](./tools/iterative-coverage-enhancer.md) - Coverage tool
-- [Code Hygiene Analyzer](../tools/code-hygiene-analyzer.md) - Hygiene analysis
-- [Semantic Code Analyzer](./tools/semantic-code-analyzer.md) - Deep code analysis
+- [Clean Code Initiative](./CLEAN_CODE_INITIATIVE.md) - Quality standards
+- Iterative Coverage Enhancer - Coverage tool (see [Tools Reference](./TOOLS_REFERENCE.md))
+- Code Hygiene Analyzer - Hygiene analysis (see [Tools Reference](./TOOLS_REFERENCE.md))
+- Semantic Code Analyzer - Deep code analysis (see [Tools Reference](./TOOLS_REFERENCE.md))
 
 ## Conclusion
 

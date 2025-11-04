@@ -234,8 +234,8 @@ When making similar improvements:
 For more information, see:
 
 - [Contributing Guidelines](../../CONTRIBUTING.md)
-- [Error Handling Guide](./tips/ERROR_HANDLING.md)
-- [Clean Code Initiative](./tips/CLEAN_CODE_INITIATIVE.md)
+- [Error Handling Guide](../ERROR_HANDLING.md)
+- [Clean Code Initiative](../CLEAN_CODE_INITIATIVE.md)
 
 <!-- FOOTER:START -->
 ![Footer](../.frames-static/09-footer.svg)

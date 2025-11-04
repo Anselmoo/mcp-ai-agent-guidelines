@@ -45,7 +45,7 @@ Agent-relative calls are natural language patterns in prompts that:
 From the [GitHub MCP documentation](https://docs.github.com/en/copilot/tutorials/enhance-agent-mode-with-mcp):
 
 ```markdown
-I need to make our customer portal WCAG 2.1 AA compliant. Use the Figma MCP to analyze our design specifications at https://figma.com/design/DESIGN-FILE-FOR-ACCESSIBILITY-SPECS?node-id=NODE_ID for accessibility requirements. Also use the GitHub MCP to find open GitHub issues with the labels accessibility or WCAG in the customer-portal repository.
+I need to make our customer portal WCAG 2.1 AA compliant. Use the Figma MCP to analyze our design specifications at https://github.com/GLips/Figma-Context-MCP for accessibility requirements. Also use the GitHub MCP to find open GitHub issues with the labels accessibility or WCAG in the customer-portal repository.
 ```
 
 This demonstrates:
