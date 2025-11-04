@@ -32,6 +32,7 @@ For comprehensive development guidelines when using GitHub Copilot or other AI c
 - For new releases, use the [Release Setup Issue Form](.github/ISSUE_TEMPLATE/release-setup.yml)
 - The form enables automation and ensures all version updates are captured
 - Maintainers will handle the actual release process after form submission
+---
 
 <!-- FOOTER:START -->
 ![Footer](docs/.frames-static/09-footer.svg)

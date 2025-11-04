@@ -104,28 +104,8 @@ For detailed history before v0.7.0, see the [Git commit history](https://github.
 [Unreleased]: https://github.com/Anselmoo/mcp-ai-agent-guidelines/compare/v0.8.0...HEAD
 [0.8.0]: https://github.com/Anselmoo/mcp-ai-agent-guidelines/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/Anselmoo/mcp-ai-agent-guidelines/releases/tag/v0.7.0
-
-
-
-<!-- AUTO-GENERATED INTERACTIVE FOOTER - DO NOT EDIT -->
-<iframe
-    src="https://raw.githubusercontent.com/Anselmoo/mcp-ai-agent-guidelines/main/docs/.frames-interactive/footer-CHANGELOG.html"
-    style="width: 100%; height: 80px; border: none; display: block; margin: 0; padding: 0;"
-    title="Interactive Footer"
-    loading="lazy"
-    sandbox="allow-scripts allow-same-origin"
-></iframe>
-<!-- END AUTO-GENERATED INTERACTIVE FOOTER -->
+---
 
 <!-- FOOTER:START -->
 ![Footer](docs/.frames-static/09-footer.svg)
 <!-- FOOTER:END -->
-
----
-
-<div align="center">
-<sub>
-Made with ❤️ by <a href="https://github.com/Anselmoo">@Anselmoo</a> and contributors<br/>
-Licensed under <a href="./LICENSE">MIT</a> • <a href="./DISCLAIMER.md">Disclaimer</a>
-</sub>
-</div>
