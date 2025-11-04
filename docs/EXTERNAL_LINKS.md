@@ -4,11 +4,11 @@
 
 # External Links Report
 
-Generated: 2025-11-04T21:27:47.642Z
+Generated: 2025-11-04T21:32:58.560Z
 
 ## Summary
 
-- **Total Links**: 1548
+- **Total Links**: 1547
 - **Unique Domains**: 117
 
 ## Links by Domain
@@ -484,9 +484,9 @@ Generated: 2025-11-04T21:27:47.642Z
 
 ### brand.github.com
 
-135 links found
+134 links found
 
-- [https://brand.github.com/foundations/color-](https://brand.github.com/foundations/color-)
+- [https://brand.github.com/foundations/color](https://brand.github.com/foundations/color)
   - File: `docs/.frames-static/DESIGN_CATALOG.md`
 
 - [https://brand.github.com/motion-identity/motion-guidelines-](https://brand.github.com/motion-identity/motion-guidelines-)
@@ -570,7 +570,7 @@ Generated: 2025-11-04T21:27:47.642Z
 - [https://brand.github.com/graphic-elements/shapes](https://brand.github.com/graphic-elements/shapes)
   - File: `footer-header.prompt.md`
 
-- [https://brand.github.com/graphic-elements/iconography,](https://brand.github.com/graphic-elements/iconography,)
+- [https://brand.github.com/graphic-elements/iconography](https://brand.github.com/graphic-elements/iconography)
   - File: `footer-header.prompt.md`
 
 - [https://brand.github.com/graphic-elements/mascots](https://brand.github.com/graphic-elements/mascots)
@@ -583,9 +583,6 @@ Generated: 2025-11-04T21:27:47.642Z
   - File: `footer-header.prompt.md`
 
 - [https://brand.github.com](https://brand.github.com)
-  - File: `footer-header.prompt.md`
-
-- [https://brand.github.com/graphic-elements/iconography](https://brand.github.com/graphic-elements/iconography)
   - File: `footer-header.prompt.md`
 
 - [https://brand.github.com/foundations/typography](https://brand.github.com/foundations/typography)

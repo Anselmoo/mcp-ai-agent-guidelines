@@ -219,7 +219,8 @@ Content here...
 
 **Animations**:
 
-- **Colors**: https://brand.github.com/foundations/color- `heart-beat`: Central heart pulses (2s ease-in-out infinite)
+- **Colors**: https://brand.github.com/foundations/color
+- `heart-beat`: Central heart pulses (2s ease-in-out infinite)
 
 - **Motion**: https://brand.github.com/motion-identity/motion-guidelines- `gitline-flow`: Connections flow outward (6s linear infinite)
 
