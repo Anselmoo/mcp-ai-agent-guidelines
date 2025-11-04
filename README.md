@@ -87,22 +87,22 @@ Configuration is in `.mlc_config.json`. Ignored patterns and retries are configu
 
 ### Getting Started Guides
 
-- **[🎯 AI Interaction Tips](./docs/AI_INTERACTION_TIPS.md)** - Learn to ask targeted questions for better results
-- **[📊 Prompting Hierarchy](./docs/PROMPTING_HIERARCHY.md)** - Understanding prompt levels and evaluation
-- **[🔗 Agent-Relative Call Patterns](./docs/AGENT_RELATIVE_CALLS.md)** - Invoking tools in workflows
+- **[🎯 AI Interaction Tips](./docs/tips/AI_INTERACTION_TIPS.md)** - Learn to ask targeted questions for better results
+- **[📊 Prompting Hierarchy](./docs/tips/PROMPTING_HIERARCHY.md)** - Understanding prompt levels and evaluation
+- **[🔗 Agent-Relative Call Patterns](./docs/tips/AGENT_RELATIVE_CALLS.md)** - Invoking tools in workflows
 
 ### Advanced Features
 
-- **[🌊 Flow-Based Prompting](./docs/FLOW_PROMPTING_EXAMPLES.md)** - Multi-step prompt workflows
-- **[🎨 Mermaid Diagram Generation](./docs/MERMAID_DIAGRAM_EXAMPLES.md)** - Create flowcharts, sequences, ER diagrams
-- **[🔍 Code Quality Analysis](./docs/CODE_QUALITY_IMPROVEMENTS.md)** - Hygiene scoring and best practices
-- **[⚡ Sprint Planning](./docs/SPRINT_PLANNING_RELIABILITY.md)** - Dependency-aware timeline calculation
+- **[🌊 Flow-Based Prompting](./docs/tips/FLOW_PROMPTING_EXAMPLES.md)** - Multi-step prompt workflows
+- **[🎨 Mermaid Diagram Generation](./docs/tips/MERMAID_DIAGRAM_EXAMPLES.md)** - Create flowcharts, sequences, ER diagrams
+- **[🔍 Code Quality Analysis](./docs/tips/CODE_QUALITY_IMPROVEMENTS.md)** - Hygiene scoring and best practices
+- **[⚡ Sprint Planning](./docs/tips/SPRINT_PLANNING_RELIABILITY.md)** - Dependency-aware timeline calculation
 
 ### Integration & Reference
 
-- **[🏗️ Bridge Connectors](./docs/BRIDGE_CONNECTORS.md)** - Integration patterns for external systems
-- **[🔄 Serena Integration](./docs/SERENA_STRATEGIES.md)** - Semantic analysis strategies
-- **[📚 Complete Reference](./docs/REFERENCES.md)** - Credits, research papers, and citations
+- **[🏗️ Bridge Connectors](./docs/tips/BRIDGE_CONNECTORS.md)** - Integration patterns for external systems
+- **[🔄 Serena Integration](./docs/tips/SERENA_STRATEGIES.md)** - Semantic analysis strategies
+- **[📚 Complete Reference](./docs/tips/REFERENCES.md)** - Credits, research papers, and citations
 
 See **[docs/README.md](./docs/README.md)** for the complete documentation index.
 
@@ -110,19 +110,19 @@ See **[docs/README.md](./docs/README.md)** for the complete documentation index.
 
 #### For Users
 
-- **[🎯 AI Interaction Tips](./docs/AI_INTERACTION_TIPS.md)** - Learn to ask targeted questions for better results
-- **[📊 Prompting Hierarchy](./docs/PROMPTING_HIERARCHY.md)** - Understanding prompt levels and evaluation
-- **[🔗 Agent-Relative Call Patterns](./docs/AGENT_RELATIVE_CALLS.md)** - Invoking tools in workflows
-- **[🌊 Flow-Based Prompting](./docs/FLOW_PROMPTING_EXAMPLES.md)** - Advanced chaining strategies
+- **[🎯 AI Interaction Tips](./docs/tips/AI_INTERACTION_TIPS.md)** - Learn to ask targeted questions for better results
+- **[📊 Prompting Hierarchy](./docs/tips/PROMPTING_HIERARCHY.md)** - Understanding prompt levels and evaluation
+- **[🔗 Agent-Relative Call Patterns](./docs/tips/AGENT_RELATIVE_CALLS.md)** - Invoking tools in workflows
+- **[🌊 Flow-Based Prompting](./docs/tips/FLOW_PROMPTING_EXAMPLES.md)** - Advanced chaining strategies
 - **[🎨 Mermaid Diagrams](./docs/tips/MERMAID_DIAGRAM_EXAMPLES.md)** - Visual diagram generation
 
 #### For Developers
 
 - **[🤝 Contributing Guidelines](./CONTRIBUTING.md)** - How to contribute
-- **[✨ Clean Code Initiative](./docs/CLEAN_CODE_INITIATIVE.md)** - Quality standards (100/100 scoring)
-- **[� Technical Improvements](./docs/TECHNICAL_IMPROVEMENTS.md)** - Refactoring and enhancements
-- **[⚠️ Error Handling](./docs/ERROR_HANDLING.md)** - Best practices
-- **[🏗️ Bridge Connectors](./docs/BRIDGE_CONNECTORS.md)** - Integration patterns
+- **[✨ Clean Code Initiative](./docs/tips/CLEAN_CODE_INITIATIVE.md)** - Quality standards (100/100 scoring)
+- **[🔧 Technical Improvements](./docs/tips/TECHNICAL_IMPROVEMENTS.md)** - Refactoring and enhancements
+- **[⚠️ Error Handling](./docs/tips/ERROR_HANDLING.md)** - Best practices
+- **[🏗️ Bridge Connectors](./docs/tips/BRIDGE_CONNECTORS.md)** - Integration patterns
 
 See the **[complete documentation](./docs/README.md)** for the full list of guides organized by topic.
 
