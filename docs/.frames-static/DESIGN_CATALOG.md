@@ -150,7 +150,7 @@ docs/.frames-static/
 
 .text-primary { fill: #f0f6fc; }      /* Almost white, not pure */## Pair 3: Design Assistant Workflow
 
-.text-secondary { fill: #8b949e; }    /* Gray */
+.text-secondary { fill: #c9d1d9; }    /* Gray */
 
 .accent-green { fill: #5FED83; }      /* GitHub green */**Files**: `03-design-assistant-header.svg`, `03-design-assistant-footer.svg`
 
@@ -172,7 +172,7 @@ docs/.frames-static/
 
 .text-primary { fill: #24292f; }      /* Almost black, not pure */
 
-.text-secondary { fill: #57606a; }    /* Gray */**Animations**:
+.text-secondary { fill: #1f2328; }    /* Gray */**Animations**:
 
 .accent-green { fill: #08872B; }      /* Darker green */- `phase-flow`: Gitline animates left-to-right (8s linear infinite)
 
