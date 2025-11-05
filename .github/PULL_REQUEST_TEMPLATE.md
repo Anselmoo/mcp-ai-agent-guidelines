@@ -23,18 +23,18 @@ Remove any sections that are not applicable.
 
 ## 🔗 Related Issues
 <!-- Link to related issues. Use keywords to auto-close issues when merged -->
-Fixes #
-Relates to #
+Fixes #issue_number
+Relates to #issue_number
 
 ## 📋 Changes Made
 <!-- Provide a detailed list of changes -->
 ### Core Changes
--
--
+- Description of primary change
+- Description of another core change
 
 ### Additional Changes
--
--
+- Description of additional change
+- Description of another additional change
 
 ## 🧪 Testing
 <!-- Describe the testing you've done -->
@@ -46,9 +46,9 @@ Relates to #
 
 ### Testing Steps
 <!-- How did you verify your changes? -->
-1.
-2.
-3.
+1. Describe first testing step
+2. Describe second testing step
+3. Describe third testing step
 
 ## ✅ Quality Checklist
 <!-- Ensure all checks pass before requesting review -->
@@ -82,8 +82,8 @@ Relates to #
 
 ## 🔍 Review Focus Areas
 <!-- Guide reviewers on what to pay attention to -->
--
--
+- Area or component that needs special review attention
+- Specific concern or implementation detail to review
 
 ## ⚠️ Breaking Changes
 <!-- If this PR includes breaking changes, describe them and migration steps -->
@@ -92,13 +92,13 @@ Relates to #
 ## 📎 Additional Context
 <!-- Any other information that reviewers should know -->
 ### Implementation Notes
--
+- Important implementation detail or decision
 
 ### Known Issues/Limitations
--
+- Known limitation or edge case
 
 ### Future Improvements
--
+- Potential future enhancement
 
 ## 🚀 Deployment Notes
 <!-- Special considerations for deployment -->
