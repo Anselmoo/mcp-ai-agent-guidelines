@@ -10,16 +10,16 @@
 
 [![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../README.md)
 [![Documentation](https://img.shields.io/badge/📚-Documentation-blue?style=flat-square)](./README.md)
-[![Technical Guide](https://img.shields.io/badge/Type-Technical_Guide-purple?style=flat-square)](#)
+[![Technical Guide](https://img.shields.io/badge/Type-Technical_Guide-purple?style=flat-square)](./README.md#documentation-index)
 
 <details>
 <summary><strong>📍 Quick Navigation</strong></summary>
 
 **Related Guides:**
 
-- [Serena Strategies](#serena-strategies)
-- [Bridge Connectors](#bridge-connectors)
-- [Documentation Index](#documentation-index)
+- [Serena Strategies](./SERENA_STRATEGIES.md)
+- [Bridge Connectors](./BRIDGE_CONNECTORS.md)
+- [Documentation Index](../README.md#documentation-index)
 
 </details>
 

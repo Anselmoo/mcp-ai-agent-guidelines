@@ -10,16 +10,16 @@
 
 [![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../README.md)
 [![Documentation](https://img.shields.io/badge/📚-Documentation-blue?style=flat-square)](./README.md)
-[![User Guide](https://img.shields.io/badge/Type-User_Guide-purple?style=flat-square)](#)
+[![User Guide](https://img.shields.io/badge/Type-User_Guide-purple?style=flat-square)](./README.md#documentation-index)
 
 <details>
 <summary><strong>📍 Quick Navigation</strong></summary>
 
 **Related Guides:**
 
-- [AI Interaction Tips](#ai-interaction-tips)
-- [Mode Switcher](#mode-switcher)
-- [Documentation Index](#documentation-index)
+- [AI Interaction Tips](./AI_INTERACTION_TIPS.md)
+- [Mode Switcher](./TOOLS_REFERENCE.md#mode-switcher)
+- [Documentation Index](../README.md#documentation-index)
 
 </details>
 
