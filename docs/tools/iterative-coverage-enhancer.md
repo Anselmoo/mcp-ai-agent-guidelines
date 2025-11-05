@@ -16,9 +16,9 @@
 <summary><strong>📚 Related Documentation</strong></summary>
 
 - [All Code Analysis Tools](./README.md#code-analysis-tools)
-- [Clean Code Initiative](../CLEAN_CODE_INITIATIVE.md)
-- [Code Quality Improvements](../CODE_QUALITY_IMPROVEMENTS.md)
-- [AI Interaction Tips](../AI_INTERACTION_TIPS.md)
+- [Clean Code Initiative](../tips/CLEAN_CODE_INITIATIVE.md)
+- [Code Quality Improvements](../tips/CODE_QUALITY_IMPROVEMENTS.md)
+- [AI Interaction Tips](../tips/AI_INTERACTION_TIPS.md)
 
 </details>
 
@@ -29,8 +29,8 @@
 ## Related Documentation
 
 - [All Code Analysis Tools](./README.md#code-analysis)
-- [Clean Code Initiative](#clean-code-initiative)
-- [Code Quality Improvements](#code-quality-improvements)
+- [Clean Code Initiative](../tips/CLEAN_CODE_INITIATIVE.md)
+- [Code Quality Improvements](../tips/CODE_QUALITY_IMPROVEMENTS.md)
 
 ---
 

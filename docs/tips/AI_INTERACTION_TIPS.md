@@ -1,5 +1,7 @@
 <!-- HEADER:START -->
+
 ![Header](../.frames-static/09-header.svg)
+
 <!-- HEADER:END -->
 
 # AI Interaction Tips
@@ -8,7 +10,7 @@
 
 [![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../README.md)
 [![Documentation](https://img.shields.io/badge/📚-Documentation-blue?style=flat-square)](./README.md)
-[![User Guide](https://img.shields.io/badge/Type-User_Guide-purple?style=flat-square)](#)
+[![User Guide](https://img.shields.io/badge/Type-User_Guide-purple?style=flat-square)](./README.md#documentation-index)
 
 <details>
 <summary><strong>📍 Quick Navigation</strong></summary>
@@ -310,8 +312,8 @@ Think about what you want to achieve, then reverse-engineer the question:
 This repository includes comprehensive demo files showing tool usage:
 
 - Check `demos/` directory for real examples
-- Review `docs/AGENT_RELATIVE_CALLS.md` for workflow patterns
-- See `docs/FLOW_PROMPTING_EXAMPLES.md` for advanced chaining
+- Review `docs/tips/AGENT_RELATIVE_CALLS.md` for workflow patterns
+- See `docs/tips/FLOW_PROMPTING_EXAMPLES.md` for advanced chaining
 
 ### Iterate and Refine
 
@@ -346,5 +348,7 @@ By following these patterns, you'll unlock the full power of the MCP AI Agent Gu
 For more information about specific tools, see the main [README.md](../README.md).
 
 <!-- FOOTER:START -->
+
 ![Footer](../.frames-static/09-footer.svg)
+
 <!-- FOOTER:END -->

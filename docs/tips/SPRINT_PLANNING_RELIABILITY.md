@@ -10,16 +10,16 @@
 
 [![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../README.md)
 [![Documentation](https://img.shields.io/badge/📚-Documentation-blue?style=flat-square)](./README.md)
-[![Technical Guide](https://img.shields.io/badge/Type-Technical_Guide-purple?style=flat-square)](#)
+[![Technical Guide](https://img.shields.io/badge/Type-Technical_Guide-purple?style=flat-square)](./README.md#documentation-index)
 
 <details>
 <summary><strong>📍 Quick Navigation</strong></summary>
 
 **Related Guides:**
 
-- [Sprint Timeline Calculator](#sprint-timeline-calculator)
-- [Documentation Index](#documentation-index)
-- [Contributing](#contributing)
+- [Sprint Timeline Calculator](./TOOLS_REFERENCE.md#sprint-timeline-calculator)
+- [Documentation Index](../README.md#documentation-index)
+- [Contributing](../../CONTRIBUTING.md)
 
 </details>
 

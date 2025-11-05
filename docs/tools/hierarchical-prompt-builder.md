@@ -314,10 +314,10 @@ graph LR
 <summary><strong>📚 Related Documentation</strong></summary>
 
 - [All Prompt Builders](./README.md#prompt-builders)
-- [Prompting Hierarchy Guide](../PROMPTING_HIERARCHY.md)
+- [Prompting Hierarchy Guide](../tips/PROMPTING_HIERARCHY.md)
 - [Domain-Neutral Prompt Builder](./domain-neutral-prompt-builder.md)
 - [Prompt Flow Builder](./prompt-flow-builder.md)
-- [AI Interaction Tips](../AI_INTERACTION_TIPS.md)
+- [AI Interaction Tips](../tips/AI_INTERACTION_TIPS.md)
 
 </details>
 
@@ -328,8 +328,8 @@ graph LR
 ## Related Documentation
 
 - [All Prompt Builders Tools](./README.md#prompt-builders)
-- [Prompting Hierarchy](#prompting-hierarchy)
-- [Flow Prompting Examples](#flow-prompting-examples)
+- [Prompting Hierarchy](../tips/PROMPTING_HIERARCHY.md)
+- [Flow Prompting Examples](../tips/FLOW_PROMPTING_EXAMPLES.md)
 
 ---
 

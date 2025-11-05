@@ -10,16 +10,16 @@
 
 [![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../README.md)
 [![Documentation](https://img.shields.io/badge/📚-Documentation-blue?style=flat-square)](./README.md)
-[![User Guide](https://img.shields.io/badge/Type-User_Guide-purple?style=flat-square)](#)
+[![User Guide](https://img.shields.io/badge/Type-User_Guide-purple?style=flat-square)](./README.md#documentation-index)
 
 <details>
 <summary><strong>📍 Quick Navigation</strong></summary>
 
 **Related Guides:**
 
-- [Mermaid Diagram Generator](#mermaid-diagram-generator)
-- [Documentation Index](#documentation-index)
-- [Contributing](#contributing)
+- [Mermaid Diagram Generator](./TOOLS_REFERENCE.md#mermaid-diagram-generator)
+- [Documentation Index](../README.md#documentation-index)
+- [Contributing](../../CONTRIBUTING.md)
 
 </details>
 

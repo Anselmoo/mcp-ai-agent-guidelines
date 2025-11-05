@@ -1,7 +1,8 @@
 <!-- HEADER:START -->
-![Header](docs/.frames-static/09-header.svg)
-<!-- HEADER:END -->
 
+![Header](docs/.frames-static/09-header.svg)
+
+<!-- HEADER:END -->
 
 # Changelog
 
@@ -14,9 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **AI Interaction Tips** (`docs/AI_INTERACTION_TIPS.md`) - Comprehensive guide for asking targeted questions to better utilize specialized tools
+- **AI Interaction Tips** (`docs/tips/AI_INTERACTION_TIPS.md`) - Comprehensive guide for asking targeted questions to better utilize specialized tools
 - **Documentation Index** (`docs/README.md`) - Complete documentation TOC with organized categories
-- **Tools Reference** (`docs/TOOLS_REFERENCE.md`) - Complete reference for all 27 MCP tools with examples
+- **Tools Reference** (`docs/tips/TOOLS_REFERENCE.md`) - Complete reference for all 27 MCP tools with examples
 - **Internal Development Docs** (`docs/internal/`) - Internal documentation for contributors (migration summaries, technical improvements, refactoring notes). See [docs/internal/README.md](./docs/development/README.md)
 - **Category-Based Template System** - 4 categories (User Guides, Developer Docs, Reference, Specialized Tools) with distinct color schemes
   - Purple/Pink gradient for User Guides (`BD93F9`,`FF79C6`,`8BE9FD`,`50FA7B`)
@@ -103,9 +104,11 @@ For detailed history before v0.7.0, see the [Git commit history](https://github.
 
 [Unreleased]: https://github.com/Anselmoo/mcp-ai-agent-guidelines/compare/v0.8.0...HEAD
 [0.8.0]: https://github.com/Anselmoo/mcp-ai-agent-guidelines/compare/v0.7.0...v0.8.0
-[0.7.0]: https://github.com/Anselmoo/mcp-ai-agent-guidelines/releases/tag/v0.7.0
----
+
+## [0.7.0]: https://github.com/Anselmoo/mcp-ai-agent-guidelines/releases/tag/v0.7.0
 
 <!-- FOOTER:START -->
+
 ![Footer](docs/.frames-static/09-footer.svg)
+
 <!-- FOOTER:END -->

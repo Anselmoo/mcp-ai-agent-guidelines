@@ -10,16 +10,16 @@
 
 [![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../README.md)
 [![Documentation](https://img.shields.io/badge/📚-Documentation-blue?style=flat-square)](./README.md)
-[![User Guide](https://img.shields.io/badge/Type-User_Guide-purple?style=flat-square)](#)
+[![User Guide](https://img.shields.io/badge/Type-User_Guide-purple?style=flat-square)](./README.md#documentation-index)
 
 <details>
 <summary><strong>📍 Quick Navigation</strong></summary>
 
 **Related Guides:**
 
-- [Prompt Flow Builder](#prompt-flow-builder)
-- [Prompt Chaining Builder](#prompt-chaining-builder)
-- [Documentation Index](#documentation-index)
+- [Prompt Flow Builder](./TOOLS_REFERENCE.md#prompt-flow-builder)
+- [Prompt Chaining Builder](./TOOLS_REFERENCE.md#prompt-chaining-builder)
+- [Documentation Index](../README.md#documentation-index)
 
 </details>
 

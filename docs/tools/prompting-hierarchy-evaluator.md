@@ -16,9 +16,9 @@
 <summary><strong>📚 Related Documentation</strong></summary>
 
 - [All Utility Tools](./README.md#utilities)
-- [Prompting Hierarchy Guide](../PROMPTING_HIERARCHY.md)
-- [Context-Aware Guidance](../CONTEXT_AWARE_GUIDANCE.md)
-- [AI Interaction Tips](../AI_INTERACTION_TIPS.md)
+- [Prompting Hierarchy Guide](../tips/PROMPTING_HIERARCHY.md)
+- [Context-Aware Guidance](../tips/CONTEXT_AWARE_GUIDANCE.md)
+- [AI Interaction Tips](../tips/AI_INTERACTION_TIPS.md)
 
 </details>
 
@@ -29,8 +29,8 @@
 ## Related Documentation
 
 - [All Utilities Tools](./README.md#utilities)
-- [Documentation Index](#documentation-index)
-- [AI Interaction Tips](#ai-interaction-tips)
+- [Documentation Index](../README.md#documentation-index)
+- [AI Interaction Tips](../tips/AI_INTERACTION_TIPS.md)
 
 ---
 

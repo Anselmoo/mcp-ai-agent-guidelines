@@ -10,16 +10,16 @@
 
 [![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../README.md)
 [![Documentation](https://img.shields.io/badge/📚-Documentation-blue?style=flat-square)](./README.md)
-[![Technical Guide](https://img.shields.io/badge/Type-Technical_Guide-purple?style=flat-square)](#)
+[![Technical Guide](https://img.shields.io/badge/Type-Technical_Guide-purple?style=flat-square)](./README.md#documentation-index)
 
 <details>
 <summary><strong>📍 Quick Navigation</strong></summary>
 
 **Related Guides:**
 
-- [Documentation Index](#documentation-index)
-- [Code Quality Improvements](#code-quality-improvements)
-- [Contributing](#contributing)
+- [Documentation Index](../README.md#documentation-index)
+- [Code Quality Improvements](./CODE_QUALITY_IMPROVEMENTS.md)
+- [Contributing](../../CONTRIBUTING.md)
 
 </details>
 
@@ -359,14 +359,14 @@ The following files have been updated to use the new error handling:
 
 **User Guides:**
 
-- [AI Interaction Tips](../AI_INTERACTION_TIPS.md)
-- [Prompting Hierarchy](../PROMPTING_HIERARCHY.md)
-- [Agent Patterns](../AGENT_RELATIVE_CALLS.md)
-- [Flow Prompting](../FLOW_PROMPTING_EXAMPLES.md)
+- [AI Interaction Tips](./AI_INTERACTION_TIPS.md)
+- [Prompting Hierarchy](./PROMPTING_HIERARCHY.md)
+- [Agent Patterns](./AGENT_RELATIVE_CALLS.md)
+- [Flow Prompting](./FLOW_PROMPTING_EXAMPLES.md)
 
 **Developer Resources:**
 
-- [Tools Reference](../TOOLS_REFERENCE.md)
+- [Tools Reference](./TOOLS_REFERENCE.md)
 - [Contributing Guidelines](../../CONTRIBUTING.md)
 - [Documentation Index](../README.md)
 

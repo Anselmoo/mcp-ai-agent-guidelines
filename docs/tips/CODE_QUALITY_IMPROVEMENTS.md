@@ -10,16 +10,16 @@
 
 [![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../README.md)
 [![Documentation](https://img.shields.io/badge/📚-Documentation-blue?style=flat-square)](./README.md)
-[![Technical Guide](https://img.shields.io/badge/Type-Technical_Guide-purple?style=flat-square)](#)
+[![Technical Guide](https://img.shields.io/badge/Type-Technical_Guide-purple?style=flat-square)](#code-quality-evaluation-improvements)
 
 <details>
 <summary><strong>📍 Quick Navigation</strong></summary>
 
 **Related Guides:**
 
-- [Clean Code Initiative](../CLEAN_CODE_INITIATIVE.md)
-- Clean Code Scorer (see [Tools Reference](../TOOLS_REFERENCE.md))
-- Code Hygiene Analyzer (see [Tools Reference](../TOOLS_REFERENCE.md))
+- [Clean Code Initiative](./CLEAN_CODE_INITIATIVE.md)
+- Clean Code Scorer (see [Tools Reference](./TOOLS_REFERENCE.md))
+- Code Hygiene Analyzer (see [Tools Reference](./TOOLS_REFERENCE.md))
 
 </details>
 

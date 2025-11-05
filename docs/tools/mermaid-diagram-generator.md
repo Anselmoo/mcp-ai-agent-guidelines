@@ -17,8 +17,8 @@
 
 - [Design & Workflow Tools](./README.md#design-and-workflow-tools)
 - [Design Module Status](../tips/DESIGN_MODULE_STATUS.md)
-- [Mermaid Diagram Examples](../MERMAID_DIAGRAM_EXAMPLES.md)
-- [AI Interaction Tips](../AI_INTERACTION_TIPS.md)
+- [Mermaid Diagram Examples](../tips/MERMAID_DIAGRAM_EXAMPLES.md)
+- [AI Interaction Tips](../tips/AI_INTERACTION_TIPS.md)
 
 </details>
 
@@ -29,8 +29,8 @@
 ## Related Documentation
 
 - [All Design Workflow Tools](./README.md#design-workflow)
-- [Design Module Status](#design-module-status)
-- [Mermaid Examples](#mermaid-examples)
+- [Design Module Status](../tips/DESIGN_MODULE_STATUS.md)
+- [Mermaid Examples](../tips/MERMAID_DIAGRAM_EXAMPLES.md)
 
 ---
 
