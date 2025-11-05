@@ -2,16 +2,19 @@ name: 📚 Documentation Issue
 description: Report issues with documentation, guides, or examples
 title: "📚 [DOCS] - [Brief description]"
 labels: ["documentation", "needs-review"]
-projects: []
 assignees: []
 
 body:
   - type: markdown
     attributes:
       value: |
-        ## Documentation Issue Form
+        ## 📚 Documentation Issue Form
 
-        Help us improve our documentation! This form is for reporting issues with existing documentation or requesting new documentation.
+        **Help us improve our documentation!** Clear documentation is essential for a great developer experience.
+
+        Use this form to report issues with existing documentation or request new documentation.
+
+        > **Note:** This form is compatible with GitHub Copilot for automated issue creation.
 
   - type: dropdown
     id: documentation_type
