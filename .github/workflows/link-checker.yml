@@ -94,6 +94,9 @@ jobs:
             --exclude 'https://httpbin.org'
             --exclude 'https://api.example.com'
             --exclude 'https://github.com/.*/pkgs/container/.*'
+            --exclude 'https://platform\.openai\.com/docs/models'
+            --exclude 'https://www\.pmi\.org/learning/library/scope-statements-3399'
+            --exclude 'https://online\.hbs\.edu/blog/post/strategy-frameworks-and-tools'
             '**/*.md'
             'src/**/*.ts'
           fail: true
