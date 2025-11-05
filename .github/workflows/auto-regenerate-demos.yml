@@ -38,17 +38,19 @@ jobs:
 
       - name: Install gitleaks
         run: |
-          curl -sSL https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks-linux-amd64 -o /usr/local/bin/gitleaks
-          chmod +x /usr/local/bin/gitleaks
+          curl -sSL https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks-linux-amd64 -o gitleaks
+          chmod +x gitleaks
+          sudo mv gitleaks /usr/local/bin/gitleaks
 
       - name: Install lefthook
         run: npm run hooks:install
 
       - name: Run lefthook pre-commit checks
+        id: lefthook_check
         run: npx lefthook run pre-commit --verbose
 
       - name: Generate quality check summary
-        if: always()
+        if: success()
         run: |
           echo "## 🪝 Lefthook Quality Check (Auto-Regenerate Workflow)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
