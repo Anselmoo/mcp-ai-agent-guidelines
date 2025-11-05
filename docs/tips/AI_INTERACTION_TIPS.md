@@ -1,5 +1,7 @@
 <!-- HEADER:START -->
+
 ![Header](../.frames-static/09-header.svg)
+
 <!-- HEADER:END -->
 
 # AI Interaction Tips
@@ -346,5 +348,7 @@ By following these patterns, you'll unlock the full power of the MCP AI Agent Gu
 For more information about specific tools, see the main [README.md](../README.md).
 
 <!-- FOOTER:START -->
+
 ![Footer](../.frames-static/09-footer.svg)
+
 <!-- FOOTER:END -->

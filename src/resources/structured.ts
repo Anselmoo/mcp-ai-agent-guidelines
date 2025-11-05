@@ -1345,7 +1345,7 @@ const chain = await promptChainingBuilder({
 					},
 					{
 						title: "Flow & Serena Integration Guide",
-						url: "https://github.com/Anselmoo/mcp-ai-agent-guidelines/blob/main/docs/FLOW_SERENA_INTEGRATION.md",
+						url: "https://github.com/Anselmoo/mcp-ai-agent-guidelines/blob/main/docs/tips/FLOW_SERENA_INTEGRATION.md",
 						source: "MCP AI Agent Guidelines",
 						note: "Comprehensive integration patterns and examples",
 					},

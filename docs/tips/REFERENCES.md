@@ -125,12 +125,12 @@ Claude Flow pioneered declarative flow-based prompting and dynamic orchestration
 
 - Inspired our `prompt-flow-builder` tool with branching, loops, and conditional logic
 - Informed our `prompt-chaining-builder` design
-- Guided integration of flow-based patterns with Serena-style memory management (see [FLOW_SERENA_INTEGRATION.md](./FLOW_SERENA_INTEGRATION.md))
+- Guided integration of flow-based patterns with Serena-style memory management (see [FLOW_SERENA_INTEGRATION.md](./tips/FLOW_SERENA_INTEGRATION.md))
 
 **Related Documentation:**
 
-- [FLOW_PROMPTING_EXAMPLES.md](./FLOW_PROMPTING_EXAMPLES.md) - Flow-based prompting examples
-- [FLOW_SERENA_INTEGRATION.md](./FLOW_SERENA_INTEGRATION.md) - Integration patterns
+- [FLOW_PROMPTING_EXAMPLES.md](./tips/FLOW_PROMPTING_EXAMPLES.md) - Flow-based prompting examples
+- [FLOW_SERENA_INTEGRATION.md](./tips/FLOW_SERENA_INTEGRATION.md) - Integration patterns
 
 ### [@oraios/serena](https://github.com/oraios/serena)
 
