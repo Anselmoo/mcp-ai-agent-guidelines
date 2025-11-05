@@ -94,6 +94,9 @@ jobs:
             --exclude 'https://httpbin.org'
             --exclude 'https://api.example.com'
             --exclude 'https://github.com/.*/pkgs/container/.*'
+            --exclude '^guidelines://.*'
+            --exclude '^github://.*'
+            --exclude '^file://.*'
             '**/*.md'
             'src/**/*.ts'
           fail: true
