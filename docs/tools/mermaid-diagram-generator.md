@@ -29,8 +29,8 @@
 ## Related Documentation
 
 - [All Design Workflow Tools](./README.md#design-workflow)
-- [Design Module Status](#design-module-status)
-- [Mermaid Examples](#mermaid-examples)
+- [Design Module Status](../tips/DESIGN_MODULE_STATUS.md)
+- [Mermaid Examples](../tips/MERMAID_DIAGRAM_EXAMPLES.md)
 
 ---
 

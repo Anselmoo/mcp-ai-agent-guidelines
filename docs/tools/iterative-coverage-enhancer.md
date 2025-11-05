@@ -29,8 +29,8 @@
 ## Related Documentation
 
 - [All Code Analysis Tools](./README.md#code-analysis)
-- [Clean Code Initiative](#clean-code-initiative)
-- [Code Quality Improvements](#code-quality-improvements)
+- [Clean Code Initiative](../tips/CLEAN_CODE_INITIATIVE.md)
+- [Code Quality Improvements](../tips/CODE_QUALITY_IMPROVEMENTS.md)
 
 ---
 

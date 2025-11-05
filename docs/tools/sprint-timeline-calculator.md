@@ -28,7 +28,7 @@
 ## Related Documentation
 
 - [All Strategy Planning Tools](./README.md#strategy-planning)
-- [Sprint Planning Reliability](#sprint-planning-reliability)
+- [Sprint Planning Reliability](../tips/SPRINT_PLANNING_RELIABILITY.md)
 
 ---
 

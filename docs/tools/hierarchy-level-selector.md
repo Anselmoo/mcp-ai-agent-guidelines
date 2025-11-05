@@ -31,8 +31,8 @@
 ## Related Documentation
 
 - [All Utilities Tools](./README.md#utilities)
-- [Documentation Index](#documentation-index)
-- [AI Interaction Tips](#ai-interaction-tips)
+- [Documentation Index](../README.md#documentation-index)
+- [AI Interaction Tips](../tips/AI_INTERACTION_TIPS.md)
 
 ---
 

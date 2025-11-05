@@ -29,8 +29,8 @@
 ## Related Documentation
 
 - [All Prompt Builders Tools](./README.md#prompt-builders)
-- [Prompting Hierarchy](#prompting-hierarchy)
-- [Flow Prompting Examples](#flow-prompting-examples)
+- [Prompting Hierarchy](../tips/PROMPTING_HIERARCHY.md)
+- [Flow Prompting Examples](../tips/FLOW_PROMPTING_EXAMPLES.md)
 
 ---
 
