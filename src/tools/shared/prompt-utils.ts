@@ -85,6 +85,7 @@ export function buildFrontmatter({
 // Policy: enforce allowed modes/models/tools and normalize casing
 const ALLOWED_MODES = new Set(["agent"]);
 const MODEL_ALIASES: Record<string, string> = {
+	"gpt-5": "GPT-5",
 	"gpt-4.1": "GPT-4.1",
 	"claude-4": "Claude-4",
 	"gemini-2.5": "Gemini-2.5",
@@ -216,6 +217,9 @@ export function applyExportFormat(
 	// Remove headers if requested (for chat outputs)
 	let processedContent = content;
 	if (!includeHeaders) {
+		// Remove YAML frontmatter block (lines between --- ... ---)
+		processedContent = processedContent.replace(/^---\n[\s\S]*?\n---\n*/m, "");
+
 		// Remove markdown headers (lines starting with #)
 		processedContent = processedContent
 			.split("\n")

@@ -22,7 +22,7 @@ const ArchitectureDesignPromptSchema = z.object({
 		.describe("Preferred or required technology stack"),
 	// Optional frontmatter controls
 	mode: z.enum(["agent", "tool", "workflow"]).optional().default("agent"),
-	model: z.string().optional().default("GPT-4.1"),
+	model: z.string().optional().default("GPT-5"),
 	tools: z
 		.array(z.string())
 		.optional()
