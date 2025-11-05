@@ -173,7 +173,7 @@
 
 
 
-  <text x="1160" y="43" text-anchor="end" class="link text-link" font-size="11px" opacity="0.9">© 2025</text>
+  <text x="1160" y="72" text-anchor="end" class="link text-link" font-size="11px" opacity="0.9">© 2025</text>
 
   <!-- Enhanced particle system -->
   <g opacity="0.6">
