@@ -1,20 +1,118 @@
-## Summary
-Briefly explain the changes and why they are needed.
+<!--
+Thank you for contributing to mcp-ai-agent-guidelines!
+Please fill out this template to help reviewers understand your changes.
+Remove any sections that are not applicable.
+-->
 
-## Changes
-- [ ] Code
-- [ ] Tests
-- [ ] Docs
-- [ ] CI/CD
+## 📝 Summary
+<!-- Provide a clear and concise description of the changes and why they are needed -->
 
-## Checklist
-- [ ] Biome checks pass (`npm run check`)
-- [ ] TypeScript passes (`npm run type-check`)
-- [ ] Tests pass locally (`npm run test:all`)
-- [ ] Updated README/docs as needed
 
-## Related Issues
+## 🎯 Change Type
+<!-- Check all that apply -->
+- [ ] 🐛 Bug fix (non-breaking change that fixes an issue)
+- [ ] ✨ New feature (non-breaking change that adds functionality)
+- [ ] 💥 Breaking change (fix or feature that would cause existing functionality to change)
+- [ ] 📚 Documentation update
+- [ ] 🔧 Refactoring (no functional changes)
+- [ ] ⚡ Performance improvement
+- [ ] 🧪 Test updates
+- [ ] 🔨 Build/CI/CD changes
+- [ ] 🎨 UI/UX improvements
+- [ ] 🔒 Security fix
+
+## 🔗 Related Issues
+<!-- Link to related issues. Use keywords to auto-close issues when merged -->
 Fixes #
+Relates to #
 
-## Notes
-Anything reviewers should know.
+## 📋 Changes Made
+<!-- Provide a detailed list of changes -->
+### Core Changes
+-
+-
+
+### Additional Changes
+-
+-
+
+## 🧪 Testing
+<!-- Describe the testing you've done -->
+### Test Coverage
+- [ ] Added new tests for new functionality
+- [ ] Updated existing tests
+- [ ] All tests pass locally (`npm run test:all`)
+- [ ] Manual testing completed
+
+### Testing Steps
+<!-- How did you verify your changes? -->
+1.
+2.
+3.
+
+## ✅ Quality Checklist
+<!-- Ensure all checks pass before requesting review -->
+### Code Quality
+- [ ] Biome checks pass (`npm run check`)
+- [ ] TypeScript compilation successful (`npm run type-check`)
+- [ ] No new linting errors or warnings
+- [ ] Code follows project conventions and style guide
+
+### Functionality
+- [ ] Changes work as expected
+- [ ] No breaking changes to existing functionality
+- [ ] Backward compatibility maintained (if applicable)
+- [ ] Error handling implemented appropriately
+
+### Documentation
+- [ ] Updated README.md (if applicable)
+- [ ] Updated relevant documentation
+- [ ] Added/updated code comments for complex logic
+- [ ] Updated CHANGELOG.md (if applicable)
+
+### Dependencies
+- [ ] No new dependencies added OR new dependencies justified below
+- [ ] Security check passed for new dependencies
+- [ ] Dependencies updated in package.json and package-lock.json
+
+## 📸 Screenshots/Recordings
+<!-- If applicable, add screenshots or recordings to demonstrate the changes -->
+<!-- For UI changes, before/after screenshots are required -->
+
+
+## 🔍 Review Focus Areas
+<!-- Guide reviewers on what to pay attention to -->
+-
+-
+
+## ⚠️ Breaking Changes
+<!-- If this PR includes breaking changes, describe them and migration steps -->
+
+
+## 📎 Additional Context
+<!-- Any other information that reviewers should know -->
+### Implementation Notes
+-
+
+### Known Issues/Limitations
+-
+
+### Future Improvements
+-
+
+## 🚀 Deployment Notes
+<!-- Special considerations for deployment -->
+- [ ] No special deployment steps required
+- [ ] Requires environment variable changes (document below)
+- [ ] Requires database migrations
+- [ ] Requires configuration updates
+
+### Deployment Steps
+<!-- If special deployment steps are needed -->
+
+
+---
+<!--
+By submitting this PR, you agree to the project's contribution guidelines
+and confirm that you have the right to contribute this code.
+-->
