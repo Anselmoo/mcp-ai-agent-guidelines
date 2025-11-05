@@ -1,17 +1,20 @@
 name: 🚀 Release Setup
 description: Create a new release and automate version updates
-title: "Release v[VERSION] - [RELEASE_TYPE]"
+title: "🚀 Release v[VERSION] - [RELEASE_TYPE]"
 labels: ["release", "automation"]
-projects: []
 assignees: []
 
 body:
   - type: markdown
     attributes:
       value: |
-        ## Release Setup Form
+        ## 🚀 Release Setup Form
 
-        Use this form to set up a new release and automate version updates in the repository. This form is designed to work with GitHub Copilot and automation tools to streamline the release process.
+        **Streamline your release process!** This form automates version updates and release preparation.
+
+        Use this to create a new release with automated version bumping, changelog generation, and deployment triggers.
+
+        > **Note:** This form is designed to work seamlessly with GitHub Copilot and automation workflows.
 
   - type: input
     id: version

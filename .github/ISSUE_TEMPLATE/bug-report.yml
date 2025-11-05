@@ -2,16 +2,19 @@ name: 🐛 Bug Report
 description: Report a bug to help us improve the project
 title: "🐛 [BUG] - [Brief description]"
 labels: ["bug", "needs-triage"]
-projects: []
 assignees: []
 
 body:
   - type: markdown
     attributes:
       value: |
-        ## Bug Report Form
+        ## 🐛 Bug Report Form
 
-        Thank you for taking the time to report a bug! Please fill out this form to help us understand and reproduce the issue.
+        **Thank you for reporting a bug!** Your feedback helps us improve the project for everyone.
+
+        Please fill out this form completely to help us understand and fix the issue quickly.
+
+        > **Note:** This form is compatible with GitHub Copilot for automated issue creation.
 
   - type: dropdown
     id: bug_type
@@ -22,6 +25,7 @@ body:
         - 🔧 Installation/Setup Issue
         - ⚡ Performance Problem
         - 💥 Application Crash
+        - ⚙️ CI/CD Crash
         - 🔄 Incorrect Behavior
         - 📱 UI/UX Issue
         - 🔌 Integration/Compatibility Issue
@@ -106,6 +110,7 @@ body:
         - 🪟 Windows 10
         - 🪟 Windows 11
         - 🐳 Docker Container
+        - ⚙️ GitHub Action
         - ☁️ GitHub Codespaces
         - ☁️ Other Cloud Environment
     validations:
