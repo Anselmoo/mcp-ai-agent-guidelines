@@ -22,6 +22,7 @@ body:
         - 🔧 Installation/Setup Issue
         - ⚡ Performance Problem
         - 💥 Application Crash
+        - :octocat: CI/CD Crash
         - 🔄 Incorrect Behavior
         - 📱 UI/UX Issue
         - 🔌 Integration/Compatibility Issue
@@ -106,6 +107,7 @@ body:
         - 🪟 Windows 10
         - 🪟 Windows 11
         - 🐳 Docker Container
+        - :octocat: GitHub Action
         - ☁️ GitHub Codespaces
         - ☁️ Other Cloud Environment
     validations:
