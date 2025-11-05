@@ -220,7 +220,7 @@ SVGs are responsive by default. Control size via container:
 | neutral-1      | #21262d   | #d0d7de    |
 | neutral-2      | #30363d   | #e1e4e8    |
 | text-primary   | #c9d1d9   | #24292e    |
-| text-secondary | #8b949e   | #57606a    |
+| text-secondary | #c9d1d9   | #1f2328    |
 
 ### Green Accents (5% of design)
 

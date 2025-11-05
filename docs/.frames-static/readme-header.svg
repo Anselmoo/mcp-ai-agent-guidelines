@@ -4,7 +4,7 @@
       .bg-start { stop-color: #0d1117; }
       .bg-end { stop-color: #161b22; }
       .text-primary { fill: #f0f6fc; }
-      .text-secondary { fill: #8b949e; }
+      .text-secondary { fill: #c9d1d9; }
       .accent-green { fill: #5FED83; }
       .accent-purple { fill: #C06EFF; }
       .line-color { stroke: #30363d; }
@@ -15,7 +15,7 @@
       .bg-start { stop-color: #f6f8fa; }
       .bg-end { stop-color: #ffffff; }
       .text-primary { fill: #24292f; }
-      .text-secondary { fill: #57606a; }
+      .text-secondary { fill: #1f2328; }
       .accent-green { fill: #08872B; }
       .accent-purple { fill: #501DAF; }
       .line-color { stroke: #d0d7de; }

@@ -19,7 +19,7 @@
   letter-spacing: -0.5px;
 }
 .text-secondary {
-  fill: #8b949e;
+  fill: #c9d1d9;
   font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
   font-weight: 500;
   letter-spacing: 0.5px;
