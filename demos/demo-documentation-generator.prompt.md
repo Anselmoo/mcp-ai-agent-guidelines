@@ -1,7 +1,7 @@
 ---
 # Note: Dropped unknown tools: documentation
 mode: 'agent'
-model: GPT-4.1
+model: GPT-5
 tools: ['codebase', 'editFiles']
 description: 'API documentation documentation for Backend developers integrating the MCP server'
 ---

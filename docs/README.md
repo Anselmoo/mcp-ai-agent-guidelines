@@ -48,8 +48,8 @@
 
 - **[Mermaid Diagram Examples](./tips/MERMAID_DIAGRAM_EXAMPLES.md)** - Visual diagram generation patterns
 - **[Context-Aware Guidance](./tips/CONTEXT_AWARE_GUIDANCE.md)** - Contextual design guidance
-- **[Export Formats](./tips/EXPORT_FORMATS.md)** - LaTeX, CSV, and JSON output options
-- **[Maintaining Models](./tips/MAINTAINING_MODELS.md)** - YAML-based model configuration
+- **[Export Formats Guide](./EXPORT_FORMATS.md)** - LaTeX, CSV, JSON export options and chat integration ⭐
+- **[Model Management Guide](./MODEL_MANAGEMENT.md)** - YAML-based model configuration for maintainers ⭐
 
 ### 👨‍💻 Developer Documentation
 
