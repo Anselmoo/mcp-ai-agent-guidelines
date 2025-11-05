@@ -2,16 +2,19 @@ name: ✨ Feature Request
 description: Suggest a new feature or enhancement for the project
 title: "✨ [FEATURE] - [Brief description]"
 labels: ["enhancement", "needs-review"]
-projects: []
 assignees: []
 
 body:
   - type: markdown
     attributes:
       value: |
-        ## Feature Request Form
+        ## ✨ Feature Request Form
 
-        Thank you for suggesting a new feature! Please fill out this form to help us understand your idea and its potential impact.
+        **We love hearing your ideas!** Feature requests help shape the future of this project.
+
+        Please describe your feature idea clearly so we can understand its value and implementation.
+
+        > **Note:** This form is compatible with GitHub Copilot for automated issue creation.
 
   - type: dropdown
     id: feature_type
