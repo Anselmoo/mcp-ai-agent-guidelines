@@ -35,6 +35,15 @@
 		},
 		{
 			"pattern": "^mailto:.*@[0-9~^]"
+		},
+		{
+			"pattern": "^https://platform\\.openai\\.com/docs/models"
+		},
+		{
+			"pattern": "^https://www\\.pmi\\.org/learning/library/scope-statements-3399"
+		},
+		{
+			"pattern": "^https://online\\.hbs\\.edu/blog/post/strategy-frameworks-and-tools"
 		}
 	],
 	"replacementPatterns": [],
