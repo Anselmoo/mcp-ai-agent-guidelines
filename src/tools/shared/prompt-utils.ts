@@ -218,7 +218,11 @@ export function applyExportFormat(
 	let processedContent = content;
 	if (!includeHeaders) {
 		// Remove YAML frontmatter block (lines between --- ... ---)
-		processedContent = processedContent.replace(/^---\n[\s\S]*?\n---\n*/m, "");
+		// Handle different line endings and spacing variations
+		processedContent = processedContent.replace(
+			/^---\r?\n[\s\S]*?\r?\n---\r?\n*/m,
+			"",
+		);
 
 		// Remove markdown headers (lines starting with #)
 		processedContent = processedContent
