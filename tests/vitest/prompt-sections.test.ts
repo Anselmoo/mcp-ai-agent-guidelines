@@ -35,10 +35,18 @@ describe("prompt-sections", () => {
 	it("buildProviderTipsSection varies by provider and style", () => {
 		const gpt = buildProviderTipsSection("gpt-4.1", "markdown");
 		expect(gpt).toMatch(/Preferred Style: MARKDOWN/);
+		const gpt5 = buildProviderTipsSection("gpt-5", "markdown");
+		expect(gpt5).toMatch(/Preferred Style: MARKDOWN/);
 		const claude = buildProviderTipsSection("claude-4");
 		expect(claude).toMatch(/Preferred Style: XML/);
 		const gemini = buildProviderTipsSection("gemini-2.5");
 		expect(gemini).toMatch(/Preferred Style: MARKDOWN/);
+	});
+
+	it("buildProviderTipsSection uses gpt-5 as default", () => {
+		const defaultTips = buildProviderTipsSection();
+		expect(defaultTips).toMatch(/Model-Specific Tips/);
+		expect(defaultTips).toMatch(/Preferred Style: MARKDOWN/);
 	});
 
 	it("buildPitfallsSection and buildDisclaimer return expected headings", () => {
