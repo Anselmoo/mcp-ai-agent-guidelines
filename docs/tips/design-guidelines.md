@@ -74,7 +74,7 @@ Reduce cognitive load through collapsible sections:
 /* Supporting Colors */
 --github-blue: #0969da; /* Links, accents */
 --github-black: #24292f; /* Text */
---github-gray: #57606a; /* Secondary text */
+--github-gray: #1f2328; /* Secondary text */
 --github-gray-light: #d0d7de; /* Borders */
 --github-bg: #f6f8fa; /* Backgrounds */
 ```
