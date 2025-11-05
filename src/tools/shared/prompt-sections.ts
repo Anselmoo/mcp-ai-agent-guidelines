@@ -234,7 +234,7 @@ export function buildProjectReferencesSection(): string {
 	return buildFurtherReadingSection([
 		{
 			title: "Project Scope Statement Best Practices",
-			url: "https://www.pmi.org/learning/library/project-scope-statement-7017",
+			url: "https://www.pmi.org/learning/library/scope-statements-3399",
 			description:
 				"PMI guide to defining project scope and acceptance criteria",
 		},
