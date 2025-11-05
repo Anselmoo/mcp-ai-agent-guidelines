@@ -16,8 +16,8 @@
 <summary><strong>📚 Related Documentation</strong></summary>
 
 - [All Strategy & Planning Tools](./README.md#strategy-and-planning)
-- [Sprint Planning Reliability](../SPRINT_PLANNING_RELIABILITY.md)
-- [AI Interaction Tips](../AI_INTERACTION_TIPS.md)
+- [Sprint Planning Reliability](../tips/SPRINT_PLANNING_RELIABILITY.md)
+- [AI Interaction Tips](../tips/AI_INTERACTION_TIPS.md)
 
 </details>
 
