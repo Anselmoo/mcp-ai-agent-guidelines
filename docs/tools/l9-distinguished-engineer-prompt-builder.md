@@ -16,9 +16,9 @@
 <summary><strong>📚 Related Documentation</strong></summary>
 
 - [All Prompt Builders](./README.md#prompt-builders)
-- [Prompting Hierarchy Guide](../PROMPTING_HIERARCHY.md)
-- [AI Interaction Tips](../AI_INTERACTION_TIPS.md)
-- [Flow Prompting Examples](../FLOW_PROMPTING_EXAMPLES.md)
+- [Prompting Hierarchy Guide](../tips/PROMPTING_HIERARCHY.md)
+- [AI Interaction Tips](../tips/AI_INTERACTION_TIPS.md)
+- [Flow Prompting Examples](../tips/FLOW_PROMPTING_EXAMPLES.md)
 
 </details>
 

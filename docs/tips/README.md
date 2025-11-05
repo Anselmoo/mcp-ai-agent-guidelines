@@ -26,19 +26,19 @@ This folder contains practical tips, best practices, and quick reference guides 
 
 ### Getting Started
 
-- **[AI Interaction Tips](../AI_INTERACTION_TIPS.md)** - Essential strategies for effective AI collaboration
-- **[Prompting Hierarchy](../PROMPTING_HIERARCHY.md)** - Understanding prompt levels and when to use them
+- **[AI Interaction Tips](../tips/AI_INTERACTION_TIPS.md)** - Essential strategies for effective AI collaboration
+- **[Prompting Hierarchy](../tips/PROMPTING_HIERARCHY.md)** - Understanding prompt levels and when to use them
 
 ### Advanced Techniques
 
-- **[Context-Aware Guidance](../CONTEXT_AWARE_GUIDANCE.md)** - Leveraging context for better results
-- **[Serena Strategies](../SERENA_STRATEGIES.md)** - Advanced semantic analysis patterns
-- **[Flow & Serena Integration](./FLOW_SERENA_INTEGRATION.md)** - Combining workflow tools
+- **[Context-Aware Guidance](../tips/CONTEXT_AWARE_GUIDANCE.md)** - Leveraging context for better results
+- **[Serena Strategies](../tips/SERENA_STRATEGIES.md)** - Advanced semantic analysis patterns
+- **[Flow & Serena Integration](../tips/FLOW_SERENA_INTEGRATION.md)** - Combining workflow tools
 
 ### Visual Communication
 
-- **[Mermaid Diagram Examples](../MERMAID_DIAGRAM_EXAMPLES.md)** - Creating effective diagrams
-- **[Flow Prompting Examples](../FLOW_PROMPTING_EXAMPLES.md)** - Workflow visualization patterns
+- **[Mermaid Diagram Examples](../tips/MERMAID_DIAGRAM_EXAMPLES.md)** - Creating effective diagrams
+- **[Flow Prompting Examples](../tips/FLOW_PROMPTING_EXAMPLES.md)** - Workflow visualization patterns
 
 ---
 
@@ -66,7 +66,7 @@ This folder contains practical tips, best practices, and quick reference guides 
 
 ## 🔗 Related Resources
 
-- **[Complete Tools Reference](../TOOLS_REFERENCE.md)** - Full documentation of all 27 tools
+- **[Complete Tools Reference](../tips/TOOLS_REFERENCE.md)** - Full documentation of all 27 tools
 - **[Developer Documentation](../README.md#developer-documentation)** - Architecture and implementation guides
 - **[Main README](../../README.md)** - Project overview and setup
 
