@@ -310,8 +310,8 @@ Think about what you want to achieve, then reverse-engineer the question:
 This repository includes comprehensive demo files showing tool usage:
 
 - Check `demos/` directory for real examples
-- Review `docs/AGENT_RELATIVE_CALLS.md` for workflow patterns
-- See `docs/FLOW_PROMPTING_EXAMPLES.md` for advanced chaining
+- Review `docs/tips/AGENT_RELATIVE_CALLS.md` for workflow patterns
+- See `docs/tips/FLOW_PROMPTING_EXAMPLES.md` for advanced chaining
 
 ### Iterate and Refine
 
