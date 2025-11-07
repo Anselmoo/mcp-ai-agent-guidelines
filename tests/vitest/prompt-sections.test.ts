@@ -49,6 +49,14 @@ describe("prompt-sections", () => {
 		expect(defaultTips).toMatch(/Preferred Style: MARKDOWN/);
 	});
 
+	it("buildProviderTipsSection handles falsy provider with fallback", () => {
+		// Test the || "gpt-5" fallback by passing null (which bypasses default parameter)
+		const fallbackTips = buildProviderTipsSection(null as any);
+		expect(fallbackTips).toMatch(/Model-Specific Tips/);
+		expect(fallbackTips).toMatch(/Preferred Style: MARKDOWN/);
+		expect(fallbackTips).toMatch(/Prefer Markdown with clear headings/);
+	});
+
 	it("buildPitfallsSection and buildDisclaimer return expected headings", () => {
 		expect(buildPitfallsSection()).toMatch(/Pitfalls to Avoid/);
 		expect(buildDisclaimer()).toMatch(/Disclaimer/);
