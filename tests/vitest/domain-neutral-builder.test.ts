@@ -14,7 +14,7 @@ describe("domain-neutral-prompt-builder", () => {
 				includeTechniqueHints: true,
 				includePitfalls: true,
 				tools: ["githubRepo", "codebase", "unknown"],
-				model: "gpt-4.1",
+				model: "gpt-5",
 			},
 			asserts: (text: string) => {
 				expect(text).toMatch(/^---/m); // frontmatter enforced

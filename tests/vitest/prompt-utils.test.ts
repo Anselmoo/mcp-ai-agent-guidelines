@@ -33,7 +33,7 @@ describe("prompt-utils", () => {
 	it("validateAndNormalizeFrontmatter filters unknowns and normalizes", () => {
 		const res = validateAndNormalizeFrontmatter({
 			mode: "unknown",
-			model: "gpt-4.1",
+			model: "gpt-5",
 			tools: ["githubRepo", "badTool"],
 			description: "d",
 		});

@@ -160,7 +160,7 @@ describe("Final Coverage Push - Prompt Builders", () => {
 			includePitfalls: true,
 			includeTechniqueHints: true,
 			autoSelectTechniques: true,
-			provider: "gpt-4.1",
+			provider: "gpt-5",
 			style: "xml",
 			techniques: ["chain-of-thought", "react", "tree-of-thoughts"],
 		});

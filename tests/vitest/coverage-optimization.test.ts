@@ -126,7 +126,7 @@ def process_data(data):
 					context: "Data analysis",
 					goal: "Analyze user behavior patterns",
 					techniques: ["self-consistency", "generate-knowledge"],
-					provider: "gpt-4.1",
+					provider: "gpt-5",
 					style: "xml",
 					includeReferences: true,
 				},

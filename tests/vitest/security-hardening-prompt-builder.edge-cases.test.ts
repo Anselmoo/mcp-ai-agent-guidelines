@@ -199,7 +199,7 @@ describe("security-hardening-prompt-builder edge cases", () => {
 	it("should exclude provider tips when provider not specified", async () => {
 		const result = await securityHardeningPromptBuilder({
 			codeContext: "Test application",
-			// provider defaults to "gpt-4.1" so tips will be included
+			// provider defaults to "GPT-5" so tips will be included
 		});
 
 		const text = result.content[0].text;

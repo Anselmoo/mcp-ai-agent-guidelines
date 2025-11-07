@@ -33,7 +33,7 @@ describe("prompt-sections", () => {
 	});
 
 	it("buildProviderTipsSection varies by provider and style", () => {
-		const gpt = buildProviderTipsSection("gpt-4.1", "markdown");
+		const gpt = buildProviderTipsSection("gpt-5", "markdown");
 		expect(gpt).toMatch(/Preferred Style: MARKDOWN/);
 		const claude = buildProviderTipsSection("claude-4");
 		expect(claude).toMatch(/Preferred Style: XML/);
