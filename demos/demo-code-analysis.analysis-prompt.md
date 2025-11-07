@@ -1,12 +1,14 @@
 ---
-mode: 'agent'
-model: GPT-4.1
-tools: ['codebase', 'editFiles']
-description: 'Code analysis with focus on security'
+mode: "agent"
+model: GPT-5
+tools: ["codebase", "editFiles"]
+description: "Code analysis with focus on security"
 ---
+
 ## 🔍 Code Analysis Prompt
 
 ### Metadata
+
 - Updated: 2025-11-05
 - Source tool: mcp_ai-agent-guid_code-analysis-prompt-builder
 - Suggested filename: code-analysis-security.prompt.md
@@ -14,9 +16,11 @@ description: 'Code analysis with focus on security'
 # Code Analysis Request
 
 ## Context
+
 You are an expert code reviewer analyzing python code with a focus on security aspects.
 
 ## Code to Analyze
+
 ```python
 """demo-code-analysis.py
 
@@ -298,11 +302,12 @@ if __name__ == "__main__":
 
 ```
 
-
 ## Few-Shot Examples
 
 ### Example 1: SQL Injection Vulnerability
+
 **Vulnerable Code:**
+
 ```python
 cursor.execute(f"SELECT * FROM users WHERE id={user_id}")
 ```
@@ -310,12 +315,15 @@ cursor.execute(f"SELECT * FROM users WHERE id={user_id}")
 **Issue:** SQL injection via f-string formatting
 **Severity:** CRITICAL
 **Fix:**
+
 ```python
 cursor.execute("SELECT * FROM users WHERE id=%s", (user_id,))
 ```
 
 ### Example 2: Command Injection
+
 **Vulnerable Code:**
+
 ```python
 os.system(f"ping {user_input}")
 ```
@@ -323,18 +331,22 @@ os.system(f"ping {user_input}")
 **Issue:** Command injection through unsanitized input
 **Severity:** CRITICAL
 **Fix:**
+
 ```python
 import subprocess
 subprocess.run(["ping", user_input], check=True)
 ```
 
 ## Analysis Requirements
+
 1. **Code Quality Assessment**
+
    - Readability and maintainability
    - Code structure and organization
    - Naming conventions and clarity
 
 2. **Security Analysis**
+
    - **SQL Injection**: Check for string formatting in SQL queries (e.g., `cursor.execute(f"SELECT * FROM users WHERE id={user_id}")`)
    - **Command Injection**: Look for `os.system()`, `subprocess.call()` with unsanitized input
    - **Path Traversal**: Check `open()` calls with user-controlled file paths
@@ -348,21 +360,22 @@ subprocess.run(["ping", user_input], check=True)
    - Error handling implementation
 
 ## Output Format
+
 - **Summary**: Brief overview of code quality
 - **Issues Found**: List of specific issues with severity levels (CRITICAL, HIGH, MEDIUM, LOW)
 - **Recommendations**: Actionable improvement suggestions with code examples
 - **Code Examples**: Improved code snippets showing the fix
 
 ## Scoring
+
 Provide an overall score from 1-10 for:
+
 - Code Quality
 - Security
 - Best Practices Adherence
 
 ## Further Reading
 
-*The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*
+_The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources._
 
 - **[Code Review Best Practices](https://google.github.io/eng-practices/review/)**: Google's engineering practices guide for effective code reviews
-
-
