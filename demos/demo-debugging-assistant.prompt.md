@@ -8,7 +8,7 @@ description: 'Systematic debugging and troubleshooting assistant'
 ## 🐛 Debugging Assistant Prompt
 
 ### Metadata
-- Updated: 2025-11-05
+- Updated: 2025-11-07
 - Source tool: mcp_ai-agent-guid_debugging-assistant-prompt-builder
 - Suggested filename: debugging-assistant.prompt.md
 

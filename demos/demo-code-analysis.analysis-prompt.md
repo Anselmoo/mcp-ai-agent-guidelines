@@ -7,7 +7,7 @@ description: 'Code analysis with focus on security'
 ## 🔍 Code Analysis Prompt
 
 ### Metadata
-- Updated: 2025-11-05
+- Updated: 2025-11-07
 - Source tool: mcp_ai-agent-guid_code-analysis-prompt-builder
 - Suggested filename: code-analysis-security.prompt.md
 
