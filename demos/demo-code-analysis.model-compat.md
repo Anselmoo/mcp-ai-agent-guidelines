@@ -58,7 +58,6 @@
 | Claude Sonnet 3.7 | Anthropic | Structured reasoning            |
 | Gemini 2.5 Pro    | Google    | Complex code generation         |
 | Claude Sonnet 4   | Anthropic | Performance and practicality    |
-| GPT-5             | OpenAI    | Fast, accurate code completions |
 | o3                | OpenAI    | Multi-step problem solving      |
 | GPT-5             | OpenAI    | Multi-step problem solving      |
 | Gemini 2.0 Flash  | Google    | Real-time responses             |

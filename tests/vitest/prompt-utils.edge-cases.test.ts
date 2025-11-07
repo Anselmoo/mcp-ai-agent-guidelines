@@ -77,7 +77,7 @@ describe("prompt-utils edge cases and branches", () => {
 				description: "Test",
 				model: "gpt-5",
 			});
-			expect(result.model).toBe("GPT-4.1");
+			expect(result.model).toBe("GPT-5");
 		});
 
 		it("handles invalid mode by defaulting to agent", () => {

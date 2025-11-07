@@ -38,7 +38,7 @@ describe("prompt-utils", () => {
 			description: "d",
 		});
 		expect(res.mode).toBe("agent");
-		expect(res.model).toBe("GPT-4.1");
+		expect(res.model).toBe("GPT-5");
 		expect(res.tools).toEqual(["githubRepo"]);
 		expect(res.comments?.join("\n")).toMatch(/Unrecognized mode/);
 		expect(res.comments?.join("\n")).toMatch(/Dropped unknown tools/);
