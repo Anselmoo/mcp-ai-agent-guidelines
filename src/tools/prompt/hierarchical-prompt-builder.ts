@@ -26,7 +26,7 @@ const HierarchicalPromptSchema = z.object({
 	audience: z.string().optional(),
 	// YAML prompt frontmatter (experimental prompt file support)
 	mode: ModeEnum.optional().default("agent"),
-	model: z.string().optional().default("GPT-4.1"),
+	model: z.string().optional().default("GPT-5"),
 	tools: z
 		.array(z.string())
 		.optional()
@@ -51,7 +51,7 @@ const HierarchicalPromptSchema = z.object({
 	includeTechniqueHints: z.boolean().optional().default(true),
 	includePitfalls: z.boolean().optional().default(true),
 	autoSelectTechniques: z.boolean().optional().default(false),
-	provider: ProviderEnum.optional().default("gpt-4.1"),
+	provider: ProviderEnum.optional().default("gpt-5"),
 	style: StyleEnum.optional(),
 
 	// Export format options (NEW)

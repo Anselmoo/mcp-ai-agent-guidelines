@@ -85,7 +85,7 @@ export function buildFrontmatter({
 // Policy: enforce allowed modes/models/tools and normalize casing
 const ALLOWED_MODES = new Set(["agent"]);
 const MODEL_ALIASES: Record<string, string> = {
-	"gpt-4.1": "GPT-4.1",
+	"gpt-5": "GPT-5",
 	"claude-4": "Claude-4",
 	"gemini-2.5": "Gemini-2.5",
 	"o4-mini": "o4-mini",
