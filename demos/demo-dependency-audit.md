@@ -1,14 +1,14 @@
 ## 📦 Dependency Audit Report
 
 ### Metadata
-- Updated: 2025-11-05
+- Updated: 2025-11-07
 - Source tool: mcp_ai-agent-guid_dependency-auditor
 
 ### 📋 Summary
 | Metric | Value |
 |---|---|
 | Project | mcp-ai-agent-guidelines |
-| Version | 0.9.0 |
+| Version | 0.9.1 |
 | Total Dependencies | 6 |
 | Dev Dependencies | 9 |
 | Peer Dependencies | 0 |

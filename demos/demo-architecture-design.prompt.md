@@ -1,31 +1,26 @@
 ---
 # Note: Dropped unknown tools: mermaid
-mode: "agent"
+mode: 'agent'
 model: GPT-5
-tools: ["codebase", "editFiles"]
-description: "Architecture design for large-scale system"
+tools: ['codebase', 'editFiles']
+description: 'Architecture design for large-scale system'
 ---
-
 ## 🏗️ Architecture Design Prompt
 
 ### Metadata
-
-- Updated: 2025-11-05
+- Updated: 2025-11-07
 - Source tool: mcp_ai-agent-guid_architecture-design-prompt-builder
 - Suggested filename: architecture-design-large.prompt.md
 
 # System Architecture Design
 
 ## Context
-
 Designing a large-scale system architecture with Node.js, PostgreSQL, Redis, Kubernetes technology constraints.
 
 ## System Requirements
-
 Design a scalable microservices architecture for an e-commerce platform with high availability requirements
 
 ## Design Constraints
-
 - **Scale**: large (affects infrastructure and technology choices)
 - **Technology Stack**: Node.js, PostgreSQL, Redis, Kubernetes
 - **Architecture Type**: Distributed Microservices
@@ -33,13 +28,11 @@ Design a scalable microservices architecture for an e-commerce platform with hig
 ## Architecture Analysis Requirements
 
 1. **High-Level Architecture**
-
    - System components and their responsibilities
    - Data flow between components
    - External dependencies and integrations
 
 2. **Technology Recommendations**
-
    - Work within Node.js, PostgreSQL, Redis, Kubernetes constraints
    - Optimize for chosen technology stack
    - Identify any limitations or workarounds needed
@@ -53,39 +46,32 @@ Design a scalable microservices architecture for an e-commerce platform with hig
 ## Output Format
 
 ### 1. Architecture Overview
-
 - System context diagram
 - High-level component architecture
 - Key architectural decisions and rationale
 
 ### 2. Component Design
-
 - Detailed component specifications
 - Interface definitions
 - Data models and schemas
 
 ### 3. Infrastructure Design
-
 - Deployment architecture
 - Network topology
 - Security considerations
 
 ### 4. Implementation Roadmap
-
 - Development phases
 - Technology setup requirements
 - Testing and deployment strategies
 
 ### 5. Documentation Artifacts
-
 - Architecture diagrams (Mermaid format)
 - Technical specifications
 - Deployment guides
 
 ## Quality Attributes
-
 Address the following non-functional requirements:
-
 - **Performance**: Response time and throughput targets
 - **Reliability**: Availability and fault tolerance requirements
 - **Security**: Authentication, authorization, and data protection
@@ -94,6 +80,8 @@ Address the following non-functional requirements:
 
 ## Further Reading
 
-_The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources._
+*The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*
 
 - **[Software Architecture Guide](https://martinfowler.com/architecture/)**: Martin Fowler's comprehensive guide to software architecture patterns and principles
+
+
