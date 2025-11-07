@@ -187,7 +187,7 @@ async function run() {
 			goal: "Generate structured prompt",
 			includeReferences: true,
 			includeTechniqueHints: true,
-			provider: "gpt-",
+			provider: "gpt-5",
 			tools: ["githubRepo", "editFiles"],
 		});
 		const text = result.content[0].text;
