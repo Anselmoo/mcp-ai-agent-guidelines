@@ -7,6 +7,7 @@ import {
 	getBudgetBonus,
 	getBudgetPenalty,
 	getCapabilityWeights,
+	getDefaultModel,
 	getModels,
 	getRequirementKeywords,
 } from "./model-loader.js";
@@ -26,3 +27,4 @@ export const BUDGET_ADJUSTMENTS: Record<
 > = getBudgetAdjustments();
 export const BUDGET_BONUS = getBudgetBonus();
 export const BUDGET_PENALTY = getBudgetPenalty();
+export const DEFAULT_MODEL = getDefaultModel();

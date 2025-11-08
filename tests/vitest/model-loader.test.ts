@@ -4,6 +4,7 @@ import {
 	getBudgetBonus,
 	getBudgetPenalty,
 	getCapabilityWeights,
+	getDefaultModel,
 	getModels,
 	getRequirementKeywords,
 } from "../../src/tools/config/model-loader.js";
@@ -145,6 +146,30 @@ describe("Model Loader (YAML)", () => {
 			for (const tier of pricingTiers) {
 				expect(validTiers).toContain(tier);
 			}
+		});
+	});
+
+	describe("getDefaultModel", () => {
+		it("should load the default model from YAML configuration", () => {
+			const defaultModel = getDefaultModel();
+
+			expect(typeof defaultModel).toBe("string");
+			expect(defaultModel.length).toBeGreaterThan(0);
+		});
+
+		it("should return GPT-5 as the configured default", () => {
+			const defaultModel = getDefaultModel();
+
+			// This test assumes GPT-5 is set as default in models.yaml
+			expect(defaultModel).toBe("GPT-5");
+		});
+
+		it("should cache results on subsequent calls", () => {
+			const model1 = getDefaultModel();
+			const model2 = getDefaultModel();
+
+			// Should return the same reference (cached)
+			expect(model1).toBe(model2);
 		});
 	});
 });

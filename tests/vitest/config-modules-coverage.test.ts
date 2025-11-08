@@ -5,6 +5,7 @@ import {
 	BUDGET_BONUS,
 	BUDGET_PENALTY,
 	CAPABILITY_WEIGHTS,
+	DEFAULT_MODEL,
 	MODELS,
 	REQUIREMENT_KEYWORDS,
 } from "../../src/tools/config/model-config.ts";
@@ -202,6 +203,17 @@ describe("Configuration Modules Comprehensive Coverage", () => {
 					model.specialFeatures.length > 0;
 				expect(hasInfo).toBe(true);
 			});
+		});
+
+		it("should export a default model", () => {
+			expect(DEFAULT_MODEL).toBeDefined();
+			expect(typeof DEFAULT_MODEL).toBe("string");
+			expect(DEFAULT_MODEL.length).toBeGreaterThan(0);
+		});
+
+		it("should have the default model in the available models list", () => {
+			const modelNames = MODELS.map((model) => model.name);
+			expect(modelNames).toContain(DEFAULT_MODEL);
 		});
 	});
 });
