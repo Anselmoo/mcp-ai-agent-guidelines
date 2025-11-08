@@ -169,7 +169,7 @@ export function buildProviderTipsSection(
 	const lines: string[] = [];
 	lines.push(`# Model-Specific Tips`);
 	lines.push("");
-	if (p === "gpt-5") {
+	if (p === "gpt-5" || p === "gpt-4.1") {
 		lines.push("- Prefer Markdown with clear headings and sections");
 		lines.push(
 			"- Place instructions at the beginning (and optionally re-assert at the end) in long contexts",

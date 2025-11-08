@@ -112,12 +112,32 @@ describe("prompt-sections", () => {
 	it("buildProviderTipsSection varies by provider and style", () => {
 		const gpt = buildProviderTipsSection("gpt-5", "markdown");
 		expect(gpt).toMatch(/Preferred Style: MARKDOWN/);
+		const gpt5 = buildProviderTipsSection("gpt-5", "markdown");
+		expect(gpt5).toMatch(/Preferred Style: MARKDOWN/);
 		const claude = buildProviderTipsSection("claude-4");
 		expect(claude).toMatch(/Preferred Style: XML/);
 		const gemini = buildProviderTipsSection("gemini-2.5");
 		expect(gemini).toMatch(/Preferred Style: MARKDOWN/);
 	});
 
+	it("buildProviderTipsSection uses gpt-5 as default", () => {
+		const defaultTips = buildProviderTipsSection();
+		expect(defaultTips).toMatch(/Model-Specific Tips/);
+		expect(defaultTips).toMatch(/Preferred Style: MARKDOWN/);
+	});
+
+	it("buildProviderTipsSection handles falsy provider with fallback", () => {
+		// Test the || "gpt-5" fallback by passing null (which bypasses default parameter)
+		const fallbackTips = buildProviderTipsSection(null as any);
+		expect(fallbackTips).toMatch(/Model-Specific Tips/);
+		expect(fallbackTips).toMatch(/Preferred Style: MARKDOWN/);
+		expect(fallbackTips).toMatch(/Prefer Markdown with clear headings/);
+	});
+
+	it("buildPitfallsSection and buildDisclaimer return expected headings", () => {
+		expect(buildPitfallsSection()).toMatch(/Pitfalls to Avoid/);
+		expect(buildDisclaimer()).toMatch(/Disclaimer/);
+	});
 	it("buildProviderTipsSection includes provider-specific tips", () => {
 		const gpt = buildProviderTipsSection("gpt-5");
 		expect(gpt).toMatch(/Markdown with clear headings/);

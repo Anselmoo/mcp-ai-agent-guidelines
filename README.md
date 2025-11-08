@@ -124,6 +124,11 @@ See **[docs/README.md](./docs/README.md)** for the complete documentation index.
 - **[⚠️ Error Handling](./docs/tips/ERROR_HANDLING.md)** - Best practices
 - **[🏗️ Bridge Connectors](./docs/tips/BRIDGE_CONNECTORS.md)** - Integration patterns
 
+#### For Maintainers
+
+- **[📦 Export Formats Guide](./docs/EXPORT_FORMATS.md)** - LaTeX, CSV, JSON export options and chat integration
+- **[🤖 Model Management Guide](./docs/MODEL_MANAGEMENT.md)** - Managing AI model definitions in YAML
+
 See the **[complete documentation](./docs/README.md)** for the full list of guides organized by topic.
 
 ## Demos

@@ -86,7 +86,9 @@ export function buildFrontmatter({
 const ALLOWED_MODES = new Set(["agent"]);
 const MODEL_ALIASES: Record<string, string> = {
 	"gpt-5": "GPT-5",
+	"gpt-4.1": "GPT-4.1",
 	"claude-4": "Claude-4",
+	"claude-4.5": "Claude-4.5",
 	"gemini-2.5": "Gemini-2.5",
 	"o4-mini": "o4-mini",
 	"o3-mini": "o3-mini",
@@ -216,6 +218,13 @@ export function applyExportFormat(
 	// Remove headers if requested (for chat outputs)
 	let processedContent = content;
 	if (!includeHeaders) {
+		// Remove YAML frontmatter block (lines between --- ... ---)
+		// Handle different line endings and spacing variations
+		processedContent = processedContent.replace(
+			/^---\r?\n[\s\S]*?\r?\n---\r?\n*/m,
+			"",
+		);
+
 		// Remove markdown headers (lines starting with #)
 		processedContent = processedContent
 			.split("\n")
