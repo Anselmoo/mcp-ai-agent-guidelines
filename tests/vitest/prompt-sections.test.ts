@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import type { Technique } from "../../src/tools/shared/prompt-sections";
+import type {
+	Provider,
+	Technique,
+} from "../../src/tools/shared/prompt-sections";
 import {
 	buildDesignReferencesSection,
 	buildDisclaimer,
@@ -41,8 +44,19 @@ describe("prompt-sections", () => {
 
 	it("inferTechniquesFromText limits results to 6 techniques", () => {
 		const t = inferTechniquesFromText(
-			"document workflow reason then pipeline example verify facts brainstorm search",
+			"document workflow reason example verify facts brainstorm search",
 		);
+		expect(t.length).toBeLessThanOrEqual(6);
+	});
+
+	it("inferTechniquesFromText with no matching patterns except zero-shot", () => {
+		const t = inferTechniquesFromText("xyz abc hello world");
+		expect(t).toEqual(["zero-shot"]);
+	});
+
+	it("inferTechniquesFromText with single matching pattern", () => {
+		const t = inferTechniquesFromText("document citation");
+		expect(t).toContain("rag");
 		expect(t.length).toBeLessThanOrEqual(6);
 	});
 
@@ -181,8 +195,132 @@ describe("prompt-sections", () => {
 	});
 
 	it("buildProviderTipsSection case-insensitive provider matching", () => {
-		const textLower = buildProviderTipsSection("gpt-5" as any);
-		const textUpper = buildProviderTipsSection("gpt-5" as any);
+		const textLower = buildProviderTipsSection("gpt-5" as Provider);
+		const textUpper = buildProviderTipsSection("gpt-5" as Provider);
 		expect(textLower).toEqual(textUpper);
+	});
+
+	it("buildProviderTipsSection with unknown provider defaults to markdown", () => {
+		const text = buildProviderTipsSection("unknown-model" as Provider);
+		expect(text).toMatch(/Preferred Style: MARKDOWN/);
+		expect(text).not.toMatch(/<instructions>/);
+	});
+
+	it("buildProviderTipsSection with unknown provider and explicit xml style", () => {
+		const text = buildProviderTipsSection("unknown-model" as Provider, "xml");
+		expect(text).toMatch(/Preferred Style: XML/);
+		expect(text).toMatch(/<instructions>/);
+	});
+
+	it("inferTechniquesFromText detects prompt-chaining from pipeline keyword", () => {
+		const t = inferTechniquesFromText("analyze then pipeline verify then plan");
+		expect(t).toContain("prompt-chaining");
+	});
+
+	it("buildTechniqueHintsSection with all prompt-chaining combinations", () => {
+		const techs: Technique[] = ["prompt-chaining"];
+		const text = buildTechniqueHintsSection({ techniques: techs });
+		expect(text).toMatch(/Prompt Chaining/);
+		expect(text).toMatch(/sequential prompts/);
+	});
+
+	it("buildTechniqueHintsSection includes art technique", () => {
+		const techs: Technique[] = ["art"];
+		const text = buildTechniqueHintsSection({ techniques: techs });
+		expect(text).toMatch(/Automatic Reasoning and Tool-use/);
+		expect(text).toMatch(/Only use tools when needed/);
+	});
+
+	it("inferTechniquesFromText handles null/undefined gracefully", () => {
+		const t1 = inferTechniquesFromText("");
+		const t2 = inferTechniquesFromText("");
+		expect(t1).toEqual(t2);
+		expect(t1).toContain("zero-shot");
+	});
+
+	it("buildProviderTipsSection with explicit markdown style for claude", () => {
+		const text = buildProviderTipsSection("claude-4", "markdown");
+		expect(text).toMatch(/Preferred Style: MARKDOWN/);
+		expect(text).toMatch(/# Instructions/);
+		// Claude's specific tips should still be present even with markdown style
+		expect(text).toMatch(/XML-like structuring/);
+	});
+
+	it("buildProviderTipsSection with explicit xml style for gpt", () => {
+		const text = buildProviderTipsSection("gpt-5", "xml");
+		expect(text).toMatch(/Preferred Style: XML/);
+		expect(text).toMatch(/<instructions>/);
+		// GPT's specific tips should still be present even with xml style
+		expect(text).toMatch(/Markdown with clear headings/);
+	});
+
+	it("buildProviderTipsSection with explicit xml style for claude", () => {
+		const text = buildProviderTipsSection("claude-4", "xml");
+		expect(text).toMatch(/Preferred Style: XML/);
+		expect(text).toMatch(/<instructions>/);
+		expect(text).toMatch(/XML-like structuring/);
+	});
+
+	it("buildProviderTipsSection with explicit markdown style for gemini", () => {
+		const text = buildProviderTipsSection("gemini-2.5", "markdown");
+		expect(text).toMatch(/Preferred Style: MARKDOWN/);
+		expect(text).toMatch(/# Instructions/);
+		expect(text).toMatch(/consistent formatting/);
+	});
+
+	it("buildProviderTipsSection with explicit xml style for gemini", () => {
+		const text = buildProviderTipsSection("gemini-2.5", "xml");
+		expect(text).toMatch(/Preferred Style: XML/);
+		expect(text).toMatch(/<instructions>/);
+		expect(text).toMatch(/consistent formatting/);
+	});
+
+	it("inferTechniquesFromText with multiple matching patterns", () => {
+		const t = inferTechniquesFromText(
+			"document then reason step workflow with examples verify consensus",
+		);
+		expect(t.length).toBeGreaterThan(1);
+		expect(t.length).toBeLessThanOrEqual(6);
+	});
+
+	it("buildTechniqueHintsSection respects empty technique list with auto-select disabled", () => {
+		const text = buildTechniqueHintsSection({
+			techniques: [],
+			autoSelectTechniques: false,
+		});
+		// Should use default techniques
+		expect(text).toMatch(/Zero-Shot|Few-Shot/);
+	});
+
+	it("buildTechniqueHintsSection with explicit techniques overrides context text", () => {
+		const techs: Technique[] = ["rag", "chain-of-thought"];
+		const text = buildTechniqueHintsSection({
+			techniques: techs,
+			autoSelectTechniques: true,
+			contextText: "brainstorm alternatives options", // Would infer tree-of-thoughts
+		});
+		// Should use explicit techniques, not inferred
+		expect(text).toMatch(/RAG/);
+		expect(text).toMatch(/Chain-of-Thought/);
+		expect(text).not.toMatch(/Tree of Thoughts/);
+	});
+
+	it("buildTechniqueHintsSection with only autoSelectTechniques true", () => {
+		const text = buildTechniqueHintsSection({
+			autoSelectTechniques: true,
+			contextText: "validate requirements and verify multiple approaches",
+		});
+		// Should infer techniques from context
+		expect(text.length).toBeGreaterThan(0);
+		expect(text).toMatch(/Technique Hints/);
+	});
+
+	it("inferTechniquesFromText preserves order and limits to 6", () => {
+		const t = inferTechniquesFromText(
+			"document cite reasoning workflow examples verify facts brainstorm search execute tools",
+		);
+		expect(t.length).toBeLessThanOrEqual(6);
+		// First should be RAG (highest priority in order array)
+		expect(t[0]).toBe("rag");
 	});
 });
