@@ -338,7 +338,7 @@ describe("hierarchical-schema.validation - Schema Validation and Canonicalizatio
 				includeTechniqueHints: true,
 				includePitfalls: true,
 				autoSelectTechniques: false,
-				provider: "GPT-5",
+				provider: "gpt-5",
 				style: "markdown",
 			});
 			expect(result.content[0].type).toBe("text");
