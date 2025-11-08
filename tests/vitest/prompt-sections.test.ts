@@ -137,7 +137,7 @@ describe("prompt-sections", () => {
 	it("buildPitfallsSection and buildDisclaimer return expected headings", () => {
 		expect(buildPitfallsSection()).toMatch(/Pitfalls to Avoid/);
 		expect(buildDisclaimer()).toMatch(/Disclaimer/);
-=======
+	});
 	it("buildProviderTipsSection includes provider-specific tips", () => {
 		const gpt = buildProviderTipsSection("gpt-5");
 		expect(gpt).toMatch(/Markdown with clear headings/);
