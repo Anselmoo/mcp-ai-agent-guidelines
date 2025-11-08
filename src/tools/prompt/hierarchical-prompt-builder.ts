@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { DEFAULT_MODEL } from "../config/model-config.js";
 import {
 	buildProviderTipsSection as buildSharedProviderTips,
 	ProviderEnum,
@@ -26,7 +27,7 @@ const HierarchicalPromptSchema = z.object({
 	audience: z.string().optional(),
 	// YAML prompt frontmatter (experimental prompt file support)
 	mode: ModeEnum.optional().default("agent"),
-	model: z.string().optional().default("GPT-5"),
+	model: z.string().optional().default(DEFAULT_MODEL),
 	tools: z
 		.array(z.string())
 		.optional()

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { DEFAULT_MODEL } from "../config/model-config.js";
 import type { Technique } from "../shared/prompt-sections.js";
 import {
 	buildPitfallsSection as buildSharedPitfalls,
@@ -80,7 +81,7 @@ const SecurityHardeningSchema = z.object({
 
 	// YAML prompt frontmatter
 	mode: z.string().optional().default("agent"),
-	model: z.string().optional().default("GPT-5"),
+	model: z.string().optional().default(DEFAULT_MODEL),
 	tools: z
 		.array(z.string())
 		.optional()
