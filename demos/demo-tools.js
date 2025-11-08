@@ -163,7 +163,7 @@ async function main() {
 		customizations:
 			"Use compact sections, bold category labels, and checklist bullets.",
 		includeFrontmatter: false,
-		model: "gpt-4.1",
+		model: "GPT-5",
 	});
 	await writeReport("demo-code-analysis.spark.prompt.md", getText(spark));
 

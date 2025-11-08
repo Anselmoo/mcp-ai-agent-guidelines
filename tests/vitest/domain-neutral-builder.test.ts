@@ -14,7 +14,7 @@ describe("domain-neutral-prompt-builder", () => {
 				includeTechniqueHints: true,
 				includePitfalls: true,
 				tools: ["githubRepo", "codebase", "unknown"],
-				model: "gpt-4.1",
+				model: "gpt-5",
 			},
 			asserts: (text: string) => {
 				expect(text).toMatch(/^---/m); // frontmatter enforced
@@ -24,8 +24,8 @@ describe("domain-neutral-prompt-builder", () => {
 				expect(text).toMatch(/# Pitfalls to Avoid/);
 				// ensure unknown tool dropped comment appears in frontmatter comments area
 				expect(text).toMatch(/Dropped unknown tools: unknown/);
-				// model normalization should uppercase GPT-4.1 in frontmatter
-				expect(text).toMatch(/model: GPT-4.1/);
+				// model normalization should uppercase GPT-5 in frontmatter
+				expect(text).toMatch(/model: GPT-5/);
 				// tools list should only contain allowed tools
 				expect(text).toMatch(
 					/tools: \['githubRepo', 'codebase'(, 'editFiles')?\]/,

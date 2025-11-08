@@ -181,7 +181,7 @@ describe("hierarchical-schema.validation - Schema Validation and Canonicalizatio
 				goal: "Build a feature",
 			});
 			expect(result.content[0].type).toBe("text");
-			// Default should be gpt-4.1
+			// Default should be GPT-5
 		});
 	});
 
@@ -323,7 +323,7 @@ describe("hierarchical-schema.validation - Schema Validation and Canonicalizatio
 				outputFormat: "Detailed technical specification with diagrams",
 				audience: "Senior software engineers and architects",
 				mode: "agent",
-				model: "GPT-4.1",
+				model: "GPT-5",
 				tools: ["githubRepo", "codebase", "editFiles"],
 				description: "Payment system design",
 				includeFrontmatter: true,
@@ -338,7 +338,7 @@ describe("hierarchical-schema.validation - Schema Validation and Canonicalizatio
 				includeTechniqueHints: true,
 				includePitfalls: true,
 				autoSelectTechniques: false,
-				provider: "gpt-4.1",
+				provider: "gpt-5",
 				style: "markdown",
 			});
 			expect(result.content[0].type).toBe("text");
@@ -440,12 +440,12 @@ describe("hierarchical-schema.validation - Schema Validation and Canonicalizatio
 				context: "Test context",
 				goal: "Test goal",
 				mode: "agent",
-				model: "GPT-4.1",
+				model: "GPT-5",
 				tools: ["githubRepo", "codebase"],
 			});
 			expect(result).toContain("---");
 			expect(result).toContain("mode: 'agent'");
-			expect(result).toContain("model: GPT-4.1");
+			expect(result).toContain("model: GPT-5");
 		});
 
 		it("should use goal as description fallback", () => {
@@ -453,7 +453,7 @@ describe("hierarchical-schema.validation - Schema Validation and Canonicalizatio
 				context: "Test context",
 				goal: "Test goal",
 				mode: "agent",
-				model: "GPT-4.1",
+				model: "GPT-5",
 			});
 			expect(result).toContain("description: 'Test goal'");
 		});
@@ -464,7 +464,7 @@ describe("hierarchical-schema.validation - Schema Validation and Canonicalizatio
 				goal: "Test goal",
 				description: "Custom description",
 				mode: "agent",
-				model: "GPT-4.1",
+				model: "GPT-5",
 			});
 			expect(result).toContain("description: 'Custom description'");
 		});

@@ -161,13 +161,13 @@ async function run() {
 			],
 			edgeCases: [{ name: "Empty", handling: "show helpful empty state" }],
 			tools: ["githubRepo", "codebase", "editFiles", "not-a-tool"],
-			model: "gpt-4.1",
+			model: "gpt-5",
 			includeReferences: true,
 		});
 		const text = result.content[0].text;
 		// frontmatter present and normalized
 		assert.ok(
-			/^---[\s\S]*model:\s+GPT-4.1[\s\S]*tools:\s*\['githubRepo', 'codebase', 'editFiles'\][\s\S]*---/m.test(
+			/^---[\s\S]*model:\s+GPT-5[\s\S]*tools:\s*\['githubRepo', 'codebase', 'editFiles'\][\s\S]*---/m.test(
 				text,
 			),
 			"Frontmatter not normalized",
@@ -187,7 +187,7 @@ async function run() {
 			goal: "Generate structured prompt",
 			includeReferences: true,
 			includeTechniqueHints: true,
-			provider: "gpt-4.1",
+			provider: "gpt-5",
 			tools: ["githubRepo", "editFiles"],
 		});
 		const text = result.content[0].text;

@@ -14,7 +14,7 @@ description: 'Distinguished Engineer (L9) guidance for Global Distributed Cachin
 
 # Distinguished Engineer (L9) Mission
 
-> 🥚 **Easter Egg**: L9 is Google's designation for Distinguished Engineer — the highest individual contributor level. This prompt embodies that rare blend of deep technical expertise, architectural vision, and pragmatic engineering leadership that defines the role across the industry.
+> This prompt embodies that rare blend of deep technical expertise, architectural vision, and pragmatic engineering leadership.
 
 ## Project Context
 - **Project:** Global Distributed Caching System

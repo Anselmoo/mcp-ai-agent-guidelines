@@ -4,7 +4,7 @@
  * Analyzes code structure and organization
  */
 
-import type { StructureInfo, SymbolInfo } from "../types/index.js";
+import type { StructureInfo } from "../types/index.js";
 import { extractSymbols } from "./symbol-extraction.js";
 
 /**

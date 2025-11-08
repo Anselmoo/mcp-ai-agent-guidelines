@@ -1,6 +1,6 @@
 ---
 mode: 'agent'
-model: GPT-4.1
+model: GPT-5
 tools: ['githubRepo', 'codebase', 'editFiles']
 description: 'A compact, skimmable card with risk badges, prioritized checklist, and a tiny plan'
 ---
