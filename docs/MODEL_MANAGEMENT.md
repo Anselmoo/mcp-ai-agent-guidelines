@@ -6,6 +6,15 @@ This guide explains how to manage the AI model definitions in the MCP AI Agent G
 
 AI model information is managed through a YAML-based configuration system that allows easy updates without modifying TypeScript code. The model list is stored in `src/tools/config/models.yaml` and loaded at runtime via `src/tools/config/model-loader.ts`.
 
+### Default Model Configuration
+
+The project uses a **centralized default model** configuration that makes it easy to upgrade or change the default AI model across all prompt builders:
+
+- **Default Model**: Defined in `models.yaml` as `defaultModel: "GPT-5"`
+- **Single Source of Truth**: All prompt builders automatically use this default
+- **Easy Upgrades**: Change one line in `models.yaml` to update the default across the entire project
+- **Backward Compatible**: Falls back to "GPT-5" if not specified
+
 ## File Structure
 
 ```
@@ -16,6 +25,50 @@ src/tools/config/
 └── types/
     └── model.types.ts    # TypeScript interfaces
 ```
+
+## Changing the Default Model
+
+To change the default AI model used across all prompt builders:
+
+### Quick Start
+
+1. Open `src/tools/config/models.yaml`
+2. Update the `defaultModel` field:
+   ```yaml
+   defaultModel: "GPT-5"  # Change to any model in the models list
+   ```
+3. Build and test:
+   ```bash
+   npm run build
+   npm run test:vitest
+   ```
+
+### Example: Upgrading to a New Model
+
+When upgrading to a new default model (e.g., GPT-6):
+
+```yaml
+# src/tools/config/models.yaml
+# Default model configuration
+# This model is used as the default across all prompt builders
+# Change this value to easily switch the default model project-wide
+defaultModel: "GPT-6"  # Updated from GPT-5
+
+models:
+  - name: "GPT-6"
+    provider: "OpenAI"
+    # ... model definition
+```
+
+**That's it!** All 11 prompt builders will automatically use the new default.
+
+### Benefits of Centralized Default
+
+✅ **Single Source of Truth** - One place to update the default model
+✅ **Consistency** - All tools use the same default automatically
+✅ **Easy Rollout** - No code changes needed to upgrade models
+✅ **Version Control** - Track default model changes in git history
+✅ **Testing** - Tests ensure the default model is valid and available
 
 ## Adding or Updating Models
 
@@ -77,6 +130,58 @@ npm run test:vitest tests/vitest/model-loader.test.ts
 git add src/tools/config/models.yaml
 git commit -m "feat: add/update model definitions"
 ```
+
+## Default Model Configuration Details
+
+### How It Works
+
+The default model system has three layers:
+
+1. **Configuration Layer** (`models.yaml`):
+   ```yaml
+   defaultModel: "GPT-5"  # Define the default here
+   models:
+     - name: "GPT-5"      # Must exist in models list
+       # ... definition
+   ```
+
+2. **Loader Layer** (`model-loader.ts`):
+   ```typescript
+   export function getDefaultModel(): string {
+     const config = loadModelsFromYaml();
+     return config.defaultModel || "GPT-5"; // Fallback for safety
+   }
+   ```
+
+3. **Consumer Layer** (prompt builders):
+   ```typescript
+   import { DEFAULT_MODEL } from "../config/model-config.js";
+
+   const schema = z.object({
+     model: z.string().optional().default(DEFAULT_MODEL),
+     // ... other fields
+   });
+   ```
+
+### Validation
+
+The system includes validation to ensure the default model is valid:
+
+```typescript
+// Test ensures default exists in models list
+it("should have the default model in the available models list", () => {
+  const modelNames = MODELS.map((model) => model.name);
+  expect(modelNames).toContain(DEFAULT_MODEL);
+});
+```
+
+### Backward Compatibility
+
+The implementation is fully backward compatible:
+
+- If `defaultModel` is not specified in YAML, falls back to "GPT-5"
+- Existing code continues to work without changes
+- Users can override the default per tool invocation if needed
 
 ## Model Definition Fields
 
@@ -249,7 +354,12 @@ When a new model family is released (e.g., "GPT-6"):
      # ... variant definition
    ```
 
-3. **Update aliases** in `src/tools/shared/prompt-utils.ts`:
+3. **Optionally update default model:**
+   ```yaml
+   defaultModel: "GPT-6"  # If making this the new default
+   ```
+
+4. **Update aliases** in `src/tools/shared/prompt-utils.ts`:
    ```typescript
    const MODEL_ALIASES: Record<string, string> = {
      "gpt-6": "GPT-6",
@@ -258,7 +368,7 @@ When a new model family is released (e.g., "GPT-6"):
    };
    ```
 
-4. **Update provider enum** in `src/tools/shared/types/prompt-sections.types.ts`:
+5. **Update provider enum** in `src/tools/shared/types/prompt-sections.types.ts`:
    ```typescript
    export const ProviderEnum = z.enum([
      "gpt-6",
@@ -267,7 +377,7 @@ When a new model family is released (e.g., "GPT-6"):
    ]);
    ```
 
-5. **Update provider tips** in `src/tools/shared/prompt-sections.ts` if needed.
+6. **Update provider tips** in `src/tools/shared/prompt-sections.ts` if needed.
 
 ### Updating Model Pricing
 
@@ -326,6 +436,9 @@ To change how capabilities are weighted in scoring:
 ### Commit Message Format
 
 ```bash
+# Changing default model
+git commit -m "feat: update default model to GPT-6"
+
 # Adding new models
 git commit -m "feat: add GPT-6 and variants to model definitions"
 
@@ -393,10 +506,11 @@ This ensures the YAML file is available in the compiled distribution.
 - [Export Formats Guide](./EXPORT_FORMATS.md)
 
 ### Related Files
-- `src/tools/config/models.yaml` - Model definitions
-- `src/tools/config/model-loader.ts` - YAML loader
-- `src/tools/config/model-config.ts` - Configuration service
+- `src/tools/config/models.yaml` - Model definitions and default model config
+- `src/tools/config/model-loader.ts` - YAML loader with `getDefaultModel()`
+- `src/tools/config/model-config.ts` - Configuration service exports `DEFAULT_MODEL`
 - `src/tools/model-compatibility-checker.ts` - Recommendation tool
+- `src/tools/prompt/*-prompt-builder.ts` - All prompt builders use `DEFAULT_MODEL`
 
 ## Questions?
 
@@ -410,5 +524,5 @@ If you have questions about model management:
 
 ---
 
-**Last Updated:** 2025-11-05
+**Last Updated:** 2025-11-08
 **Maintainer:** MCP AI Agent Guidelines Team
