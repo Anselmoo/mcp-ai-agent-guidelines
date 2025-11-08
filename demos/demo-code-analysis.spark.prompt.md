@@ -1,13 +1,13 @@
 ---
 mode: 'agent'
-model: GPT-4.1
+model: GPT-5
 tools: ['githubRepo', 'codebase', 'editFiles']
 description: 'A compact, skimmable card with risk badges, prioritized checklist, and a tiny plan'
 ---
 ## ⚡ Spark Prompt Template
 
 ### Metadata
-- Updated: 2025-11-05
+- Updated: 2025-11-07
 - Source tool: mcp_ai-agent-guid_spark-prompt-builder
 - Suggested filename: spark-prompt-code-hygiene-review-card.prompt.md
 

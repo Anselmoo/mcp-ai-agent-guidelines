@@ -119,7 +119,7 @@ const L9DistinguishedEngineerPromptSchema = z.object({
 		),
 	// Optional frontmatter controls
 	mode: z.enum(["agent", "tool", "workflow"]).optional().default("agent"),
-	model: z.string().optional().default("GPT-4.1"),
+	model: z.string().optional().default("GPT-5"),
 	tools: z
 		.array(z.string())
 		.optional()
@@ -250,7 +250,7 @@ function buildL9DistinguishedEngineerPrompt(
 	lines.push(`# Distinguished Engineer (L9) Mission`);
 	lines.push("");
 	lines.push(
-		`> 🥚 **Easter Egg**: L9 is Google's designation for Distinguished Engineer — the highest individual contributor level. This prompt embodies that rare blend of deep technical expertise, architectural vision, and pragmatic engineering leadership that defines the role across the industry.`,
+		`> This prompt embodies that rare blend of deep technical expertise, architectural vision, and pragmatic engineering leadership.`,
 	);
 	lines.push("");
 

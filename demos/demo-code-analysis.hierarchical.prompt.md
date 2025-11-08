@@ -1,13 +1,13 @@
 ---
 mode: 'agent'
-model: GPT-4.1
+model: GPT-5
 tools: ['githubRepo', 'codebase', 'editFiles']
 description: 'Produce a step-by-step refactor plan and a checklist'
 ---
 ## 🧭 Hierarchical Prompt Structure
 
 ### Metadata
-- Updated: 2025-11-05
+- Updated: 2025-11-07
 - Source tool: mcp_ai-agent-guid_hierarchical-prompt-builder
 - Input file: /home/runner/work/mcp-ai-agent-guidelines/mcp-ai-agent-guidelines/demos/demo-code-analysis.py
 - Suggested filename: produce-a-step-by-step-refactor-plan-and-a-checklist.prompt.md

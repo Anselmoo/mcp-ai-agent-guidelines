@@ -161,15 +161,15 @@ export function inferTechniquesFromText(text: string): Technique[] {
 }
 
 export function buildProviderTipsSection(
-	provider: Provider = "gpt-4.1",
+	provider: Provider = "gpt-5",
 	style?: "markdown" | "xml",
 ): string {
-	const p = (provider || "gpt-4.1").toLowerCase();
+	const p = (provider || "gpt-5").toLowerCase();
 	const effectiveStyle = style || (p === "claude-4" ? "xml" : "markdown");
 	const lines: string[] = [];
 	lines.push(`# Model-Specific Tips`);
 	lines.push("");
-	if (p === "gpt-4.1") {
+	if (p === "gpt-5") {
 		lines.push("- Prefer Markdown with clear headings and sections");
 		lines.push(
 			"- Place instructions at the beginning (and optionally re-assert at the end) in long contexts",

@@ -45,12 +45,12 @@ describe("prompt-utils edge cases and branches", () => {
 		it("includes all options when provided", () => {
 			const result = buildFrontmatter({
 				mode: "agent",
-				model: "gpt-4.1",
+				model: "gpt-5",
 				tools: ["githubRepo", "codebase"],
 				description: "Full test",
 			});
 			expect(result).toMatch(/mode: 'agent'/);
-			expect(result).toMatch(/model: gpt-4.1/);
+			expect(result).toMatch(/model: gpt-5/);
 			expect(result).toMatch(/tools: \['githubRepo', 'codebase'\]/);
 			expect(result).toMatch(/description: 'Full test'/);
 		});
@@ -75,9 +75,9 @@ describe("prompt-utils edge cases and branches", () => {
 		it("normalizes valid model aliases", () => {
 			const result = validateAndNormalizeFrontmatter({
 				description: "Test",
-				model: "gpt-4.1",
+				model: "gpt-5",
 			});
-			expect(result.model).toBe("GPT-4.1");
+			expect(result.model).toBe("GPT-5");
 		});
 
 		it("handles invalid mode by defaulting to agent", () => {
@@ -128,7 +128,7 @@ describe("prompt-utils edge cases and branches", () => {
 			const result = validateAndNormalizeFrontmatter({
 				description: "Test",
 				mode: "agent",
-				model: "gpt-4.1",
+				model: "gpt-5",
 				tools: ["githubRepo"],
 			});
 			expect(result.comments).toBeUndefined();
@@ -150,7 +150,7 @@ describe("prompt-utils edge cases and branches", () => {
 			const result = buildFrontmatterWithPolicy({
 				description: "Test",
 				mode: "agent",
-				model: "gpt-4.1",
+				model: "gpt-5",
 			});
 			expect(result).not.toMatch(/# Note:/);
 			expect(result).toMatch(/---/);

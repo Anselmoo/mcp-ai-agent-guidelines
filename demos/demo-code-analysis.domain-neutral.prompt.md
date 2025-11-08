@@ -1,13 +1,13 @@
 ---
 mode: 'agent'
-model: GPT-4.1
+model: GPT-5
 tools: ['githubRepo', 'codebase', 'editFiles']
 description: 'Template to run consistent, security-first code hygiene reviews across languages'
 ---
 ## 🧩 Domain-Neutral Prompt Template
 
 ### Metadata
-- Updated: 2025-11-05
+- Updated: 2025-11-07
 - Source tool: mcp_ai-agent-guid_domain-neutral-prompt-builder
 - Input file: /home/runner/work/mcp-ai-agent-guidelines/mcp-ai-agent-guidelines/demos/demo-code-analysis.py
 - Suggested filename: domain-neutral-code-hygiene-review-prompt.prompt.md

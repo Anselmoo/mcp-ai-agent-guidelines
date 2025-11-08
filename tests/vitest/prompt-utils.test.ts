@@ -33,12 +33,12 @@ describe("prompt-utils", () => {
 	it("validateAndNormalizeFrontmatter filters unknowns and normalizes", () => {
 		const res = validateAndNormalizeFrontmatter({
 			mode: "unknown",
-			model: "gpt-4.1",
+			model: "gpt-5",
 			tools: ["githubRepo", "badTool"],
 			description: "d",
 		});
 		expect(res.mode).toBe("agent");
-		expect(res.model).toBe("GPT-4.1");
+		expect(res.model).toBe("GPT-5");
 		expect(res.tools).toEqual(["githubRepo"]);
 		expect(res.comments?.join("\n")).toMatch(/Unrecognized mode/);
 		expect(res.comments?.join("\n")).toMatch(/Dropped unknown tools/);

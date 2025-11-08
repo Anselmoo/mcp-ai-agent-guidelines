@@ -1,14 +1,14 @@
 ---
 # Note: Dropped unknown tools: documentation
 mode: 'agent'
-model: GPT-4.1
+model: GPT-5
 tools: ['codebase', 'editFiles']
 description: 'API documentation documentation for Backend developers integrating the MCP server'
 ---
 ## 📚 Documentation Generator Prompt
 
 ### Metadata
-- Updated: 2025-11-05
+- Updated: 2025-11-07
 - Source tool: mcp_ai-agent-guid_documentation-generator-prompt-builder
 - Suggested filename: documentation-api-documentation.prompt.md
 

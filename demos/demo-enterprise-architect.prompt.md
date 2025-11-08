@@ -1,14 +1,14 @@
 ---
 # Note: Dropped unknown tools: vscode-websearch, mermaid
 mode: 'agent'
-model: GPT-4.1
+model: GPT-5
 tools: ['githubRepo']
 description: 'Enterprise Architect guidance for AI-Native Platform Transformation'
 ---
 ## 🧠 Enterprise Architect Prompt
 
 ### Metadata
-- Updated: 2025-11-05
+- Updated: 2025-11-07
 - Source tool: mcp_ai-agent-guid_enterprise-architect-prompt-builder
 - Suggested filename: ai-native-platform-transformation-enterprise-architect.prompt.md
 
