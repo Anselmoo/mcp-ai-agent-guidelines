@@ -50,19 +50,19 @@
   
   <g class="service">
     <rect x="150" y="40" width="80" height="60" rx="8" class="accent-blue" opacity="0.15"/>
-    <text x="190" y="75" text-anchor="middle" class="text-secondary" font-size="11">Auth</text>
+    <text x="190" y="75" text-anchor="middle" class="text-secondary" font-size="11" fill="#f0f6fc">Auth</text>
   </g>
   <g class="service" style="animation-delay: 1s">
     <rect x="400" y="40" width="80" height="60" rx="8" class="accent-green" opacity="0.15"/>
-    <text x="440" y="75" text-anchor="middle" class="text-secondary" font-size="11">API</text>
+    <text x="440" y="75" text-anchor="middle" class="text-secondary" font-size="11" fill="#f0f6fc">API</text>
   </g>
   <g class="service" style="animation-delay: 2s">
     <rect x="650" y="40" width="80" height="60" rx="8" class="accent-purple" opacity="0.15"/>
-    <text x="690" y="75" text-anchor="middle" class="text-secondary" font-size="11">Cache</text>
+    <text x="690" y="75" text-anchor="middle" class="text-secondary" font-size="11" fill="#f0f6fc">Cache</text>
   </g>
   <g class="service" style="animation-delay: 3s">
     <rect x="900" y="40" width="80" height="60" rx="8" class="accent-blue" opacity="0.15"/>
-    <text x="940" y="75" text-anchor="middle" class="text-secondary" font-size="11">DB</text>
+    <text x="940" y="75" text-anchor="middle" class="text-secondary" font-size="11" fill="#f0f6fc">DB</text>
   </g>
   
   <line x1="230" y1="70" x2="400" y2="70" class="accent-green api-call" stroke-width="2" stroke-dasharray="8 4"/>
@@ -72,6 +72,6 @@
   <circle class="accent-green lb-distribute" cx="50" r="5"/>
   <circle class="accent-blue lb-distribute" cx="1150" r="5" style="animation-delay: 2s"/>
   
-  <text x="600" y="70" text-anchor="middle" class="title text-primary">MCP AI Agent Guidelines Server</text>
-  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary">Guidelines • Patterns • Best Practices</text>
+  <text x="600" y="70" text-anchor="middle" class="title text-primary" fill="#f0f6fc">MCP AI Agent Guidelines Server</text>
+  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" fill="#f0f6fc">Guidelines • Patterns • Best Practices</text>
 </svg>

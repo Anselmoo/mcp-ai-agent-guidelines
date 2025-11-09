@@ -151,7 +151,7 @@
   <!-- Left Icon: Code Brackets -->
   <g transform="translate(40, 70)" class="float-icon-left">
     <path class="accent-green" d="M8 0 L3 6 L8 12 M16 0 L21 6 L16 12" stroke-width="2" fill="none" stroke="currentColor" opacity="0.8"/>
-    <text x="6" y="10" font-size="10" class="accent-green" opacity="0.6">&lt;/&gt;</text>
+    <text x="6" y="10" font-size="10" class="accent-green" opacity="0.6" fill="#f0f6fc">&lt;/&gt;</text>
   </g>
   
   <!-- Left Icon: Git Branch -->
@@ -163,10 +163,10 @@
   </g>
   
   <!-- Center Title -->
-  <text x="600" y="75" text-anchor="middle" class="title text-primary">MCP AI Agent Guidelines</text>
+  <text x="600" y="75" text-anchor="middle" class="title text-primary" fill="#f0f6fc">MCP AI Agent Guidelines</text>
   
   <!-- Center Subtitle -->
-  <text x="600" y="105" text-anchor="middle" class="subtitle text-secondary">Advanced Tools for Hierarchical Prompting, Code Quality &amp; Agile Planning</text>
+  <text x="600" y="105" text-anchor="middle" class="subtitle text-secondary" fill="#f0f6fc">Advanced Tools for Hierarchical Prompting, Code Quality &amp; Agile Planning</text>
   
   <!-- Pulsing Underline -->
   <line x1="450" y1="115" x2="750" y2="115" class="accent-green underline-pulse" stroke-width="2" opacity="0.8"/>

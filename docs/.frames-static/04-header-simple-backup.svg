@@ -58,6 +58,6 @@
   <circle class="accent-blue throughput" cx="600" cy="120" r="4" style="animation-delay: 0.7s"/>
   <circle class="accent-purple throughput" cx="1100" cy="120" r="4" style="animation-delay: 1.4s"/>
   
-  <text x="600" y="70" text-anchor="middle" class="title text-primary">MCP AI Agent Guidelines Server</text>
-  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary">Guidelines • Patterns • Best Practices</text>
+  <text x="600" y="70" text-anchor="middle" class="title text-primary" fill="#f0f6fc">MCP AI Agent Guidelines Server</text>
+  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" fill="#f0f6fc">Guidelines • Patterns • Best Practices</text>
 </svg>

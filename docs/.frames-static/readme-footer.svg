@@ -169,15 +169,15 @@
   </g>
 
   <!-- Text Content -->
-  <text x="600" y="40" text-anchor="middle" class="footer-text text-secondary">
+  <text x="600" y="40" text-anchor="middle" class="footer-text text-secondary" fill="#f0f6fc">
     Built with ❤️ for the open source community
   </text>
 
-  <text x="600" y="65" text-anchor="middle" class="footer-text text-muted small-text">
+  <text x="600" y="65" text-anchor="middle" class="footer-text text-muted small-text" fill="#f0f6fc">
     MIT License • Model Context Protocol • TypeScript
   </text>
 
-  <text x="600" y="90" text-anchor="middle" class="footer-text text-muted small-text">
+  <text x="600" y="90" text-anchor="middle" class="footer-text text-muted small-text" fill="#f0f6fc">
     © 2025 • Empowering AI Agents with Better Guidance
   </text>
 

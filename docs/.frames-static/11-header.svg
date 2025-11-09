@@ -1,12 +1,12 @@
 <svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="GraphQL Query Resolution">
   <defs>
     <linearGradient id="bgGraphQLGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#0d1117;stop-opacity:1">
-        <animate attributeName="stop-color" values="#0d1117;#161b22;#0d1117" dur="5.0s" repeatCount="indefinite"/>
+      <stop offset="0%" style="stop-color:#000240;stop-opacity:1">
+        <animate attributeName="stop-color" values="#000240;#501DAF;#000240" dur="5.0s" repeatCount="indefinite"/>
       </stop>
-      <stop offset="50%" style="stop-color:#1c2128;stop-opacity:1"/>
-      <stop offset="100%" style="stop-color:#161b22;stop-opacity:1">
-        <animate attributeName="stop-color" values="#161b22;#0d1117;#161b22" dur="5.0s" repeatCount="indefinite"/>
+      <stop offset="50%" style="stop-color:#501DAF;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#D0B0FF;stop-opacity:1">
+        <animate attributeName="stop-color" values="#000240;#501DAF;#000240" dur="5.0s" repeatCount="indefinite"/>
       </stop>
     </linearGradient>
     
@@ -191,7 +191,7 @@
   <!-- Query root -->
   <g filter="url(#glow)">
     <circle class="query-node" cx="200" cy="80" r="20" fill="none" stroke="#C06EFF" stroke-width="3" style="animation-delay: 0s"/>
-    <text x="200" y="110" text-anchor="middle" class="text-secondary" font-size="10">Query</text>
+    <text x="200" y="110" text-anchor="middle" class="text-secondary" font-size="10" fill="#f0f6fc">Query</text>
   </g>
   
   <!-- Field resolvers (tree structure) -->
@@ -239,22 +239,22 @@
   </g>
   
   <!-- Field labels -->
-  <text x="400" y="35" text-anchor="middle" class="text-secondary" font-size="8">user</text>
-  <text x="400" y="75" text-anchor="middle" class="text-secondary" font-size="8">posts</text>
-  <text x="400" y="115" text-anchor="middle" class="text-secondary" font-size="8">comments</text>
+  <text x="400" y="35" text-anchor="middle" class="text-secondary" font-size="8" fill="#f0f6fc">user</text>
+  <text x="400" y="75" text-anchor="middle" class="text-secondary" font-size="8" fill="#f0f6fc">posts</text>
+  <text x="400" y="115" text-anchor="middle" class="text-secondary" font-size="8" fill="#f0f6fc">comments</text>
   
-  <text x="810" y="83" text-anchor="middle" class="text-secondary" font-size="9">Database</text>
+  <text x="810" y="83" text-anchor="middle" class="text-secondary" font-size="9" fill="#f0f6fc">Database</text>
   
   <!-- Field indicators -->
   <g opacity="0.6">
     <circle class="field-pulse" cx="600" cy="30" r="2" fill="#3094FF" style="animation-delay: 0s"/>
-    <text x="615" y="33" class="text-secondary" font-size="7">id</text>
+    <text x="615" y="33" class="text-secondary" font-size="7" fill="#f0f6fc">id</text>
     
     <circle class="field-pulse" cx="600" cy="50" r="2" fill="#3094FF" style="animation-delay: 0.5s"/>
-    <text x="615" y="53" class="text-secondary" font-size="7">name</text>
+    <text x="615" y="53" class="text-secondary" font-size="7" fill="#f0f6fc">name</text>
     
     <circle class="field-pulse" cx="600" cy="70" r="2" fill="#3094FF" style="animation-delay: 1s"/>
-    <text x="615" y="73" class="text-secondary" font-size="7">email</text>
+    <text x="615" y="73" class="text-secondary" font-size="7" fill="#f0f6fc">email</text>
   </g>
   
   <!-- GraphQL logo (left) -->
@@ -279,10 +279,10 @@
   </g>
   
   <!-- Query stats -->
-  <text x="600" y="145" text-anchor="middle" class="text-secondary" font-size="9" opacity="0.8">Resolved 12 fields • 3 data sources • 45ms</text>
+  <text x="600" y="145" text-anchor="middle" class="text-secondary" font-size="9" opacity="0.8" fill="#f0f6fc">Resolved 12 fields • 3 data sources • 45ms</text>
   
-  <text x="600" y="70" text-anchor="middle" class="text-primary" font-size="36" filter="url(#dropShadow)">MCP AI Agent Guidelines Server</text>
-  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" font-size="14">Guidelines • Patterns • Best Practices</text>
+  <text x="600" y="70" text-anchor="middle" class="text-primary" font-size="36" filter="url(#dropShadow)" fill="#f0f6fc">MCP AI Agent Guidelines Server</text>
+  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" font-size="14" fill="#f0f6fc">Guidelines • Patterns • Best Practices</text>
   <rect x="400" y="84" width="400" height="16" fill="url(#shine11)" opacity="0.15"/>
 
   <!-- Enhanced header particle system -->

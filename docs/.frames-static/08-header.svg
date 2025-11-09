@@ -1,15 +1,15 @@
 <svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Matrix Code Rain">
   <defs>
     <linearGradient id="bgMatrixGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" style="stop-color:#001a00;stop-opacity:1">
+      <stop offset="0%" style="stop-color:#000240;stop-opacity:1">
         <animate attributeName="stop-color" values="#001a00;#002200;#001a00" dur="4.0s" repeatCount="indefinite"/>
       </stop>
-      <stop offset="100%" style="stop-color:#000d00;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#D0B0FF;stop-opacity:1"/>
     </linearGradient>
     
     <radialGradient id="matrixGlow" cx="50%" cy="50%" r="50%">
       <stop offset="0%" style="stop-color:#5FED83;stop-opacity:1"/>
-      <stop offset="50%" style="stop-color:#5FED83;stop-opacity:0.6"/>
+      <stop offset="50%" style="stop-color:#501DAF;stop-opacity:0.6"/>
       <stop offset="100%" style="stop-color:#00ff00;stop-opacity:0"/>
     </radialGradient>
     
@@ -50,7 +50,7 @@
     @import url('data:text/css;base64,QGZvbnQtZmFjZXtmb250LWZhbWlseTonTWF0cml4Q29kZSc7c3JjOmxvY2FsKCdDb3VyaWVyIE5ldycpLGxvY2FsKCdDb3VyaWVyJyl9');
     
     @media (prefers-color-scheme: dark) {
-      .text-primary { fill: #5FED83; font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.5px; }
+      .text-primary { fill: #f0f6fc; font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.5px; }
       .text-secondary { fill: #4a9960; font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; letter-spacing: 0.5px; }
     }
     @media (prefers-color-scheme: light) {
@@ -196,109 +196,109 @@
   
   <!-- Matrix rain columns - Column 1 -->
   <g class="rain-1" style="animation-delay: 0s">
-    <text class="leading-char" x="80" y="0" font-size="14">ア</text>
-    <text class="matrix-char" x="80" y="15" font-size="12" opacity="0.8">M</text>
-    <text class="matrix-char" x="80" y="28" font-size="12" opacity="0.6">C</text>
-    <text class="matrix-char" x="80" y="41" font-size="12" opacity="0.4">P</text>
-    <text class="matrix-char" x="80" y="54" font-size="12" opacity="0.2">3</text>
+    <text class="leading-char" x="80" y="0" font-size="14" fill="#f0f6fc">ア</text>
+    <text class="matrix-char" x="80" y="15" font-size="12" opacity="0.8" fill="#f0f6fc">M</text>
+    <text class="matrix-char" x="80" y="28" font-size="12" opacity="0.6" fill="#f0f6fc">C</text>
+    <text class="matrix-char" x="80" y="41" font-size="12" opacity="0.4" fill="#f0f6fc">P</text>
+    <text class="matrix-char" x="80" y="54" font-size="12" opacity="0.2" fill="#f0f6fc">3</text>
   </g>
   
   <!-- Column 2 -->
   <g class="rain-2" style="animation-delay: -0.3s">
-    <text class="leading-char" x="180" y="0" font-size="14">タ</text>
-    <text class="matrix-char" x="180" y="15" font-size="12" opacity="0.8">A</text>
-    <text class="matrix-char" x="180" y="28" font-size="12" opacity="0.6">I</text>
-    <text class="matrix-char" x="180" y="41" font-size="12" opacity="0.4">7</text>
-    <text class="matrix-char" x="180" y="54" font-size="12" opacity="0.2">ン</text>
+    <text class="leading-char" x="180" y="0" font-size="14" fill="#f0f6fc">タ</text>
+    <text class="matrix-char" x="180" y="15" font-size="12" opacity="0.8" fill="#f0f6fc">A</text>
+    <text class="matrix-char" x="180" y="28" font-size="12" opacity="0.6" fill="#f0f6fc">I</text>
+    <text class="matrix-char" x="180" y="41" font-size="12" opacity="0.4" fill="#f0f6fc">7</text>
+    <text class="matrix-char" x="180" y="54" font-size="12" opacity="0.2" fill="#f0f6fc">ン</text>
   </g>
   
   <!-- Column 3 -->
   <g class="rain-3" style="animation-delay: -0.6s">
-    <text class="leading-char" x="280" y="0" font-size="14">ナ</text>
-    <text class="matrix-char" x="280" y="15" font-size="12" opacity="0.8">G</text>
-    <text class="matrix-char" x="280" y="28" font-size="12" opacity="0.6">E</text>
-    <text class="matrix-char" x="280" y="41" font-size="12" opacity="0.4">N</text>
-    <text class="matrix-char" x="280" y="54" font-size="12" opacity="0.2">2</text>
+    <text class="leading-char" x="280" y="0" font-size="14" fill="#f0f6fc">ナ</text>
+    <text class="matrix-char" x="280" y="15" font-size="12" opacity="0.8" fill="#f0f6fc">G</text>
+    <text class="matrix-char" x="280" y="28" font-size="12" opacity="0.6" fill="#f0f6fc">E</text>
+    <text class="matrix-char" x="280" y="41" font-size="12" opacity="0.4" fill="#f0f6fc">N</text>
+    <text class="matrix-char" x="280" y="54" font-size="12" opacity="0.2" fill="#f0f6fc">2</text>
   </g>
   
   <!-- Column 4 -->
   <g class="rain-4" style="animation-delay: -0.9s">
-    <text class="leading-char" x="380" y="0" font-size="14">カ</text>
-    <text class="matrix-char" x="380" y="15" font-size="12" opacity="0.8">T</text>
-    <text class="matrix-char" x="380" y="28" font-size="12" opacity="0.6">5</text>
-    <text class="matrix-char" x="380" y="41" font-size="12" opacity="0.4">ラ</text>
-    <text class="matrix-char" x="380" y="54" font-size="12" opacity="0.2">9</text>
+    <text class="leading-char" x="380" y="0" font-size="14" fill="#f0f6fc">カ</text>
+    <text class="matrix-char" x="380" y="15" font-size="12" opacity="0.8" fill="#f0f6fc">T</text>
+    <text class="matrix-char" x="380" y="28" font-size="12" opacity="0.6" fill="#f0f6fc">5</text>
+    <text class="matrix-char" x="380" y="41" font-size="12" opacity="0.4" fill="#f0f6fc">ラ</text>
+    <text class="matrix-char" x="380" y="54" font-size="12" opacity="0.2" fill="#f0f6fc">9</text>
   </g>
   
   <!-- Column 5 -->
   <g class="rain-5" style="animation-delay: -1.2s">
-    <text class="leading-char" x="480" y="0" font-size="14">サ</text>
-    <text class="matrix-char" x="480" y="15" font-size="12" opacity="0.8">4</text>
-    <text class="matrix-char" x="480" y="28" font-size="12" opacity="0.6">イ</text>
-    <text class="matrix-char" x="480" y="41" font-size="12" opacity="0.4">D</text>
-    <text class="matrix-char" x="480" y="54" font-size="12" opacity="0.2">E</text>
+    <text class="leading-char" x="480" y="0" font-size="14" fill="#f0f6fc">サ</text>
+    <text class="matrix-char" x="480" y="15" font-size="12" opacity="0.8" fill="#f0f6fc">4</text>
+    <text class="matrix-char" x="480" y="28" font-size="12" opacity="0.6" fill="#f0f6fc">イ</text>
+    <text class="matrix-char" x="480" y="41" font-size="12" opacity="0.4" fill="#f0f6fc">D</text>
+    <text class="matrix-char" x="480" y="54" font-size="12" opacity="0.2" fill="#f0f6fc">E</text>
   </g>
   
   <!-- Column 6 -->
   <g class="rain-1" style="animation-delay: -1.5s">
-    <text class="leading-char" x="580" y="0" font-size="14">ツ</text>
-    <text class="matrix-char" x="580" y="15" font-size="12" opacity="0.8">L</text>
-    <text class="matrix-char" x="580" y="28" font-size="12" opacity="0.6">I</text>
-    <text class="matrix-char" x="580" y="41" font-size="12" opacity="0.4">N</text>
-    <text class="matrix-char" x="580" y="54" font-size="12" opacity="0.2">E</text>
+    <text class="leading-char" x="580" y="0" font-size="14" fill="#f0f6fc">ツ</text>
+    <text class="matrix-char" x="580" y="15" font-size="12" opacity="0.8" fill="#f0f6fc">L</text>
+    <text class="matrix-char" x="580" y="28" font-size="12" opacity="0.6" fill="#f0f6fc">I</text>
+    <text class="matrix-char" x="580" y="41" font-size="12" opacity="0.4" fill="#f0f6fc">N</text>
+    <text class="matrix-char" x="580" y="54" font-size="12" opacity="0.2" fill="#f0f6fc">E</text>
   </g>
   
   <!-- Column 7 -->
   <g class="rain-2" style="animation-delay: -1.8s">
-    <text class="leading-char" x="680" y="0" font-size="14">ハ</text>
-    <text class="matrix-char" x="680" y="15" font-size="12" opacity="0.8">8</text>
-    <text class="matrix-char" x="680" y="28" font-size="12" opacity="0.6">ミ</text>
-    <text class="matrix-char" x="680" y="41" font-size="12" opacity="0.4">S</text>
-    <text class="matrix-char" x="680" y="54" font-size="12" opacity="0.2">6</text>
+    <text class="leading-char" x="680" y="0" font-size="14" fill="#f0f6fc">ハ</text>
+    <text class="matrix-char" x="680" y="15" font-size="12" opacity="0.8" fill="#f0f6fc">8</text>
+    <text class="matrix-char" x="680" y="28" font-size="12" opacity="0.6" fill="#f0f6fc">ミ</text>
+    <text class="matrix-char" x="680" y="41" font-size="12" opacity="0.4" fill="#f0f6fc">S</text>
+    <text class="matrix-char" x="680" y="54" font-size="12" opacity="0.2" fill="#f0f6fc">6</text>
   </g>
   
   <!-- Column 8 -->
   <g class="rain-3" style="animation-delay: -2.1s">
-    <text class="leading-char" x="780" y="0" font-size="14">ヤ</text>
-    <text class="matrix-char" x="780" y="15" font-size="12" opacity="0.8">R</text>
-    <text class="matrix-char" x="780" y="28" font-size="12" opacity="0.6">V</text>
-    <text class="matrix-char" x="780" y="41" font-size="12" opacity="0.4">E</text>
-    <text class="matrix-char" x="780" y="54" font-size="12" opacity="0.2">R</text>
+    <text class="leading-char" x="780" y="0" font-size="14" fill="#f0f6fc">ヤ</text>
+    <text class="matrix-char" x="780" y="15" font-size="12" opacity="0.8" fill="#f0f6fc">R</text>
+    <text class="matrix-char" x="780" y="28" font-size="12" opacity="0.6" fill="#f0f6fc">V</text>
+    <text class="matrix-char" x="780" y="41" font-size="12" opacity="0.4" fill="#f0f6fc">E</text>
+    <text class="matrix-char" x="780" y="54" font-size="12" opacity="0.2" fill="#f0f6fc">R</text>
   </g>
   
   <!-- Column 9 -->
   <g class="rain-4" style="animation-delay: -2.4s">
-    <text class="leading-char" x="880" y="0" font-size="14">ワ</text>
-    <text class="matrix-char" x="880" y="15" font-size="12" opacity="0.8">1</text>
-    <text class="matrix-char" x="880" y="28" font-size="12" opacity="0.6">ル</text>
-    <text class="matrix-char" x="880" y="41" font-size="12" opacity="0.4">K</text>
-    <text class="matrix-char" x="880" y="54" font-size="12" opacity="0.2">3</text>
+    <text class="leading-char" x="880" y="0" font-size="14" fill="#f0f6fc">ワ</text>
+    <text class="matrix-char" x="880" y="15" font-size="12" opacity="0.8" fill="#f0f6fc">1</text>
+    <text class="matrix-char" x="880" y="28" font-size="12" opacity="0.6" fill="#f0f6fc">ル</text>
+    <text class="matrix-char" x="880" y="41" font-size="12" opacity="0.4" fill="#f0f6fc">K</text>
+    <text class="matrix-char" x="880" y="54" font-size="12" opacity="0.2" fill="#f0f6fc">3</text>
   </g>
   
   <!-- Column 10 -->
   <g class="rain-5" style="animation-delay: -2.7s">
-    <text class="leading-char" x="980" y="0" font-size="14">ヲ</text>
-    <text class="matrix-char" x="980" y="15" font-size="12" opacity="0.8">P</text>
-    <text class="matrix-char" x="980" y="28" font-size="12" opacity="0.6">T</text>
-    <text class="matrix-char" x="980" y="41" font-size="12" opacity="0.4">テ</text>
-    <text class="matrix-char" x="980" y="54" font-size="12" opacity="0.2">R</text>
+    <text class="leading-char" x="980" y="0" font-size="14" fill="#f0f6fc">ヲ</text>
+    <text class="matrix-char" x="980" y="15" font-size="12" opacity="0.8" fill="#f0f6fc">P</text>
+    <text class="matrix-char" x="980" y="28" font-size="12" opacity="0.6" fill="#f0f6fc">T</text>
+    <text class="matrix-char" x="980" y="41" font-size="12" opacity="0.4" fill="#f0f6fc">テ</text>
+    <text class="matrix-char" x="980" y="54" font-size="12" opacity="0.2" fill="#f0f6fc">R</text>
   </g>
   
   <!-- Column 11 -->
   <g class="rain-1" style="animation-delay: -3s">
-    <text class="leading-char" x="1080" y="0" font-size="14">ン</text>
-    <text class="matrix-char" x="1080" y="15" font-size="12" opacity="0.8">N</text>
-    <text class="matrix-char" x="1080" y="28" font-size="12" opacity="0.6">S</text>
-    <text class="matrix-char" x="1080" y="41" font-size="12" opacity="0.4">7</text>
-    <text class="matrix-char" x="1080" y="54" font-size="12" opacity="0.2">レ</text>
+    <text class="leading-char" x="1080" y="0" font-size="14" fill="#f0f6fc">ン</text>
+    <text class="matrix-char" x="1080" y="15" font-size="12" opacity="0.8" fill="#f0f6fc">N</text>
+    <text class="matrix-char" x="1080" y="28" font-size="12" opacity="0.6" fill="#f0f6fc">S</text>
+    <text class="matrix-char" x="1080" y="41" font-size="12" opacity="0.4" fill="#f0f6fc">7</text>
+    <text class="matrix-char" x="1080" y="54" font-size="12" opacity="0.2" fill="#f0f6fc">レ</text>
   </g>
   
   <!-- Matrix code icon (left) -->
   <g transform="translate(20, 25)" opacity="0.8" filter="url(#glow)">
     <rect x="0" y="0" width="30" height="35" rx="2" fill="none" stroke="#5FED83" stroke-width="2"/>
-    <text x="7" y="14" class="matrix-char" font-size="10">01</text>
-    <text x="7" y="24" class="matrix-char" font-size="10">10</text>
-    <text x="7" y="34" class="matrix-char" font-size="10">11</text>
+    <text x="7" y="14" class="matrix-char" font-size="10" fill="#f0f6fc">01</text>
+    <text x="7" y="24" class="matrix-char" font-size="10" fill="#f0f6fc">10</text>
+    <text x="7" y="34" class="matrix-char" font-size="10" fill="#f0f6fc">11</text>
   </g>
   
   <!-- Digital icon (right) -->
@@ -308,8 +308,8 @@
     <circle cx="12" cy="12" r="3" fill="#5FED83"/>
   </g>
   
-  <text x="600" y="70" text-anchor="middle" class="text-primary" font-size="36" filter="url(#dropShadow)">MCP AI Agent Guidelines Server</text>
-  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" font-size="14">Guidelines • Patterns • Best Practices</text>
+  <text x="600" y="70" text-anchor="middle" class="text-primary" font-size="36" filter="url(#dropShadow)" fill="#f0f6fc">MCP AI Agent Guidelines Server</text>
+  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" font-size="14" fill="#f0f6fc">Guidelines • Patterns • Best Practices</text>
   <rect x="400" y="84" width="400" height="16" fill="url(#shine08)" opacity="0.2"/>
 
   <!-- Enhanced header particle system -->

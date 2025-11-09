@@ -1,12 +1,12 @@
 <svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Microservices Architecture">
   <defs>
     <linearGradient id="bgMicroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#0d1117;stop-opacity:1">
-        <animate attributeName="stop-color" values="#0d1117;#161b22;#0d1117" dur="5.5s" repeatCount="indefinite"/>
+      <stop offset="0%" style="stop-color:#000240;stop-opacity:1">
+        <animate attributeName="stop-color" values="#000240;#501DAF;#000240" dur="5.5s" repeatCount="indefinite"/>
       </stop>
-      <stop offset="50%" style="stop-color:#1c2128;stop-opacity:1"/>
-      <stop offset="100%" style="stop-color:#161b22;stop-opacity:1">
-        <animate attributeName="stop-color" values="#161b22;#0d1117;#161b22" dur="5.5s" repeatCount="indefinite"/>
+      <stop offset="50%" style="stop-color:#501DAF;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#D0B0FF;stop-opacity:1">
+        <animate attributeName="stop-color" values="#000240;#501DAF;#000240" dur="5.5s" repeatCount="indefinite"/>
       </stop>
     </linearGradient>
     
@@ -237,15 +237,15 @@
   <circle class="service-heartbeat" cx="1045" cy="100" r="3" fill="#3094FF" style="animation-delay: 3.5s"/>
   
   <!-- Service labels -->
-  <text x="190" y="50" class="text-secondary" font-size="8">Auth</text>
-  <text x="390" y="50" class="text-secondary" font-size="8">API</text>
-  <text x="810" y="50" class="text-secondary" font-size="8">DB</text>
-  <text x="1010" y="50" class="text-secondary" font-size="8">Cache</text>
+  <text x="190" y="50" class="text-secondary" font-size="8" fill="#f0f6fc">Auth</text>
+  <text x="390" y="50" class="text-secondary" font-size="8" fill="#f0f6fc">API</text>
+  <text x="810" y="50" class="text-secondary" font-size="8" fill="#f0f6fc">DB</text>
+  <text x="1010" y="50" class="text-secondary" font-size="8" fill="#f0f6fc">Cache</text>
   
-  <text x="190" y="120" class="text-secondary" font-size="8">Queue</text>
-  <text x="390" y="120" class="text-secondary" font-size="8">Worker</text>
-  <text x="810" y="120" class="text-secondary" font-size="8">Search</text>
-  <text x="1010" y="120" class="text-secondary" font-size="8">Storage</text>
+  <text x="190" y="120" class="text-secondary" font-size="8" fill="#f0f6fc">Queue</text>
+  <text x="390" y="120" class="text-secondary" font-size="8" fill="#f0f6fc">Worker</text>
+  <text x="810" y="120" class="text-secondary" font-size="8" fill="#f0f6fc">Search</text>
+  <text x="1010" y="120" class="text-secondary" font-size="8" fill="#f0f6fc">Storage</text>
   
   <!-- API Gateway icon (left) -->
   <g transform="translate(25, 30)" opacity="0.7">
@@ -268,8 +268,8 @@
     <line x1="9" y1="20" x2="16" y2="20" stroke="#C06EFF" stroke-width="1"/>
   </g>
   
-  <text x="600" y="70" text-anchor="middle" class="text-primary" font-size="36" filter="url(#dropShadow)">MCP AI Agent Guidelines Server</text>
-  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" font-size="14">Guidelines • Patterns • Best Practices</text>
+  <text x="600" y="70" text-anchor="middle" class="text-primary" font-size="36" filter="url(#dropShadow)" fill="#f0f6fc">MCP AI Agent Guidelines Server</text>
+  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" font-size="14" fill="#f0f6fc">Guidelines • Patterns • Best Practices</text>
   <rect x="400" y="84" width="400" height="16" fill="url(#shine06)" opacity="0.15"/>
 
   <!-- Enhanced header particle system -->

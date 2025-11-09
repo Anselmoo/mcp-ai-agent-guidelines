@@ -156,8 +156,8 @@
   </g>
 
   <!-- Title and subtitle -->
-  <text x="600" y="70" text-anchor="middle" class="title text-primary">MCP AI Agent Guidelines Server</text>
-  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary">Guidelines • Patterns • Best Practices</text>
+  <text x="600" y="70" text-anchor="middle" class="title text-primary" fill="#f0f6fc">MCP AI Agent Guidelines Server</text>
+  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" fill="#f0f6fc">Guidelines • Patterns • Best Practices</text>
 
   <!-- Bottom full-width progress bar -->
   <rect class="progress-bar" x="0" y="157" height="3" rx="1.5" fill="url(#accentGrad01H)" opacity="0.7"/>

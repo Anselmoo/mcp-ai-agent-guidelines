@@ -1,12 +1,12 @@
 <svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Git Rebase">
   <defs>
     <linearGradient id="bgRebaseGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#0d1117;stop-opacity:1">
-        <animate attributeName="stop-color" values="#0d1117;#161b22;#0d1117" dur="4.5s" repeatCount="indefinite"/>
+      <stop offset="0%" style="stop-color:#000240;stop-opacity:1">
+        <animate attributeName="stop-color" values="#000240;#501DAF;#000240" dur="4.5s" repeatCount="indefinite"/>
       </stop>
-      <stop offset="50%" style="stop-color:#1c2128;stop-opacity:1"/>
-      <stop offset="100%" style="stop-color:#161b22;stop-opacity:1">
-        <animate attributeName="stop-color" values="#161b22;#0d1117;#161b22" dur="4.5s" repeatCount="indefinite"/>
+      <stop offset="50%" style="stop-color:#501DAF;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#D0B0FF;stop-opacity:1">
+        <animate attributeName="stop-color" values="#000240;#501DAF;#000240" dur="4.5s" repeatCount="indefinite"/>
       </stop>
     </linearGradient>
     
@@ -233,17 +233,17 @@
   <!-- Squash indicator -->
   <g class="squash-merge" transform="translate(950, 80)">
     <rect x="-15" y="-5" width="30" height="10" rx="2" fill="none" stroke="#5FED83" stroke-width="2" opacity="0.6"/>
-    <text x="0" y="3" text-anchor="middle" class="text-secondary" font-size="8">squash</text>
+    <text x="0" y="3" text-anchor="middle" class="text-secondary" font-size="8" fill="#f0f6fc">squash</text>
   </g>
   
   <!-- Time direction arrow -->
   <path d="M 100 150 L 1100 150" stroke="#30363d" stroke-width="1" opacity="0.3" marker-end="url(#rebaseArrow)"/>
-  <text x="1110" y="153" class="text-secondary" font-size="9" opacity="0.8">time →</text>
+  <text x="1110" y="153" class="text-secondary" font-size="9" opacity="0.8" fill="#f0f6fc">time →</text>
   
   <!-- Commit hash labels -->
-  <text x="200" y="30" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.8">old</text>
-  <text x="250" y="140" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.6">new</text>
-  <text x="1000" y="140" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7">HEAD</text>
+  <text x="200" y="30" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.8" fill="#f0f6fc">old</text>
+  <text x="250" y="140" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.6" fill="#f0f6fc">new</text>
+  <text x="1000" y="140" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7" fill="#f0f6fc">HEAD</text>
   
   <!-- Git rebase icon (left) -->
   <g transform="translate(25, 30)" opacity="0.7">
@@ -260,8 +260,8 @@
     <path d="M 20 10 L 15 5 L 10 10" fill="none" stroke="#3094FF" stroke-width="2" stroke-linecap="round"/>
   </g>
   
-  <text x="600" y="70" text-anchor="middle" class="text-primary" font-size="36" filter="url(#dropShadow)">MCP AI Agent Guidelines Server</text>
-  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" font-size="14">Guidelines • Patterns • Best Practices</text>
+  <text x="600" y="70" text-anchor="middle" class="text-primary" font-size="36" filter="url(#dropShadow)" fill="#f0f6fc">MCP AI Agent Guidelines Server</text>
+  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" font-size="14" fill="#f0f6fc">Guidelines • Patterns • Best Practices</text>
   <rect x="400" y="84" width="400" height="16" fill="url(#shine07)" opacity="0.15"/>
 
   <!-- Enhanced header particle system -->

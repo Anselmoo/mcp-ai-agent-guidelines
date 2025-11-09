@@ -1,12 +1,12 @@
 <svg width="1200" height="160" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="WebSocket Real-time Communication">
   <defs>
     <linearGradient id="bgWSGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#0d1117;stop-opacity:1">
-        <animate attributeName="stop-color" values="#0d1117;#161b22;#0d1117" dur="5.0s" repeatCount="indefinite"/>
+      <stop offset="0%" style="stop-color:#000240;stop-opacity:1">
+        <animate attributeName="stop-color" values="#000240;#501DAF;#000240" dur="5.0s" repeatCount="indefinite"/>
       </stop>
-      <stop offset="50%" style="stop-color:#1c2128;stop-opacity:1"/>
-      <stop offset="100%" style="stop-color:#161b22;stop-opacity:1">
-        <animate attributeName="stop-color" values="#161b22;#0d1117;#161b22" dur="5.0s" repeatCount="indefinite"/>
+      <stop offset="50%" style="stop-color:#501DAF;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#D0B0FF;stop-opacity:1">
+        <animate attributeName="stop-color" values="#000240;#501DAF;#000240" dur="5.0s" repeatCount="indefinite"/>
       </stop>
     </linearGradient>
     
@@ -210,15 +210,15 @@
   <!-- Client (left) -->
   <g filter="url(#glow)">
     <rect class="ws-endpoint" x="150" y="50" width="100" height="60" rx="8" fill="none" stroke="#C06EFF" stroke-width="3" style="animation-delay: 0s"/>
-    <text x="200" y="77" text-anchor="middle" class="text-secondary" font-size="12">Client</text>
-    <text x="200" y="92" text-anchor="middle" class="text-secondary" font-size="9" opacity="0.7">Browser</text>
+    <text x="200" y="77" text-anchor="middle" class="text-secondary" font-size="12" fill="#f0f6fc">Client</text>
+    <text x="200" y="92" text-anchor="middle" class="text-secondary" font-size="9" opacity="0.7" fill="#f0f6fc">Browser</text>
   </g>
   
   <!-- Server (right) -->
   <g filter="url(#glow)">
     <rect class="ws-endpoint" x="950" y="50" width="100" height="60" rx="8" fill="none" stroke="#3094FF" stroke-width="3" style="animation-delay: 1s"/>
-    <text x="1000" y="77" text-anchor="middle" class="text-secondary" font-size="12">Server</text>
-    <text x="1000" y="92" text-anchor="middle" class="text-secondary" font-size="9" opacity="0.7">WebSocket</text>
+    <text x="1000" y="77" text-anchor="middle" class="text-secondary" font-size="12" fill="#f0f6fc">Server</text>
+    <text x="1000" y="92" text-anchor="middle" class="text-secondary" font-size="9" opacity="0.7" fill="#f0f6fc">WebSocket</text>
   </g>
   
   <!-- Bidirectional connection paths -->
@@ -254,10 +254,10 @@
   <!-- Connection status indicators -->
   <g opacity="0.6">
     <circle cx="190" cy="125" r="4" fill="#5FED83"/>
-    <text x="200" y="129" class="text-secondary" font-size="9">Connected</text>
+    <text x="200" y="129" class="text-secondary" font-size="9" fill="#f0f6fc">Connected</text>
     
     <circle cx="990" cy="125" r="4" fill="#5FED83"/>
-    <text x="1000" y="129" class="text-secondary" font-size="9">Active</text>
+    <text x="1000" y="129" class="text-secondary" font-size="9" fill="#f0f6fc">Active</text>
   </g>
   
   <!-- WebSocket protocol arrows -->
@@ -288,14 +288,14 @@
   </g>
   
   <!-- Protocol labels -->
-  <text x="450" y="50" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.8">ws://</text>
-  <text x="750" y="130" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.8">Full-duplex communication</text>
+  <text x="450" y="50" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.8" fill="#f0f6fc">ws://</text>
+  <text x="750" y="130" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.8" fill="#f0f6fc">Full-duplex communication</text>
   
   <!-- Connection stats -->
-  <text x="600" y="145" text-anchor="middle" class="text-secondary" font-size="9" opacity="0.8">Latency: 12ms • Messages/sec: 847 • Connections: 1,234</text>
+  <text x="600" y="145" text-anchor="middle" class="text-secondary" font-size="9" opacity="0.8" fill="#f0f6fc">Latency: 12ms • Messages/sec: 847 • Connections: 1,234</text>
   
-  <text x="600" y="70" text-anchor="middle" class="text-primary" font-size="36" filter="url(#dropShadow)">MCP AI Agent Guidelines Server</text>
-  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" font-size="14">Guidelines • Patterns • Best Practices</text>
+  <text x="600" y="70" text-anchor="middle" class="text-primary" font-size="36" filter="url(#dropShadow)" fill="#f0f6fc">MCP AI Agent Guidelines Server</text>
+  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" font-size="14" fill="#f0f6fc">Guidelines • Patterns • Best Practices</text>
   <rect x="400" y="84" width="400" height="16" fill="url(#shine15)" opacity="0.15"/>
 
   <!-- Enhanced header particle system -->
