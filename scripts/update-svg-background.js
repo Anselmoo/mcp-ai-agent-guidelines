@@ -23,7 +23,7 @@ const changes = [];
 /**
  * Update SVG background gradient to use new color scheme
  */
-function updateSVGBackground(filepath, content) {
+function updateSVGBackground(_filepath, content) {
 	let modified = content;
 	const changesMade = [];
 
@@ -31,7 +31,7 @@ function updateSVGBackground(filepath, content) {
 	// Replace dark backgrounds with new purple/blue gradient
 	modified = modified.replace(
 		/(<linearGradient id="bg[^"]*"[^>]*>[\s\S]*?<stop offset="0%"[^>]*stop-color:)(#[0-9a-fA-F]{6})/g,
-		(match, prefix, _color) => {
+		(_match, prefix, _color) => {
 			changesMade.push("Updated gradient start color to #000240");
 			return `${prefix}#000240`;
 		},
@@ -39,7 +39,7 @@ function updateSVGBackground(filepath, content) {
 
 	modified = modified.replace(
 		/(<linearGradient id="bg[^"]*"[\s\S]*?<stop offset="50%"[^>]*stop-color:)(#[0-9a-fA-F]{6})/g,
-		(match, prefix, _color) => {
+		(_match, prefix, _color) => {
 			changesMade.push("Updated gradient middle color to #501DAF");
 			return `${prefix}#501DAF`;
 		},
@@ -47,7 +47,7 @@ function updateSVGBackground(filepath, content) {
 
 	modified = modified.replace(
 		/(<linearGradient id="bg[^"]*"[\s\S]*?<stop offset="100%"[^>]*stop-color:)(#[0-9a-fA-F]{6})/g,
-		(match, prefix, _color) => {
+		(_match, prefix, _color) => {
 			changesMade.push("Updated gradient end color to #D0B0FF");
 			return `${prefix}#D0B0FF`;
 		},
@@ -72,7 +72,7 @@ function updateSVGBackground(filepath, content) {
 	// Pattern 3: Also update any radial gradients to complement the new scheme
 	modified = modified.replace(
 		/(<radialGradient[^>]*>[\s\S]*?<stop offset="0%"[^>]*stop-color:)(#[0-9a-fA-F]{6})/g,
-		(match, prefix, color) => {
+		(match, _prefix, _color) => {
 			// Keep existing radial gradient colors (glow effects) but could adjust if needed
 			return match;
 		},
