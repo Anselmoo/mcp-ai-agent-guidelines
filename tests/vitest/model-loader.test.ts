@@ -168,13 +168,55 @@ describe("Model Loader (YAML)", () => {
 			const model1 = getDefaultModel();
 			const model2 = getDefaultModel();
 
-			// Should return the same reference (cached)
+			// Should return the same value (cached config)
 			expect(model1).toBe(model2);
 		});
 
 		it("should return a string that is not empty", () => {
 			const defaultModel = getDefaultModel();
 			expect(defaultModel.trim().length).toBeGreaterThan(0);
+		});
+
+		it("should use same cached config as other getters", () => {
+			// Call getDefaultModel first to load config
+			const defaultModel = getDefaultModel();
+
+			// Call other getters which should use the same cached config
+			const models = getModels();
+			const keywords = getRequirementKeywords();
+			const weights = getCapabilityWeights();
+
+			// Verify they all return valid data from the same config
+			expect(defaultModel).toBe("GPT-5");
+			expect(models.length).toBeGreaterThan(0);
+			expect(Object.keys(keywords).length).toBeGreaterThan(0);
+			expect(Object.keys(weights).length).toBeGreaterThan(0);
+		});
+	});
+
+	describe("Caching behavior", () => {
+		it("should use cached configuration across all getter functions", () => {
+			// First call to load and cache config
+			const models1 = getModels();
+
+			// Subsequent calls should use cached config
+			const models2 = getModels();
+			const keywords = getRequirementKeywords();
+			const weights = getCapabilityWeights();
+			const adjustments = getBudgetAdjustments();
+			const bonus = getBudgetBonus();
+			const penalty = getBudgetPenalty();
+			const defaultModel = getDefaultModel();
+
+			// Verify all data is loaded
+			expect(models1).toBe(models2); // Same reference from cache
+			expect(models2.length).toBeGreaterThan(0);
+			expect(Object.keys(keywords).length).toBeGreaterThan(0);
+			expect(Object.keys(weights).length).toBeGreaterThan(0);
+			expect(Object.keys(adjustments).length).toBe(3); // low, medium, high
+			expect(bonus).toBeGreaterThan(0);
+			expect(penalty).toBeGreaterThan(0);
+			expect(defaultModel.length).toBeGreaterThan(0);
 		});
 	});
 
