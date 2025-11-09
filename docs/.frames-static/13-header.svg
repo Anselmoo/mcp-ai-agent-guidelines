@@ -203,29 +203,29 @@
     <rect x="150" y="25" width="900" height="20" rx="10" fill="#30363d" opacity="0.5"/>
     <rect class="coverage-fill" x="150" y="25" height="20" rx="10" fill="url(#coverageFill)" style="animation-delay: 0s"/>
     <rect class="bar-shine" x="150" y="25" width="900" height="20" rx="10" fill="url(#shine13)" opacity="0.1"/>
-    <text x="130" y="39" text-anchor="end" class="text-secondary" font-size="11">Lines</text>
-    <text x="1070" y="39" class="text-secondary" font-size="11" opacity="0.8">94.2%</text>
+    <text x="130" y="39" text-anchor="end" class="text-secondary" font-size="11" fill="#f0f6fc">Lines</text>
+    <text x="1070" y="39" class="text-secondary" font-size="11" opacity="0.8" fill="#f0f6fc">94.2%</text>
     
     <!-- Branches coverage -->
     <rect x="150" y="55" width="900" height="20" rx="10" fill="#30363d" opacity="0.5"/>
     <rect class="coverage-fill" x="150" y="55" height="20" rx="10" fill="url(#coverageFill)" style="width: 720px; animation-delay: 0.5s"/>
     <rect class="bar-shine" x="150" y="55" width="900" height="20" rx="10" fill="url(#shine13)" opacity="0.1"/>
-    <text x="130" y="69" text-anchor="end" class="text-secondary" font-size="11">Branches</text>
-    <text x="1070" y="69" class="text-secondary" font-size="11" opacity="0.8">80.0%</text>
+    <text x="130" y="69" text-anchor="end" class="text-secondary" font-size="11" fill="#f0f6fc">Branches</text>
+    <text x="1070" y="69" class="text-secondary" font-size="11" opacity="0.8" fill="#f0f6fc">80.0%</text>
     
     <!-- Functions coverage -->
     <rect x="150" y="85" width="900" height="20" rx="10" fill="#30363d" opacity="0.5"/>
     <rect class="coverage-fill" x="150" y="85" height="20" rx="10" fill="url(#coverageFill)" style="width: 810px; animation-delay: 1s"/>
     <rect class="bar-shine" x="150" y="85" width="900" height="20" rx="10" fill="url(#shine13)" opacity="0.1"/>
-    <text x="130" y="99" text-anchor="end" class="text-secondary" font-size="11">Functions</text>
-    <text x="1070" y="99" class="text-secondary" font-size="11" opacity="0.8">90.0%</text>
+    <text x="130" y="99" text-anchor="end" class="text-secondary" font-size="11" fill="#f0f6fc">Functions</text>
+    <text x="1070" y="99" class="text-secondary" font-size="11" opacity="0.8" fill="#f0f6fc">90.0%</text>
     
     <!-- Statements coverage -->
     <rect x="150" y="115" width="900" height="20" rx="10" fill="#30363d" opacity="0.5"/>
     <rect class="coverage-fill" x="150" y="115" height="20" rx="10" fill="url(#coverageFill)" style="width: 873px; animation-delay: 1.5s"/>
     <rect class="bar-shine" x="150" y="115" width="900" height="20" rx="10" fill="url(#shine13)" opacity="0.1"/>
-    <text x="130" y="129" text-anchor="end" class="text-secondary" font-size="11">Statements</text>
-    <text x="1070" y="129" class="text-secondary" font-size="11" opacity="0.8">97.0%</text>
+    <text x="130" y="129" text-anchor="end" class="text-secondary" font-size="11" fill="#f0f6fc">Statements</text>
+    <text x="1070" y="129" class="text-secondary" font-size="11" opacity="0.8" fill="#f0f6fc">97.0%</text>
   </g>
   
   <!-- Test execution indicators -->
@@ -269,9 +269,9 @@
   </g>
   
   <!-- Test stats -->
-  <text x="600" y="150" text-anchor="middle" class="text-secondary" font-size="9" opacity="0.8">Tests: 247 passed, 0 failed • Duration: 12.4s • Threshold: 80%</text>
+  <text x="600" y="150" text-anchor="middle" class="text-secondary" font-size="9" opacity="0.8" fill="#f0f6fc">Tests: 247 passed, 0 failed • Duration: 12.4s • Threshold: 80%</text>
   
-  <text x="600" y="70" text-anchor="middle" class="text-primary" font-size="36" filter="url(#dropShadow)">MCP AI Agent Guidelines Server</text>
+  <text x="600" y="70" text-anchor="middle" class="text-primary" font-size="36" filter="url(#dropShadow)" fill="#f0f6fc">MCP AI Agent Guidelines Server</text>
   <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" font-size="14" fill="#f0f6fc">Guidelines • Patterns • Best Practices</text>
   <rect x="400" y="84" width="400" height="16" fill="url(#shine13)" opacity="0.15"/>
 

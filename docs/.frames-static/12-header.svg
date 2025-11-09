@@ -192,33 +192,33 @@
   <g filter="url(#glow)">
     <!-- Block 1 (Genesis) -->
     <rect class="block-mine" x="120" y="55" width="70" height="50" rx="5" fill="none" stroke="#3094FF" stroke-width="3" style="animation-delay: 0s"/>
-    <text x="155" y="78" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7">Block</text>
-    <text x="155" y="88" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7">#0</text>
+    <text x="155" y="78" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7" fill="#f0f6fc">Block</text>
+    <text x="155" y="88" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7" fill="#f0f6fc">#0</text>
     
     <!-- Block 2 -->
     <rect class="block-mine" x="280" y="55" width="70" height="50" rx="5" fill="none" stroke="#5FED83" stroke-width="3" style="animation-delay: 1s"/>
-    <text x="315" y="78" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7">Block</text>
-    <text x="315" y="88" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7">#1</text>
+    <text x="315" y="78" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7" fill="#f0f6fc">Block</text>
+    <text x="315" y="88" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7" fill="#f0f6fc">#1</text>
     
     <!-- Block 3 -->
     <rect class="block-mine" x="440" y="55" width="70" height="50" rx="5" fill="none" stroke="#C06EFF" stroke-width="3" style="animation-delay: 2s"/>
-    <text x="475" y="78" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7">Block</text>
-    <text x="475" y="88" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7">#2</text>
+    <text x="475" y="78" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7" fill="#f0f6fc">Block</text>
+    <text x="475" y="88" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7" fill="#f0f6fc">#2</text>
     
     <!-- Block 4 -->
     <rect class="block-mine" x="600" y="55" width="70" height="50" rx="5" fill="none" stroke="#3094FF" stroke-width="3" style="animation-delay: 3s"/>
-    <text x="635" y="78" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7">Block</text>
-    <text x="635" y="88" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7">#3</text>
+    <text x="635" y="78" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7" fill="#f0f6fc">Block</text>
+    <text x="635" y="88" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7" fill="#f0f6fc">#3</text>
     
     <!-- Block 5 -->
     <rect class="block-mine" x="760" y="55" width="70" height="50" rx="5" fill="none" stroke="#5FED83" stroke-width="3" style="animation-delay: 4s"/>
-    <text x="795" y="78" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7">Block</text>
-    <text x="795" y="88" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7">#4</text>
+    <text x="795" y="78" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7" fill="#f0f6fc">Block</text>
+    <text x="795" y="88" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7" fill="#f0f6fc">#4</text>
     
     <!-- Block 6 (Latest) -->
     <rect class="block-mine" x="920" y="55" width="70" height="50" rx="5" fill="none" stroke="#C06EFF" stroke-width="3" style="animation-delay: 5s"/>
-    <text x="955" y="78" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7">Block</text>
-    <text x="955" y="88" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7">#5</text>
+    <text x="955" y="78" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7" fill="#f0f6fc">Block</text>
+    <text x="955" y="88" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.7" fill="#f0f6fc">#5</text>
   </g>
   
   <!-- Chain links -->
@@ -275,9 +275,9 @@
   </g>
   
   <!-- Network stats -->
-  <text x="600" y="135" text-anchor="middle" class="text-secondary" font-size="9" opacity="0.8">Block height: 5 • Hash rate: 1.2 TH/s • Difficulty: 12.5T</text>
+  <text x="600" y="135" text-anchor="middle" class="text-secondary" font-size="9" opacity="0.8" fill="#f0f6fc">Block height: 5 • Hash rate: 1.2 TH/s • Difficulty: 12.5T</text>
   
-  <text x="600" y="70" text-anchor="middle" class="text-primary" font-size="36" filter="url(#dropShadow)">MCP AI Agent Guidelines Server</text>
+  <text x="600" y="70" text-anchor="middle" class="text-primary" font-size="36" filter="url(#dropShadow)" fill="#f0f6fc">MCP AI Agent Guidelines Server</text>
   <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" font-size="14" fill="#f0f6fc">Guidelines • Patterns • Best Practices</text>
   <rect x="400" y="84" width="400" height="16" fill="url(#shine12)" opacity="0.15"/>
 

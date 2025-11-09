@@ -84,9 +84,13 @@ function fixSVGVisibility(_filepath, content) {
 	// Add a default light fill for all text elements that don't have explicit fill
 	// This acts as a fallback when media queries don't work
 	modified = modified.replace(/<text([^>]*)>/g, (match, attrs) => {
-		// If text doesn't have fill attribute and doesn't have a class, add a light fill
-		if (!attrs.includes("fill=") && !attrs.includes('class="text-')) {
-			changesMade.push("Added default light fill to unclassed text element");
+		// If text doesn't have fill attribute, add a light fill
+		if (!attrs.includes("fill=")) {
+			const hasTextClass = attrs.includes('class="text-');
+			const message = hasTextClass
+				? "Added light fill to text element with class"
+				: "Added default light fill to unclassed text element";
+			changesMade.push(message);
 			return `<text${attrs} fill="#f0f6fc">`;
 		}
 		return match;

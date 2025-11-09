@@ -195,19 +195,19 @@
   <g filter="url(#glow)">
     <!-- Lexer stage -->
     <circle cx="200" cy="80" r="30" fill="none" stroke="#5FED83" stroke-width="2" opacity="0.5"/>
-    <text x="200" y="110" text-anchor="middle" class="text-secondary" font-size="10">Lexer</text>
+    <text x="200" y="110" text-anchor="middle" class="text-secondary" font-size="10" fill="#f0f6fc">Lexer</text>
     
     <!-- Parser stage -->
     <circle cx="450" cy="80" r="30" fill="none" stroke="#C06EFF" stroke-width="2" opacity="0.5"/>
-    <text x="450" y="110" text-anchor="middle" class="text-secondary" font-size="10">Parser</text>
+    <text x="450" y="110" text-anchor="middle" class="text-secondary" font-size="10" fill="#f0f6fc">Parser</text>
     
     <!-- Optimizer stage -->
     <circle cx="700" cy="80" r="30" fill="none" stroke="#3094FF" stroke-width="2" opacity="0.5"/>
-    <text x="700" y="110" text-anchor="middle" class="text-secondary" font-size="10">Optimizer</text>
+    <text x="700" y="110" text-anchor="middle" class="text-secondary" font-size="10" fill="#f0f6fc">Optimizer</text>
     
     <!-- Code gen stage -->
     <circle cx="950" cy="80" r="30" fill="none" stroke="#5FED83" stroke-width="2" opacity="0.5"/>
-    <text x="950" y="110" text-anchor="middle" class="text-secondary" font-size="10">CodeGen</text>
+    <text x="950" y="110" text-anchor="middle" class="text-secondary" font-size="10" fill="#f0f6fc">CodeGen</text>
   </g>
   
   <!-- Compilation progress arcs -->
@@ -260,7 +260,7 @@
     <circle cx="12" cy="30" r="2" fill="#5FED83"/>
   </g>
   
-  <text x="600" y="70" text-anchor="middle" class="text-primary" font-size="36" filter="url(#dropShadow)">MCP AI Agent Guidelines Server</text>
+  <text x="600" y="70" text-anchor="middle" class="text-primary" font-size="36" filter="url(#dropShadow)" fill="#f0f6fc">MCP AI Agent Guidelines Server</text>
   <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" font-size="14" fill="#f0f6fc">Guidelines • Patterns • Best Practices</text>
   <rect x="400" y="84" width="400" height="16" fill="url(#shine05)" opacity="0.15"/>
 

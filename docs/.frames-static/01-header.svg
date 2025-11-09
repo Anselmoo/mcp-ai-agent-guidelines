@@ -254,11 +254,11 @@
   </g>
   
   <!-- Commit hash labels -->
-  <text x="150" y="100" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.8">a1b2c</text>
-  <text x="550" y="100" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.8">d3e4f</text>
-  <text x="1100" y="100" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.8">HEAD</text>
+  <text x="150" y="100" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.8" fill="#f0f6fc">a1b2c</text>
+  <text x="550" y="100" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.8" fill="#f0f6fc">d3e4f</text>
+  <text x="1100" y="100" text-anchor="middle" class="text-secondary" font-size="8" opacity="0.8" fill="#f0f6fc">HEAD</text>
   
-  <text x="600" y="70" text-anchor="middle" class="text-primary" font-size="36" filter="url(#dropShadow)">MCP AI Agent Guidelines Server</text>
+  <text x="600" y="70" text-anchor="middle" class="text-primary" font-size="36" filter="url(#dropShadow)" fill="#f0f6fc">MCP AI Agent Guidelines Server</text>
   <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" font-size="14" fill="#f0f6fc">Guidelines • Patterns • Best Practices</text>
   <rect x="400" y="84" width="400" height="16" fill="url(#shine01)" opacity="0.15"/>
 

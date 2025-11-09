@@ -47,23 +47,23 @@
   <rect width="1200" height="160" fill="url(#bgGrad05H)"/>
   
   <g>
-    <text x="60" y="45" class="text-secondary" font-size="12">Lexer</text>
+    <text x="60" y="45" class="text-secondary" font-size="12" fill="#f0f6fc">Lexer</text>
     <rect class="accent-blue compile-stage" x="50" y="50" height="8" rx="4"/>
   </g>
   <g>
-    <text x="260" y="75" class="text-secondary" font-size="12">Parser</text>
+    <text x="260" y="75" class="text-secondary" font-size="12" fill="#f0f6fc">Parser</text>
     <rect class="accent-purple compile-stage" x="250" y="80" height="8" rx="4" style="animation-delay: 2s"/>
   </g>
   <g>
-    <text x="460" y="105" class="text-secondary" font-size="12">AST</text>
+    <text x="460" y="105" class="text-secondary" font-size="12" fill="#f0f6fc">AST</text>
     <rect class="accent-green compile-stage" x="450" y="110" height="8" rx="4" style="animation-delay: 4s"/>
   </g>
   <g>
-    <text x="660" y="75" class="text-secondary" font-size="12">Optimize</text>
+    <text x="660" y="75" class="text-secondary" font-size="12" fill="#f0f6fc">Optimize</text>
     <rect class="accent-blue compile-stage" x="650" y="80" height="8" rx="4" style="animation-delay: 6s"/>
   </g>
   <g>
-    <text x="860" y="45" class="text-secondary" font-size="12">Codegen</text>
+    <text x="860" y="45" class="text-secondary" font-size="12" fill="#f0f6fc">Codegen</text>
     <rect class="accent-purple compile-stage" x="850" y="50" height="8" rx="4" style="animation-delay: 8s"/>
   </g>
   

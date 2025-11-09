@@ -268,7 +268,7 @@
     <circle class="neuron-node" cx="100" cy="40" r="8" fill="#5FED83" style="animation-delay: 0s"/>
     <circle class="neuron-node" cx="100" cy="80" r="8" fill="#3094FF" style="animation-delay: 0.5s"/>
     <circle class="neuron-node" cx="100" cy="120" r="8" fill="#C06EFF" style="animation-delay: 1s"/>
-    <text x="120" y="45" class="text-secondary" font-size="10">Input</text>
+    <text x="120" y="45" class="text-secondary" font-size="10" fill="#f0f6fc">Input</text>
   </g>
   
   <!-- Layer 2: Hidden neurons (left-center) -->
@@ -291,7 +291,7 @@
   <g filter="url(#neuronGlowFilter)">
     <circle class="neuron-node" cx="1100" cy="60" r="8" fill="#5FED83" style="animation-delay: 5.5s"/>
     <circle class="neuron-node" cx="1100" cy="100" r="8" fill="#3094FF" style="animation-delay: 6s"/>
-    <text x="1020" y="85" class="text-secondary" font-size="10">Output</text>
+    <text x="1020" y="85" class="text-secondary" font-size="10" fill="#f0f6fc">Output</text>
   </g>
   
   <!-- Complex synapse connections -->

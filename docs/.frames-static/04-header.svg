@@ -249,10 +249,10 @@
   </g>
   
   <!-- Throughput labels -->
-  <text x="300" y="30" class="text-secondary" font-size="8" opacity="0.8">1.2 GB/s</text>
-  <text x="700" y="30" class="text-secondary" font-size="8" opacity="0.8">850 MB/s</text>
+  <text x="300" y="30" class="text-secondary" font-size="8" opacity="0.8" fill="#f0f6fc">1.2 GB/s</text>
+  <text x="700" y="30" class="text-secondary" font-size="8" opacity="0.8" fill="#f0f6fc">850 MB/s</text>
   
-  <text x="600" y="70" text-anchor="middle" class="text-primary" font-size="36" filter="url(#dropShadow)">MCP AI Agent Guidelines Server</text>
+  <text x="600" y="70" text-anchor="middle" class="text-primary" font-size="36" filter="url(#dropShadow)" fill="#f0f6fc">MCP AI Agent Guidelines Server</text>
   <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" font-size="14" fill="#f0f6fc">Guidelines • Patterns • Best Practices</text>
   <rect x="400" y="84" width="400" height="16" fill="url(#shine04)" opacity="0.15"/>
 

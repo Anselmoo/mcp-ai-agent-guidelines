@@ -186,7 +186,7 @@
   <text x="1160" y="72" text-anchor="end" class="link text-link" font-size="11px" opacity="0.9" fill="#f0f6fc">© 2025</text>
 
   <!-- Load stats -->
-  <text x="600" y="73" text-anchor="middle" class="text-link" font-size="8" opacity="0.4">Active: 8/8 • Req/s: 1,247</text>
+  <text x="600" y="73" text-anchor="middle" class="text-link" font-size="8" opacity="0.4" fill="#f0f6fc">Active: 8/8 • Req/s: 1,247</text>
 
   <!-- Enhanced particle system -->
   <g opacity="0.6">

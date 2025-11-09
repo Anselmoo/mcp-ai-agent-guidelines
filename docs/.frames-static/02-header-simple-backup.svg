@@ -40,22 +40,22 @@
   <g class="stage">
     <rect x="100" y="60" width="80" height="40" rx="8" class="node-bg" opacity="0.5"/>
     <circle cx="140" cy="80" r="12" class="accent-green" opacity="0.3"/>
-    <text x="140" y="85" text-anchor="middle" class="text-secondary" font-size="10">Build</text>
+    <text x="140" y="85" text-anchor="middle" class="text-secondary" font-size="10" fill="#f0f6fc">Build</text>
   </g>
   <g class="stage" style="animation-delay: 2s">
     <rect x="400" y="60" width="80" height="40" rx="8" class="node-bg" opacity="0.5"/>
     <circle cx="440" cy="80" r="12" class="accent-blue" opacity="0.3"/>
-    <text x="440" y="85" text-anchor="middle" class="text-secondary" font-size="10">Test</text>
+    <text x="440" y="85" text-anchor="middle" class="text-secondary" font-size="10" fill="#f0f6fc">Test</text>
   </g>
   <g class="stage" style="animation-delay: 4s">
     <rect x="700" y="60" width="80" height="40" rx="8" class="node-bg" opacity="0.5"/>
     <circle cx="740" cy="80" r="12" class="accent-purple" opacity="0.3"/>
-    <text x="740" y="85" text-anchor="middle" class="text-secondary" font-size="10">Deploy</text>
+    <text x="740" y="85" text-anchor="middle" class="text-secondary" font-size="10" fill="#f0f6fc">Deploy</text>
   </g>
   <g class="stage" style="animation-delay: 6s">
     <rect x="1000" y="60" width="80" height="40" rx="8" class="node-bg" opacity="0.5"/>
     <circle cx="1040" cy="80" r="12" class="accent-green" opacity="0.3"/>
-    <text x="1040" y="85" text-anchor="middle" class="text-secondary" font-size="10">Monitor</text>
+    <text x="1040" y="85" text-anchor="middle" class="text-secondary" font-size="10" fill="#f0f6fc">Monitor</text>
   </g>
   
   <line x1="180" y1="80" x2="400" y2="80" class="gitline pipeline-arrow" stroke-dasharray="10 10" stroke-width="2"/>

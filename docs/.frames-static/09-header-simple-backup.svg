@@ -50,15 +50,15 @@
   
   <g class="comment-appear">
     <rect x="200" y="50" width="60" height="30" rx="4" class="accent-blue" opacity="0.2"/>
-    <text x="230" y="70" class="text-secondary" font-size="10">Comment</text>
+    <text x="230" y="70" class="text-secondary" font-size="10" fill="#f0f6fc">Comment</text>
   </g>
   <g class="comment-appear" style="animation-delay: 2s">
     <rect x="500" y="50" width="60" height="30" rx="4" class="accent-purple" opacity="0.2"/>
-    <text x="530" y="70" class="text-secondary" font-size="10">Review</text>
+    <text x="530" y="70" class="text-secondary" font-size="10" fill="#f0f6fc">Review</text>
   </g>
   <g class="comment-appear" style="animation-delay: 4s">
     <rect x="800" y="50" width="60" height="30" rx="4" class="accent-green" opacity="0.2"/>
-    <text x="830" y="70" class="text-secondary" font-size="10">Approve</text>
+    <text x="830" y="70" class="text-secondary" font-size="10" fill="#f0f6fc">Approve</text>
   </g>
   
   <path d="M350,75 L360,85 L380,65" class="accent-green approval" fill="none" stroke-width="3" stroke-linecap="round"/>

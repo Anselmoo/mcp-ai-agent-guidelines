@@ -187,7 +187,7 @@
   <text x="1160" y="72" text-anchor="end" class="link text-link" font-size="11px" opacity="0.9" fill="#f0f6fc">© 2025</text>
 
   <!-- Coverage stats -->
-  <text x="600" y="73" text-anchor="middle" class="text-link" font-size="8" opacity="0.4">94.2% Lines • 80% Branches</text>
+  <text x="600" y="73" text-anchor="middle" class="text-link" font-size="8" opacity="0.4" fill="#f0f6fc">94.2% Lines • 80% Branches</text>
 
   <!-- Enhanced particle system -->
   <g opacity="0.6">
