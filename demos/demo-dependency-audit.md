@@ -8,7 +8,7 @@
 | Metric | Value |
 |---|---|
 | Project | mcp-ai-agent-guidelines |
-| Version | 0.9.1 |
+| Version | 0.10.0 |
 | Total Dependencies | 6 |
 | Dev Dependencies | 9 |
 | Peer Dependencies | 0 |

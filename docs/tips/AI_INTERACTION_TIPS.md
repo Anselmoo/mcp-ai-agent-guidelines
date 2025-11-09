@@ -347,7 +347,7 @@ By following these patterns, you'll unlock the full power of the MCP AI Agent Gu
 
 For more information about specific tools, see the main [README.md](../README.md).
 
-<!-- FOOTER:START -->
+<<!-- FOOTER:START -->
 
 ![Footer](../.frames-static/09-footer.svg)
 

@@ -119,7 +119,7 @@ For complete parameter schemas, examples, and best practices:
 
 **Navigation**: [📁 Docs Home](../README.md) • [💡 Tips](../tips/) • [ℹ️ About](../about/)
 
-<!-- FOOTER:START -->
+<<!-- FOOTER:START -->
 
 ![Footer](../.frames-static/09-footer.svg)
 

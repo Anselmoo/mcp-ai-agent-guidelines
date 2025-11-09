@@ -408,6 +408,6 @@ For issues with link extraction:
 2. Review script output for errors
 3. Open issue with `npm run links:extract:json` output
 
-<!-- FOOTER:START -->
+<<!-- FOOTER:START -->
 ![Footer](../.frames-static/09-footer.svg)
 <!-- FOOTER:END -->

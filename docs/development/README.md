@@ -39,6 +39,6 @@ See [CONTRIBUTING.md](../../CONTRIBUTING.md) for general contribution guidelines
 - [Error Handling](../tips/ERROR_HANDLING.md) - Error patterns and best practices
 - [Type Organization](../tips/TYPE_ORGANIZATION_EXTENSION.md) - TypeScript conventions
 
-<!-- FOOTER:START -->
+<<!-- FOOTER:START -->
 ![Footer](../.frames-static/09-footer.svg)
 <!-- FOOTER:END -->

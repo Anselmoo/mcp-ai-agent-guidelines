@@ -32,6 +32,26 @@ npm run docs:lint
 - `0` - No issues found
 - `1` - Issues detected (see output for details)
 
+### 🔧 Documentation Consistency Fixer
+
+Automatically fixes common documentation inconsistencies in naming, headers, and footers.
+
+**Dry run (preview changes):**
+```bash
+npm run docs:fix:dry-run
+```
+
+**Apply fixes:**
+```bash
+npm run docs:fix
+```
+
+**What it fixes:**
+- File naming conventions (auto-converts to SCREAMING_SNAKE_CASE or kebab-case)
+- Missing header structures (adds standard header with SVG)
+- Footer comment typos (`!--` → `<!--`)
+- Ensures all files follow repository conventions
+
 ### 🎨 SVG Visibility Fixer
 
 Fixes SVG text visibility issues in dark mode by adding explicit fill colors.
@@ -86,7 +106,7 @@ All documentation files should include standardized headers and footers:
 
 ### Footer Template (Optional)
 ```markdown
-<!-- FOOTER:START -->
+<<!-- FOOTER:START -->
 
 ![Footer](../.frames-static/09-footer.svg)
 
@@ -143,7 +163,12 @@ File: tips/design-guidelines.md
 Expected: SCREAMING_SNAKE_CASE
 ```
 
-**Fix:**
+**Automated Fix:**
+```bash
+npm run docs:fix
+```
+
+**Manual Fix:**
 ```bash
 cd docs/tips
 mv design-guidelines.md DESIGN_GUIDELINES.md
@@ -158,7 +183,12 @@ File: docs/EXPORT_FORMATS.md
 Issue: Missing or incomplete header structure
 ```
 
-**Fix:**
+**Automated Fix:**
+```bash
+npm run docs:fix
+```
+
+**Manual Fix:**
 Add header markers at the top of the file:
 ```markdown
 <!-- HEADER:START -->
@@ -170,6 +200,21 @@ Add header markers at the top of the file:
 # Export Formats
 ```
 
+### Issue: Footer comment typo
+
+**Problem:**
+```
+!-- FOOTER:START -->  (missing opening <)
+```
+
+**Automated Fix:**
+```bash
+npm run docs:fix
+```
+
+**Manual Fix:**
+Change `!--` to `<!--` in footer markers.
+
 ### Issue: SVG text invisible in dark mode
 
 **Problem:**
@@ -180,6 +225,33 @@ Run the SVG fixer:
 ```bash
 npm run docs:fix-svg
 ```
+
+## Recommended Workflow
+
+### Before Committing Documentation Changes
+
+1. **Run the consistency fixer** (preview mode):
+   ```bash
+   npm run docs:fix:dry-run
+   ```
+
+2. **Apply automatic fixes**:
+   ```bash
+   npm run docs:fix
+   ```
+
+3. **Verify with the linter**:
+   ```bash
+   npm run docs:lint
+   ```
+
+4. **Commit changes**:
+   ```bash
+   git add docs/
+   git commit -m "docs: fix consistency issues"
+   ```
+
+This workflow ensures all documentation follows repository conventions before merging.
 
 ## Best Practices
 
@@ -203,6 +275,11 @@ npm run docs:fix-svg
 4. **Start with H1 heading**
    - First heading should be `# Title`
    - Follow logical hierarchy (H1 → H2 → H3)
+
+5. **Run the fixer before committing**
+   - Use `npm run docs:fix:dry-run` to preview
+   - Apply with `npm run docs:fix`
+   - Verify with `npm run docs:lint`
 
 ### When Modifying SVG Files
 

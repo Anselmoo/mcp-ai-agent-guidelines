@@ -1065,6 +1065,6 @@ Vary illustration style and complexity by asset importance:
 **Maintainer**: @Anselmoo
 **Last Updated**: 2025-11-01
 
-<!-- FOOTER:START -->
+<<!-- FOOTER:START -->
 ![Footer](../.frames-static/09-footer.svg)
 <!-- FOOTER:END -->
