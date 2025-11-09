@@ -287,7 +287,7 @@
   <text x="600" y="140" text-anchor="middle" class="text-secondary" font-size="9" opacity="0.8">+142 -38 • 12 files changed</text>
   
   <text x="600" y="70" text-anchor="middle" class="text-primary" font-size="36" filter="url(#dropShadow)">MCP AI Agent Guidelines Server</text>
-  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" font-size="14">Guidelines • Patterns • Best Practices</text>
+  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" font-size="14" fill="#f0f6fc">Guidelines • Patterns • Best Practices</text>
   <rect x="400" y="84" width="400" height="16" fill="url(#shine09)" opacity="0.15"/>
 
   <!-- Enhanced header particle system -->

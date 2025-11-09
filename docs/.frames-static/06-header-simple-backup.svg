@@ -72,6 +72,6 @@
   <circle class="accent-green lb-distribute" cx="50" r="5"/>
   <circle class="accent-blue lb-distribute" cx="1150" r="5" style="animation-delay: 2s"/>
   
-  <text x="600" y="70" text-anchor="middle" class="title text-primary">MCP AI Agent Guidelines Server</text>
-  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary">Guidelines • Patterns • Best Practices</text>
+  <text x="600" y="70" text-anchor="middle" class="title text-primary" fill="#f0f6fc">MCP AI Agent Guidelines Server</text>
+  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" fill="#f0f6fc">Guidelines • Patterns • Best Practices</text>
 </svg>

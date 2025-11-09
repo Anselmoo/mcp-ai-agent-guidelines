@@ -61,10 +61,10 @@
   <circle class="accent-green resolver" cx="200" cy="130" style="animation-delay: 2.5s"/>
   <circle class="accent-blue resolver" cx="400" cy="130" style="animation-delay: 3s"/>
   
-  <text x="600" y="20" text-anchor="middle" class="field text-secondary" font-size="10">query</text>
-  <text x="300" y="100" text-anchor="middle" class="field text-secondary" font-size="9" style="animation-delay: 1s">user</text>
-  <text x="900" y="100" text-anchor="middle" class="field text-secondary" font-size="9" style="animation-delay: 2s">posts</text>
+  <text x="600" y="20" text-anchor="middle" class="field text-secondary" font-size="10" fill="#f0f6fc">query</text>
+  <text x="300" y="100" text-anchor="middle" class="field text-secondary" font-size="9" style="animation-delay: 1s" fill="#f0f6fc">user</text>
+  <text x="900" y="100" text-anchor="middle" class="field text-secondary" font-size="9" style="animation-delay: 2s" fill="#f0f6fc">posts</text>
   
-  <text x="600" y="70" text-anchor="middle" class="title text-primary">MCP AI Agent Guidelines Server</text>
-  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary">Guidelines • Patterns • Best Practices</text>
+  <text x="600" y="70" text-anchor="middle" class="title text-primary" fill="#f0f6fc">MCP AI Agent Guidelines Server</text>
+  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" fill="#f0f6fc">Guidelines • Patterns • Best Practices</text>
 </svg>

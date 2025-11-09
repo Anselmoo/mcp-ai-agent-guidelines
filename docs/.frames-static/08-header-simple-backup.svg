@@ -53,18 +53,18 @@
   </style>
   <rect width="1200" height="160" fill="url(#bgGrad08H)"/>
   
-  <text class="accent-green rain-1" x="100" font-family="monospace" font-size="14">git commit</text>
-  <text class="accent-green rain-2" x="250" font-family="monospace" font-size="14" style="animation-delay: 1s">push</text>
-  <text class="accent-blue rain-1" x="400" font-family="monospace" font-size="14" style="animation-delay: 2s">merge</text>
-  <text class="accent-purple rain-3" x="550" font-family="monospace" font-size="14" style="animation-delay: 3s">branch</text>
-  <text class="accent-green rain-2" x="700" font-family="monospace" font-size="14" style="animation-delay: 4s">pull</text>
-  <text class="accent-blue rain-1" x="850" font-family="monospace" font-size="14" style="animation-delay: 5s">rebase</text>
-  <text class="accent-purple rain-3" x="1000" font-family="monospace" font-size="14" style="animation-delay: 6s">tag</text>
+  <text class="accent-green rain-1" x="100" font-family="monospace" font-size="14" fill="#f0f6fc">git commit</text>
+  <text class="accent-green rain-2" x="250" font-family="monospace" font-size="14" style="animation-delay: 1s" fill="#f0f6fc">push</text>
+  <text class="accent-blue rain-1" x="400" font-family="monospace" font-size="14" style="animation-delay: 2s" fill="#f0f6fc">merge</text>
+  <text class="accent-purple rain-3" x="550" font-family="monospace" font-size="14" style="animation-delay: 3s" fill="#f0f6fc">branch</text>
+  <text class="accent-green rain-2" x="700" font-family="monospace" font-size="14" style="animation-delay: 4s" fill="#f0f6fc">pull</text>
+  <text class="accent-blue rain-1" x="850" font-family="monospace" font-size="14" style="animation-delay: 5s" fill="#f0f6fc">rebase</text>
+  <text class="accent-purple rain-3" x="1000" font-family="monospace" font-size="14" style="animation-delay: 6s" fill="#f0f6fc">tag</text>
   
   <circle class="accent-green matrix-glow" cx="100" cy="120" r="20" opacity="0.1"/>
   <circle class="accent-blue matrix-glow" cx="600" cy="120" r="25" opacity="0.1" style="animation-delay: 1s"/>
   <circle class="accent-purple matrix-glow" cx="1100" cy="120" r="22" opacity="0.1" style="animation-delay: 2s"/>
   
-  <text x="600" y="70" text-anchor="middle" class="title text-primary">MCP AI Agent Guidelines Server</text>
-  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary">Guidelines • Patterns • Best Practices</text>
+  <text x="600" y="70" text-anchor="middle" class="title text-primary" fill="#f0f6fc">MCP AI Agent Guidelines Server</text>
+  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" fill="#f0f6fc">Guidelines • Patterns • Best Practices</text>
 </svg>

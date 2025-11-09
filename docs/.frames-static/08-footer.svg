@@ -141,74 +141,74 @@
 
   <!-- Matrix rain columns -->
   <g style="animation-delay: 0s">
-    <text class="leading-char" x="120" y="0" font-size="14">ア</text>
-    <text class="code-rain matrix-char" x="120" y="15" font-size="12" opacity="0.8">M</text>
-    <text class="code-rain matrix-char" x="120" y="28" font-size="12" opacity="0.6">C</text>
-    <text class="code-rain matrix-char" x="120" y="41" font-size="12" opacity="0.4">P</text>
+    <text class="leading-char" x="120" y="0" font-size="14" fill="#f0f6fc">ア</text>
+    <text class="code-rain matrix-char" x="120" y="15" font-size="12" opacity="0.8" fill="#f0f6fc">M</text>
+    <text class="code-rain matrix-char" x="120" y="28" font-size="12" opacity="0.6" fill="#f0f6fc">C</text>
+    <text class="code-rain matrix-char" x="120" y="41" font-size="12" opacity="0.4" fill="#f0f6fc">P</text>
   </g>
 
   <g style="animation-delay: -0.3s">
-    <text class="leading-char" x="240" y="0" font-size="14">タ</text>
-    <text class="code-rain matrix-char" x="240" y="15" font-size="12" opacity="0.8">A</text>
-    <text class="code-rain matrix-char" x="240" y="28" font-size="12" opacity="0.6">I</text>
-    <text class="code-rain matrix-char" x="240" y="41" font-size="12" opacity="0.4">7</text>
+    <text class="leading-char" x="240" y="0" font-size="14" fill="#f0f6fc">タ</text>
+    <text class="code-rain matrix-char" x="240" y="15" font-size="12" opacity="0.8" fill="#f0f6fc">A</text>
+    <text class="code-rain matrix-char" x="240" y="28" font-size="12" opacity="0.6" fill="#f0f6fc">I</text>
+    <text class="code-rain matrix-char" x="240" y="41" font-size="12" opacity="0.4" fill="#f0f6fc">7</text>
   </g>
 
   <g style="animation-delay: -0.6s">
-    <text class="leading-char" x="360" y="0" font-size="14">ナ</text>
-    <text class="code-rain matrix-char" x="360" y="15" font-size="12" opacity="0.8">G</text>
-    <text class="code-rain matrix-char" x="360" y="28" font-size="12" opacity="0.6">E</text>
-    <text class="code-rain matrix-char" x="360" y="41" font-size="12" opacity="0.4">N</text>
+    <text class="leading-char" x="360" y="0" font-size="14" fill="#f0f6fc">ナ</text>
+    <text class="code-rain matrix-char" x="360" y="15" font-size="12" opacity="0.8" fill="#f0f6fc">G</text>
+    <text class="code-rain matrix-char" x="360" y="28" font-size="12" opacity="0.6" fill="#f0f6fc">E</text>
+    <text class="code-rain matrix-char" x="360" y="41" font-size="12" opacity="0.4" fill="#f0f6fc">N</text>
   </g>
 
   <g style="animation-delay: -0.9s">
-    <text class="leading-char" x="480" y="0" font-size="14">カ</text>
-    <text class="code-rain matrix-char" x="480" y="15" font-size="12" opacity="0.8">T</text>
-    <text class="code-rain matrix-char" x="480" y="28" font-size="12" opacity="0.6">5</text>
-    <text class="code-rain matrix-char" x="480" y="41" font-size="12" opacity="0.4">ラ</text>
+    <text class="leading-char" x="480" y="0" font-size="14" fill="#f0f6fc">カ</text>
+    <text class="code-rain matrix-char" x="480" y="15" font-size="12" opacity="0.8" fill="#f0f6fc">T</text>
+    <text class="code-rain matrix-char" x="480" y="28" font-size="12" opacity="0.6" fill="#f0f6fc">5</text>
+    <text class="code-rain matrix-char" x="480" y="41" font-size="12" opacity="0.4" fill="#f0f6fc">ラ</text>
   </g>
 
   <g style="animation-delay: -1.2s">
-    <text class="leading-char" x="600" y="0" font-size="14">サ</text>
-    <text class="code-rain matrix-char" x="600" y="15" font-size="12" opacity="0.8">4</text>
-    <text class="code-rain matrix-char" x="600" y="28" font-size="12" opacity="0.6">イ</text>
-    <text class="code-rain matrix-char" x="600" y="41" font-size="12" opacity="0.4">D</text>
+    <text class="leading-char" x="600" y="0" font-size="14" fill="#f0f6fc">サ</text>
+    <text class="code-rain matrix-char" x="600" y="15" font-size="12" opacity="0.8" fill="#f0f6fc">4</text>
+    <text class="code-rain matrix-char" x="600" y="28" font-size="12" opacity="0.6" fill="#f0f6fc">イ</text>
+    <text class="code-rain matrix-char" x="600" y="41" font-size="12" opacity="0.4" fill="#f0f6fc">D</text>
   </g>
 
   <g style="animation-delay: -1.5s">
-    <text class="leading-char" x="720" y="0" font-size="14">ツ</text>
-    <text class="code-rain matrix-char" x="720" y="15" font-size="12" opacity="0.8">L</text>
-    <text class="code-rain matrix-char" x="720" y="28" font-size="12" opacity="0.6">I</text>
-    <text class="code-rain matrix-char" x="720" y="41" font-size="12" opacity="0.4">N</text>
+    <text class="leading-char" x="720" y="0" font-size="14" fill="#f0f6fc">ツ</text>
+    <text class="code-rain matrix-char" x="720" y="15" font-size="12" opacity="0.8" fill="#f0f6fc">L</text>
+    <text class="code-rain matrix-char" x="720" y="28" font-size="12" opacity="0.6" fill="#f0f6fc">I</text>
+    <text class="code-rain matrix-char" x="720" y="41" font-size="12" opacity="0.4" fill="#f0f6fc">N</text>
   </g>
 
   <g style="animation-delay: -1.8s">
-    <text class="leading-char" x="840" y="0" font-size="14">ハ</text>
-    <text class="code-rain matrix-char" x="840" y="15" font-size="12" opacity="0.8">8</text>
-    <text class="code-rain matrix-char" x="840" y="28" font-size="12" opacity="0.6">ミ</text>
-    <text class="code-rain matrix-char" x="840" y="41" font-size="12" opacity="0.4">S</text>
+    <text class="leading-char" x="840" y="0" font-size="14" fill="#f0f6fc">ハ</text>
+    <text class="code-rain matrix-char" x="840" y="15" font-size="12" opacity="0.8" fill="#f0f6fc">8</text>
+    <text class="code-rain matrix-char" x="840" y="28" font-size="12" opacity="0.6" fill="#f0f6fc">ミ</text>
+    <text class="code-rain matrix-char" x="840" y="41" font-size="12" opacity="0.4" fill="#f0f6fc">S</text>
   </g>
 
   <g style="animation-delay: -2.1s">
-    <text class="leading-char" x="960" y="0" font-size="14">ヤ</text>
-    <text class="code-rain matrix-char" x="960" y="15" font-size="12" opacity="0.8">R</text>
-    <text class="code-rain matrix-char" x="960" y="28" font-size="12" opacity="0.6">V</text>
-    <text class="code-rain matrix-char" x="960" y="41" font-size="12" opacity="0.4">E</text>
+    <text class="leading-char" x="960" y="0" font-size="14" fill="#f0f6fc">ヤ</text>
+    <text class="code-rain matrix-char" x="960" y="15" font-size="12" opacity="0.8" fill="#f0f6fc">R</text>
+    <text class="code-rain matrix-char" x="960" y="28" font-size="12" opacity="0.6" fill="#f0f6fc">V</text>
+    <text class="code-rain matrix-char" x="960" y="41" font-size="12" opacity="0.4" fill="#f0f6fc">E</text>
   </g>
 
   <g style="animation-delay: -2.4s">
-    <text class="leading-char" x="1080" y="0" font-size="14">ワ</text>
-    <text class="code-rain matrix-char" x="1080" y="15" font-size="12" opacity="0.8">1</text>
-    <text class="code-rain matrix-char" x="1080" y="28" font-size="12" opacity="0.6">ル</text>
-    <text class="code-rain matrix-char" x="1080" y="41" font-size="12" opacity="0.4">K</text>
+    <text class="leading-char" x="1080" y="0" font-size="14" fill="#f0f6fc">ワ</text>
+    <text class="code-rain matrix-char" x="1080" y="15" font-size="12" opacity="0.8" fill="#f0f6fc">1</text>
+    <text class="code-rain matrix-char" x="1080" y="28" font-size="12" opacity="0.6" fill="#f0f6fc">ル</text>
+    <text class="code-rain matrix-char" x="1080" y="41" font-size="12" opacity="0.4" fill="#f0f6fc">K</text>
   </g>
 
   <!-- Matrix code icon (left) -->
   <g transform="translate(20, 25)" opacity="0.8" filter="url(#matrixFilter08F)">
     <rect x="0" y="0" width="30" height="35" rx="2" fill="none" stroke="#5FED83" stroke-width="2"/>
-    <text x="7" y="14" class="matrix-char" font-size="10" font-family="'Courier New', monospace">01</text>
-    <text x="7" y="24" class="matrix-char" font-size="10" font-family="'Courier New', monospace">10</text>
-    <text x="7" y="34" class="matrix-char" font-size="10" font-family="'Courier New', monospace">11</text>
+    <text x="7" y="14" class="matrix-char" font-size="10" font-family="'Courier New', monospace" fill="#f0f6fc">01</text>
+    <text x="7" y="24" class="matrix-char" font-size="10" font-family="'Courier New', monospace" fill="#f0f6fc">10</text>
+    <text x="7" y="34" class="matrix-char" font-size="10" font-family="'Courier New', monospace" fill="#f0f6fc">11</text>
   </g>
 
 
@@ -216,14 +216,14 @@
 
 
 
-    <text x="1050" y="72" text-anchor="middle" class="link text-link" font-size="11px" opacity="0.8">License (MIT)</text>
+    <text x="1050" y="72" text-anchor="middle" class="link text-link" font-size="11px" opacity="0.8" fill="#f0f6fc">License (MIT)</text>
 
 
 
 
 
 
-  <text x="1160" y="72" text-anchor="end" class="link text-link" font-size="11px" opacity="0.9">© 2025</text>
+  <text x="1160" y="72" text-anchor="end" class="link text-link" font-size="11px" opacity="0.9" fill="#f0f6fc">© 2025</text>
 
   <!-- Enhanced particle system -->
   <g opacity="0.6">

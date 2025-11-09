@@ -182,14 +182,14 @@
 
 
 
-    <text x="1050" y="72" text-anchor="middle" class="link text-link" font-size="11px" opacity="0.8">License (MIT)</text>
+    <text x="1050" y="72" text-anchor="middle" class="link text-link" font-size="11px" opacity="0.8" fill="#f0f6fc">License (MIT)</text>
 
 
 
 
 
 
-  <text x="1150" y="72" text-anchor="middle" class="link text-link" font-size="11px" opacity="0.8">© 2025</text>
+  <text x="1150" y="72" text-anchor="middle" class="link text-link" font-size="11px" opacity="0.8" fill="#f0f6fc">© 2025</text>
 
   <!-- Enhanced particle system -->
   <g opacity="0.6">

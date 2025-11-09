@@ -297,7 +297,7 @@
   <text x="600" y="150" text-anchor="middle" class="text-secondary" font-size="9" opacity="0.8">Algorithm: Round Robin • Active servers: 8/8 • Requests/sec: 1,247</text>
   
   <text x="600" y="70" text-anchor="middle" class="text-primary" font-size="36" filter="url(#dropShadow)">MCP AI Agent Guidelines Server</text>
-  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" font-size="14">Guidelines • Patterns • Best Practices</text>
+  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" font-size="14" fill="#f0f6fc">Guidelines • Patterns • Best Practices</text>
   <rect x="400" y="84" width="400" height="16" fill="url(#shine14)" opacity="0.15"/>
 
   <!-- Enhanced header particle system -->

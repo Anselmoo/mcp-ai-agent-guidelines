@@ -62,6 +62,6 @@
   <line x1="480" y1="80" x2="700" y2="80" class="gitline pipeline-arrow" stroke-dasharray="10 10" stroke-width="2" style="animation-delay: 0.5s"/>
   <line x1="780" y1="80" x2="1000" y2="80" class="gitline pipeline-arrow" stroke-dasharray="10 10" stroke-width="2" style="animation-delay: 1s"/>
   
-  <text x="600" y="70" text-anchor="middle" class="title text-primary">MCP AI Agent Guidelines Server</text>
-  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary">Guidelines • Patterns • Best Practices</text>
+  <text x="600" y="70" text-anchor="middle" class="title text-primary" fill="#f0f6fc">MCP AI Agent Guidelines Server</text>
+  <text x="600" y="95" text-anchor="middle" class="subtitle text-secondary" fill="#f0f6fc">Guidelines • Patterns • Best Practices</text>
 </svg>
