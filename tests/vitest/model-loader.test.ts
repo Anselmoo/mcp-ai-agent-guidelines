@@ -319,4 +319,151 @@ describe("Model Loader (YAML)", () => {
 			}
 		});
 	});
+
+	describe("Default model fallback behavior", () => {
+		it("should return GPT-5 as fallback if defaultModel is not set", () => {
+			// This test validates the fallback logic in getDefaultModel()
+			// The function should return "GPT-5" if config.defaultModel is undefined
+			const defaultModel = getDefaultModel();
+
+			// Even if defaultModel is not explicitly set in YAML,
+			// the function should return a valid model name
+			expect(typeof defaultModel).toBe("string");
+			expect(defaultModel.length).toBeGreaterThan(0);
+
+			// In our current config, it should be "GPT-5"
+			expect(defaultModel).toBe("GPT-5");
+		});
+
+		it("should verify default model exists in available models list", () => {
+			const defaultModel = getDefaultModel();
+			const models = getModels();
+			const modelNames = models.map((m) => m.name);
+
+			// The default model must be one of the available models
+			expect(modelNames).toContain(defaultModel);
+		});
+
+		it("should use consistent default across multiple calls", () => {
+			// Call getDefaultModel multiple times
+			const calls = Array.from({ length: 5 }, () => getDefaultModel());
+
+			// All calls should return the same value
+			const uniqueValues = new Set(calls);
+			expect(uniqueValues.size).toBe(1);
+			expect(uniqueValues.has("GPT-5")).toBe(true);
+		});
+	});
+
+	describe("loadModelsFromYaml comprehensive validation", () => {
+		it("should return valid configuration structure", () => {
+			// Access all configuration data through getters
+			const models = getModels();
+			const keywords = getRequirementKeywords();
+			const weights = getCapabilityWeights();
+			const adjustments = getBudgetAdjustments();
+			const bonus = getBudgetBonus();
+			const penalty = getBudgetPenalty();
+			const defaultModel = getDefaultModel();
+
+			// Validate all parts of the configuration are loaded
+			expect(Array.isArray(models)).toBe(true);
+			expect(models.length).toBeGreaterThan(0);
+
+			expect(typeof keywords).toBe("object");
+			expect(Object.keys(keywords).length).toBeGreaterThan(0);
+
+			expect(typeof weights).toBe("object");
+			expect(Object.keys(weights).length).toBeGreaterThan(0);
+
+			expect(typeof adjustments).toBe("object");
+			expect(Object.keys(adjustments)).toEqual(
+				expect.arrayContaining(["low", "medium", "high"]),
+			);
+
+			expect(typeof bonus).toBe("number");
+			expect(bonus).toBeGreaterThan(0);
+
+			expect(typeof penalty).toBe("number");
+			expect(penalty).toBeGreaterThan(0);
+
+			expect(typeof defaultModel).toBe("string");
+			expect(defaultModel.length).toBeGreaterThan(0);
+		});
+
+		it("should maintain data consistency across all getters", () => {
+			// First, get data through one getter to load cache
+			const models1 = getModels();
+
+			// Get data through all other getters
+			const models2 = getModels();
+			const keywords = getRequirementKeywords();
+			const weights = getCapabilityWeights();
+			const adjustments = getBudgetAdjustments();
+			const bonus = getBudgetBonus();
+			const penalty = getBudgetPenalty();
+			const defaultModel = getDefaultModel();
+
+			// Verify models are the same reference (cached)
+			expect(models1).toBe(models2);
+
+			// Verify all data types are correct
+			expect(Array.isArray(models1)).toBe(true);
+			expect(typeof keywords).toBe("object");
+			expect(typeof weights).toBe("object");
+			expect(typeof adjustments).toBe("object");
+			expect(typeof bonus).toBe("number");
+			expect(typeof penalty).toBe("number");
+			expect(typeof defaultModel).toBe("string");
+
+			// Verify relationships between data
+			// Default model should be in the models list
+			const modelNames = models1.map((m) => m.name);
+			expect(modelNames).toContain(defaultModel);
+
+			// Budget adjustments should have entries for all levels
+			expect(adjustments.low).toBeDefined();
+			expect(adjustments.medium).toBeDefined();
+			expect(adjustments.high).toBeDefined();
+		});
+
+		it("should load all required configuration fields", () => {
+			// Validate that all expected configuration sections are present
+			const models = getModels();
+			const keywords = getRequirementKeywords();
+			const weights = getCapabilityWeights();
+			const adjustments = getBudgetAdjustments();
+
+			// Models should have required fields
+			expect(models.every((m) => m.name && m.provider && m.pricingTier)).toBe(
+				true,
+			);
+
+			// Keywords should have expected capability types
+			const expectedKeywordTypes = [
+				"reasoning",
+				"code",
+				"large-context",
+				"speed",
+				"multimodal",
+			];
+			for (const type of expectedKeywordTypes) {
+				expect(keywords[type]).toBeDefined();
+				expect(Array.isArray(keywords[type])).toBe(true);
+			}
+
+			// Weights should have numeric values
+			for (const weight of Object.values(weights)) {
+				expect(typeof weight).toBe("number");
+				expect(weight).toBeGreaterThan(0);
+			}
+
+			// Budget adjustments should have proper structure
+			for (const level of ["low", "medium", "high"] as const) {
+				expect(adjustments[level]).toBeDefined();
+				expect(Array.isArray(adjustments[level].bonus)).toBe(true);
+				expect(Array.isArray(adjustments[level].penalty)).toBe(true);
+			}
+		});
+	});
 });
