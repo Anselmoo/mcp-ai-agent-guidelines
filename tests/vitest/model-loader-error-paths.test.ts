@@ -3,10 +3,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 describe("Model Loader Error Paths", () => {
-	// Store original implementation
-	let originalReadFileSync: any;
-	let originalYamlLoad: any;
-
 	beforeEach(() => {
 		// Clear the module cache before each test to reset the singleton
 		vi.resetModules();
