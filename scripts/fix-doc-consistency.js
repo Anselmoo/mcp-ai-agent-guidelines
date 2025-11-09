@@ -128,7 +128,7 @@ function fixHeader(filepath, content) {
 	// Determine relative path to .frames-static
 	const relativePath = relative(DOCS_DIR, filepath);
 	const depth = relativePath.split("/").length - 1;
-	const svgPath = "../".repeat(depth) + ".frames-static/09-header.svg";
+	const svgPath = `${"../".repeat(depth)}.frames-static/09-header.svg`;
 
 	if (!hasHeaderStart || !hasHeaderEnd || !hasHeaderImage) {
 		const header = `<!-- HEADER:START -->
