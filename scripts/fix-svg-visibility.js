@@ -9,7 +9,7 @@
  * 3. Adding fallback colors for better compatibility
  */
 
-import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { extname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -30,7 +30,7 @@ const changes = [];
  * - For light mode, use dark colors (#24292f, #1f2328, #000)
  * - Add picture element suggestions for better GitHub rendering
  */
-function fixSVGVisibility(filepath, content) {
+function fixSVGVisibility(_filepath, content) {
 	let modified = content;
 	const changesMade = [];
 
@@ -46,7 +46,7 @@ function fixSVGVisibility(filepath, content) {
 	// Pattern: find dark mode styles and ensure text fills are light
 	modified = modified.replace(
 		/@media \(prefers-color-scheme: dark\)\s*\{([^}]+)\}/gs,
-		(match, styles) => {
+		(_match, styles) => {
 			let updatedStyles = styles;
 
 			// Fix text-primary to use light color
@@ -57,7 +57,7 @@ function fixSVGVisibility(filepath, content) {
 						changesMade.push(
 							"Updated text-primary fill in dark mode to #f0f6fc",
 						);
-						return prefix + "#f0f6fc";
+						return `${prefix}#f0f6fc`;
 					}
 					return m;
 				},
@@ -71,7 +71,7 @@ function fixSVGVisibility(filepath, content) {
 						changesMade.push(
 							"Updated text-secondary fill in dark mode to #c9d1d9",
 						);
-						return prefix + "#c9d1d9";
+						return `${prefix}#c9d1d9`;
 					}
 					return m;
 				},
