@@ -1,7 +1,7 @@
 ## 📦 Dependency Audit Report
 
 ### Metadata
-- Updated: 2025-11-07
+- Updated: 2025-11-09
 - Source tool: mcp_ai-agent-guid_dependency-auditor
 
 ### 📋 Summary
@@ -21,7 +21,7 @@
 ### 🚨 Issues by Severity
 
 #### 🔵 Low (1)
-**@biomejs/biome@2.3.2** - Exact Version Pin
+**@biomejs/biome@2.3.4** - Exact Version Pin
   - Exact version pinning prevents automatic security updates
   - 💡 **Recommendation**: Consider using caret (^) ranges to allow patch updates
 
@@ -29,7 +29,7 @@
 ### 📊 Issues Table
 | Package | Version | Type | Severity | Description |
 |---|---|---|---|---|
-| @biomejs/biome | 2.3.2 | Exact Version Pin | 🔵 low | Exact version pinning prevents automatic security updates |
+| @biomejs/biome | 2.3.4 | Exact Version Pin | 🔵 low | Exact version pinning prevents automatic security updates |
 
 ### 💡 Recommendations
 1. Run 'npm audit' for detailed vulnerability analysis

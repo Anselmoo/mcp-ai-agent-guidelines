@@ -3,6 +3,11 @@
 # Source: https://docs.github.com/en/copilot/reference/ai-models/supported-models
 # Last updated: 2025-10-30
 
+# Default model configuration
+# This model is used as the default across all prompt builders
+# Change this value to easily switch the default model project-wide
+defaultModel: "GPT-5"
+
 models:
   - name: "GPT-4.1"
     provider: "OpenAI"

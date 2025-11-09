@@ -15,6 +15,7 @@ const MODELS_YAML_PATH = join(__dirname, "models.yaml");
  * Interface for the YAML models configuration structure
  */
 interface ModelsYamlConfig {
+	defaultModel?: string;
 	models: ModelDefinition[];
 	requirementKeywords: Record<string, string[]>;
 	capabilityWeights: Record<string, number>;
@@ -125,4 +126,15 @@ export function getBudgetBonus(): number {
 export function getBudgetPenalty(): number {
 	const config = loadModelsFromYaml();
 	return config.budgetPenalty;
+}
+
+/**
+ * Gets the default model name from the YAML configuration.
+ * Falls back to "GPT-5" if not specified for backward compatibility.
+ *
+ * @returns Default model name
+ */
+export function getDefaultModel(): string {
+	const config = loadModelsFromYaml();
+	return config.defaultModel || "GPT-5";
 }

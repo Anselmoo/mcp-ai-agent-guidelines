@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { DEFAULT_MODEL } from "../config/model-config.js";
 import {
 	buildFrontmatterWithPolicy as buildFrontmatter,
 	buildFurtherReadingSection,
@@ -22,7 +23,7 @@ const CodeAnalysisPromptSchema = z.object({
 		.describe("Programming language of the code"),
 	// Optional frontmatter controls
 	mode: z.enum(["agent", "tool", "workflow"]).optional().default("agent"),
-	model: z.string().optional().default("GPT-5"),
+	model: z.string().optional().default(DEFAULT_MODEL),
 	tools: z.array(z.string()).optional().default(["codebase", "editFiles"]),
 	includeFrontmatter: z.boolean().optional().default(true),
 	includeReferences: z.boolean().optional().default(false),
