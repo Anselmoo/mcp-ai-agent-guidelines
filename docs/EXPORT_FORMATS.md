@@ -1,3 +1,9 @@
+<!-- HEADER:START -->
+
+![Header](.frames-static/09-header.svg)
+
+<!-- HEADER:END -->
+
 # Export Formats and Output Options Guide
 
 This guide explains the various export formats and output options available in the MCP AI Agent Guidelines toolset.

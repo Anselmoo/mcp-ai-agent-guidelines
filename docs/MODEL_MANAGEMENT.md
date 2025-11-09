@@ -1,3 +1,9 @@
+<!-- HEADER:START -->
+
+![Header](.frames-static/09-header.svg)
+
+<!-- HEADER:END -->
+
 # Model Management Guide for Maintainers
 
 This guide explains how to manage the AI model definitions in the MCP AI Agent Guidelines project.
