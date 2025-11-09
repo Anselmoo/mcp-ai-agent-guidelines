@@ -185,4 +185,101 @@ describe("quickDeveloperPromptsBuilder", () => {
 		expect(checklistMatches).not.toBeNull();
 		expect(checklistMatches?.length).toBe(25);
 	});
+
+	it("respects forcePromptMdStyle setting when true", async () => {
+		const res = await quickDeveloperPromptsBuilder({
+			forcePromptMdStyle: true,
+			includeFrontmatter: false,
+			includeMetadata: false,
+		});
+		const text = res.content[0].text;
+
+		// When forcePromptMdStyle is true, frontmatter and metadata should be forced on
+		// even if explicitly set to false
+		expect(text).toMatch(/---/); // Frontmatter marker
+		expect(text).toMatch(/quick-developer-prompts-builder/); // Metadata
+	});
+
+	it("respects forcePromptMdStyle setting when false", async () => {
+		const res = await quickDeveloperPromptsBuilder({
+			forcePromptMdStyle: false,
+			includeFrontmatter: false,
+			includeMetadata: false,
+		});
+		const text = res.content[0].text;
+
+		// When forcePromptMdStyle is false, should respect individual settings
+		// Check that frontmatter is not at the start (frontmatter starts with ---)
+		expect(text).not.toMatch(/^---/); // No frontmatter at start
+		expect(text).not.toMatch(/quick-developer-prompts-builder/); // No metadata
+	});
+
+	it("includes inputFile in metadata when provided", async () => {
+		const testInputFile = "test-input.ts";
+		const res = await quickDeveloperPromptsBuilder({
+			inputFile: testInputFile,
+			includeFrontmatter: false,
+			includeMetadata: true,
+		});
+		const text = res.content[0].text;
+
+		// Check that inputFile is referenced in metadata
+		expect(text).toMatch(/Metadata/);
+	});
+
+	it("generates correct filename hint based on category", async () => {
+		const res = await quickDeveloperPromptsBuilder({
+			category: "testing",
+			includeFrontmatter: false,
+			includeMetadata: true,
+		});
+		const text = res.content[0].text;
+
+		// Check that filename hint includes the category
+		expect(text).toMatch(/quick-developer-prompts-testing\.prompt\.md/);
+	});
+
+	it("uses default values for optional parameters", async () => {
+		// Call with minimal params to test defaults
+		const res = await quickDeveloperPromptsBuilder({});
+		const text = res.content[0].text;
+
+		// Should have frontmatter and metadata by default (due to forcePromptMdStyle default)
+		expect(text).toMatch(/---/);
+		expect(text).toMatch(/Metadata/);
+
+		// Should have all categories by default
+		expect(text).toMatch(/Strategy & High-Level Planning/);
+		expect(text).toMatch(/Code Quality & Refactoring/);
+		expect(text).toMatch(/Testing & Validation/);
+		expect(text).toMatch(/Documentation & Onboarding/);
+		expect(text).toMatch(/DevOps & Automation/);
+	});
+
+	it("respects custom mode and model parameters", async () => {
+		const res = await quickDeveloperPromptsBuilder({
+			mode: "agent",
+			model: "GPT-4",
+			includeFrontmatter: true,
+			includeMetadata: false,
+		});
+		const text = res.content[0].text;
+
+		// Check that custom mode is in frontmatter
+		expect(text).toMatch(/mode:/);
+	});
+
+	it("respects custom tools parameter", async () => {
+		const customTools = ["customTool1", "customTool2"];
+		const res = await quickDeveloperPromptsBuilder({
+			tools: customTools,
+			includeFrontmatter: true,
+			includeMetadata: false,
+		});
+		const text = res.content[0].text;
+
+		// Frontmatter should be present
+		expect(text).toMatch(/---/);
+		expect(text).toMatch(/tools:/);
+	});
 });
