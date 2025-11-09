@@ -1,11 +1,11 @@
 <svg width="1200" height="80" viewBox="0 0 1200 80" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="CI/CD Pipeline Footer">
   <defs>
     <linearGradient id="bgGrad02F" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#0d1117;stop-opacity:1">
+      <stop offset="0%" style="stop-color:#000240;stop-opacity:1">
 
       </stop>
-      <stop offset="50%" style="stop-color:#161b22;stop-opacity:1"/>
-      <stop offset="100%" style="stop-color:#1c2128;stop-opacity:1">
+      <stop offset="50%" style="stop-color:#501DAF;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#D0B0FF;stop-opacity:1">
 
       </stop>
     </linearGradient>

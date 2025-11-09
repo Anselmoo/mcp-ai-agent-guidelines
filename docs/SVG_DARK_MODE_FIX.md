@@ -28,7 +28,8 @@ Now the text has an explicit `fill="#f0f6fc"` attribute that ensures light-color
 
 1. **Added Fallback Colors**: All text elements without explicit `fill` attributes now have `fill="#f0f6fc"` (light gray)
 2. **Preserved Media Queries**: Existing CSS media queries for light/dark mode are still present
-3. **Applied to All SVGs**: Fixed 47 SVG files with 190 text elements
+3. **Applied to All SVGs**: Fixed 47 SVG files with 338 text elements
+4. **Updated Background Gradient**: Changed from dark (#0d1117, #161b22) to colorful gradient (#000240, #501DAF, #D0B0FF) for better contrast
 
 ### Technical Approach
 
@@ -72,11 +73,17 @@ Text elements now have explicit light colors that ensure visibility in all modes
 Run the SVG visibility fixer anytime SVG files are modified:
 
 ```bash
-# Preview changes
+# Preview text visibility changes
 npm run docs:fix-svg:dry-run
 
-# Apply changes
+# Apply text visibility changes
 npm run docs:fix-svg
+
+# Preview background gradient changes
+npm run docs:update-svg-bg:dry-run
+
+# Apply background gradient changes
+npm run docs:update-svg-bg
 ```
 
 ## Files Affected
