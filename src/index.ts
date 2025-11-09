@@ -63,6 +63,7 @@ import { l9DistinguishedEngineerPromptBuilder } from "./tools/prompt/l9-distingu
 import { promptChainingBuilder } from "./tools/prompt/prompt-chaining-builder.js";
 import { promptFlowBuilder } from "./tools/prompt/prompt-flow-builder.js";
 import { promptingHierarchyEvaluator } from "./tools/prompt/prompting-hierarchy-evaluator.js";
+import { quickDeveloperPromptsBuilder } from "./tools/prompt/quick-developer-prompts-builder.js";
 import { securityHardeningPromptBuilder } from "./tools/prompt/security-hardening-prompt-builder.js";
 import { sparkPromptBuilder } from "./tools/prompt/spark-prompt-builder.js";
 import { semanticCodeAnalyzer } from "./tools/semantic-code-analyzer.js";
@@ -1394,6 +1395,37 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 				},
 			},
 			{
+				name: "quick-developer-prompts-builder",
+				description:
+					"Generate the 'Best of 25' quick developer prompts bundle - ultra-efficient checklist prompts for rapid code analysis, planning, and progress checks. Use this MCP to access concise, actionable prompts organized in 5 categories: Strategy & Planning, Code Quality, Testing, Documentation, and DevOps. Example: 'Use the quick-developer-prompts-builder MCP to get all 25 quick prompts' or 'category: testing' for testing-specific prompts",
+				inputSchema: {
+					type: "object",
+					properties: {
+						category: {
+							type: "string",
+							enum: [
+								"strategy",
+								"code-quality",
+								"testing",
+								"documentation",
+								"devops",
+								"all",
+							],
+							description:
+								"Category of prompts to generate. Use 'all' for all 25 prompts or select a specific category",
+						},
+						mode: { type: "string" },
+						model: { type: "string" },
+						tools: { type: "array", items: { type: "string" } },
+						includeFrontmatter: { type: "boolean" },
+						includeMetadata: { type: "boolean" },
+						inputFile: { type: "string" },
+						forcePromptMdStyle: { type: "boolean" },
+					},
+					required: [],
+				},
+			},
+			{
 				name: "sprint-timeline-calculator",
 				description:
 					"Calculate optimal development cycles and sprint timelines with dependency-aware scheduling, team velocity, and complexity analysis. Use this MCP to estimate project timelines and plan sprint allocations. Example: 'Use the sprint-timeline-calculator MCP to estimate the timeline for our microservices migration with a team of 6 developers'",
@@ -1853,6 +1885,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 				return domainNeutralPromptBuilder(args);
 			case "security-hardening-prompt-builder":
 				return securityHardeningPromptBuilder(args);
+			case "quick-developer-prompts-builder":
+				return quickDeveloperPromptsBuilder(args);
 			case "clean-code-scorer":
 				return cleanCodeScorer(args);
 			case "code-hygiene-analyzer":
