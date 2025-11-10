@@ -27,6 +27,7 @@ import { hierarchicalPromptBuilder } from "../dist/tools/prompt/hierarchical-pro
 import { hierarchyLevelSelector } from "../dist/tools/prompt/hierarchy-level-selector.js";
 import { l9DistinguishedEngineerPromptBuilder } from "../dist/tools/prompt/l9-distinguished-engineer-prompt-builder.js";
 import { promptingHierarchyEvaluator } from "../dist/tools/prompt/prompting-hierarchy-evaluator.js";
+import { quickDeveloperPromptsBuilder } from "../dist/tools/prompt/quick-developer-prompts-builder.js";
 import { securityHardeningPromptBuilder } from "../dist/tools/prompt/security-hardening-prompt-builder.js";
 import { sparkPromptBuilder } from "../dist/tools/prompt/spark-prompt-builder.js";
 import { semanticCodeAnalyzer } from "../dist/tools/semantic-code-analyzer.js";
@@ -572,6 +573,27 @@ Enhance the authentication system with JWT token support and proper session mana
 		techStack: ["Redis 6.x", "Python/Go clients", "Kubernetes on AWS"],
 	});
 	await writeReport("demo-l9-engineer.prompt.md", getText(l9EngineerPrompt));
+
+	// Quick Developer Prompts demo - all categories
+	const quickPromptsAll = await quickDeveloperPromptsBuilder({
+		category: "all",
+		mode: "agent",
+		includeFrontmatter: true,
+		includeMetadata: true,
+	});
+	await writeReport("demo-quick-prompts-all.md", getText(quickPromptsAll));
+
+	// Quick Developer Prompts demo - testing category only
+	const quickPromptsTesting = await quickDeveloperPromptsBuilder({
+		category: "testing",
+		mode: "agent",
+		includeFrontmatter: true,
+		includeMetadata: true,
+	});
+	await writeReport(
+		"demo-quick-prompts-testing.md",
+		getText(quickPromptsTesting),
+	);
 }
 
 main().catch((err) => {
