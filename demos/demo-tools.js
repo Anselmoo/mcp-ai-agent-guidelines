@@ -577,7 +577,7 @@ Enhance the authentication system with JWT token support and proper session mana
 	// Quick Developer Prompts demo - all categories
 	const quickPromptsAll = await quickDeveloperPromptsBuilder({
 		category: "all",
-		mode: "tool",
+		mode: "agent",
 		includeFrontmatter: true,
 		includeMetadata: true,
 	});
