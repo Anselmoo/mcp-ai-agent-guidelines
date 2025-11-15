@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cleanCodeScorer } from "../../src/tools/clean-code-scorer";
+import { cleanCodeScorer } from "../../src/tools/analysis/clean-code-scorer.js";
 
 describe("Clean Code Scorer", () => {
 	describe("Overall Score Calculation", () => {

@@ -3,7 +3,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { semanticCodeAnalyzer } from "../../src/tools/semantic-code-analyzer.js";
+import { semanticCodeAnalyzer } from "../../src/tools/analysis/semantic-code-analyzer.js";
 
 describe("Semantic Code Analyzer", () => {
 	describe("Symbol Extraction", () => {

@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { gapFrameworksAnalyzers } from "../../src/tools/analysis/gap-frameworks-analyzers.js";
+import { gapFrameworksAnalyzer } from "../../src/tools/analysis/gap-frameworks-analyzer.js";
 
 describe("gap-frameworks-analyzers", () => {
 	it("should generate a basic gap analysis", async () => {
-		const result = await gapFrameworksAnalyzers({
+		const result = await gapFrameworksAnalyzer({
 			frameworks: ["capability", "performance"],
 			currentState: "Manual processes with limited automation",
 			desiredState: "Fully automated CI/CD pipeline with monitoring",
@@ -21,7 +21,7 @@ describe("gap-frameworks-analyzers", () => {
 	});
 
 	it("should generate analysis with all optional fields", async () => {
-		const result = await gapFrameworksAnalyzers({
+		const result = await gapFrameworksAnalyzer({
 			frameworks: ["maturity", "skills", "technology"],
 			currentState: "Legacy monolith system",
 			desiredState: "Microservices architecture",
@@ -67,7 +67,7 @@ describe("gap-frameworks-analyzers", () => {
 			"compliance",
 		];
 
-		const result = await gapFrameworksAnalyzers({
+		const result = await gapFrameworksAnalyzer({
 			frameworks,
 			currentState: "Current state",
 			desiredState: "Desired state",
@@ -90,7 +90,7 @@ describe("gap-frameworks-analyzers", () => {
 	});
 
 	it("should exclude optional sections when disabled", async () => {
-		const result = await gapFrameworksAnalyzers({
+		const result = await gapFrameworksAnalyzer({
 			frameworks: ["capability"],
 			currentState: "Current state",
 			desiredState: "Desired state",
@@ -108,7 +108,7 @@ describe("gap-frameworks-analyzers", () => {
 	});
 
 	it("should generate appropriate filename hint", async () => {
-		const result = await gapFrameworksAnalyzers({
+		const result = await gapFrameworksAnalyzer({
 			frameworks: ["capability", "security"],
 			currentState: "Current state",
 			desiredState: "Desired state",

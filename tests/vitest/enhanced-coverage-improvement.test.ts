@@ -5,7 +5,7 @@ describe("Enhanced Coverage Improvement - Targeting Uncovered Functions", () => 
 	describe("Memory Context Optimizer Edge Cases", () => {
 		it("should handle complex memory optimization scenarios", async () => {
 			const { memoryContextOptimizer } = await import(
-				"../../src/tools/memory-context-optimizer.js"
+				"../../src/tools/utility/memory-context-optimizer.js"
 			);
 
 			// Test with large context
@@ -42,7 +42,7 @@ describe("Enhanced Coverage Improvement - Targeting Uncovered Functions", () => 
 
 		it("should handle different compression levels", async () => {
 			const { memoryContextOptimizer } = await import(
-				"../../src/tools/memory-context-optimizer.js"
+				"../../src/tools/utility/memory-context-optimizer.js"
 			);
 
 			const cacheStrategies = ["conservative", "balanced", "aggressive"];
@@ -62,7 +62,7 @@ describe("Enhanced Coverage Improvement - Targeting Uncovered Functions", () => 
 	describe("Code Hygiene Analyzer Comprehensive Testing", () => {
 		it("should analyze various code patterns and languages", async () => {
 			const { codeHygieneAnalyzer } = await import(
-				"../../src/tools/code-hygiene-analyzer.js"
+				"../../src/tools/analysis/code-hygiene-analyzer.js"
 			);
 
 			// Test different programming languages
@@ -92,7 +92,7 @@ describe("Enhanced Coverage Improvement - Targeting Uncovered Functions", () => 
 
 		it("should handle edge cases in code analysis", async () => {
 			const { codeHygieneAnalyzer } = await import(
-				"../../src/tools/code-hygiene-analyzer.js"
+				"../../src/tools/analysis/code-hygiene-analyzer.js"
 			);
 
 			// Empty code
@@ -152,7 +152,7 @@ describe("Enhanced Coverage Improvement - Targeting Uncovered Functions", () => 
 	describe("Sprint Timeline Calculator Enhanced Testing", () => {
 		it("should handle complex sprint scenarios", async () => {
 			const { sprintTimelineCalculator } = await import(
-				"../../src/tools/sprint-timeline-calculator.js"
+				"../../src/tools/utility/sprint-timeline-calculator.js"
 			);
 
 			// Complex task scenarios
@@ -197,7 +197,7 @@ describe("Enhanced Coverage Improvement - Targeting Uncovered Functions", () => 
 
 		it("should handle edge cases in sprint planning", async () => {
 			const { sprintTimelineCalculator } = await import(
-				"../../src/tools/sprint-timeline-calculator.js"
+				"../../src/tools/utility/sprint-timeline-calculator.js"
 			);
 
 			// Empty tasks
@@ -243,7 +243,7 @@ describe("Enhanced Coverage Improvement - Targeting Uncovered Functions", () => 
 	describe("Model Compatibility Checker Advanced Testing", () => {
 		it("should handle comprehensive model compatibility scenarios", async () => {
 			const { modelCompatibilityChecker } = await import(
-				"../../src/tools/model-compatibility-checker.js"
+				"../../src/tools/utility/model-compatibility-checker.js"
 			);
 
 			// Complex task descriptions
@@ -279,7 +279,7 @@ describe("Enhanced Coverage Improvement - Targeting Uncovered Functions", () => 
 
 		it("should test different budget and requirement combinations", async () => {
 			const { modelCompatibilityChecker } = await import(
-				"../../src/tools/model-compatibility-checker.js"
+				"../../src/tools/utility/model-compatibility-checker.js"
 			);
 
 			const budgets = ["low", "medium", "high"];
@@ -310,7 +310,7 @@ describe("Enhanced Coverage Improvement - Targeting Uncovered Functions", () => 
 	describe("Guidelines Validator Comprehensive Testing", () => {
 		it("should validate practices across all categories", async () => {
 			const { guidelinesValidator } = await import(
-				"../../src/tools/guidelines-validator.js"
+				"../../src/tools/utility/guidelines-validator.js"
 			);
 
 			const categories = [
@@ -351,7 +351,7 @@ describe("Enhanced Coverage Improvement - Targeting Uncovered Functions", () => 
 
 		it("should handle edge cases in practice validation", async () => {
 			const { guidelinesValidator } = await import(
-				"../../src/tools/guidelines-validator.js"
+				"../../src/tools/utility/guidelines-validator.js"
 			);
 
 			// Empty practice description
@@ -383,7 +383,7 @@ describe("Enhanced Coverage Improvement - Targeting Uncovered Functions", () => 
 	describe("Mermaid Diagram Generator Advanced Scenarios", () => {
 		it("should generate complex diagrams with various configurations", async () => {
 			const { mermaidDiagramGenerator } = await import(
-				"../../src/tools/mermaid-diagram-generator.js"
+				"../../src/tools/utility/mermaid-diagram-generator.js"
 			);
 
 			// Complex system architecture
@@ -597,11 +597,11 @@ describe("Enhanced Coverage Improvement - Targeting Uncovered Functions", () => 
 		});
 
 		it("should test gap frameworks analyzers with complex scenarios", async () => {
-			const { gapFrameworksAnalyzers } = await import(
-				"../../src/tools/analysis/gap-frameworks-analyzers.js"
+			const { gapFrameworksAnalyzer } = await import(
+				"../../src/tools/analysis/gap-frameworks-analyzer.js"
 			);
 
-			const result = await gapFrameworksAnalyzers({
+			const result = await gapFrameworksAnalyzer({
 				currentState:
 					"Traditional on-premises infrastructure with manual processes, limited automation, siloed departments, and reactive maintenance approaches",
 				desiredState:
@@ -640,7 +640,7 @@ describe("Enhanced Coverage Improvement - Targeting Uncovered Functions", () => 
 	describe("Iterative Coverage Enhancer Advanced Testing", () => {
 		it("should test the iterative coverage enhancer with real project scenarios", async () => {
 			const { iterativeCoverageEnhancer } = await import(
-				"../../src/tools/iterative-coverage-enhancer.js"
+				"../../src/tools/analysis/iterative-coverage-enhancer.js"
 			);
 
 			// Test with real-world coverage data

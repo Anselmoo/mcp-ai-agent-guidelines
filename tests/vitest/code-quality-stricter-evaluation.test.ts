@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { codeHygieneAnalyzer } from "../../src/tools/code-hygiene-analyzer";
-import { guidelinesValidator } from "../../src/tools/guidelines-validator";
+import { codeHygieneAnalyzer } from "../../src/tools/analysis/code-hygiene-analyzer.js";
+import { guidelinesValidator } from "../../src/tools/utility/guidelines-validator.js";
 
 describe("Stricter Code Quality Evaluation", () => {
 	describe("Code Hygiene with Severity-Based Scoring", () => {

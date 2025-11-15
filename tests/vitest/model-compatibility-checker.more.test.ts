@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { modelCompatibilityChecker } from "../../src/tools/model-compatibility-checker";
+import { modelCompatibilityChecker } from "../../src/tools/utility/model-compatibility-checker.js";
 
 describe("model-compatibility-checker (examples and links)", () => {
 	it("omits code examples when includeCodeExamples=false", async () => {

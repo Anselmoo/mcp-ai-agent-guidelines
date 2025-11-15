@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { gapFrameworksAnalyzers } from "../../src/tools/analysis/gap-frameworks-analyzers.js";
+import { gapFrameworksAnalyzer } from "../../src/tools/analysis/gap-frameworks-analyzer.js";
 
 describe("gap-frameworks-analyzers negative cases", () => {
 	it("should throw error for invalid framework type", async () => {
 		await expect(
-			gapFrameworksAnalyzers({
+			gapFrameworksAnalyzer({
 				frameworks: ["invalid-framework"],
 				currentState: "Current state",
 				desiredState: "Desired state",
@@ -15,7 +15,7 @@ describe("gap-frameworks-analyzers negative cases", () => {
 
 	it("should throw error for missing required fields", async () => {
 		await expect(
-			gapFrameworksAnalyzers({
+			gapFrameworksAnalyzer({
 				frameworks: ["capability"],
 				// Missing currentState, desiredState, context
 			}),
@@ -24,7 +24,7 @@ describe("gap-frameworks-analyzers negative cases", () => {
 
 	it("should throw error for empty frameworks array", async () => {
 		await expect(
-			gapFrameworksAnalyzers({
+			gapFrameworksAnalyzer({
 				frameworks: [],
 				currentState: "Current state",
 				desiredState: "Desired state",
@@ -35,7 +35,7 @@ describe("gap-frameworks-analyzers negative cases", () => {
 
 	it("should throw error for non-string current state", async () => {
 		await expect(
-			gapFrameworksAnalyzers({
+			gapFrameworksAnalyzer({
 				frameworks: ["capability"],
 				currentState: 123,
 				desiredState: "Desired state",
@@ -46,7 +46,7 @@ describe("gap-frameworks-analyzers negative cases", () => {
 
 	it("should throw error for non-array objectives", async () => {
 		await expect(
-			gapFrameworksAnalyzers({
+			gapFrameworksAnalyzer({
 				frameworks: ["capability"],
 				currentState: "Current state",
 				desiredState: "Desired state",
@@ -57,7 +57,7 @@ describe("gap-frameworks-analyzers negative cases", () => {
 	});
 
 	it("should handle empty optional arrays gracefully", async () => {
-		const result = await gapFrameworksAnalyzers({
+		const result = await gapFrameworksAnalyzer({
 			frameworks: ["capability"],
 			currentState: "Current state",
 			desiredState: "Desired state",
