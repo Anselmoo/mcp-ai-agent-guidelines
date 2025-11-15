@@ -372,7 +372,7 @@ The following files have been updated to use the new error handling:
 
 ---
 
-<!-- FOOTER:START -->
+<<!-- FOOTER:START -->
 
 ![Footer](../.frames-static/09-footer.svg)
 

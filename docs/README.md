@@ -147,6 +147,6 @@ npm run quality            # Check quality standards
 
 Made with ❤️ by the MCP AI Agent Guidelines community
 
-<!-- FOOTER:START -->
+<<!-- FOOTER:START -->
 ![Footer](.frames-static/09-footer.svg)
 <!-- FOOTER:END -->

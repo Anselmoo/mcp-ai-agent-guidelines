@@ -232,7 +232,7 @@ For questions about specific references or to suggest additions, please [open an
 
 ---
 
-<!-- FOOTER:START -->
+<<!-- FOOTER:START -->
 
 ![Footer](../.frames-static/09-footer.svg)
 

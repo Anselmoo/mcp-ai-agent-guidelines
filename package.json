@@ -39,6 +39,8 @@
 		"hooks:run": "lefthook run",
 		"links:check": "npx markdown-link-check --config .mlc_config.json README.md CONTRIBUTING.md DISCLAIMER.md",
 		"docs:lint": "node scripts/lint-docs.js",
+		"docs:fix": "node scripts/fix-doc-consistency.js",
+		"docs:fix:dry-run": "node scripts/fix-doc-consistency.js --dry-run",
 		"docs:fix-svg": "node scripts/fix-svg-visibility.js",
 		"docs:fix-svg:dry-run": "node scripts/fix-svg-visibility.js --dry-run",
 		"docs:update-svg-bg": "node scripts/update-svg-background.js",

@@ -141,6 +141,6 @@ Our visual design is inspired by modern open source best practices and contempor
 
 ---
 
-<!-- FOOTER:START -->
+<<!-- FOOTER:START -->
 ![Footer](../.frames-static/09-footer.svg)
 <!-- FOOTER:END -->

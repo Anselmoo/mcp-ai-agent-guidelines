@@ -1,3 +1,9 @@
+<!-- HEADER:START -->
+
+![Header](.frames-static/09-header.svg)
+
+<!-- HEADER:END -->
+
 # SVG Dark Mode Visibility Fix
 
 ## Problem Statement

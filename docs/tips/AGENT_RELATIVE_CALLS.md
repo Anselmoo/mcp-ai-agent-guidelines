@@ -1016,7 +1016,7 @@ To suggest improvements to agent-relative call patterns or add new examples:
 
 ---
 
-<!-- FOOTER:START -->
+<<!-- FOOTER:START -->
 
 ![Footer](../.frames-static/09-footer.svg)
 

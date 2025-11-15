@@ -1,3 +1,9 @@
+<!-- HEADER:START -->
+
+![Header](.frames-static/09-header.svg)
+
+<!-- HEADER:END -->
+
 # Quick Developer Prompts Builder - Usage Guide
 
 ## Overview

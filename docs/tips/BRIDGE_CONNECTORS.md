@@ -364,6 +364,6 @@ const strategy = await strategyFrameworksBuilder({
 - [Serena Repository](https://github.com/oraios/serena)
 ---
 
-<!-- FOOTER:START -->
+<<!-- FOOTER:START -->
 ![Footer](../.frames-static/09-footer.svg)
 <!-- FOOTER:END -->

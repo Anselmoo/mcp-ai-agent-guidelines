@@ -17,7 +17,7 @@
 
 **Related Guides:**
 
-- [Design Guidelines](./design-guidelines.md)
+- [Design Guidelines](./DESIGN_GUIDELINES.md)
 - [Design Assistant](./TOOLS_REFERENCE.md#design-assistant)
 - [Documentation Index](../README.md#documentation-index)
 
@@ -153,7 +153,7 @@ All modules maintain backwards compatibility through:
 
 ---
 
-<!-- FOOTER:START -->
+<<!-- FOOTER:START -->
 
 ![Footer](../.frames-static/09-footer.svg)
 

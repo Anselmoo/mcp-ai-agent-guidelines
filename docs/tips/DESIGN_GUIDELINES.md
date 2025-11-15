@@ -384,7 +384,7 @@ Potential scripts to maintain consistency:
 
 ---
 
-<!-- FOOTER:START -->
+<<!-- FOOTER:START -->
 
 ![Footer](../.frames-static/09-footer.svg)
 

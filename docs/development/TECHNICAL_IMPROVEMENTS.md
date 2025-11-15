@@ -237,7 +237,7 @@ For more information, see:
 - [Error Handling Guide](../tips/ERROR_HANDLING.md)
 - [Clean Code Initiative](../tips/CLEAN_CODE_INITIATIVE.md)
 
-<!-- FOOTER:START -->
+<<!-- FOOTER:START -->
 ![Footer](../.frames-static/09-footer.svg)
 <!-- FOOTER:END -->
 

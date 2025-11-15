@@ -260,6 +260,6 @@ The system is **fully operational**. All interactive frames have been:
 **Last Updated**: 2025-11-01
 **Maintainer**: @Anselmoo
 
-<!-- FOOTER:START -->
+<<!-- FOOTER:START -->
 ![Footer](../.frames-static/09-footer.svg)
 <!-- FOOTER:END -->

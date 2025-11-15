@@ -467,7 +467,7 @@ The generator automatically converts legacy type names:
 
 ---
 
-<!-- FOOTER:START -->
+<<!-- FOOTER:START -->
 
 ![Footer](../.frames-static/09-footer.svg)
 

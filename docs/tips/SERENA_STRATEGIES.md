@@ -328,7 +328,7 @@ When adding new tools or strategies inspired by Serena:
 
 ---
 
-<!-- FOOTER:START -->
+<<!-- FOOTER:START -->
 
 ![Footer](../.frames-static/09-footer.svg)
 
