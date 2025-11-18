@@ -6,7 +6,9 @@ name: Link Checker
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - 'auto-regenerate-demos-*'
     paths:
       - "**.md"
       - "**.ts"

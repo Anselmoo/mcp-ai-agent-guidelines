@@ -8,7 +8,9 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: [main]
+    branches:
+      - main
+      - 'auto-regenerate-demos-*'
 
 env:
   NODE_VERSION: "22"

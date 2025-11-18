@@ -6,7 +6,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - 'auto-regenerate-demos-*'
     tags: ['v*.*.*']
   pull_request:
     branches: [main]
