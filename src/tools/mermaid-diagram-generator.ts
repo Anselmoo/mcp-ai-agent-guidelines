@@ -6,16 +6,15 @@ async function validateDiagram(code: string): Promise<ValidateResult> {
 	try {
 		// dynamic import keeps tool lightweight if mermaid not installed
 		const mermaid = await import("mermaid");
-		// mermaid.parse will throw on error
+		// mermaid.default.parse will throw on error
 		// Some versions expose parse async; wrap in Promise.resolve
-		// @ts-expect-error
-		await Promise.resolve(mermaid.parse(code));
+		await Promise.resolve(mermaid.default.parse(code));
 		return { valid: true };
 	} catch (err) {
 		const msg = (err as Error).message || String(err);
-		// If mermaid is not installed/available, skip validation but allow diagram output
+		// If mermaid is not installed/available, or requires DOM environment, skip validation but allow diagram output
 		if (
-			/Cannot find module 'mermaid'|Cannot use import statement|module not found/i.test(
+			/Cannot find module 'mermaid'|Cannot use import statement|module not found|DOMPurify|document is not defined|window is not defined/i.test(
 				msg,
 			)
 		) {
