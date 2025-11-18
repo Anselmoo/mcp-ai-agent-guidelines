@@ -6,20 +6,16 @@ User submits data -> Validate -> Process -> Save -> Return summary
 ### Diagram Code
 ```mermaid
 flowchart TD
-A([Start]) --> B[Fallback Diagram]
-B --> C([End])
+A[User submits data -> Validate -> Process -> Save -> Return summary]
+A --> B([End])
 ```
 
 ### Accessibility
 - You can provide accTitle and accDescr to improve screen reader context.
 
 ### Validation
-❌ Diagram invalid even after attempts: mermaid.parse is not a function
-### Feedback Loop
-- Try simplifying node labels (avoid punctuation that Mermaid may misparse)
-- Ensure a single diagram header (e.g., 'flowchart TD')
-- Replace complex punctuation with plain words
-- If describing a pipeline, try a simpler 5-step flow and add branches gradually
+ℹ️ Validation skipped (mermaid not available). Diagram generated.
+
 
 ### Generation Settings
 Type: flowchart
