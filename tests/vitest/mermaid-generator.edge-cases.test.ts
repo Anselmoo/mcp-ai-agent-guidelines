@@ -42,4 +42,33 @@ describe("mermaid-diagram-generator additional edge cases", () => {
 		const text = res.content[0]?.type === "text" ? res.content[0].text : "";
 		expect(text).toMatch(/Mermaid Diagram/);
 	});
+
+	it("rejects invalid diagram type", async () => {
+		await expect(
+			mermaidDiagramGenerator({
+				description: "Invalid type",
+				diagramType: "not-real" as any,
+			}),
+		).rejects.toThrow(/Invalid enum value/i);
+	});
+
+	it("handles extremely long descriptions", async () => {
+		const longDescription = "A".repeat(5000);
+		const res = await mermaidDiagramGenerator({
+			description: longDescription,
+			diagramType: "flowchart",
+		});
+		const text = res.content[0]?.type === "text" ? res.content[0].text : "";
+		expect(text).toContain(longDescription.slice(0, 100));
+	});
+
+	it("preserves special characters in descriptions", async () => {
+		const specialDescription = `Nodes & relationships <A> -> "B" & 'C'`;
+		const res = await mermaidDiagramGenerator({
+			description: specialDescription,
+			diagramType: "flowchart",
+		});
+		const text = res.content[0]?.type === "text" ? res.content[0].text : "";
+		expect(text).toContain(specialDescription);
+	});
 });
