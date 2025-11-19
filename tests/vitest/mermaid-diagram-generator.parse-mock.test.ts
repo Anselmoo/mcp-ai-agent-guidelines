@@ -7,7 +7,7 @@ describe("mermaid-diagram-generator: dynamic mermaid import shapes", () => {
 	it("skips validation when mermaid exports no parse function (module shape without parse)", async () => {
 		vi.resetModules();
 		// Mock 'mermaid' as an empty object, so extractMermaidParse should return null
-		vi.mock("mermaid", () => ({}) as unknown);
+		vi.mock("mermaid", () => ({}));
 		const { mermaidDiagramGenerator } = await import(
 			"../../src/tools/mermaid-diagram-generator.js"
 		);
@@ -31,7 +31,7 @@ describe("mermaid-diagram-generator: dynamic mermaid import shapes", () => {
 		const { mermaidDiagramGenerator } = await import(
 			"../../src/tools/mermaid-diagram-generator.js"
 		);
-		const res = await mermaidDiagramGenerator({
+		await mermaidDiagramGenerator({
 			description: "User sends request to system",
 			diagramType: "sequence",
 		});
@@ -43,20 +43,16 @@ describe("mermaid-diagram-generator: dynamic mermaid import shapes", () => {
 	it("uses parse property when mermaid exports a parse function", async () => {
 		vi.resetModules();
 		const calls: string[] = [];
-		vi.mock(
-			"mermaid",
-			() =>
-				({
-					parse: (_code: string) => {
-						calls.push("parse-fn");
-						return true;
-					},
-				}) as unknown,
-		);
+		vi.mock("mermaid", () => ({
+			parse: (_code: string) => {
+				calls.push("parse-fn");
+				return true;
+			},
+		}));
 		const { mermaidDiagramGenerator } = await import(
 			"../../src/tools/mermaid-diagram-generator.js"
 		);
-		const res = await mermaidDiagramGenerator({
+		await mermaidDiagramGenerator({
 			description: "User sends request to system",
 			diagramType: "sequence",
 		});
@@ -68,18 +64,14 @@ describe("mermaid-diagram-generator: dynamic mermaid import shapes", () => {
 	it("uses default.parse when mermaid.default.parse exists", async () => {
 		vi.resetModules();
 		const calls: string[] = [];
-		vi.mock(
-			"mermaid",
-			() =>
-				({
-					default: {
-						parse: (_code: string) => {
-							calls.push("default-parse");
-							return true;
-						},
-					},
-				}) as unknown,
-		);
+		vi.mock("mermaid", () => ({
+			default: {
+				parse: (_code: string) => {
+					calls.push("default-parse");
+					return true;
+				},
+			},
+		}));
 		const { mermaidDiagramGenerator } = await import(
 			"../../src/tools/mermaid-diagram-generator.js"
 		);
@@ -98,18 +90,14 @@ describe("mermaid-diagram-generator: dynamic mermaid import shapes", () => {
 		// due to `repair: true` we expect the generator to attempt repair and either
 		// succeed or fall back depending on the simulated parse.
 		const calls: string[] = [];
-		vi.mock(
-			"mermaid",
-			() =>
-				({
-					parse: (code: string) => {
-						calls.push(code.includes("BAD_PARSE") ? "bad" : "ok");
-						if (code.includes("BAD_PARSE"))
-							throw new Error("Syntax error near BAD_PARSE");
-						return true;
-					},
-				}) as unknown,
-		);
+		vi.mock("mermaid", () => ({
+			parse: (code: string) => {
+				calls.push(code.includes("BAD_PARSE") ? "bad" : "ok");
+				if (code.includes("BAD_PARSE"))
+					throw new Error("Syntax error near BAD_PARSE");
+				return true;
+			},
+		}));
 
 		const { mermaidDiagramGenerator } = await import(
 			"../../src/tools/mermaid-diagram-generator.js"
@@ -136,9 +124,7 @@ describe("mermaid-diagram-generator: dynamic mermaid import shapes", () => {
 	it("maps legacy diagram type names and includes accessibility comments", async () => {
 		vi.resetModules();
 		// Make parse succeed to keep behavior deterministic
-		vi.mock("mermaid", () => ({
-			parse: (_code: string) => true,
-		}));
+		vi.mock("mermaid", () => ({ parse: (_code: string) => true }));
 		const { mermaidDiagramGenerator } = await import(
 			"../../src/tools/mermaid-diagram-generator.js"
 		);
