@@ -1,9 +1,13 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 // We'll re-import the module under test after each mock setup to ensure module-level
 // cache is reset. This allows us to test behavior around dynamic import + caching.
 
 describe("mermaid-diagram-generator: dynamic mermaid import shapes", () => {
+	afterEach(() => {
+		vi.restoreAllMocks();
+		vi.resetModules();
+	});
 	it("skips validation when mermaid exports no parse function (module shape without parse)", async () => {
 		vi.resetModules();
 		// Mock 'mermaid' as an empty object, so extractMermaidParse should return null
@@ -31,7 +35,7 @@ describe("mermaid-diagram-generator: dynamic mermaid import shapes", () => {
 		const { mermaidDiagramGenerator } = await import(
 			"../../src/tools/mermaid-diagram-generator.js"
 		);
-		await mermaidDiagramGenerator({
+		const res = await mermaidDiagramGenerator({
 			description: "User sends request to system",
 			diagramType: "sequence",
 		});
@@ -52,7 +56,7 @@ describe("mermaid-diagram-generator: dynamic mermaid import shapes", () => {
 		const { mermaidDiagramGenerator } = await import(
 			"../../src/tools/mermaid-diagram-generator.js"
 		);
-		await mermaidDiagramGenerator({
+		const res = await mermaidDiagramGenerator({
 			description: "User sends request to system",
 			diagramType: "sequence",
 		});
@@ -204,10 +208,13 @@ describe("mermaid-diagram-generator: dynamic mermaid import shapes", () => {
 
 	it("skips validation when dynamic import throws (e.g., DOM/SSR errors)", async () => {
 		vi.resetModules();
-		// Simulate import failing with an SSR/dom error
-		vi.mock("mermaid", () => {
-			throw new Error("Cannot use import statement");
-		});
+		// Simulate an environment error by throwing from parse with the same message
+		// as the one in loadMermaidParse()'s skip regex (e.g., "Cannot use import statement").
+		vi.mock("mermaid", () => ({
+			parse: (_code: string) => {
+				throw new Error("Cannot use import statement");
+			},
+		}));
 		const { mermaidDiagramGenerator } = await import(
 			"../../src/tools/mermaid-diagram-generator.js"
 		);
