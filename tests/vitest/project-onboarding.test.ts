@@ -3,7 +3,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { projectOnboarding } from "../../src/tools/project-onboarding.js";
+import { projectOnboarding } from "../../src/tools/utility/project-onboarding.js";
 
 describe("Project Onboarding", () => {
 	describe("Basic Functionality", () => {

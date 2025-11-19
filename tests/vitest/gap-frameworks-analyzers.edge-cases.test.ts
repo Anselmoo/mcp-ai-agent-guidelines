@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { gapFrameworksAnalyzers } from "../../src/tools/analysis/gap-frameworks-analyzers.js";
+import { gapFrameworksAnalyzer } from "../../src/tools/analysis/gap-frameworks-analyzer.js";
 
 describe("gap-frameworks-analyzers edge cases", () => {
 	it("should handle single framework analysis", async () => {
-		const result = await gapFrameworksAnalyzers({
+		const result = await gapFrameworksAnalyzer({
 			frameworks: ["capability"],
 			currentState: "Basic manual processes",
 			desiredState: "Advanced automated workflows",
@@ -18,7 +18,7 @@ describe("gap-frameworks-analyzers edge cases", () => {
 
 	it("should handle very long text inputs", async () => {
 		const longText = "A".repeat(10000);
-		const result = await gapFrameworksAnalyzers({
+		const result = await gapFrameworksAnalyzer({
 			frameworks: ["strategic"],
 			currentState: longText,
 			desiredState: longText,
@@ -33,7 +33,7 @@ describe("gap-frameworks-analyzers edge cases", () => {
 	it("should handle special characters in inputs", async () => {
 		const specialText =
 			"Test with special chars: @#$%^&*()[]{}|\\:;\"'<>,.?/~`";
-		const result = await gapFrameworksAnalyzers({
+		const result = await gapFrameworksAnalyzer({
 			frameworks: ["process"],
 			currentState: specialText,
 			desiredState: specialText,
@@ -47,7 +47,7 @@ describe("gap-frameworks-analyzers edge cases", () => {
 
 	it("should handle unicode and emoji characters", async () => {
 		const unicodeText = "Testing 🚀 unicode ñáéíóú and 中文 characters";
-		const result = await gapFrameworksAnalyzers({
+		const result = await gapFrameworksAnalyzer({
 			frameworks: ["cultural"],
 			currentState: unicodeText,
 			desiredState: unicodeText,
@@ -73,7 +73,7 @@ describe("gap-frameworks-analyzers edge cases", () => {
 			(_, i) => `Constraint ${i + 1}`,
 		);
 
-		const result = await gapFrameworksAnalyzers({
+		const result = await gapFrameworksAnalyzer({
 			frameworks: ["operational"],
 			currentState: "Current operational state",
 			desiredState: "Desired operational state",
@@ -117,7 +117,7 @@ describe("gap-frameworks-analyzers edge cases", () => {
 		];
 
 		for (const { framework, expectedContent } of frameworkTests) {
-			const result = await gapFrameworksAnalyzers({
+			const result = await gapFrameworksAnalyzer({
 				frameworks: [framework as any],
 				currentState: "Current state",
 				desiredState: "Desired state",
@@ -130,7 +130,7 @@ describe("gap-frameworks-analyzers edge cases", () => {
 	});
 
 	it("should handle mixed case and duplicate frameworks", async () => {
-		const result = await gapFrameworksAnalyzers({
+		const result = await gapFrameworksAnalyzer({
 			frameworks: ["capability", "capability"], // Duplicate should be handled
 			currentState: "Current state",
 			desiredState: "Desired state",
@@ -143,7 +143,7 @@ describe("gap-frameworks-analyzers edge cases", () => {
 	});
 
 	it("should properly format filename hints with complex framework combinations", async () => {
-		const result = await gapFrameworksAnalyzers({
+		const result = await gapFrameworksAnalyzer({
 			frameworks: ["capability", "performance", "maturity", "skills"],
 			currentState: "Current state",
 			desiredState: "Desired state",

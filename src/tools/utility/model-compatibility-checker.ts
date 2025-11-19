@@ -7,7 +7,7 @@ import {
 	MODELS,
 	REQUIREMENT_KEYWORDS,
 	type ScoredModel,
-} from "./config/model-config.js";
+} from "../config/model-config.js";
 
 const ModelCompatibilitySchema = z.object({
 	taskDescription: z.string(),

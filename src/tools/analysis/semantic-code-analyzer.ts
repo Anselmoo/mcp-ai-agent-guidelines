@@ -5,7 +5,7 @@ import type {
 	PatternInfo,
 	StructureInfo,
 	SymbolInfo,
-} from "./semantic-analyzer/index.js";
+} from "../semantic-analyzer/index.js";
 import {
 	analyzeCode,
 	buildDependenciesSection,
@@ -15,11 +15,11 @@ import {
 	detectLanguage,
 	generateInsights,
 	generateRecommendations,
-} from "./semantic-analyzer/index.js";
+} from "../semantic-analyzer/index.js";
 import {
 	buildFurtherReadingSection,
 	buildMetadataSection,
-} from "./shared/prompt-utils.js";
+} from "../shared/prompt-utils.js";
 
 const SemanticCodeAnalyzerSchema = z.object({
 	codeContent: z.string().describe("Code content to analyze"),

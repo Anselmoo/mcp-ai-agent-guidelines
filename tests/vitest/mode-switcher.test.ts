@@ -3,7 +3,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { modeSwitcher } from "../../src/tools/mode-switcher.js";
+import { modeSwitcher } from "../../src/tools/utility/mode-switcher.js";
 
 describe("Mode Switcher", () => {
 	describe("Mode Switching", () => {
