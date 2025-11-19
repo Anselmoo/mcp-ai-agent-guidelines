@@ -2,20 +2,92 @@ import { z } from "zod";
 
 // Optional runtime validation of generated diagrams using mermaid.parse (if installed)
 type ValidateResult = { valid: boolean; error?: string; skipped?: boolean };
+
+type MermaidParseLike = (code: string) => unknown | Promise<unknown>;
+
+let cachedMermaidParse: MermaidParseLike | null = null;
+let mermaidLoadPromise: Promise<MermaidParseLike> | null = null;
+let mermaidLoadError: Error | null = null;
+type MermaidModuleProvider = () => unknown | Promise<unknown>;
+let customMermaidModuleProvider: MermaidModuleProvider | null = null;
+
+function resetMermaidLoaderState(): void {
+	cachedMermaidParse = null;
+	mermaidLoadPromise = null;
+	mermaidLoadError = null;
+}
+
+export function __setMermaidModuleProvider(
+	provider: MermaidModuleProvider | null,
+): void {
+	customMermaidModuleProvider = provider;
+	resetMermaidLoaderState();
+}
+
+function importMermaidModule(): Promise<unknown> {
+	if (customMermaidModuleProvider) {
+		return Promise.resolve(customMermaidModuleProvider());
+	}
+	return import("mermaid");
+}
+
+function extractMermaidParse(mod: unknown): MermaidParseLike | null {
+	if (!mod) return null;
+	if (typeof mod === "function") {
+		return mod as MermaidParseLike;
+	}
+	if (typeof (mod as { parse?: unknown }).parse === "function") {
+		const parse = (mod as { parse: MermaidParseLike }).parse;
+		return parse.bind(mod);
+	}
+	const defaultExport = (mod as { default?: unknown }).default;
+	if (typeof defaultExport === "function") {
+		return defaultExport as MermaidParseLike;
+	}
+	if (
+		defaultExport &&
+		typeof (defaultExport as { parse?: unknown }).parse === "function"
+	) {
+		const parse = (defaultExport as { parse: MermaidParseLike }).parse;
+		return parse.bind(defaultExport);
+	}
+	return null;
+}
+
+async function loadMermaidParse(): Promise<MermaidParseLike> {
+	if (cachedMermaidParse) return cachedMermaidParse;
+	if (mermaidLoadError) throw mermaidLoadError;
+	if (!mermaidLoadPromise) {
+		mermaidLoadPromise = importMermaidModule()
+			.then((mod) => {
+				const parse = extractMermaidParse(mod);
+				if (!parse) {
+					throw new Error("Mermaid parse function unavailable");
+				}
+				cachedMermaidParse = parse;
+				return parse;
+			})
+			.catch((error) => {
+				const err = error instanceof Error ? error : new Error(String(error));
+				mermaidLoadError = err;
+				mermaidLoadPromise = null;
+				throw err;
+			});
+	}
+	return mermaidLoadPromise;
+}
+
 async function validateDiagram(code: string): Promise<ValidateResult> {
 	try {
-		// dynamic import keeps tool lightweight if mermaid not installed
-		const mermaid = await import("mermaid");
-		// mermaid.parse will throw on error
+		const parse = await loadMermaidParse();
 		// Some versions expose parse async; wrap in Promise.resolve
-		// @ts-expect-error
-		await Promise.resolve(mermaid.parse(code));
+		await Promise.resolve(parse(code));
 		return { valid: true };
 	} catch (err) {
 		const msg = (err as Error).message || String(err);
-		// If mermaid is not installed/available, skip validation but allow diagram output
+		// If mermaid is not installed/available, or requires DOM environment, skip validation but allow diagram output
 		if (
-			/Cannot find module 'mermaid'|Cannot use import statement|module not found/i.test(
+			/Cannot find module 'mermaid'|Cannot use import statement|module not found|DOMPurify|document is not defined|window is not defined|Mermaid parse function unavailable/i.test(
 				msg,
 			)
 		) {
