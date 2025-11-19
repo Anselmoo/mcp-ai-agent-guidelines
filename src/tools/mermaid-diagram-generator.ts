@@ -8,6 +8,28 @@ type MermaidParseLike = (code: string) => unknown | Promise<unknown>;
 let cachedMermaidParse: MermaidParseLike | null = null;
 let mermaidLoadPromise: Promise<MermaidParseLike> | null = null;
 let mermaidLoadError: Error | null = null;
+type MermaidModuleProvider = () => unknown | Promise<unknown>;
+let customMermaidModuleProvider: MermaidModuleProvider | null = null;
+
+function resetMermaidLoaderState(): void {
+	cachedMermaidParse = null;
+	mermaidLoadPromise = null;
+	mermaidLoadError = null;
+}
+
+export function __setMermaidModuleProvider(
+	provider: MermaidModuleProvider | null,
+): void {
+	customMermaidModuleProvider = provider;
+	resetMermaidLoaderState();
+}
+
+function importMermaidModule(): Promise<unknown> {
+	if (customMermaidModuleProvider) {
+		return Promise.resolve(customMermaidModuleProvider());
+	}
+	return import("mermaid");
+}
 
 function extractMermaidParse(mod: unknown): MermaidParseLike | null {
 	if (!mod) return null;
@@ -36,7 +58,7 @@ async function loadMermaidParse(): Promise<MermaidParseLike> {
 	if (cachedMermaidParse) return cachedMermaidParse;
 	if (mermaidLoadError) throw mermaidLoadError;
 	if (!mermaidLoadPromise) {
-		mermaidLoadPromise = import("mermaid")
+		mermaidLoadPromise = importMermaidModule()
 			.then((mod) => {
 				const parse = extractMermaidParse(mod);
 				if (!parse) {
