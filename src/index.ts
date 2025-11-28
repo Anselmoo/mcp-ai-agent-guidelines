@@ -52,6 +52,7 @@ import { modelCompatibilityChecker } from "./tools/model-compatibility-checker.j
 import { projectOnboarding } from "./tools/project-onboarding.js";
 import { architectureDesignPromptBuilder } from "./tools/prompt/architecture-design-prompt-builder.js";
 import { codeAnalysisPromptBuilder } from "./tools/prompt/code-analysis-prompt-builder.js";
+import { coverageDashboardDesignPromptBuilder } from "./tools/prompt/coverage-dashboard-design-prompt-builder.js";
 import { debuggingAssistantPromptBuilder } from "./tools/prompt/debugging-assistant-prompt-builder.js";
 import { documentationGeneratorPromptBuilder } from "./tools/prompt/documentation-generator-prompt-builder.js";
 import { domainNeutralPromptBuilder } from "./tools/prompt/domain-neutral-prompt-builder.js";
@@ -794,6 +795,194 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						"spacingContext",
 						"mobileLayout",
 					],
+				},
+			},
+			{
+				name: "coverage-dashboard-design-prompt-builder",
+				description:
+					"Generate comprehensive UI/UX design prompts for coverage reporting dashboards. Creates intuitive, accessible, and responsive coverage dashboards following Nielsen's usability heuristics and WCAG standards. Use this MCP to design user-optimized coverage reporting interfaces. Example: 'Use the coverage-dashboard-design-prompt-builder MCP to design a mobile-responsive coverage dashboard with card-based metrics and accessibility support'",
+				inputSchema: {
+					type: "object",
+					properties: {
+						title: {
+							type: "string",
+							description: "Dashboard title",
+							default: "Coverage Dashboard Design",
+						},
+						projectContext: {
+							type: "string",
+							description: "Project context or description",
+						},
+						targetUsers: {
+							type: "array",
+							items: { type: "string" },
+							description:
+								"Target user personas (e.g., developers, qa-engineers, managers)",
+						},
+						dashboardStyle: {
+							type: "string",
+							enum: ["card-based", "table-heavy", "hybrid", "minimal"],
+							description: "Dashboard layout style",
+						},
+						primaryMetrics: {
+							type: "array",
+							items: { type: "string" },
+							description:
+								"Primary coverage metrics to display (e.g., statements, branches, functions, lines)",
+						},
+						colorScheme: {
+							type: "string",
+							enum: [
+								"light",
+								"dark",
+								"auto",
+								"high-contrast",
+								"colorblind-safe",
+								"custom",
+							],
+							description: "Color scheme preference",
+						},
+						primaryColor: {
+							type: "string",
+							description: "Primary color in OKLCH",
+						},
+						successColor: {
+							type: "string",
+							description: "Success/good coverage color",
+						},
+						warningColor: {
+							type: "string",
+							description: "Warning coverage color",
+						},
+						dangerColor: {
+							type: "string",
+							description: "Danger/critical coverage color",
+						},
+						useGradients: {
+							type: "boolean",
+							description: "Use gradient visual indicators",
+						},
+						visualIndicators: {
+							type: "array",
+							items: { type: "string" },
+							description:
+								"Visual indicator types (e.g., progress-bars, badges, sparklines, heat-maps)",
+						},
+						fontFamily: { type: "string", description: "UI font family" },
+						codeFont: { type: "string", description: "Code font family" },
+						accessibility: {
+							type: "object",
+							description: "Accessibility configuration",
+							properties: {
+								wcagLevel: { type: "string", enum: ["A", "AA", "AAA"] },
+								colorBlindSafe: { type: "boolean" },
+								keyboardNavigation: { type: "boolean" },
+								screenReaderOptimized: { type: "boolean" },
+								focusIndicators: { type: "boolean" },
+								highContrastMode: { type: "boolean" },
+							},
+						},
+						responsive: {
+							type: "object",
+							description: "Responsive design configuration",
+							properties: {
+								mobileFirst: { type: "boolean" },
+								touchOptimized: { type: "boolean" },
+								collapsibleNavigation: { type: "boolean" },
+							},
+						},
+						interactiveFeatures: {
+							type: "object",
+							description: "Interactive feature configuration",
+							properties: {
+								filters: { type: "boolean" },
+								sorting: { type: "boolean" },
+								search: { type: "boolean" },
+								tooltips: { type: "boolean" },
+								expandCollapse: { type: "boolean" },
+								drillDown: { type: "boolean" },
+								exportOptions: { type: "array", items: { type: "string" } },
+								realTimeUpdates: { type: "boolean" },
+							},
+						},
+						performance: {
+							type: "object",
+							description: "Performance optimization settings",
+							properties: {
+								lazyLoading: { type: "boolean" },
+								virtualScrolling: { type: "boolean" },
+								dataCaching: { type: "boolean" },
+								skeletonLoaders: { type: "boolean" },
+								progressiveEnhancement: { type: "boolean" },
+							},
+						},
+						framework: {
+							type: "string",
+							enum: ["react", "vue", "angular", "svelte", "static", "any"],
+							description: "Preferred frontend framework",
+						},
+						componentLibrary: {
+							type: "string",
+							description: "Preferred component library",
+						},
+						iterationCycle: {
+							type: "object",
+							description: "Design iteration configuration",
+							properties: {
+								includeABTesting: { type: "boolean" },
+								includeAnalytics: { type: "boolean" },
+								includeFeedbackWidget: { type: "boolean" },
+								includeUsabilityMetrics: { type: "boolean" },
+							},
+						},
+						mode: { type: "string" },
+						model: { type: "string" },
+						tools: { type: "array", items: { type: "string" } },
+						includeFrontmatter: { type: "boolean" },
+						includeDisclaimer: { type: "boolean" },
+						includeReferences: { type: "boolean" },
+						includeMetadata: { type: "boolean" },
+						inputFile: { type: "string" },
+						forcePromptMdStyle: { type: "boolean" },
+						techniques: {
+							type: "array",
+							items: {
+								type: "string",
+								enum: [
+									"zero-shot",
+									"few-shot",
+									"chain-of-thought",
+									"self-consistency",
+									"in-context-learning",
+									"generate-knowledge",
+									"prompt-chaining",
+									"tree-of-thoughts",
+									"meta-prompting",
+									"rag",
+									"react",
+									"art",
+								],
+							},
+							description: "Prompting techniques to include",
+						},
+						includeTechniqueHints: { type: "boolean" },
+						autoSelectTechniques: { type: "boolean" },
+						provider: {
+							type: "string",
+							enum: [
+								"gpt-5",
+								"gpt-4.1",
+								"claude-4",
+								"claude-3.7",
+								"gemini-2.5",
+								"o4-mini",
+								"o3-mini",
+								"other",
+							],
+						},
+						style: { type: "string", enum: ["markdown", "xml"] },
+					},
+					required: [],
 				},
 			},
 			{
@@ -1881,6 +2070,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 				return gapFrameworksAnalyzers(args);
 			case "spark-prompt-builder":
 				return sparkPromptBuilder(args);
+			case "coverage-dashboard-design-prompt-builder":
+				return coverageDashboardDesignPromptBuilder(args);
 			case "domain-neutral-prompt-builder":
 				return domainNeutralPromptBuilder(args);
 			case "security-hardening-prompt-builder":
