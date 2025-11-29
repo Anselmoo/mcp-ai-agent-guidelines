@@ -42,6 +42,7 @@ const FileTypeEnum = z.enum([
 	"vcpkg.json",
 	"conanfile.txt",
 	"rockspec",
+	"csproj",
 	"auto",
 ]);
 
@@ -51,7 +52,7 @@ const DependencyAuditorSchema = z.object({
 		.string()
 		.optional()
 		.describe(
-			"Content of dependency file (package.json, requirements.txt, go.mod, Cargo.toml, Gemfile, etc.)",
+			"Content of dependency file (package.json, requirements.txt, go.mod, Cargo.toml, Gemfile, csproj, etc.)",
 		),
 	// Backward compatibility: packageJsonContent still works for JS/TS
 	packageJsonContent: z
@@ -606,6 +607,23 @@ function getEcosystemReferences(ecosystem: EcosystemType): ReferenceLink[] {
 				description: "LuaRocks package manager documentation",
 			},
 		],
+		dotnet: [
+			{
+				title: "NuGet Security",
+				url: "https://docs.microsoft.com/en-us/nuget/concepts/security-best-practices",
+				description: "NuGet security best practices",
+			},
+			{
+				title: ".NET Security Advisories",
+				url: "https://github.com/dotnet/announcements/issues?q=is%3Aissue+label%3ASecurity",
+				description: "Official .NET security announcements",
+			},
+			{
+				title: "dotnet list package --vulnerable",
+				url: "https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-list-package",
+				description: "Built-in vulnerability scanning for .NET",
+			},
+		],
 	};
 
 	return refs[ecosystem] || [];
@@ -765,6 +783,7 @@ function getEcosystemEmoji(ecosystem: EcosystemType): string {
 		ruby: "💎",
 		cpp: "⚡",
 		lua: "🌙",
+		dotnet: "🔷",
 	};
 	return emojis[ecosystem] || "📦";
 }

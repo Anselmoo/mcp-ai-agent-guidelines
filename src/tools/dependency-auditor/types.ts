@@ -16,6 +16,7 @@ export type PackageFileType =
 	| "vcpkg.json"
 	| "conanfile.txt"
 	| "rockspec"
+	| "csproj"
 	| "auto";
 
 /**
@@ -28,7 +29,8 @@ export type EcosystemType =
 	| "rust"
 	| "ruby"
 	| "cpp"
-	| "lua";
+	| "lua"
+	| "dotnet";
 
 /**
  * Dependency type classification

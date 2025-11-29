@@ -5,9 +5,11 @@
  * across multiple programming languages and package ecosystems.
  */
 
-// Export parsers and utilities
+// Export parsers and utilities from modular parser files
 export {
+	BaseParser,
 	CppVcpkgParser,
+	DotNetCsprojParser,
 	detectParser,
 	GoModParser,
 	getAllParsers,
@@ -15,13 +17,15 @@ export {
 	JavaScriptParser,
 	JsParser,
 	LuaRockspecParser,
+	PATTERNS,
 	PyProjectParser,
 	PyRequirementsParser,
 	PythonPyprojectParser,
 	PythonRequirementsParser,
 	RubyGemfileParser,
 	RustCargoParser,
-} from "./parsers.js";
+} from "./parsers/index.js";
+
 // Export types
 export type {
 	AnalysisOptions,
