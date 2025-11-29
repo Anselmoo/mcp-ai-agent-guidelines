@@ -1,27 +1,26 @@
 import { z } from "zod";
+import {
+	type AnalysisResult,
+	detectParser,
+	type EcosystemType,
+	getParserForFileType,
+	type Issue as MultiLangIssue,
+	type PackageInfo as MultiLangPackageInfo,
+	type PackageFileType,
+	type ReferenceLink,
+} from "./dependency-auditor/index.js";
 import { buildFurtherReadingSection } from "./shared/prompt-utils.js";
 
-const DependencyAuditorSchema = z.object({
-	packageJsonContent: z.string().describe("Content of package.json file"),
-	checkOutdated: z.boolean().optional().default(true),
-	checkDeprecated: z.boolean().optional().default(true),
-	checkVulnerabilities: z.boolean().optional().default(true),
-	suggestAlternatives: z.boolean().optional().default(true),
-	analyzeBundleSize: z.boolean().optional().default(true),
-	includeReferences: z.boolean().optional().default(true),
-	includeMetadata: z.boolean().optional().default(true),
-	inputFile: z.string().optional(),
-});
-
-type DependencyAuditorInput = z.infer<typeof DependencyAuditorSchema>;
-
-interface PackageInfo {
+/**
+ * Legacy types for backward compatibility with package.json-only analysis
+ */
+interface LegacyPackageInfo {
 	name: string;
 	version: string;
 	type: "dependencies" | "devDependencies" | "peerDependencies";
 }
 
-interface Issue {
+interface LegacyIssue {
 	package: string;
 	version: string;
 	type: string;
@@ -30,9 +29,151 @@ interface Issue {
 	recommendation?: string;
 }
 
+/**
+ * Supported file types for multi-language dependency auditing
+ */
+const FileTypeEnum = z.enum([
+	"package.json",
+	"requirements.txt",
+	"pyproject.toml",
+	"pipfile",
+	"go.mod",
+	"Cargo.toml",
+	"Gemfile",
+	"vcpkg.json",
+	"conanfile.txt",
+	"rockspec",
+	"auto",
+]);
+
+const DependencyAuditorSchema = z.object({
+	// Primary content input - supports any language
+	dependencyContent: z
+		.string()
+		.optional()
+		.describe(
+			"Content of dependency file (package.json, requirements.txt, go.mod, Cargo.toml, Gemfile, etc.)",
+		),
+	// Backward compatibility: packageJsonContent still works for JS/TS
+	packageJsonContent: z
+		.string()
+		.optional()
+		.describe(
+			"Content of package.json file (deprecated: use dependencyContent)",
+		),
+	// File type specification
+	fileType: FileTypeEnum.optional()
+		.default("auto")
+		.describe(
+			"Type of dependency file. Use 'auto' for automatic detection based on content.",
+		),
+	// Analysis options
+	checkOutdated: z.boolean().optional().default(true),
+	checkDeprecated: z.boolean().optional().default(true),
+	checkVulnerabilities: z.boolean().optional().default(true),
+	suggestAlternatives: z.boolean().optional().default(true),
+	analyzeBundleSize: z.boolean().optional().default(true),
+	// Output options
+	includeReferences: z.boolean().optional().default(true),
+	includeMetadata: z.boolean().optional().default(true),
+	inputFile: z.string().optional(),
+});
+
+type DependencyAuditorInput = z.infer<typeof DependencyAuditorSchema>;
+
 export async function dependencyAuditor(args: unknown) {
 	const input = DependencyAuditorSchema.parse(args);
 
+	// Get content from either new or legacy parameter
+	const content = input.dependencyContent || input.packageJsonContent;
+
+	if (!content) {
+		return {
+			content: [
+				{
+					type: "text",
+					text: `## ❌ Error\n\nNo dependency content provided. Please provide either 'dependencyContent' or 'packageJsonContent'.`,
+				},
+			],
+		};
+	}
+
+	// Determine file type and get appropriate parser
+	const fileType = input.fileType;
+	let parser = null;
+
+	if (fileType && fileType !== "auto") {
+		parser = getParserForFileType(fileType as PackageFileType);
+	}
+
+	if (!parser) {
+		parser = detectParser(content);
+	}
+
+	if (!parser) {
+		// Fall back to legacy package.json handling for backward compatibility
+		return handleLegacyPackageJson(content, input);
+	}
+
+	// Parse and analyze using the new multi-language system
+	const parseResult = parser.parse(content);
+
+	if (parseResult.errors && parseResult.errors.length > 0) {
+		return {
+			content: [
+				{
+					type: "text",
+					text: `## ❌ Error\n\n${parseResult.errors.join("\n")}`,
+				},
+			],
+		};
+	}
+
+	const analysisResult = parser.analyze(parseResult, {
+		checkOutdated: input.checkOutdated,
+		checkDeprecated: input.checkDeprecated,
+		checkVulnerabilities: input.checkVulnerabilities,
+		suggestAlternatives: input.suggestAlternatives,
+		analyzeBundleSize: input.analyzeBundleSize,
+	});
+
+	const references = input.includeReferences
+		? buildFurtherReadingSection(
+				getEcosystemReferences(analysisResult.ecosystem),
+			)
+		: undefined;
+
+	const metadata = input.includeMetadata
+		? [
+				"### Metadata",
+				`- Updated: ${new Date().toISOString().slice(0, 10)}`,
+				"- Source tool: mcp_ai-agent-guid_dependency-auditor",
+				`- Ecosystem: ${analysisResult.ecosystem}`,
+				`- File type: ${analysisResult.fileType}`,
+				input.inputFile ? `- Input file: ${input.inputFile}` : undefined,
+				"",
+			]
+				.filter(Boolean)
+				.join("\n")
+		: "";
+
+	return {
+		content: [
+			{
+				type: "text",
+				text: generateMultiLanguageReport(analysisResult, metadata, references),
+			},
+		],
+	};
+}
+
+/**
+ * Handle legacy package.json for backward compatibility
+ */
+function handleLegacyPackageJson(
+	content: string,
+	input: DependencyAuditorInput,
+) {
 	let packageJson: {
 		dependencies?: Record<string, string>;
 		devDependencies?: Record<string, string>;
@@ -42,19 +183,19 @@ export async function dependencyAuditor(args: unknown) {
 	};
 
 	try {
-		packageJson = JSON.parse(input.packageJsonContent);
+		packageJson = JSON.parse(content);
 	} catch (error) {
 		return {
 			content: [
 				{
 					type: "text",
-					text: `## ❌ Error\n\nInvalid package.json content: ${error instanceof Error ? error.message : "Unknown error"}`,
+					text: `## ❌ Error\n\nInvalid content: ${error instanceof Error ? error.message : "Unknown error"}\n\nSupported formats: package.json, requirements.txt, pyproject.toml, go.mod, Cargo.toml, Gemfile, vcpkg.json, rockspec`,
 				},
 			],
 		};
 	}
 
-	const analysis = analyzeDependencies(packageJson, input);
+	const analysis = analyzeLegacyDependencies(packageJson, input);
 	const references = input.includeReferences
 		? buildFurtherReadingSection([
 				{
@@ -100,13 +241,13 @@ export async function dependencyAuditor(args: unknown) {
 		content: [
 			{
 				type: "text",
-				text: generateReport(packageJson, analysis, metadata, references),
+				text: generateLegacyReport(packageJson, analysis, metadata, references),
 			},
 		],
 	};
 }
 
-function analyzeDependencies(
+function analyzeLegacyDependencies(
 	packageJson: {
 		dependencies?: Record<string, string>;
 		devDependencies?: Record<string, string>;
@@ -115,9 +256,9 @@ function analyzeDependencies(
 	},
 	input: DependencyAuditorInput,
 ) {
-	const issues: Issue[] = [];
+	const issues: LegacyIssue[] = [];
 	const recommendations: string[] = [];
-	const packages: PackageInfo[] = [];
+	const packages: LegacyPackageInfo[] = [];
 
 	// Collect all packages
 	if (packageJson.dependencies) {
@@ -376,11 +517,264 @@ function analyzeDependencies(
 	};
 }
 
-function generateReport(
+/**
+ * Get ecosystem-specific reference links
+ */
+function getEcosystemReferences(ecosystem: EcosystemType): ReferenceLink[] {
+	const refs: Record<EcosystemType, ReferenceLink[]> = {
+		javascript: [
+			{
+				title: "NPM Audit Official Guide",
+				url: "https://docs.npmjs.com/auditing-package-dependencies-for-security-vulnerabilities",
+				description: "Official documentation for auditing package dependencies",
+			},
+			{
+				title: "NPM Security Best Practices",
+				url: "https://docs.npmjs.com/packages-and-modules/securing-your-code",
+				description: "Best practices for securing Node.js projects",
+			},
+		],
+		python: [
+			{
+				title: "pip-audit",
+				url: "https://pypi.org/project/pip-audit/",
+				description:
+					"Scan Python environments for packages with known vulnerabilities",
+			},
+			{
+				title: "Safety CLI",
+				url: "https://safetycli.com/",
+				description: "Python dependency vulnerability scanner",
+			},
+			{
+				title: "Python Packaging Security",
+				url: "https://packaging.python.org/en/latest/guides/analyzing-pypi-package-downloads/",
+				description: "Python packaging security best practices",
+			},
+		],
+		go: [
+			{
+				title: "govulncheck",
+				url: "https://go.dev/blog/vuln",
+				description: "Official Go vulnerability database and scanner",
+			},
+			{
+				title: "Go Module Security",
+				url: "https://go.dev/doc/modules/managing-dependencies",
+				description: "Managing dependencies securely in Go",
+			},
+		],
+		rust: [
+			{
+				title: "cargo-audit",
+				url: "https://rustsec.org/",
+				description: "Audit Cargo.lock for security vulnerabilities",
+			},
+			{
+				title: "RustSec Advisory Database",
+				url: "https://github.com/RustSec/advisory-db",
+				description: "Security advisory database for Rust crates",
+			},
+		],
+		ruby: [
+			{
+				title: "bundler-audit",
+				url: "https://github.com/rubysec/bundler-audit",
+				description: "Patch-level verification for Ruby dependencies",
+			},
+			{
+				title: "Ruby Advisory Database",
+				url: "https://rubysec.com/",
+				description: "Security advisories for Ruby gems",
+			},
+		],
+		cpp: [
+			{
+				title: "vcpkg Security",
+				url: "https://vcpkg.io/en/docs/users/versioning.html",
+				description: "vcpkg versioning and security documentation",
+			},
+			{
+				title: "C++ Package Management",
+				url: "https://isocpp.org/wiki/faq/cpp-package-management",
+				description: "C++ dependency management best practices",
+			},
+		],
+		lua: [
+			{
+				title: "LuaRocks Documentation",
+				url: "https://luarocks.org/",
+				description: "LuaRocks package manager documentation",
+			},
+		],
+	};
+
+	return refs[ecosystem] || [];
+}
+
+/**
+ * Generate report for multi-language analysis results
+ */
+function generateMultiLanguageReport(
+	analysis: AnalysisResult,
+	metadata: string,
+	references: string | undefined,
+): string {
+	const {
+		packages,
+		issues,
+		recommendations,
+		ecosystem,
+		projectName,
+		projectVersion,
+	} = analysis;
+
+	// Group issues by severity
+	const criticalIssues = issues.filter((i) => i.severity === "critical");
+	const highIssues = issues.filter((i) => i.severity === "high");
+	const moderateIssues = issues.filter((i) => i.severity === "moderate");
+	const lowIssues = issues.filter((i) => i.severity === "low");
+	const infoIssues = issues.filter((i) => i.severity === "info");
+
+	// Get dependency counts by type
+	const depCounts = {
+		dependencies: packages.filter((p) => p.type === "dependencies").length,
+		devDependencies: packages.filter((p) => p.type === "devDependencies")
+			.length,
+		optionalDependencies: packages.filter(
+			(p) => p.type === "optionalDependencies",
+		).length,
+		buildDependencies: packages.filter((p) => p.type === "buildDependencies")
+			.length,
+		peerDependencies: packages.filter((p) => p.type === "peerDependencies")
+			.length,
+	};
+
+	const ecosystemEmoji = getEcosystemEmoji(ecosystem);
+
+	let report = `## ${ecosystemEmoji} Dependency Audit Report
+
+${metadata}
+
+### 📋 Summary
+| Metric | Value |
+|---|---|
+| Project | ${projectName || "Unknown"} |
+| Version | ${projectVersion || "Unknown"} |
+| Ecosystem | ${ecosystem} |
+| Total Packages | ${packages.length} |
+| Dependencies | ${depCounts.dependencies} |
+| Dev Dependencies | ${depCounts.devDependencies} |
+| Peer Dependencies | ${depCounts.peerDependencies} |
+| Optional/Build | ${depCounts.optionalDependencies + depCounts.buildDependencies} |
+| Issues Found | ${issues.length} |
+| Critical | ${criticalIssues.length} |
+| High | ${highIssues.length} |
+| Moderate | ${moderateIssues.length} |
+| Low | ${lowIssues.length} |
+
+`;
+
+	if (issues.length > 0) {
+		report += `### 🚨 Issues by Severity\n\n`;
+
+		if (criticalIssues.length > 0) {
+			report += `#### 🔴 Critical (${criticalIssues.length})\n`;
+			for (const issue of criticalIssues) {
+				report += formatMultiLangIssue(issue);
+			}
+			report += "\n";
+		}
+
+		if (highIssues.length > 0) {
+			report += `#### 🟠 High (${highIssues.length})\n`;
+			for (const issue of highIssues) {
+				report += formatMultiLangIssue(issue);
+			}
+			report += "\n";
+		}
+
+		if (moderateIssues.length > 0) {
+			report += `#### 🟡 Moderate (${moderateIssues.length})\n`;
+			for (const issue of moderateIssues) {
+				report += formatMultiLangIssue(issue);
+			}
+			report += "\n";
+		}
+
+		if (lowIssues.length > 0) {
+			report += `#### 🔵 Low (${lowIssues.length})\n`;
+			for (const issue of lowIssues) {
+				report += formatMultiLangIssue(issue);
+			}
+			report += "\n";
+		}
+
+		if (infoIssues.length > 0) {
+			report += `#### ℹ️ Info (${infoIssues.length})\n`;
+			for (const issue of infoIssues) {
+				report += formatMultiLangIssue(issue);
+			}
+			report += "\n";
+		}
+
+		// Add issues table
+		report += `### 📊 Issues Table\n`;
+		report += `| Package | Version | Type | Severity | Description |\n`;
+		report += `|---|---|---|---|---|\n`;
+		for (const issue of issues) {
+			report += `| ${issue.package} | ${issue.version} | ${issue.type} | ${getSeverityEmoji(issue.severity)} ${issue.severity} | ${issue.description} |\n`;
+		}
+		report += "\n";
+	} else {
+		report += `### ✅ No Issues Detected\n\nAll dependencies appear to be up-to-date and secure based on static analysis.\n\n`;
+	}
+
+	report += `### 💡 Recommendations\n`;
+	for (let i = 0; i < recommendations.length; i++) {
+		report += `${i + 1}. ${recommendations[i]}\n`;
+	}
+
+	if (references) {
+		report += `\n${references}\n`;
+	}
+
+	report += `\n### ⚠️ Disclaimer\n`;
+	report += `- This is a static analysis based on known patterns and common issues.\n`;
+	report += `- Use ecosystem-specific tools for real-time vulnerability scanning.\n`;
+	report += `- Always test dependency updates in a development environment before deploying to production.\n`;
+	report += `- This tool provides recommendations, but final decisions should be based on your specific project requirements.\n`;
+
+	return report;
+}
+
+function formatMultiLangIssue(issue: MultiLangIssue): string {
+	let formatted = `**${issue.package}@${issue.version}** - ${issue.type}\n`;
+	formatted += `  - ${issue.description}\n`;
+	if (issue.recommendation) {
+		formatted += `  - 💡 **Recommendation**: ${issue.recommendation}\n`;
+	}
+	return `${formatted}\n`;
+}
+
+function getEcosystemEmoji(ecosystem: EcosystemType): string {
+	const emojis: Record<EcosystemType, string> = {
+		javascript: "📦",
+		python: "🐍",
+		go: "🐹",
+		rust: "🦀",
+		ruby: "💎",
+		cpp: "⚡",
+		lua: "🌙",
+	};
+	return emojis[ecosystem] || "📦";
+}
+
+function generateLegacyReport(
 	packageJson: { name?: string; version?: string },
 	analysis: {
-		packages: PackageInfo[];
-		issues: Issue[];
+		packages: LegacyPackageInfo[];
+		issues: LegacyIssue[];
 		recommendations: string[];
 	},
 	metadata: string,
@@ -488,7 +882,7 @@ ${metadata}
 	return report;
 }
 
-function formatIssue(issue: Issue): string {
+function formatIssue(issue: LegacyIssue): string {
 	let formatted = `**${issue.package}@${issue.version}** - ${issue.type}\n`;
 	formatted += `  - ${issue.description}\n`;
 	if (issue.recommendation) {
