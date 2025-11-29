@@ -17,7 +17,7 @@
 
 **Related Guides:**
 
-- [Model Compatibility Checker](./TOOLS_REFERENCE.md#model-compatibility-checker)
+- [Model Compatibility Checker](./tools-reference.md#model-compatibility-checker)
 - [Documentation Index](../README.md#documentation-index)
 - [Contributing](../../CONTRIBUTING.md)
 

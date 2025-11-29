@@ -189,9 +189,9 @@ graph LR
 <summary><strong>📚 Related Documentation</strong></summary>
 
 - [All Prompt Builders Tools](./README.md#prompt-builders)
-- [Prompting Hierarchy Guide](../tips/PROMPTING_HIERARCHY.md)
-- [Flow Prompting Examples](../tips/FLOW_PROMPTING_EXAMPLES.md)
-- [AI Interaction Tips](../tips/AI_INTERACTION_TIPS.md)
+- [Prompting Hierarchy Guide](../tips/prompting-hierarchy.md)
+- [Flow Prompting Examples](../tips/flow-prompting-examples.md)
+- [AI Interaction Tips](../tips/ai-interaction-tips.md)
 
 </details>
 
@@ -202,9 +202,9 @@ graph LR
 ## Related Documentation
 
 - [All Prompt Builders Tools](./README.md#prompt-builders)
-- [Prompting Hierarchy Guide](../tips/PROMPTING_HIERARCHY.md)
-- [Flow Prompting Examples](../tips/FLOW_PROMPTING_EXAMPLES.md)
-- [AI Interaction Tips](../tips/AI_INTERACTION_TIPS.md)
+- [Prompting Hierarchy Guide](../tips/prompting-hierarchy.md)
+- [Flow Prompting Examples](../tips/flow-prompting-examples.md)
+- [AI Interaction Tips](../tips/ai-interaction-tips.md)
 
 ---
 

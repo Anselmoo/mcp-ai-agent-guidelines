@@ -10,17 +10,17 @@
 <summary><strong>� Quick Navigation</strong></summary>
 
 - [🏠 Main README](../README.md)
-- [💡 AI Interaction Tips](./tips/AI_INTERACTION_TIPS.md)
-- [🛠️ Tools Reference](./tips/TOOLS_REFERENCE.md)
-- [🏗️ Architecture](./tips/BRIDGE_CONNECTORS.md)
-- [📖 References](./tips/REFERENCES.md)
+- [💡 AI Interaction Tips](./tips/ai-interaction-tips.md)
+- [🛠️ Tools Reference](./tips/tools-reference.md)
+- [🏗️ Architecture](./tips/bridge-connectors.md)
+- [📖 References](./tips/references.md)
 
 </details>
 
 # Documentation Index
 
 - **[Main README](../README.md)** - Project overview, installation, and quick start
-- **[Tools Reference](./tips/TOOLS_REFERENCE.md)** - Complete reference for all 27 MCP tools ⭐
+- **[Tools Reference](./tips/tools-reference.md)** - Complete reference for all 27 MCP tools ⭐
 - **[Tool Documentation](./tools/README.md)** - Individual tool documentation pages
 - **[AI Interaction Tips](./tips/README.md)** - Best practices for effective AI collaboration ⭐ **NEW**
 - **[Contributing Guidelines](../CONTRIBUTING.md)** - How to contribute to the project
@@ -34,22 +34,22 @@
 
 #### Core Concepts
 
-- **[Prompting Hierarchy](./tips/PROMPTING_HIERARCHY.md)** - Understanding prompt levels and evaluation metrics
-- **[Agent-Relative Call Patterns](./tips/AGENT_RELATIVE_CALLS.md)** - Comprehensive guide to invoking tools in workflows
-- **[AI Interaction Tips](./tips/AI_INTERACTION_TIPS.md)** - Targeted question patterns for specialized tools
+- **[Prompting Hierarchy](./tips/prompting-hierarchy.md)** - Understanding prompt levels and evaluation metrics
+- **[Agent-Relative Call Patterns](./tips/agent-relative-calls.md)** - Comprehensive guide to invoking tools in workflows
+- **[AI Interaction Tips](./tips/ai-interaction-tips.md)** - Targeted question patterns for specialized tools
 
 #### Advanced Techniques
 
-- **[Flow-Based Prompting](./tips/FLOW_PROMPTING_EXAMPLES.md)** - Advanced chaining and orchestration strategies
-- **[Flow + Serena Integration](./tips/FLOW_SERENA_INTEGRATION.md)** - Combining flow-based prompting with memory patterns
-- **[Serena Strategies](./tips/SERENA_STRATEGIES.md)** - Effective agent strategies from Serena
+- **[Flow-Based Prompting](./tips/flow-prompting-examples.md)** - Advanced chaining and orchestration strategies
+- **[Flow + Serena Integration](./tips/flow-serena-integration.md)** - Combining flow-based prompting with memory patterns
+- **[Serena Strategies](./tips/serena-strategies.md)** - Effective agent strategies from Serena
 
 #### Specialized Tools
 
-- **[Mermaid Diagram Examples](./tips/MERMAID_DIAGRAM_EXAMPLES.md)** - Visual diagram generation patterns
-- **[Context-Aware Guidance](./tips/CONTEXT_AWARE_GUIDANCE.md)** - Contextual design guidance
-- **[Export Formats Guide](./EXPORT_FORMATS.md)** - LaTeX, CSV, JSON export options and chat integration ⭐
-- **[Model Management Guide](./MODEL_MANAGEMENT.md)** - YAML-based model configuration for maintainers ⭐
+- **[Mermaid Diagram Examples](./tips/mermaid-diagram-examples.md)** - Visual diagram generation patterns
+- **[Context-Aware Guidance](./tips/context-aware-guidance.md)** - Contextual design guidance
+- **[Export Formats Guide](./export-formats.md)** - LaTeX, CSV, JSON export options and chat integration ⭐
+- **[Model Management Guide](./model-management.md)** - YAML-based model configuration for maintainers ⭐
 
 ### 👨‍💻 Developer Documentation
 
@@ -57,21 +57,21 @@
 
 #### Architecture & Design
 
-- **[Bridge Connectors](./tips/BRIDGE_CONNECTORS.md)** - External system integration patterns
-- **[Design Module Status](./tips/DESIGN_MODULE_STATUS.md)** - Design workflow orchestrator status
-- **[Error Handling](./tips/ERROR_HANDLING.md)** - Error handling patterns and best practices
+- **[Bridge Connectors](./tips/bridge-connectors.md)** - External system integration patterns
+- **[Design Module Status](./tips/design-module-status.md)** - Design workflow orchestrator status
+- **[Error Handling](./tips/error-handling.md)** - Error handling patterns and best practices
 
 #### Code Quality
 
-- **[Clean Code Initiative](./tips/CLEAN_CODE_INITIATIVE.md)** - 100/100 quality scoring system
-- **[Code Quality Improvements](./tips/CODE_QUALITY_IMPROVEMENTS.md)** - Ongoing quality enhancements
-- **[Sprint Planning Reliability](./tips/SPRINT_PLANNING_RELIABILITY.md)** - Sprint calculation improvements
+- **[Clean Code Initiative](./tips/clean-code-initiative.md)** - 100/100 quality scoring system
+- **[Code Quality Improvements](./tips/code-quality-improvements.md)** - Ongoing quality enhancements
+- **[Sprint Planning Reliability](./tips/sprint-planning-reliability.md)** - Sprint calculation improvements
 
 ### Reference
 
 **Additional resources and acknowledgments**
 
-- **[References & Acknowledgments](./tips/REFERENCES.md)** - Credits and external resources
+- **[References & Acknowledgments](./tips/references.md)** - Credits and external resources
 - **[Demo Reports](../demos/README.md)** - Real-world tool usage examples
 - **[Tools Documentation](./tools/README.md)** - Individual tool pages
 
@@ -85,29 +85,29 @@
 
 - Read the [Main README](../README.md)
 - Try the [Demo Reports](../demos/README.md)
-- Learn [AI Interaction Tips](./tips/AI_INTERACTION_TIPS.md)
+- Learn [AI Interaction Tips](./tips/ai-interaction-tips.md)
 
 **...improve my prompting skills**
 
-- Start with [AI Interaction Tips](./tips/AI_INTERACTION_TIPS.md)
-- Learn [Prompting Hierarchy](./tips/PROMPTING_HIERARCHY.md)
-- Explore [Agent-Relative Calls](./tips/AGENT_RELATIVE_CALLS.md)
-- Try [Flow-Based Prompting](./tips/FLOW_PROMPTING_EXAMPLES.md)
+- Start with [AI Interaction Tips](./tips/ai-interaction-tips.md)
+- Learn [Prompting Hierarchy](./tips/prompting-hierarchy.md)
+- Explore [Agent-Relative Calls](./tips/agent-relative-calls.md)
+- Try [Flow-Based Prompting](./tips/flow-prompting-examples.md)
 
 **...use specific tools**
 
 - Browse [Tool Documentation](./tools/README.md)
-- Generate diagrams: [Mermaid Examples](./tips/MERMAID_DIAGRAM_EXAMPLES.md)
-- Check code quality: [Clean Code Initiative](./tips/CLEAN_CODE_INITIATIVE.md)
-- Plan sprints: [Sprint Planning](./tips/SPRINT_PLANNING_RELIABILITY.md)
-- Export data: [Export Formats](./tips/EXPORT_FORMATS.md)
+- Generate diagrams: [Mermaid Examples](./tips/mermaid-diagram-examples.md)
+- Check code quality: [Clean Code Initiative](./tips/clean-code-initiative.md)
+- Plan sprints: [Sprint Planning](./tips/sprint-planning-reliability.md)
+- Export data: [Export Formats](./tips/export-formats.md)
 
 **...contribute to the project**
 
 - Read [Contributing Guidelines](../CONTRIBUTING.md)
-- Review [Code Quality Standards](./tips/CLEAN_CODE_INITIATIVE.md)
-- Check [Error Handling Patterns](./tips/ERROR_HANDLING.md)
-- Understand [Architecture](./tips/BRIDGE_CONNECTORS.md)
+- Review [Code Quality Standards](./tips/clean-code-initiative.md)
+- Check [Error Handling Patterns](./tips/error-handling.md)
+- Understand [Architecture](./tips/bridge-connectors.md)
 
 ---
 

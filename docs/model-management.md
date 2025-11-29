@@ -503,7 +503,7 @@ This ensures the YAML file is available in the compiled distribution.
 ### Documentation
 - [GitHub Copilot AI Models](https://docs.github.com/en/copilot/reference/ai-models/supported-models)
 - [Model Compatibility Checker](../src/tools/model-compatibility-checker.ts)
-- [Export Formats Guide](./EXPORT_FORMATS.md)
+- [Export Formats Guide](./export-formats.md)
 
 ### Related Files
 - `src/tools/config/models.yaml` - Model definitions and default model config

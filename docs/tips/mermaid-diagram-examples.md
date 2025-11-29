@@ -17,7 +17,7 @@
 
 **Related Guides:**
 
-- [Mermaid Diagram Generator](./TOOLS_REFERENCE.md#mermaid-diagram-generator)
+- [Mermaid Diagram Generator](./tools-reference.md#mermaid-diagram-generator)
 - [Documentation Index](../README.md#documentation-index)
 - [Contributing](../../CONTRIBUTING.md)
 

@@ -195,9 +195,9 @@ graph LR
 <summary><strong>📚 Related Documentation</strong></summary>
 
 - [All Code Analysis Tools](./README.md#code-analysis)
-- [Clean Code Initiative](../tips/CLEAN_CODE_INITIATIVE.md)
-- [Code Quality Improvements](../tips/CODE_QUALITY_IMPROVEMENTS.md)
-- [AI Interaction Tips](../tips/AI_INTERACTION_TIPS.md)
+- [Clean Code Initiative](../tips/clean-code-initiative.md)
+- [Code Quality Improvements](../tips/code-quality-improvements.md)
+- [AI Interaction Tips](../tips/ai-interaction-tips.md)
 
 </details>
 
@@ -208,9 +208,9 @@ graph LR
 ## Related Documentation
 
 - [All Code Analysis Tools](./README.md#code-analysis)
-- [Clean Code Initiative](../tips/CLEAN_CODE_INITIATIVE.md)
-- [Code Quality Improvements](../tips/CODE_QUALITY_IMPROVEMENTS.md)
-- [AI Interaction Tips](../tips/AI_INTERACTION_TIPS.md)
+- [Clean Code Initiative](../tips/clean-code-initiative.md)
+- [Code Quality Improvements](../tips/code-quality-improvements.md)
+- [AI Interaction Tips](../tips/ai-interaction-tips.md)
 
 ---
 

@@ -193,7 +193,7 @@ graph LR
 <summary><strong>📚 Related Documentation</strong></summary>
 
 - [All Utilities Tools](./README.md#utilities)
-- [AI Interaction Tips](../tips/AI_INTERACTION_TIPS.md)
+- [AI Interaction Tips](../tips/ai-interaction-tips.md)
 
 </details>
 
@@ -204,7 +204,7 @@ graph LR
 ## Related Documentation
 
 - [All Utilities Tools](./README.md#utilities)
-- [AI Interaction Tips](../tips/AI_INTERACTION_TIPS.md)
+- [AI Interaction Tips](../tips/ai-interaction-tips.md)
 
 ---
 

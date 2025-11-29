@@ -17,8 +17,8 @@
 
 **Related Guides:**
 
-- [AI Interaction Tips](./AI_INTERACTION_TIPS.md)
-- [Mode Switcher](./TOOLS_REFERENCE.md#mode-switcher)
+- [AI Interaction Tips](./ai-interaction-tips.md)
+- [Mode Switcher](./tools-reference.md#mode-switcher)
 - [Documentation Index](../README.md#documentation-index)
 
 </details>

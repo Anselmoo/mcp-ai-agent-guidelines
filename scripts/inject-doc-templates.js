@@ -11,7 +11,7 @@
  *   node scripts/inject-doc-templates.js --all              # Process all docs
  *   node scripts/inject-doc-templates.js --dry-run          # Preview changes
  *   node scripts/inject-doc-templates.js --category user-guide --dry-run
- *   node scripts/inject-doc-templates.js --file docs/AI_INTERACTION_TIPS.md
+ *   node scripts/inject-doc-templates.js --file docs/ai-interaction-tips.md
  */
 
 import {
@@ -301,7 +301,7 @@ function showUsage() {
 	console.log("  --verbose, -v           Show detailed changes");
 	console.log("\nExamples:");
 	console.log(
-		"  node scripts/inject-doc-templates.js docs/AI_INTERACTION_TIPS.md",
+		"  node scripts/inject-doc-templates.js docs/ai-interaction-tips.md",
 	);
 	console.log("  node scripts/inject-doc-templates.js --all");
 	console.log("  node scripts/inject-doc-templates.js --all --dry-run");
@@ -309,7 +309,7 @@ function showUsage() {
 		"  node scripts/inject-doc-templates.js --category user-guide --dry-run",
 	);
 	console.log(
-		"  node scripts/inject-doc-templates.js --file docs/TECHNICAL_IMPROVEMENTS.md -v",
+		"  node scripts/inject-doc-templates.js --file docs/technical-improvements.md -v",
 	);
 	console.log("\nCategories:");
 	console.log("  user-guide    Purple/Pink - User-facing documentation");

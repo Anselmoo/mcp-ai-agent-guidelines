@@ -105,7 +105,7 @@ graph LR
 
 For complete parameter schemas, examples, and best practices:
 
-**➡️ [Complete Tools Reference](../tips/TOOLS_REFERENCE.md)**
+**➡️ [Complete Tools Reference](../tips/tools-reference.md)**
 
 ---
 

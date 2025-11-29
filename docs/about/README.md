@@ -32,7 +32,7 @@ This project references third-party models, tools, pricing, and documentation th
 
 ## 📚 References & Citations
 
-**➡️ [Complete References](../tips/REFERENCES.md)**
+**➡️ [Complete References](../tips/references.md)**
 
 Key areas of research and inspiration:
 
@@ -59,7 +59,7 @@ Key areas of research and inspiration:
 - **GitHub Primer** - Design system inspiration (not branding)
 - **All OSS Contributors** - Whose work has shaped this project
 
-**➡️ [Complete Acknowledgments](../tips/REFERENCES.md#acknowledgments)**
+**➡️ [Complete Acknowledgments](../tips/references.md#acknowledgments)**
 
 ---
 
@@ -128,7 +128,7 @@ Our visual design is inspired by modern open source best practices and contempor
 - **Gitlines** - Branching/merging visualization concepts
 - **Community Examples** - Scalar, Asciinema, awesome-readme
 
-**Note**: We use design principles as inspiration without explicit branding or copying. See **[Visual Design Reference](../development/VISUAL_DESIGN_REFERENCE.md)** for details.
+**Note**: We use design principles as inspiration without explicit branding or copying. See **[Visual Design Reference](../development/visual-design-reference.md)** for details.
 
 ---
 
@@ -136,7 +136,7 @@ Our visual design is inspired by modern open source best practices and contempor
 
 - **[Main README](../../README.md)** - Project setup and overview
 - **[Documentation Index](../README.md)** - Full documentation
-- **[Tools Reference](../tips/TOOLS_REFERENCE.md)** - Complete tool documentation
+- **[Tools Reference](../tips/tools-reference.md)** - Complete tool documentation
 - **[AI Interaction Tips](../tips/)** - Best practices and guides
 
 ---

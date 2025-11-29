@@ -18,9 +18,9 @@
 **Related Guides:**
 
 - [Documentation Index](./README.md)
-- [Prompting Hierarchy](./PROMPTING_HIERARCHY.md)
+- [Prompting Hierarchy](./prompting-hierarchy.md)
 - [Hierarchical Prompt Builder](../tools/hierarchical-prompt-builder.md)
-- [Tool Reference](./TOOLS_REFERENCE.md)
+- [Tool Reference](./tools-reference.md)
 
 </details>
 
@@ -312,8 +312,8 @@ Think about what you want to achieve, then reverse-engineer the question:
 This repository includes comprehensive demo files showing tool usage:
 
 - Check `demos/` directory for real examples
-- Review `docs/tips/AGENT_RELATIVE_CALLS.md` for workflow patterns
-- See `docs/tips/FLOW_PROMPTING_EXAMPLES.md` for advanced chaining
+- Review `docs/tips/agent-relative-calls.md` for workflow patterns
+- See `docs/tips/flow-prompting-examples.md` for advanced chaining
 
 ### Iterate and Refine
 
@@ -340,9 +340,9 @@ By following these patterns, you'll unlock the full power of the MCP AI Agent Gu
 
 ## Additional Resources
 
-- **[Agent-Relative Call Patterns](./AGENT_RELATIVE_CALLS.md)** - Comprehensive guide to invoking tools in workflows
-- **[Prompting Hierarchy](./PROMPTING_HIERARCHY.md)** - Understanding prompt levels and evaluation
-- **[Flow Prompting Examples](./FLOW_PROMPTING_EXAMPLES.md)** - Advanced chaining and orchestration
+- **[Agent-Relative Call Patterns](./agent-relative-calls.md)** - Comprehensive guide to invoking tools in workflows
+- **[Prompting Hierarchy](./prompting-hierarchy.md)** - Understanding prompt levels and evaluation
+- **[Flow Prompting Examples](./flow-prompting-examples.md)** - Advanced chaining and orchestration
 - **[Demo Reports](../../demos/README.md)** - Real-world tool usage examples
 
 For more information about specific tools, see the main [README.md](../README.md).

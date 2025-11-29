@@ -18,7 +18,7 @@
 **Related Guides:**
 
 - [Documentation Index](../README.md#documentation-index)
-- [Code Quality Improvements](./CODE_QUALITY_IMPROVEMENTS.md)
+- [Code Quality Improvements](./code-quality-improvements.md)
 - [Contributing](../../CONTRIBUTING.md)
 
 </details>
@@ -359,14 +359,14 @@ The following files have been updated to use the new error handling:
 
 **User Guides:**
 
-- [AI Interaction Tips](./AI_INTERACTION_TIPS.md)
-- [Prompting Hierarchy](./PROMPTING_HIERARCHY.md)
-- [Agent Patterns](./AGENT_RELATIVE_CALLS.md)
-- [Flow Prompting](./FLOW_PROMPTING_EXAMPLES.md)
+- [AI Interaction Tips](./ai-interaction-tips.md)
+- [Prompting Hierarchy](./prompting-hierarchy.md)
+- [Agent Patterns](./agent-relative-calls.md)
+- [Flow Prompting](./flow-prompting-examples.md)
 
 **Developer Resources:**
 
-- [Tools Reference](./TOOLS_REFERENCE.md)
+- [Tools Reference](./tools-reference.md)
 - [Contributing Guidelines](../../CONTRIBUTING.md)
 - [Documentation Index](../README.md)
 

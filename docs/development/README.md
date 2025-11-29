@@ -8,7 +8,7 @@ This directory contains documentation for developers contributing to the MCP AI 
 
 ## Available Guides
 
-### [Link Extraction](./LINK_EXTRACTION.md)
+### [Link Extraction](./link-extraction.md)
 
 Extract and audit all external links from markdown files:
 
@@ -27,7 +27,7 @@ npm run links:extract:md          # Markdown report
 - Documentation maintenance
 - License compliance
 
-See [LINK_EXTRACTION.md](./LINK_EXTRACTION.md) for detailed documentation.
+See [link-extraction.md](./link-extraction.md) for detailed documentation.
 
 ## Contributing
 
@@ -35,9 +35,9 @@ See [CONTRIBUTING.md](../../CONTRIBUTING.md) for general contribution guidelines
 
 ## Related Documentation
 
-- [Technical Improvements](./TECHNICAL_IMPROVEMENTS.md) - Refactoring and enhancements
-- [Error Handling](../tips/ERROR_HANDLING.md) - Error patterns and best practices
-- [Type Organization](../tips/TYPE_ORGANIZATION_EXTENSION.md) - TypeScript conventions
+- [Technical Improvements](./technical-improvements.md) - Refactoring and enhancements
+- [Error Handling](../tips/error-handling.md) - Error patterns and best practices
+- [Type Organization](../tips/type-organization-extension.md) - TypeScript conventions
 
 !-- FOOTER:START -->
 ![Footer](../.frames-static/09-footer.svg)

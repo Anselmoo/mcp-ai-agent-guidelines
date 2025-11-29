@@ -19,11 +19,9 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
 // Configuration
 const DOCS_DIR = join(__dirname, "..", "docs");
-const NAMING_CONVENTIONS = {
-	tips: "SCREAMING_SNAKE_CASE", // AI_INTERACTION_TIPS.md
-	tools: "kebab-case", // hierarchical-prompt-builder.md
-	root: "SCREAMING_SNAKE_CASE", // MODEL_MANAGEMENT.md
-};
+// All documentation files should use kebab-case (lowercase, dash-separated)
+// This standardizes naming across all doc directories for consistency
+const NAMING_CONVENTION = "kebab-case";
 
 // Issue tracking
 const issues = {
@@ -35,36 +33,23 @@ const issues = {
 };
 
 /**
- * Check if a filename matches the expected naming convention
+ * Check if a filename matches the kebab-case convention
  */
-function checkNamingConvention(filepath, expectedConvention) {
+function checkNamingConvention(filepath) {
 	const filename = basename(filepath, extname(filepath));
 
 	// README.md is always valid
 	if (filename === "README") return true;
 
-	switch (expectedConvention) {
-		case "SCREAMING_SNAKE_CASE":
-			return /^[A-Z][A-Z0-9_]*$/.test(filename);
-		case "kebab-case":
-			return /^[a-z][a-z0-9-]*$/.test(filename);
-		case "PascalCase":
-			return /^[A-Z][a-zA-Z0-9]*$/.test(filename);
-		default:
-			return true;
-	}
+	// kebab-case: lowercase letters, numbers, and dashes
+	return /^[a-z][a-z0-9-]*$/.test(filename);
 }
 
 /**
- * Get expected convention based on directory
+ * Get expected convention description for error messages
  */
-function getExpectedConvention(filepath) {
-	const relativePath = relative(DOCS_DIR, filepath);
-	const parts = relativePath.split("/");
-
-	if (parts.includes("tips")) return NAMING_CONVENTIONS.tips;
-	if (parts.includes("tools")) return NAMING_CONVENTIONS.tools;
-	return NAMING_CONVENTIONS.root;
+function getExpectedConvention() {
+	return NAMING_CONVENTION;
 }
 
 /**
@@ -236,13 +221,12 @@ function lintDocumentation() {
 
 		// Check markdown files
 		if (ext === ".md") {
-			const expectedConvention = getExpectedConvention(filepath);
-			const isValidNaming = checkNamingConvention(filepath, expectedConvention);
+			const isValidNaming = checkNamingConvention(filepath);
 
 			if (!isValidNaming) {
 				issues.naming.push({
 					file: relative(DOCS_DIR, filepath),
-					expected: expectedConvention,
+					expected: getExpectedConvention(),
 					actual: basename(filepath),
 				});
 			}

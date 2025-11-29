@@ -18,7 +18,7 @@
 **Related Guides:**
 
 - [Documentation Index](../README.md#documentation-index)
-- [Tool Reference](./TOOLS_REFERENCE.md)
+- [Tool Reference](./tools-reference.md)
 - [Contributing](../../CONTRIBUTING.md)
 
 </details>
