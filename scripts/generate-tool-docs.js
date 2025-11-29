@@ -3,10 +3,28 @@
 /**
  * Tool Documentation Generator
  *
- * Generates comprehensive documentation for all MCP tools based on README.md metadata
- * and established template patterns from dependency-auditor.md and hierarchical-prompt-builder.md
+ * Generates comprehensive documentation for all MCP tools following the gold standard
+ * established by hierarchical-prompt-builder.md. This generator creates detailed,
+ * consistent documentation including:
+ * - Header with images and badges
+ * - Overview with key capabilities
+ * - When to Use section (good for / not ideal for)
+ * - Basic Usage with JSON examples
+ * - Parameters table with detailed descriptions
+ * - What You Get section (output structure)
+ * - Real-World Examples
+ * - Tips & Tricks
+ * - Related Tools
+ * - Workflow Integration with mermaid diagrams
+ * - Related Documentation (collapsible)
+ * - Footer with links
  *
- * Usage: node scripts/generate-tool-docs.js [--dry-run] [--tool=<name>]
+ * Usage: node scripts/generate-tool-docs.js [--dry-run] [--tool=<name>] [--force]
+ *
+ * Options:
+ *   --dry-run    Preview changes without writing files
+ *   --tool=NAME  Generate docs for a specific tool only
+ *   --force      Overwrite existing documentation even if comprehensive
  */
 
 import fs from "fs/promises";
@@ -700,156 +718,913 @@ const TOOLS_METADATA = [
 	},
 ];
 
-// Template sections
+/**
+ * Category badge colors for consistent styling
+ */
+const CATEGORY_COLORS = {
+	"Prompt Builders": "purple",
+	"Code Analysis": "orange",
+	"Strategy & Planning": "blue",
+	"Design & Workflow": "green",
+	Utilities: "gray",
+};
+
+/**
+ * Get category anchor for README links
+ */
+function getCategoryAnchor(category) {
+	const anchors = {
+		"Prompt Builders": "prompt-builders",
+		"Code Analysis": "code-analysis",
+		"Strategy & Planning": "strategy-planning",
+		"Design & Workflow": "design-workflow",
+		Utilities: "utilities",
+	};
+	return anchors[category] || "tools";
+}
+
+/**
+ * Get complexity level description
+ */
+function getComplexityLevel(complexity) {
+	if (complexity.includes("⭐⭐⭐⭐⭐")) return "Master";
+	if (complexity.includes("⭐⭐⭐⭐")) return "Expert";
+	if (complexity.includes("⭐⭐⭐")) return "Advanced";
+	if (complexity.includes("⭐⭐")) return "Moderate";
+	return "Simple";
+}
+
+/**
+ * Generate parameter type inference based on parameter name
+ */
+function inferParameterType(paramName) {
+	const typeMap = {
+		// Boolean patterns
+		include: "boolean",
+		auto: "boolean",
+		force: "boolean",
+		enable: "boolean",
+		analyze: "boolean",
+		generate: "boolean",
+		check: "boolean",
+		detect: "boolean",
+		adapt: "boolean",
+		prioritize: "boolean",
+		// Array patterns
+		requirements: "array",
+		techniques: "array",
+		steps: "array",
+		nodes: "array",
+		edges: "array",
+		objectives: "array",
+		stakeholders: "array",
+		constraints: "array",
+		frameworks: "array",
+		complianceStandards: "array",
+		analysisScope: "array",
+		securityRequirements: "array",
+		tools: "array",
+		issues: "array",
+		// Object patterns
+		globalVariables: "object",
+		variables: "object",
+		coverageMetrics: "object",
+		currentCoverage: "object",
+		targetCoverage: "object",
+		config: "object",
+		// Enum patterns
+		style: "enum",
+		provider: "enum",
+		outputFormat: "enum",
+		executionStrategy: "enum",
+		securityFocus: "enum",
+		riskTolerance: "enum",
+		category: "enum",
+		targetMode: "enum",
+		analysisType: "enum",
+		optimizationStrategy: "enum",
+		cacheStrategy: "enum",
+		// Number patterns
+		maxTokens: "number",
+		velocity: "number",
+		teamSize: "number",
+		sprintLength: "number",
+		// String patterns (default)
+	};
+
+	for (const [pattern, type] of Object.entries(typeMap)) {
+		if (
+			paramName.toLowerCase().includes(pattern.toLowerCase()) ||
+			paramName === pattern
+		) {
+			return type;
+		}
+	}
+	return "string";
+}
+
+/**
+ * Generate smart parameter description based on parameter name and tool context
+ */
+function generateParameterDescription(paramName, tool) {
+	const descriptionMap = {
+		// Common parameters
+		context: "Broad context or domain background for the task",
+		goal: "Specific objective or target outcome",
+		requirements:
+			"Detailed requirements and constraints as an array of strings",
+		audience: "Target audience or expertise level (e.g., 'Senior engineers')",
+		style: "Output format style: `markdown` or `xml`",
+		outputFormat: "Desired output format specification",
+		provider:
+			"AI model provider for optimizations (e.g., `gpt-5`, `claude-4`, `gemini-2.5`)",
+		techniques:
+			"Prompting techniques to apply (e.g., `chain-of-thought`, `few-shot`)",
+		autoSelectTechniques:
+			"Automatically select optimal techniques based on context",
+		includeDisclaimer: "Append third-party disclaimer section",
+		includePitfalls: "Include common pitfalls section",
+		includeReferences: "Add external references and documentation links",
+		includeTechniqueHints: "Include technique-specific guidance",
+		includeMetadata: "Include metadata section with timestamps and source info",
+		includeVisualization: "Generate mermaid diagram visualization",
+		includeCodeExamples: "Include code examples in output",
+		includeExamples: "Include example scenarios",
+
+		// Prompt chaining parameters
+		chainName: "Name identifier for the prompt chain",
+		steps: "Array of chain step objects with name, prompt, and dependencies",
+		executionStrategy:
+			"Execution mode: `sequential` or `parallel-where-possible`",
+		globalVariables: "Variables accessible to all steps in the chain",
+
+		// Flow builder parameters
+		flowName: "Name identifier for the prompt flow",
+		nodes: "Array of flow node definitions with conditions and actions",
+		edges: "Connections between nodes defining flow transitions",
+		entryPoint: "Starting node for flow execution",
+		variables: "Flow-level variables for state management",
+
+		// Security parameters
+		codeContext: "Code snippet or description for security analysis",
+		securityFocus:
+			"Analysis focus: `vulnerability-analysis`, `security-hardening`, `compliance-check`, `threat-modeling`, or `penetration-testing`",
+		complianceStandards:
+			"Compliance frameworks to check (e.g., `OWASP-Top-10`, `PCI-DSS`, `HIPAA`)",
+		riskTolerance: "Risk acceptance level: `low`, `medium`, or `high`",
+		analysisScope:
+			"Security areas to analyze (e.g., `input-validation`, `authentication`)",
+		securityRequirements: "Specific security requirements to validate",
+		includeMitigations: "Include specific mitigation recommendations",
+		includeTestCases: "Generate security test cases",
+		prioritizeFindings: "Prioritize findings by severity",
+
+		// Code analysis parameters
+		codeContent: "Source code content to analyze",
+		language: "Programming language (e.g., `typescript`, `python`, `java`)",
+		framework:
+			"Framework or technology stack (e.g., `express`, `react`, `django`)",
+		packageJsonContent: "Content of package.json file for dependency analysis",
+		checkOutdated: "Check for outdated package versions",
+		checkDeprecated: "Check for deprecated packages",
+		checkVulnerabilities: "Check for known security vulnerabilities",
+		suggestAlternatives: "Suggest modern alternatives for outdated packages",
+		analyzeBundleSize: "Analyze bundle size impact",
+		projectPath: "Path to the project root directory",
+		coverageMetrics: "Current test coverage metrics object",
+		currentCoverage: "Current coverage percentages by type",
+		targetCoverage: "Target coverage goals to achieve",
+		analyzeCoverageGaps: "Analyze and identify coverage gaps",
+		generateTestSuggestions: "Generate test suggestions for uncovered code",
+		detectDeadCode: "Detect unused code for elimination",
+		adaptThresholds: "Recommend adaptive coverage threshold adjustments",
+		generateCIActions: "Generate CI/CD integration actions",
+
+		// Strategy parameters
+		frameworks:
+			"Strategy frameworks to apply (e.g., `swot`, `balancedScorecard`, `vrio`)",
+		objectives: "Strategic objectives to analyze",
+		stakeholders: "Key stakeholders to consider",
+		currentState: "Description of current state for gap analysis",
+		desiredState: "Description of desired future state",
+		timeframe: "Analysis timeframe (e.g., '6 months', '1 year')",
+		includeActionPlan: "Generate actionable implementation plan",
+
+		// Sprint/planning parameters
+		tasks: "Array of task objects with estimates and dependencies",
+		teamSize: "Number of team members available",
+		sprintLength: "Sprint duration in days (default: 14)",
+		velocity: "Team velocity in story points per sprint",
+		optimizationStrategy:
+			"Scheduling optimization: `greedy` or `linear-programming`",
+
+		// Design assistant parameters
+		action:
+			"Design action: `start-session`, `advance-phase`, `check-coverage`, `generate-artifact`",
+		sessionId: "Unique session identifier",
+		phaseId: "Current design phase identifier",
+		artifactTypes:
+			"Types of artifacts to generate (e.g., `adr`, `spec`, `roadmap`)",
+		constraintConfig: "Custom constraint configuration",
+
+		// Mermaid parameters
+		description: "Description of the diagram to generate",
+		diagramType:
+			"Diagram type: `flowchart`, `sequence`, `class`, `state`, `gantt`, `pie`, `er`",
+		theme: "Visual theme: `default`, `dark`, `forest`, `neutral`",
+		direction: "Flow direction: `TB`, `LR`, `BT`, `RL`",
+		customStyles: "Custom CSS styles for diagram elements",
+		advancedFeatures: "Enable advanced mermaid features",
+		repair: "Auto-repair on validation errors",
+
+		// Utility parameters
+		taskDescription: "Description of the task for model selection",
+		budget: "Budget constraint: `low`, `medium`, or `high`",
+		practiceDescription: "Description of the development practice to validate",
+		category:
+			"Practice category: `prompting`, `code-management`, `architecture`, `visualization`, `memory`, `workflow`",
+		taskComplexity:
+			"Task complexity: `simple`, `moderate`, `complex`, or `very-complex`",
+		agentCapability:
+			"Agent capability level: `novice`, `intermediate`, `advanced`, or `expert`",
+		autonomyPreference: "Desired autonomy level: `low`, `medium`, or `high`",
+		targetMode:
+			"Target mode: `planning`, `editing`, `analysis`, `debugging`, `refactoring`, `documentation`",
+		currentMode: "Current agent operation mode",
+		reason: "Reason for the operation",
+		promptText: "Prompt text to evaluate",
+		targetLevel: "Target hierarchy level for evaluation",
+		contextContent: "Context content for optimization",
+		maxTokens: "Maximum token limit for context",
+		cacheStrategy:
+			"Caching strategy: `aggressive`, `conservative`, or `balanced`",
+		projectName: "Project or initiative name",
+		projectType: "Type of project for onboarding",
+		analysisDepth: "Depth of analysis: `shallow`, `standard`, or `deep`",
+		includeMemories: "Generate memory entries for quick context",
+		inputFile: "Input file path for reference",
+
+		// Domain neutral parameters
+		title: "Document or prompt title",
+		summary: "Brief summary or overview",
+		capabilities: "Array of capability definitions",
+		risks: "Risk factors and mitigation strategies",
+		acceptanceTests: "Acceptance test scenarios",
+		milestones: "Project milestones and deliverables",
+		workflow: "Workflow steps as an array of strings",
+		inputs: "Expected inputs specification",
+		outputs: "Expected outputs specification",
+		interfaces: "Interface contracts and definitions",
+	};
+
+	return (
+		descriptionMap[paramName] ||
+		`${paramName.replace(/([A-Z])/g, " $1").replace(/^./, (s) => s.toUpperCase())} parameter`
+	);
+}
+
+/**
+ * Generate use cases based on tool category and features
+ */
+function generateUseCases(tool) {
+	const useCaseMap = {
+		"Prompt Builders": {
+			good: [
+				"Complex tasks requiring detailed instructions",
+				"Multi-step workflows with dependencies",
+				"Standardizing prompt patterns across teams",
+				"Generating consistent AI interactions",
+			],
+			bad: [
+				"Simple, single-line questions",
+				"Quick clarifications without context",
+				"Tasks with obvious, minimal requirements",
+			],
+		},
+		"Code Analysis": {
+			good: [
+				"Identifying code quality issues and technical debt",
+				"Analyzing test coverage gaps",
+				"Security vulnerability scanning",
+				"Dependency health checks",
+			],
+			bad: [
+				"Real-time code execution",
+				"Replacing comprehensive security audits",
+				"Performance benchmarking",
+			],
+		},
+		"Strategy & Planning": {
+			good: [
+				"Strategic planning sessions",
+				"Gap analysis between current and desired states",
+				"Sprint and resource planning",
+				"Multi-framework business analysis",
+			],
+			bad: [
+				"Quick operational decisions",
+				"Real-time project tracking",
+				"Budget calculations",
+			],
+		},
+		"Design & Workflow": {
+			good: [
+				"Multi-phase design sessions with constraints",
+				"Generating visual diagrams and documentation",
+				"Enforcing design consistency across projects",
+				"Creating architecture decision records (ADRs)",
+			],
+			bad: [
+				"Simple one-off diagrams",
+				"Quick wireframe sketches",
+				"Real-time collaboration",
+			],
+		},
+		Utilities: {
+			good: [
+				"AI model selection based on task requirements",
+				"Validating practices against established guidelines",
+				"Context window optimization",
+				"Project onboarding and analysis",
+			],
+			bad: [
+				"Complex business logic decisions",
+				"Security-critical operations",
+				"Production deployment automation",
+			],
+		},
+	};
+
+	return useCaseMap[tool.category] || useCaseMap["Utilities"];
+}
+
+/**
+ * Generate tips based on tool category
+ */
+function generateTips(tool) {
+	const tipsMap = {
+		"Prompt Builders": {
+			bestPractices: [
+				"Be Specific in Goals - Vague goals lead to vague outputs",
+				"Prioritize Requirements - Use keywords like CRITICAL, HIGH, NICE-TO-HAVE",
+				"Define Success Criteria - How will you know when it's done?",
+				"Match Style to Use Case - XML for complex structures, Markdown for readability",
+			],
+			mistakes: [
+				"Vague context → Be specific about the domain and constraints",
+				"Too many requirements → Focus on top 3-5 critical ones",
+				"Mixing goals → One clear objective per prompt",
+				"Ignoring audience → Tailor detail level to expertise",
+			],
+			proTips: [
+				`Combine with related tools for comprehensive workflows`,
+				`Use \`autoSelectTechniques: true\` for optimal technique selection`,
+				`Enable \`includePitfalls: true\` for complex tasks`,
+			],
+		},
+		"Code Analysis": {
+			bestPractices: [
+				"Provide Complete Code - Partial snippets may miss context",
+				"Specify Language and Framework - Enables targeted analysis",
+				"Review All Severity Levels - Not just critical issues",
+				"Integrate with CI/CD - Automate quality checks",
+			],
+			mistakes: [
+				"Ignoring low severity issues → They accumulate as tech debt",
+				"Skipping context → Always specify framework and patterns",
+				"One-time analysis → Regular monitoring catches regressions",
+				"Trusting blindly → Validate recommendations with tests",
+			],
+			proTips: [
+				"Combine with security hardening for comprehensive reviews",
+				"Use coverage metrics to prioritize testing efforts",
+				"Export results to tracking systems for follow-up",
+			],
+		},
+		"Strategy & Planning": {
+			bestPractices: [
+				"Define Clear Objectives - Measurable goals drive better analysis",
+				"Involve Stakeholders - List all affected parties",
+				"Set Realistic Timeframes - Be honest about constraints",
+				"Use Multiple Frameworks - Cross-validate insights",
+			],
+			mistakes: [
+				"Skipping context → Always provide business background",
+				"Ignoring constraints → List real limitations upfront",
+				"Over-planning → Focus on actionable next steps",
+				"Static analysis → Strategy needs regular review",
+			],
+			proTips: [
+				"Combine SWOT with gap analysis for comprehensive views",
+				"Use sprint calculator for realistic timelines",
+				"Include action plans for implementation guidance",
+			],
+		},
+		"Design & Workflow": {
+			bestPractices: [
+				"Start with Clear Goals - What should the design accomplish?",
+				"Follow Phase Order - Don't skip design phases",
+				"Check Coverage - Ensure all constraints are addressed",
+				"Generate Artifacts - Document decisions as you go",
+			],
+			mistakes: [
+				"Skipping phases → Each phase builds on previous ones",
+				"Ignoring constraints → They exist for good reasons",
+				"No artifacts → Undocumented decisions get forgotten",
+				"Solo design → Get feedback early and often",
+			],
+			proTips: [
+				"Use mermaid diagrams to visualize workflows",
+				"Generate ADRs for important decisions",
+				"Cross-reference with strategy frameworks",
+			],
+		},
+		Utilities: {
+			bestPractices: [
+				"Match Tool to Task - Choose the right utility for the job",
+				"Provide Complete Context - Utilities need information to help",
+				"Review Recommendations - Don't blindly accept suggestions",
+				"Integrate into Workflow - Make utilities part of your process",
+			],
+			mistakes: [
+				"Using wrong tool → Check tool descriptions carefully",
+				"Incomplete input → Provide all relevant context",
+				"Ignoring output → Act on recommendations",
+				"One-off usage → Build into regular workflow",
+			],
+			proTips: [
+				"Combine utilities for more comprehensive analysis",
+				"Use validation tools before committing changes",
+				"Cache results for frequently used configurations",
+			],
+		},
+	};
+
+	return tipsMap[tool.category] || tipsMap["Utilities"];
+}
+
+/**
+ * Get related documentation links based on category
+ */
+function getRelatedDocs(tool) {
+	const docsMap = {
+		"Prompt Builders": [
+			{
+				name: "Prompting Hierarchy Guide",
+				path: "../tips/PROMPTING_HIERARCHY.md",
+			},
+			{
+				name: "Flow Prompting Examples",
+				path: "../tips/FLOW_PROMPTING_EXAMPLES.md",
+			},
+			{ name: "AI Interaction Tips", path: "../tips/AI_INTERACTION_TIPS.md" },
+		],
+		"Code Analysis": [
+			{
+				name: "Clean Code Initiative",
+				path: "../tips/CLEAN_CODE_INITIATIVE.md",
+			},
+			{
+				name: "Code Quality Improvements",
+				path: "../tips/CODE_QUALITY_IMPROVEMENTS.md",
+			},
+			{ name: "AI Interaction Tips", path: "../tips/AI_INTERACTION_TIPS.md" },
+		],
+		"Strategy & Planning": [
+			{
+				name: "Sprint Planning Reliability",
+				path: "../tips/SPRINT_PLANNING_RELIABILITY.md",
+			},
+			{ name: "AI Interaction Tips", path: "../tips/AI_INTERACTION_TIPS.md" },
+		],
+		"Design & Workflow": [
+			{ name: "Design Module Status", path: "../tips/DESIGN_MODULE_STATUS.md" },
+			{
+				name: "Mermaid Diagram Examples",
+				path: "../tips/MERMAID_DIAGRAM_EXAMPLES.md",
+			},
+			{ name: "AI Interaction Tips", path: "../tips/AI_INTERACTION_TIPS.md" },
+		],
+		Utilities: [
+			{ name: "AI Interaction Tips", path: "../tips/AI_INTERACTION_TIPS.md" },
+		],
+	};
+
+	return docsMap[tool.category] || docsMap["Utilities"];
+}
+
+/**
+ * Generate tool description for related tools section
+ */
+function getToolDescription(toolName) {
+	const tool = TOOLS_METADATA.find((t) => t.name === toolName);
+	return tool ? tool.title : "Related tool";
+}
+
+// Template sections following gold standard (hierarchical-prompt-builder.md)
 const TEMPLATE_SECTIONS = {
-	header: (tool) => `# ${tool.name}
+	/**
+	 * Header section with image, title, badges
+	 */
+	header: (tool) => {
+		const categoryColor = CATEGORY_COLORS[tool.category] || "gray";
+		const categoryAnchor = getCategoryAnchor(tool.category);
+		const complexityLevel = getComplexityLevel(tool.complexity);
+		const titleCase = tool.name
+			.split("-")
+			.map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+			.join(" ");
+
+		return `<!-- HEADER:START -->
+![Header](../.frames-static/09-header.svg)
+<!-- HEADER:END -->
+
+# ${titleCase}
+
+> **${tool.category} Tool** • **Complexity: ${complexityLevel}**
+
+[![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../../README.md)
+[![${tool.category}](https://img.shields.io/badge/Category-${tool.category.replace(/ /g, "_")}-${categoryColor}?style=flat-square)](./README.md#${categoryAnchor})
+[![Documentation](https://img.shields.io/badge/📚-Docs-blue?style=flat-square)](../README.md)
+
+---
+
+# ${tool.name}
 
 > **${tool.title}**
 
-**Complexity**: ${tool.complexity} ${tool.complexity.includes("⭐⭐⭐⭐⭐") ? "Master" : tool.complexity.includes("⭐⭐⭐⭐") ? "Expert" : tool.complexity.includes("⭐⭐⭐") ? "Advanced" : tool.complexity.includes("⭐⭐") ? "Moderate" : "Simple"} | **Category**: ${tool.category} | **Time to Learn**: ${tool.time}
+**Complexity**: ${tool.complexity} ${complexityLevel} | **Category**: ${tool.category} | **Time to Learn**: ${tool.time}
 
 ---
 
 ## Overview
 
-${tool.description}
+The \`${tool.name}\` ${tool.description.charAt(0).toLowerCase() + tool.description.slice(1)}.
 
 ${
-	tool.keyFeatures
+	tool.keyFeatures && tool.keyFeatures.length > 0
 		? `### Key Capabilities
 
 ${tool.keyFeatures.map((f) => `- ${f}`).join("\n")}`
 		: ""
 }
 
----`,
+---`;
+	},
 
-	whenToUse: () => `## When to Use
+	/**
+	 * When to Use section with good/bad use cases
+	 */
+	whenToUse: (tool) => {
+		const useCases = generateUseCases(tool);
+
+		return `## When to Use
 
 ✅ **Good for:**
-- [Use case 1]
-- [Use case 2]
-- [Use case 3]
+
+${useCases.good.map((uc) => `- ${uc}`).join("\n")}
 
 ❌ **Not ideal for:**
-- [Anti-pattern 1]
-- [Anti-pattern 2]
 
----`,
+${useCases.bad.map((uc) => `- ${uc}`).join("\n")}
 
-	basicUsage: (tool) => `## Basic Usage
+---`;
+	},
 
-### Example 1: [Use Case Name]
+	/**
+	 * Basic Usage section with JSON examples
+	 */
+	basicUsage: (tool) => {
+		const requiredParams =
+			tool.parameters.required.length > 0
+				? tool.parameters.required
+						.map(
+							(p) =>
+								`  "${p}": "your-${p.replace(/([A-Z])/g, "-$1").toLowerCase()}-here"`,
+						)
+						.join(",\n")
+				: "";
+		const optionalParams = tool.parameters.optional
+			.slice(0, 3)
+			.map((p) => {
+				const type = inferParameterType(p);
+				let value;
+				if (type === "boolean") value = "true";
+				else if (type === "array") value = '["item1", "item2"]';
+				else if (type === "object") value = '{ "key": "value" }';
+				else if (type === "number") value = "10";
+				else value = `"your-${p.replace(/([A-Z])/g, "-$1").toLowerCase()}"`;
+				return `  "${p}": ${value}`;
+			})
+			.join(",\n");
+
+		// Build params string, handling comma placement correctly
+		const paramsContent = [requiredParams, optionalParams]
+			.filter(Boolean)
+			.join(",\n");
+
+		return `## Basic Usage
+
+### Example 1: Basic ${tool.category} Task
 
 \`\`\`json
 {
-  "tool": "${tool.name}",
-  ${tool.parameters.required.map((p) => `"${p}": "[value]"`).join(",\n  ")}${
-		tool.parameters.optional.length > 0
-			? `,\n  ${tool.parameters.optional
-					.slice(0, 2)
-					.map((p) => `"${p}": "[value]"`)
-					.join(",\n  ")}`
-			: ""
-	}
+  "tool": "${tool.name}"${paramsContent ? `,\n${paramsContent}` : ""}
 }
 \`\`\`
 
-**Output**: [Description of what you get]
+**Output**: Structured ${tool.category.toLowerCase()} output with:
 
----`,
+${
+	tool.keyFeatures
+		? tool.keyFeatures
+				.slice(0, 3)
+				.map((f) => `- ${f}`)
+				.join("\n")
+		: "- Generated content based on your inputs"
+}
 
-	parameters: (tool) => `## Parameters
+---`;
+	},
+
+	/**
+	 * Parameters table with detailed descriptions
+	 */
+	parameters: (tool) => {
+		const requiredRows = tool.parameters.required.map((p) => {
+			const type = inferParameterType(p);
+			const desc = generateParameterDescription(p, tool);
+			return `| \`${p}\` | ${type} | ✅ Yes | - | ${desc} |`;
+		});
+
+		const optionalRows = tool.parameters.optional.map((p) => {
+			const type = inferParameterType(p);
+			const desc = generateParameterDescription(p, tool);
+			let defaultVal = "-";
+			if (type === "boolean") defaultVal = "`false`";
+			else if (p.includes("include") || p.includes("auto"))
+				defaultVal = type === "boolean" ? "`false`" : "-";
+			return `| \`${p}\` | ${type} | No | ${defaultVal} | ${desc} |`;
+		});
+
+		return `## Parameters
 
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
-${tool.parameters.required.map((p) => `| \`${p}\` | [type] | ✅ Yes | - | [Description] |`).join("\n")}
-${tool.parameters.optional.map((p) => `| \`${p}\` | [type] | No | \`[default]\` | [Description] |`).join("\n")}
+${requiredRows.join("\n")}
+${optionalRows.join("\n")}
 
----`,
+---`;
+	},
 
-	output: () => `## What You Get
+	/**
+	 * What You Get section showing output structure
+	 */
+	output: (tool) => {
+		return `## What You Get
 
-The tool returns a structured report with:
+The tool returns a structured ${tool.category.toLowerCase()} output with:
 
-1. **[Section 1]** - [Description]
-2. **[Section 2]** - [Description]
-3. **[Section 3]** - [Description]
+${
+	tool.keyFeatures
+		? tool.keyFeatures
+				.map((f, i) => `${i + 1}. **${f.split(" ")[0]}** - ${f}`)
+				.join("\n")
+		: `1. **Structured Output** - Formatted response based on inputs
+2. **Recommendations** - Actionable suggestions
+3. **References** - Links to relevant documentation`
+}
 
----`,
+### Output Structure
 
-	examples: () => `## Real-World Examples
+\`\`\`markdown
+## ${tool.name
+			.split("-")
+			.map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+			.join(" ")} Output
 
-### Example 1: [Scenario Name]
+### Summary
+[High-level summary of analysis/output]
 
-**Before:**
-\`\`\`[language]
-[code or data before]
+### Details
+[Detailed content based on your inputs]
+
+### Recommendations
+[Actionable next steps]
+
+### References (if enabled)
+[Links to external resources]
 \`\`\`
 
-**After:**
-\`\`\`[language]
-[code or data after]
+---`;
+	},
+
+	/**
+	 * Real-World Examples section
+	 */
+	examples: (tool) => {
+		const exampleTitle =
+			tool.category === "Prompt Builders"
+				? "Code Review Workflow"
+				: tool.category === "Code Analysis"
+					? "Security Analysis"
+					: tool.category === "Strategy & Planning"
+						? "Strategic Planning Session"
+						: tool.category === "Design & Workflow"
+							? "Design Session"
+							: "Common Use Case";
+
+		// Build required params string
+		const requiredParamsStr =
+			tool.parameters.required.length > 0
+				? tool.parameters.required
+						.map(
+							(p) =>
+								`  "${p}": "Example ${p} value for ${exampleTitle.toLowerCase()}"`,
+						)
+						.join(",\n")
+				: "";
+
+		// Build optional params string
+		const optionalParamsStr =
+			tool.parameters.optional.length > 0
+				? tool.parameters.optional
+						.slice(0, 2)
+						.map((p) => {
+							const type = inferParameterType(p);
+							return type === "boolean"
+								? `  "${p}": true`
+								: type === "array"
+									? `  "${p}": ["example1", "example2"]`
+									: `  "${p}": "example-value"`;
+						})
+						.join(",\n")
+				: "";
+
+		// Combine params with proper comma handling
+		const exampleParams = [requiredParamsStr, optionalParamsStr]
+			.filter(Boolean)
+			.join(",\n");
+
+		return `## Real-World Examples
+
+### Example 1: ${exampleTitle}
+
+\`\`\`json
+{
+  "tool": "${tool.name}"${exampleParams ? `,\n${exampleParams}` : ""}
+}
 \`\`\`
 
-**Impact**: [What improved]
+**Generated Output Excerpt**:
 
----`,
+\`\`\`markdown
+## ${exampleTitle} Results
 
-	tips: () => `## Tips & Tricks
+### Summary
+Analysis complete with actionable insights...
+
+### Key Findings
+1. [Finding 1 based on ${tool.category.toLowerCase()} analysis]
+2. [Finding 2 with specific recommendations]
+3. [Finding 3 with priority indicators]
+
+### Next Steps
+- Implement recommended changes
+- Review and validate results
+- Integrate into workflow
+\`\`\`
+
+---`;
+	},
+
+	/**
+	 * Tips & Tricks section
+	 */
+	tips: (tool) => {
+		const tips = generateTips(tool);
+
+		return `## Tips & Tricks
 
 ### 💡 Best Practices
 
-1. **[Practice 1]** - [Explanation]
-2. **[Practice 2]** - [Explanation]
-3. **[Practice 3]** - [Explanation]
+${tips.bestPractices.map((bp, i) => `${i + 1}. **${bp.split(" - ")[0]}** - ${bp.split(" - ")[1] || bp}`).join("\n")}
 
 ### 🚫 Common Mistakes
 
-- ❌ [Mistake] → ✅ [Correct approach]
-- ❌ [Mistake] → ✅ [Correct approach]
+${tips.mistakes.map((m) => `- ❌ ${m.split(" → ")[0]} → ✅ ${m.split(" → ")[1] || "Fix this issue"}`).join("\n")}
 
 ### ⚡ Pro Tips
 
-- [Pro tip 1]
-- [Pro tip 2]
+${tips.proTips.map((pt) => `- ${pt}`).join("\n")}
 
----`,
+---`;
+	},
 
-	relatedTools: (tool) => `## Related Tools
+	/**
+	 * Related Tools section with links and descriptions
+	 */
+	relatedTools: (tool) => {
+		if (!tool.relatedTools || tool.relatedTools.length === 0) {
+			return `## Related Tools
 
-${
-	tool.relatedTools && tool.relatedTools.length > 0
-		? tool.relatedTools
-				.map((t) => `- **[${t}](./${t}.md)** - [Brief description]`)
-				.join("\n")
-		: "_No directly related tools_"
-}
+_No directly related tools. Check the [Tools Overview](./README.md) for other options._
 
----`,
+---`;
+		}
 
-	footer:
-		() => `**[← Back to Tools](../README.md)** • **[📖 Complete Tools Reference](../../TOOLS_REFERENCE.md)** • **[🏠 Main README](../../../README.md)**
-`,
+		return `## Related Tools
+
+${tool.relatedTools.map((t) => `- **[${t}](./${t}.md)** - ${getToolDescription(t)}`).join("\n")}
+
+---`;
+	},
+
+	/**
+	 * Workflow Integration section with mermaid diagram
+	 */
+	workflowIntegration: (tool) => {
+		const related =
+			tool.relatedTools && tool.relatedTools.length > 0
+				? tool.relatedTools.slice(0, 2)
+				: [];
+
+		if (related.length === 0) {
+			return "";
+		}
+
+		return `## Workflow Integration
+
+### With Other Tools
+
+\`\`\`mermaid
+graph LR
+  A[${tool.name}] --> B[${related[0] || "next-tool"}]
+${related[1] ? `  B --> C[${related[1]}]` : ""}
+${related[1] ? "  C --> D[Execute/Apply]" : "  B --> C[Execute/Apply]"}
+\`\`\`
+
+1. **${tool.name}** - ${tool.title}
+${related.map((r, i) => `${i + 2}. **${r}** - ${getToolDescription(r)}`).join("\n")}
+${related.length + 2}. Execute combined output with your AI model or apply changes
+
+---`;
+	},
+
+	/**
+	 * Related Documentation section (collapsible)
+	 */
+	relatedDocs: (tool) => {
+		const docs = getRelatedDocs(tool);
+		const categoryAnchor = getCategoryAnchor(tool.category);
+
+		return `<details>
+<summary><strong>📚 Related Documentation</strong></summary>
+
+- [All ${tool.category} Tools](./README.md#${categoryAnchor})
+${docs.map((d) => `- [${d.name}](${d.path})`).join("\n")}
+
+</details>
+
+<sub>**MCP AI Agent Guidelines** • Licensed under [MIT](../../LICENSE) • [Disclaimer](../../DISCLAIMER.md) • [Contributing](../../CONTRIBUTING.md)</sub>
+
+---
+
+## Related Documentation
+
+- [All ${tool.category} Tools](./README.md#${categoryAnchor})
+${docs.map((d) => `- [${d.name}](${d.path})`).join("\n")}
+
+---`;
+	},
+
+	/**
+	 * Footer section with image
+	 */
+	footer: () => `<!-- FOOTER:START -->
+![Footer](../.frames-static/09-footer.svg)
+<!-- FOOTER:END -->`,
 };
 
 /**
- * Generate documentation for a single tool
+ * Generate documentation for a single tool following gold standard structure
  */
 function generateToolDoc(tool) {
 	const sections = [
 		TEMPLATE_SECTIONS.header(tool),
-		TEMPLATE_SECTIONS.whenToUse(),
+		TEMPLATE_SECTIONS.whenToUse(tool),
 		TEMPLATE_SECTIONS.basicUsage(tool),
 		TEMPLATE_SECTIONS.parameters(tool),
-		TEMPLATE_SECTIONS.output(),
-		TEMPLATE_SECTIONS.examples(),
-		TEMPLATE_SECTIONS.tips(),
+		TEMPLATE_SECTIONS.output(tool),
+		TEMPLATE_SECTIONS.examples(tool),
+		TEMPLATE_SECTIONS.tips(tool),
 		TEMPLATE_SECTIONS.relatedTools(tool),
+		TEMPLATE_SECTIONS.workflowIntegration(tool),
+		TEMPLATE_SECTIONS.relatedDocs(tool),
 		TEMPLATE_SECTIONS.footer(),
 	];
 
-	return sections.join("\n");
+	return sections.filter(Boolean).join("\n\n");
 }
 
 /**
@@ -858,6 +1633,7 @@ function generateToolDoc(tool) {
 async function main() {
 	const args = process.argv.slice(2);
 	const dryRun = args.includes("--dry-run");
+	const forceOverwrite = args.includes("--force");
 	const specificTool = args
 		.find((arg) => arg.startsWith("--tool="))
 		?.split("=")[1];
@@ -885,6 +1661,17 @@ async function main() {
 	console.log(
 		`\n🔨 Generating documentation for ${toolsToGenerate.length} tools...\n`,
 	);
+	if (forceOverwrite) {
+		console.log(
+			"⚠️  Force mode enabled - will overwrite existing comprehensive docs\n",
+		);
+	}
+
+	let generatedCount = 0;
+	let skippedCount = 0;
+
+	// Gold standard file that should not be overwritten
+	const GOLD_STANDARD = "hierarchical-prompt-builder";
 
 	for (const tool of toolsToGenerate) {
 		const filePath = path.join(docsDir, `${tool.name}.md`);
@@ -895,17 +1682,35 @@ async function main() {
 			console.log(
 				`   Complexity: ${tool.complexity} | Category: ${tool.category}`,
 			);
+			generatedCount++;
 		} else {
-			// Check if file already exists and is comprehensive (>100 lines)
+			// Never overwrite the gold standard unless explicitly forced
+			if (tool.name === GOLD_STANDARD && !forceOverwrite) {
+				console.log(
+					`⭐ Skipping ${tool.name} (gold standard - use --force to overwrite)`,
+				);
+				skippedCount++;
+				continue;
+			}
+
+			// Check if file already exists and is comprehensive (>200 lines)
+			// Skip comprehensive docs unless --force is specified
 			let shouldWrite = true;
 			try {
 				const existing = await fs.readFile(filePath, "utf-8");
 				const lineCount = existing.split("\n").length;
-				if (lineCount > 100) {
+				// Gold standard threshold: hierarchical-prompt-builder.md has ~338 lines
+				// Consider anything over 200 lines as comprehensive
+				if (lineCount > 200 && !forceOverwrite) {
 					console.log(
 						`⏭️  Skipping ${tool.name} (existing comprehensive doc: ${lineCount} lines)`,
 					);
 					shouldWrite = false;
+					skippedCount++;
+				} else if (lineCount > 200 && forceOverwrite) {
+					console.log(
+						`🔄 Overwriting ${tool.name} (--force enabled, was ${lineCount} lines)`,
+					);
 				}
 			} catch {
 				// File doesn't exist, proceed with creation
@@ -913,37 +1718,29 @@ async function main() {
 
 			if (shouldWrite) {
 				await fs.writeFile(filePath, content, "utf-8");
+				const newLineCount = content.split("\n").length;
 				console.log(
-					`✅ Created: ${tool.name}.md (${tool.complexity} ${tool.category})`,
+					`✅ Created: ${tool.name}.md (${newLineCount} lines, ${tool.complexity} ${tool.category})`,
 				);
+				generatedCount++;
 			}
 		}
 	}
 
-	console.log(
-		`\n✨ Done! ${
-			dryRun
-				? "Dry run complete."
-				: `Generated ${
-						toolsToGenerate.filter((t) => {
-							const filePath = path.join(docsDir, `${t.name}.md`);
-							try {
-								const existing = require("fs").readFileSync(filePath, "utf-8");
-								return existing.split("\n").length <= 100;
-							} catch {
-								return true;
-							}
-						}).length
-					} tool documentation files.`
-		}\n`,
-	);
+	console.log(`\n✨ Done!`);
+	console.log(`   📝 Generated: ${generatedCount} files`);
+	if (skippedCount > 0) {
+		console.log(
+			`   ⏭️  Skipped: ${skippedCount} files (use --force to overwrite)`,
+		);
+	}
 
-	if (!dryRun) {
-		console.log("📝 Next steps:");
+	if (!dryRun && generatedCount > 0) {
+		console.log("\n📝 Next steps:");
 		console.log("   1. Review generated files in docs/tools/");
-		console.log("   2. Fill in placeholder sections with actual content");
-		console.log("   3. Add real examples and use cases");
-		console.log("   4. Test tool documentation links from README.md\n");
+		console.log("   2. Verify content accuracy for your specific tools");
+		console.log("   3. Test documentation links");
+		console.log("   4. Run 'npm run docs:lint' to check for issues\n");
 	}
 }
 
