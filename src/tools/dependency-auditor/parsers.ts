@@ -17,6 +17,16 @@ import type {
 } from "./types.js";
 
 /**
+ * Common regex patterns used across parsers
+ */
+const PATTERNS = {
+	// Matches bare package name with optional extras: package[extra] or just package
+	BARE_PACKAGE: /^[a-zA-Z0-9_-]+(\[[^\]]+\])?\s*$/,
+	// Matches package with version constraint: package>=1.0 or package[extra]==1.2
+	PACKAGE_WITH_VERSION: /^[a-zA-Z0-9_-]+(\[[^\]]+\])?\s*[<>=!~]+/,
+};
+
+/**
  * Base analyzer with common issue detection logic
  */
 abstract class BaseParser implements DependencyParser {
@@ -243,6 +253,11 @@ export class JavaScriptParser extends BaseParser {
 	}
 
 	canParse(content: string): boolean {
+		// Quick check before attempting JSON parse
+		const trimmed = content.trim();
+		if (!trimmed.startsWith("{") || !trimmed.endsWith("}")) {
+			return false;
+		}
 		try {
 			const parsed = JSON.parse(content);
 			return (
@@ -551,7 +566,7 @@ export class PythonRequirementsParser extends BaseParser {
 			// Check if it looks like a requirements.txt line
 			// Must have package name followed by version specifier or be a pip option
 			if (
-				/^[a-zA-Z0-9_-]+(\[[^\]]+\])?\s*[<>=!~]+/.test(line) ||
+				PATTERNS.PACKAGE_WITH_VERSION.test(line) ||
 				line.startsWith("-r") ||
 				line.startsWith("-e") ||
 				line.startsWith("-c") ||
@@ -561,7 +576,7 @@ export class PythonRequirementsParser extends BaseParser {
 				if (/[<>=!~]+/.test(line)) {
 					hasVersionConstraint = true;
 				}
-			} else if (/^[a-zA-Z0-9_-]+(\[[^\]]+\])?\s*$/.test(line)) {
+			} else if (PATTERNS.BARE_PACKAGE.test(line)) {
 				// Bare package name without version
 				validLines++;
 			}
@@ -1638,6 +1653,11 @@ export class CppVcpkgParser extends BaseParser {
 	}
 
 	canParse(content: string): boolean {
+		// Quick check before attempting JSON parse
+		const trimmed = content.trim();
+		if (!trimmed.startsWith("{") || !trimmed.endsWith("}")) {
+			return false;
+		}
 		try {
 			const parsed = JSON.parse(content);
 			return (

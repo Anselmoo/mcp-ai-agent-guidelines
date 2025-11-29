@@ -4,7 +4,6 @@ import {
 	detectParser,
 	GoModParser,
 	LuaRockspecParser,
-	PyProjectParser,
 	PyRequirementsParser,
 	RubyGemfileParser,
 	RustCargoParser,
