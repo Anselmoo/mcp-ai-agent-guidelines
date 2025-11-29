@@ -45,6 +45,13 @@ export class DotNetCsprojParser extends BaseParser {
 		},
 	};
 
+	/**
+	 * Escape special regex characters in a string to prevent ReDoS attacks
+	 */
+	private escapeRegex(str: string): string {
+		return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	}
+
 	parse(content: string): ParseResult {
 		const packages: PackageInfo[] = [];
 		const errors: string[] = [];
@@ -68,12 +75,13 @@ export class DotNetCsprojParser extends BaseParser {
 			);
 			for (const match of packageRefs) {
 				const name = match[1];
+				const escapedName = this.escapeRegex(name);
 				let version = match[2] || "*";
 
 				if (!match[2]) {
 					const versionElementMatch = content.match(
 						new RegExp(
-							`<PackageReference\\s+Include=["']${name}["'][^>]*>[\\s\\S]*?<Version>([^<]+)<\\/Version>`,
+							`<PackageReference\\s+Include=["']${escapedName}["'][^>]*>[\\s\\S]*?<Version>([^<]+)<\\/Version>`,
 							"i",
 						),
 					);
@@ -82,7 +90,7 @@ export class DotNetCsprojParser extends BaseParser {
 
 				const privateAssetsMatch = content.match(
 					new RegExp(
-						`<PackageReference\\s+Include=["']${name}["'][^>]*PrivateAssets=["']All["']`,
+						`<PackageReference\\s+Include=["']${escapedName}["'][^>]*PrivateAssets=["']All["']`,
 						"i",
 					),
 				);
