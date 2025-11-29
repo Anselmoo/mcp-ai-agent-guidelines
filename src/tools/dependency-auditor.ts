@@ -5,7 +5,6 @@ import {
 	type EcosystemType,
 	getParserForFileType,
 	type Issue as MultiLangIssue,
-	type PackageInfo as MultiLangPackageInfo,
 	type PackageFileType,
 	type ReferenceLink,
 } from "./dependency-auditor/index.js";

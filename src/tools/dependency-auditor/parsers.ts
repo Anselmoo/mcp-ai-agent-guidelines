@@ -530,6 +530,18 @@ export class PythonRequirementsParser extends BaseParser {
 		const lines = content.split("\n");
 		let validLines = 0;
 		let totalNonEmptyLines = 0;
+		let hasVersionConstraint = false;
+
+		// Exclude other format indicators
+		if (
+			content.includes("[package]") ||
+			content.includes("[dependencies]") ||
+			content.includes("[project]") ||
+			content.includes("module ") ||
+			(content.includes("source ") && content.includes("gem "))
+		) {
+			return false;
+		}
 
 		for (const rawLine of lines) {
 			const line = rawLine.trim();
@@ -537,17 +549,30 @@ export class PythonRequirementsParser extends BaseParser {
 			totalNonEmptyLines++;
 
 			// Check if it looks like a requirements.txt line
+			// Must have package name followed by version specifier or be a pip option
 			if (
-				/^[a-zA-Z0-9_-]+(\[[^\]]+\])?\s*([<>=!~]+|$)/.test(line) ||
+				/^[a-zA-Z0-9_-]+(\[[^\]]+\])?\s*[<>=!~]+/.test(line) ||
 				line.startsWith("-r") ||
 				line.startsWith("-e") ||
-				line.startsWith("-c")
+				line.startsWith("-c") ||
+				line.startsWith("--")
 			) {
+				validLines++;
+				if (/[<>=!~]+/.test(line)) {
+					hasVersionConstraint = true;
+				}
+			} else if (/^[a-zA-Z0-9_-]+(\[[^\]]+\])?\s*$/.test(line)) {
+				// Bare package name without version
 				validLines++;
 			}
 		}
 
-		return totalNonEmptyLines > 0 && validLines / totalNonEmptyLines >= 0.5;
+		// Need at least 50% valid lines AND at least one version constraint OR all bare package names
+		return (
+			totalNonEmptyLines > 0 &&
+			validLines / totalNonEmptyLines >= 0.5 &&
+			(hasVersionConstraint || validLines === totalNonEmptyLines)
+		);
 	}
 
 	getEcosystem(): EcosystemType {
@@ -690,9 +715,7 @@ export class PythonRequirementsParser extends BaseParser {
 // Python Parser (pyproject.toml)
 // ============================================================================
 
-export class PythonPyprojectParser extends BaseParser {
-	private requirementsParser = new PythonRequirementsParser();
-
+export class PythonPyprojectParser extends PythonRequirementsParser {
 	parse(content: string): ParseResult {
 		const packages: PackageInfo[] = [];
 		const errors: string[] = [];
@@ -900,16 +923,11 @@ export class PythonPyprojectParser extends BaseParser {
 		return ["pyproject.toml"];
 	}
 
-	protected analyzePackage(
-		pkg: PackageInfo,
-		options: AnalysisOptions,
-		issues: Issue[],
-	): void {
-		// Delegate to requirements parser for common Python analysis
-		this.requirementsParser["analyzePackage"](pkg, options, issues);
-	}
+	// Uses parent class analyzePackage from PythonRequirementsParser
 
-	protected addEcosystemRecommendations(recommendations: string[]): void {
+	protected override addEcosystemRecommendations(
+		recommendations: string[],
+	): void {
 		recommendations.push(
 			"Run 'pip-audit' or 'safety check' for vulnerability scanning",
 		);
@@ -1764,11 +1782,15 @@ export class LuaRockspecParser extends BaseParser {
 	}
 
 	canParse(content: string): boolean {
-		return (
-			content.includes("rockspec_format") ||
-			content.includes("package =") ||
-			(content.includes("dependencies") && content.includes("source ="))
-		);
+		// Rockspec files have specific Lua patterns
+		// Check for rockspec_format or package = combined with version = and Lua-style tables
+		if (content.includes("rockspec_format")) return true;
+
+		// Rockspec pattern: package = "name" followed by version = "x.y.z-n"
+		const hasLuaPackage = /package\s*=\s*["'][^"']+["']/.test(content);
+		const hasLuaVersion = /version\s*=\s*["'][\d.]+-\d+["']/.test(content);
+
+		return hasLuaPackage && (hasLuaVersion || content.includes("source = {"));
 	}
 
 	getEcosystem(): EcosystemType {
@@ -1810,15 +1832,19 @@ export class LuaRockspecParser extends BaseParser {
 // Parser Registry and Factory
 // ============================================================================
 
+// Order matters! More specific parsers should come first.
+// JSON-based parsers first (they try JSON.parse and check specific keys)
+// Then format-specific parsers (they have unique identifiers)
+// Python requirements parser last (it's the most permissive)
 const parsers: DependencyParser[] = [
-	new JavaScriptParser(),
-	new PythonRequirementsParser(),
-	new PythonPyprojectParser(),
-	new GoModParser(),
-	new RustCargoParser(),
-	new RubyGemfileParser(),
-	new CppVcpkgParser(),
-	new LuaRockspecParser(),
+	new JavaScriptParser(), // JSON with dependencies/devDependencies
+	new CppVcpkgParser(), // JSON with dependencies but no devDependencies.typescript
+	new RustCargoParser(), // TOML with [package] or [dependencies]
+	new PythonPyprojectParser(), // TOML with [project] or [tool.poetry
+	new GoModParser(), // Has "module " and "require " or "go "
+	new RubyGemfileParser(), // Has "source " and "gem "
+	new LuaRockspecParser(), // Lua-style with rockspec_format or package/source =
+	new PythonRequirementsParser(), // Most permissive - matches package==version style
 ];
 
 /**
