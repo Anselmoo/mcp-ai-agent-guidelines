@@ -4,18 +4,198 @@
 
 # Strategy Frameworks Builder
 
-> **Strategy Planning Tool** • **Complexity: Medium**
+> **Strategy analysis frameworks**
 
 [![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../../README.md)
-[![Strategy Planning](https://img.shields.io/badge/Category-Strategy_Planning-blue?style=flat-square)](./README.md#strategy-planning)
+[![Strategy & Planning](https://img.shields.io/badge/Category-Strategy_&_Planning-blue?style=flat-square)](./README.md#strategy-planning)
 [![Documentation](https://img.shields.io/badge/📚-Docs-blue?style=flat-square)](../README.md)
+
+**Complexity**: ⭐⭐⭐ Advanced | **Category**: Strategy & Planning | **Time to Learn**: 1-2 hours
+
+---
+
+## Overview
+
+The `strategy-frameworks-builder` sWOT, BSC, VRIO, Porter Five Forces, McKinsey 7S, etc..
+
+### Key Capabilities
+
+- 15+ strategy frameworks (SWOT, BSC, VRIO, Porter, McKinsey 7S)
+- Multi-framework composition
+- Context-aware analysis
+- Actionable insights generation
+
+---
+
+## When to Use
+
+✅ **Good for:**
+
+- Strategic planning sessions
+- Gap analysis between current and desired states
+- Sprint and resource planning
+- Multi-framework business analysis
+
+❌ **Not ideal for:**
+
+- Quick operational decisions
+- Real-time project tracking
+- Budget calculations
+
+---
+
+## Basic Usage
+
+### Example 1: Basic Strategy & Planning Task
+
+```json
+{
+  "tool": "strategy-frameworks-builder",
+  "frameworks": "your-frameworks-here",
+  "context": "your-context-here",
+  "objectives": ["item1", "item2"],
+  "stakeholders": ["item1", "item2"],
+  "constraints": ["item1", "item2"]
+}
+```
+
+**Output**: Structured strategy & planning output with:
+
+- 15+ strategy frameworks (SWOT, BSC, VRIO, Porter, McKinsey 7S)
+- Multi-framework composition
+- Context-aware analysis
+
+---
+
+## Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `frameworks` | array | ✅ Yes | - | Strategy frameworks to apply (e.g., `swot`, `balancedScorecard`, `vrio`) |
+| `context` | string | ✅ Yes | - | Broad context or domain background for the task |
+| `objectives` | array | No | - | Strategic objectives to analyze |
+| `stakeholders` | array | No | - | Key stakeholders to consider |
+| `constraints` | array | No | - | Constraints parameter |
+
+---
+
+## What You Get
+
+The tool returns a structured strategy & planning output with:
+
+1. **15+** - 15+ strategy frameworks (SWOT, BSC, VRIO, Porter, McKinsey 7S)
+2. **Multi-framework** - Multi-framework composition
+3. **Context-aware** - Context-aware analysis
+4. **Actionable** - Actionable insights generation
+
+### Output Structure
+
+```markdown
+## Strategy Frameworks Builder Output
+
+### Summary
+[High-level summary of analysis/output]
+
+### Details
+[Detailed content based on your inputs]
+
+### Recommendations
+[Actionable next steps]
+
+### References (if enabled)
+[Links to external resources]
+```
+
+---
+
+## Real-World Examples
+
+### Example 1: Strategic Planning Session
+
+```json
+{
+  "tool": "strategy-frameworks-builder",
+  "frameworks": "Example frameworks value for strategic planning session",
+  "context": "Example context value for strategic planning session",
+  "objectives": ["example1", "example2"],
+  "stakeholders": ["example1", "example2"]
+}
+```
+
+**Generated Output Excerpt**:
+
+```markdown
+## Strategic Planning Session Results
+
+### Summary
+Analysis complete with actionable insights...
+
+### Key Findings
+1. [Finding 1 based on strategy & planning analysis]
+2. [Finding 2 with specific recommendations]
+3. [Finding 3 with priority indicators]
+
+### Next Steps
+- Implement recommended changes
+- Review and validate results
+- Integrate into workflow
+```
+
+---
+
+## Tips & Tricks
+
+### 💡 Best Practices
+
+1. **Define Clear Objectives** - Measurable goals drive better analysis
+2. **Involve Stakeholders** - List all affected parties
+3. **Set Realistic Timeframes** - Be honest about constraints
+4. **Use Multiple Frameworks** - Cross-validate insights
+
+### 🚫 Common Mistakes
+
+- ❌ Skipping context → ✅ Always provide business background
+- ❌ Ignoring constraints → ✅ List real limitations upfront
+- ❌ Over-planning → ✅ Focus on actionable next steps
+- ❌ Static analysis → ✅ Strategy needs regular review
+
+### ⚡ Pro Tips
+
+- Combine SWOT with gap analysis for comprehensive views
+- Use sprint calculator for realistic timelines
+- Include action plans for implementation guidance
+
+---
+
+## Related Tools
+
+- **[gap-frameworks-analyzers](./gap-frameworks-analyzers.md)** - Gap analysis frameworks
+- **[sprint-timeline-calculator](./sprint-timeline-calculator.md)** - Sprint timelines and development cycles
+
+---
+
+## Workflow Integration
+
+### With Other Tools
+
+```mermaid
+graph LR
+  A[strategy-frameworks-builder] --> B[gap-frameworks-analyzers]
+  B --> C[sprint-timeline-calculator]
+  C --> D[Execute/Apply]
+```
+
+1. **strategy-frameworks-builder** - Strategy analysis frameworks
+2. **gap-frameworks-analyzers** - Gap analysis frameworks
+3. **sprint-timeline-calculator** - Sprint timelines and development cycles
+4. Execute combined output with your AI model or apply changes
 
 ---
 
 <details>
 <summary><strong>📚 Related Documentation</strong></summary>
 
-- [All Strategy & Planning Tools](./README.md#strategy-and-planning)
+- [All Strategy & Planning Tools](./README.md#strategy-planning)
 - [Sprint Planning Reliability](../tips/SPRINT_PLANNING_RELIABILITY.md)
 - [AI Interaction Tips](../tips/AI_INTERACTION_TIPS.md)
 
@@ -27,8 +207,9 @@
 
 ## Related Documentation
 
-- [All Strategy Planning Tools](./README.md#strategy-planning)
+- [All Strategy & Planning Tools](./README.md#strategy-planning)
 - [Sprint Planning Reliability](../tips/SPRINT_PLANNING_RELIABILITY.md)
+- [AI Interaction Tips](../tips/AI_INTERACTION_TIPS.md)
 
 ---
 
