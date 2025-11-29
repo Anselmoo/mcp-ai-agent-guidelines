@@ -719,6 +719,13 @@ const TOOLS_METADATA = [
 ];
 
 /**
+ * Threshold for considering a documentation file "comprehensive" (in lines).
+ * Files with more lines than this threshold won't be overwritten unless --force is used.
+ * Based on gold standard: hierarchical-prompt-builder.md has ~338 lines.
+ */
+const COMPREHENSIVE_DOC_THRESHOLD = 200;
+
+/**
  * Category badge colors for consistent styling
  */
 const CATEGORY_COLORS = {
@@ -1223,9 +1230,7 @@ function getToolDescription(toolName) {
 
 // Template sections following gold standard (hierarchical-prompt-builder.md)
 const TEMPLATE_SECTIONS = {
-	/**
-	 * Header section with image, title, badges
-	 */
+	// Header section with image, title, badges
 	header: (tool) => {
 		const categoryColor = CATEGORY_COLORS[tool.category] || "gray";
 		const categoryAnchor = getCategoryAnchor(tool.category);
@@ -1272,9 +1277,8 @@ ${tool.keyFeatures.map((f) => `- ${f}`).join("\n")}`
 ---`;
 	},
 
-	/**
-	 * When to Use section with good/bad use cases
-	 */
+	// When to Use section with good/bad use cases
+
 	whenToUse: (tool) => {
 		const useCases = generateUseCases(tool);
 
@@ -1291,9 +1295,8 @@ ${useCases.bad.map((uc) => `- ${uc}`).join("\n")}
 ---`;
 	},
 
-	/**
-	 * Basic Usage section with JSON examples
-	 */
+	// Basic Usage section with JSON examples
+
 	basicUsage: (tool) => {
 		const requiredParams =
 			tool.parameters.required.length > 0
@@ -1347,9 +1350,8 @@ ${
 ---`;
 	},
 
-	/**
-	 * Parameters table with detailed descriptions
-	 */
+	// Parameters table with detailed descriptions
+
 	parameters: (tool) => {
 		const requiredRows = tool.parameters.required.map((p) => {
 			const type = inferParameterType(p);
@@ -1377,9 +1379,8 @@ ${optionalRows.join("\n")}
 ---`;
 	},
 
-	/**
-	 * What You Get section showing output structure
-	 */
+	// What You Get section showing output structure
+
 	output: (tool) => {
 		return `## What You Get
 
@@ -1419,9 +1420,8 @@ ${
 ---`;
 	},
 
-	/**
-	 * Real-World Examples section
-	 */
+	// Real-World Examples section
+
 	examples: (tool) => {
 		const exampleTitle =
 			tool.category === "Prompt Builders"
@@ -1498,9 +1498,8 @@ Analysis complete with actionable insights...
 ---`;
 	},
 
-	/**
-	 * Tips & Tricks section
-	 */
+	// Tips & Tricks section
+
 	tips: (tool) => {
 		const tips = generateTips(tool);
 
@@ -1521,9 +1520,8 @@ ${tips.proTips.map((pt) => `- ${pt}`).join("\n")}
 ---`;
 	},
 
-	/**
-	 * Related Tools section with links and descriptions
-	 */
+	// Related Tools section with links and descriptions
+
 	relatedTools: (tool) => {
 		if (!tool.relatedTools || tool.relatedTools.length === 0) {
 			return `## Related Tools
@@ -1540,9 +1538,8 @@ ${tool.relatedTools.map((t) => `- **[${t}](./${t}.md)** - ${getToolDescription(t
 ---`;
 	},
 
-	/**
-	 * Workflow Integration section with mermaid diagram
-	 */
+	// Workflow Integration section with mermaid diagram
+
 	workflowIntegration: (tool) => {
 		const related =
 			tool.relatedTools && tool.relatedTools.length > 0
@@ -1571,9 +1568,8 @@ ${related.length + 2}. Execute combined output with your AI model or apply chang
 ---`;
 	},
 
-	/**
-	 * Related Documentation section (collapsible)
-	 */
+	// Related Documentation section (collapsible)
+
 	relatedDocs: (tool) => {
 		const docs = getRelatedDocs(tool);
 		const categoryAnchor = getCategoryAnchor(tool.category);
@@ -1598,9 +1594,8 @@ ${docs.map((d) => `- [${d.name}](${d.path})`).join("\n")}
 ---`;
 	},
 
-	/**
-	 * Footer section with image
-	 */
+	// Footer section with image
+
 	footer: () => `<!-- FOOTER:START -->
 ![Footer](../.frames-static/09-footer.svg)
 <!-- FOOTER:END -->`,
@@ -1693,21 +1688,19 @@ async function main() {
 				continue;
 			}
 
-			// Check if file already exists and is comprehensive (>200 lines)
+			// Check if file already exists and is comprehensive
 			// Skip comprehensive docs unless --force is specified
 			let shouldWrite = true;
 			try {
 				const existing = await fs.readFile(filePath, "utf-8");
 				const lineCount = existing.split("\n").length;
-				// Gold standard threshold: hierarchical-prompt-builder.md has ~338 lines
-				// Consider anything over 200 lines as comprehensive
-				if (lineCount > 200 && !forceOverwrite) {
+				if (lineCount > COMPREHENSIVE_DOC_THRESHOLD && !forceOverwrite) {
 					console.log(
 						`⏭️  Skipping ${tool.name} (existing comprehensive doc: ${lineCount} lines)`,
 					);
 					shouldWrite = false;
 					skippedCount++;
-				} else if (lineCount > 200 && forceOverwrite) {
+				} else if (lineCount > COMPREHENSIVE_DOC_THRESHOLD && forceOverwrite) {
 					console.log(
 						`🔄 Overwriting ${tool.name} (--force enabled, was ${lineCount} lines)`,
 					);
