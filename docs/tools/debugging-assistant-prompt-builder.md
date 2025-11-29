@@ -4,17 +4,11 @@
 
 # Debugging Assistant Prompt Builder
 
-> **Prompt Builders Tool** • **Complexity: Moderate**
+> **Systematic debugging prompts**
 
 [![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../../README.md)
 [![Prompt Builders](https://img.shields.io/badge/Category-Prompt_Builders-purple?style=flat-square)](./README.md#prompt-builders)
 [![Documentation](https://img.shields.io/badge/📚-Docs-blue?style=flat-square)](../README.md)
-
----
-
-# debugging-assistant-prompt-builder
-
-> **Systematic debugging prompts**
 
 **Complexity**: ⭐⭐ Moderate | **Category**: Prompt Builders | **Time to Learn**: 15-30 minutes
 

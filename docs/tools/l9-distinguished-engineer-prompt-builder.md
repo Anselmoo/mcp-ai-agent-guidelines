@@ -4,17 +4,11 @@
 
 # L9 Distinguished Engineer Prompt Builder
 
-> **Prompt Builders Tool** • **Complexity: Master**
+> **L9 Distinguished Engineer prompts**
 
 [![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../../README.md)
 [![Prompt Builders](https://img.shields.io/badge/Category-Prompt_Builders-purple?style=flat-square)](./README.md#prompt-builders)
 [![Documentation](https://img.shields.io/badge/📚-Docs-blue?style=flat-square)](../README.md)
-
----
-
-# l9-distinguished-engineer-prompt-builder
-
-> **L9 Distinguished Engineer prompts**
 
 **Complexity**: ⭐⭐⭐⭐⭐ Master | **Category**: Prompt Builders | **Time to Learn**: 1-2 days
 

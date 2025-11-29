@@ -4,17 +4,11 @@
 
 # Model Compatibility Checker
 
-> **Utilities Tool** • **Complexity: Simple**
+> **Recommend AI models for tasks**
 
 [![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../../README.md)
 [![Utilities](https://img.shields.io/badge/Category-Utilities-gray?style=flat-square)](./README.md#utilities)
 [![Documentation](https://img.shields.io/badge/📚-Docs-blue?style=flat-square)](../README.md)
-
----
-
-# model-compatibility-checker
-
-> **Recommend AI models for tasks**
 
 **Complexity**: ⭐ Simple | **Category**: Utilities | **Time to Learn**: 5-10 minutes
 

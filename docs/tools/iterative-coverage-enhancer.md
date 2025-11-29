@@ -4,17 +4,11 @@
 
 # Iterative Coverage Enhancer
 
-> **Code Analysis Tool** • **Complexity: Moderate**
+> **Analyze coverage gaps and suggest tests**
 
 [![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../../README.md)
 [![Code Analysis](https://img.shields.io/badge/Category-Code_Analysis-orange?style=flat-square)](./README.md#code-analysis)
 [![Documentation](https://img.shields.io/badge/📚-Docs-blue?style=flat-square)](../README.md)
-
----
-
-# iterative-coverage-enhancer
-
-> **Analyze coverage gaps and suggest tests**
 
 **Complexity**: ⭐⭐ Moderate | **Category**: Code Analysis | **Time to Learn**: 15-30 minutes
 

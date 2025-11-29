@@ -4,17 +4,11 @@
 
 # Guidelines Validator
 
-> **Utilities Tool** • **Complexity: Simple**
+> **Validate against AI agent guidelines**
 
 [![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../../README.md)
 [![Utilities](https://img.shields.io/badge/Category-Utilities-gray?style=flat-square)](./README.md#utilities)
 [![Documentation](https://img.shields.io/badge/📚-Docs-blue?style=flat-square)](../README.md)
-
----
-
-# guidelines-validator
-
-> **Validate against AI agent guidelines**
 
 **Complexity**: ⭐ Simple | **Category**: Utilities | **Time to Learn**: 5-10 minutes
 

@@ -4,17 +4,11 @@
 
 # Digital Enterprise Architect Prompt Builder
 
-> **Prompt Builders Tool** • **Complexity: Expert**
+> **Enterprise architecture strategy**
 
 [![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../../README.md)
 [![Prompt Builders](https://img.shields.io/badge/Category-Prompt_Builders-purple?style=flat-square)](./README.md#prompt-builders)
 [![Documentation](https://img.shields.io/badge/📚-Docs-blue?style=flat-square)](../README.md)
-
----
-
-# digital-enterprise-architect-prompt-builder
-
-> **Enterprise architecture strategy**
 
 **Complexity**: ⭐⭐⭐⭐ Expert | **Category**: Prompt Builders | **Time to Learn**: Half day
 

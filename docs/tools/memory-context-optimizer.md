@@ -4,17 +4,11 @@
 
 # Memory Context Optimizer
 
-> **Utilities Tool** • **Complexity: Moderate**
+> **Optimize prompt caching**
 
 [![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../../README.md)
 [![Utilities](https://img.shields.io/badge/Category-Utilities-gray?style=flat-square)](./README.md#utilities)
 [![Documentation](https://img.shields.io/badge/📚-Docs-blue?style=flat-square)](../README.md)
-
----
-
-# memory-context-optimizer
-
-> **Optimize prompt caching**
 
 **Complexity**: ⭐⭐ Moderate | **Category**: Utilities | **Time to Learn**: 15-30 minutes
 

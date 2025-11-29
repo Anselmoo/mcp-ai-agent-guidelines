@@ -4,17 +4,11 @@
 
 # Design Assistant
 
-> **Design & Workflow Tool** • **Complexity: Expert**
+> **Deterministic design sessions**
 
 [![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../../README.md)
 [![Design & Workflow](https://img.shields.io/badge/Category-Design_&_Workflow-green?style=flat-square)](./README.md#design-workflow)
 [![Documentation](https://img.shields.io/badge/📚-Docs-blue?style=flat-square)](../README.md)
-
----
-
-# design-assistant
-
-> **Deterministic design sessions**
 
 **Complexity**: ⭐⭐⭐⭐ Expert | **Category**: Design & Workflow | **Time to Learn**: Half day
 

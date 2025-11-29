@@ -19,12 +19,13 @@
  * - Related Documentation (collapsible)
  * - Footer with links
  *
- * Usage: node scripts/generate-tool-docs.js [--dry-run] [--tool=<name>] [--force]
+ * Usage: node scripts/generate-tool-docs.js [--dry-run] [--tool=<name>] [--force] [--clean]
  *
  * Options:
  *   --dry-run    Preview changes without writing files
  *   --tool=NAME  Generate docs for a specific tool only
  *   --force      Overwrite existing documentation even if comprehensive
+ *   --clean      Remove existing file before generating (complete overwrite)
  */
 
 import fs from "node:fs/promises";
@@ -1246,17 +1247,11 @@ const TEMPLATE_SECTIONS = {
 
 # ${titleCase}
 
-> **${tool.category} Tool** • **Complexity: ${complexityLevel}**
+> **${tool.title}**
 
 [![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../../README.md)
 [![${tool.category}](https://img.shields.io/badge/Category-${tool.category.replace(/ /g, "_")}-${categoryColor}?style=flat-square)](./README.md#${categoryAnchor})
 [![Documentation](https://img.shields.io/badge/📚-Docs-blue?style=flat-square)](../README.md)
-
----
-
-# ${tool.name}
-
-> **${tool.title}**
 
 **Complexity**: ${tool.complexity} ${complexityLevel} | **Category**: ${tool.category} | **Time to Learn**: ${tool.time}
 
@@ -1629,6 +1624,7 @@ async function main() {
 	const args = process.argv.slice(2);
 	const dryRun = args.includes("--dry-run");
 	const forceOverwrite = args.includes("--force");
+	const cleanMode = args.includes("--clean");
 	const specificTool = args
 		.find((arg) => arg.startsWith("--tool="))
 		?.split("=")[1];
@@ -1661,6 +1657,9 @@ async function main() {
 			"⚠️  Force mode enabled - will overwrite existing comprehensive docs\n",
 		);
 	}
+	if (cleanMode) {
+		console.log("🧹 Clean mode enabled - will remove and recreate files\n");
+	}
 
 	let generatedCount = 0;
 	let skippedCount = 0;
@@ -1679,12 +1678,30 @@ async function main() {
 			);
 			generatedCount++;
 		} else {
-			// Never overwrite the gold standard unless explicitly forced
-			if (tool.name === GOLD_STANDARD && !forceOverwrite) {
+			// Never overwrite the gold standard unless explicitly forced or clean mode
+			if (tool.name === GOLD_STANDARD && !forceOverwrite && !cleanMode) {
 				console.log(
-					`⭐ Skipping ${tool.name} (gold standard - use --force to overwrite)`,
+					`⭐ Skipping ${tool.name} (gold standard - use --force or --clean to overwrite)`,
 				);
 				skippedCount++;
+				continue;
+			}
+
+			// In clean mode, remove existing file first
+			if (cleanMode) {
+				try {
+					await fs.unlink(filePath);
+					console.log(`🗑️  Removed existing ${tool.name}.md`);
+				} catch {
+					// File doesn't exist, that's fine
+				}
+				// Write new content
+				await fs.writeFile(filePath, content, "utf-8");
+				const newLineCount = content.split("\n").length;
+				console.log(
+					`✅ Created: ${tool.name}.md (${newLineCount} lines, ${tool.complexity} ${tool.category})`,
+				);
+				generatedCount++;
 				continue;
 			}
 
@@ -1724,7 +1741,7 @@ async function main() {
 	console.log(`   📝 Generated: ${generatedCount} files`);
 	if (skippedCount > 0) {
 		console.log(
-			`   ⏭️  Skipped: ${skippedCount} files (use --force to overwrite)`,
+			`   ⏭️  Skipped: ${skippedCount} files (use --force or --clean to overwrite)`,
 		);
 	}
 

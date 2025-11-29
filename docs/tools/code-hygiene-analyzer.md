@@ -4,17 +4,11 @@
 
 # Code Hygiene Analyzer
 
-> **Code Analysis Tool** • **Complexity: Moderate**
+> **Outdated patterns and unused dependencies**
 
 [![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../../README.md)
 [![Code Analysis](https://img.shields.io/badge/Category-Code_Analysis-orange?style=flat-square)](./README.md#code-analysis)
 [![Documentation](https://img.shields.io/badge/📚-Docs-blue?style=flat-square)](../README.md)
-
----
-
-# code-hygiene-analyzer
-
-> **Outdated patterns and unused dependencies**
 
 **Complexity**: ⭐⭐ Moderate | **Category**: Code Analysis | **Time to Learn**: 15-30 minutes
 

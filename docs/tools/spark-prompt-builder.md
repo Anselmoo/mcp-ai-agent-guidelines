@@ -4,17 +4,11 @@
 
 # Spark Prompt Builder
 
-> **Prompt Builders Tool** • **Complexity: Advanced**
+> **UI/UX product prompts**
 
 [![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../../README.md)
 [![Prompt Builders](https://img.shields.io/badge/Category-Prompt_Builders-purple?style=flat-square)](./README.md#prompt-builders)
 [![Documentation](https://img.shields.io/badge/📚-Docs-blue?style=flat-square)](../README.md)
-
----
-
-# spark-prompt-builder
-
-> **UI/UX product prompts**
 
 **Complexity**: ⭐⭐⭐ Advanced | **Category**: Prompt Builders | **Time to Learn**: 1-2 hours
 

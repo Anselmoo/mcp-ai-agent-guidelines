@@ -4,17 +4,11 @@
 
 # Strategy Frameworks Builder
 
-> **Strategy & Planning Tool** • **Complexity: Advanced**
+> **Strategy analysis frameworks**
 
 [![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../../README.md)
 [![Strategy & Planning](https://img.shields.io/badge/Category-Strategy_&_Planning-blue?style=flat-square)](./README.md#strategy-planning)
 [![Documentation](https://img.shields.io/badge/📚-Docs-blue?style=flat-square)](../README.md)
-
----
-
-# strategy-frameworks-builder
-
-> **Strategy analysis frameworks**
 
 **Complexity**: ⭐⭐⭐ Advanced | **Category**: Strategy & Planning | **Time to Learn**: 1-2 hours
 

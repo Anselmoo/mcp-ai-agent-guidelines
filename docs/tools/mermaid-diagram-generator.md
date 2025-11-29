@@ -4,17 +4,11 @@
 
 # Mermaid Diagram Generator
 
-> **Design & Workflow Tool** • **Complexity: Moderate**
+> **Generate Mermaid diagrams**
 
 [![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../../README.md)
 [![Design & Workflow](https://img.shields.io/badge/Category-Design_&_Workflow-green?style=flat-square)](./README.md#design-workflow)
 [![Documentation](https://img.shields.io/badge/📚-Docs-blue?style=flat-square)](../README.md)
-
----
-
-# mermaid-diagram-generator
-
-> **Generate Mermaid diagrams**
 
 **Complexity**: ⭐⭐ Moderate | **Category**: Design & Workflow | **Time to Learn**: 15-30 minutes
 

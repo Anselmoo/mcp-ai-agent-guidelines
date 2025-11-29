@@ -4,17 +4,11 @@
 
 # Clean Code Scorer
 
-> **Code Analysis Tool** • **Complexity: Moderate**
+> **Calculate Clean Code score (0-100)**
 
 [![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../../README.md)
 [![Code Analysis](https://img.shields.io/badge/Category-Code_Analysis-orange?style=flat-square)](./README.md#code-analysis)
 [![Documentation](https://img.shields.io/badge/📚-Docs-blue?style=flat-square)](../README.md)
-
----
-
-# clean-code-scorer
-
-> **Calculate Clean Code score (0-100)**
 
 **Complexity**: ⭐⭐ Moderate | **Category**: Code Analysis | **Time to Learn**: 15-30 minutes
 

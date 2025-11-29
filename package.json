@@ -42,6 +42,7 @@
 		"docs:generate-tool-docs": "node scripts/generate-tool-docs.js",
 		"docs:generate-tool-docs:dry-run": "node scripts/generate-tool-docs.js --dry-run",
 		"docs:generate-tool-docs:force": "node scripts/generate-tool-docs.js --force",
+		"docs:generate-tool-docs:clean": "node scripts/generate-tool-docs.js --clean",
 		"docs:fix-svg": "node scripts/fix-svg-visibility.js",
 		"docs:fix-svg:dry-run": "node scripts/fix-svg-visibility.js --dry-run",
 		"docs:update-svg-bg": "node scripts/update-svg-background.js",

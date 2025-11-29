@@ -4,17 +4,11 @@
 
 # Sprint Timeline Calculator
 
-> **Strategy & Planning Tool** • **Complexity: Simple**
+> **Sprint timelines and development cycles**
 
 [![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../../README.md)
 [![Strategy & Planning](https://img.shields.io/badge/Category-Strategy_&_Planning-blue?style=flat-square)](./README.md#strategy-planning)
 [![Documentation](https://img.shields.io/badge/📚-Docs-blue?style=flat-square)](../README.md)
-
----
-
-# sprint-timeline-calculator
-
-> **Sprint timelines and development cycles**
 
 **Complexity**: ⭐ Simple | **Category**: Strategy & Planning | **Time to Learn**: 5-10 minutes
 

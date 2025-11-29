@@ -4,17 +4,11 @@
 
 # Prompting Hierarchy Evaluator
 
-> **Utilities Tool** • **Complexity: Moderate**
+> **Evaluate prompt quality**
 
 [![MCP AI Agent Guidelines](https://img.shields.io/badge/MCP-AI_Agent_Guidelines-1a7f37?style=flat-square&logo=github)](../../README.md)
 [![Utilities](https://img.shields.io/badge/Category-Utilities-gray?style=flat-square)](./README.md#utilities)
 [![Documentation](https://img.shields.io/badge/📚-Docs-blue?style=flat-square)](../README.md)
-
----
-
-# prompting-hierarchy-evaluator
-
-> **Evaluate prompt quality**
 
 **Complexity**: ⭐⭐ Moderate | **Category**: Utilities | **Time to Learn**: 15-30 minutes
 
