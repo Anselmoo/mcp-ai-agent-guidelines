@@ -729,4 +729,474 @@ gem 'rails', '~> 7.0'
 			expect(text).toMatch(/test-project/);
 		});
 	});
+
+	describe("Coverage gaps - severity levels and error paths", () => {
+		it("reports critical issues with proper formatting", async () => {
+			// lodash versions before 4.17.21 have critical vulnerabilities
+			const packageJson = JSON.stringify({
+				name: "critical-test",
+				version: "1.0.0",
+				dependencies: {
+					lodash: "4.17.0",
+				},
+			});
+
+			const result = await dependencyAuditor({
+				dependencyContent: packageJson,
+				fileType: "package.json",
+				checkVulnerabilities: true,
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+			expect(text).toMatch(/Critical/i);
+			expect(text).toMatch(/lodash/i);
+		});
+
+		it("reports high severity issues", async () => {
+			// axios versions before 0.21.2 have high severity vulnerabilities
+			const packageJson = JSON.stringify({
+				name: "high-severity-test",
+				version: "1.0.0",
+				dependencies: {
+					axios: "0.21.0",
+				},
+			});
+
+			const result = await dependencyAuditor({
+				dependencyContent: packageJson,
+				fileType: "package.json",
+				checkVulnerabilities: true,
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+			expect(text).toMatch(/High|Prototype Pollution|Vulnerable/i);
+		});
+
+		it("reports info level issues for pre-1.0 versions", async () => {
+			const packageJson = JSON.stringify({
+				name: "info-test",
+				version: "1.0.0",
+				dependencies: {
+					"some-package": "0.5.0",
+				},
+			});
+
+			const result = await dependencyAuditor({
+				dependencyContent: packageJson,
+				fileType: "package.json",
+				checkOutdated: true,
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+			// Should detect pre-1.0 version
+			expect(text).toMatch(/Pre-1\.0|0\.5\.0/i);
+		});
+
+		it("handles legacy analysis for unrecognized JSON content", async () => {
+			// Content that looks like JSON but doesn't match any parser's pattern
+			const invalidJson = JSON.stringify({
+				name: "unknown-format",
+				version: "1.0.0",
+				// No dependencies, devDependencies, or peerDependencies
+			});
+
+			const result = await dependencyAuditor({
+				dependencyContent: invalidJson,
+				fileType: "auto",
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+			// Should fall back to legacy handling
+			expect(text).toMatch(/Audit Report|Error/i);
+		});
+
+		it("generates issues table with all severity levels", async () => {
+			const packageJson = JSON.stringify({
+				name: "multi-severity-test",
+				version: "1.0.0",
+				dependencies: {
+					lodash: "4.17.0", // Critical
+					"left-pad": "1.0.0", // Deprecated
+					moment: "2.29.0", // Bundle size concern
+				},
+				devDependencies: {
+					"some-dev-pkg": "0.1.0", // Pre-1.0
+				},
+			});
+
+			const result = await dependencyAuditor({
+				dependencyContent: packageJson,
+				fileType: "package.json",
+				checkVulnerabilities: true,
+				checkDeprecated: true,
+				checkOutdated: true,
+				analyzeBundleSize: true,
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+			expect(text).toMatch(/Issues Table/i);
+			expect(text).toMatch(/Package.*Version.*Type.*Severity.*Description/i);
+		});
+
+		it("includes metadata when requested", async () => {
+			const packageJson = JSON.stringify({
+				name: "metadata-test",
+				version: "2.0.0",
+				dependencies: {
+					express: "^4.18.0",
+				},
+			});
+
+			const result = await dependencyAuditor({
+				dependencyContent: packageJson,
+				fileType: "package.json",
+				includeReferences: false,
+				includeMetadata: true,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+			expect(text).toMatch(/Metadata/i);
+			expect(text).toMatch(/Source tool/i);
+			expect(text).toMatch(/Ecosystem.*javascript/i);
+		});
+
+		it("includes input file path in metadata when provided", async () => {
+			const packageJson = JSON.stringify({
+				name: "file-path-test",
+				version: "1.0.0",
+				dependencies: {
+					express: "^4.18.0",
+				},
+			});
+
+			const result = await dependencyAuditor({
+				dependencyContent: packageJson,
+				fileType: "package.json",
+				inputFile: "/path/to/package.json",
+				includeReferences: false,
+				includeMetadata: true,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+			expect(text).toMatch(/Input file.*\/path\/to\/package\.json/i);
+		});
+
+		it("handles vcpkg.json with build dependencies", async () => {
+			const vcpkgJson = JSON.stringify({
+				name: "cpp-project",
+				version: "1.0.0",
+				dependencies: ["boost-asio", { name: "fmt", "version>=": "9.0.0" }],
+				"default-features": true,
+			});
+
+			const result = await dependencyAuditor({
+				dependencyContent: vcpkgJson,
+				fileType: "vcpkg.json",
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+			expect(text).toMatch(/Ecosystem\s*\|\s*cpp/i);
+			expect(text).toMatch(/cpp-project/i);
+		});
+
+		it("handles Lua rockspec with dependencies", async () => {
+			const rockspec = `
+package = "my-lua-pkg"
+version = "2.0.0-1"
+
+source = {
+   url = "git://github.com/example/pkg"
+}
+
+dependencies = {
+   "lua >= 5.1",
+   "luasocket >= 3.0",
+}
+`;
+
+			const result = await dependencyAuditor({
+				dependencyContent: rockspec,
+				fileType: "rockspec",
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+			expect(text).toMatch(/Ecosystem\s*\|\s*lua/i);
+			expect(text).toMatch(/my-lua-pkg/i);
+		});
+
+		it("handles Go module with indirect dependencies", async () => {
+			const goMod = `
+module github.com/test/project
+
+go 1.21
+
+require (
+	github.com/gin-gonic/gin v1.9.1
+	github.com/stretchr/testify v1.8.4 // indirect
+	golang.org/x/crypto v0.14.0
+)
+`;
+
+			const result = await dependencyAuditor({
+				dependencyContent: goMod,
+				fileType: "go.mod",
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+			expect(text).toMatch(/Ecosystem\s*\|\s*go/i);
+			expect(text).toMatch(/github\.com\/test\/project/i);
+		});
+
+		it("handles Rust Cargo.toml with features", async () => {
+			const cargoToml = `
+[package]
+name = "rust-app"
+version = "0.2.0"
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+tokio = { version = "1.32", features = ["full"] }
+
+[dev-dependencies]
+criterion = "0.5"
+
+[build-dependencies]
+cc = "1.0"
+`;
+
+			const result = await dependencyAuditor({
+				dependencyContent: cargoToml,
+				fileType: "Cargo.toml",
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+			expect(text).toMatch(/Ecosystem\s*\|\s*rust/i);
+			expect(text).toMatch(/rust-app/i);
+			expect(text).toMatch(/Dev Dependencies\s*\|\s*1/i);
+		});
+
+		it("handles Ruby Gemfile with groups", async () => {
+			const gemfile = `
+source 'https://rubygems.org'
+
+gem 'rails', '~> 7.0'
+gem 'pg', '~> 1.4'
+
+group :development, :test do
+  gem 'rspec-rails', '~> 6.0'
+  gem 'factory_bot_rails'
+end
+
+group :development do
+  gem 'pry'
+end
+`;
+
+			const result = await dependencyAuditor({
+				dependencyContent: gemfile,
+				fileType: "Gemfile",
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+			expect(text).toMatch(/Ecosystem\s*\|\s*ruby/i);
+			expect(text).toMatch(/Dependencies\s*\|\s*2/i);
+		});
+
+		it("handles pyproject.toml with optional dependencies", async () => {
+			const pyproject = `
+[project]
+name = "my-python-app"
+version = "3.0.0"
+dependencies = [
+    "flask>=2.0.0",
+    "sqlalchemy>=1.4.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0.0", "black>=22.0.0"]
+docs = ["sphinx>=5.0.0"]
+`;
+
+			const result = await dependencyAuditor({
+				dependencyContent: pyproject,
+				fileType: "pyproject.toml",
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+			expect(text).toMatch(/Ecosystem\s*\|\s*python/i);
+			expect(text).toMatch(/my-python-app/i);
+			expect(text).toMatch(/3\.0\.0/i);
+		});
+
+		it("detects deprecated failure crate in Rust", async () => {
+			const cargoToml = `
+[package]
+name = "deprecated-test"
+version = "0.1.0"
+
+[dependencies]
+failure = "0.1.8"
+`;
+
+			const result = await dependencyAuditor({
+				dependencyContent: cargoToml,
+				fileType: "Cargo.toml",
+				checkDeprecated: true,
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+			expect(text).toMatch(/Deprecated|failure/i);
+		});
+
+		it("detects deprecated pkg/errors in Go", async () => {
+			const goMod = `
+module example.com/project
+
+go 1.20
+
+require github.com/pkg/errors v0.9.1
+`;
+
+			const result = await dependencyAuditor({
+				dependencyContent: goMod,
+				fileType: "go.mod",
+				checkDeprecated: true,
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+			expect(text).toMatch(/Deprecated|github\.com\/pkg\/errors/i);
+		});
+
+		it("detects deprecated coffee-rails in Ruby", async () => {
+			const gemfile = `
+source 'https://rubygems.org'
+
+gem 'rails', '~> 7.0'
+gem 'coffee-rails'
+`;
+
+			const result = await dependencyAuditor({
+				dependencyContent: gemfile,
+				fileType: "Gemfile",
+				checkDeprecated: true,
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+			expect(text).toMatch(/Deprecated|coffee-rails/i);
+		});
+
+		it("shows no issues message when all dependencies are healthy", async () => {
+			const packageJson = JSON.stringify({
+				name: "healthy-project",
+				version: "1.0.0",
+				dependencies: {
+					express: "^4.18.2",
+				},
+			});
+
+			const result = await dependencyAuditor({
+				dependencyContent: packageJson,
+				fileType: "package.json",
+				checkOutdated: false,
+				checkDeprecated: false,
+				checkVulnerabilities: false,
+				analyzeBundleSize: false,
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+			expect(text).toMatch(/No Issues Detected|healthy/i);
+		});
+
+		it("generates recommendations based on issues found", async () => {
+			const packageJson = JSON.stringify({
+				name: "recommendations-test",
+				version: "1.0.0",
+				dependencies: {
+					lodash: "4.17.0",
+					moment: "2.29.0",
+				},
+			});
+
+			const result = await dependencyAuditor({
+				dependencyContent: packageJson,
+				fileType: "package.json",
+				checkVulnerabilities: true,
+				analyzeBundleSize: true,
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+			expect(text).toMatch(/Recommendations/i);
+		});
+
+		it("includes ecosystem-specific references when requested", async () => {
+			const goMod = `
+module example.com/test
+
+go 1.20
+
+require github.com/gin-gonic/gin v1.9.1
+`;
+
+			const result = await dependencyAuditor({
+				dependencyContent: goMod,
+				fileType: "go.mod",
+				includeReferences: true,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+			expect(text).toMatch(/Further Reading|govulncheck/i);
+		});
+	});
 });
