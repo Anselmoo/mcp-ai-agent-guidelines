@@ -833,7 +833,7 @@ function inferParameterType(paramName) {
 /**
  * Generate smart parameter description based on parameter name and tool context
  */
-function generateParameterDescription(paramName, tool) {
+function generateParameterDescription(paramName, _tool) {
 	const descriptionMap = {
 		// Common parameters
 		context: "Broad context or domain background for the task",
@@ -1062,7 +1062,7 @@ function generateUseCases(tool) {
 		},
 	};
 
-	return useCaseMap[tool.category] || useCaseMap["Utilities"];
+	return useCaseMap[tool.category] || useCaseMap.Utilities;
 }
 
 /**
@@ -1167,7 +1167,7 @@ function generateTips(tool) {
 		},
 	};
 
-	return tipsMap[tool.category] || tipsMap["Utilities"];
+	return tipsMap[tool.category] || tipsMap.Utilities;
 }
 
 /**
@@ -1217,7 +1217,7 @@ function getRelatedDocs(tool) {
 		],
 	};
 
-	return docsMap[tool.category] || docsMap["Utilities"];
+	return docsMap[tool.category] || docsMap.Utilities;
 }
 
 /**
