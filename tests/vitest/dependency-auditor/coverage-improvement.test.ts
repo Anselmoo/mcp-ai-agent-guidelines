@@ -5,7 +5,6 @@
 import { describe, expect, it } from "vitest";
 import {
 	CppVcpkgParser,
-	DotNetCsprojParser,
 	GoModParser,
 	LuaRockspecParser,
 	PyRequirementsParser,
