@@ -10,7 +10,7 @@
 | Metric | Value |
 |---|---|
 | Project | mcp-ai-agent-guidelines |
-| Version | 0.10.1 |
+| Version | 0.10.2 |
 | Ecosystem | javascript |
 | Total Packages | 15 |
 | Dependencies | 6 |
