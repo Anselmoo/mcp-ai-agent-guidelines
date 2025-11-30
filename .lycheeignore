@@ -6,6 +6,10 @@
 ^https://httpbin\.org
 ^https://api\.example\.com
 
+# MCP resource URIs (custom protocol schemes used by MCP server, not HTTP links)
+^guidelines://
+^github://
+
 # GitHub container registry (may 404 if package is private or unpublished)
 # Generic pattern for all container registry links
 ^https://github\.com/.*\/pkgs\/container\/

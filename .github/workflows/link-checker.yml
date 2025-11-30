@@ -90,6 +90,10 @@ jobs:
             --accept 200,206,301,302,307,308,403,429
             --timeout 20
             --max-retries 3
+            --scheme 'https'
+            --scheme 'http'
+            --scheme 'file'
+            --scheme 'mailto'
             --exclude 'https://img.shields.io'
             --exclude 'https://insiders.vscode.dev'
             --exclude 'http://localhost'
