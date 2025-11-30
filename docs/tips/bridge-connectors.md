@@ -18,7 +18,7 @@
 **Related Guides:**
 
 - [Documentation Index](../README.md#documentation-index)
-- [Serena Integration](./FLOW_SERENA_INTEGRATION.md)
+- [Serena Integration](./flow-serena-integration.md)
 - [Contributing](../../CONTRIBUTING.md)
 
 </details>
@@ -359,8 +359,8 @@ const strategy = await strategyFrameworksBuilder({
 
 ## References
 
-- [Serena Strategies Documentation](./SERENA_STRATEGIES.md)
-- [Integration Summary](./SERENA_STRATEGIES.md)
+- [Serena Strategies Documentation](./serena-strategies.md)
+- [Integration Summary](./serena-strategies.md)
 - [Serena Repository](https://github.com/oraios/serena)
 ---
 

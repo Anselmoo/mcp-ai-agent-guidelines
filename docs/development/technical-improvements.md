@@ -234,8 +234,8 @@ When making similar improvements:
 For more information, see:
 
 - [Contributing Guidelines](../../CONTRIBUTING.md)
-- [Error Handling Guide](../tips/ERROR_HANDLING.md)
-- [Clean Code Initiative](../tips/CLEAN_CODE_INITIATIVE.md)
+- [Error Handling Guide](../tips/error-handling.md)
+- [Clean Code Initiative](../tips/clean-code-initiative.md)
 
 <!-- FOOTER:START -->
 ![Footer](../.frames-static/09-footer.svg)
@@ -246,13 +246,13 @@ For more information, see:
 ## 📚 Related Documentation
 
 **User Guides:**
-- [AI Interaction Tips](../tips/AI_INTERACTION_TIPS.md)
-- [Prompting Hierarchy](../tips/PROMPTING_HIERARCHY.md)
-- [Agent Patterns](../tips/AGENT_RELATIVE_CALLS.md)
-- [Flow Prompting](../tips/FLOW_PROMPTING_EXAMPLES.md)
+- [AI Interaction Tips](../tips/ai-interaction-tips.md)
+- [Prompting Hierarchy](../tips/prompting-hierarchy.md)
+- [Agent Patterns](../tips/agent-relative-calls.md)
+- [Flow Prompting](../tips/flow-prompting-examples.md)
 
 **Developer Resources:**
-- [Tools Reference](../tips/TOOLS_REFERENCE.md)
+- [Tools Reference](../tips/tools-reference.md)
 - [Contributing Guidelines](../../CONTRIBUTING.md)
 - [Documentation Index](../README.md)
 

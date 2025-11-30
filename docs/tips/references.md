@@ -125,12 +125,12 @@ Claude Flow pioneered declarative flow-based prompting and dynamic orchestration
 
 - Inspired our `prompt-flow-builder` tool with branching, loops, and conditional logic
 - Informed our `prompt-chaining-builder` design
-- Guided integration of flow-based patterns with Serena-style memory management (see [FLOW_SERENA_INTEGRATION.md](./FLOW_SERENA_INTEGRATION.md))
+- Guided integration of flow-based patterns with Serena-style memory management (see [flow-serena-integration.md](./flow-serena-integration.md))
 
 **Related Documentation:**
 
-- [FLOW_PROMPTING_EXAMPLES.md](./FLOW_PROMPTING_EXAMPLES.md) - Flow-based prompting examples
-- [FLOW_SERENA_INTEGRATION.md](./FLOW_SERENA_INTEGRATION.md) - Integration patterns
+- [flow-prompting-examples.md](./flow-prompting-examples.md) - Flow-based prompting examples
+- [flow-serena-integration.md](./flow-serena-integration.md) - Integration patterns
 
 ### [@oraios/serena](https://github.com/oraios/serena)
 
@@ -153,8 +153,8 @@ Serena's approach to semantic code analysis, project onboarding, and mode-based 
 
 **Related Documentation:**
 
-- [SERENA_STRATEGIES.md](./SERENA_STRATEGIES.md) - Serena-inspired strategies overview
-- [SERENA_INTEGRATION_SUMMARY.md](./SERENA_STRATEGIES.md) - Integration summary
+- [serena-strategies.md](./serena-strategies.md) - Serena-inspired strategies overview
+- [SERENA_INTEGRATION_SUMMARY.md](./serena-strategies.md) - Integration summary
 
 ### [@upstash/context7](https://github.com/upstash/context7)
 

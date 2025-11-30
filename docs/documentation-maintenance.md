@@ -53,19 +53,30 @@ npm run docs:fix-svg
 
 ## Naming Conventions
 
-### By Directory
+### Standardized Convention
+
+All documentation files must use **kebab-case** (lowercase, dash-separated) naming:
 
 | Directory | Convention | Example |
 |-----------|-----------|---------|
-| `docs/tips/` | SCREAMING_SNAKE_CASE | `AI_INTERACTION_TIPS.md` |
+| `docs/` (all directories) | kebab-case | `prompting-hierarchy.md` |
+| `docs/tips/` | kebab-case | `ai-interaction-tips.md` |
 | `docs/tools/` | kebab-case | `hierarchical-prompt-builder.md` |
-| `docs/` (root) | SCREAMING_SNAKE_CASE | `MODEL_MANAGEMENT.md` |
+| `docs/development/` | kebab-case | `interactive-frames.md` |
 | **Exception** | Any directory | `README.md` (always valid) |
 
 ### Rationale
 
-- **SCREAMING_SNAKE_CASE**: Used for high-level guides and conceptual documents
-- **kebab-case**: Used for technical tool documentation (matches tool names)
+- **Consistency**: All documentation uses the same naming convention for easier navigation
+- **URL-friendly**: kebab-case creates clean URLs without encoding issues
+- **Automation**: Naming convention is enforced via pre-commit hooks (see `lefthook.yml`)
+
+### Automated Enforcement
+
+The documentation naming convention is automatically checked:
+- **Pre-commit hook**: `docs-naming-check` runs `./lefthook/docs-naming-check.sh`
+- **Lint script**: `npm run docs:lint` validates naming conventions
+- Commits will fail if files use uppercase or underscore naming in docs directories
 
 ## Header/Footer Structure
 
@@ -154,7 +165,7 @@ mv design-guidelines.md DESIGN_GUIDELINES.md
 
 **Problem:**
 ```
-File: docs/EXPORT_FORMATS.md
+File: docs/export-formats.md
 Issue: Missing or incomplete header structure
 ```
 

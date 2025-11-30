@@ -87,22 +87,22 @@ Configuration is in `.mlc_config.json`. Ignored patterns and retries are configu
 
 ### Getting Started Guides
 
-- **[🎯 AI Interaction Tips](./docs/tips/AI_INTERACTION_TIPS.md)** - Learn to ask targeted questions for better results
-- **[📊 Prompting Hierarchy](./docs/tips/PROMPTING_HIERARCHY.md)** - Understanding prompt levels and evaluation
-- **[🔗 Agent-Relative Call Patterns](./docs/tips/AGENT_RELATIVE_CALLS.md)** - Invoking tools in workflows
+- **[🎯 AI Interaction Tips](./docs/tips/ai-interaction-tips.md)** - Learn to ask targeted questions for better results
+- **[📊 Prompting Hierarchy](./docs/tips/prompting-hierarchy.md)** - Understanding prompt levels and evaluation
+- **[🔗 Agent-Relative Call Patterns](./docs/tips/agent-relative-calls.md)** - Invoking tools in workflows
 
 ### Advanced Features
 
-- **[🌊 Flow-Based Prompting](./docs/tips/FLOW_PROMPTING_EXAMPLES.md)** - Multi-step prompt workflows
-- **[🎨 Mermaid Diagram Generation](./docs/tips/MERMAID_DIAGRAM_EXAMPLES.md)** - Create flowcharts, sequences, ER diagrams
-- **[🔍 Code Quality Analysis](./docs/tips/CODE_QUALITY_IMPROVEMENTS.md)** - Hygiene scoring and best practices
-- **[⚡ Sprint Planning](./docs/tips/SPRINT_PLANNING_RELIABILITY.md)** - Dependency-aware timeline calculation
+- **[🌊 Flow-Based Prompting](./docs/tips/flow-prompting-examples.md)** - Multi-step prompt workflows
+- **[🎨 Mermaid Diagram Generation](./docs/tips/mermaid-diagram-examples.md)** - Create flowcharts, sequences, ER diagrams
+- **[🔍 Code Quality Analysis](./docs/tips/code-quality-improvements.md)** - Hygiene scoring and best practices
+- **[⚡ Sprint Planning](./docs/tips/sprint-planning-reliability.md)** - Dependency-aware timeline calculation
 
 ### Integration & Reference
 
-- **[🏗️ Bridge Connectors](./docs/tips/BRIDGE_CONNECTORS.md)** - Integration patterns for external systems
-- **[🔄 Serena Integration](./docs/tips/SERENA_STRATEGIES.md)** - Semantic analysis strategies
-- **[📚 Complete Reference](./docs/tips/REFERENCES.md)** - Credits, research papers, and citations
+- **[🏗️ Bridge Connectors](./docs/tips/bridge-connectors.md)** - Integration patterns for external systems
+- **[🔄 Serena Integration](./docs/tips/serena-strategies.md)** - Semantic analysis strategies
+- **[📚 Complete Reference](./docs/tips/references.md)** - Credits, research papers, and citations
 
 See **[docs/README.md](./docs/README.md)** for the complete documentation index.
 
@@ -110,24 +110,24 @@ See **[docs/README.md](./docs/README.md)** for the complete documentation index.
 
 #### For Users
 
-- **[🎯 AI Interaction Tips](./docs/tips/AI_INTERACTION_TIPS.md)** - Learn to ask targeted questions for better results
-- **[📊 Prompting Hierarchy](./docs/tips/PROMPTING_HIERARCHY.md)** - Understanding prompt levels and evaluation
-- **[🔗 Agent-Relative Call Patterns](./docs/tips/AGENT_RELATIVE_CALLS.md)** - Invoking tools in workflows
-- **[🌊 Flow-Based Prompting](./docs/tips/FLOW_PROMPTING_EXAMPLES.md)** - Advanced chaining strategies
-- **[🎨 Mermaid Diagrams](./docs/tips/MERMAID_DIAGRAM_EXAMPLES.md)** - Visual diagram generation
+- **[🎯 AI Interaction Tips](./docs/tips/ai-interaction-tips.md)** - Learn to ask targeted questions for better results
+- **[📊 Prompting Hierarchy](./docs/tips/prompting-hierarchy.md)** - Understanding prompt levels and evaluation
+- **[🔗 Agent-Relative Call Patterns](./docs/tips/agent-relative-calls.md)** - Invoking tools in workflows
+- **[🌊 Flow-Based Prompting](./docs/tips/flow-prompting-examples.md)** - Advanced chaining strategies
+- **[🎨 Mermaid Diagrams](./docs/tips/mermaid-diagram-examples.md)** - Visual diagram generation
 
 #### For Developers
 
 - **[🤝 Contributing Guidelines](./CONTRIBUTING.md)** - How to contribute
-- **[✨ Clean Code Initiative](./docs/tips/CLEAN_CODE_INITIATIVE.md)** - Quality standards (100/100 scoring)
-- **[🔧 Technical Improvements](./docs/tips/TECHNICAL_IMPROVEMENTS.md)** - Refactoring and enhancements
-- **[⚠️ Error Handling](./docs/tips/ERROR_HANDLING.md)** - Best practices
-- **[🏗️ Bridge Connectors](./docs/tips/BRIDGE_CONNECTORS.md)** - Integration patterns
+- **[✨ Clean Code Initiative](./docs/tips/clean-code-initiative.md)** - Quality standards (100/100 scoring)
+- **[🔧 Technical Improvements](./docs/tips/technical-improvements.md)** - Refactoring and enhancements
+- **[⚠️ Error Handling](./docs/tips/error-handling.md)** - Best practices
+- **[🏗️ Bridge Connectors](./docs/tips/bridge-connectors.md)** - Integration patterns
 
 #### For Maintainers
 
-- **[📦 Export Formats Guide](./docs/EXPORT_FORMATS.md)** - LaTeX, CSV, JSON export options and chat integration
-- **[🤖 Model Management Guide](./docs/MODEL_MANAGEMENT.md)** - Managing AI model definitions in YAML
+- **[📦 Export Formats Guide](./docs/export-formats.md)** - LaTeX, CSV, JSON export options and chat integration
+- **[🤖 Model Management Guide](./docs/model-management.md)** - Managing AI model definitions in YAML
 
 See the **[complete documentation](./docs/README.md)** for the full list of guides organized by topic.
 
@@ -185,7 +185,7 @@ Demos are automatically regenerated when tool code changes via GitHub Actions.
 - ⭐⭐⭐⭐ **Expert** - Multi-phase workflows, deep domain knowledge (half day)
 - ⭐⭐⭐⭐⭐ **Master** - Enterprise-scale, comprehensive orchestration (1-2 days)
 
-**📖 [Complete Tools Reference](./docs/tips/TOOLS_REFERENCE.md)** - Detailed documentation with examples
+**📖 [Complete Tools Reference](./docs/tips/tools-reference.md)** - Detailed documentation with examples
 
 ---
 
@@ -368,7 +368,7 @@ Use the Playwright MCP to create and run automated accessibility tests.
 
 For complete documentation with 20+ detailed examples, workflow patterns, and best practices, see:
 
-📘 **[Agent-Relative Call Patterns Guide](./docs/tips/AGENT_RELATIVE_CALLS.md)**
+📘 **[Agent-Relative Call Patterns Guide](./docs/tips/agent-relative-calls.md)**
 
 This guide covers:
 
@@ -912,15 +912,15 @@ Contributions welcome! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guide
 ### Developer Resources
 
 - **[Complete Documentation](./docs/README.md)** - Full documentation index
-- **[Clean Code Standards](./docs/tips/CLEAN_CODE_INITIATIVE.md)** - Quality requirements and scoring
-- **[Error Handling Patterns](./docs/tips/ERROR_HANDLING.md)** - Best practices for error handling
-- **[Architecture Guide](./docs/tips/BRIDGE_CONNECTORS.md)** - System architecture and integration patterns
-- **[Type System Organization](./docs/tips/TYPE_ORGANIZATION_EXTENSION.md)** - TypeScript conventions
+- **[Clean Code Standards](./docs/tips/clean-code-initiative.md)** - Quality requirements and scoring
+- **[Error Handling Patterns](./docs/tips/error-handling.md)** - Best practices for error handling
+- **[Architecture Guide](./docs/tips/bridge-connectors.md)** - System architecture and integration patterns
+- **[Type System Organization](./docs/tips/type-organization-extension.md)** - TypeScript conventions
 
 ### Quality Standards
 
 - **TypeScript strict mode** - All code must pass type checking
-- **100% test coverage goal** - See [Clean Code Initiative](./docs/tips/CLEAN_CODE_INITIATIVE.md)
+- **100% test coverage goal** - See [Clean Code Initiative](./docs/tips/clean-code-initiative.md)
 - **Biome linting** - Code must pass `npm run quality`
 - **Git hooks** - Automated checks via Lefthook (see [lefthook.yml](./lefthook.yml))
 
@@ -932,7 +932,7 @@ MIT © Anselmoo — see [LICENSE](./LICENSE).
 
 ## References & Acknowledgments
 
-For a comprehensive list of references, research papers, and detailed attribution, see **[docs/tips/REFERENCES.md](./docs/tips/REFERENCES.md)**.
+For a comprehensive list of references, research papers, and detailed attribution, see **[docs/tips/references.md](./docs/tips/references.md)**.
 
 ### Key Acknowledgments
 
@@ -945,7 +945,7 @@ For a comprehensive list of references, research papers, and detailed attributio
 - **[@oraios/serena](https://github.com/oraios/serena)** - Influenced semantic analysis and mode switching
 - **All open-source contributors** whose work has shaped this project
 
-See [docs/tips/REFERENCES.md](./docs/tips/REFERENCES.md) for the complete list of research papers, projects, and inspirations.
+See [docs/tips/references.md](./docs/tips/references.md) for the complete list of research papers, projects, and inspirations.
 
 <!-- FOOTER:START -->
 ![Footer](docs/.frames-static/09-footer.svg)

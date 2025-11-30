@@ -54,6 +54,13 @@ pre-commit:
         done
       fail_text: "📄 JSON syntax errors found"
 
+    # --------------------------- 📄 Documentation Checks -------------------------- #
+    docs-naming-check:
+      tags: [docs, validate]
+      glob: "docs/**/*.md"
+      run: ./lefthook/docs-naming-check.sh
+      fail_text: "📄 Documentation files must use lowercase, dash-separated naming (kebab-case)"
+
     # ----------------------------- 📝 File Quality ---------------------------- #
     trailing-whitespace:
       tags: [format]

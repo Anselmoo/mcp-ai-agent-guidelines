@@ -18,7 +18,7 @@
 **Related Guides:**
 
 - [Design Guidelines](./design-guidelines.md)
-- [Design Assistant](./TOOLS_REFERENCE.md#design-assistant)
+- [Design Assistant](./tools-reference.md#design-assistant)
 - [Documentation Index](../README.md#documentation-index)
 
 </details>

@@ -198,9 +198,9 @@ graph LR
 <summary><strong>📚 Related Documentation</strong></summary>
 
 - [All Design & Workflow Tools](./README.md#design-workflow)
-- [Design Module Status](../tips/DESIGN_MODULE_STATUS.md)
-- [Mermaid Diagram Examples](../tips/MERMAID_DIAGRAM_EXAMPLES.md)
-- [AI Interaction Tips](../tips/AI_INTERACTION_TIPS.md)
+- [Design Module Status](../tips/design-module-status.md)
+- [Mermaid Diagram Examples](../tips/mermaid-diagram-examples.md)
+- [AI Interaction Tips](../tips/ai-interaction-tips.md)
 
 </details>
 
@@ -211,9 +211,9 @@ graph LR
 ## Related Documentation
 
 - [All Design & Workflow Tools](./README.md#design-workflow)
-- [Design Module Status](../tips/DESIGN_MODULE_STATUS.md)
-- [Mermaid Diagram Examples](../tips/MERMAID_DIAGRAM_EXAMPLES.md)
-- [AI Interaction Tips](../tips/AI_INTERACTION_TIPS.md)
+- [Design Module Status](../tips/design-module-status.md)
+- [Mermaid Diagram Examples](../tips/mermaid-diagram-examples.md)
+- [AI Interaction Tips](../tips/ai-interaction-tips.md)
 
 ---
 

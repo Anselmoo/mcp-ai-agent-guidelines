@@ -1179,42 +1179,42 @@ function getRelatedDocs(tool) {
 		"Prompt Builders": [
 			{
 				name: "Prompting Hierarchy Guide",
-				path: "../tips/PROMPTING_HIERARCHY.md",
+				path: "../tips/prompting-hierarchy.md",
 			},
 			{
 				name: "Flow Prompting Examples",
-				path: "../tips/FLOW_PROMPTING_EXAMPLES.md",
+				path: "../tips/flow-prompting-examples.md",
 			},
-			{ name: "AI Interaction Tips", path: "../tips/AI_INTERACTION_TIPS.md" },
+			{ name: "AI Interaction Tips", path: "../tips/ai-interaction-tips.md" },
 		],
 		"Code Analysis": [
 			{
 				name: "Clean Code Initiative",
-				path: "../tips/CLEAN_CODE_INITIATIVE.md",
+				path: "../tips/clean-code-initiative.md",
 			},
 			{
 				name: "Code Quality Improvements",
-				path: "../tips/CODE_QUALITY_IMPROVEMENTS.md",
+				path: "../tips/code-quality-improvements.md",
 			},
-			{ name: "AI Interaction Tips", path: "../tips/AI_INTERACTION_TIPS.md" },
+			{ name: "AI Interaction Tips", path: "../tips/ai-interaction-tips.md" },
 		],
 		"Strategy & Planning": [
 			{
 				name: "Sprint Planning Reliability",
-				path: "../tips/SPRINT_PLANNING_RELIABILITY.md",
+				path: "../tips/sprint-planning-reliability.md",
 			},
-			{ name: "AI Interaction Tips", path: "../tips/AI_INTERACTION_TIPS.md" },
+			{ name: "AI Interaction Tips", path: "../tips/ai-interaction-tips.md" },
 		],
 		"Design & Workflow": [
-			{ name: "Design Module Status", path: "../tips/DESIGN_MODULE_STATUS.md" },
+			{ name: "Design Module Status", path: "../tips/design-module-status.md" },
 			{
 				name: "Mermaid Diagram Examples",
-				path: "../tips/MERMAID_DIAGRAM_EXAMPLES.md",
+				path: "../tips/mermaid-diagram-examples.md",
 			},
-			{ name: "AI Interaction Tips", path: "../tips/AI_INTERACTION_TIPS.md" },
+			{ name: "AI Interaction Tips", path: "../tips/ai-interaction-tips.md" },
 		],
 		Utilities: [
-			{ name: "AI Interaction Tips", path: "../tips/AI_INTERACTION_TIPS.md" },
+			{ name: "AI Interaction Tips", path: "../tips/ai-interaction-tips.md" },
 		],
 	};
 

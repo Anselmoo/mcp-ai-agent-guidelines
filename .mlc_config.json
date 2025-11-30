@@ -1,6 +1,12 @@
 {
 	"ignorePatterns": [
 		{
+			"pattern": "^guidelines://"
+		},
+		{
+			"pattern": "^github://"
+		},
+		{
 			"pattern": "^docs/EXTERNAL_LINKS\\.md$"
 		},
 		{

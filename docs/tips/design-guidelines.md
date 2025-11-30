@@ -19,7 +19,7 @@
 
 - [Documentation Index](../README.md#documentation-index)
 - [Contributing](../../CONTRIBUTING.md)
-- [Design Module Status](./DESIGN_MODULE_STATUS.md)
+- [Design Module Status](./design-module-status.md)
 
 </details>
 
@@ -234,25 +234,25 @@ Use inline `style` attributes for all CSS (no external stylesheets):
 
 ### docs/ Files (19 files)
 
-1. ✅ `AI_INTERACTION_TIPS.md`
-2. ✅ `AGENT_RELATIVE_CALLS.md`
-3. ✅ `BRIDGE_CONNECTORS.md`
-4. ✅ `CLEAN_CODE_INITIATIVE.md`
-5. ✅ `CODE_QUALITY_IMPROVEMENTS.md`
-6. ✅ `CONTEXT_AWARE_GUIDANCE.md`
-7. ✅ `DESIGN_MODULE_STATUS.md`
-8. ✅ `ERROR_HANDLING.md`
-9. ✅ `EXPORT_FORMATS.md`
-10. ✅ `FLOW_PROMPTING_EXAMPLES.md`
-11. ✅ `FLOW_SERENA_INTEGRATION.md`
-12. ✅ `MAINTAINING_MODELS.md`
-13. ✅ `MERMAID_DIAGRAM_EXAMPLES.md`
-14. ✅ `PROMPTING_HIERARCHY.md`
+1. ✅ `ai-interaction-tips.md`
+2. ✅ `agent-relative-calls.md`
+3. ✅ `bridge-connectors.md`
+4. ✅ `clean-code-initiative.md`
+5. ✅ `code-quality-improvements.md`
+6. ✅ `context-aware-guidance.md`
+7. ✅ `design-module-status.md`
+8. ✅ `error-handling.md`
+9. ✅ `export-formats.md`
+10. ✅ `flow-prompting-examples.md`
+11. ✅ `flow-serena-integration.md`
+12. ✅ `maintaining-models.md`
+13. ✅ `mermaid-diagram-examples.md`
+14. ✅ `prompting-hierarchy.md`
 15. ✅ `README.md` (docs index)
-16. ✅ `REFERENCES.md`
-17. ✅ `SERENA_STRATEGIES.md`
-18. ✅ `SPRINT_PLANNING_RELIABILITY.md`
-19. ✅ `TOOLS_REFERENCE.md`
+16. ✅ `references.md`
+17. ✅ `serena-strategies.md`
+18. ✅ `sprint-planning-reliability.md`
+19. ✅ `tools-reference.md`
 
 ### docs/tools/ Files (In Progress)
 

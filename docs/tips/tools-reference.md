@@ -18,7 +18,7 @@
 **Related Guides:**
 
 - [Documentation Index](../README.md#documentation-index)
-- [AI Interaction Tips](./AI_INTERACTION_TIPS.md)
+- [AI Interaction Tips](./ai-interaction-tips.md)
 - [Contributing](../../CONTRIBUTING.md)
 
 </details>
@@ -830,8 +830,8 @@
 
 ## 🔗 See Also
 
-- **[AI Interaction Tips](./AI_INTERACTION_TIPS.md)** - How to ask targeted questions
-- **[Prompting Hierarchy](./PROMPTING_HIERARCHY.md)** - Understanding prompt levels
+- **[AI Interaction Tips](./ai-interaction-tips.md)** - How to ask targeted questions
+- **[Prompting Hierarchy](./prompting-hierarchy.md)** - Understanding prompt levels
 - **[Demos](../../demos/README.md)** - Real-world examples of each tool
 - **[Main README](../README.md)** - Installation and setup
 

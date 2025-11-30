@@ -18,7 +18,7 @@
 **Related Guides:**
 
 - [Documentation Index](../README.md#documentation-index)
-- [AI Interaction Tips](./AI_INTERACTION_TIPS.md)
+- [AI Interaction Tips](./ai-interaction-tips.md)
 - [Contributing](../../CONTRIBUTING.md)
 
 </details>
