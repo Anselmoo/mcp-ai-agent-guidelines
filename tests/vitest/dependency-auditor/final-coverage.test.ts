@@ -5,11 +5,9 @@
 import { describe, expect, it } from "vitest";
 import {
 	CppVcpkgParser,
-	DotNetCsprojParser,
 	detectParser,
 	GoModParser,
 	getParserForFileType,
-	JavaScriptPackageJsonParser,
 	LuaRockspecParser,
 	PyRequirementsParser,
 	PythonPyprojectParser,
