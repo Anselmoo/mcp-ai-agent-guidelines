@@ -17,7 +17,7 @@
 
 **Related Guides:**
 
-- [Sprint Timeline Calculator](./TOOLS_REFERENCE.md#sprint-timeline-calculator)
+- [Sprint Timeline Calculator](./tools-reference.md#sprint-timeline-calculator)
 - [Documentation Index](../README.md#documentation-index)
 - [Contributing](../../CONTRIBUTING.md)
 

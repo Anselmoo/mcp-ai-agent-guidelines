@@ -15,7 +15,7 @@
 
 **Related Guides:**
 
-- [AI Interaction Tips](./AI_INTERACTION_TIPS.md)
+- [AI Interaction Tips](./ai-interaction-tips.md)
 - [Hierarchical Prompt Builder](../tools/hierarchical-prompt-builder.md)
 - [Hierarchy Level Selector](../tools/hierarchy-level-selector.md)
 

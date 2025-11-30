@@ -96,6 +96,6 @@ All 47 SVG files in `docs/.frames-static/`:
 
 ## Related Documentation
 
-- [Documentation Maintenance Guide](./DOCUMENTATION_MAINTENANCE.md) - Full guide for doc consistency
+- [Documentation Maintenance Guide](./documentation-maintenance.md) - Full guide for doc consistency
 - `scripts/fix-svg-visibility.js` - Automated fix script
 - `scripts/lint-docs.js` - Documentation linter

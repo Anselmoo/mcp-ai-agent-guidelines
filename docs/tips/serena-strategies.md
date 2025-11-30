@@ -17,8 +17,8 @@
 
 **Related Guides:**
 
-- [Bridge Connectors](./BRIDGE_CONNECTORS.md)
-- [Semantic Code Analyzer](./TOOLS_REFERENCE.md#semantic-code-analyzer)
+- [Bridge Connectors](./bridge-connectors.md)
+- [Semantic Code Analyzer](./tools-reference.md#semantic-code-analyzer)
 - [Documentation Index](../README.md#documentation-index)
 
 </details>

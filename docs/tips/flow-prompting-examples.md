@@ -17,8 +17,8 @@
 
 **Related Guides:**
 
-- [Prompt Flow Builder](./TOOLS_REFERENCE.md#prompt-flow-builder)
-- [Prompt Chaining Builder](./TOOLS_REFERENCE.md#prompt-chaining-builder)
+- [Prompt Flow Builder](./tools-reference.md#prompt-flow-builder)
+- [Prompt Chaining Builder](./tools-reference.md#prompt-chaining-builder)
 - [Documentation Index](../README.md#documentation-index)
 
 </details>

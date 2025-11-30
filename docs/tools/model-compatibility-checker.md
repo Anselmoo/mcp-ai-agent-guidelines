@@ -175,7 +175,7 @@ _No directly related tools. Check the [Tools Overview](./README.md) for other op
 <summary><strong>📚 Related Documentation</strong></summary>
 
 - [All Utilities Tools](./README.md#utilities)
-- [AI Interaction Tips](../tips/AI_INTERACTION_TIPS.md)
+- [AI Interaction Tips](../tips/ai-interaction-tips.md)
 
 </details>
 
@@ -186,7 +186,7 @@ _No directly related tools. Check the [Tools Overview](./README.md) for other op
 ## Related Documentation
 
 - [All Utilities Tools](./README.md#utilities)
-- [AI Interaction Tips](../tips/AI_INTERACTION_TIPS.md)
+- [AI Interaction Tips](../tips/ai-interaction-tips.md)
 
 ---
 

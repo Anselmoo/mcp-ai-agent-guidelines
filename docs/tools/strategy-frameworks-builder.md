@@ -196,8 +196,8 @@ graph LR
 <summary><strong>📚 Related Documentation</strong></summary>
 
 - [All Strategy & Planning Tools](./README.md#strategy-planning)
-- [Sprint Planning Reliability](../tips/SPRINT_PLANNING_RELIABILITY.md)
-- [AI Interaction Tips](../tips/AI_INTERACTION_TIPS.md)
+- [Sprint Planning Reliability](../tips/sprint-planning-reliability.md)
+- [AI Interaction Tips](../tips/ai-interaction-tips.md)
 
 </details>
 
@@ -208,8 +208,8 @@ graph LR
 ## Related Documentation
 
 - [All Strategy & Planning Tools](./README.md#strategy-planning)
-- [Sprint Planning Reliability](../tips/SPRINT_PLANNING_RELIABILITY.md)
-- [AI Interaction Tips](../tips/AI_INTERACTION_TIPS.md)
+- [Sprint Planning Reliability](../tips/sprint-planning-reliability.md)
+- [AI Interaction Tips](../tips/ai-interaction-tips.md)
 
 ---
 

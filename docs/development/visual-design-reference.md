@@ -564,7 +564,7 @@ Following GitHub Primer responsive system:
   <p>
     <a href="../README.md">🏠 Home</a> • <a href="./README.md">📖 Docs</a> •
     <a href="../demos/README.md">🎯 Demos</a> •
-    <a href="./REFERENCES.md">📚 References</a>
+    <a href="./references.md">📚 References</a>
   </p>
 </div>
 <!-- END AUTO-GENERATED HEADER -->
@@ -584,8 +584,8 @@ Following GitHub Primer responsive system:
     <tr>
       <td align="center" width="33%">
         <strong>🎯 Getting Started</strong><br />
-        <a href="./AI_INTERACTION_TIPS.md">AI Tips</a> •
-        <a href="./PROMPTING_HIERARCHY.md">Hierarchy</a>
+        <a href="./ai-interaction-tips.md">AI Tips</a> •
+        <a href="./prompting-hierarchy.md">Hierarchy</a>
       </td>
       <td align="center" width="33%">
         <strong>🛠️ Tools & Features</strong><br />
@@ -593,7 +593,7 @@ Following GitHub Primer responsive system:
       </td>
       <td align="center" width="33%">
         <strong>📚 References</strong><br />
-        <a href="./REFERENCES.md">Credits</a> •
+        <a href="./references.md">Credits</a> •
         <a href="../DISCLAIMER.md">Disclaimer</a>
       </td>
     </tr>
@@ -718,7 +718,7 @@ Following GitHub Primer responsive system:
 ### Example 1: Tool Documentation Page
 
 ```markdown
-<!-- AI_INTERACTION_TIPS.md -->
+<!-- ai-interaction-tips.md -->
 
 <!-- BEGIN AUTO-GENERATED HEADER -->
 <div align="center">

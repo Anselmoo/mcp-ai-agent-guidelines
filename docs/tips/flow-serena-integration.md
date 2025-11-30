@@ -17,8 +17,8 @@
 
 **Related Guides:**
 
-- [Serena Strategies](./SERENA_STRATEGIES.md)
-- [Bridge Connectors](./BRIDGE_CONNECTORS.md)
+- [Serena Strategies](./serena-strategies.md)
+- [Bridge Connectors](./bridge-connectors.md)
 - [Documentation Index](../README.md#documentation-index)
 
 </details>
@@ -470,9 +470,9 @@ await modeSwitcher({
 
 ## Resources
 
-- [Flow-Based Prompting Examples](./FLOW_PROMPTING_EXAMPLES.md)
-- [Serena Strategies](./SERENA_STRATEGIES.md)
-- [Serena Integration Summary](./SERENA_STRATEGIES.md)
+- [Flow-Based Prompting Examples](./flow-prompting-examples.md)
+- [Serena Strategies](./serena-strategies.md)
+- [Serena Integration Summary](./serena-strategies.md)
 - [Claude Flow Architecture](https://github.com/ruvnet/claude-flow)
 - [Serena Project](https://github.com/oraios/serena)
 
