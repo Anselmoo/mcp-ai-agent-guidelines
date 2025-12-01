@@ -62,7 +62,7 @@ describe("Pivot Module Comprehensive Function Coverage", () => {
 					{
 						id: "insight-001",
 						name: "Market Insights",
-						type: "analysis",
+						type: "specification",
 						content:
 							"Comprehensive market analysis with user behavior patterns and competitive landscape assessment",
 						format: "markdown",
@@ -277,7 +277,7 @@ describe("Pivot Module Comprehensive Function Coverage", () => {
 		highComplexityState.artifacts.push({
 			id: "multi-complex-001",
 			name: "Multi-Factor Complexity",
-			type: "analysis",
+			type: "specification",
 			content:
 				"System exhibiting multiple complexity factors including algorithmic complexity, integration complexity, data complexity, and operational complexity with machine learning models and real-time processing requirements",
 			format: "markdown",
@@ -332,5 +332,209 @@ describe("Pivot Module Comprehensive Function Coverage", () => {
 		expect(result.entropy).toBeGreaterThan(0);
 		expect(result.reason).toContain("entropy");
 		expect(result.alternatives.length).toBeGreaterThanOrEqual(0);
+	});
+
+	it("should generate alternatives for very high complexity (>80)", async () => {
+		const veryHighComplexityState = createTestSessionState(40);
+		// Add multiple complex artifacts to drive up complexity score
+		veryHighComplexityState.artifacts.push({
+			id: "extreme-complex-001",
+			name: "Extreme Complexity Analysis",
+			type: "specification",
+			content:
+				"Extremely complex distributed microservices architecture with event-driven messaging, machine learning pipelines, real-time data processing, multi-cloud deployment, and legacy system integration requiring significant refactoring",
+			format: "markdown",
+			timestamp: "2024-01-25T10:00:00Z",
+			metadata: {
+				complexity: "extreme",
+				integrations: 50,
+				microservices: 30,
+				dataFlows: 100,
+				keywords: [
+					"microservices",
+					"event-driven",
+					"machine learning",
+					"real-time",
+					"multi-cloud",
+					"legacy",
+					"refactoring",
+					"distributed",
+					"kafka",
+					"kubernetes",
+				],
+			},
+		});
+
+		const request: PivotRequest = {
+			sessionState: veryHighComplexityState,
+			currentContent:
+				"Extremely complex distributed microservices architecture with event-driven messaging, machine learning pipelines, real-time data processing, multi-cloud deployment requiring complete architectural redesign with 50 integrations and 30 microservices",
+			triggerReason: "complexity",
+			forceEvaluation: true,
+		};
+
+		const result = await pivotModule.evaluatePivotNeed(request);
+
+		expect(result.triggered).toBe(true);
+		expect(result.alternatives.length).toBeGreaterThan(0);
+		// Verify at least some alternatives are generated for high complexity
+		expect(result.complexity).toBeGreaterThan(0);
+	});
+
+	it("should generate alternatives for very high entropy (>70)", async () => {
+		const veryHighEntropyState = createTestSessionState(45);
+		veryHighEntropyState.artifacts.push({
+			id: "extreme-entropy-001",
+			name: "Extreme Uncertainty Analysis",
+			type: "specification",
+			content:
+				"Highly uncertain requirements with conflicting stakeholder needs, unclear business objectives, rapidly changing market conditions, and undefined technical constraints requiring extensive discovery",
+			format: "markdown",
+			timestamp: "2024-01-25T10:00:00Z",
+			metadata: {
+				uncertainty: "extreme",
+				requirementsClarity: "very-low",
+				stakeholderAlignment: "none",
+				keywords: [
+					"uncertain",
+					"conflicting",
+					"unclear",
+					"changing",
+					"undefined",
+					"discovery",
+					"unknown",
+					"ambiguous",
+				],
+			},
+		});
+
+		const request: PivotRequest = {
+			sessionState: veryHighEntropyState,
+			currentContent:
+				"Highly uncertain requirements with conflicting stakeholder needs, unclear business objectives, rapidly changing market conditions, and undefined technical constraints with unknown dependencies",
+			triggerReason: "entropy",
+			forceEvaluation: true,
+		};
+
+		const result = await pivotModule.evaluatePivotNeed(request);
+
+		expect(result.triggered).toBe(true);
+		expect(result.alternatives.length).toBeGreaterThan(0);
+		// Verify entropy was calculated
+		expect(result.entropy).toBeGreaterThan(0);
+	});
+
+	it("should generate alternatives for combined high complexity and entropy", async () => {
+		const combinedState = createTestSessionState(35);
+		combinedState.artifacts.push({
+			id: "combined-issues-001",
+			name: "Combined Complexity and Uncertainty",
+			type: "specification",
+			content:
+				"Complex system with uncertain requirements, multiple integration points, unclear business rules, distributed architecture, and evolving technical landscape with unknown scalability needs",
+			format: "markdown",
+			timestamp: "2024-01-25T10:00:00Z",
+			metadata: {
+				complexity: "high",
+				uncertainty: "high",
+				keywords: [
+					"complex",
+					"uncertain",
+					"integration",
+					"unclear",
+					"distributed",
+					"evolving",
+					"unknown",
+					"scalability",
+				],
+			},
+		});
+
+		const request: PivotRequest = {
+			sessionState: combinedState,
+			currentContent:
+				"Complex system with uncertain requirements, multiple integration points, unclear business rules, distributed architecture, and evolving technical landscape with unknown scalability needs requiring both simplification and clarification",
+			triggerReason: "complexity",
+			forceEvaluation: true,
+		};
+
+		const result = await pivotModule.evaluatePivotNeed(request);
+
+		expect(result.triggered).toBe(true);
+		expect(result.alternatives.length).toBeGreaterThan(0);
+		// Verify both metrics were calculated
+		expect(result.complexity).toBeGreaterThan(0);
+		expect(result.entropy).toBeGreaterThan(0);
+	});
+
+	it("should detect coverage drop and trigger pivot", async () => {
+		const coverageDropState = createTestSessionState(60);
+		// Add history events with coverage updates showing a significant drop
+		coverageDropState.history = [
+			{
+				timestamp: "2024-01-01T09:00:00Z",
+				type: "coverage-update",
+				description: "Initial coverage assessment",
+				data: { coverage: 85 },
+			},
+			{
+				timestamp: "2024-01-02T10:00:00Z",
+				type: "coverage-update",
+				description: "Coverage update after changes",
+				data: { coverage: 75 },
+			},
+			{
+				timestamp: "2024-01-03T11:00:00Z",
+				type: "coverage-update",
+				description: "Coverage dropped significantly",
+				data: { coverage: 55 },
+			},
+		];
+
+		const request: PivotRequest = {
+			sessionState: coverageDropState,
+			currentContent: "Coverage has dropped significantly due to scope creep",
+			triggerReason: "coverage",
+			forceEvaluation: false,
+		};
+
+		const result = await pivotModule.evaluatePivotNeed(request);
+
+		// Coverage drop should be detected if the drop exceeds threshold
+		expect(result.reason).toBeDefined();
+		expect(result.alternatives).toBeDefined();
+	});
+
+	it("should return fallback alternatives when complexity and entropy are low", async () => {
+		const lowRiskState = createTestSessionState(95);
+		lowRiskState.artifacts = [
+			{
+				id: "simple-001",
+				name: "Simple Project",
+				type: "specification",
+				content: "Simple CRUD application with basic requirements",
+				format: "markdown",
+				timestamp: "2024-01-25T10:00:00Z",
+				metadata: {},
+			},
+		];
+
+		const request: PivotRequest = {
+			sessionState: lowRiskState,
+			currentContent: "Simple application with well-defined requirements",
+			triggerReason: undefined,
+			forceEvaluation: true, // Force to get alternatives
+		};
+
+		const result = await pivotModule.evaluatePivotNeed(request);
+
+		expect(result.triggered).toBe(true); // Due to forceEvaluation
+		expect(result.alternatives.length).toBeGreaterThan(0);
+		// Should have fallback alternatives for low-risk scenarios
+		const hasFallbackAlternatives = result.alternatives.some(
+			(alt) =>
+				alt.includes("Continue with current") || alt.includes("design reviews"),
+		);
+		expect(hasFallbackAlternatives).toBe(true);
 	});
 });

@@ -560,4 +560,184 @@ describe("dependency-auditor", () => {
 		expect(text).toMatch(/Known Vulnerabilities/i);
 		expect(text).toMatch(/axios/i);
 	});
+
+	it("handles peerDependencies", async () => {
+		const packageJson = JSON.stringify({
+			name: "test-project",
+			version: "1.0.0",
+			dependencies: {
+				express: "^4.18.0",
+			},
+			peerDependencies: {
+				react: "^18.0.0",
+				"react-dom": "^18.0.0",
+			},
+		});
+
+		const result = await dependencyAuditor({
+			packageJsonContent: packageJson,
+			includeReferences: false,
+			includeMetadata: false,
+		});
+
+		const text =
+			result.content[0].type === "text" ? result.content[0].text : "";
+		expect(text).toMatch(/Peer Dependencies\s*\|\s*2/);
+	});
+
+	it("suggests ESM alternatives for isomorphic-fetch", async () => {
+		const packageJson = JSON.stringify({
+			name: "test-project",
+			version: "1.0.0",
+			dependencies: {
+				"isomorphic-fetch": "^3.0.0",
+			},
+		});
+
+		const result = await dependencyAuditor({
+			packageJsonContent: packageJson,
+			suggestAlternatives: true,
+			includeReferences: false,
+			includeMetadata: false,
+		});
+
+		const text =
+			result.content[0].type === "text" ? result.content[0].text : "";
+		expect(text).toMatch(/ESM Alternative Available/i);
+		expect(text).toMatch(/native fetch/i);
+	});
+
+	it("suggests ESM alternatives for es6-promise", async () => {
+		const packageJson = JSON.stringify({
+			name: "test-project",
+			version: "1.0.0",
+			dependencies: {
+				"es6-promise": "^4.2.8",
+			},
+		});
+
+		const result = await dependencyAuditor({
+			packageJsonContent: packageJson,
+			suggestAlternatives: true,
+			includeReferences: false,
+			includeMetadata: false,
+		});
+
+		const text =
+			result.content[0].type === "text" ? result.content[0].text : "";
+		expect(text).toMatch(/ESM Alternative Available/i);
+		expect(text).toMatch(/native Promises/i);
+	});
+
+	it("suggests ESM alternatives for babel-polyfill", async () => {
+		const packageJson = JSON.stringify({
+			name: "test-project",
+			version: "1.0.0",
+			dependencies: {
+				"babel-polyfill": "^6.26.0",
+			},
+		});
+
+		const result = await dependencyAuditor({
+			packageJsonContent: packageJson,
+			suggestAlternatives: true,
+			includeReferences: false,
+			includeMetadata: false,
+		});
+
+		const text =
+			result.content[0].type === "text" ? result.content[0].text : "";
+		expect(text).toMatch(/ESM Alternative Available/i);
+		expect(text).toMatch(/core-js/i);
+	});
+
+	it("suggests ESM alternatives for @babel/polyfill", async () => {
+		const packageJson = JSON.stringify({
+			name: "test-project",
+			version: "1.0.0",
+			dependencies: {
+				"@babel/polyfill": "^7.12.1",
+			},
+		});
+
+		const result = await dependencyAuditor({
+			packageJsonContent: packageJson,
+			suggestAlternatives: true,
+			includeReferences: false,
+			includeMetadata: false,
+		});
+
+		const text =
+			result.content[0].type === "text" ? result.content[0].text : "";
+		expect(text).toMatch(/ESM Alternative Available/i);
+		expect(text).toMatch(/core-js/i);
+	});
+
+	it("detects core-js bundle size concern", async () => {
+		const packageJson = JSON.stringify({
+			name: "test-project",
+			version: "1.0.0",
+			dependencies: {
+				"core-js": "^3.30.0",
+			},
+		});
+
+		const result = await dependencyAuditor({
+			packageJsonContent: packageJson,
+			analyzeBundleSize: true,
+			includeReferences: false,
+			includeMetadata: false,
+		});
+
+		const text =
+			result.content[0].type === "text" ? result.content[0].text : "";
+		expect(text).toMatch(/Bundle Size Concern/i);
+		expect(text).toMatch(/core-js/i);
+	});
+
+	it("formats high severity issues correctly", async () => {
+		const packageJson = JSON.stringify({
+			name: "test-project",
+			version: "1.0.0",
+			dependencies: {
+				axios: "^0.19.0",
+			},
+		});
+
+		const result = await dependencyAuditor({
+			packageJsonContent: packageJson,
+			checkVulnerabilities: true,
+			includeReferences: false,
+			includeMetadata: false,
+		});
+
+		const text =
+			result.content[0].type === "text" ? result.content[0].text : "";
+		expect(text).toMatch(/🟠 High/i);
+		expect(text).toMatch(/Update.*high-priority/i);
+	});
+
+	it("counts and reports moderate issues", async () => {
+		const packageJson = JSON.stringify({
+			name: "test-project",
+			version: "1.0.0",
+			dependencies: {
+				lodash: "^4.17.15",
+				express: "*",
+			},
+		});
+
+		const result = await dependencyAuditor({
+			packageJsonContent: packageJson,
+			checkVulnerabilities: true,
+			checkOutdated: true,
+			includeReferences: false,
+			includeMetadata: false,
+		});
+
+		const text =
+			result.content[0].type === "text" ? result.content[0].text : "";
+		expect(text).toMatch(/🟡 Moderate/i);
+		expect(text).toMatch(/Review.*moderate concern/i);
+	});
 });
