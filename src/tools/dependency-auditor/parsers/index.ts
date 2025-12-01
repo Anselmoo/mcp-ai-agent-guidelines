@@ -23,6 +23,9 @@ export {
 } from "./python.js";
 export { RubyGemfileParser } from "./ruby.js";
 export { RustCargoParser } from "./rust.js";
+export { TsConfigParser, TypeScriptConfigParser } from "./typescript.js";
+export { UvLockParser } from "./uv.js";
+export { YarnLockParser } from "./yarn.js";
 
 import { CppVcpkgParser } from "./cpp.js";
 import { DotNetCsprojParser } from "./dotnet.js";
@@ -33,6 +36,9 @@ import { LuaRockspecParser } from "./lua.js";
 import { PythonPyprojectParser, PythonRequirementsParser } from "./python.js";
 import { RubyGemfileParser } from "./ruby.js";
 import { RustCargoParser } from "./rust.js";
+import { TypeScriptConfigParser } from "./typescript.js";
+import { UvLockParser } from "./uv.js";
+import { YarnLockParser } from "./yarn.js";
 
 /**
  * Parser Registry
@@ -40,13 +46,17 @@ import { RustCargoParser } from "./rust.js";
  * Order matters! More specific parsers should come first.
  * - JSON-based parsers first (they try JSON.parse and check specific keys)
  * - XML-based parsers next (csproj)
+ * - Lock file parsers (they have unique identifiers)
  * - Then format-specific parsers (they have unique identifiers)
  * - Python requirements parser last (it's the most permissive)
  */
 const parsers: DependencyParser[] = [
+	new TypeScriptConfigParser(), // JSON with compilerOptions/extends/references
 	new JavaScriptParser(), // JSON with dependencies/devDependencies
 	new CppVcpkgParser(), // JSON with dependencies but no devDependencies
 	new DotNetCsprojParser(), // XML with <Project> and <PackageReference>
+	new YarnLockParser(), // yarn.lock v1/v2 format
+	new UvLockParser(), // uv.lock TOML format with [[package]]
 	new RustCargoParser(), // TOML with [package] or [dependencies]
 	new PythonPyprojectParser(), // TOML with [project] or [tool.poetry]
 	new GoModParser(), // Has "module " and "require " or "go "

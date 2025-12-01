@@ -24,6 +24,10 @@ export {
 	PythonRequirementsParser,
 	RubyGemfileParser,
 	RustCargoParser,
+	TsConfigParser,
+	TypeScriptConfigParser,
+	UvLockParser,
+	YarnLockParser,
 } from "./parsers/index.js";
 
 // Export types

@@ -13,6 +13,10 @@ import {
 	PythonRequirementsParser,
 	RubyGemfileParser,
 	RustCargoParser,
+	TsConfigParser,
+	TypeScriptConfigParser,
+	UvLockParser,
+	YarnLockParser,
 } from "../../src/tools/dependency-auditor/index.js";
 
 describe("dependency-auditor parsers", () => {
@@ -111,6 +115,49 @@ dependencies = { "lua >= 5.1" }`;
 			expect(parser).toBeInstanceOf(LuaRockspecParser);
 		});
 
+		it("detects uv.lock", () => {
+			const content = `version = 1
+revision = 1
+requires-python = ">=3.9"
+
+[[package]]
+name = "requests"
+version = "2.31.0"`;
+			const parser = detectParser(content);
+			expect(parser).toBeInstanceOf(UvLockParser);
+		});
+
+		it("detects yarn.lock v1", () => {
+			const content = `# yarn lockfile v1
+
+lodash@^4.17.21:
+  version "4.17.21"
+  resolved "https://registry.npmjs.org/lodash/-/lodash-4.17.21.tgz"`;
+			const parser = detectParser(content);
+			expect(parser).toBeInstanceOf(YarnLockParser);
+		});
+
+		it("detects yarn.lock v2", () => {
+			const content = `__metadata:
+  version: 6
+
+"lodash@npm:^4.17.21":
+  version: 4.17.21`;
+			const parser = detectParser(content);
+			expect(parser).toBeInstanceOf(YarnLockParser);
+		});
+
+		it("detects tsconfig.json", () => {
+			const content = `{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs"
+  }
+}`;
+			const parser = detectParser(content);
+			expect(parser).toBeInstanceOf(TypeScriptConfigParser);
+		});
+
 		it("returns null for unknown format", () => {
 			const parser = detectParser("random text that is not a dependency file");
 			expect(parser).toBeNull();
@@ -134,6 +181,24 @@ dependencies = { "lua >= 5.1" }`;
 			const parser = getParserForFileType("Cargo.toml");
 			expect(parser).not.toBeNull();
 			expect(parser?.getEcosystem()).toBe("rust");
+		});
+
+		it("returns parser for uv.lock", () => {
+			const parser = getParserForFileType("uv.lock");
+			expect(parser).not.toBeNull();
+			expect(parser?.getEcosystem()).toBe("python");
+		});
+
+		it("returns parser for yarn.lock", () => {
+			const parser = getParserForFileType("yarn.lock");
+			expect(parser).not.toBeNull();
+			expect(parser?.getEcosystem()).toBe("javascript");
+		});
+
+		it("returns parser for tsconfig.json", () => {
+			const parser = getParserForFileType("tsconfig.json");
+			expect(parser).not.toBeNull();
+			expect(parser?.getEcosystem()).toBe("typescript");
 		});
 
 		it("returns null for unknown file type", () => {
