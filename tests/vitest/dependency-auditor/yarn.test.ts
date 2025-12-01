@@ -92,6 +92,26 @@ axios@^0.21.0:
 				result.content[0].type === "text" ? result.content[0].text : "";
 			expect(text).toMatch(/Known Vulnerabilities|axios/i);
 		});
+
+		it("detects moment.js deprecation", async () => {
+			const yarnLock = `# yarn lockfile v1
+
+moment@^2.29.0:
+  version "2.29.4"
+  resolved "https://registry.npmjs.org/moment/-/moment-2.29.4.tgz"
+  integrity sha512-xyz==
+`;
+			const result = await dependencyAuditor({
+				dependencyContent: yarnLock,
+				fileType: "yarn.lock",
+				checkDeprecated: true,
+				includeReferences: false,
+				includeMetadata: false,
+			});
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+			expect(text).toMatch(/Deprecated|moment|Bundle Size/i);
+		});
 	});
 
 	describe("yarn.lock v2 format", () => {

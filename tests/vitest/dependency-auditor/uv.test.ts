@@ -100,6 +100,72 @@ source = { registry = "https://pypi.org/simple" }
 		expect(text).toMatch(/Known Vulnerabilities|django/i);
 	});
 
+	it("detects requests vulnerabilities", async () => {
+		const uvLock = `version = 1
+revision = 1
+requires-python = ">=3.9"
+
+[[package]]
+name = "requests"
+version = "2.20.0"
+source = { registry = "https://pypi.org/simple" }
+`;
+		const result = await dependencyAuditor({
+			dependencyContent: uvLock,
+			fileType: "uv.lock",
+			checkVulnerabilities: true,
+			includeReferences: false,
+			includeMetadata: false,
+		});
+		const text =
+			result.content[0].type === "text" ? result.content[0].text : "";
+		expect(text).toMatch(/Known Vulnerabilities|requests/i);
+	});
+
+	it("detects Pillow vulnerabilities", async () => {
+		const uvLock = `version = 1
+revision = 1
+requires-python = ">=3.9"
+
+[[package]]
+name = "pillow"
+version = "8.4.0"
+source = { registry = "https://pypi.org/simple" }
+`;
+		const result = await dependencyAuditor({
+			dependencyContent: uvLock,
+			fileType: "uv.lock",
+			checkVulnerabilities: true,
+			includeReferences: false,
+			includeMetadata: false,
+		});
+		const text =
+			result.content[0].type === "text" ? result.content[0].text : "";
+		expect(text).toMatch(/Known Vulnerabilities|pillow/i);
+	});
+
+	it("detects urllib3 vulnerabilities", async () => {
+		const uvLock = `version = 1
+revision = 1
+requires-python = ">=3.9"
+
+[[package]]
+name = "urllib3"
+version = "1.25.0"
+source = { registry = "https://pypi.org/simple" }
+`;
+		const result = await dependencyAuditor({
+			dependencyContent: uvLock,
+			fileType: "uv.lock",
+			checkVulnerabilities: true,
+			includeReferences: false,
+			includeMetadata: false,
+		});
+		const text =
+			result.content[0].type === "text" ? result.content[0].text : "";
+		expect(text).toMatch(/Known Vulnerabilities|urllib3/i);
+	});
+
 	it("parses dependencies with extras", async () => {
 		const uvLock = `version = 1
 revision = 1
