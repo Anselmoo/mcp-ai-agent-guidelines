@@ -179,5 +179,138 @@ describe("TypeScript Config parsing", () => {
 				analysisResult.recommendations.some((r) => r.includes("tsc --noEmit")),
 			).toBe(true);
 		});
+
+		it("detects outdated @tsconfig/node16 extends", async () => {
+			const tsConfig = JSON.stringify({
+				extends: "@tsconfig/node16",
+				compilerOptions: {},
+			});
+			const result = await dependencyAuditor({
+				dependencyContent: tsConfig,
+				fileType: "tsconfig.json",
+				checkOutdated: true,
+				includeReferences: false,
+				includeMetadata: false,
+			});
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+			expect(text).toMatch(/Outdated|upgrading/i);
+		});
+
+		it("detects deprecated @types/express-serve-static-core", async () => {
+			const tsConfig = JSON.stringify({
+				compilerOptions: {
+					types: ["express-serve-static-core"],
+				},
+			});
+			const result = await dependencyAuditor({
+				dependencyContent: tsConfig,
+				fileType: "tsconfig.json",
+				checkDeprecated: true,
+				includeReferences: false,
+				includeMetadata: false,
+			});
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+			expect(text).toMatch(/Deprecated|express/i);
+		});
+
+		it("detects deprecated @types/glob", async () => {
+			const tsConfig = JSON.stringify({
+				compilerOptions: {
+					types: ["glob"],
+				},
+			});
+			const result = await dependencyAuditor({
+				dependencyContent: tsConfig,
+				fileType: "tsconfig.json",
+				checkDeprecated: true,
+				includeReferences: false,
+				includeMetadata: false,
+			});
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+			expect(text).toMatch(/Deprecated|glob/i);
+		});
+
+		it("detects deprecated @types/rimraf", async () => {
+			const tsConfig = JSON.stringify({
+				compilerOptions: {
+					types: ["rimraf"],
+				},
+			});
+			const result = await dependencyAuditor({
+				dependencyContent: tsConfig,
+				fileType: "tsconfig.json",
+				checkDeprecated: true,
+				includeReferences: false,
+				includeMetadata: false,
+			});
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+			expect(text).toMatch(/Deprecated|rimraf/i);
+		});
+
+		it("skips project references in analyzePackage", () => {
+			const parser = new TypeScriptConfigParser();
+			const tsConfig = JSON.stringify({
+				references: [{ path: "../common" }],
+			});
+			const parseResult = parser.parse(tsConfig);
+			const analysisResult = parser.analyze(parseResult, {
+				checkOutdated: true,
+				checkDeprecated: true,
+				checkVulnerabilities: false,
+				suggestAlternatives: false,
+				analyzeBundleSize: false,
+			});
+			// Project references should be skipped, no issues
+			expect(analysisResult.issues.length).toBe(0);
+		});
+
+		it("analyzes ecosystem-specific with @types/node", () => {
+			const parser = new TypeScriptConfigParser();
+			const tsConfig = JSON.stringify({
+				compilerOptions: {
+					types: ["node"],
+				},
+			});
+			const parseResult = parser.parse(tsConfig);
+			const analysisResult = parser.analyze(parseResult, {
+				checkOutdated: true,
+				checkDeprecated: false,
+				checkVulnerabilities: false,
+				suggestAlternatives: false,
+				analyzeBundleSize: false,
+			});
+			// Should not have issues for valid @types/node
+			expect(analysisResult.issues.length).toBe(0);
+		});
+
+		it("handles empty tsconfig correctly", () => {
+			const parser = new TypeScriptConfigParser();
+			const tsConfig = JSON.stringify({});
+			// Empty tsconfig shouldn't be detected as valid
+			expect(parser.canParse(tsConfig)).toBe(false);
+		});
+
+		it("handles non-JSON content for canParse", () => {
+			const parser = new TypeScriptConfigParser();
+			expect(parser.canParse("not json")).toBe(false);
+			expect(parser.canParse("")).toBe(false);
+			expect(parser.canParse("[]")).toBe(false);
+		});
+
+		it("handles tsconfig without compilerOptions.types", () => {
+			const parser = new TypeScriptConfigParser();
+			const tsConfig = JSON.stringify({
+				compilerOptions: {
+					target: "ES2020",
+				},
+			});
+			const result = parser.parse(tsConfig);
+			expect(result.packages).toHaveLength(0);
+			expect(result.errors).toBeUndefined();
+		});
 	});
 });

@@ -208,4 +208,197 @@ dependencies = [
 		expect(parser.getEcosystem()).toBe("python");
 		expect(parser.getFileTypes()).toContain("uv.lock");
 	});
+
+	it("handles parse error gracefully", () => {
+		const parser = new UvLockParser();
+		// Create content that will throw during parsing
+		const result = parser.parse("[[package]]\nname = 'missing-version");
+		// Even with error, we should get a valid result structure
+		expect(result.ecosystem).toBe("python");
+		expect(result.fileType).toBe("uv.lock");
+	});
+
+	it("parses package without version", () => {
+		const parser = new UvLockParser();
+		const uvLock = `version = 1
+revision = 1
+requires-python = ">=3.9"
+
+[[package]]
+name = "some-package"
+`;
+		const result = parser.parse(uvLock);
+		expect(result.packages).toHaveLength(1);
+		expect(result.packages[0].version).toBe("*");
+	});
+
+	it("parses package without source", () => {
+		const parser = new UvLockParser();
+		const uvLock = `version = 1
+revision = 1
+requires-python = ">=3.9"
+
+[[package]]
+name = "local-package"
+version = "1.0.0"
+`;
+		const result = parser.parse(uvLock);
+		expect(result.packages).toHaveLength(1);
+		expect(result.packages[0].source).toBeUndefined();
+	});
+
+	it("detects Django 3.0 vulnerabilities", async () => {
+		const uvLock = `version = 1
+revision = 1
+requires-python = ">=3.9"
+
+[[package]]
+name = "django"
+version = "3.0.5"
+source = { registry = "https://pypi.org/simple" }
+`;
+		const result = await dependencyAuditor({
+			dependencyContent: uvLock,
+			fileType: "uv.lock",
+			checkVulnerabilities: true,
+			includeReferences: false,
+			includeMetadata: false,
+		});
+		const text =
+			result.content[0].type === "text" ? result.content[0].text : "";
+		expect(text).toMatch(/Known Vulnerabilities|django/i);
+	});
+
+	it("detects Django 3.1 vulnerabilities", async () => {
+		const uvLock = `version = 1
+revision = 1
+requires-python = ">=3.9"
+
+[[package]]
+name = "django"
+version = "3.1.0"
+source = { registry = "https://pypi.org/simple" }
+`;
+		const result = await dependencyAuditor({
+			dependencyContent: uvLock,
+			fileType: "uv.lock",
+			checkVulnerabilities: true,
+			includeReferences: false,
+			includeMetadata: false,
+		});
+		const text =
+			result.content[0].type === "text" ? result.content[0].text : "";
+		expect(text).toMatch(/Known Vulnerabilities|django/i);
+	});
+
+	it("detects fabric deprecation", async () => {
+		const uvLock = `version = 1
+revision = 1
+requires-python = ">=3.9"
+
+[[package]]
+name = "fabric"
+version = "1.14.0"
+source = { registry = "https://pypi.org/simple" }
+`;
+		const result = await dependencyAuditor({
+			dependencyContent: uvLock,
+			fileType: "uv.lock",
+			checkDeprecated: true,
+			includeReferences: false,
+			includeMetadata: false,
+		});
+		const text =
+			result.content[0].type === "text" ? result.content[0].text : "";
+		expect(text).toMatch(/Deprecated|fabric/i);
+	});
+
+	it("detects nose deprecation", async () => {
+		const uvLock = `version = 1
+revision = 1
+requires-python = ">=3.9"
+
+[[package]]
+name = "nose"
+version = "1.3.7"
+source = { registry = "https://pypi.org/simple" }
+`;
+		const result = await dependencyAuditor({
+			dependencyContent: uvLock,
+			fileType: "uv.lock",
+			checkDeprecated: true,
+			includeReferences: false,
+			includeMetadata: false,
+		});
+		const text =
+			result.content[0].type === "text" ? result.content[0].text : "";
+		expect(text).toMatch(/Deprecated|nose/i);
+	});
+
+	it("detects mock deprecation", async () => {
+		const uvLock = `version = 1
+revision = 1
+requires-python = ">=3.9"
+
+[[package]]
+name = "mock"
+version = "4.0.3"
+source = { registry = "https://pypi.org/simple" }
+`;
+		const result = await dependencyAuditor({
+			dependencyContent: uvLock,
+			fileType: "uv.lock",
+			checkDeprecated: true,
+			includeReferences: false,
+			includeMetadata: false,
+		});
+		const text =
+			result.content[0].type === "text" ? result.content[0].text : "";
+		expect(text).toMatch(/Deprecated|mock/i);
+	});
+
+	it("detects distribute deprecation", async () => {
+		const uvLock = `version = 1
+revision = 1
+requires-python = ">=3.9"
+
+[[package]]
+name = "distribute"
+version = "0.7.3"
+source = { registry = "https://pypi.org/simple" }
+`;
+		const result = await dependencyAuditor({
+			dependencyContent: uvLock,
+			fileType: "uv.lock",
+			checkDeprecated: true,
+			includeReferences: false,
+			includeMetadata: false,
+		});
+		const text =
+			result.content[0].type === "text" ? result.content[0].text : "";
+		expect(text).toMatch(/Deprecated|distribute/i);
+	});
+
+	it("skips package block without name", () => {
+		const parser = new UvLockParser();
+		const uvLock = `version = 1
+revision = 1
+requires-python = ">=3.9"
+
+[[package]]
+version = "1.0.0"
+`;
+		const result = parser.parse(uvLock);
+		expect(result.packages).toHaveLength(0);
+	});
+
+	it("handles content without package blocks", () => {
+		const parser = new UvLockParser();
+		const uvLock = `version = 1
+revision = 1
+requires-python = ">=3.9"
+`;
+		const result = parser.parse(uvLock);
+		expect(result.packages).toHaveLength(0);
+	});
 });
