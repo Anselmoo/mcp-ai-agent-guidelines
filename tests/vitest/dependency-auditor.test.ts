@@ -26,7 +26,7 @@ describe("dependency-auditor", () => {
 			result.content[0].type === "text" ? result.content[0].text : "";
 		expect(text).toMatch(/Dependency Audit Report/);
 		expect(text).toMatch(/Summary/);
-		expect(text).toMatch(/Total Dependencies\s*\|\s*2/);
+		expect(text).toMatch(/Dependencies\s*\|\s*2/);
 		expect(text).toMatch(/Dev Dependencies\s*\|\s*2/);
 	});
 
@@ -255,7 +255,7 @@ describe("dependency-auditor", () => {
 		const text =
 			result.content[0].type === "text" ? result.content[0].text : "";
 		expect(text).toMatch(/Error/i);
-		expect(text).toMatch(/Invalid package\.json/i);
+		expect(text).toMatch(/Invalid content/i);
 	});
 
 	it("includes metadata when requested", async () => {
@@ -426,7 +426,7 @@ describe("dependency-auditor", () => {
 			result.content[0].type === "text" ? result.content[0].text : "";
 		expect(text).toMatch(/⚠️ Disclaimer/);
 		expect(text).toMatch(/static analysis/i);
-		expect(text).toMatch(/npm audit/i);
+		expect(text).toMatch(/ecosystem-specific tools|npm audit/i);
 		expect(text).toMatch(/test.*development environment/i);
 	});
 
@@ -444,7 +444,7 @@ describe("dependency-auditor", () => {
 
 		const text =
 			result.content[0].type === "text" ? result.content[0].text : "";
-		expect(text).toMatch(/Total Dependencies\s*\|\s*0/);
+		expect(text).toMatch(/Dependencies\s*\|\s*0/);
 		expect(text).toMatch(/No Issues Detected/i);
 	});
 

@@ -1,17 +1,22 @@
 ## 📦 Dependency Audit Report
 
 ### Metadata
-- Updated: 2025-11-30
+- Updated: 2025-12-01
 - Source tool: mcp_ai-agent-guid_dependency-auditor
+- Ecosystem: javascript
+- File type: package.json
 
 ### 📋 Summary
 | Metric | Value |
 |---|---|
 | Project | mcp-ai-agent-guidelines |
-| Version | 0.10.1 |
-| Total Dependencies | 6 |
+| Version | 0.10.2 |
+| Ecosystem | javascript |
+| Total Packages | 15 |
+| Dependencies | 6 |
 | Dev Dependencies | 9 |
 | Peer Dependencies | 0 |
+| Optional/Build | 0 |
 | Issues Found | 1 |
 | Critical | 0 |
 | High | 0 |
@@ -43,14 +48,12 @@
 *The following resources are provided for informational and educational purposes only. Their inclusion does not imply endorsement, affiliation, or guarantee of accuracy. Information may change over time; please verify current information with official sources.*
 
 - **[NPM Audit Official Guide](https://docs.npmjs.com/auditing-package-dependencies-for-security-vulnerabilities)**: Official documentation for auditing package dependencies
-- **[Understanding NPM Audit](https://www.niraj.life/blog/understanding-npm-audit-fixing-vulnerabilities-nodejs/)**: Practical guide to fixing vulnerabilities in Node.js projects
-- **[Dependency Tree Analysis](https://www.jit.io/resources/appsec-tools/guide-to-using-npm-audit-to-create-a-dependency-tree)**: Using npm audit to visualize and analyze dependency trees
-- **[Advanced Dependency Management](https://www.jit.io/resources/appsec-tools/guide-to-using-npm-audit-to-create-a-dependency-tree)**: Developer tutorial for comprehensive dependency scanning
+- **[NPM Security Best Practices](https://docs.npmjs.com/packages-and-modules/securing-your-code)**: Best practices for securing Node.js projects
 
 
 
 ### ⚠️ Disclaimer
 - This is a static analysis based on known patterns and common issues.
-- Run `npm audit` for real-time vulnerability scanning against the npm advisory database.
+- Use ecosystem-specific tools for real-time vulnerability scanning.
 - Always test dependency updates in a development environment before deploying to production.
 - This tool provides recommendations, but final decisions should be based on your specific project requirements.

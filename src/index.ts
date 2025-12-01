@@ -884,13 +884,38 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "dependency-auditor",
 				description:
-					"Analyze package.json for outdated, deprecated, or insecure packages and recommend modern, secure alternatives with ESM compatibility and bundle size insights. Use this MCP to audit project dependencies for security vulnerabilities and modernization opportunities. Example: 'Use the dependency-auditor MCP to check our package.json for security vulnerabilities and deprecated packages'",
+					"Multi-language dependency auditor for analyzing package files across multiple ecosystems including JavaScript/TypeScript (package.json), Python (requirements.txt, pyproject.toml), Go (go.mod), Rust (Cargo.toml), Ruby (Gemfile), C++ (vcpkg.json), and Lua (rockspec). Detects outdated, deprecated, or insecure packages and recommends modern, secure alternatives. Use this MCP to audit project dependencies for security vulnerabilities and modernization opportunities across polyglot codebases. Example: 'Use the dependency-auditor MCP to check our requirements.txt for security vulnerabilities and deprecated packages'",
 				inputSchema: {
 					type: "object",
 					properties: {
+						dependencyContent: {
+							type: "string",
+							description:
+								"Content of dependency file (package.json, requirements.txt, pyproject.toml, go.mod, Cargo.toml, Gemfile, vcpkg.json, or rockspec)",
+						},
 						packageJsonContent: {
 							type: "string",
-							description: "Content of package.json file",
+							description:
+								"Content of package.json file (deprecated: use dependencyContent)",
+						},
+						fileType: {
+							type: "string",
+							enum: [
+								"package.json",
+								"requirements.txt",
+								"pyproject.toml",
+								"pipfile",
+								"go.mod",
+								"Cargo.toml",
+								"Gemfile",
+								"vcpkg.json",
+								"conanfile.txt",
+								"rockspec",
+								"auto",
+							],
+							description:
+								"Type of dependency file. Use 'auto' for automatic detection based on content.",
+							default: "auto",
 						},
 						checkOutdated: {
 							type: "boolean",
@@ -909,12 +934,12 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						},
 						suggestAlternatives: {
 							type: "boolean",
-							description: "Suggest ESM-compatible alternatives",
+							description: "Suggest modern alternatives",
 							default: true,
 						},
 						analyzeBundleSize: {
 							type: "boolean",
-							description: "Analyze bundle size concerns",
+							description: "Analyze bundle size concerns (JavaScript only)",
 							default: true,
 						},
 						includeReferences: {
@@ -932,7 +957,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 							description: "Input file path for reference",
 						},
 					},
-					required: ["packageJsonContent"],
+					required: [],
 				},
 			},
 			{
