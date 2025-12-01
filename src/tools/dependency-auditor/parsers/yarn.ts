@@ -84,10 +84,13 @@ export class YarnLockParser extends BaseParser {
 		for (const block of blocks) {
 			if (!block.trim() || block.startsWith("#")) continue;
 
-			const headerMatch = block.match(
-				/^["']?([^@\s]+)@[^:]+["']?(?:,\s*["']?[^@\s]+@[^:]+["']?)*:/,
-			);
+			// Simplified pattern to avoid ReDoS - match first package name only
+			const headerMatch = block.match(/^["']?([^@\s]+)@[^:\s]+/);
 			if (!headerMatch) continue;
+
+			// Verify it ends with a colon (package definition)
+			const firstLine = block.split("\n")[0];
+			if (!firstLine.endsWith(":")) continue;
 
 			const packageName = headerMatch[1];
 			const versionMatch = block.match(/^\s*version\s+["']([^"']+)["']/m);
@@ -120,14 +123,15 @@ export class YarnLockParser extends BaseParser {
 			// Skip metadata and comments
 			if (line.startsWith("__metadata:") || line.startsWith("#")) continue;
 
-			// Match package entry header (quoted key with @npm: or @)
-			const headerMatch = line.match(
-				/^["']?([^@\s]+)@(?:npm:)?[^"'\s]+["']?(?:,\s*["']?[^@\s]+@[^"'\s]+["']?)*:$/,
-			);
-			if (headerMatch) {
-				currentPackage = headerMatch[1];
-				currentVersion = null;
-				continue;
+			// Simplified pattern to avoid ReDoS - match first package name only
+			// Must end with : and contain @npm: or just @
+			if (line.endsWith(":") && line.includes("@")) {
+				const headerMatch = line.match(/^["']?([^@\s]+)@/);
+				if (headerMatch) {
+					currentPackage = headerMatch[1];
+					currentVersion = null;
+					continue;
+				}
 			}
 
 			// Match version field
