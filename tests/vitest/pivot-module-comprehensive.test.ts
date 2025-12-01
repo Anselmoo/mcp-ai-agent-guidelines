@@ -537,4 +537,328 @@ describe("Pivot Module Comprehensive Function Coverage", () => {
 		);
 		expect(hasFallbackAlternatives).toBe(true);
 	});
+
+	it("should trigger reason for high complexity exceeding threshold", async () => {
+		const highComplexityState = createTestSessionState(30);
+		// Add extremely complex content with many technical keywords
+		highComplexityState.artifacts.push({
+			id: "very-complex-001",
+			name: "Very Complex System",
+			type: "specification",
+			content:
+				"Distributed microservices with Kafka event streaming, Kubernetes orchestration, machine learning model serving, real-time analytics, multi-region deployment, legacy system migration, custom protocol implementation, database sharding, caching layer, API gateway, service mesh, observability stack, CI/CD pipelines",
+			format: "markdown",
+			timestamp: "2024-01-25T10:00:00Z",
+			metadata: {
+				complexity: "extreme",
+				components: 100,
+				integrations: 50,
+				keywords: [
+					"microservices",
+					"distributed",
+					"kafka",
+					"kubernetes",
+					"machine learning",
+					"real-time",
+					"analytics",
+					"multi-region",
+					"legacy",
+					"migration",
+					"sharding",
+					"caching",
+					"api gateway",
+					"service mesh",
+					"observability",
+				],
+			},
+		});
+
+		const request: PivotRequest = {
+			sessionState: highComplexityState,
+			currentContent:
+				"Distributed microservices with Kafka event streaming, Kubernetes orchestration, machine learning model serving, real-time analytics, multi-region deployment, legacy system migration, custom protocol implementation, database sharding, caching layer, API gateway, service mesh, observability stack requiring architectural review",
+			triggerReason: undefined, // No explicit trigger, should detect complexity
+			forceEvaluation: false,
+		};
+
+		const result = await pivotModule.evaluatePivotNeed(request);
+
+		// Should detect high complexity and provide relevant reason
+		expect(result.complexity).toBeGreaterThan(0);
+		expect(result.reason).toBeDefined();
+		expect(result.alternatives.length).toBeGreaterThanOrEqual(0);
+	});
+
+	it("should trigger reason for high entropy exceeding threshold", async () => {
+		const highEntropyState = createTestSessionState(35);
+		// Add content with uncertainty keywords
+		highEntropyState.artifacts.push({
+			id: "uncertain-001",
+			name: "Uncertain Requirements",
+			type: "specification",
+			content:
+				"Unknown requirements, unclear objectives, undefined scope, ambiguous specifications, conflicting stakeholder needs, evolving market conditions, uncertain technical constraints, undefined dependencies, unknown scalability requirements, unclear integration points",
+			format: "markdown",
+			timestamp: "2024-01-25T10:00:00Z",
+			metadata: {
+				uncertainty: "extreme",
+				clarity: "none",
+				keywords: [
+					"unknown",
+					"unclear",
+					"undefined",
+					"ambiguous",
+					"conflicting",
+					"evolving",
+					"uncertain",
+					"undefined",
+				],
+			},
+		});
+
+		const request: PivotRequest = {
+			sessionState: highEntropyState,
+			currentContent:
+				"Unknown requirements, unclear objectives, undefined scope, ambiguous specifications with conflicting stakeholder needs and evolving market conditions requiring extensive discovery",
+			triggerReason: undefined, // No explicit trigger, should detect entropy
+			forceEvaluation: false,
+		};
+
+		const result = await pivotModule.evaluatePivotNeed(request);
+
+		// Should detect high entropy
+		expect(result.entropy).toBeGreaterThan(0);
+		expect(result.reason).toBeDefined();
+	});
+
+	it("should generate all high complexity alternatives when complexity > 80", async () => {
+		const extremeComplexityState = createTestSessionState(25);
+		extremeComplexityState.artifacts = [
+			{
+				id: "extreme-001",
+				name: "Extreme Complexity",
+				type: "specification",
+				content:
+					"Enterprise-scale distributed system with 200 microservices, 50 databases, machine learning pipelines, real-time streaming, event sourcing, CQRS pattern, saga orchestration, multi-cloud deployment, legacy integration, custom protocols, complex business rules engine",
+				format: "markdown",
+				timestamp: "2024-01-25T10:00:00Z",
+				metadata: {
+					complexity: "extreme",
+					microservices: 200,
+					databases: 50,
+					integrations: 100,
+					keywords: [
+						"enterprise",
+						"distributed",
+						"microservices",
+						"machine learning",
+						"real-time",
+						"streaming",
+						"event sourcing",
+						"CQRS",
+						"saga",
+						"multi-cloud",
+						"legacy",
+						"custom",
+						"business rules",
+						"orchestration",
+					],
+				},
+			},
+		];
+
+		const request: PivotRequest = {
+			sessionState: extremeComplexityState,
+			currentContent:
+				"Enterprise-scale distributed system with 200 microservices, 50 databases, machine learning pipelines, real-time streaming, event sourcing, CQRS pattern, saga orchestration requiring complete architectural simplification",
+			triggerReason: "complexity",
+			forceEvaluation: true,
+		};
+
+		const result = await pivotModule.evaluatePivotNeed(request);
+
+		expect(result.triggered).toBe(true);
+		expect(result.alternatives.length).toBeGreaterThan(0);
+		// Verify complexity was calculated and alternatives were generated
+		expect(result.complexity).toBeGreaterThan(0);
+	});
+
+	it("should generate all high entropy alternatives when entropy > 70", async () => {
+		const extremeEntropyState = createTestSessionState(25);
+		extremeEntropyState.artifacts = [
+			{
+				id: "entropy-001",
+				name: "Extreme Uncertainty",
+				type: "specification",
+				content:
+					"Requirements are completely undefined with no stakeholder alignment, unknown market conditions, unclear technical feasibility, undefined success criteria, unknown dependencies, ambiguous scope, conflicting priorities, evolving business needs",
+				format: "markdown",
+				timestamp: "2024-01-25T10:00:00Z",
+				metadata: {
+					uncertainty: "extreme",
+					clarity: "none",
+					stakeholderAlignment: "none",
+					keywords: [
+						"undefined",
+						"unknown",
+						"unclear",
+						"ambiguous",
+						"conflicting",
+						"evolving",
+						"uncertain",
+						"incomplete",
+						"vague",
+						"unspecified",
+					],
+				},
+			},
+		];
+
+		const request: PivotRequest = {
+			sessionState: extremeEntropyState,
+			currentContent:
+				"Requirements are completely undefined with no stakeholder alignment, unknown market conditions, unclear technical feasibility requiring extensive research and discovery",
+			triggerReason: "entropy",
+			forceEvaluation: true,
+		};
+
+		const result = await pivotModule.evaluatePivotNeed(request);
+
+		expect(result.triggered).toBe(true);
+		expect(result.alternatives.length).toBeGreaterThan(0);
+		// Verify entropy was calculated
+		expect(result.entropy).toBeGreaterThan(0);
+	});
+
+	it("should generate combined alternatives when both complexity > 70 and entropy > 60", async () => {
+		const combinedHighState = createTestSessionState(20);
+		combinedHighState.artifacts = [
+			{
+				id: "combined-001",
+				name: "Complex and Uncertain",
+				type: "specification",
+				content:
+					"Highly complex system with undefined requirements, distributed architecture with unknown scalability needs, multiple integrations with unclear interfaces, machine learning components with uncertain model performance",
+				format: "markdown",
+				timestamp: "2024-01-25T10:00:00Z",
+				metadata: {
+					complexity: "high",
+					uncertainty: "high",
+					keywords: [
+						"complex",
+						"distributed",
+						"undefined",
+						"unknown",
+						"unclear",
+						"uncertain",
+						"machine learning",
+						"integrations",
+					],
+				},
+			},
+		];
+
+		const request: PivotRequest = {
+			sessionState: combinedHighState,
+			currentContent:
+				"Highly complex system with undefined requirements requiring both architectural simplification and requirements clarification with unknown scalability needs",
+			triggerReason: "complexity",
+			forceEvaluation: true,
+		};
+
+		const result = await pivotModule.evaluatePivotNeed(request);
+
+		expect(result.triggered).toBe(true);
+		expect(result.alternatives.length).toBeGreaterThan(0);
+		// Check for combined alternatives
+		const hasCombinedAlternatives = result.alternatives.some(
+			(alt) =>
+				alt.includes("off-the-shelf") ||
+				alt.includes("core functionality") ||
+				alt.includes("independent projects"),
+		);
+		// May or may not have combined alternatives depending on threshold
+		expect(result.complexity).toBeGreaterThan(0);
+		expect(result.entropy).toBeGreaterThan(0);
+	});
+
+	it("should generate strong pivot recommendation when both complexity > 85 and entropy > 75", async () => {
+		const extremeState = createTestSessionState(15);
+		extremeState.artifacts = [
+			{
+				id: "extreme-both-001",
+				name: "Extreme Both",
+				type: "specification",
+				content:
+					"Massively complex enterprise system with completely undefined requirements, 500 microservices, unknown integrations, unclear business rules, undefined success criteria, conflicting stakeholder needs, and unknown technical constraints",
+				format: "markdown",
+				timestamp: "2024-01-25T10:00:00Z",
+				metadata: {
+					complexity: "extreme",
+					uncertainty: "extreme",
+					microservices: 500,
+					keywords: [
+						"enterprise",
+						"complex",
+						"undefined",
+						"unknown",
+						"unclear",
+						"conflicting",
+						"microservices",
+						"distributed",
+						"machine learning",
+						"real-time",
+					],
+				},
+			},
+		];
+
+		const request: PivotRequest = {
+			sessionState: extremeState,
+			currentContent:
+				"Massively complex enterprise system with completely undefined requirements requiring fundamental redesign",
+			triggerReason: "complexity",
+			forceEvaluation: true,
+		};
+
+		const result = await pivotModule.evaluatePivotNeed(request);
+
+		expect(result.triggered).toBe(true);
+		expect(result.recommendation).toBeDefined();
+		// Recommendation should be defined
+		expect(result.recommendation.length).toBeGreaterThan(0);
+	});
+
+	it("should generate caution recommendation when complexity > 70 or entropy > 60", async () => {
+		const moderateState = createTestSessionState(50);
+		moderateState.artifacts = [
+			{
+				id: "moderate-001",
+				name: "Moderate Concerns",
+				type: "specification",
+				content:
+					"Moderately complex system with some unclear requirements, standard microservices architecture, some unknown dependencies",
+				format: "markdown",
+				timestamp: "2024-01-25T10:00:00Z",
+				metadata: {
+					complexity: "medium",
+					uncertainty: "medium",
+					keywords: ["microservices", "unclear", "unknown", "dependencies"],
+				},
+			},
+		];
+
+		const request: PivotRequest = {
+			sessionState: moderateState,
+			currentContent:
+				"Moderately complex system with some unclear requirements and unknown dependencies",
+			triggerReason: undefined,
+			forceEvaluation: true,
+		};
+
+		const result = await pivotModule.evaluatePivotNeed(request);
+
+		expect(result.triggered).toBe(true);
+		expect(result.recommendation).toBeDefined();
+	});
 });

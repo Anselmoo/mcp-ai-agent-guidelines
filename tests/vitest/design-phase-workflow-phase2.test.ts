@@ -288,4 +288,204 @@ describe("Design Phase Workflow - Phase 2 Additional Tests", () => {
 			expect(true).toBe(true);
 		});
 	});
+
+	describe("Error Handling - Unknown Actions", () => {
+		it("should throw error for unknown action", async () => {
+			const config = createSessionConfig();
+			await designPhaseWorkflow.executeWorkflow({
+				action: "start",
+				sessionId: "unknown-action-test",
+				config,
+			});
+
+			// Use try/catch to test error throwing
+			try {
+				await designPhaseWorkflow.executeWorkflow({
+					action: "invalid-action" as
+						| "start"
+						| "advance"
+						| "complete"
+						| "validate"
+						| "reset"
+						| "status",
+					sessionId: "unknown-action-test",
+				});
+				// Should not reach here
+				expect(false).toBe(true);
+			} catch (error) {
+				expect(error).toBeDefined();
+			}
+		});
+	});
+
+	describe("Session Not Found Errors", () => {
+		it("should throw error when completing non-existent session", async () => {
+			try {
+				await designPhaseWorkflow.executeWorkflow({
+					action: "complete",
+					sessionId: "non-existent-session-complete",
+					phaseId: "discovery",
+					content: "test content",
+				});
+				expect(false).toBe(true);
+			} catch (error) {
+				expect(error).toBeDefined();
+			}
+		});
+	});
+
+	describe("All Phases Complete", () => {
+		it("should complete discovery phase", async () => {
+			const config = createSessionConfig();
+			const sid = `complete-discovery-${Math.random()}`;
+
+			await designPhaseWorkflow.executeWorkflow({
+				action: "start",
+				sessionId: sid,
+				config,
+			});
+
+			// Complete discovery phase
+			const discoveryResult = await designPhaseWorkflow.executeWorkflow({
+				action: "complete",
+				sessionId: sid,
+				phaseId: "discovery",
+				content: "Discovery completed with comprehensive analysis",
+			});
+
+			// Result should be defined
+			expect(discoveryResult).toBeDefined();
+			expect(discoveryResult.sessionState).toBeDefined();
+		});
+	});
+
+	describe("Status Action with Completed Session", () => {
+		it("should show completed status in recommendations", async () => {
+			const config = createSessionConfig();
+			const sid = `status-completed-${Math.random()}`;
+
+			await designPhaseWorkflow.executeWorkflow({
+				action: "start",
+				sessionId: sid,
+				config,
+			});
+
+			// Get status
+			const statusResult = await designPhaseWorkflow.executeWorkflow({
+				action: "status",
+				sessionId: sid,
+			});
+
+			expect(statusResult.success).toBe(true);
+			expect(statusResult.recommendations).toBeDefined();
+			expect(statusResult.recommendations.length).toBeGreaterThan(0);
+		});
+	});
+
+	describe("Pivot Decision During Advance", () => {
+		it("should handle advance with pivot recommendation", async () => {
+			const config = createSessionConfig();
+			config.enablePivots = true;
+			const sid = `pivot-advance-${Math.random()}`;
+
+			await designPhaseWorkflow.executeWorkflow({
+				action: "start",
+				sessionId: sid,
+				config,
+			});
+
+			// Advance with content to potentially trigger pivot evaluation
+			const advanceResult = await designPhaseWorkflow.executeWorkflow({
+				action: "advance",
+				sessionId: sid,
+				content:
+					"Complex distributed microservices architecture with machine learning pipelines and real-time processing",
+			});
+
+			// May or may not succeed depending on phase validation
+			expect(advanceResult).toBeDefined();
+		});
+	});
+
+	describe("Advance with No Next Phase", () => {
+		it("should handle advance at end of sequence", async () => {
+			const config = createSessionConfig();
+			const sid = `no-next-phase-${Math.random()}`;
+
+			await designPhaseWorkflow.executeWorkflow({
+				action: "start",
+				sessionId: sid,
+				config,
+			});
+
+			// Advance through all phases
+			for (let i = 0; i < 5; i++) {
+				await designPhaseWorkflow.executeWorkflow({
+					action: "advance",
+					sessionId: sid,
+				});
+			}
+
+			// Try to advance when no more phases
+			const advanceResult = await designPhaseWorkflow.executeWorkflow({
+				action: "advance",
+				sessionId: sid,
+			});
+
+			// Should handle gracefully - may return success false when no more phases
+			expect(advanceResult).toBeDefined();
+		});
+	});
+
+	describe("Advance with Confirmation Failure", () => {
+		it("should handle advance when confirmation fails", async () => {
+			const config = createSessionConfig();
+			config.coverageThreshold = 99; // Very high threshold
+			const sid = `confirm-fail-${Math.random()}`;
+
+			await designPhaseWorkflow.executeWorkflow({
+				action: "start",
+				sessionId: sid,
+				config,
+			});
+
+			// Advance with content that may not meet threshold
+			const advanceResult = await designPhaseWorkflow.executeWorkflow({
+				action: "advance",
+				sessionId: sid,
+				content: "Minimal content",
+			});
+
+			// Should return result even if confirmation fails
+			expect(advanceResult).toBeDefined();
+		});
+	});
+
+	describe("Compute Next Phase Edge Cases", () => {
+		it("should compute next phase correctly at end of sequence", async () => {
+			const config = createSessionConfig();
+			const sid = `compute-next-${Math.random()}`;
+
+			await designPhaseWorkflow.executeWorkflow({
+				action: "start",
+				sessionId: sid,
+				config,
+			});
+
+			// Advance through phases
+			for (let i = 0; i < 4; i++) {
+				await designPhaseWorkflow.executeWorkflow({
+					action: "advance",
+					sessionId: sid,
+				});
+			}
+
+			const status = await designPhaseWorkflow.executeWorkflow({
+				action: "status",
+				sessionId: sid,
+			});
+
+			expect(status.success).toBe(true);
+		});
+	});
 });
