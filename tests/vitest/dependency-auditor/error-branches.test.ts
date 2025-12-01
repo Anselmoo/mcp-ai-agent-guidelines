@@ -9,7 +9,6 @@ import {
 	GoModParser,
 	JavaScriptParser,
 	LuaRockspecParser,
-	PyRequirementsParser,
 	PythonPyprojectParser,
 	RubyGemfileParser,
 	RustCargoParser,
