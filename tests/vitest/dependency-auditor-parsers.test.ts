@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import {
-	BaseParser,
 	CppVcpkgParser,
 	DotNetCsprojParser,
 	detectParser,
@@ -13,7 +12,6 @@ import {
 	PythonRequirementsParser,
 	RubyGemfileParser,
 	RustCargoParser,
-	TsConfigParser,
 	TypeScriptConfigParser,
 	UvLockParser,
 	YarnLockParser,
