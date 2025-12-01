@@ -8,7 +8,7 @@ description: 'Enterprise Architect guidance for AI-Native Platform Transformatio
 ## 🧠 Enterprise Architect Prompt
 
 ### Metadata
-- Updated: 2025-11-30
+- Updated: 2025-12-01
 - Source tool: mcp_ai-agent-guid_enterprise-architect-prompt-builder
 - Suggested filename: ai-native-platform-transformation-enterprise-architect.prompt.md
 
