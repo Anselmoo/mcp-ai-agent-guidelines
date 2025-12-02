@@ -5,7 +5,25 @@ tools:
   - shell
   - read
   - search
-  - custom-agent
+  - runSubagent
+  - runTests
+  - ai-agent-guidelines/debugging-assistant-prompt-builder
+  - ai-agent-guidelines/semantic-code-analyzer
+  - serena/*
+  - sequentialthinking/*
+handoffs:
+  - label: Request Fix Implementation
+    agent: MCP-Tool-Builder
+    prompt: "Root cause identified. Please implement the fix based on the analysis."
+    send: false
+  - label: Request Test Coverage
+    agent: TDD-Workflow
+    prompt: "Bug identified. Please add regression tests before and after the fix."
+    send: false
+  - label: Request CI Investigation
+    agent: CI-Fixer
+    prompt: "Issue may be CI/CD related. Please investigate workflow failures."
+    send: false
 ---
 
 # Debugging Assistant Agent

@@ -4,7 +4,24 @@ description: OWASP compliance and security hardening checks using project patter
 tools:
   - read
   - search
-  - custom-agent
+  - runSubagent
+  - ai-agent-guidelines/security-hardening-prompt-builder
+  - ai-agent-guidelines/dependency-auditor
+  - serena/search_for_pattern
+  - fetch/*
+handoffs:
+  - label: Request Documentation
+    agent: Documentation-Generator
+    prompt: "Security audit passed. Please update documentation with security considerations."
+    send: false
+  - label: Request Changelog Update
+    agent: Changelog-Curator
+    prompt: "Security fixes applied. Please update CHANGELOG.md with security-related changes."
+    send: false
+  - label: Return for Security Fixes
+    agent: MCP-Tool-Builder
+    prompt: "Security vulnerabilities found. Please address the following security issues."
+    send: false
 ---
 
 # Security Auditor Agent

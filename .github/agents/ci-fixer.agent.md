@@ -1,12 +1,28 @@
 ---
 name: CI-Fixer
-description: Debug and repair CI/CD workflows using project patterns
+description: Debug and repair CI/CD workflows
 tools:
   - shell
   - read
   - edit
   - search
-  - custom-agent
+  - runSubagent
+  - runTests
+  - serena/search_for_pattern
+  - fetch/*
+handoffs:
+  - label: Request Test Implementation
+    agent: TDD-Workflow
+    prompt: "CI issue relates to tests. Please review and fix the test suite."
+    send: false
+  - label: Request Debugging
+    agent: Debugging-Assistant
+    prompt: "CI failure root cause unclear. Please perform deep analysis."
+    send: false
+  - label: Request Security Check
+    agent: Security-Auditor
+    prompt: "CI workflow may have security implications. Please audit."
+    send: false
 ---
 
 # CI Fixer Agent

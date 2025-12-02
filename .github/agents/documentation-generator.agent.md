@@ -5,7 +5,25 @@ tools:
   - read
   - edit
   - search
-  - custom-agent
+  - runSubagent
+  - ai-agent-guidelines/documentation-generator-prompt-builder
+  - ai-agent-guidelines/hierarchical-prompt-builder
+  - serena/get_symbols_overview
+  - serena/find_symbol
+  - context7/*
+handoffs:
+  - label: Request Changelog Update
+    agent: Changelog-Curator
+    prompt: "Documentation updated. Please update CHANGELOG.md with the documentation changes."
+    send: false
+  - label: Request Architecture Review
+    agent: Architecture-Advisor
+    prompt: "Documentation complete. Please review architecture documentation for accuracy."
+    send: false
+  - label: Return for Clarification
+    agent: MCP-Tool-Builder
+    prompt: "Documentation unclear. Please provide more context for the following sections."
+    send: false
 ---
 
 # Documentation Generator Agent

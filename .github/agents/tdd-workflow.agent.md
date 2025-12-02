@@ -6,7 +6,24 @@ tools:
   - read
   - edit
   - search
-  - custom-agent
+  - runTests
+  - runSubagent
+  - ai-agent-guidelines/clean-code-scorer
+  - ai-agent-guidelines/iterative-coverage-enhancer
+  - serena/*
+handoffs:
+  - label: Request Code Review
+    agent: Code-Reviewer
+    prompt: "Tests complete with 90%+ coverage. Please review code quality and clean code compliance."
+    send: false
+  - label: Request Security Audit
+    agent: Security-Auditor
+    prompt: "Implementation and tests complete. Please perform security audit for OWASP compliance."
+    send: false
+  - label: Return to Development
+    agent: MCP-Tool-Builder
+    prompt: "Tests failed. Please fix the failing tests and re-run."
+    send: false
 ---
 
 # TDD Workflow Agent

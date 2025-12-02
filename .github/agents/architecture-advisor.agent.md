@@ -4,7 +4,26 @@ description: Design pattern recommendations and ADR generation using project pat
 tools:
   - read
   - search
-  - custom-agent
+  - runSubagent
+  - ai-agent-guidelines/design-assistant
+  - ai-agent-guidelines/architecture-design-prompt-builder
+  - ai-agent-guidelines/mermaid-diagram-generator
+  - ai-agent-guidelines/gap-frameworks-analyzers
+  - serena/*
+  - sequentialthinking/*
+handoffs:
+  - label: Request Implementation
+    agent: MCP-Tool-Builder
+    prompt: "Architecture design complete. Please implement according to the ADR and specifications."
+    send: false
+  - label: Request Documentation
+    agent: Documentation-Generator
+    prompt: "Architecture decisions documented. Please update README and API docs accordingly."
+    send: false
+  - label: Request Code Review
+    agent: Code-Reviewer
+    prompt: "Please review existing code against the proposed architecture patterns."
+    send: false
 ---
 
 # Architecture Advisor Agent

@@ -6,7 +6,26 @@ tools:
   - read
   - edit
   - search
-  - custom-agent
+  - runTests
+  - runSubagent
+  - ai-agent-guidelines/*
+  - serena/*
+  - fetch/*
+  - context7/*
+  - sequentialthinking/*
+handoffs:
+  - label: Request Test Coverage
+    agent: TDD-Workflow
+    prompt: "Implementation complete. Please write comprehensive tests following Red-Green-Refactor cycle. Target: 90% coverage."
+    send: false
+  - label: Request Code Review
+    agent: Code-Reviewer
+    prompt: "Implementation complete. Please review for clean code patterns, TypeScript conventions, and quality metrics."
+    send: false
+  - label: Request Documentation
+    agent: Documentation-Generator
+    prompt: "Implementation complete. Please generate/update API documentation and JSDoc comments."
+    send: false
 ---
 
 # MCP Tool Builder Agent

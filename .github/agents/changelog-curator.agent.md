@@ -5,7 +5,17 @@ tools:
   - read
   - edit
   - search
-  - custom-agent
+  - runSubagent
+  - serena/search_for_pattern
+handoffs:
+  - label: Request PR Review
+    agent: Code-Reviewer
+    prompt: "Changelog updated. Please review the changes for completeness and accuracy."
+    send: false
+  - label: Request Documentation Sync
+    agent: Documentation-Generator
+    prompt: "Changelog updated. Please ensure documentation reflects the new changes."
+    send: false
 ---
 
 # Changelog Curator Agent

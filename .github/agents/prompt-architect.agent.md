@@ -1,10 +1,32 @@
 ---
 name: Prompt-Architect
-description: Prompt engineering and optimization specialist
+description: Prompt engineering and optimization using project MCP tools
 tools:
   - read
   - search
-  - custom-agent
+  - runSubagent
+  - ai-agent-guidelines/hierarchical-prompt-builder
+  - ai-agent-guidelines/prompt-flow-builder
+  - ai-agent-guidelines/prompt-chaining-builder
+  - ai-agent-guidelines/prompting-hierarchy-evaluator
+  - ai-agent-guidelines/hierarchy-level-selector
+  - ai-agent-guidelines/domain-neutral-prompt-builder
+  - ai-agent-guidelines/spark-prompt-builder
+  - ai-agent-guidelines/security-hardening-prompt-builder
+  - sequentialthinking/*
+handoffs:
+  - label: Request Tool Implementation
+    agent: MCP-Tool-Builder
+    prompt: "New prompt patterns designed. Please implement as MCP tools."
+    send: false
+  - label: Request Documentation
+    agent: Documentation-Generator
+    prompt: "Prompt patterns documented. Please update usage guides."
+    send: false
+  - label: Request Test Coverage
+    agent: TDD-Workflow
+    prompt: "New prompts ready. Please create test cases for the prompt builders."
+    send: false
 ---
 
 # Prompt Architect Agent

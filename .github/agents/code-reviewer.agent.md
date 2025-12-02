@@ -4,7 +4,26 @@ description: Quality review agent using project's clean-code-scorer patterns
 tools:
   - read
   - search
-  - custom-agent
+  - runSubagent
+  - ai-agent-guidelines/clean-code-scorer
+  - ai-agent-guidelines/code-hygiene-analyzer
+  - ai-agent-guidelines/semantic-code-analyzer
+  - serena/find_symbol
+  - serena/get_symbols_overview
+  - serena/search_for_pattern
+handoffs:
+  - label: Request Security Audit
+    agent: Security-Auditor
+    prompt: "Code review passed. Please perform security audit for OWASP compliance and vulnerability checks."
+    send: false
+  - label: Request Documentation
+    agent: Documentation-Generator
+    prompt: "Code review passed. Please update API documentation and JSDoc comments."
+    send: false
+  - label: Return for Fixes
+    agent: MCP-Tool-Builder
+    prompt: "Code review found issues. Please address the following concerns before re-review."
+    send: false
 ---
 
 # Code Reviewer Agent

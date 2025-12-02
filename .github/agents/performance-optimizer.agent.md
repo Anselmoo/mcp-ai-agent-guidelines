@@ -5,7 +5,27 @@ tools:
   - shell
   - read
   - search
-  - custom-agent
+  - runSubagent
+  - runTests
+  - ai-agent-guidelines/semantic-code-analyzer
+  - ai-agent-guidelines/clean-code-scorer
+  - ai-agent-guidelines/memory-context-optimizer
+  - serena/*
+  - playwright-mcp/*
+  - chrome-devtools-mcp/*
+handoffs:
+  - label: Request Implementation
+    agent: MCP-Tool-Builder
+    prompt: "Performance optimizations identified. Please implement the changes."
+    send: false
+  - label: Request Documentation
+    agent: Documentation-Generator
+    prompt: "Performance improvements complete. Please document the optimizations."
+    send: false
+  - label: Request Architecture Review
+    agent: Architecture-Advisor
+    prompt: "Performance issues may require architectural changes. Please advise."
+    send: false
 ---
 
 # Performance Optimizer Agent

@@ -4,7 +4,23 @@ description: Dependency management and security vulnerability monitoring
 tools:
   - read
   - search
-  - custom-agent
+  - runSubagent
+  - ai-agent-guidelines/dependency-auditor
+  - fetch/*
+  - context7/*
+handoffs:
+  - label: Request Security Audit
+    agent: Security-Auditor
+    prompt: "Dependency vulnerabilities found. Please perform deep security audit."
+    send: false
+  - label: Request Update Implementation
+    agent: MCP-Tool-Builder
+    prompt: "Dependencies need updating. Please implement the version bumps carefully."
+    send: false
+  - label: Request Changelog Update
+    agent: Changelog-Curator
+    prompt: "Dependency updates complete. Please document changes in CHANGELOG.md."
+    send: false
 ---
 
 # Dependency Guardian Agent
