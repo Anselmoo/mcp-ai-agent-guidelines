@@ -281,4 +281,143 @@ try {
 9. **Use zod for input validation** - ensure robust schema definitions for all tool inputs
 10. **Reuse singleton instances** - don't create new instances of shared services
 
+## 8. GitHub Copilot Coding Agent
+
+This section provides guidance specific to the autonomous **Copilot Coding Agent** running on GitHub.com in ephemeral GitHub Actions environments.
+
+### Custom Agents
+
+Specialized agents are available in `.github/agents/`. Invoke them using `@agent-name`:
+
+#### Core Development Agents
+- **`@mcp-tool-builder`** - Primary agent for creating and enhancing MCP tools following project patterns
+- **`@tdd-workflow`** - Test-driven development agent (Red → Green → Refactor)
+- **`@code-reviewer`** - Quality review using clean-code-scorer and code-hygiene-analyzer patterns
+
+#### Quality & Security Agents
+- **`@security-auditor`** - OWASP compliance checks and security hardening
+- **`@documentation-generator`** - API documentation and README updates
+- **`@architecture-advisor`** - Design pattern recommendations and ADR generation
+
+#### Automation Agents
+- **`@dependency-guardian`** - Dependency management and security vulnerability triage
+- **`@ci-fixer`** - Debug and fix failing CI/CD workflows
+- **`@changelog-curator`** - Maintain CHANGELOG.md following Keep a Changelog format
+
+#### Advanced Agents
+- **`@debugging-assistant`** - Root cause analysis and troubleshooting
+- **`@performance-optimizer`** - Performance analysis and bundle optimization
+- **`@prompt-architect`** - Prompt engineering and optimization
+
+### Multi-Agent Delegation
+
+**Important**: The `handoffs` property in agent frontmatter is **NOT supported** on the GitHub.com coding agent (only works in VS Code/IDE). Instead, use the **`custom-agent` tool** to delegate work between agents.
+
+#### Delegation Pattern
+
+When delegating to another agent, always provide:
+
+1. **Context**: Summary of completed work and current state
+2. **Files**: List of modified files with brief descriptions
+3. **Focus**: Specific task for the receiving agent to address
+
+#### Example Delegation
+
+```markdown
+After implementing a new MCP tool:
+
+Use the custom-agent tool to invoke @tdd-workflow with context:
+- Context: "Created new clean-code-scorer-v2 tool in src/tools/analysis/"
+- Files: ["src/tools/analysis/clean-code-scorer-v2.ts", "src/tools/analysis/index.ts"]
+- Focus: "Write comprehensive Vitest tests mirroring src/ structure, target 90% coverage"
+
+After tests pass:
+
+Use the custom-agent tool to invoke @code-reviewer with context:
+- Context: "Implemented clean-code-scorer-v2 with full test coverage"
+- Files: ["src/tools/analysis/clean-code-scorer-v2.ts", "tests/vitest/tools/analysis/clean-code-scorer-v2.spec.ts"]
+- Focus: "Review code quality, check for TypeScript strict mode compliance, validate against project patterns"
+```
+
+### MCP Servers Available
+
+This repository has two MCP servers configured in repository settings:
+
+#### Fetch Server
+- **Purpose**: Web content retrieval and up-to-date documentation lookup
+- **Tool**: `mcp_fetch_fetch` - Retrieve content from URLs, useful for checking latest library versions or API docs
+- **Command**: `uvx mcp-server-fetch`
+
+#### Serena Server (Semantic Code Analysis)
+- **Purpose**: Advanced code analysis, symbol management, and refactoring
+- **Tools**:
+  - `mcp_serena_find_symbol` - Find symbols by name path pattern
+  - `mcp_serena_get_symbols_overview` - Get overview of symbols in a file
+  - `mcp_serena_replace_symbol_body` - Replace symbol implementations safely
+  - `mcp_serena_find_referencing_symbols` - Find all usages of a symbol
+  - `mcp_serena_read_file` - Read file contents with semantic context
+  - `mcp_serena_list_dir` - List directory contents
+  - `mcp_serena_search_for_pattern` - Search codebase for patterns
+- **Command**: `uvx --from "git+https://github.com/oraios/serena" serena`
+- **Best for**: Large-scale refactoring, finding symbol references, understanding code structure
+
+#### When to Use MCP Tools
+
+- **Fetch**: When you need to check the latest documentation for libraries/APIs before making changes
+- **Serena**: When performing refactoring across multiple files, finding all usages of a function/class, or analyzing code structure before making architectural changes
+
+### Environment Configuration
+
+The coding agent environment is pre-configured via `.github/copilot-setup-steps.yml`:
+
+- **OS**: Ubuntu x64 (latest)
+- **Node.js**: 22.x with npm cache
+- **Python**: 3.12 (for MCP servers)
+- **Build**: Project is pre-built (`npm ci && npm run build`)
+- **MCP Servers**: Pre-cached (fetch, serena)
+
+### Tool Aliases
+
+The coding agent supports these tool aliases:
+
+| Alias | Maps To | Description |
+|-------|---------|-------------|
+| `shell` | `bash`/`powershell` | Execute shell commands |
+| `read` | `view` | Read file contents |
+| `edit` | `str_replace` | Edit files with string replacement |
+| `search` | `search` | Search files in the repository |
+| `custom-agent` | Agent invocation | **Critical for multi-agent delegation** |
+
+### Best Practices for Coding Agent
+
+1. **Delegate Appropriately**: Use specialized agents for their domain expertise rather than trying to do everything yourself
+2. **Provide Context**: When delegating, always include sufficient context about what was done and what needs to happen next
+3. **Leverage MCP**: Use `serena` for complex refactoring and `fetch` for documentation lookup
+4. **Follow Workflow**: Primary development → TDD → Code review → Security audit → Documentation
+5. **Pre-built Environment**: The project is already built, so you can immediately run tests and quality checks
+
+### Workflow Example
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant MCP as @mcp-tool-builder
+    participant TDD as @tdd-workflow
+    participant CR as @code-reviewer
+    participant SEC as @security-auditor
+    participant DOC as @documentation-generator
+
+    User->>MCP: Create new MCP tool
+    MCP->>MCP: Implement tool following patterns
+    MCP->>TDD: Delegate via custom-agent
+    TDD->>TDD: Write tests (90% coverage)
+    TDD->>CR: Delegate via custom-agent
+    CR->>CR: Review code quality
+    CR->>SEC: Delegate via custom-agent
+    SEC->>SEC: Security audit
+    SEC->>DOC: Delegate via custom-agent
+    DOC->>DOC: Update documentation
+    DOC->>User: Complete workflow
+```
+
 _If any of these instructions are unclear or seem incomplete, please ask for clarification!_
