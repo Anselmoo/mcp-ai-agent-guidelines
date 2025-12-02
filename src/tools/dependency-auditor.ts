@@ -43,6 +43,9 @@ const FileTypeEnum = z.enum([
 	"conanfile.txt",
 	"rockspec",
 	"csproj",
+	"uv.lock",
+	"yarn.lock",
+	"tsconfig.json",
 	"auto",
 ]);
 
@@ -624,6 +627,23 @@ function getEcosystemReferences(ecosystem: EcosystemType): ReferenceLink[] {
 				description: "Built-in vulnerability scanning for .NET",
 			},
 		],
+		typescript: [
+			{
+				title: "TypeScript Configuration",
+				url: "https://www.typescriptlang.org/tsconfig",
+				description: "Official TypeScript configuration documentation",
+			},
+			{
+				title: "DefinitelyTyped",
+				url: "https://github.com/DefinitelyTyped/DefinitelyTyped",
+				description: "TypeScript type definitions repository",
+			},
+			{
+				title: "TypeScript Strict Mode",
+				url: "https://www.typescriptlang.org/docs/handbook/2/basic-types.html#strictness",
+				description: "TypeScript strict mode documentation",
+			},
+		],
 	};
 
 	return refs[ecosystem] || [];
@@ -777,6 +797,7 @@ function formatMultiLangIssue(issue: MultiLangIssue): string {
 function getEcosystemEmoji(ecosystem: EcosystemType): string {
 	const emojis: Record<EcosystemType, string> = {
 		javascript: "📦",
+		typescript: "📘",
 		python: "🐍",
 		go: "🐹",
 		rust: "🦀",

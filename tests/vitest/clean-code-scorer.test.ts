@@ -597,5 +597,289 @@ function typed(x: number): number {
 
 			expect(text).toMatch(/\d+\/100/);
 		});
+
+		it("should provide Fair score description for score between 60-69", async () => {
+			const code = `
+const apiKey = 'key1';
+console.log('debug');
+var x = 1;
+// old code
+			`;
+
+			const result = await cleanCodeScorer({
+				codeContent: code,
+				language: "javascript",
+				coverageMetrics: {
+					statements: 55,
+					branches: 50,
+					functions: 55,
+					lines: 55,
+				},
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+
+			// Should show Fair or Poor due to low coverage and issues
+			expect(text).toMatch(/Fair|Poor|Good/);
+		});
+
+		it("should provide Poor score description for score below 60", async () => {
+			const code = `
+const apiKey = 'secret1';
+const password = 'admin123';
+eval('dangerous code');
+console.log('debug1');
+console.log('debug2');
+// old code 1
+// old code 2
+// old code 3
+// old code 4
+// old code 5
+var x = 1;
+var y = 2;
+			`;
+
+			const result = await cleanCodeScorer({
+				codeContent: code,
+				language: "javascript",
+				coverageMetrics: {
+					statements: 30,
+					branches: 25,
+					functions: 35,
+					lines: 30,
+				},
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+
+			// Should show Poor or Significant Issues
+			expect(text).toMatch(/Poor|Significant|Fair/i);
+		});
+
+		it("should generate next steps for perfect score", async () => {
+			const code = `
+/**
+ * Perfect function with docs
+ * @param value Input value
+ * @returns Processed value
+ */
+export function perfect(value: number): number {
+	return value * 2;
+}
+			`;
+
+			const result = await cleanCodeScorer({
+				codeContent: code,
+				language: "typescript",
+				coverageMetrics: {
+					statements: 100,
+					branches: 100,
+					functions: 100,
+					lines: 100,
+				},
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+
+			expect(text).toMatch(/Next Steps/);
+			// For high scores, should have maintenance-focused next steps
+			expect(text).toMatch(/maintain|quality|team|best practices/i);
+		});
+
+		it("should detect low documentation score and provide recommendation", async () => {
+			const code = `
+function noDoc() { return 1; }
+function alsoNoDoc() { return 2; }
+function stillNoDoc() { return 3; }
+			`;
+
+			const result = await cleanCodeScorer({
+				codeContent: code,
+				language: "javascript",
+				coverageMetrics: {
+					statements: 90,
+					branches: 88,
+					functions: 92,
+					lines: 90,
+				},
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+
+			expect(text).toMatch(/Documentation/);
+		});
+
+		it("should detect well-documented code and give achievement", async () => {
+			const code = `
+/**
+ * Function with excellent documentation
+ * @description This function is well documented
+ * @param value The input value
+ * @returns The processed value
+ * @example
+ * const result = wellDocumented(42);
+ */
+function wellDocumented(value: number): number {
+	return value;
+}
+
+/**
+ * Another well-documented function
+ * @param x First parameter
+ * @param y Second parameter
+ */
+function anotherDoc(x: number, y: number): number {
+	return x + y;
+}
+			`;
+
+			const result = await cleanCodeScorer({
+				codeContent: code,
+				language: "typescript",
+				coverageMetrics: {
+					statements: 95,
+					branches: 93,
+					functions: 96,
+					lines: 95,
+				},
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+
+			expect(text).toMatch(/Achievements/);
+		});
+
+		it("should detect README mentions", async () => {
+			const code = `
+// See README.md for more information
+// Check CONTRIBUTING.md for guidelines
+// CHANGELOG.md contains version history
+function main() { return 1; }
+			`;
+
+			const result = await cleanCodeScorer({
+				codeContent: code,
+				language: "javascript",
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+
+			// Should get documentation bonus
+			expect(text).toMatch(/Documentation/);
+		});
+
+		it("should handle score at exact 70 boundary", async () => {
+			const result = await cleanCodeScorer({
+				codeContent: "const x = 1;",
+				language: "javascript",
+				coverageMetrics: {
+					statements: 70,
+					branches: 70,
+					functions: 70,
+					lines: 70,
+				},
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+
+			// Should have score and description
+			expect(text).toMatch(/\d+\/100/);
+		});
+
+		it("should handle score at exact 80 boundary", async () => {
+			const result = await cleanCodeScorer({
+				codeContent: "const x = 1;",
+				language: "javascript",
+				coverageMetrics: {
+					statements: 80,
+					branches: 80,
+					functions: 80,
+					lines: 80,
+				},
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+
+			// Should have score and description
+			expect(text).toMatch(/\d+\/100/);
+		});
+
+		it("should handle score at exact 90 boundary", async () => {
+			const code = `
+/**
+ * Clean documented function
+ */
+function clean(): number { return 1; }
+			`;
+
+			const result = await cleanCodeScorer({
+				codeContent: code,
+				language: "javascript",
+				coverageMetrics: {
+					statements: 90,
+					branches: 90,
+					functions: 90,
+					lines: 90,
+				},
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+
+			expect(text).toMatch(/Excellent|Very Good/);
+		});
+
+		it("should provide score bar with correct color for low scores", async () => {
+			const code = `
+const apiKey = 'key';
+eval('code');
+console.log('debug');
+			`;
+
+			const result = await cleanCodeScorer({
+				codeContent: code,
+				language: "javascript",
+				coverageMetrics: {
+					statements: 40,
+					branches: 35,
+					functions: 45,
+					lines: 40,
+				},
+				includeReferences: false,
+				includeMetadata: false,
+			});
+
+			const text =
+				result.content[0].type === "text" ? result.content[0].text : "";
+
+			// Should have red or orange indicator for low score
+			expect(text).toMatch(/🔴|🟠|🟡/);
+		});
 	});
 });

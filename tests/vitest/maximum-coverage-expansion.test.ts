@@ -421,17 +421,5 @@ describe("Maximum Coverage Expansion", () => {
 			// confirmationModule.validateSessionState was removed as dead code during refactoring
 			expect(invalidState.config.sessionId).toBe("");
 		});
-
-		it.skip("should handle empty analysis requests", async () => {
-			// SKIPPED: gapFrameworksAnalyzers was removed as dead code during refactoring
-			// This test validates error handling for empty analysis frameworks
-			expect(true).toBe(true);
-		});
-
-		it.skip("should handle complex workflow transitions", async () => {
-			// SKIPPED: designPhaseWorkflow functions were removed as dead code during refactoring
-			// This test validates complex workflow state transitions and methodology selection
-			expect(true).toBe(true);
-		});
 	});
 });

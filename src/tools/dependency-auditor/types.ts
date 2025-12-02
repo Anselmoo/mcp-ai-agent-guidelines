@@ -17,6 +17,9 @@ export type PackageFileType =
 	| "conanfile.txt"
 	| "rockspec"
 	| "csproj"
+	| "uv.lock"
+	| "yarn.lock"
+	| "tsconfig.json"
 	| "auto";
 
 /**
@@ -24,6 +27,7 @@ export type PackageFileType =
  */
 export type EcosystemType =
 	| "javascript"
+	| "typescript"
 	| "python"
 	| "go"
 	| "rust"
