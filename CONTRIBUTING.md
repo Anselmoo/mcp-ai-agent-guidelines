@@ -21,6 +21,28 @@ For comprehensive development guidelines when using GitHub Copilot or other AI c
 - Include or update tests for behavior changes.
 - Keep docs current (README, demos/README).
 
+## 📄 Documentation Quality
+
+Documentation files in `docs/` are validated by `npm run docs:lint`:
+
+- **Naming**: Files must use kebab-case (e.g., `my-guide.md`)
+- **Headers/Footers**: Markdown files should have standard header/footer structure
+- **SVG visibility**: SVG images must support dark mode
+
+### Available Commands
+
+| Command | Purpose |
+|---------|---------|
+| `npm run docs:lint` | Validate all documentation (naming, headers, SVG) |
+| `npm run docs:lint:warn-only` | Validate without failing on issues |
+| `npm run docs:lint:naming-only` | Check only naming conventions |
+| `npm run docs:fix-svg` | Fix SVG dark mode visibility issues |
+| `npm run docs:generate-tool-docs` | Generate comprehensive tool documentation |
+
+These checks run automatically in:
+- **Pre-commit hooks** via lefthook (with `--warn-only` to show issues)
+- **CI workflow** via `lefthook-quality-gates.yml` (strict mode)
+
 ## Commit and PR
 
 - Use clear, conventional commit messages if possible.
