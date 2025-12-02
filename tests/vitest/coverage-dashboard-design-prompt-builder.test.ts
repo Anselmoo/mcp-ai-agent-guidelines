@@ -373,4 +373,342 @@ describe("Coverage Dashboard Design Prompt Builder", () => {
 		});
 		expect(highContrastResult.content[0].text).toContain("high-contrast");
 	});
+
+	// Additional tests for improved coverage
+
+	it("should handle forcePromptMdStyle: false to respect individual flags", async () => {
+		const result = await coverageDashboardDesignPromptBuilder({
+			forcePromptMdStyle: false,
+			includeFrontmatter: false,
+			includeMetadata: false,
+		});
+
+		// When forcePromptMdStyle is false and includeFrontmatter is false,
+		// frontmatter should not be included
+		expect(result.content[0].text).not.toMatch(/^---\n/);
+		expect(result.content[0].text).not.toContain("### Metadata");
+	});
+
+	it("should handle custom user personas with fallback to default description", async () => {
+		const result = await coverageDashboardDesignPromptBuilder({
+			targetUsers: ["custom-persona", "another-custom"],
+		});
+
+		expect(result.content[0].text).toContain(
+			"**custom-persona** - Custom user persona",
+		);
+		expect(result.content[0].text).toContain(
+			"**another-custom** - Custom user persona",
+		);
+	});
+
+	it("should handle team-leads and devops-engineers user personas", async () => {
+		const result = await coverageDashboardDesignPromptBuilder({
+			targetUsers: ["team-leads", "devops-engineers"],
+		});
+
+		expect(result.content[0].text).toContain("Team Leads");
+		expect(result.content[0].text).toContain("DevOps Engineers");
+	});
+
+	it("should handle custom metrics with fallback to default icon/label", async () => {
+		const result = await coverageDashboardDesignPromptBuilder({
+			primaryMetrics: ["custom-metric", "another-metric"],
+		});
+
+		// Custom metrics should use the default icon and the metric name as label
+		expect(result.content[0].text).toContain("📈 **custom-metric**");
+		expect(result.content[0].text).toContain("📈 **another-metric**");
+	});
+
+	it("should handle custom visual indicators with fallback to raw value", async () => {
+		const result = await coverageDashboardDesignPromptBuilder({
+			visualIndicators: ["custom-indicator", "gauge-charts", "trend-arrows"],
+		});
+
+		// Custom indicator falls back to raw value, known ones get descriptions
+		expect(result.content[0].text).toContain("custom-indicator");
+		expect(result.content[0].text).toContain("Circular gauge charts");
+		expect(result.content[0].text).toContain("Trend arrows");
+	});
+
+	it("should handle custom export formats with fallback to raw value", async () => {
+		const result = await coverageDashboardDesignPromptBuilder({
+			interactiveFeatures: {
+				exportOptions: ["PDF", "XLSX", "custom-format"],
+			},
+		});
+
+		expect(result.content[0].text).toContain("📄 PDF");
+		expect(result.content[0].text).toContain("📁 XLSX");
+		expect(result.content[0].text).toContain("📁 custom-format");
+	});
+
+	it("should handle HTML export format", async () => {
+		const result = await coverageDashboardDesignPromptBuilder({
+			interactiveFeatures: {
+				exportOptions: ["HTML"],
+			},
+		});
+
+		expect(result.content[0].text).toContain("🌐 HTML");
+	});
+
+	it("should handle accessibility options set to false", async () => {
+		const result = await coverageDashboardDesignPromptBuilder({
+			accessibility: {
+				colorBlindSafe: false,
+				keyboardNavigation: false,
+				screenReaderOptimized: false,
+				focusIndicators: false,
+				highContrastMode: false,
+			},
+		});
+
+		expect(result.content[0].text).toContain("Disabled");
+		expect(result.content[0].text).toContain("Limited");
+		expect(result.content[0].text).toContain("Basic");
+		expect(result.content[0].text).toContain("Browser default");
+		expect(result.content[0].text).toContain("Not included");
+	});
+
+	it("should handle responsive options set to false", async () => {
+		const result = await coverageDashboardDesignPromptBuilder({
+			responsive: {
+				mobileFirst: false,
+				touchOptimized: false,
+				collapsibleNavigation: false,
+			},
+		});
+
+		expect(result.content[0].text).toContain("Desktop-first");
+		expect(result.content[0].text).toContain("Standard");
+		expect(result.content[0].text).toContain("Fixed");
+	});
+
+	it("should handle interactive features set to false", async () => {
+		const result = await coverageDashboardDesignPromptBuilder({
+			interactiveFeatures: {
+				filters: false,
+				sorting: false,
+				search: false,
+				tooltips: false,
+				expandCollapse: false,
+				drillDown: false,
+				exportOptions: [],
+				realTimeUpdates: false,
+			},
+		});
+
+		// When all features are false, these should not appear
+		expect(result.content[0].text).not.toContain("🔍 **Filters**");
+		expect(result.content[0].text).not.toContain("↕️ **Sorting**");
+		expect(result.content[0].text).not.toContain("🔎 **Search**");
+		expect(result.content[0].text).not.toContain("💬 **Tooltips**");
+		expect(result.content[0].text).not.toContain("📂 **Expand/Collapse**");
+		expect(result.content[0].text).not.toContain("🔬 **Drill-down**");
+		expect(result.content[0].text).not.toContain("⚡ **Real-time Updates**");
+		expect(result.content[0].text).not.toContain("### Export Options");
+	});
+
+	it("should handle performance options set to false", async () => {
+		const result = await coverageDashboardDesignPromptBuilder({
+			performance: {
+				lazyLoading: false,
+				virtualScrolling: false,
+				dataCaching: false,
+				skeletonLoaders: false,
+				progressiveEnhancement: false,
+			},
+		});
+
+		// When all performance options are false, these should not appear
+		expect(result.content[0].text).not.toContain("⏳ **Lazy Loading**");
+		expect(result.content[0].text).not.toContain("📜 **Virtual Scrolling**");
+		expect(result.content[0].text).not.toContain("💾 **Data Caching**");
+		expect(result.content[0].text).not.toContain("🦴 **Skeleton Loaders**");
+		expect(result.content[0].text).not.toContain(
+			"🔄 **Progressive Enhancement**",
+		);
+	});
+
+	it("should handle heuristics compliance with some heuristics disabled", async () => {
+		const result = await coverageDashboardDesignPromptBuilder({
+			heuristicsCompliance: {
+				visibilityOfSystemStatus: false,
+				matchWithRealWorld: false,
+				userControlAndFreedom: true,
+				consistencyAndStandards: true,
+				errorPrevention: false,
+				recognitionOverRecall: true,
+				flexibilityAndEfficiency: false,
+				aestheticAndMinimalist: true,
+				helpUsersRecognizeErrors: false,
+				helpAndDocumentation: true,
+			},
+		});
+
+		// Disabled heuristics should show unchecked box
+		expect(result.content[0].text).toContain(
+			"### ⬜ Visibility of System Status",
+		);
+		expect(result.content[0].text).toContain("### ⬜ Match with Real World");
+		expect(result.content[0].text).toContain("### ⬜ Error Prevention");
+		expect(result.content[0].text).toContain(
+			"### ⬜ Flexibility and Efficiency",
+		);
+		expect(result.content[0].text).toContain(
+			"### ⬜ Help Users Recognize Errors",
+		);
+
+		// Enabled heuristics should show checked box
+		expect(result.content[0].text).toContain("### ✅ User Control and Freedom");
+		expect(result.content[0].text).toContain(
+			"### ✅ Consistency and Standards",
+		);
+		expect(result.content[0].text).toContain("### ✅ Recognition over Recall");
+		expect(result.content[0].text).toContain("### ✅ Aesthetic and Minimalist");
+		expect(result.content[0].text).toContain("### ✅ Help and Documentation");
+	});
+
+	it("should handle iteration cycle with all options disabled", async () => {
+		const result = await coverageDashboardDesignPromptBuilder({
+			iterationCycle: {
+				includeABTesting: false,
+				includeAnalytics: false,
+				includeFeedbackWidget: false,
+				includeUsabilityMetrics: false,
+			},
+		});
+
+		// When all iteration features are disabled, they should not appear
+		expect(result.content[0].text).not.toContain("🧪 **A/B Testing**");
+		expect(result.content[0].text).not.toContain(
+			"📊 **Analytics Integration**",
+		);
+		expect(result.content[0].text).not.toContain("💬 **Feedback Widget**");
+		expect(result.content[0].text).not.toContain("📈 **Usability Metrics**");
+	});
+
+	it("should handle useGradients set to false", async () => {
+		const result = await coverageDashboardDesignPromptBuilder({
+			useGradients: false,
+		});
+
+		expect(result.content[0].text).toContain("No - flat color scheme");
+	});
+
+	it("should handle sections without description", async () => {
+		const result = await coverageDashboardDesignPromptBuilder({
+			sections: [
+				{
+					sectionId: "test-section",
+					title: "Test Section",
+					collapsible: false,
+					defaultExpanded: false,
+				},
+			],
+		});
+
+		expect(result.content[0].text).toContain("Test Section");
+		expect(result.content[0].text).toContain("Collapsible: No");
+		expect(result.content[0].text).toContain("Default: Collapsed");
+	});
+
+	it("should handle sections with metrics without optional fields", async () => {
+		const result = await coverageDashboardDesignPromptBuilder({
+			sections: [
+				{
+					sectionId: "metrics-section",
+					title: "Metrics Section",
+					metrics: [
+						{
+							metricName: "Basic Metric",
+						},
+					],
+				},
+			],
+		});
+
+		expect(result.content[0].text).toContain("Basic Metric");
+		expect(result.content[0].text).toContain("percentage");
+		expect(result.content[0].text).toContain("medium");
+	});
+
+	it("should handle empty targetUsers array", async () => {
+		const result = await coverageDashboardDesignPromptBuilder({
+			targetUsers: [],
+		});
+
+		// Should still have the Target Users section header
+		expect(result.content[0].text).toContain("## 👥 Target Users");
+	});
+
+	it("should handle empty primaryMetrics array", async () => {
+		const result = await coverageDashboardDesignPromptBuilder({
+			primaryMetrics: [],
+		});
+
+		// Should still have the Primary Metrics Display section header
+		expect(result.content[0].text).toContain("### Primary Metrics Display");
+	});
+
+	it("should handle empty visualIndicators array", async () => {
+		const result = await coverageDashboardDesignPromptBuilder({
+			visualIndicators: [],
+		});
+
+		// Should still have the Visual Indicators section header
+		expect(result.content[0].text).toContain("### Visual Indicators");
+	});
+
+	it("should use projectContext in frontmatter description", async () => {
+		const result = await coverageDashboardDesignPromptBuilder({
+			projectContext: "Custom project context for testing",
+			title: "Test Dashboard",
+		});
+
+		// Project context should be used in the frontmatter description
+		expect(result.content[0].text).toContain(
+			"Custom project context for testing",
+		);
+	});
+
+	it("should handle all framework options", async () => {
+		const frameworks = ["vue", "angular", "svelte", "static"] as const;
+		for (const framework of frameworks) {
+			const result = await coverageDashboardDesignPromptBuilder({
+				framework,
+			});
+			expect(result.content[0].text).toContain(framework);
+		}
+	});
+
+	it("should handle responsive breakpoints configuration", async () => {
+		const result = await coverageDashboardDesignPromptBuilder({
+			responsive: {
+				breakpoints: {
+					mobile: "400px",
+					tablet: "800px",
+					desktop: "1200px",
+					largeDesktop: "1600px",
+				},
+			},
+		});
+
+		expect(result.content[0].text).toContain("400px");
+		expect(result.content[0].text).toContain("800px");
+		expect(result.content[0].text).toContain("1200px");
+		expect(result.content[0].text).toContain("1600px");
+	});
+
+	it("should handle WCAG level A", async () => {
+		const result = await coverageDashboardDesignPromptBuilder({
+			accessibility: {
+				wcagLevel: "A",
+			},
+		});
+
+		expect(result.content[0].text).toContain("WCAG A");
+	});
 });
