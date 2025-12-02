@@ -471,16 +471,6 @@ End-to-end tests: 70%
 				expect(rec.length).toBeGreaterThan(0);
 			});
 		});
-
-		it.skip("should validate minimum coverage requirements", async () => {
-			// Skipping this test as validateMinimumCoverage may not return currentCoverage in current implementation
-			const _sessionState = createBasicSessionState();
-
-			const result = { passed: true, coverage: 85 };
-			// REMOVED: await coverageEnforcer.validateMinimumCoverage(sessionState);
-
-			expect(result).toBeDefined();
-		});
 	});
 
 	describe("Documentation and Test Coverage Analysis", () => {
@@ -562,11 +552,6 @@ Comprehensive testing approach with automated test suites.
 	});
 
 	describe("Error Handling and Edge Cases", () => {
-		it.skip("should handle sessions with missing data gracefully", async () => {
-			// Skipping due to implementation details around phase.outputs access
-			// The test still exercises most of the coverage we want
-		});
-
 		it("should handle various content formats", async () => {
 			const sessionState = createBasicSessionState();
 			const contentVariations = [

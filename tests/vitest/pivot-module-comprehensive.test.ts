@@ -219,22 +219,6 @@ describe("Pivot Module Comprehensive Function Coverage", () => {
 		expect(result.reason).toBeDefined();
 	});
 
-	it.skip("should identify bottlenecks in system architecture", async () => {
-		// Function identifyBottlenecks was removed as dead code - not used in main application
-		const sessionState = createTestSessionState(70);
-
-		// Test skipped - function removed during dead code cleanup
-		expect(true).toBe(true);
-	});
-
-	it.skip("should recommend simplification strategies", async () => {
-		// Function recommendSimplification was removed as dead code - not used in main application
-		const complexSessionState = createTestSessionState(55);
-
-		// Test skipped - function removed during dead code cleanup
-		expect(true).toBe(true);
-	});
-
 	it("should handle low urgency pivot evaluation", async () => {
 		const sessionState = createTestSessionState(88); // High coverage
 
@@ -770,13 +754,6 @@ describe("Pivot Module Comprehensive Function Coverage", () => {
 
 		expect(result.triggered).toBe(true);
 		expect(result.alternatives.length).toBeGreaterThan(0);
-		// Check for combined alternatives
-		const hasCombinedAlternatives = result.alternatives.some(
-			(alt) =>
-				alt.includes("off-the-shelf") ||
-				alt.includes("core functionality") ||
-				alt.includes("independent projects"),
-		);
 		// May or may not have combined alternatives depending on threshold
 		expect(result.complexity).toBeGreaterThan(0);
 		expect(result.entropy).toBeGreaterThan(0);
