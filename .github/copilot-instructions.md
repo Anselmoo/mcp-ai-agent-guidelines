@@ -281,4 +281,89 @@ try {
 9. **Use zod for input validation** - ensure robust schema definitions for all tool inputs
 10. **Reuse singleton instances** - don't create new instances of shared services
 
+## 8. GitHub Copilot Coding Agent
+
+This section provides guidance specific to the autonomous Copilot Coding Agent running on GitHub.com.
+
+### Custom Agents
+
+Specialized agents are available in `.github/agents/`. Invoke with `@agent-name`:
+
+**Core Development:**
+- `@mcp-tool-builder` - Primary development agent for creating and enhancing MCP tools
+- `@tdd-workflow` - Test-driven development with Red-Green-Refactor cycle
+- `@code-reviewer` - Quality review using clean-code-scorer patterns
+
+**Quality & Security:**
+- `@security-auditor` - OWASP compliance and security hardening checks
+- `@documentation-generator` - API documentation and README updates
+- `@architecture-advisor` - Design pattern recommendations and ADR generation
+- `@debugging-assistant` - Root cause analysis and troubleshooting
+
+**Automation:**
+- `@dependency-guardian` - Monitor dependencies and security vulnerabilities
+- `@changelog-curator` - Maintain CHANGELOG.md in Keep a Changelog format
+- `@ci-fixer` - Debug and repair CI/CD workflows
+- `@performance-optimizer` - Performance analysis and bundle optimization
+- `@prompt-architect` - Prompt engineering and optimization
+
+### Multi-Agent Delegation
+
+Use the `custom-agent` tool to delegate work between agents (NOT `handoffs` - that's IDE-only). Always provide:
+
+1. **Context**: Summary of completed work
+2. **Files**: List of modified files
+3. **Focus**: Specific task for receiving agent
+
+**Example delegation pattern:**
+```markdown
+When implementation complete and tests pass:
+1. Use `custom-agent` to invoke `@code-reviewer` for quality analysis
+2. After review passes, use `custom-agent` to invoke `@documentation-generator`
+```
+
+### MCP Servers Available
+
+This repository has two MCP servers configured for enhanced capabilities:
+
+**fetch** - Web content retrieval
+- Tool: `mcp_fetch_fetch`
+- Use case: Retrieve up-to-date documentation, check library versions
+
+**serena** - Semantic code analysis and manipulation
+- `mcp_serena_find_symbol` - Find symbols by name path
+- `mcp_serena_get_symbols_overview` - Overview of file symbols
+- `mcp_serena_replace_symbol_body` - Replace symbol implementations
+- `mcp_serena_find_referencing_symbols` - Find all symbol usages
+- `mcp_serena_rename_symbol` - Rename symbols across codebase
+- `mcp_serena_search_for_pattern` - Pattern-based code search
+
+### Tool Aliases
+
+The Coding Agent supports these aliases:
+- `shell` → `bash` (execute shell commands)
+- `read` → `view` (read file contents)
+- `edit` → `str_replace` (edit files)
+- `search` → `search` (search files)
+- `custom-agent` → agent invocation (key for multi-agent delegation)
+
+### Environment Notes
+
+The Coding Agent runs on GitHub.com in ephemeral GitHub Actions environments:
+- **OS**: Ubuntu x64
+- **Node.js**: 22.x
+- **Python**: 3.12
+- **Pre-built**: Project compiled via `.github/copilot-setup-steps.yml`
+- **MCP Servers**: Pre-cached during setup for faster tool access
+
+### Workflow Example
+
+Typical multi-agent workflow:
+1. `@mcp-tool-builder` implements feature
+2. `@tdd-workflow` ensures 90% test coverage
+3. `@code-reviewer` validates code quality
+4. `@security-auditor` checks for vulnerabilities
+5. `@documentation-generator` updates documentation
+6. `@changelog-curator` records changes
+
 _If any of these instructions are unclear or seem incomplete, please ask for clarification!_
