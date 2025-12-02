@@ -281,4 +281,129 @@ try {
 9. **Use zod for input validation** - ensure robust schema definitions for all tool inputs
 10. **Reuse singleton instances** - don't create new instances of shared services
 
+## 8. GitHub Copilot Coding Agent
+
+This section provides guidance specific to the autonomous Copilot Coding Agent running on GitHub.com.
+
+### Custom Agents
+
+Specialized agents are available in `.github/agents/`. Invoke with `@agent-name`:
+
+**Core Development:**
+- `@mcp-tool-builder` - Primary development agent for creating and enhancing MCP tools
+- `@tdd-workflow` - Test-driven development with Red-Green-Refactor cycle
+- `@code-reviewer` - Quality review using clean-code-scorer patterns
+
+**Quality & Security:**
+- `@security-auditor` - OWASP compliance and security hardening checks
+- `@documentation-generator` - API documentation and README updates
+- `@architecture-advisor` - Design pattern recommendations and ADR generation
+- `@debugging-assistant` - Root cause analysis and troubleshooting
+
+**Automation:**
+- `@dependency-guardian` - Monitor dependencies and security vulnerabilities
+- `@changelog-curator` - Maintain CHANGELOG.md in Keep a Changelog format
+- `@ci-fixer` - Debug and repair CI/CD workflows
+- `@performance-optimizer` - Performance analysis and bundle optimization
+- `@prompt-architect` - Prompt engineering and optimization
+
+### Multi-Agent Delegation
+
+Use the `custom-agent` tool to delegate work between agents (NOT `handoffs` - that's IDE-only). Always provide:
+
+1. **Context**: Summary of completed work
+2. **Files**: List of modified files
+3. **Focus**: Specific task for receiving agent
+
+**Example delegation pattern:**
+```markdown
+When implementation complete and tests pass:
+1. Use `custom-agent` to invoke `@code-reviewer` for quality analysis
+2. After review passes, use `custom-agent` to invoke `@documentation-generator`
+```
+
+### MCP Servers Available
+
+This repository has **8 MCP servers** configured for enhanced capabilities:
+
+**Core Development:**
+- **fetch** - Web content retrieval (`mcp_fetch_fetch`)
+- **serena** - Semantic code analysis (find/replace symbols, pattern search)
+- **ai-agent-guidelines** - This project's 30+ tools (prompt builders, code analyzers, design assistant)
+
+**AI & Reasoning:**
+- **sequentialthinking** - Advanced chain-of-thought reasoning and problem-solving
+- **deepwiki** - Knowledge base search and retrieval (HTTP)
+- **context7** - Library documentation resolver (HTTP)
+
+**Browser Automation:**
+- **playwright** - Automated browser testing and web scraping
+- **chrome-devtools** - Chrome DevTools protocol integration for debugging
+
+#### Key Tools by Server
+
+**fetch:**
+- `mcp_fetch_fetch` - Retrieve web content, check library versions
+
+**serena:**
+- `mcp_serena_find_symbol` - Find symbols by name path
+- `mcp_serena_get_symbols_overview` - Overview of file symbols
+- `mcp_serena_replace_symbol_body` - Replace symbol implementations
+- `mcp_serena_find_referencing_symbols` - Find all symbol usages
+- `mcp_serena_rename_symbol` - Rename symbols across codebase
+- `mcp_serena_search_for_pattern` - Pattern-based code search
+
+**ai-agent-guidelines:**
+- `hierarchical_prompt_builder` - Generate structured prompts
+- `clean_code_scorer` - Calculate code quality score (0-100)
+- `design_assistant` - Multi-phase design workflow orchestration
+- `security_hardening_prompt_builder` - OWASP compliance prompts
+- Plus 26+ additional tools (see project README)
+
+**sequentialthinking:**
+- Advanced reasoning with hypothesis generation and verification
+- Multi-step problem solving with branching logic
+
+**context7:**
+- `resolve_library_id` - Convert package names to Context7 library IDs
+- `get_library_docs` - Fetch up-to-date library documentation
+
+**playwright:**
+- Browser automation (navigate, click, type, screenshot)
+- Form filling and UI testing
+- Network request monitoring
+
+**chrome-devtools:**
+- Performance profiling
+- Network analysis
+- Advanced debugging capabilities
+
+### Tool Aliases
+
+The Coding Agent supports these aliases:
+- `shell` → `bash` (execute shell commands)
+- `read` → `view` (read file contents)
+- `edit` → `str_replace` (edit files)
+- `search` → `search` (search files)
+- `custom-agent` → agent invocation (key for multi-agent delegation)
+
+### Environment Notes
+
+The Coding Agent runs on GitHub.com in ephemeral GitHub Actions environments:
+- **OS**: Ubuntu x64
+- **Node.js**: 22.x
+- **Python**: 3.12
+- **Pre-built**: Project compiled via `.github/copilot-setup-steps.yml`
+- **MCP Servers**: Pre-cached during setup for faster tool access
+
+### Workflow Example
+
+Typical multi-agent workflow:
+1. `@mcp-tool-builder` implements feature
+2. `@tdd-workflow` ensures 90% test coverage
+3. `@code-reviewer` validates code quality
+4. `@security-auditor` checks for vulnerabilities
+5. `@documentation-generator` updates documentation
+6. `@changelog-curator` records changes
+
 _If any of these instructions are unclear or seem incomplete, please ask for clarification!_
