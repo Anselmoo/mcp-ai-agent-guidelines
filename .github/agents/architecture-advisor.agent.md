@@ -1,5 +1,5 @@
 ---
-name: Architecture Advisor
+name: Architecture-Advisor
 description: Design pattern recommendations and ADR generation using project patterns
 tools:
   - read

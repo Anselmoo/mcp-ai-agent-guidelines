@@ -1,5 +1,5 @@
 ---
-name: CI Fixer
+name: CI-Fixer
 description: Debug and repair CI/CD workflows using project patterns
 tools:
   - shell

@@ -1,5 +1,5 @@
 ---
-name: Code Reviewer
+name: Code-Reviewer
 description: Quality review agent using project's clean-code-scorer patterns
 tools:
   - read

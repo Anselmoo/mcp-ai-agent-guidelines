@@ -1,5 +1,5 @@
 ---
-name: Documentation Generator
+name: Documentation-Generator
 description: API documentation and README updates using project patterns
 tools:
   - read

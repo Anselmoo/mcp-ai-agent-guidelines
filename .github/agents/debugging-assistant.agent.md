@@ -1,5 +1,5 @@
 ---
-name: Debugging Assistant
+name: Debugging-Assistant
 description: Root cause analysis and troubleshooting using project patterns
 tools:
   - shell

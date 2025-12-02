@@ -1,5 +1,5 @@
 ---
-name: Performance Optimizer
+name: Performance-Optimizer
 description: Performance analysis and bundle optimization
 tools:
   - shell

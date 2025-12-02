@@ -1,5 +1,5 @@
 ---
-name: Security Auditor
+name: Security-Auditor
 description: OWASP compliance and security hardening checks using project patterns
 tools:
   - read

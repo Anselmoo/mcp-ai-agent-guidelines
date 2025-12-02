@@ -1,5 +1,5 @@
 ---
-name: Prompt Architect
+name: Prompt-Architect
 description: Prompt engineering and optimization specialist
 tools:
   - read

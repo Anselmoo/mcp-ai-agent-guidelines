@@ -1,5 +1,5 @@
 ---
-name: TDD Workflow
+name: TDD-Workflow
 description: Test-Driven Development agent following Red-Green-Refactor cycle
 tools:
   - shell

@@ -1,5 +1,5 @@
 ---
-name: Changelog Curator
+name: Changelog-Curator
 description: Maintain CHANGELOG.md in Keep a Changelog format
 tools:
   - read

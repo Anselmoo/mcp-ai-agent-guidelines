@@ -1,5 +1,5 @@
 ---
-name: MCP Tool Builder
+name: MCP-Tool-Builder
 description: Primary agent for creating and enhancing MCP tools following project patterns
 tools:
   - shell

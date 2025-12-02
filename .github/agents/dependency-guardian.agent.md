@@ -1,5 +1,5 @@
 ---
-name: Dependency Guardian
+name: Dependency-Guardian
 description: Dependency management and security vulnerability monitoring
 tools:
   - read
