@@ -87,6 +87,20 @@ jobs:
           echo "🔒 Running security and quality checks..."
           npx lefthook run pre-commit --verbose
 
+      - name: Validate documentation quality
+        if: steps.check_skip.outputs.skip == 'false'
+        run: |
+          echo "📄 Validating documentation quality..."
+          # Using warn-only mode because existing docs have pre-existing header/footer issues.
+          # TODO: Switch to strict mode (npm run docs:lint) after fixing existing doc issues.
+          npm run docs:lint:warn-only
+
+      - name: Validate tool documentation generation
+        if: steps.check_skip.outputs.skip == 'false'
+        run: |
+          echo "📝 Checking tool documentation generation..."
+          npm run docs:generate-tool-docs:dry-run
+
       - name: Run lefthook pre-push checks (Tests & Validation)
         if: steps.check_skip.outputs.skip == 'false'
         run: |
@@ -117,8 +131,9 @@ jobs:
             echo "- 🟨 **Code Quality**: Biome formatting & linting" >> $GITHUB_STEP_SUMMARY
             echo "- 🔷 **Type Safety**: TypeScript type checking" >> $GITHUB_STEP_SUMMARY
             echo "- 🧹 **Code Hygiene**: Trailing whitespace & EOF fixes" >> $GITHUB_STEP_SUMMARY
+            echo "- 📄 **Documentation**: Naming, headers, footers, and SVG visibility" >> $GITHUB_STEP_SUMMARY
             echo "- 🧪 **Testing**: Unit, integration, and MCP server tests" >> $GITHUB_STEP_SUMMARY
-            echo "- � **Audit**: Dependency vulnerability scanning" >> $GITHUB_STEP_SUMMARY
+            echo "- 🔐 **Audit**: Dependency vulnerability scanning" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "### 📋 Configuration:" >> $GITHUB_STEP_SUMMARY
             echo "- **Hook Manager**: Lefthook (replacing pre-commit)" >> $GITHUB_STEP_SUMMARY

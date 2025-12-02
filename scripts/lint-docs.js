@@ -19,6 +19,9 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
 // Configuration
 const DOCS_DIR = join(__dirname, "..", "docs");
+// Parse command-line arguments
+const WARN_ONLY = process.argv.includes("--warn-only");
+const NAMING_ONLY = process.argv.includes("--naming-only");
 // All documentation files should use kebab-case (lowercase, dash-separated)
 // This standardizes naming across all doc directories for consistency
 const NAMING_CONVENTION = "kebab-case";
@@ -215,9 +218,12 @@ function scanDirectory(dir, fileHandler) {
 function lintDocumentation() {
 	console.log("🔍 Linting documentation files...\n");
 
+	if (NAMING_ONLY) {
+		console.log("📝 Running naming convention check only\n");
+	}
+
 	scanDirectory(DOCS_DIR, (filepath) => {
 		const ext = extname(filepath);
-		const content = readFileSync(filepath, "utf-8");
 
 		// Check markdown files
 		if (ext === ".md") {
@@ -231,12 +237,31 @@ function lintDocumentation() {
 				});
 			}
 
-			checkMarkdownStructure(filepath, content);
+			// Skip structure checks if naming-only mode
+			if (!NAMING_ONLY) {
+				const content = readFileSync(filepath, "utf-8");
+				checkMarkdownStructure(filepath, content);
+			}
+			return;
 		}
 
 		// Check SVG files
 		if (ext === ".svg") {
-			checkSVGVisibility(filepath, content);
+			// Always check naming convention
+			const isValidNaming = checkNamingConvention(filepath);
+			if (!isValidNaming) {
+				issues.naming.push({
+					file: relative(DOCS_DIR, filepath),
+					expected: getExpectedConvention(),
+					actual: basename(filepath),
+				});
+			}
+			// Skip visibility checks if naming-only mode
+			if (!NAMING_ONLY) {
+				const content = readFileSync(filepath, "utf-8");
+				checkSVGVisibility(filepath, content);
+			}
+			return;
 		}
 	});
 
@@ -363,8 +388,8 @@ function printResults() {
 	console.log("=".repeat(80));
 	console.log(`\n📈 Summary: Found ${totalIssues} total issues\n`);
 
-	// Exit with error code if issues found
-	if (totalIssues > 0) {
+	// Exit with error code if issues found (unless warn-only mode)
+	if (totalIssues > 0 && !WARN_ONLY) {
 		process.exit(1);
 	}
 }

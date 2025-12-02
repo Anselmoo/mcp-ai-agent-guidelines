@@ -55,11 +55,18 @@ pre-commit:
       fail_text: "📄 JSON syntax errors found"
 
     # --------------------------- 📄 Documentation Checks -------------------------- #
-    docs-naming-check:
+    docs-quality:
       tags: [docs, validate]
-      glob: "docs/**/*.md"
-      run: ./lefthook/docs-naming-check.sh
-      fail_text: "📄 Documentation files must use lowercase, dash-separated naming (kebab-case)"
+      glob: "docs/**/*.{md,svg}"
+      run: npm run docs:lint:warn-only
+      fail_text: "📄 Documentation quality issues found (naming, headers, footers, SVG)"
+
+    docs-svg-fix:
+      tags: [docs, format]
+      glob: "docs/**/*.svg"
+      run: npm run docs:fix-svg
+      stage_fixed: true
+      fail_text: "🎨 SVG dark mode visibility issues fixed"
 
     # ----------------------------- 📝 File Quality ---------------------------- #
     trailing-whitespace:
