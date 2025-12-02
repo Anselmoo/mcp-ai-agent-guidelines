@@ -12,7 +12,7 @@ import type { A2AContext } from "./a2a-context.js";
 import { OrchestrationError } from "./a2a-errors.js";
 import { logger } from "./logger.js";
 import { batchInvoke, invokeTool } from "./tool-invoker.js";
-import { type ToolResult, toolRegistry } from "./tool-registry.js";
+import type { ToolResult } from "./tool-registry.js";
 
 /**
  * Map-Reduce pattern: Apply a tool to multiple inputs in parallel, then reduce
@@ -277,15 +277,11 @@ export async function raceTools(
 	});
 
 	const promises = tools.map(async ({ toolName, args }) => {
-		try {
-			const result = await invokeTool(toolName, args, context);
-			if (result.success) {
-				return result;
-			}
-			throw new Error(`Tool ${toolName} failed: ${result.error}`);
-		} catch (error) {
-			throw error;
+		const result = await invokeTool(toolName, args, context);
+		if (result.success) {
+			return result;
 		}
+		throw new Error(`Tool ${toolName} failed: ${result.error}`);
 	});
 
 	try {

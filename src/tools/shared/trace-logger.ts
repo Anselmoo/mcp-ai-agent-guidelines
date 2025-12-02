@@ -9,7 +9,7 @@
  * - Distributed tracing support
  */
 
-import type { A2AContext, ExecutionLogEntry } from "./a2a-context.js";
+import type { A2AContext } from "./a2a-context.js";
 import { logger } from "./logger.js";
 
 /**
@@ -272,7 +272,7 @@ export class TraceLogger {
 		const startTimes = spans.map((s) => s.startTime.getTime());
 		const endTimes = spans
 			.filter((s) => s.endTime)
-			.map((s) => s.endTime!.getTime());
+			.map((s) => s.endTime?.getTime() ?? 0);
 
 		const totalDurationMs =
 			endTimes.length > 0 ? Math.max(...endTimes) - Math.min(...startTimes) : 0;
@@ -418,7 +418,10 @@ export class TraceLogger {
 				if (!graph.has(span.parentSpanId)) {
 					graph.set(span.parentSpanId, []);
 				}
-				graph.get(span.parentSpanId)!.push(span.spanId);
+				const children = graph.get(span.parentSpanId);
+				if (children) {
+					children.push(span.spanId);
+				}
 			}
 		}
 
