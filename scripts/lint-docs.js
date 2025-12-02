@@ -242,6 +242,7 @@ function lintDocumentation() {
 				const content = readFileSync(filepath, "utf-8");
 				checkMarkdownStructure(filepath, content);
 			}
+			return;
 		}
 
 		// Check SVG files (skip if naming-only mode)
