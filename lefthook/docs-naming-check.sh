@@ -1,10 +1,23 @@
 #!/usr/bin/env bash
 #
-# Documentation file naming convention check
+# DEPRECATED: This script is superseded by 'npm run docs:lint'
+# The comprehensive lint-docs.js script now handles:
+# - Kebab-case naming convention (this script's functionality)
+# - Header/footer structure validation
+# - Table of Contents format
+# - SVG text visibility in dark mode
+#
+# This file is kept for backwards compatibility but will be removed in a future version.
+# Please use 'npm run docs:lint' or 'npm run docs:lint:naming-only' instead.
+#
+# Documentation file naming convention check (DEPRECATED)
 # - Ensures all .md files in docs/tools, docs/tips, docs/development, and docs/ root
 #   use lowercase, dash-separated naming (kebab-case)
 # - Skips README.md files as they are always valid
 #
+
+echo "⚠️  WARNING: This script is deprecated. Use 'npm run docs:lint' instead."
+echo ""
 
 set -u
 
