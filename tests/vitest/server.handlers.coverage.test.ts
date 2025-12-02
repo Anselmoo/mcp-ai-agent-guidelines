@@ -237,4 +237,32 @@ describe("Server Handlers Coverage", () => {
 			}
 		}
 	});
+
+	it("should test coverage-dashboard-design-prompt-builder tool via MCP handler", async () => {
+		// Import the server to register handlers
+		await import("../../src/index.ts");
+
+		const callToolHandler = capturedHandlers[1]?.handler;
+		if (callToolHandler) {
+			const result = await callToolHandler({
+				params: {
+					name: "coverage-dashboard-design-prompt-builder",
+					arguments: {
+						title: "Test Coverage Dashboard",
+						projectContext: "Testing MCP handler integration",
+						dashboardStyle: "card-based",
+						framework: "react",
+					},
+				},
+			});
+
+			expect(result).toHaveProperty("content");
+			expect(Array.isArray(result.content)).toBe(true);
+			expect(result.content[0].type).toBe("text");
+			expect(result.content[0].text).toContain("Test Coverage Dashboard");
+			expect(result.content[0].text).toContain(
+				"Testing MCP handler integration",
+			);
+		}
+	});
 });
