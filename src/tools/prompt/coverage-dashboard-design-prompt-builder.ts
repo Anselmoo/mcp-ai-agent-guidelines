@@ -24,6 +24,54 @@ import {
 	slugify,
 } from "../shared/prompt-utils.js";
 
+// Shared default configuration constants
+const DEFAULT_ACCESSIBILITY = {
+	wcagLevel: "AA" as const,
+	colorBlindSafe: true,
+	keyboardNavigation: true,
+	screenReaderOptimized: true,
+	focusIndicators: true,
+	highContrastMode: false,
+};
+
+const DEFAULT_RESPONSIVE = {
+	mobileFirst: true,
+	breakpoints: {
+		mobile: "320px",
+		tablet: "768px",
+		desktop: "1024px",
+		largeDesktop: "1440px",
+	},
+	touchOptimized: true,
+	collapsibleNavigation: true,
+};
+
+const DEFAULT_INTERACTIVE = {
+	filters: true,
+	sorting: true,
+	search: true,
+	tooltips: true,
+	expandCollapse: true,
+	drillDown: true,
+	exportOptions: ["PDF", "CSV", "JSON"] as string[],
+	realTimeUpdates: false,
+};
+
+const DEFAULT_PERFORMANCE = {
+	lazyLoading: true,
+	virtualScrolling: true,
+	dataCaching: true,
+	skeletonLoaders: true,
+	progressiveEnhancement: true,
+};
+
+const DEFAULT_ITERATION = {
+	includeABTesting: false,
+	includeAnalytics: true,
+	includeFeedbackWidget: true,
+	includeUsabilityMetrics: true,
+};
+
 // Schema for coverage metric card configuration
 const CoverageMetricCardSchema = z.object({
 	metricName: z.string(),
@@ -51,48 +99,102 @@ const DashboardSectionSchema = z.object({
 
 // Schema for accessibility configuration
 const AccessibilityConfigSchema = z.object({
-	wcagLevel: z.enum(["A", "AA", "AAA"]).optional().default("AA"),
-	colorBlindSafe: z.boolean().optional().default(true),
-	keyboardNavigation: z.boolean().optional().default(true),
-	screenReaderOptimized: z.boolean().optional().default(true),
-	focusIndicators: z.boolean().optional().default(true),
-	highContrastMode: z.boolean().optional().default(false),
+	wcagLevel: z
+		.enum(["A", "AA", "AAA"])
+		.optional()
+		.default(DEFAULT_ACCESSIBILITY.wcagLevel),
+	colorBlindSafe: z
+		.boolean()
+		.optional()
+		.default(DEFAULT_ACCESSIBILITY.colorBlindSafe),
+	keyboardNavigation: z
+		.boolean()
+		.optional()
+		.default(DEFAULT_ACCESSIBILITY.keyboardNavigation),
+	screenReaderOptimized: z
+		.boolean()
+		.optional()
+		.default(DEFAULT_ACCESSIBILITY.screenReaderOptimized),
+	focusIndicators: z
+		.boolean()
+		.optional()
+		.default(DEFAULT_ACCESSIBILITY.focusIndicators),
+	highContrastMode: z
+		.boolean()
+		.optional()
+		.default(DEFAULT_ACCESSIBILITY.highContrastMode),
 });
 
 // Schema for responsive design configuration
 const ResponsiveConfigSchema = z.object({
-	mobileFirst: z.boolean().optional().default(true),
+	mobileFirst: z.boolean().optional().default(DEFAULT_RESPONSIVE.mobileFirst),
 	breakpoints: z
 		.object({
-			mobile: z.string().optional().default("320px"),
-			tablet: z.string().optional().default("768px"),
-			desktop: z.string().optional().default("1024px"),
-			largeDesktop: z.string().optional().default("1440px"),
+			mobile: z
+				.string()
+				.optional()
+				.default(DEFAULT_RESPONSIVE.breakpoints.mobile),
+			tablet: z
+				.string()
+				.optional()
+				.default(DEFAULT_RESPONSIVE.breakpoints.tablet),
+			desktop: z
+				.string()
+				.optional()
+				.default(DEFAULT_RESPONSIVE.breakpoints.desktop),
+			largeDesktop: z
+				.string()
+				.optional()
+				.default(DEFAULT_RESPONSIVE.breakpoints.largeDesktop),
 		})
 		.optional(),
-	touchOptimized: z.boolean().optional().default(true),
-	collapsibleNavigation: z.boolean().optional().default(true),
+	touchOptimized: z
+		.boolean()
+		.optional()
+		.default(DEFAULT_RESPONSIVE.touchOptimized),
+	collapsibleNavigation: z
+		.boolean()
+		.optional()
+		.default(DEFAULT_RESPONSIVE.collapsibleNavigation),
 });
 
 // Schema for interactive features configuration
 const InteractiveFeaturesSchema = z.object({
-	filters: z.boolean().optional().default(true),
-	sorting: z.boolean().optional().default(true),
-	search: z.boolean().optional().default(true),
-	tooltips: z.boolean().optional().default(true),
-	expandCollapse: z.boolean().optional().default(true),
-	drillDown: z.boolean().optional().default(true),
-	exportOptions: z.array(z.string()).optional().default(["PDF", "CSV", "JSON"]),
-	realTimeUpdates: z.boolean().optional().default(false),
+	filters: z.boolean().optional().default(DEFAULT_INTERACTIVE.filters),
+	sorting: z.boolean().optional().default(DEFAULT_INTERACTIVE.sorting),
+	search: z.boolean().optional().default(DEFAULT_INTERACTIVE.search),
+	tooltips: z.boolean().optional().default(DEFAULT_INTERACTIVE.tooltips),
+	expandCollapse: z
+		.boolean()
+		.optional()
+		.default(DEFAULT_INTERACTIVE.expandCollapse),
+	drillDown: z.boolean().optional().default(DEFAULT_INTERACTIVE.drillDown),
+	exportOptions: z
+		.array(z.string())
+		.optional()
+		.default(DEFAULT_INTERACTIVE.exportOptions),
+	realTimeUpdates: z
+		.boolean()
+		.optional()
+		.default(DEFAULT_INTERACTIVE.realTimeUpdates),
 });
 
 // Schema for performance optimization configuration
 const PerformanceConfigSchema = z.object({
-	lazyLoading: z.boolean().optional().default(true),
-	virtualScrolling: z.boolean().optional().default(true),
-	dataCaching: z.boolean().optional().default(true),
-	skeletonLoaders: z.boolean().optional().default(true),
-	progressiveEnhancement: z.boolean().optional().default(true),
+	lazyLoading: z.boolean().optional().default(DEFAULT_PERFORMANCE.lazyLoading),
+	virtualScrolling: z
+		.boolean()
+		.optional()
+		.default(DEFAULT_PERFORMANCE.virtualScrolling),
+	dataCaching: z.boolean().optional().default(DEFAULT_PERFORMANCE.dataCaching),
+	skeletonLoaders: z
+		.boolean()
+		.optional()
+		.default(DEFAULT_PERFORMANCE.skeletonLoaders),
+	progressiveEnhancement: z
+		.boolean()
+		.optional()
+		.default(DEFAULT_PERFORMANCE.progressiveEnhancement),
 });
 
 // Main schema for the coverage dashboard design prompt builder
@@ -397,12 +499,7 @@ function buildDashboardDesignPrompt(
 	lines.push("## ♿ Accessibility (WCAG Compliance)");
 	lines.push("");
 	const a11y = {
-		wcagLevel: "AA" as const,
-		colorBlindSafe: true,
-		keyboardNavigation: true,
-		screenReaderOptimized: true,
-		focusIndicators: true,
-		highContrastMode: false,
+		...DEFAULT_ACCESSIBILITY,
 		...input.accessibility,
 	};
 	lines.push(`**Target Level**: WCAG ${a11y.wcagLevel}`);
@@ -436,15 +533,7 @@ function buildDashboardDesignPrompt(
 	lines.push("## 📱 Responsive Design");
 	lines.push("");
 	const responsive = {
-		mobileFirst: true,
-		breakpoints: {
-			mobile: "320px",
-			tablet: "768px",
-			desktop: "1024px",
-			largeDesktop: "1440px",
-		},
-		touchOptimized: true,
-		collapsibleNavigation: true,
+		...DEFAULT_RESPONSIVE,
 		...input.responsive,
 	};
 	lines.push(
@@ -481,14 +570,7 @@ function buildDashboardDesignPrompt(
 	lines.push("## 🔧 Interactive Features");
 	lines.push("");
 	const interactive = {
-		filters: true,
-		sorting: true,
-		search: true,
-		tooltips: true,
-		expandCollapse: true,
-		drillDown: true,
-		exportOptions: ["PDF", "CSV", "JSON"] as string[],
-		realTimeUpdates: false,
+		...DEFAULT_INTERACTIVE,
 		...input.interactiveFeatures,
 	};
 	lines.push("### User Controls");
@@ -527,11 +609,7 @@ function buildDashboardDesignPrompt(
 	lines.push("## ⚡ Performance Optimization");
 	lines.push("");
 	const perf = {
-		lazyLoading: true,
-		virtualScrolling: true,
-		dataCaching: true,
-		skeletonLoaders: true,
-		progressiveEnhancement: true,
+		...DEFAULT_PERFORMANCE,
 		...input.performance,
 	};
 	lines.push("### Loading Strategy");
@@ -634,10 +712,7 @@ function buildDashboardDesignPrompt(
 	lines.push("## 🔄 Design Iteration & Feedback Loop");
 	lines.push("");
 	const iteration = {
-		includeABTesting: false,
-		includeAnalytics: true,
-		includeFeedbackWidget: true,
-		includeUsabilityMetrics: true,
+		...DEFAULT_ITERATION,
 		...input.iterationCycle,
 	};
 	lines.push("### Iteration Features");
