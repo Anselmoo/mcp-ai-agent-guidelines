@@ -57,14 +57,18 @@ When implementation is complete and code compiles:
 
 ## MCP Integration
 
-This repository has MCP servers configured for enhanced capabilities:
+This repository has **8 MCP servers** configured for enhanced capabilities:
 
-### Fetch Server
+### Core Development Servers
+
+**Fetch Server** (Web Content Retrieval)
+- **Type**: Local (uvx)
 - **Purpose**: Web content retrieval for up-to-date documentation
 - **Tool**: `mcp_fetch_fetch`
 - **Use Case**: Check latest library versions, retrieve API documentation
 
-### Serena Server
+**Serena Server** (Semantic Code Analysis)
+- **Type**: Local (uvx)
 - **Purpose**: Semantic code analysis and symbol manipulation
 - **Tools**:
   - `mcp_serena_find_symbol` - Find symbols by name path
@@ -75,13 +79,61 @@ This repository has MCP servers configured for enhanced capabilities:
   - `mcp_serena_search_for_pattern` - Pattern-based code search
   - `mcp_serena_execute_shell_command` - Execute shell commands
 
+**AI Agent Guidelines** (This Project's Tools)
+- **Type**: Local (npx)
+- **Purpose**: Access this project's MCP tools for prompt building, code analysis, and design workflows
+- **Tools**: 30+ tools including hierarchical-prompt-builder, clean-code-scorer, design-assistant, security-hardening-prompt-builder, and more
+- **Use Case**: Generate prompts, analyze code quality, create design artifacts
+
+### AI & Reasoning Servers
+
+**Sequential Thinking** (Advanced Reasoning)
+- **Type**: Local (npx)
+- **Purpose**: Deep reasoning and problem-solving through chain-of-thought
+- **Use Case**: Complex problem analysis, multi-step reasoning, hypothesis testing
+
+**DeepWiki** (Knowledge Retrieval)
+- **Type**: HTTP (https://mcp.deepwiki.com/sse)
+- **Purpose**: Advanced knowledge base search and retrieval
+- **Use Case**: Research technical topics, retrieve deep documentation
+
+**Context7** (Library Documentation)
+- **Type**: HTTP (https://mcp.context7.com/mcp)
+- **Purpose**: Resolve library IDs and fetch up-to-date library documentation
+- **Use Case**: Get latest API docs, check library compatibility, find best practices
+
+### Browser Automation Servers
+
+**Playwright MCP** (Browser Automation)
+- **Type**: Local (npx)
+- **Purpose**: Automated browser testing and web scraping
+- **Use Case**: Test web UIs, capture screenshots, automate web workflows
+
+**Chrome DevTools MCP** (Browser Debugging)
+- **Type**: Local (npx)
+- **Purpose**: Chrome DevTools protocol integration
+- **Use Case**: Advanced browser debugging, performance profiling, network analysis
+
 ### Using MCP Tools in Agents
 
-Agents should leverage MCP tools for:
-- **Code Navigation**: Use serena to find and analyze symbols
-- **Refactoring**: Use serena for symbol manipulation
-- **Documentation Lookup**: Use fetch to retrieve current best practices
-- **Pattern Analysis**: Use serena to search for code patterns
+Agents should strategically leverage MCP tools:
+
+**Code Development:**
+- **serena**: Navigate code, find symbols, refactor
+- **ai-agent-guidelines**: Generate prompts, analyze quality, create designs
+
+**Research & Documentation:**
+- **fetch**: Retrieve current best practices
+- **context7**: Get library documentation and resolve package IDs
+- **deepwiki**: Deep research on technical topics
+
+**Problem Solving:**
+- **sequentialthinking**: Complex reasoning and hypothesis testing
+- **serena**: Pattern analysis and code search
+
+**Testing & Automation:**
+- **playwright**: Browser automation and UI testing
+- **chrome-devtools**: Performance profiling and debugging
 
 ## Coding Standards
 

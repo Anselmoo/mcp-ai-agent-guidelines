@@ -152,6 +152,47 @@ mcp_fetch_fetch({
 })
 ```
 
+**Context7 (Library Documentation):**
+```typescript
+// Resolve library ID
+context7_resolve_library_id({
+  libraryName: "react"
+})
+
+// Get library docs
+context7_get_library_docs({
+  context7CompatibleLibraryID: "/facebook/react",
+  topic: "hooks"
+})
+```
+
+**Sequential Thinking (Complex Reasoning):**
+```typescript
+// Use for complex problem solving
+sequentialthinking({
+  thought: "Analyzing the problem...",
+  thoughtNumber: 1,
+  totalThoughts: 5,
+  nextThoughtNeeded: true
+})
+```
+
+**AI Agent Guidelines (This Project's Tools):**
+```typescript
+// Generate prompts
+hierarchical_prompt_builder({
+  context: "Development task",
+  goal: "Implement feature",
+  requirements: ["req1", "req2"]
+})
+
+// Analyze code quality
+clean_code_scorer({
+  codeContent: sourceCode,
+  language: "typescript"
+})
+```
+
 ## Quality Standards
 
 ### Before Delegating to @tdd-workflow

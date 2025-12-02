@@ -324,19 +324,59 @@ When implementation complete and tests pass:
 
 ### MCP Servers Available
 
-This repository has two MCP servers configured for enhanced capabilities:
+This repository has **8 MCP servers** configured for enhanced capabilities:
 
-**fetch** - Web content retrieval
-- Tool: `mcp_fetch_fetch`
-- Use case: Retrieve up-to-date documentation, check library versions
+**Core Development:**
+- **fetch** - Web content retrieval (`mcp_fetch_fetch`)
+- **serena** - Semantic code analysis (find/replace symbols, pattern search)
+- **ai-agent-guidelines** - This project's 30+ tools (prompt builders, code analyzers, design assistant)
 
-**serena** - Semantic code analysis and manipulation
+**AI & Reasoning:**
+- **sequentialthinking** - Advanced chain-of-thought reasoning and problem-solving
+- **deepwiki** - Knowledge base search and retrieval (HTTP)
+- **context7** - Library documentation resolver (HTTP)
+
+**Browser Automation:**
+- **playwright** - Automated browser testing and web scraping
+- **chrome-devtools** - Chrome DevTools protocol integration for debugging
+
+#### Key Tools by Server
+
+**fetch:**
+- `mcp_fetch_fetch` - Retrieve web content, check library versions
+
+**serena:**
 - `mcp_serena_find_symbol` - Find symbols by name path
 - `mcp_serena_get_symbols_overview` - Overview of file symbols
 - `mcp_serena_replace_symbol_body` - Replace symbol implementations
 - `mcp_serena_find_referencing_symbols` - Find all symbol usages
 - `mcp_serena_rename_symbol` - Rename symbols across codebase
 - `mcp_serena_search_for_pattern` - Pattern-based code search
+
+**ai-agent-guidelines:**
+- `hierarchical_prompt_builder` - Generate structured prompts
+- `clean_code_scorer` - Calculate code quality score (0-100)
+- `design_assistant` - Multi-phase design workflow orchestration
+- `security_hardening_prompt_builder` - OWASP compliance prompts
+- Plus 26+ additional tools (see project README)
+
+**sequentialthinking:**
+- Advanced reasoning with hypothesis generation and verification
+- Multi-step problem solving with branching logic
+
+**context7:**
+- `resolve_library_id` - Convert package names to Context7 library IDs
+- `get_library_docs` - Fetch up-to-date library documentation
+
+**playwright:**
+- Browser automation (navigate, click, type, screenshot)
+- Form filling and UI testing
+- Network request monitoring
+
+**chrome-devtools:**
+- Performance profiling
+- Network analysis
+- Advanced debugging capabilities
 
 ### Tool Aliases
 

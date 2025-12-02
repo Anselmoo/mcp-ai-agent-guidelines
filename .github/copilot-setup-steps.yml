@@ -34,5 +34,14 @@ jobs:
 
       - name: Pre-cache MCP servers
         run: |
+          # Cache uvx-based servers (fetch, serena)
           uvx mcp-server-fetch --help || true
           uvx --from "git+https://github.com/oraios/serena" serena --help || true
+
+          # Cache npx-based servers (playwright, chrome-devtools, sequentialthinking, ai-agent-guidelines)
+          npx -y @playwright/mcp@latest --help || true
+          npx -y chrome-devtools-mcp@latest --help || true
+          npx -y @modelcontextprotocol/server-sequential-thinking@latest --help || true
+          npx -y mcp-ai-agent-guidelines@latest --help || true
+
+          # Note: HTTP servers (deepwiki, context7) require no pre-caching
