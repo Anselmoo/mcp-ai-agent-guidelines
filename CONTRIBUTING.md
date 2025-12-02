@@ -41,7 +41,7 @@ Documentation files in `docs/` are validated by `npm run docs:lint`:
 
 These checks run automatically in:
 - **Pre-commit hooks** via lefthook (with `--warn-only` to show issues)
-- **CI workflow** via `lefthook-quality-gates.yml` (strict mode)
+- **CI workflow** via `lefthook-quality-gates.yml` (currently warn-only mode, TODO: strict mode after fixing existing issues)
 
 ## Commit and PR
 

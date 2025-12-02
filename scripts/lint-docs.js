@@ -245,10 +245,23 @@ function lintDocumentation() {
 			return;
 		}
 
-		// Check SVG files (skip if naming-only mode)
-		if (ext === ".svg" && !NAMING_ONLY) {
-			const content = readFileSync(filepath, "utf-8");
-			checkSVGVisibility(filepath, content);
+		// Check SVG files
+		if (ext === ".svg") {
+			// Always check naming convention
+			const isValidNaming = checkNamingConvention(filepath);
+			if (!isValidNaming) {
+				issues.naming.push({
+					file: relative(DOCS_DIR, filepath),
+					expected: getExpectedConvention(),
+					actual: basename(filepath),
+				});
+			}
+			// Skip visibility checks if naming-only mode
+			if (!NAMING_ONLY) {
+				const content = readFileSync(filepath, "utf-8");
+				checkSVGVisibility(filepath, content);
+			}
+			return;
 		}
 	});
 
