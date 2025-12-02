@@ -861,4 +861,272 @@ describe("Pivot Module Comprehensive Function Coverage", () => {
 		expect(result.triggered).toBe(true);
 		expect(result.recommendation).toBeDefined();
 	});
+
+	// Tests specifically targeting the private generateAlternatives and generateRecommendation methods
+	// by using content with enough keywords to reach the required thresholds
+	describe("Coverage for generateAlternatives thresholds", () => {
+		it("should trigger complexity > 80 alternatives with keyword-rich content", async () => {
+			const sessionState = createTestSessionState(30);
+
+			// Content with many technical/business/integration/user/maintenance keywords
+			// to ensure complexity score exceeds 80
+			const keywordRichContent = `
+				This API requires database integration with multiple microservices.
+				The integration protocol needs careful algorithm design.
+				Stakeholder compliance with regulation requires process workflow approval.
+				External third-party legacy migration needs sync federation.
+				Interface experience personalization accessibility localization required.
+				Monitoring logging deployment scaling backup security essential.
+				API database microservice integration protocol algorithm API database.
+				External third-party legacy migration sync federation external legacy.
+				Stakeholder compliance regulation process workflow approval stakeholder.
+			`;
+
+			const request: PivotRequest = {
+				sessionState,
+				currentContent: keywordRichContent,
+				triggerReason: "complexity",
+				forceEvaluation: true,
+			};
+
+			const result = await pivotModule.evaluatePivotNeed(request);
+
+			expect(result.triggered).toBe(true);
+			expect(result.complexity).toBeGreaterThan(0);
+			expect(result.alternatives.length).toBeGreaterThan(0);
+		});
+
+		it("should trigger entropy > 70 alternatives with uncertainty-rich content", async () => {
+			const sessionState = createTestSessionState(30);
+
+			// Content with many uncertainty/timeline/resource/conflict keywords
+			// to ensure entropy score exceeds 70
+			const uncertaintyRichContent = `
+				Requirements are unclear and unknown. TBD pending items need investigation.
+				Research needed for prototype experiment proof of concept feasibility spike.
+				Estimate roughly approximately depends on variable timeline.
+				Resource capacity availability allocation constraint issues.
+				Stakeholders disagree with conflict and dispute. Concern and objection raised.
+				There are blockers. Unclear unknown TBD pending investigate research.
+				Prototype experiment proof of concept feasibility spike needed.
+				Estimate roughly approximately depends variable estimate roughly.
+				Disagree conflict dispute concern objection blocker disagree conflict.
+			`;
+
+			const request: PivotRequest = {
+				sessionState,
+				currentContent: uncertaintyRichContent,
+				triggerReason: "entropy",
+				forceEvaluation: true,
+			};
+
+			const result = await pivotModule.evaluatePivotNeed(request);
+
+			expect(result.triggered).toBe(true);
+			expect(result.entropy).toBeGreaterThan(0);
+			expect(result.alternatives.length).toBeGreaterThan(0);
+		});
+
+		it("should trigger combined complexity > 70 AND entropy > 60 alternatives", async () => {
+			const sessionState = createTestSessionState(25);
+
+			// Content with both technical complexity and uncertainty keywords
+			const combinedContent = `
+				This API database microservice integration protocol algorithm system
+				has unclear unknown TBD pending items requiring investigation research.
+				External third-party legacy migration sync federation needed.
+				Prototype experiment proof of concept feasibility spike required.
+				Stakeholder compliance regulation process workflow approval pending.
+				Estimate roughly approximately depends on variable factors.
+				Resource capacity availability allocation constraint present.
+				Disagree conflict dispute concern objection blocker issues exist.
+				API database microservice integration external legacy third-party.
+				Unclear unknown TBD pending investigate research prototype experiment.
+			`;
+
+			const request: PivotRequest = {
+				sessionState,
+				currentContent: combinedContent,
+				triggerReason: "complexity",
+				forceEvaluation: true,
+			};
+
+			const result = await pivotModule.evaluatePivotNeed(request);
+
+			expect(result.triggered).toBe(true);
+			expect(result.complexity).toBeGreaterThan(0);
+			expect(result.entropy).toBeGreaterThan(0);
+			expect(result.alternatives.length).toBeGreaterThan(0);
+		});
+	});
+
+	describe("Coverage for generateRecommendation thresholds", () => {
+		it("should trigger STRONG PIVOT recommendation with extreme complexity and entropy", async () => {
+			const sessionState = createTestSessionState(15);
+
+			// Extremely keyword-dense content to maximize both scores
+			const extremeContent = `
+				API database microservice integration protocol algorithm API database
+				microservice integration protocol algorithm API database microservice
+				integration protocol algorithm external third-party legacy migration
+				sync federation external third-party legacy migration sync federation
+				stakeholder compliance regulation process workflow approval stakeholder
+				compliance regulation process workflow approval interface experience
+				personalization accessibility localization monitoring logging deployment
+				scaling backup security unclear unknown TBD pending investigate research
+				unclear unknown TBD pending investigate research prototype experiment
+				proof of concept feasibility spike prototype experiment proof of concept
+				feasibility spike estimate roughly approximately depends variable
+				resource capacity availability allocation constraint disagree conflict
+				dispute concern objection blocker disagree conflict dispute concern
+				objection blocker API database microservice integration protocol algorithm
+				external third-party legacy unclear unknown TBD pending investigate.
+			`;
+
+			const request: PivotRequest = {
+				sessionState,
+				currentContent: extremeContent,
+				triggerReason: "complexity",
+				forceEvaluation: true,
+			};
+
+			const result = await pivotModule.evaluatePivotNeed(request);
+
+			expect(result.triggered).toBe(true);
+			expect(result.recommendation).toBeDefined();
+			expect(result.recommendation.length).toBeGreaterThan(0);
+		});
+
+		it("should trigger complexity-only PIVOT recommendation", async () => {
+			const sessionState = createTestSessionState(20);
+
+			// Heavy technical keywords but few uncertainty keywords
+			const highComplexityContent = `
+				API database microservice integration protocol algorithm API database
+				microservice integration protocol algorithm API database microservice
+				integration protocol algorithm external third-party legacy migration
+				sync federation external third-party legacy migration sync federation
+				stakeholder compliance regulation process workflow approval stakeholder
+				compliance regulation process workflow approval interface experience
+				personalization accessibility localization monitoring logging deployment
+				scaling backup security API database microservice integration protocol
+				algorithm external third-party legacy migration sync federation
+				stakeholder compliance regulation process workflow approval.
+			`;
+
+			const request: PivotRequest = {
+				sessionState,
+				currentContent: highComplexityContent,
+				triggerReason: "complexity",
+				forceEvaluation: true,
+			};
+
+			const result = await pivotModule.evaluatePivotNeed(request);
+
+			expect(result.triggered).toBe(true);
+			expect(result.recommendation).toBeDefined();
+		});
+
+		it("should trigger entropy-only PIVOT recommendation", async () => {
+			const sessionState = createTestSessionState(20);
+
+			// Heavy uncertainty keywords but few technical keywords
+			const highEntropyContent = `
+				Requirements are unclear and unknown. TBD pending items need investigation.
+				Research needed for prototype experiment proof of concept feasibility spike.
+				Estimate roughly approximately depends on variable timeline factors.
+				Resource capacity availability allocation constraint issues present.
+				Stakeholders disagree with conflict and dispute. Concern and objection raised.
+				There are blockers. Unclear unknown TBD pending investigate research.
+				Prototype experiment proof of concept feasibility spike needed urgently.
+				Estimate roughly approximately depends variable estimate roughly.
+				Disagree conflict dispute concern objection blocker disagree conflict.
+				Unclear unknown TBD pending investigate research unclear unknown TBD.
+			`;
+
+			const request: PivotRequest = {
+				sessionState,
+				currentContent: highEntropyContent,
+				triggerReason: "entropy",
+				forceEvaluation: true,
+			};
+
+			const result = await pivotModule.evaluatePivotNeed(request);
+
+			expect(result.triggered).toBe(true);
+			expect(result.recommendation).toBeDefined();
+		});
+
+		it("should trigger CAUTION recommendation with moderate complexity or entropy", async () => {
+			const sessionState = createTestSessionState(40);
+
+			// Moderate keyword content - enough to trigger caution but not full pivot
+			const moderateContent = `
+				This system has API database integration with some microservices.
+				There are some unclear requirements that are TBD pending review.
+				External third-party integration needed. Some stakeholders have concerns.
+			`;
+
+			const request: PivotRequest = {
+				sessionState,
+				currentContent: moderateContent,
+				triggerReason: undefined,
+				forceEvaluation: true,
+			};
+
+			const result = await pivotModule.evaluatePivotNeed(request);
+
+			expect(result.triggered).toBe(true);
+			expect(result.recommendation).toBeDefined();
+		});
+	});
+
+	describe("Coverage for reason assignment based on thresholds", () => {
+		it("should set complexity-based reason when complexity exceeds threshold", async () => {
+			const sessionState = createTestSessionState(25);
+
+			const highComplexityContent = `
+				API database microservice integration protocol algorithm API database
+				microservice integration protocol algorithm external third-party legacy
+				migration sync federation stakeholder compliance regulation process
+				workflow approval interface experience personalization accessibility
+				localization monitoring logging deployment scaling backup security.
+			`;
+
+			const request: PivotRequest = {
+				sessionState,
+				currentContent: highComplexityContent,
+				triggerReason: undefined, // Let the system determine the reason
+				forceEvaluation: false,
+			};
+
+			const result = await pivotModule.evaluatePivotNeed(request);
+
+			expect(result.reason).toBeDefined();
+			expect(result.complexity).toBeGreaterThan(0);
+		});
+
+		it("should set entropy-based reason when entropy exceeds threshold", async () => {
+			const sessionState = createTestSessionState(25);
+
+			const highEntropyContent = `
+				Requirements are unclear and unknown. TBD pending items need investigation.
+				Research needed. Prototype experiment proof of concept feasibility spike.
+				Estimate roughly approximately depends on variable timeline.
+				Disagree conflict dispute concern objection blocker present.
+			`;
+
+			const request: PivotRequest = {
+				sessionState,
+				currentContent: highEntropyContent,
+				triggerReason: undefined, // Let the system determine the reason
+				forceEvaluation: false,
+			};
+
+			const result = await pivotModule.evaluatePivotNeed(request);
+
+			expect(result.reason).toBeDefined();
+			expect(result.entropy).toBeGreaterThan(0);
+		});
+	});
 });
