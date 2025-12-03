@@ -255,4 +255,66 @@ describe("ExecutionController", () => {
 			expect(result.success).toBe(true);
 		});
 	});
+
+	describe("Error handling modes", () => {
+		it("should abort on error with abort strategy", async () => {
+			const plan: ExecutionPlan = {
+				strategy: "sequential",
+				steps: [
+					{
+						id: "step1",
+						toolName: failingToolName,
+						args: {},
+					},
+					{
+						id: "step2",
+						toolName: addToolName,
+						args: { a: 2, b: 3 },
+					},
+				],
+				onError: "abort",
+			};
+
+			const result = await executeChain(plan, context);
+
+			// With abort strategy, chain should fail
+			expect(result.success).toBe(false);
+		});
+
+		it("should handle empty steps array", async () => {
+			const plan: ExecutionPlan = {
+				strategy: "sequential",
+				steps: [],
+				onError: "skip",
+			};
+
+			const result = await executeChain(plan, context);
+
+			expect(result.success).toBe(true);
+			expect(result.summary.totalSteps).toBe(0);
+		});
+
+		it("should support parallel-with-join strategy", async () => {
+			const plan: ExecutionPlan = {
+				strategy: "parallel-with-join",
+				steps: [
+					{
+						id: "step1",
+						toolName: addToolName,
+						args: { a: 2, b: 3 },
+					},
+					{
+						id: "step2",
+						toolName: multiplyToolName,
+						args: { x: 4, y: 5 },
+					},
+				],
+				onError: "skip",
+			};
+
+			const result = await executeChain(plan, context);
+
+			expect(result.stepResults.size).toBe(2);
+		});
+	});
 });

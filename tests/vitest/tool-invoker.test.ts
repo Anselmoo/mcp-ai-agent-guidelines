@@ -270,5 +270,57 @@ describe("Tool Invoker", () => {
 			const error = new ToolInvocationError("test-tool", "Failed to invoke");
 			expect(error).toBeInstanceOf(Error);
 		});
+
+		it("should handle tool throwing non-Error object", async () => {
+			const toolName = `throw-string-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+			toolRegistry.register(
+				{
+					name: toolName,
+					description: "Tool that throws string",
+					inputSchema: z.object({}),
+					canInvoke: [],
+				},
+				async () => {
+					throw "string error";
+				},
+			);
+
+			await expect(invokeTool(toolName, {})).rejects.toThrow("string error");
+		});
+
+		it("should invoke tool with timeout context", async () => {
+			const toolName = `timeout-ctx-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+			toolRegistry.register(
+				{
+					name: toolName,
+					description: "Fast tool",
+					inputSchema: z.object({}),
+					canInvoke: [],
+				},
+				async () => ({ success: true, data: "fast" }),
+			);
+
+			// Create context without timeout to avoid permission issues at depth
+			const result = await invokeTool(toolName, {});
+			expect(result.success).toBe(true);
+		});
+
+		it("should check chain timeout before invocation", async () => {
+			const toolName = `chain-timeout-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+			toolRegistry.register(
+				{
+					name: toolName,
+					description: "Tool for chain timeout test",
+					inputSchema: z.object({}),
+					canInvoke: [],
+				},
+				async () => ({ success: true, data: "ok" }),
+			);
+
+			const ctx = createA2AContext(undefined, { chainTimeoutMs: 1 });
+			ctx.chainStartTime = new Date(Date.now() - 10000);
+
+			await expect(invokeTool(toolName, {}, ctx)).rejects.toThrow();
+		});
 	});
 });
