@@ -1,6 +1,6 @@
 # AGENTS.md - AI Agent Guidelines
 
-This document follows the [AGENTS.md standard](https://agents-standard.dev/).
+This document follows the [AGENTS.md standard](https://agents.md/).
 
 ## Repository Overview
 
@@ -95,8 +95,11 @@ npm run quality           # Type-check + lint
 
 ## References
 
+## References
+
 - [GitHub Copilot Coding Agent Documentation](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent)
-- [AGENTS.md Standard](https://agents-standard.dev/)
+- [AGENTS.md Standard](https://agents.md/)
+- [AGENTS.md GitHub Repository](https://github.com/openai/agents.md)
 - [MCP Protocol Specification](https://spec.modelcontextprotocol.io/)
 
 ---
