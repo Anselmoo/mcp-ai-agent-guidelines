@@ -19,7 +19,7 @@ import {
 import { toolRegistry } from "../../src/tools/shared/tool-registry.js";
 
 describe("Async Patterns", () => {
-	let context: A2AContext;
+	let _context: A2AContext;
 	let toolSuffix: string;
 	let addToolName: string;
 	let multiplyToolName: string;
@@ -27,7 +27,7 @@ describe("Async Patterns", () => {
 	let echoToolName: string;
 
 	beforeEach(() => {
-		context = createA2AContext();
+		_context = createA2AContext();
 		toolSuffix = `${Date.now()}-${Math.random().toString(36).substring(7)}`;
 		addToolName = `async-add-tool-${toolSuffix}`;
 		multiplyToolName = `async-multiply-tool-${toolSuffix}`;
