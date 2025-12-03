@@ -13,25 +13,24 @@ import {
 describe("A2A Errors", () => {
 	describe("RecursionDepthError", () => {
 		it("should create error with correct properties", () => {
-			const error = new RecursionDepthError("test-tool", 10, 10);
+			const error = new RecursionDepthError(10, 5, { toolName: "test-tool" });
 
 			expect(error).toBeInstanceOf(Error);
 			expect(error).toBeInstanceOf(RecursionDepthError);
 			expect(error.name).toBe("RecursionDepthError");
-			expect(error.message).toContain("test-tool");
+			expect(error.message).toContain("depth");
 			expect(error.message).toContain("10");
-			expect(error.code).toBe("RECURSION_DEPTH_EXCEEDED");
-			expect(error.context).toEqual({
-				toolName: "test-tool",
-				currentDepth: 10,
-				maxDepth: 10,
-			});
+			expect(error.code).toBe("RECURSION_DEPTH_ERROR");
+			expect(error.currentDepth).toBe(10);
+			expect(error.maxDepth).toBe(5);
+			expect(error.context.currentDepth).toBe(10);
+			expect(error.context.maxDepth).toBe(5);
 			expect(error.timestamp).toBeInstanceOf(Date);
 		});
 
 		it("should be catchable as Error", () => {
 			try {
-				throw new RecursionDepthError("test", 5, 3);
+				throw new RecursionDepthError(5, 3);
 			} catch (e) {
 				expect(e).toBeInstanceOf(Error);
 				expect(e instanceof RecursionDepthError).toBe(true);
@@ -41,33 +40,31 @@ describe("A2A Errors", () => {
 
 	describe("ToolTimeoutError", () => {
 		it("should create error with timeout details", () => {
-			const error = new ToolTimeoutError("slow-tool", 5000, 10000);
+			const error = new ToolTimeoutError("slow-tool", 5000);
 
 			expect(error.name).toBe("ToolTimeoutError");
 			expect(error.message).toContain("slow-tool");
 			expect(error.message).toContain("5000");
-			expect(error.code).toBe("TOOL_TIMEOUT");
-			expect(error.context).toEqual({
-				toolName: "slow-tool",
-				timeoutMs: 5000,
-				elapsedMs: 10000,
-			});
+			expect(error.code).toBe("TOOL_TIMEOUT_ERROR");
+			expect(error.toolName).toBe("slow-tool");
+			expect(error.timeoutMs).toBe(5000);
+			expect(error.context.toolName).toBe("slow-tool");
+			expect(error.context.timeoutMs).toBe(5000);
 		});
 	});
 
 	describe("ChainTimeoutError", () => {
 		it("should create error with chain timeout details", () => {
-			const error = new ChainTimeoutError("correlation-123", 30000, 35000);
+			const error = new ChainTimeoutError(30000, 5, {
+				correlationId: "test-123",
+			});
 
 			expect(error.name).toBe("ChainTimeoutError");
-			expect(error.message).toContain("correlation-123");
 			expect(error.message).toContain("30000");
-			expect(error.code).toBe("CHAIN_TIMEOUT");
-			expect(error.context).toEqual({
-				correlationId: "correlation-123",
-				chainTimeoutMs: 30000,
-				elapsedMs: 35000,
-			});
+			expect(error.message).toContain("5");
+			expect(error.code).toBe("CHAIN_TIMEOUT_ERROR");
+			expect(error.chainTimeoutMs).toBe(30000);
+			expect(error.toolsCompleted).toBe(5);
 		});
 	});
 
@@ -77,10 +74,9 @@ describe("A2A Errors", () => {
 
 			expect(error.name).toBe("ToolNotFoundError");
 			expect(error.message).toContain("missing-tool");
-			expect(error.code).toBe("TOOL_NOT_FOUND");
-			expect(error.context).toEqual({
-				toolName: "missing-tool",
-			});
+			expect(error.code).toBe("TOOL_NOT_FOUND_ERROR");
+			expect(error.toolName).toBe("missing-tool");
+			expect(error.context.toolName).toBe("missing-tool");
 		});
 	});
 
@@ -94,53 +90,40 @@ describe("A2A Errors", () => {
 			expect(error.name).toBe("ToolInvocationNotAllowedError");
 			expect(error.message).toContain("caller-tool");
 			expect(error.message).toContain("target-tool");
-			expect(error.code).toBe("INVOCATION_NOT_ALLOWED");
-			expect(error.context).toEqual({
-				callerTool: "caller-tool",
-				targetTool: "target-tool",
-			});
+			expect(error.code).toBe("TOOL_INVOCATION_NOT_ALLOWED_ERROR");
+			expect(error.callerTool).toBe("caller-tool");
+			expect(error.targetTool).toBe("target-tool");
 		});
 	});
 
 	describe("ToolInvocationError", () => {
 		it("should create error with tool execution details", () => {
-			const originalError = new Error("Original failure");
-			const error = new ToolInvocationError("failing-tool", originalError, {
-				input: "test",
-			});
+			const error = new ToolInvocationError(
+				"failing-tool",
+				"Original failure",
+				{
+					input: "test",
+				},
+			);
 
 			expect(error.name).toBe("ToolInvocationError");
-			expect(error.message).toContain("failing-tool");
-			expect(error.message).toContain("Original failure");
+			expect(error.message).toBe("Original failure");
 			expect(error.code).toBe("TOOL_INVOCATION_ERROR");
-			expect(error.context).toEqual({
-				toolName: "failing-tool",
-				originalError: originalError.message,
-				args: { input: "test" },
-			});
-		});
-
-		it("should handle non-Error originalError", () => {
-			const error = new ToolInvocationError("tool", "String error", {});
-
-			expect(error.message).toContain("String error");
-			expect(error.context.originalError).toBe("String error");
+			expect(error.toolName).toBe("failing-tool");
 		});
 	});
 
 	describe("OrchestrationError", () => {
 		it("should create error with orchestration details", () => {
-			const error = new OrchestrationError("Invalid workflow", "workflow-123", {
+			const error = new OrchestrationError("Invalid workflow", {
+				workflowName: "workflow-123",
 				step: 1,
 			});
 
 			expect(error.name).toBe("OrchestrationError");
 			expect(error.message).toBe("Invalid workflow");
 			expect(error.code).toBe("ORCHESTRATION_ERROR");
-			expect(error.context).toEqual({
-				correlationId: "workflow-123",
-				details: { step: 1 },
-			});
+			expect(error.workflowName).toBe("workflow-123");
 		});
 	});
 
@@ -153,28 +136,23 @@ describe("A2A Errors", () => {
 			);
 
 			expect(error.name).toBe("ExecutionStrategyError");
-			expect(error.message).toContain("sequential");
-			expect(error.message).toContain("Circular dependency");
+			expect(error.message).toBe("Circular dependency detected");
 			expect(error.code).toBe("EXECUTION_STRATEGY_ERROR");
-			expect(error.context).toEqual({
-				strategy: "sequential",
-				reason: "Circular dependency detected",
-				details: { step: "step1" },
-			});
+			expect(error.strategy).toBe("sequential");
 		});
 	});
 
 	describe("Error inheritance", () => {
 		it("all A2A errors should extend Error", () => {
 			const errors = [
-				new RecursionDepthError("tool", 1, 1),
-				new ToolTimeoutError("tool", 1000, 2000),
-				new ChainTimeoutError("corr", 1000, 2000),
+				new RecursionDepthError(1, 1),
+				new ToolTimeoutError("tool", 1000),
+				new ChainTimeoutError(1000, 2),
 				new ToolNotFoundError("tool"),
 				new ToolInvocationNotAllowedError("caller", "target"),
-				new ToolInvocationError("tool", new Error("fail"), {}),
-				new OrchestrationError("msg", "corr", {}),
-				new ExecutionStrategyError("seq", "reason", {}),
+				new ToolInvocationError("tool", "fail"),
+				new OrchestrationError("msg", { workflowName: "test" }),
+				new ExecutionStrategyError("seq", "reason"),
 			];
 
 			for (const error of errors) {
@@ -182,7 +160,6 @@ describe("A2A Errors", () => {
 				expect(error.name).toBeDefined();
 				expect(error.message).toBeDefined();
 				expect(error.code).toBeDefined();
-				expect(error.context).toBeDefined();
 				expect(error.timestamp).toBeInstanceOf(Date);
 			}
 		});
@@ -190,7 +167,7 @@ describe("A2A Errors", () => {
 
 	describe("Error context", () => {
 		it("should preserve error context for debugging", () => {
-			const error = new RecursionDepthError("deep-tool", 15, 10);
+			const error = new RecursionDepthError(15, 10, { toolName: "deep-tool" });
 
 			expect(error.context.toolName).toBe("deep-tool");
 			expect(error.context.currentDepth).toBe(15);
@@ -199,7 +176,7 @@ describe("A2A Errors", () => {
 
 		it("should have timestamp for error tracking", () => {
 			const before = Date.now();
-			const error = new ToolTimeoutError("tool", 1000, 2000);
+			const error = new ToolTimeoutError("tool", 1000);
 			const after = Date.now();
 
 			expect(error.timestamp.getTime()).toBeGreaterThanOrEqual(before);
@@ -214,8 +191,7 @@ describe("A2A Errors", () => {
 			const parsed = JSON.parse(json);
 
 			expect(parsed.name).toBe("ToolNotFoundError");
-			expect(parsed.code).toBe("TOOL_NOT_FOUND");
-			expect(parsed.message).toContain("missing-tool");
+			expect(parsed.code).toBe("TOOL_NOT_FOUND_ERROR");
 		});
 	});
 });

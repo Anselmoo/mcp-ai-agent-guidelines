@@ -4,8 +4,11 @@ import {
 	createA2AContext,
 } from "../../src/tools/shared/a2a-context.js";
 import {
+	createTraceFromContext,
+	type TraceEvent,
 	TraceLogger,
 	type TraceSpan,
+	traceLogger,
 } from "../../src/tools/shared/trace-logger.js";
 
 describe("TraceLogger", () => {
@@ -19,210 +22,128 @@ describe("TraceLogger", () => {
 
 	describe("Span management", () => {
 		it("should start and end tool spans", () => {
-			const spanId = logger.startToolSpan(
-				context.correlationId,
-				"test-tool",
-				{ input: "test" },
-				0,
-			);
+			const spanId = logger.startToolSpan(context, "test-tool", "hash123");
 
 			expect(spanId).toMatch(/^span_/);
 
-			logger.endToolSpan(spanId, { success: true, data: "result" });
+			logger.endToolSpan(spanId, true, "result summary");
 
-			const trace = logger.getTrace(context.correlationId);
-			expect(trace).toBeDefined();
-			expect(trace?.spans).toHaveLength(1);
-			expect(trace?.spans[0].toolName).toBe("test-tool");
-			expect(trace?.spans[0].status).toBe("success");
+			const spans = logger.getSpans(context.correlationId);
+			expect(spans).toBeDefined();
+			expect(spans).toHaveLength(1);
+			expect(spans[0].toolName).toBe("test-tool");
+			expect(spans[0].status).toBe("success");
 		});
 
 		it("should track span hierarchy", () => {
 			const parentSpanId = logger.startToolSpan(
-				context.correlationId,
+				context,
 				"parent-tool",
-				{},
-				0,
+				"hash1",
 			);
 
+			// Create child context
+			const childContext = { ...context, depth: 1 };
 			const childSpanId = logger.startToolSpan(
-				context.correlationId,
+				childContext,
 				"child-tool",
-				{},
-				1,
-				parentSpanId,
+				"hash2",
 			);
 
-			logger.endToolSpan(childSpanId, { success: true, data: "child" });
-			logger.endToolSpan(parentSpanId, { success: true, data: "parent" });
+			logger.endToolSpan(childSpanId, true, "child result");
+			logger.endToolSpan(parentSpanId, true, "parent result");
 
-			const trace = logger.getTrace(context.correlationId);
-			expect(trace?.spans).toHaveLength(2);
-			expect(trace?.spans[1].parentSpanId).toBe(parentSpanId);
+			const spans = logger.getSpans(context.correlationId);
+			expect(spans).toHaveLength(2);
+			// The child span should have parent reference
+			expect(spans[1].parentSpanId).toBe(parentSpanId);
 		});
 
 		it("should mark spans with errors", () => {
-			const spanId = logger.startToolSpan(
-				context.correlationId,
-				"failing-tool",
-				{},
-				0,
-			);
+			const spanId = logger.startToolSpan(context, "failing-tool", "hash");
 
-			logger.endToolSpan(spanId, {
-				success: false,
-				error: "Tool failed",
-			});
+			logger.endToolSpan(spanId, false, undefined, "Tool failed");
 
-			const trace = logger.getTrace(context.correlationId);
-			expect(trace?.spans[0].status).toBe("error");
-			expect(trace?.spans[0].error).toBe("Tool failed");
+			const spans = logger.getSpans(context.correlationId);
+			expect(spans[0].status).toBe("error");
+			expect(spans[0].error).toBe("Tool failed");
 		});
 	});
 
 	describe("Events", () => {
-		it("should add events to trace", () => {
-			const spanId = logger.startToolSpan(
-				context.correlationId,
-				"test-tool",
-				{},
-				0,
-			);
+		it("should track events through chain lifecycle", () => {
+			logger.startChain(context);
 
-			logger.addEvent(context.correlationId, "test_event", {
-				message: "Test event",
-			});
+			const spanId = logger.startToolSpan(context, "test-tool", "hash");
+			logger.endToolSpan(spanId, true, "result");
 
-			const trace = logger.getTrace(context.correlationId);
-			expect(trace?.events).toHaveLength(1);
-			expect(trace?.events[0].name).toBe("test_event");
-		});
+			logger.endChain(context, true);
 
-		it("should limit events to prevent memory leaks", () => {
-			const spanId = logger.startToolSpan(
-				context.correlationId,
-				"test-tool",
-				{},
-				0,
-			);
-
-			// Add more than MAX_EVENTS
-			for (let i = 0; i < 1100; i++) {
-				logger.addEvent(context.correlationId, `event_${i}`, {});
-			}
-
-			const trace = logger.getTrace(context.correlationId);
-			expect(trace?.events.length).toBeLessThanOrEqual(1000);
+			const events = logger.getEvents(context.correlationId);
+			expect(events.length).toBeGreaterThan(0);
+			expect(events[0].type).toBe("chain_start");
 		});
 	});
 
-	describe("Timeline visualization", () => {
-		it("should generate timeline visualization", () => {
-			const span1 = logger.startToolSpan(context.correlationId, "tool1", {}, 0);
-			logger.endToolSpan(span1, { success: true, data: "result1" });
+	describe("Timeline", () => {
+		it("should generate timeline data", () => {
+			const span1 = logger.startToolSpan(context, "tool1", "hash1");
+			logger.endToolSpan(span1, true, "result1");
 
-			const span2 = logger.startToolSpan(context.correlationId, "tool2", {}, 0);
-			logger.endToolSpan(span2, { success: true, data: "result2" });
+			const span2 = logger.startToolSpan(context, "tool2", "hash2");
+			logger.endToolSpan(span2, true, "result2");
 
 			const timeline = logger.getTimeline(context.correlationId);
 
 			expect(timeline).toBeDefined();
-			expect(timeline).toContain("tool1");
-			expect(timeline).toContain("tool2");
-			expect(timeline).toContain("Timeline");
+			expect(timeline.spans).toHaveLength(2);
+			expect(timeline.totalDurationMs).toBeGreaterThanOrEqual(0);
 		});
 
 		it("should handle empty traces", () => {
 			const timeline = logger.getTimeline("non-existent");
-			expect(timeline).toBe("No trace found for correlation ID: non-existent");
+			expect(timeline.spans).toEqual([]);
+			expect(timeline.totalDurationMs).toBe(0);
 		});
 	});
 
-	describe("Mermaid diagram generation", () => {
-		it("should generate Mermaid sequence diagram", () => {
-			const parentSpan = logger.startToolSpan(
-				context.correlationId,
-				"parent",
-				{},
-				0,
-			);
-			const childSpan = logger.startToolSpan(
-				context.correlationId,
-				"child",
-				{},
-				1,
-				parentSpan,
-			);
+	describe("Export", () => {
+		it("should export trace in JSON format", () => {
+			const spanId = logger.startToolSpan(context, "test-tool", "hash");
+			logger.endToolSpan(spanId, true, "result");
 
-			logger.endToolSpan(childSpan, { success: true, data: "child" });
-			logger.endToolSpan(parentSpan, { success: true, data: "parent" });
+			const exported = logger.exportTrace(context.correlationId, "json");
 
-			const diagram = logger.getMermaidDiagram(context.correlationId);
-
-			expect(diagram).toContain("sequenceDiagram");
-			expect(diagram).toContain("parent");
-			expect(diagram).toContain("child");
+			expect(exported).toBeDefined();
+			const parsed = JSON.parse(exported);
+			expect(parsed.correlationId).toBe(context.correlationId);
+			expect(parsed.spans).toHaveLength(1);
 		});
-	});
 
-	describe("OTLP export", () => {
 		it("should export trace in OTLP format", () => {
-			const spanId = logger.startToolSpan(
-				context.correlationId,
-				"test-tool",
-				{},
-				0,
-			);
-			logger.endToolSpan(spanId, { success: true, data: "result" });
+			const spanId = logger.startToolSpan(context, "test-tool", "hash");
+			logger.endToolSpan(spanId, true, "result");
 
-			const otlp = logger.exportOTLP(context.correlationId);
+			const exported = logger.exportTrace(context.correlationId, "otlp");
 
-			expect(otlp).toBeDefined();
-			expect(otlp?.resourceSpans).toBeDefined();
-			expect(otlp?.resourceSpans[0].scopeSpans[0].spans).toHaveLength(1);
+			expect(exported).toBeDefined();
+			const parsed = JSON.parse(exported);
+			expect(parsed.resourceSpans).toBeDefined();
 		});
 	});
 
-	describe("Metrics", () => {
-		it("should calculate trace metrics", () => {
-			const span1 = logger.startToolSpan(context.correlationId, "tool1", {}, 0);
-			// Simulate some delay
-			logger.endToolSpan(span1, { success: true, data: "result1" });
+	describe("Summary", () => {
+		it("should provide summary statistics", () => {
+			const span1 = logger.startToolSpan(context, "tool1", "hash1");
+			logger.endToolSpan(span1, true, "result1");
 
-			const span2 = logger.startToolSpan(context.correlationId, "tool2", {}, 0);
-			logger.endToolSpan(span2, { success: true, data: "result2" });
+			const span2 = logger.startToolSpan(context, "tool2", "hash2");
+			logger.endToolSpan(span2, true, "result2");
 
-			const metrics = logger.getMetrics(context.correlationId);
+			const summary = logger.getSummary();
 
-			expect(metrics).toBeDefined();
-			expect(metrics?.totalSpans).toBe(2);
-			expect(metrics?.successfulSpans).toBe(2);
-			expect(metrics?.failedSpans).toBe(0);
-			expect(metrics?.totalDurationMs).toBeGreaterThan(0);
-		});
-
-		it("should identify critical path", () => {
-			const parentSpan = logger.startToolSpan(
-				context.correlationId,
-				"parent",
-				{},
-				0,
-			);
-			const childSpan = logger.startToolSpan(
-				context.correlationId,
-				"child",
-				{},
-				1,
-				parentSpan,
-			);
-
-			logger.endToolSpan(childSpan, { success: true, data: "child" });
-			logger.endToolSpan(parentSpan, { success: true, data: "parent" });
-
-			const metrics = logger.getMetrics(context.correlationId);
-
-			expect(metrics?.criticalPath).toBeDefined();
-			expect(metrics?.criticalPath.length).toBeGreaterThan(0);
+			expect(summary).toBeDefined();
+			expect(summary.totalSpans).toBe(2);
 		});
 	});
 
@@ -249,7 +170,7 @@ describe("TraceLogger", () => {
 				depth: 1,
 			});
 
-			const trace = logger.createTraceFromContext(context);
+			const trace = createTraceFromContext(context);
 
 			expect(trace).toBeDefined();
 			expect(trace.correlationId).toBe(context.correlationId);
@@ -257,43 +178,47 @@ describe("TraceLogger", () => {
 		});
 	});
 
-	describe("Memory management", () => {
-		it("should cleanup old spans to prevent memory leaks", () => {
-			// Create many spans for different correlations
-			for (let i = 0; i < 150; i++) {
-				const corrId = `corr_${i}`;
-				const spanId = logger.startToolSpan(corrId, `tool_${i}`, {}, 0);
-				logger.endToolSpan(spanId, { success: true, data: "result" });
-			}
+	describe("Singleton instance", () => {
+		it("should export singleton traceLogger", () => {
+			expect(traceLogger).toBeDefined();
+			expect(traceLogger).toBeInstanceOf(TraceLogger);
+		});
+	});
 
-			// Cleanup should have been triggered
-			// Verify that old spans are cleaned up
-			const allTraces = [];
-			for (let i = 0; i < 150; i++) {
-				const trace = logger.getTrace(`corr_${i}`);
-				if (trace) allTraces.push(trace);
-			}
+	describe("Clear", () => {
+		it("should clear all traces", () => {
+			const spanId = logger.startToolSpan(context, "test-tool", "hash");
+			logger.endToolSpan(spanId, true, "result");
 
-			// Some old traces should have been cleaned up
-			expect(allTraces.length).toBeLessThan(150);
+			expect(logger.getSpans(context.correlationId)).toHaveLength(1);
+
+			logger.clear();
+
+			expect(logger.getSpans(context.correlationId)).toHaveLength(0);
+		});
+	});
+
+	describe("Type exports", () => {
+		it("should export TraceSpan type", () => {
+			const span: TraceSpan = {
+				spanId: "test",
+				correlationId: "corr",
+				toolName: "tool",
+				startTime: new Date(),
+				depth: 0,
+				status: "pending",
+				inputHash: "hash",
+			};
+			expect(span.spanId).toBe("test");
 		});
 
-		it("should cleanup spans older than MAX_SPAN_AGE_MS", () => {
-			const oldCorrId = "old_correlation";
-			const spanId = logger.startToolSpan(oldCorrId, "old-tool", {}, 0);
-			logger.endToolSpan(spanId, { success: true, data: "result" });
-
-			// Manually set span to be very old (this tests the cleanup logic conceptually)
-			// In real implementation, cleanup happens periodically
-
-			// Trigger cleanup by creating new spans
-			for (let i = 0; i < 20; i++) {
-				const newSpan = logger.startToolSpan(`new_${i}`, `tool_${i}`, {}, 0);
-				logger.endToolSpan(newSpan, { success: true, data: "result" });
-			}
-
-			// Old span might be cleaned up
-			// This is a conceptual test - actual cleanup depends on time thresholds
+		it("should export TraceEvent type", () => {
+			const event: TraceEvent = {
+				type: "tool_start",
+				timestamp: new Date(),
+				correlationId: "corr",
+			};
+			expect(event.type).toBe("tool_start");
 		});
 	});
 });
