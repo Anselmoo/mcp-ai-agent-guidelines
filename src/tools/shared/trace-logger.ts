@@ -147,6 +147,11 @@ export class TraceLogger {
 		toolName: string,
 		inputHash: string,
 	): string {
+		// Periodically clean up old spans (10% chance)
+		if (Math.random() < 0.1) {
+			this.cleanupOldSpans();
+		}
+
 		const spanId = this.generateSpanId();
 		const parentSpanId = this.activeSpans.get(context.correlationId);
 
