@@ -262,6 +262,12 @@ async function executeWithTimeout<T>(
 }
 
 /**
+ * Window size for deduplication checking
+ * Only check the last N entries to avoid excessive searching
+ */
+const DEDUPLICATION_WINDOW_SIZE = 10;
+
+/**
  * Find duplicate invocation in execution log
  *
  * @param context - A2A context
@@ -274,8 +280,9 @@ function findDuplicateInvocation(
 	toolName: string,
 	inputHash: string,
 ): (typeof context.executionLog)[0] | undefined {
-	// Look for recent invocations (within last 10 entries) to avoid excessive searching
-	const recentLog = context.executionLog.slice(-10);
+	// Look for recent invocations (within last DEDUPLICATION_WINDOW_SIZE entries)
+	// to avoid excessive searching while still catching common duplicates
+	const recentLog = context.executionLog.slice(-DEDUPLICATION_WINDOW_SIZE);
 
 	return recentLog.find(
 		(entry) =>

@@ -95,6 +95,8 @@ Configuration is in `.mlc_config.json`. Ignored patterns and retries are configu
 ### Advanced Features
 
 - **[🌊 Flow-Based Prompting](./docs/tips/flow-prompting-examples.md)** - Multi-step prompt workflows
+- **[🔗 Agent-to-Agent (A2A) Orchestration](./docs/A2A_ORCHESTRATION_GUIDE.md)** - Tool-to-tool chaining with context propagation
+- **[📋 A2A Practical Examples](./docs/A2A_EXAMPLES.md)** - Real-world A2A workflow patterns
 - **[🎨 Mermaid Diagram Generation](./docs/tips/mermaid-diagram-examples.md)** - Create flowcharts, sequences, ER diagrams
 - **[🔍 Code Quality Analysis](./docs/tips/code-quality-improvements.md)** - Hygiene scoring and best practices
 - **[⚡ Sprint Planning](./docs/tips/sprint-planning-reliability.md)** - Dependency-aware timeline calculation

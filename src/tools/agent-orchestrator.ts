@@ -72,20 +72,23 @@ const AgentOrchestratorSchema = z.object({
 				z.object({
 					id: z.string(),
 					toolName: z.string(),
-					args: z.any(),
+					args: z.unknown().describe("Arguments to pass to the tool"),
 					dependencies: z.array(z.string()).optional(),
 				}),
 			),
 			onError: z.enum(["abort", "skip", "fallback"]),
 			fallbackTool: z.string().optional(),
-			fallbackArgs: z.any().optional(),
+			fallbackArgs: z
+				.unknown()
+				.optional()
+				.describe("Arguments for fallback tool"),
 		})
 		.optional()
 		.describe("Custom execution plan for the workflow"),
 
 	// Workflow parameters (passed to tools in the workflow)
 	parameters: z
-		.record(z.any())
+		.record(z.unknown())
 		.optional()
 		.describe("Parameters to pass to workflow steps"),
 
@@ -386,7 +389,10 @@ function convertCustomPlan(
 	const steps: ExecutionStep[] = customPlan.steps.map((step) => ({
 		id: step.id,
 		toolName: step.toolName,
-		args: { ...step.args, ...parameters },
+		args:
+			typeof step.args === "object" && step.args !== null
+				? { ...(step.args as Record<string, unknown>), ...parameters }
+				: parameters || step.args,
 		dependencies: step.dependencies,
 	}));
 

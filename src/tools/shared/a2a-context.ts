@@ -201,10 +201,23 @@ function generateCorrelationId(): string {
  *
  * @param input - Input parameters
  * @returns Hash string
+ *
+ * @remarks
+ * This is a demonstration implementation using a simple string-based hash.
+ * For production deployments, replace with a proper hashing library like
+ * `crypto.createHash('sha256')` for better collision resistance and performance
+ * with large inputs.
+ *
+ * @example
+ * ```typescript
+ * // Production implementation:
+ * import { createHash } from 'crypto';
+ * const hash = createHash('sha256').update(JSON.stringify(input)).digest('hex');
+ * ```
  */
 export function hashInput(input: unknown): string {
 	// Simple hash implementation using JSON stringification
-	// In production, consider using a proper hash function
+	// NOTE: This is a demonstration implementation with potential collisions
 	const str = JSON.stringify(input) || "";
 	let hash = 0;
 

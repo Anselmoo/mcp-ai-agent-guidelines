@@ -297,7 +297,7 @@ export async function raceTools(
 }
 
 /**
- * Retry pattern: Retry a tool invocation with exponential backoff
+ * Retry pattern: Retry a tool invocation with exponential backoff and optional jitter
  *
  * @param toolName - Tool to retry
  * @param args - Tool arguments
@@ -305,7 +305,12 @@ export async function raceTools(
  * @param maxRetries - Maximum retry attempts
  * @param initialDelayMs - Initial delay before first retry
  * @param backoffMultiplier - Multiplier for exponential backoff
+ * @param jitterMs - Optional maximum jitter in milliseconds (default: 0)
  * @returns Tool result
+ *
+ * @remarks
+ * Jitter is added to each retry delay to prevent thundering herd problems when
+ * multiple tool chains fail simultaneously and retry at the same time.
  */
 export async function retryTool(
 	toolName: string,
@@ -314,6 +319,7 @@ export async function retryTool(
 	maxRetries = 3,
 	initialDelayMs = 1000,
 	backoffMultiplier = 2,
+	jitterMs = 0,
 ): Promise<ToolResult> {
 	let lastError: Error | undefined;
 	let delayMs = initialDelayMs;
@@ -332,13 +338,19 @@ export async function retryTool(
 		}
 
 		if (attempt < maxRetries) {
+			// Add jitter to delay to prevent thundering herd
+			const jitter = jitterMs > 0 ? Math.floor(Math.random() * jitterMs) : 0;
+			const actualDelay = delayMs + jitter;
+
 			logger.warn(
 				`Retry attempt ${attempt + 1}/${maxRetries} for ${toolName}`,
 				{
-					delayMs,
+					delayMs: actualDelay,
+					baseDelayMs: delayMs,
+					jitterMs: jitter,
 				},
 			);
-			await sleep(delayMs);
+			await sleep(actualDelay);
 			delayMs *= backoffMultiplier;
 		}
 	}

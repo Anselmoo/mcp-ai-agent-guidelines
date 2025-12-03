@@ -161,7 +161,7 @@ export async function executeChain(
 		}
 
 		// Calculate summary
-		const summary = calculateSummary(stepResults, startTime);
+		const summary = calculateSummary(stepResults, startTime, context);
 
 		// Determine final output
 		const finalOutput = getFinalOutput(plan.steps, stepResults);
@@ -189,7 +189,7 @@ export async function executeChain(
 
 				stepResults.set("fallback", fallbackResult);
 
-				const summary = calculateSummary(stepResults, startTime);
+				const summary = calculateSummary(stepResults, startTime, context);
 
 				return {
 					success: fallbackResult.success,
@@ -208,7 +208,7 @@ export async function executeChain(
 			}
 		}
 
-		const summary = calculateSummary(stepResults, startTime);
+		const summary = calculateSummary(stepResults, startTime, context);
 
 		return {
 			success: false,
@@ -549,14 +549,20 @@ function getFinalOutput(
 function calculateSummary(
 	results: Map<string, ToolResult>,
 	startTime: number,
+	context: A2AContext,
 ): ChainResult["summary"] {
 	const values = Array.from(results.values());
+
+	// Count skipped steps from execution log
+	const skippedCount = context.executionLog.filter(
+		(entry) => entry.status === "skipped",
+	).length;
 
 	return {
 		totalSteps: values.length,
 		successfulSteps: values.filter((r) => r.success).length,
 		failedSteps: values.filter((r) => !r.success).length,
-		skippedSteps: 0, // TODO: Track skipped steps
+		skippedSteps: skippedCount,
 		totalDurationMs: Date.now() - startTime,
 	};
 }

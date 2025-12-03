@@ -312,7 +312,10 @@ export class TraceLogger {
 		}
 
 		// OTLP format (simplified)
-		// In production, use proper OTLP library
+		// In production, use proper OTLP library like:
+		// - @opentelemetry/otlp-exporter-base
+		// - @opentelemetry/exporter-trace-otlp-http
+		// See: https://opentelemetry.io/docs/specs/otlp/
 		return JSON.stringify({
 			resourceSpans: [
 				{
@@ -385,14 +388,85 @@ export class TraceLogger {
 	}
 
 	/**
+	 * Maximum number of events to keep in memory
+	 */
+	private static readonly MAX_EVENTS = 1000;
+
+	/**
+	 * Maximum number of spans to keep in memory per correlation ID
+	 */
+	private static readonly MAX_SPANS_PER_CORRELATION = 100;
+
+	/**
+	 * Maximum age of spans to keep (in milliseconds)
+	 */
+	private static readonly MAX_SPAN_AGE_MS = 3600000; // 1 hour
+
+	/**
 	 * Add a trace event
 	 */
 	private addEvent(event: TraceEvent): void {
 		this.events.push(event);
 
-		// Keep only last 1000 events to prevent memory leaks
-		if (this.events.length > 1000) {
-			this.events = this.events.slice(-1000);
+		// Keep only last MAX_EVENTS to prevent memory leaks
+		if (this.events.length > TraceLogger.MAX_EVENTS) {
+			this.events = this.events.slice(-TraceLogger.MAX_EVENTS);
+		}
+	}
+
+	/**
+	 * Clean up old spans to prevent memory leaks in long-running servers
+	 */
+	private cleanupOldSpans(): void {
+		const now = Date.now();
+		const spanIdsToRemove: string[] = [];
+
+		// Remove old spans based on age
+		for (const [spanId, span] of this.spans.entries()) {
+			// Check if the span is too old
+			if (
+				span.endTime &&
+				now - span.endTime.getTime() > TraceLogger.MAX_SPAN_AGE_MS
+			) {
+				spanIdsToRemove.push(spanId);
+			}
+		}
+
+		// Remove old spans
+		for (const spanId of spanIdsToRemove) {
+			this.spans.delete(spanId);
+		}
+
+		// Clean up active spans for removed correlation IDs
+		// (If all spans for a correlation are removed, clean up the active tracking)
+		const remainingCorrelationIds = new Set(
+			Array.from(this.spans.values()).map((span) => span.correlationId),
+		);
+		const activeCorrelationIds = Array.from(this.activeSpans.keys());
+		for (const correlationId of activeCorrelationIds) {
+			if (!remainingCorrelationIds.has(correlationId)) {
+				this.activeSpans.delete(correlationId);
+			}
+		}
+
+		// Limit total spans if still too many
+		if (this.spans.size > TraceLogger.MAX_SPANS_PER_CORRELATION * 10) {
+			// Keep only the most recent spans
+			const spanArray = Array.from(this.spans.entries());
+			spanArray.sort(
+				(a, b) =>
+					(b[1].endTime?.getTime() || now) - (a[1].endTime?.getTime() || now),
+			);
+
+			// Keep only the newest MAX_SPANS_PER_CORRELATION * 10 spans
+			const toKeep = spanArray.slice(
+				0,
+				TraceLogger.MAX_SPANS_PER_CORRELATION * 10,
+			);
+			this.spans.clear();
+			for (const [spanId, span] of toKeep) {
+				this.spans.set(spanId, span);
+			}
 		}
 	}
 
@@ -478,22 +552,35 @@ export function createTraceFromContext(context: A2AContext): {
 	spans: TraceSpan[];
 	totalDurationMs: number;
 } {
-	const spans: TraceSpan[] = context.executionLog.map((entry, index) => ({
-		spanId: `span_${index}`,
-		parentSpanId: entry.parentToolName
-			? `parent_${entry.parentToolName}`
-			: undefined,
-		correlationId: context.correlationId,
-		toolName: entry.toolName,
-		startTime: new Date(entry.timestamp.getTime() - entry.durationMs),
-		endTime: entry.timestamp,
-		durationMs: entry.durationMs,
-		depth: entry.depth,
-		status: entry.status === "success" ? "success" : "error",
-		error: entry.errorDetails,
-		inputHash: entry.inputHash,
-		outputSummary: entry.outputSummary,
-	}));
+	// Build a mapping from toolName to spanId for proper parent lookup
+	const toolNameToSpanId: Record<string, string> = {};
+
+	const spans: TraceSpan[] = context.executionLog.map((entry, index) => {
+		const spanId = `span_${index}`;
+
+		// Map this toolName to its spanId for future parent lookups
+		if (entry.toolName) {
+			toolNameToSpanId[entry.toolName] = spanId;
+		}
+
+		return {
+			spanId,
+			// Look up parent span ID from the toolName mapping
+			parentSpanId: entry.parentToolName
+				? toolNameToSpanId[entry.parentToolName]
+				: undefined,
+			correlationId: context.correlationId,
+			toolName: entry.toolName,
+			startTime: new Date(entry.timestamp.getTime() - entry.durationMs),
+			endTime: entry.timestamp,
+			durationMs: entry.durationMs,
+			depth: entry.depth,
+			status: entry.status === "success" ? "success" : "error",
+			error: entry.errorDetails,
+			inputHash: entry.inputHash,
+			outputSummary: entry.outputSummary,
+		};
+	});
 
 	const totalDurationMs = spans.reduce(
 		(sum, span) => sum + (span.durationMs || 0),
