@@ -14,19 +14,8 @@ tools:
   - ai-agent-guidelines/spark-prompt-builder
   - ai-agent-guidelines/security-hardening-prompt-builder
   - sequentialthinking/*
-handoffs:
-  - label: Request Tool Implementation
-    agent: MCP-Tool-Builder
-    prompt: "New prompt patterns designed. Please implement as MCP tools."
-    send: false
-  - label: Request Documentation
-    agent: Documentation-Generator
-    prompt: "Prompt patterns documented. Please update usage guides."
-    send: false
-  - label: Request Test Coverage
-    agent: TDD-Workflow
-    prompt: "New prompts ready. Please create test cases for the prompt builders."
-    send: false
+  - custom-agent
+
 ---
 
 # Prompt Architect Agent
@@ -613,6 +602,35 @@ Optimized prompt ready for implementation.
 ```
 
 No further delegation needed - prompt ready to use.
+
+## Multi-Agent Delegation
+
+After prompt engineering work, use the `custom-agent` tool to delegate:
+
+### Delegation Workflow
+
+**After prompt optimization:**
+
+1. **Request Code Review** - Delegate to `@code-reviewer`:
+   ```
+   Use `custom-agent` tool to invoke @code-reviewer
+   Context: Prompt templates/builders optimized
+   Files: [list prompt files]
+   Focus: Review for code quality and consistency.
+   ```
+
+2. **Request Documentation** - Delegate to `@documentation-generator`:
+   ```
+   Use `custom-agent` tool to invoke @documentation-generator
+   Context: New/updated prompts created
+   Files: [list prompt files]
+   Focus: Document prompt usage patterns and examples.
+   ```
+
+### When to Delegate Elsewhere
+
+- **Testing prompt outputs**: Delegate to `@tdd-workflow`
+- **Prompt pattern architecture**: Delegate to `@architecture-advisor`
 
 ## Resources
 

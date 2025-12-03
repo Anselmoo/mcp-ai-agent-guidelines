@@ -11,19 +11,8 @@ tools:
   - ai-agent-guidelines/clean-code-scorer
   - ai-agent-guidelines/iterative-coverage-enhancer
   - serena/*
-handoffs:
-  - label: Request Code Review
-    agent: Code-Reviewer
-    prompt: "Tests complete with 90%+ coverage. Please review code quality and clean code compliance."
-    send: false
-  - label: Request Security Audit
-    agent: Security-Auditor
-    prompt: "Implementation and tests complete. Please perform security audit for OWASP compliance."
-    send: false
-  - label: Return to Development
-    agent: MCP-Tool-Builder
-    prompt: "Tests failed. Please fix the failing tests and re-run."
-    send: false
+  - custom-agent
+
 ---
 
 # TDD Workflow Agent
@@ -380,6 +369,36 @@ npm run test:vitest -- -t "test name"
 # Debug mode
 node --inspect-brk node_modules/.bin/vitest run
 ```
+
+## Multi-Agent Delegation
+
+After completing test implementation, use the `custom-agent` tool to delegate:
+
+### Delegation Workflow
+
+**After tests are written and passing:**
+
+1. **Request Code Review** - Delegate to `@code-reviewer`:
+   ```
+   Use `custom-agent` tool to invoke @code-reviewer
+   Context: Tests complete with [X]% coverage
+   Files: [list test files and implementation files]
+   Focus: Review test quality, coverage adequacy, and code patterns.
+   ```
+
+2. **If tests are failing** - Delegate to `@debugging-assistant`:
+   ```
+   Use `custom-agent` tool to invoke @debugging-assistant
+   Context: Tests failing in [module/feature]
+   Files: [list failing test files]
+   Focus: Identify root cause of test failures.
+   ```
+
+### When to Delegate Elsewhere
+
+- **Need implementation fixes**: Delegate to `@mcp-tool-builder`
+- **Security test patterns**: Delegate to `@security-auditor`
+- **Performance testing**: Delegate to `@performance-optimizer`
 
 ## Resources
 

@@ -7,15 +7,8 @@ tools:
   - search
   - runSubagent
   - serena/search_for_pattern
-handoffs:
-  - label: Request PR Review
-    agent: Code-Reviewer
-    prompt: "Changelog updated. Please review the changes for completeness and accuracy."
-    send: false
-  - label: Request Documentation Sync
-    agent: Documentation-Generator
-    prompt: "Changelog updated. Please ensure documentation reflects the new changes."
-    send: false
+  - custom-agent
+
 ---
 
 # Changelog Curator Agent
@@ -524,6 +517,35 @@ Ready for release process when appropriate.
 ```
 
 No delegation needed - changelog maintenance complete.
+
+## Multi-Agent Delegation
+
+After updating CHANGELOG, use the `custom-agent` tool to delegate:
+
+### Delegation Workflow
+
+**After CHANGELOG update:**
+
+1. **Request PR Review** - Delegate to `@code-reviewer`:
+   ```
+   Use `custom-agent` tool to invoke @code-reviewer
+   Context: Changelog updated for [version/release]
+   Files: CHANGELOG.md
+   Focus: Review changes for completeness and accuracy.
+   ```
+
+2. **Request Documentation Sync** - Delegate to `@documentation-generator`:
+   ```
+   Use `custom-agent` tool to invoke @documentation-generator
+   Context: Changelog updated with new features/fixes
+   Files: CHANGELOG.md
+   Focus: Ensure documentation reflects the changes listed in CHANGELOG.
+   ```
+
+### When to Delegate Elsewhere
+
+- **Version tagging issues**: Delegate to `@ci-fixer`
+- **Release notes formatting**: Delegate to `@documentation-generator`
 
 ## Resources
 

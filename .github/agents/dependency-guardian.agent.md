@@ -8,19 +8,8 @@ tools:
   - ai-agent-guidelines/dependency-auditor
   - fetch/*
   - context7/*
-handoffs:
-  - label: Request Security Audit
-    agent: Security-Auditor
-    prompt: "Dependency vulnerabilities found. Please perform deep security audit."
-    send: false
-  - label: Request Update Implementation
-    agent: MCP-Tool-Builder
-    prompt: "Dependencies need updating. Please implement the version bumps carefully."
-    send: false
-  - label: Request Changelog Update
-    agent: Changelog-Curator
-    prompt: "Dependency updates complete. Please document changes in CHANGELOG.md."
-    send: false
+  - custom-agent
+
 ---
 
 # Dependency Guardian Agent
@@ -489,6 +478,45 @@ Solutions:
 3. Replace parent dependency
 4. Apply workaround if available
 ```
+
+## Multi-Agent Delegation
+
+After dependency analysis, use the `custom-agent` tool to delegate:
+
+### Delegation Workflow
+
+**If vulnerabilities found:**
+
+1. **Request Security Audit** - Delegate to `@security-auditor`:
+   ```
+   Use `custom-agent` tool to invoke @security-auditor
+   Context: Dependency vulnerabilities found: [list CVEs]
+   Files: package.json, package-lock.json
+   Focus: Perform deep security audit of vulnerable dependencies.
+   ```
+
+2. **Request Update Implementation** - Delegate to `@mcp-tool-builder`:
+   ```
+   Use `custom-agent` tool to invoke @mcp-tool-builder
+   Context: Dependencies need updating: [list packages]
+   Files: package.json
+   Focus: Implement version bumps carefully, check for breaking changes.
+   ```
+
+**After updates complete:**
+
+3. **Request Changelog Update** - Delegate to `@changelog-curator`:
+   ```
+   Use `custom-agent` tool to invoke @changelog-curator
+   Context: Dependency updates complete
+   Files: package.json, package-lock.json
+   Focus: Document dependency changes in CHANGELOG.md.
+   ```
+
+### When to Delegate Elsewhere
+
+- **Breaking changes in tests**: Delegate to `@tdd-workflow`
+- **CI failures after update**: Delegate to `@ci-fixer`
 
 ## Resources
 

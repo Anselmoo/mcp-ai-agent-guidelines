@@ -8,6 +8,18 @@ This directory contains documentation for developers contributing to the MCP AI 
 
 ## Available Guides
 
+### [Agent Ecosystem](./agent-ecosystem.md)
+
+Comprehensive documentation for the GitHub Copilot Coding Agent ecosystem:
+
+- **12 specialized agents** for development, testing, security, documentation, and automation
+- **Multi-agent delegation** using the `custom-agent` tool
+- **MCP integration** with 8 servers (fetch, serena, ai-agent-guidelines, sequentialthinking, etc.)
+- **Workflow examples** and best practices
+- **Environment setup** via `.github/copilot-setup-steps.yml`
+
+See [agent-ecosystem.md](./agent-ecosystem.md) for detailed documentation.
+
 ### [Link Extraction](./link-extraction.md)
 
 Extract and audit all external links from markdown files:
@@ -35,10 +47,11 @@ See [CONTRIBUTING.md](../../CONTRIBUTING.md) for general contribution guidelines
 
 ## Related Documentation
 
+- [Agent Ecosystem](./agent-ecosystem.md) - GitHub Copilot Coding Agent documentation
 - [Technical Improvements](./technical-improvements.md) - Refactoring and enhancements
 - [Error Handling](../tips/error-handling.md) - Error patterns and best practices
 - [Type Organization](../tips/type-organization-extension.md) - TypeScript conventions
 
-!-- FOOTER:START -->
+<!-- FOOTER:START -->
 ![Footer](../.frames-static/09-footer.svg)
 <!-- FOOTER:END -->

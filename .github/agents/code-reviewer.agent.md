@@ -11,19 +11,8 @@ tools:
   - serena/find_symbol
   - serena/get_symbols_overview
   - serena/search_for_pattern
-handoffs:
-  - label: Request Security Audit
-    agent: Security-Auditor
-    prompt: "Code review passed. Please perform security audit for OWASP compliance and vulnerability checks."
-    send: false
-  - label: Request Documentation
-    agent: Documentation-Generator
-    prompt: "Code review passed. Please update API documentation and JSDoc comments."
-    send: false
-  - label: Return for Fixes
-    agent: MCP-Tool-Builder
-    prompt: "Code review found issues. Please address the following concerns before re-review."
-    send: false
+  - custom-agent
+
 ---
 
 # Code Reviewer Agent
@@ -373,6 +362,45 @@ Use the `custom-agent` tool to invoke `@security-auditor`.
 
 ### Issue: No barrel export
 **Solution:** Add export to appropriate `index.ts`
+
+## Multi-Agent Delegation
+
+After completing code review, use the `custom-agent` tool to delegate:
+
+### Delegation Workflow
+
+**If code review passes:**
+
+1. **Request Security Audit** - Delegate to `@security-auditor`:
+   ```
+   Use `custom-agent` tool to invoke @security-auditor
+   Context: Code review passed for [feature/module]
+   Files: [list reviewed files]
+   Focus: Perform security audit for OWASP compliance and vulnerability checks.
+   ```
+
+2. **Request Documentation** - Delegate to `@documentation-generator`:
+   ```
+   Use `custom-agent` tool to invoke @documentation-generator
+   Context: Code review passed
+   Files: [list reviewed files]
+   Focus: Update API documentation and JSDoc comments.
+   ```
+
+**If code review finds issues:**
+
+- **Return for Fixes** - Delegate to `@mcp-tool-builder`:
+   ```
+   Use `custom-agent` tool to invoke @mcp-tool-builder
+   Context: Code review found [X] issues
+   Files: [list files with issues]
+   Focus: Address code quality concerns: [list specific issues]
+   ```
+
+### When to Delegate Elsewhere
+
+- **Architecture concerns**: Delegate to `@architecture-advisor`
+- **Test coverage gaps**: Delegate to `@tdd-workflow`
 
 ## Resources
 

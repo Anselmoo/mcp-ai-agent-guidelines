@@ -13,19 +13,8 @@ tools:
   - serena/*
   - playwright-mcp/*
   - chrome-devtools-mcp/*
-handoffs:
-  - label: Request Implementation
-    agent: MCP-Tool-Builder
-    prompt: "Performance optimizations identified. Please implement the changes."
-    send: false
-  - label: Request Documentation
-    agent: Documentation-Generator
-    prompt: "Performance improvements complete. Please document the optimizations."
-    send: false
-  - label: Request Architecture Review
-    agent: Architecture-Advisor
-    prompt: "Performance issues may require architectural changes. Please advise."
-    send: false
+  - custom-agent
+
 ---
 
 # Performance Optimizer Agent
@@ -597,6 +586,36 @@ Performance targets met. No further action needed.
 ```
 
 For architectural performance improvements, delegate to `@architecture-advisor`.
+
+## Multi-Agent Delegation
+
+After performance analysis, use the `custom-agent` tool to delegate:
+
+### Delegation Workflow
+
+**After optimization complete:**
+
+1. **Request Code Review** - Delegate to `@code-reviewer`:
+   ```
+   Use `custom-agent` tool to invoke @code-reviewer
+   Context: Performance optimizations applied
+   Files: [list optimized files]
+   Focus: Review optimizations for code quality and maintainability.
+   ```
+
+2. **Request Testing** - Delegate to `@tdd-workflow`:
+   ```
+   Use `custom-agent` tool to invoke @tdd-workflow
+   Context: Performance optimizations implemented
+   Files: [list optimized files]
+   Focus: Add performance regression tests.
+   ```
+
+### When to Delegate Elsewhere
+
+- **Architecture changes needed**: Delegate to `@architecture-advisor`
+- **Performance issues persist**: Delegate to `@debugging-assistant`
+- **Bundle size issues**: Delegate to `@dependency-guardian`
 
 ## Resources
 
