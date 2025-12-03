@@ -11,19 +11,8 @@ tools:
   - ai-agent-guidelines/semantic-code-analyzer
   - serena/*
   - sequentialthinking/*
-handoffs:
-  - label: Request Fix Implementation
-    agent: MCP-Tool-Builder
-    prompt: "Root cause identified. Please implement the fix based on the analysis."
-    send: false
-  - label: Request Test Coverage
-    agent: TDD-Workflow
-    prompt: "Bug identified. Please add regression tests before and after the fix."
-    send: false
-  - label: Request CI Investigation
-    agent: CI-Fixer
-    prompt: "Issue may be CI/CD related. Please investigate workflow failures."
-    send: false
+  - custom-agent
+
 ---
 
 # Debugging Assistant Agent
@@ -547,6 +536,36 @@ For complex issues requiring architectural changes, delegate to `@architecture-a
 - Verify assumptions
 - Fix root cause
 - Document the fix
+
+## Multi-Agent Delegation
+
+After identifying root cause, use the `custom-agent` tool to delegate:
+
+### Delegation Workflow
+
+**After root cause analysis:**
+
+1. **Request Fix Implementation** - Delegate to `@mcp-tool-builder`:
+   ```
+   Use `custom-agent` tool to invoke @mcp-tool-builder
+   Context: Root cause identified: [description]
+   Files: [list affected files]
+   Focus: Implement fix based on analysis: [specific solution]
+   ```
+
+2. **Request Regression Tests** - Delegate to `@tdd-workflow`:
+   ```
+   Use `custom-agent` tool to invoke @tdd-workflow
+   Context: Bug identified in [module/feature]
+   Files: [list buggy files]
+   Focus: Add regression tests before and after fix to prevent reoccurrence.
+   ```
+
+### When to Delegate Elsewhere
+
+- **CI/CD issues**: Delegate to `@ci-fixer`
+- **Security implications**: Delegate to `@security-auditor`
+- **Architecture problems**: Delegate to `@architecture-advisor`
 
 ## Resources
 

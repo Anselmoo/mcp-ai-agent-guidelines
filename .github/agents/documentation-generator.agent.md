@@ -11,19 +11,8 @@ tools:
   - serena/get_symbols_overview
   - serena/find_symbol
   - context7/*
-handoffs:
-  - label: Request Changelog Update
-    agent: Changelog-Curator
-    prompt: "Documentation updated. Please update CHANGELOG.md with the documentation changes."
-    send: false
-  - label: Request Architecture Review
-    agent: Architecture-Advisor
-    prompt: "Documentation complete. Please review architecture documentation for accuracy."
-    send: false
-  - label: Return for Clarification
-    agent: MCP-Tool-Builder
-    prompt: "Documentation unclear. Please provide more context for the following sections."
-    send: false
+  - custom-agent
+
 ---
 
 # Documentation Generator Agent
@@ -535,6 +524,35 @@ Use the `custom-agent` tool to invoke `@changelog-curator`.
  * @throws {Error} When operation fails
  */
 ```
+
+## Multi-Agent Delegation
+
+After completing documentation, use the `custom-agent` tool to delegate:
+
+### Delegation Workflow
+
+**After documentation is complete:**
+
+1. **Request Changelog Update** - Delegate to `@changelog-curator`:
+   ```
+   Use `custom-agent` tool to invoke @changelog-curator
+   Context: Documentation updated for [feature/module]
+   Files: [list documentation files]
+   Focus: Update CHANGELOG.md with documentation changes.
+   ```
+
+2. **If architecture documented** - Delegate to `@architecture-advisor`:
+   ```
+   Use `custom-agent` tool to invoke @architecture-advisor
+   Context: Documentation complete, architecture may need review
+   Files: [list ADR/architecture files]
+   Focus: Review architecture documentation for accuracy and completeness.
+   ```
+
+### When to Delegate Elsewhere
+
+- **Code review needed**: Delegate to `@code-reviewer`
+- **API examples need testing**: Delegate to `@tdd-workflow`
 
 ## Resources
 

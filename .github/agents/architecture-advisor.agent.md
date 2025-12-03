@@ -11,19 +11,8 @@ tools:
   - ai-agent-guidelines/gap-frameworks-analyzers
   - serena/*
   - sequentialthinking/*
-handoffs:
-  - label: Request Implementation
-    agent: MCP-Tool-Builder
-    prompt: "Architecture design complete. Please implement according to the ADR and specifications."
-    send: false
-  - label: Request Documentation
-    agent: Documentation-Generator
-    prompt: "Architecture decisions documented. Please update README and API docs accordingly."
-    send: false
-  - label: Request Code Review
-    agent: Code-Reviewer
-    prompt: "Please review existing code against the proposed architecture patterns."
-    send: false
+  - custom-agent
+
 ---
 
 # Architecture Advisor Agent
@@ -490,6 +479,43 @@ For implementation requests, delegate to `@mcp-tool-builder`.
 - Lazy initialization
 - Thread-safe access
 - Example: `constraint-manager.ts`
+
+## Multi-Agent Delegation
+
+After completing architecture design, use the `custom-agent` tool to delegate:
+
+### Delegation Workflow
+
+**After ADR/design complete:**
+
+1. **Request Implementation** - Delegate to `@mcp-tool-builder`:
+   ```
+   Use `custom-agent` tool to invoke @mcp-tool-builder
+   Context: Architecture design complete for [feature/system]
+   Files: [list ADR files]
+   Focus: Implement according to ADR and architectural specifications.
+   ```
+
+2. **Request Documentation** - Delegate to `@documentation-generator`:
+   ```
+   Use `custom-agent` tool to invoke @documentation-generator
+   Context: Architecture decisions documented in ADR
+   Files: [list ADR files]
+   Focus: Update README and API docs to reflect architecture.
+   ```
+
+3. **Request Code Review** - Delegate to `@code-reviewer`:
+   ```
+   Use `custom-agent` tool to invoke @code-reviewer
+   Context: Architecture proposal complete
+   Files: [list relevant code files]
+   Focus: Review existing code against proposed architecture patterns.
+   ```
+
+### When to Delegate Elsewhere
+
+- **Performance considerations**: Delegate to `@performance-optimizer`
+- **Security architecture**: Delegate to `@security-auditor`
 
 ## Resources
 
