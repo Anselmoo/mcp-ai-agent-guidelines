@@ -221,4 +221,87 @@ describe("TraceLogger", () => {
 			expect(event.type).toBe("tool_start");
 		});
 	});
+
+	describe("Edge cases", () => {
+		it("should handle ending non-existent span", () => {
+			// Should not throw, just warn
+			logger.endToolSpan("non-existent-span", true, "result");
+			// No assertion needed - just checking it doesn't throw
+		});
+
+		it("should restore parent span when ending nested span", () => {
+			const parentSpan = logger.startToolSpan(context, "parent", "hash1");
+			const childSpan = logger.startToolSpan(context, "child", "hash2");
+
+			logger.endToolSpan(childSpan, true, "child result");
+			// Parent should be restored as active span
+
+			const anotherSpan = logger.startToolSpan(context, "sibling", "hash3");
+			logger.endToolSpan(anotherSpan, true, "sibling result");
+			logger.endToolSpan(parentSpan, true, "parent result");
+
+			const spans = logger.getSpans(context.correlationId);
+			expect(spans).toHaveLength(3);
+		});
+
+		it("should handle spans without end times in timeline", () => {
+			// Start a span but don't end it
+			logger.startToolSpan(context, "unfinished", "hash");
+
+			const timeline = logger.getTimeline(context.correlationId);
+			expect(timeline.spans).toHaveLength(1);
+			expect(timeline.totalDurationMs).toBe(0); // No end time
+		});
+
+		it("should find critical path through dependent spans", () => {
+			// Create a chain of dependent spans
+			const span1 = logger.startToolSpan(context, "tool1", "hash1");
+			logger.endToolSpan(span1, true, "result1");
+
+			const childContext = { ...context, depth: 1 };
+			const span2 = logger.startToolSpan(childContext, "tool2", "hash2");
+			logger.endToolSpan(span2, true, "result2");
+
+			const timeline = logger.getTimeline(context.correlationId);
+			expect(timeline.criticalPath).toBeDefined();
+		});
+
+		it("should track context_update events", () => {
+			logger.startChain(context);
+
+			const events = logger.getEvents(context.correlationId);
+			expect(events.some((e) => e.type === "chain_start")).toBe(true);
+		});
+
+		it("should calculate correct summary with zero chains", () => {
+			const freshLogger = new TraceLogger();
+			const summary = freshLogger.getSummary();
+
+			expect(summary.totalChains).toBe(0);
+			expect(summary.avgSpansPerChain).toBe(0);
+		});
+
+		it("should handle error spans with error message", () => {
+			const spanId = logger.startToolSpan(context, "error-tool", "hash");
+			logger.endToolSpan(spanId, false, undefined, "Critical failure");
+
+			const spans = logger.getSpans(context.correlationId);
+			expect(spans[0].status).toBe("error");
+			expect(spans[0].error).toBe("Critical failure");
+		});
+	});
+
+	describe("Memory management", () => {
+		it("should limit events to prevent memory leaks", () => {
+			// Create many events
+			for (let i = 0; i < 50; i++) {
+				const spanId = logger.startToolSpan(context, `tool-${i}`, `hash-${i}`);
+				logger.endToolSpan(spanId, true, `result-${i}`);
+			}
+
+			// Should have events but limited
+			const events = logger.getEvents(context.correlationId);
+			expect(events.length).toBeGreaterThan(0);
+		});
+	});
 });

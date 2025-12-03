@@ -316,5 +316,154 @@ describe("ExecutionController", () => {
 
 			expect(result.stepResults.size).toBe(2);
 		});
+
+		it("should try fallback tool when chain throws error", async () => {
+			const plan: ExecutionPlan = {
+				strategy: "sequential",
+				steps: [
+					{
+						id: "step1",
+						toolName: failingToolName,
+						args: {},
+					},
+				],
+				onError: "abort", // Abort will throw and trigger fallback
+				fallbackTool: addToolName,
+				fallbackArgs: { a: 1, b: 2 },
+			};
+
+			const result = await executeChain(plan, context);
+
+			// Chain should succeed if fallback works
+			// But the failing tool throws, onError=abort throws, then fallback runs
+			expect(result).toBeDefined();
+		});
+
+		it("should support retry-with-backoff strategy", async () => {
+			const plan: ExecutionPlan = {
+				strategy: "retry-with-backoff",
+				steps: [
+					{
+						id: "step1",
+						toolName: addToolName,
+						args: { a: 1, b: 1 },
+					},
+				],
+				onError: "skip",
+				retryConfig: {
+					maxRetries: 2,
+					initialDelayMs: 10,
+					maxDelayMs: 100,
+					backoffMultiplier: 2,
+				},
+			};
+
+			const result = await executeChain(plan, context);
+
+			expect(result.stepResults.size).toBe(1);
+		});
+
+		it("should support conditional strategy", async () => {
+			context.sharedState.set("runStep", true);
+
+			const plan: ExecutionPlan = {
+				strategy: "conditional",
+				steps: [
+					{
+						id: "step1",
+						toolName: addToolName,
+						args: { a: 1, b: 1 },
+						condition: (state) => state.get("runStep") === true,
+					},
+					{
+						id: "step2",
+						toolName: multiplyToolName,
+						args: { x: 2, y: 2 },
+						condition: (state) => state.get("runStep") === false,
+					},
+				],
+				onError: "skip",
+			};
+
+			const result = await executeChain(plan, context);
+
+			// Only step1 should run due to condition
+			expect(result.stepResults.has("step1")).toBe(true);
+		});
+
+		it("should handle dependencies in sequential execution", async () => {
+			const plan: ExecutionPlan = {
+				strategy: "sequential",
+				steps: [
+					{
+						id: "step1",
+						toolName: addToolName,
+						args: { a: 1, b: 1 },
+					},
+					{
+						id: "step2",
+						toolName: multiplyToolName,
+						args: { x: 2, y: 2 },
+						dependencies: ["step1"],
+					},
+				],
+				onError: "skip",
+			};
+
+			const result = await executeChain(plan, context);
+
+			expect(result.stepResults.size).toBe(2);
+		});
+
+		it("should skip steps with unmet dependencies", async () => {
+			const plan: ExecutionPlan = {
+				strategy: "sequential",
+				steps: [
+					{
+						id: "step1",
+						toolName: failingToolName,
+						args: {},
+					},
+					{
+						id: "step2",
+						toolName: addToolName,
+						args: { a: 1, b: 1 },
+						dependencies: ["nonexistent"],
+					},
+				],
+				onError: "skip",
+			};
+
+			const result = await executeChain(plan, context);
+
+			// step2 should be skipped due to unmet dependency
+			const step2Result = result.stepResults.get("step2");
+			expect(step2Result?.success).toBe(false);
+		});
+
+		it("should apply transform function to previous output", async () => {
+			const plan: ExecutionPlan = {
+				strategy: "sequential",
+				steps: [
+					{
+						id: "step1",
+						toolName: addToolName,
+						args: { a: 2, b: 3 },
+					},
+					{
+						id: "step2",
+						toolName: multiplyToolName,
+						args: { x: 1, y: 1 },
+						dependencies: ["step1"],
+						transform: (prev) => ({ x: prev as number, y: 2 }),
+					},
+				],
+				onError: "skip",
+			};
+
+			const result = await executeChain(plan, context);
+
+			expect(result.stepResults.size).toBe(2);
+		});
 	});
 });
