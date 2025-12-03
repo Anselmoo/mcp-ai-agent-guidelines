@@ -10,19 +10,8 @@ tools:
   - runTests
   - serena/search_for_pattern
   - fetch/*
-handoffs:
-  - label: Request Test Implementation
-    agent: TDD-Workflow
-    prompt: "CI issue relates to tests. Please review and fix the test suite."
-    send: false
-  - label: Request Debugging
-    agent: Debugging-Assistant
-    prompt: "CI failure root cause unclear. Please perform deep analysis."
-    send: false
-  - label: Request Security Check
-    agent: Security-Auditor
-    prompt: "CI workflow may have security implications. Please audit."
-    send: false
+  - custom-agent
+
 ---
 
 # CI Fixer Agent
@@ -533,6 +522,47 @@ CI/CD pipeline stable. No further action needed.
 ```
 
 For complex issues requiring architectural changes, delegate to `@architecture-advisor`.
+
+## Multi-Agent Delegation
+
+After diagnosing CI issue, use the `custom-agent` tool to delegate:
+
+### Delegation Workflow
+
+**If test-related issue:**
+
+1. **Request Test Fix** - Delegate to `@tdd-workflow`:
+   ```
+   Use `custom-agent` tool to invoke @tdd-workflow
+   Context: CI failure in test suite: [description]
+   Files: [list failing test files]
+   Focus: Review and fix the test suite issues.
+   ```
+
+**If root cause unclear:**
+
+2. **Request Debugging** - Delegate to `@debugging-assistant`:
+   ```
+   Use `custom-agent` tool to invoke @debugging-assistant
+   Context: CI failure root cause unclear: [error messages]
+   Files: [list relevant workflow/code files]
+   Focus: Perform deep analysis of CI failure.
+   ```
+
+**If security-related:**
+
+3. **Request Security Check** - Delegate to `@security-auditor`:
+   ```
+   Use `custom-agent` tool to invoke @security-auditor
+   Context: CI workflow may have security implications
+   Files: .github/workflows/[workflow].yml
+   Focus: Audit workflow for security best practices.
+   ```
+
+### When to Delegate Elsewhere
+
+- **Workflow architecture**: Delegate to `@architecture-advisor`
+- **Dependency issues**: Delegate to `@dependency-guardian`
 
 ## Resources
 

@@ -9,19 +9,8 @@ tools:
   - ai-agent-guidelines/dependency-auditor
   - serena/search_for_pattern
   - fetch/*
-handoffs:
-  - label: Request Documentation
-    agent: Documentation-Generator
-    prompt: "Security audit passed. Please update documentation with security considerations."
-    send: false
-  - label: Request Changelog Update
-    agent: Changelog-Curator
-    prompt: "Security fixes applied. Please update CHANGELOG.md with security-related changes."
-    send: false
-  - label: Return for Security Fixes
-    agent: MCP-Tool-Builder
-    prompt: "Security vulnerabilities found. Please address the following security issues."
-    send: false
+  - custom-agent
+
 ---
 
 # Security Auditor Agent
@@ -443,6 +432,45 @@ console.error(error.stack);
 ```typescript
 logger.error('Operation failed', { code: error.code });
 ```
+
+## Multi-Agent Delegation
+
+After completing security audit, use the `custom-agent` tool to delegate:
+
+### Delegation Workflow
+
+**If security audit passes:**
+
+1. **Request Documentation** - Delegate to `@documentation-generator`:
+   ```
+   Use `custom-agent` tool to invoke @documentation-generator
+   Context: Security audit complete - no issues found
+   Files: [list audited files]
+   Focus: Update security documentation and add security notes to API docs.
+   ```
+
+**If vulnerabilities found:**
+
+1. **Request Fix Implementation** - Delegate to `@mcp-tool-builder`:
+   ```
+   Use `custom-agent` tool to invoke @mcp-tool-builder
+   Context: Security vulnerabilities found: [list CVEs/issues]
+   Files: [list vulnerable files]
+   Focus: Implement security fixes for [specific vulnerabilities]
+   ```
+
+2. **After fixes** - Delegate to `@tdd-workflow`:
+   ```
+   Use `custom-agent` tool to invoke @tdd-workflow
+   Context: Security fixes implemented
+   Files: [list fixed files]
+   Focus: Add security regression tests to prevent reintroduction.
+   ```
+
+### When to Delegate Elsewhere
+
+- **Dependency vulnerabilities**: Delegate to `@dependency-guardian`
+- **Root cause unclear**: Delegate to `@debugging-assistant`
 
 ## Resources
 

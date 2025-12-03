@@ -7,25 +7,12 @@ tools:
   - edit
   - search
   - runTests
-  - runSubagent
+  - custom-agent
   - ai-agent-guidelines/*
   - serena/*
   - fetch/*
   - context7/*
   - sequentialthinking/*
-handoffs:
-  - label: Request Test Coverage
-    agent: TDD-Workflow
-    prompt: "Implementation complete. Please write comprehensive tests following Red-Green-Refactor cycle. Target: 90% coverage."
-    send: false
-  - label: Request Code Review
-    agent: Code-Reviewer
-    prompt: "Implementation complete. Please review for clean code patterns, TypeScript conventions, and quality metrics."
-    send: false
-  - label: Request Documentation
-    agent: Documentation-Generator
-    prompt: "Implementation complete. Please generate/update API documentation and JSDoc comments."
-    send: false
 ---
 
 # MCP Tool Builder Agent
@@ -282,10 +269,54 @@ These are app-wide singletons - reuse, don't recreate:
 - Keep functions pure where possible
 - Mirror `src/` structure in `tests/vitest/`
 
+
+## Multi-Agent Delegation
+
+When your implementation work is complete, use the `custom-agent` tool to delegate to specialized agents:
+
+### Delegation Workflow
+
+**After implementation is complete:**
+
+1. **Request Test Coverage** - Delegate to `@tdd-workflow`:
+   ```
+   Use `custom-agent` tool to invoke @tdd-workflow
+   Context: Implementation complete for [feature/tool name]
+   Files:
+   - src/tools/[category]/[file].ts
+   - [any other modified files]
+   Focus: Write comprehensive tests following Red-Green-Refactor cycle. Target: 90% coverage.
+   ```
+
+2. **After tests pass** - Delegate to `@code-reviewer`:
+   ```
+   Use `custom-agent` tool to invoke @code-reviewer
+   Context: Implementation and tests complete for [feature/tool name]
+   Files:
+   - src/tools/[category]/[file].ts
+   - tests/vitest/tools/[category]/[file].spec.ts
+   Focus: Review for clean code patterns, TypeScript conventions, and quality metrics.
+   ```
+
+3. **After review passes** - Delegate to `@documentation-generator`:
+   ```
+   Use `custom-agent` tool to invoke @documentation-generator
+   Context: Implementation, tests, and code review complete for [feature/tool name]
+   Files:
+   - src/tools/[category]/[file].ts
+   Focus: Generate/update API documentation and JSDoc comments.
+   ```
+
+### When to Delegate Elsewhere
+
+- **Security concerns**: Delegate to `@security-auditor` for security review
+- **Architecture decisions**: Delegate to `@architecture-advisor` for design guidance
+- **Build/CI issues**: Delegate to `@ci-fixer` for workflow problems
+- **Bugs/errors**: Delegate to `@debugging-assistant` for root cause analysis
+
 ## Resources
 
 - Project conventions: `.github/copilot-instructions.md`
 - Example tools: Browse `src/tools/` for patterns
 - Test examples: Browse `tests/vitest/tools/` for testing patterns
 
-When ready, delegate to `@tdd-workflow` for comprehensive test coverage!
