@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { z } from "zod";
 import {
 	type A2AContext,
@@ -18,11 +18,11 @@ import {
 import { toolRegistry } from "../../src/tools/shared/tool-registry.js";
 
 describe("Tool Invoker", () => {
-	let context: A2AContext;
+	let _context: A2AContext;
 
 	beforeEach(() => {
 		// Create context without parent so tools don't need permission to invoke themselves
-		context = createA2AContext();
+		_context = createA2AContext();
 	});
 
 	describe("invokeTool", () => {
@@ -109,7 +109,7 @@ describe("Tool Invoker", () => {
 					inputSchema: z.object({}),
 					canInvoke: [],
 				},
-				async (args, ctx) => {
+				async (_args, ctx) => {
 					const parentData = ctx?.sharedState.get("parent-data");
 					return { success: true, data: parentData };
 				},
@@ -122,7 +122,7 @@ describe("Tool Invoker", () => {
 					inputSchema: z.object({}),
 					canInvoke: [childToolName],
 				},
-				async (args, ctx) => {
+				async (_args, ctx) => {
 					ctx?.sharedState.set("parent-data", "from-parent");
 					const childResult = await invokeTool(childToolName, {}, ctx);
 					return { success: true, data: childResult };
