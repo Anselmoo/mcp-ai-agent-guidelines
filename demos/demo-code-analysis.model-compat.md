@@ -85,11 +85,17 @@ Heuristic fit against requirement keywords; qualitative only. Validate with quic
 ```ts
 type Provider = 'openai' | 'anthropic' | 'google';
 interface Choice { provider: Provider; model: string }
-export function pickModel(opts: { complexity?: 'simple'|'balanced'|'advanced'; largeContext?: boolean; multimodal?: boolean; budget?: 'low'|'medium'|'high'; }): Choice {
-  if (opts.largeContext) return { provider: 'google', model: 'gemini-2.5-pro' };
-  if (opts.complexity === 'advanced') return { provider: 'anthropic', model: 'claude-4-opus' };
-  if (opts.complexity === 'simple' || opts.budget === 'low') return { provider: 'openai', model: 'o4-mini' };
-  return { provider: 'anthropic', model: 'claude-4-sonnet' };
+
+export function pickModel(opts: {
+  complexity?: 'simple' | 'balanced' | 'advanced';
+  largeContext?: boolean;
+  multimodal?: boolean;
+  budget?: 'low' | 'medium' | 'high';
+}): Choice {
+  if (opts.largeContext) return { provider: 'anthropic', model: 'Claude Opus 4.1' };
+  if (opts.complexity === 'advanced') return { provider: 'anthropic', model: 'Claude Opus 4.1' };
+  if (opts.complexity === 'simple' || opts.budget === 'low') return { provider: 'google', model: 'Gemini 2.0 Flash' };
+  return { provider: 'google', model: 'Gemini 2.5 Pro' };
 }
 
 // Example usage (pseudo—replace with real SDK calls):

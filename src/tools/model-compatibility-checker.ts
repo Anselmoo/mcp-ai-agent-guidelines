@@ -8,6 +8,10 @@ import {
 	REQUIREMENT_KEYWORDS,
 	type ScoredModel,
 } from "./config/model-config.js";
+import {
+	generatePythonExample,
+	generateTypeScriptExample,
+} from "./config/model-examples.js";
 
 const ModelCompatibilitySchema = z.object({
 	taskDescription: z.string(),
@@ -184,47 +188,10 @@ function analyzeModelCompatibility(input: ModelCompatibilityInput): {
 function buildCodeExamples(language?: string): string {
 	const lang = (language || "typescript").toLowerCase();
 	if (lang.includes("python")) {
-		return [
-			"#### Python (pseudo-usage)",
-			"```python",
-			"# Example: switch model by task complexity",
-			"def pick_model(task_complexity: str):",
-			"    if task_complexity in ('simple', 'low-latency'):",
-			"        return 'o4-mini'  # budget/fast\n",
-			"    if task_complexity in ('large-context', 'long-docs'):",
-			"        return 'gemini-2.5-pro'  # 2M context\n",
-			"    return 'claude-4-sonnet'  # balanced default\n",
-			"",
-			"model = pick_model('large-context')",
-			"# Call provider SDK accordingly (pseudo):",
-			"# openai.chat.completions.create(model=model, messages=...)",
-			"# anthropic.messages.create(model=model, messages=...)",
-			"# genai.GenerativeModel(model).generate_content(...)",
-			"```",
-		].join("\n");
+		return generatePythonExample();
 	}
 	// default TypeScript/JavaScript
-	return [
-		"#### TypeScript (pattern)",
-		"```ts",
-		"type Provider = 'openai' | 'anthropic' | 'google';",
-		"interface Choice { provider: Provider; model: string }",
-		"export function pickModel(opts: { complexity?: 'simple'|'balanced'|'advanced'; largeContext?: boolean; multimodal?: boolean; budget?: 'low'|'medium'|'high'; }): Choice {",
-		"  if (opts.largeContext) return { provider: 'google', model: 'gemini-2.5-pro' };",
-		"  if (opts.complexity === 'advanced') return { provider: 'anthropic', model: 'claude-4-opus' };",
-		"  if (opts.complexity === 'simple' || opts.budget === 'low') return { provider: 'openai', model: 'o4-mini' };",
-		"  return { provider: 'anthropic', model: 'claude-4-sonnet' };",
-		"}",
-		"",
-		"// Example usage (pseudo—replace with real SDK calls):",
-		"const choice = pickModel({ largeContext: true });",
-		"switch (choice.provider) {",
-		"  case 'openai': /* openai.chat.completions.create({ model: choice.model, messages }) */ break;",
-		"  case 'anthropic': /* anthropic.messages.create({ model: choice.model, messages }) */ break;",
-		"  case 'google': /* new GenerativeModel({ model: choice.model }).generateContent(...) */ break;",
-		"}",
-		"```",
-	].join("\n");
+	return generateTypeScriptExample();
 }
 
 function buildFileLinks(): string {
