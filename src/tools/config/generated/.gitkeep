@@ -1,0 +1,3 @@
+# This directory contains auto-generated TypeScript types from models.yaml
+# These files SHOULD be committed to version control
+# Run `npm run generate:models` to regenerate them

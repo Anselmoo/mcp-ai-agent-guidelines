@@ -5,9 +5,11 @@
 	"main": "dist/index.js",
 	"type": "module",
 	"scripts": {
-		"build": "tsc && npm run copy-yaml",
+		"build": "npm run generate:models:internal && tsc && npm run copy-yaml",
 		"copy-yaml": "cp src/tools/config/models.yaml dist/tools/config/",
-		"generate:models": "npm run build && node scripts/generate-model-types.js",
+		"generate:models": "npm run build:base && node scripts/generate-model-types.js",
+		"generate:models:internal": "test -f dist/tools/config/model-loader.js && node scripts/generate-model-types.js || echo 'Skipping model generation (first build)'",
+		"build:base": "tsc && npm run copy-yaml",
 		"validate:models": "node scripts/validate-model-config.js",
 		"start": "npm run build && node dist/index.js",
 		"dev": "tsc --watch",
