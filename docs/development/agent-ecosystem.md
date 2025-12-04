@@ -468,7 +468,7 @@ tools:
 - [GitHub Copilot Coding Agent - Customize Environment](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/customize-the-agent-environment)
 - [AGENTS.md Standard](https://agents.md/)
 - [AGENTS.md GitHub Repository](https://github.com/openai/agents.md)
-- [MCP Protocol Specification](https://spec.modelcontextprotocol.io/)
+- [MCP Protocol Specification](https://modelcontextprotocol.io/specification)
 
 ## Contributing
 
