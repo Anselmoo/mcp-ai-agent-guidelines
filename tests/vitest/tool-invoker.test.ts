@@ -407,5 +407,108 @@ describe("Tool Invoker", () => {
 			expect(result.success).toBe(false);
 			expect(result.error).toContain("validation");
 		});
+
+		it("should support deduplication of invocations", async () => {
+			const toolName = `dedup-tool-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+
+			toolRegistry.register(
+				{
+					name: toolName,
+					description: "Tool for dedup test",
+					inputSchema: z.object({ value: z.number() }),
+					canInvoke: [toolName],
+				},
+				async (args) => {
+					return { success: true, data: (args as { value: number }).value };
+				},
+			);
+
+			const ctx = createA2AContext();
+
+			// First invocation
+			const result1 = await invokeTool(toolName, { value: 42 }, ctx);
+			expect(result1.success).toBe(true);
+
+			// Second invocation with same args and deduplicate option
+			const result2 = await invokeTool(toolName, { value: 42 }, ctx, {
+				deduplicate: true,
+			});
+
+			// Should return cached result
+			expect(result2.success).toBe(true);
+			expect(result2.data).toEqual({ cached: true, outputSummary: "42" });
+		});
+
+		it("should use custom error handler for recovery", async () => {
+			const toolName = `error-recover-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+			toolRegistry.register(
+				{
+					name: toolName,
+					description: "Tool that fails for recovery test",
+					inputSchema: z.object({}),
+					canInvoke: ["*"],
+				},
+				async () => {
+					throw new Error("Intentional failure");
+				},
+			);
+
+			// Don't pass context to avoid permission checks
+			const result = await invokeTool(toolName, {}, undefined, {
+				onError: async (error) => ({
+					success: true,
+					data: { recovered: true, originalError: error.message },
+				}),
+			});
+
+			expect(result.success).toBe(true);
+			expect(result.data).toEqual({
+				recovered: true,
+				originalError: "Intentional failure",
+			});
+		});
+
+		it("should handle recovery handler that also fails", async () => {
+			const toolName = `double-fail-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+			toolRegistry.register(
+				{
+					name: toolName,
+					description: "Tool for double failure test",
+					inputSchema: z.object({}),
+					canInvoke: ["*"],
+				},
+				async () => {
+					throw new Error("Primary failure");
+				},
+			);
+
+			// Don't pass context to avoid permission checks
+			await expect(
+				invokeTool(toolName, {}, undefined, {
+					onError: async () => {
+						throw new Error("Recovery also failed");
+					},
+				}),
+			).rejects.toThrow();
+		});
+
+		it("should respect remaining chain time for timeout", async () => {
+			const toolName = `chain-time-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+			toolRegistry.register(
+				{
+					name: toolName,
+					description: "Fast tool",
+					inputSchema: z.object({}),
+					canInvoke: ["*"],
+				},
+				async () => ({ success: true, data: "done" }),
+			);
+
+			// Don't pass context to avoid permission checks
+			const result = await invokeTool(toolName, {}, undefined, {
+				timeoutMs: 5000,
+			});
+			expect(result.success).toBe(true);
+		});
 	});
 });

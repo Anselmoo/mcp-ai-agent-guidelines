@@ -281,6 +281,26 @@ describe("ExecutionController", () => {
 			expect(result.success).toBe(false);
 		});
 
+		it("should handle unknown execution strategy", async () => {
+			const plan = {
+				strategy: "unknown-strategy" as "sequential",
+				steps: [
+					{
+						id: "step1",
+						toolName: addToolName,
+						args: { a: 1, b: 1 },
+					},
+				],
+				onError: "skip" as const,
+			};
+
+			const result = await executeChain(plan, context);
+
+			// Should fail with unknown strategy error
+			expect(result.success).toBe(false);
+			expect(result.error).toContain("Unknown execution strategy");
+		});
+
 		it("should handle empty steps array", async () => {
 			const plan: ExecutionPlan = {
 				strategy: "sequential",
@@ -464,6 +484,163 @@ describe("ExecutionController", () => {
 			const result = await executeChain(plan, context);
 
 			expect(result.stepResults.size).toBe(2);
+		});
+
+		it("should handle parallel execution with abort on error", async () => {
+			const plan: ExecutionPlan = {
+				strategy: "parallel",
+				steps: [
+					{
+						id: "step1",
+						toolName: addToolName,
+						args: { a: 1, b: 1 },
+					},
+					{
+						id: "step2",
+						toolName: failingToolName,
+						args: {},
+					},
+				],
+				onError: "abort",
+			};
+
+			const result = await executeChain(plan, context);
+
+			// With abort strategy in parallel, should fail
+			expect(result.success).toBe(false);
+		});
+
+		it("should handle retry-with-backoff when tool fails consistently", async () => {
+			const plan: ExecutionPlan = {
+				strategy: "retry-with-backoff",
+				steps: [
+					{
+						id: "step1",
+						toolName: failingToolName,
+						args: {},
+					},
+				],
+				onError: "skip",
+				retryConfig: {
+					maxRetries: 2,
+					initialDelayMs: 5,
+					maxDelayMs: 20,
+					backoffMultiplier: 2,
+				},
+			};
+
+			const result = await executeChain(plan, context);
+
+			// Should have attempted retries but ultimately failed
+			expect(result.stepResults.has("step1")).toBe(true);
+			expect(result.stepResults.get("step1")?.success).toBe(false);
+		});
+
+		it("should handle retry-with-backoff with abort on error", async () => {
+			const plan: ExecutionPlan = {
+				strategy: "retry-with-backoff",
+				steps: [
+					{
+						id: "step1",
+						toolName: failingToolName,
+						args: {},
+					},
+				],
+				onError: "abort",
+				retryConfig: {
+					maxRetries: 1,
+					initialDelayMs: 5,
+					maxDelayMs: 20,
+					backoffMultiplier: 2,
+				},
+			};
+
+			const result = await executeChain(plan, context);
+
+			// Should fail and abort
+			expect(result.success).toBe(false);
+		});
+
+		it("should handle conditional execution with abort on error", async () => {
+			context.sharedState.set("runFailing", true);
+
+			const plan: ExecutionPlan = {
+				strategy: "conditional",
+				steps: [
+					{
+						id: "step1",
+						toolName: failingToolName,
+						args: {},
+						condition: (state) => state.get("runFailing") === true,
+					},
+				],
+				onError: "abort",
+			};
+
+			const result = await executeChain(plan, context);
+
+			// Should fail due to abort
+			expect(result.success).toBe(false);
+		});
+
+		it("should handle fallback when fallback also fails", async () => {
+			// Create a tool that returns failure result
+			const failResultToolName = `fallback-fail-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+			toolRegistry.register(
+				{
+					name: failResultToolName,
+					description: "Returns failure result",
+					inputSchema: z.object({}),
+					canInvoke: ["*"],
+				},
+				async () => ({ success: false, error: "Failure" }),
+			);
+
+			const plan: ExecutionPlan = {
+				strategy: "sequential",
+				steps: [
+					{
+						id: "step1",
+						toolName: failResultToolName,
+						args: {},
+					},
+				],
+				onError: "fallback",
+				fallbackTool: failResultToolName,
+				fallbackArgs: {},
+			};
+
+			const result = await executeChain(plan, context);
+
+			// With fallback strategy but no throwing error, chain continues
+			expect(result.stepResults.size).toBeGreaterThan(0);
+		});
+
+		it("should detect circular dependencies in parallel execution", async () => {
+			const plan: ExecutionPlan = {
+				strategy: "parallel",
+				steps: [
+					{
+						id: "step1",
+						toolName: addToolName,
+						args: { a: 1, b: 1 },
+						dependencies: ["step2"],
+					},
+					{
+						id: "step2",
+						toolName: multiplyToolName,
+						args: { x: 2, y: 2 },
+						dependencies: ["step1"],
+					},
+				],
+				onError: "skip",
+			};
+
+			const result = await executeChain(plan, context);
+
+			// Should fail with circular dependency
+			expect(result.success).toBe(false);
+			expect(result.error).toContain("Circular dependency");
 		});
 	});
 });

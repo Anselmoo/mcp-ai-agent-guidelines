@@ -272,6 +272,42 @@ describe("Async Patterns", () => {
 
 			expect(result).toBe(0);
 		});
+
+		it("should handle partial failures in map-reduce", async () => {
+			// Create a tool that fails for certain inputs
+			const conditionalToolName = `conditional-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+			toolRegistry.register(
+				{
+					name: conditionalToolName,
+					description: "Fails for negative inputs",
+					inputSchema: z.object({ value: z.number() }),
+					canInvoke: ["*"], // Allow any invocation
+				},
+				async (args) => {
+					const { value } = args as { value: number };
+					if (value < 0) {
+						return { success: false, error: "Negative value" };
+					}
+					return { success: true, data: value * 2 };
+				},
+			);
+
+			// Use fresh context without parent to avoid permission checks
+			const freshContext = createA2AContext();
+			const inputs = [{ value: 1 }, { value: -1 }, { value: 2 }];
+
+			const result = await mapReduceTools(
+				conditionalToolName,
+				inputs,
+				freshContext,
+				reducers.collectSuccessful,
+			);
+
+			// Should only have 2 successful results
+			expect(result).toHaveLength(2);
+			expect(result).toContain(2); // 1*2
+			expect(result).toContain(4); // 2*2
+		});
 	});
 
 	describe("pipelineTools", () => {
@@ -297,6 +333,35 @@ describe("Async Patterns", () => {
 			});
 
 			expect(result.success).toBe(true);
+		});
+
+		it("should throw on pipeline failure", async () => {
+			// Create a tool that returns failure result (not throws)
+			const failResultToolName = `fail-result-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+			toolRegistry.register(
+				{
+					name: failResultToolName,
+					description: "Returns failure result",
+					inputSchema: z.unknown(),
+					canInvoke: ["*"],
+				},
+				async () => ({ success: false, error: "Intentional failure" }),
+			);
+
+			const freshContext = createA2AContext();
+			const pipeline = [
+				{
+					toolName: addToolName,
+					transform: () => ({ a: 2, b: 3 }),
+				},
+				{
+					toolName: failResultToolName,
+				},
+			];
+
+			await expect(pipelineTools(pipeline, freshContext)).rejects.toThrow(
+				/Pipeline failed/,
+			);
 		});
 	});
 
@@ -410,6 +475,28 @@ describe("Async Patterns", () => {
 			expect(result.success).toBe(true);
 			expect(result.data).toBe("initial");
 		});
+
+		it("should propagate failure in waterfall", async () => {
+			// Create a tool that returns failure result (not throws)
+			const failResultToolName = `waterfall-fail-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+			toolRegistry.register(
+				{
+					name: failResultToolName,
+					description: "Returns failure result",
+					inputSchema: z.unknown(),
+					canInvoke: ["*"],
+				},
+				async () => ({ success: false, error: "Waterfall failure" }),
+			);
+
+			const freshContext = createA2AContext();
+			const tools = [addToolName, failResultToolName, multiplyToolName];
+
+			const result = await waterfallTools(tools, freshContext, { a: 1, b: 2 });
+
+			// Should fail at the failing tool
+			expect(result.success).toBe(false);
+		});
 	});
 
 	describe("raceTools", () => {
@@ -425,6 +512,19 @@ describe("Async Patterns", () => {
 			expect(result.success).toBe(true);
 			// Should be one of the results
 			expect([3, 7]).toContain(result.data);
+		});
+
+		it("should return error when all tools fail in race", async () => {
+			const freshContext = createA2AContext();
+			const tools = [
+				{ toolName: failingToolName, args: {} },
+				{ toolName: failingToolName, args: {} },
+			];
+
+			const result = await raceTools(tools, freshContext);
+
+			expect(result.success).toBe(false);
+			expect(result.error).toContain("All tools failed");
 		});
 	});
 
@@ -458,6 +558,47 @@ describe("Async Patterns", () => {
 
 			expect(result.success).toBe(true);
 		});
+
+		it("should retry failing tool and return error after max retries", async () => {
+			const freshContext = createA2AContext();
+			const result = await retryTool(
+				failingToolName,
+				{},
+				freshContext,
+				2, // maxRetries
+				5, // initialDelayMs
+				2, // backoffMultiplier
+				0, // jitterMs
+			);
+
+			expect(result.success).toBe(false);
+			expect(result.error).toContain("Failed after");
+		});
+
+		it("should handle tool returning failure result", async () => {
+			const failResultToolName = `fail-result-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+			toolRegistry.register(
+				{
+					name: failResultToolName,
+					description: "Returns failure result",
+					inputSchema: z.object({}),
+					canInvoke: [],
+				},
+				async () => ({ success: false, error: "Intentional failure" }),
+			);
+
+			const freshContext = createA2AContext();
+			const result = await retryTool(
+				failResultToolName,
+				{},
+				freshContext,
+				1,
+				5,
+				2,
+			);
+
+			expect(result.success).toBe(false);
+		});
 	});
 
 	describe("fallbackTool", () => {
@@ -472,6 +613,31 @@ describe("Async Patterns", () => {
 
 			expect(result.success).toBe(true);
 			expect(result.data).toBe(3); // add: 1+2
+		});
+
+		it("should use fallback when primary fails", async () => {
+			// Create a tool that returns failure result (not throws)
+			const failResultToolName = `fallback-fail-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+			toolRegistry.register(
+				{
+					name: failResultToolName,
+					description: "Returns failure result",
+					inputSchema: z.unknown(),
+					canInvoke: ["*"],
+				},
+				async () => ({ success: false, error: "Primary failure" }),
+			);
+
+			const freshContext = createA2AContext();
+			const result = await fallbackTool(
+				failResultToolName,
+				addToolName,
+				{ a: 1, b: 2 },
+				freshContext,
+			);
+
+			expect(result.success).toBe(true);
+			expect(result.data).toBe(3); // fallback add: 1+2
 		});
 	});
 });

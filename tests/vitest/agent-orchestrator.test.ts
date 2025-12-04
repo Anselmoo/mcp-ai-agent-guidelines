@@ -211,6 +211,35 @@ describe("Agent Orchestrator", () => {
 
 			expect(result.content).toBeDefined();
 		});
+
+		it("should have code-analysis-pipeline template", async () => {
+			const result = await agentOrchestrator({
+				mode: "template",
+				template: "code-analysis-pipeline",
+				parameters: {
+					codeContent: "const x = 1;",
+					projectPath: ".",
+					description: "Test analysis",
+				},
+				includeTrace: false,
+			});
+
+			expect(result.content).toBeDefined();
+		});
+
+		it("should have documentation-generation template", async () => {
+			const result = await agentOrchestrator({
+				mode: "template",
+				template: "documentation-generation",
+				parameters: {
+					projectPath: ".",
+					contentType: "API",
+				},
+				includeTrace: false,
+			});
+
+			expect(result.content).toBeDefined();
+		});
 	});
 
 	describe("Execution strategies", () => {

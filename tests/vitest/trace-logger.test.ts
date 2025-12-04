@@ -303,5 +303,131 @@ describe("TraceLogger", () => {
 			const events = logger.getEvents(context.correlationId);
 			expect(events.length).toBeGreaterThan(0);
 		});
+
+		it("should trim events when exceeding MAX_EVENTS", () => {
+			// Create more than 1000 events to trigger trimming
+			for (let i = 0; i < 520; i++) {
+				const spanId = logger.startToolSpan(context, `tool-${i}`, `hash-${i}`);
+				logger.endToolSpan(spanId, true, `result-${i}`);
+			}
+
+			// Events should be trimmed to MAX_EVENTS
+			const summary = logger.getSummary();
+			expect(summary.totalEvents).toBeLessThanOrEqual(1000);
+		});
+
+		it("should clean up old spans during startToolSpan", () => {
+			// Create some old spans with end times in the past
+			const oldContext = createA2AContext("old-correlation");
+
+			// Create spans and end them
+			for (let i = 0; i < 50; i++) {
+				const spanId = logger.startToolSpan(
+					oldContext,
+					`old-tool-${i}`,
+					`hash-${i}`,
+				);
+				logger.endToolSpan(spanId, true, `result-${i}`);
+			}
+
+			// Create new spans - this may trigger cleanup (10% chance)
+			// Run multiple times to increase chance of cleanup
+			for (let i = 0; i < 100; i++) {
+				const spanId = logger.startToolSpan(
+					context,
+					`new-tool-${i}`,
+					`hash-${i}`,
+				);
+				logger.endToolSpan(spanId, true, `result-${i}`);
+			}
+
+			// Just verify operation completed without error
+			const summary = logger.getSummary();
+			expect(summary.totalSpans).toBeGreaterThan(0);
+		});
+	});
+
+	describe("Critical path finding", () => {
+		it("should find critical path through nested spans", () => {
+			// Create a parent span
+			const parentSpanId = logger.startToolSpan(context, "parent", "hash1");
+
+			// Create child spans with parent relationship
+			const childContext1 = { ...context, depth: 1 };
+			const childSpanId1 = logger.startToolSpan(
+				childContext1,
+				"child1",
+				"hash2",
+			);
+			logger.endToolSpan(childSpanId1, true, "child1 result");
+
+			const childContext2 = { ...context, depth: 1 };
+			const childSpanId2 = logger.startToolSpan(
+				childContext2,
+				"child2",
+				"hash3",
+			);
+
+			// Create grandchild
+			const grandchildContext = { ...context, depth: 2 };
+			const grandchildSpanId = logger.startToolSpan(
+				grandchildContext,
+				"grandchild",
+				"hash4",
+			);
+			logger.endToolSpan(grandchildSpanId, true, "grandchild result");
+
+			logger.endToolSpan(childSpanId2, true, "child2 result");
+			logger.endToolSpan(parentSpanId, true, "parent result");
+
+			const timeline = logger.getTimeline(context.correlationId);
+			expect(timeline.criticalPath).toBeDefined();
+			expect(timeline.spans.length).toBe(4);
+		});
+
+		it("should handle spans with parent references correctly", () => {
+			// Create execution log with parent references
+			context.executionLog.push({
+				timestamp: new Date(),
+				toolName: "parent-tool",
+				inputHash: "hash1",
+				outputSummary: "result1",
+				durationMs: 100,
+				status: "success",
+				depth: 0,
+			});
+
+			context.executionLog.push({
+				timestamp: new Date(),
+				toolName: "child-tool",
+				inputHash: "hash2",
+				outputSummary: "result2",
+				durationMs: 50,
+				status: "success",
+				depth: 1,
+				parentToolName: "parent-tool",
+			});
+
+			const trace = createTraceFromContext(context);
+			expect(trace.spans).toHaveLength(2);
+			expect(trace.spans[1].parentSpanId).toBe("span_0");
+		});
+	});
+
+	describe("OTLP export edge cases", () => {
+		it("should handle spans without end time in OTLP export", () => {
+			// Start a span but don't end it
+			logger.startToolSpan(context, "unfinished", "hash");
+
+			const exported = logger.exportTrace(context.correlationId, "otlp");
+			const parsed = JSON.parse(exported);
+
+			expect(parsed.resourceSpans).toBeDefined();
+			expect(parsed.resourceSpans[0].scopeSpans[0].spans).toHaveLength(1);
+			// endTimeUnixNano should be undefined for unfinished spans
+			expect(
+				parsed.resourceSpans[0].scopeSpans[0].spans[0].endTimeUnixNano,
+			).toBeUndefined();
+		});
 	});
 });
