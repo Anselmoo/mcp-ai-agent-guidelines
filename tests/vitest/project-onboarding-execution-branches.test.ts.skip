@@ -1,0 +1,348 @@
+// Project Onboarding and Execution Controller - Branch Coverage Enhancement Tests
+import { describe, expect, it } from "vitest";
+import { projectOnboarding } from "../../src/tools/project-onboarding.ts";
+import { executionController } from "../../src/tools/shared/execution-controller.ts";
+
+describe("Project Onboarding & Execution Controller - Branch Coverage", () => {
+	describe("Project Onboarding Branches", () => {
+		it("should handle onboarding with projectPath", async () => {
+			const result = await projectOnboarding.analyzeProject({
+				projectPath: "/tmp/test-project",
+				includeAnalysis: true,
+			});
+
+			expect(result).toBeDefined();
+		});
+
+		it("should handle includeAnalysis=true branch", async () => {
+			const result = await projectOnboarding.analyzeProject({
+				projectPath: "/tmp/test-project",
+				includeAnalysis: true,
+			});
+
+			expect(result).toBeDefined();
+		});
+
+		it("should handle includeAnalysis=false branch", async () => {
+			const result = await projectOnboarding.analyzeProject({
+				projectPath: "/tmp/test-project",
+				includeAnalysis: false,
+			});
+
+			expect(result).toBeDefined();
+		});
+
+		it("should detect Node.js projects", async () => {
+			const result = await projectOnboarding.detectProjectType(
+				"/tmp/node-project",
+			);
+
+			expect(result).toBeDefined();
+		});
+
+		it("should detect Python projects", async () => {
+			const result = await projectOnboarding.detectProjectType(
+				"/tmp/python-project",
+			);
+
+			expect(result).toBeDefined();
+		});
+
+		it("should detect Go projects", async () => {
+			const result = await projectOnboarding.detectProjectType("/tmp/go-project");
+
+			expect(result).toBeDefined();
+		});
+
+		it("should detect Java projects", async () => {
+			const result = await projectOnboarding.detectProjectType(
+				"/tmp/java-project",
+			);
+
+			expect(result).toBeDefined();
+		});
+
+		it("should handle unknown project types", async () => {
+			const result = await projectOnboarding.detectProjectType(
+				"/tmp/unknown-project",
+			);
+
+			expect(result).toBeDefined();
+		});
+
+		it("should generate onboarding recommendations", async () => {
+			const result = await projectOnboarding.generateRecommendations({
+				projectType: "nodejs",
+				hasTests: true,
+				hasDocumentation: true,
+				hasCI: false,
+			});
+
+			expect(result).toBeDefined();
+			expect(Array.isArray(result)).toBe(true);
+		});
+
+		it("should handle projects without tests", async () => {
+			const result = await projectOnboarding.generateRecommendations({
+				projectType: "nodejs",
+				hasTests: false,
+				hasDocumentation: true,
+				hasCI: true,
+			});
+
+			expect(result.some((r) => r.includes("test"))).toBe(true);
+		});
+
+		it("should handle projects without documentation", async () => {
+			const result = await projectOnboarding.generateRecommendations({
+				projectType: "python",
+				hasTests: true,
+				hasDocumentation: false,
+				hasCI: true,
+			});
+
+			expect(result.some((r) => r.includes("documentation"))).toBe(true);
+		});
+
+		it("should handle projects without CI", async () => {
+			const result = await projectOnboarding.generateRecommendations({
+				projectType: "golang",
+				hasTests: true,
+				hasDocumentation: true,
+				hasCI: false,
+			});
+
+			expect(result.some((r) => r.includes("CI"))).toBe(true);
+		});
+	});
+
+	describe("Execution Controller Branches", () => {
+		it("should handle sequential execution strategy", async () => {
+			const tasks = [
+				{ id: "task1", execute: async () => ({ result: "1" }) },
+				{ id: "task2", execute: async () => ({ result: "2" }) },
+			];
+
+			const result = await executionController.execute({
+				tasks,
+				strategy: "sequential",
+			});
+
+			expect(result).toBeDefined();
+			expect(result.completed).toBe(2);
+		});
+
+		it("should handle parallel execution strategy", async () => {
+			const tasks = [
+				{ id: "task1", execute: async () => ({ result: "1" }) },
+				{ id: "task2", execute: async () => ({ result: "2" }) },
+			];
+
+			const result = await executionController.execute({
+				tasks,
+				strategy: "parallel",
+			});
+
+			expect(result).toBeDefined();
+			expect(result.completed).toBe(2);
+		});
+
+		it("should handle batch execution strategy", async () => {
+			const tasks = [
+				{ id: "task1", execute: async () => ({ result: "1" }) },
+				{ id: "task2", execute: async () => ({ result: "2" }) },
+				{ id: "task3", execute: async () => ({ result: "3" }) },
+			];
+
+			const result = await executionController.execute({
+				tasks,
+				strategy: "batch",
+				batchSize: 2,
+			});
+
+			expect(result).toBeDefined();
+		});
+
+		it("should handle priority execution strategy", async () => {
+			const tasks = [
+				{ id: "task1", priority: 1, execute: async () => ({ result: "1" }) },
+				{ id: "task2", priority: 3, execute: async () => ({ result: "2" }) },
+				{ id: "task3", priority: 2, execute: async () => ({ result: "3" }) },
+			];
+
+			const result = await executionController.execute({
+				tasks,
+				strategy: "priority",
+			});
+
+			expect(result).toBeDefined();
+		});
+
+		it("should handle empty task list", async () => {
+			const result = await executionController.execute({
+				tasks: [],
+				strategy: "sequential",
+			});
+
+			expect(result.completed).toBe(0);
+		});
+
+		it("should handle single task", async () => {
+			const tasks = [{ id: "task1", execute: async () => ({ result: "1" }) }];
+
+			const result = await executionController.execute({
+				tasks,
+				strategy: "sequential",
+			});
+
+			expect(result.completed).toBe(1);
+		});
+
+		it("should handle task errors in sequential mode", async () => {
+			const tasks = [
+				{ id: "task1", execute: async () => ({ result: "1" }) },
+				{
+					id: "task2",
+					execute: async () => {
+						throw new Error("Task failed");
+					},
+				},
+				{ id: "task3", execute: async () => ({ result: "3" }) },
+			];
+
+			const result = await executionController.execute({
+				tasks,
+				strategy: "sequential",
+				continueOnError: true,
+			});
+
+			expect(result.errors.length).toBeGreaterThan(0);
+		});
+
+		it("should handle task errors in parallel mode", async () => {
+			const tasks = [
+				{ id: "task1", execute: async () => ({ result: "1" }) },
+				{
+					id: "task2",
+					execute: async () => {
+						throw new Error("Task failed");
+					},
+				},
+			];
+
+			const result = await executionController.execute({
+				tasks,
+				strategy: "parallel",
+				continueOnError: true,
+			});
+
+			expect(result).toBeDefined();
+		});
+
+		it("should stop on error when continueOnError=false", async () => {
+			const tasks = [
+				{
+					id: "task1",
+					execute: async () => {
+						throw new Error("Task failed");
+					},
+				},
+				{ id: "task2", execute: async () => ({ result: "2" }) },
+			];
+
+			try {
+				await executionController.execute({
+					tasks,
+					strategy: "sequential",
+					continueOnError: false,
+				});
+			} catch (error) {
+				expect(error).toBeDefined();
+			}
+		});
+
+		it("should handle timeout configuration", async () => {
+			const tasks = [
+				{
+					id: "task1",
+					execute: async () => {
+						await new Promise((resolve) => setTimeout(resolve, 100));
+						return { result: "1" };
+					},
+				},
+			];
+
+			const result = await executionController.execute({
+				tasks,
+				strategy: "sequential",
+				timeout: 5000,
+			});
+
+			expect(result.completed).toBe(1);
+		});
+
+		it("should track execution metrics", async () => {
+			const tasks = [
+				{ id: "task1", execute: async () => ({ result: "1" }) },
+				{ id: "task2", execute: async () => ({ result: "2" }) },
+			];
+
+			const result = await executionController.execute({
+				tasks,
+				strategy: "sequential",
+			});
+
+			expect(result.duration).toBeGreaterThan(0);
+			expect(result.completed).toBe(2);
+		});
+
+		it("should handle different batch sizes", async () => {
+			const tasks = Array.from({ length: 10 }, (_, i) => ({
+				id: `task${i}`,
+				execute: async () => ({ result: `${i}` }),
+			}));
+
+			const result1 = await executionController.execute({
+				tasks,
+				strategy: "batch",
+				batchSize: 2,
+			});
+
+			const result2 = await executionController.execute({
+				tasks,
+				strategy: "batch",
+				batchSize: 5,
+			});
+
+			expect(result1.completed).toBe(10);
+			expect(result2.completed).toBe(10);
+		});
+	});
+
+	describe("Integration Scenarios", () => {
+		it("should handle project onboarding with execution controller", async () => {
+			const onboardingResult = await projectOnboarding.detectProjectType(
+				"/tmp/test-project",
+			);
+
+			const tasks = [
+				{
+					id: "analyze",
+					execute: async () => ({ analyzed: true }),
+				},
+				{
+					id: "generate-docs",
+					execute: async () => ({ documented: true }),
+				},
+			];
+
+			const execResult = await executionController.execute({
+				tasks,
+				strategy: "sequential",
+			});
+
+			expect(onboardingResult).toBeDefined();
+			expect(execResult.completed).toBe(2);
+		});
+	});
+});

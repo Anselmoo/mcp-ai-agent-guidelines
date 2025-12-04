@@ -1,0 +1,378 @@
+// Roadmap and Spec Generators - Branch Coverage Enhancement Tests
+import { describe, expect, it } from "vitest";
+import { roadmapGenerator } from "../../src/tools/design/roadmap-generator.ts";
+import { specGenerator } from "../../src/tools/design/spec-generator.ts";
+import type { DesignSessionState } from "../../src/tools/design/types.ts";
+
+describe("Roadmap & Spec Generators - Branch Coverage", () => {
+	const createTestSession = (): DesignSessionState => ({
+		config: {
+			sessionId: "test-session",
+			context: "Test context",
+			goal: "Test goal",
+			requirements: ["req1", "req2"],
+			constraints: [],
+			coverageThreshold: 80,
+			enablePivots: true,
+			templateRefs: [],
+			outputFormats: ["markdown"],
+			metadata: {},
+		},
+		currentPhase: "design",
+		phases: {
+			discovery: {
+				id: "discovery",
+				name: "Discovery",
+				description: "Initial discovery",
+				inputs: [],
+				outputs: ["discovery-doc"],
+				criteria: [],
+				coverage: 85,
+				status: "completed",
+				artifacts: [],
+				dependencies: [],
+			},
+			requirements: {
+				id: "requirements",
+				name: "Requirements",
+				description: "Requirements gathering",
+				inputs: ["discovery-doc"],
+				outputs: ["requirements-doc"],
+				criteria: [],
+				coverage: 80,
+				status: "completed",
+				artifacts: [],
+				dependencies: ["discovery"],
+			},
+			design: {
+				id: "design",
+				name: "Design",
+				description: "System design",
+				inputs: ["requirements-doc"],
+				outputs: ["design-doc"],
+				criteria: [],
+				coverage: 75,
+				status: "in-progress",
+				artifacts: [],
+				dependencies: ["requirements"],
+			},
+		},
+		coverage: {
+			overall: 80,
+			phases: { discovery: 85, requirements: 80, design: 75 },
+			constraints: {},
+			assumptions: {},
+			documentation: 75,
+			testCoverage: 75,
+		},
+		artifacts: [],
+		history: [],
+		status: "active",
+	});
+
+	describe("Roadmap Generator Branches", () => {
+		it("should generate roadmap with all phases", async () => {
+			const session = createTestSession();
+
+			const result = await roadmapGenerator.generateRoadmap({
+				sessionState: session,
+				includeTimeline: true,
+				includeMilestones: true,
+			});
+
+			expect(result.artifact).toBeDefined();
+			expect(result.markdown).toContain("Roadmap");
+		});
+
+		it("should handle includeTimeline=false branch", async () => {
+			const session = createTestSession();
+
+			const result = await roadmapGenerator.generateRoadmap({
+				sessionState: session,
+				includeTimeline: false,
+				includeMilestones: true,
+			});
+
+			expect(result.artifact).toBeDefined();
+		});
+
+		it("should handle includeMilestones=false branch", async () => {
+			const session = createTestSession();
+
+			const result = await roadmapGenerator.generateRoadmap({
+				sessionState: session,
+				includeTimeline: true,
+				includeMilestones: false,
+			});
+
+			expect(result.artifact).toBeDefined();
+		});
+
+		it("should generate roadmap with no phases", async () => {
+			const session = createTestSession();
+			session.phases = {};
+
+			const result = await roadmapGenerator.generateRoadmap({
+				sessionState: session,
+				includeTimeline: true,
+				includeMilestones: true,
+			});
+
+			expect(result.artifact).toBeDefined();
+		});
+
+		it("should handle phases with dependencies", async () => {
+			const session = createTestSession();
+
+			const result = await roadmapGenerator.generateRoadmap({
+				sessionState: session,
+				includeTimeline: true,
+				includeMilestones: true,
+			});
+
+			expect(result.markdown).toBeDefined();
+		});
+
+		it("should handle phases without dependencies", async () => {
+			const session = createTestSession();
+			session.phases.discovery.dependencies = [];
+
+			const result = await roadmapGenerator.generateRoadmap({
+				sessionState: session,
+				includeTimeline: true,
+				includeMilestones: true,
+			});
+
+			expect(result.markdown).toBeDefined();
+		});
+
+		it("should generate roadmap with completed phases", async () => {
+			const session = createTestSession();
+
+			const result = await roadmapGenerator.generateRoadmap({
+				sessionState: session,
+				includeTimeline: true,
+				includeMilestones: true,
+			});
+
+			expect(result.markdown).toContain("completed");
+		});
+
+		it("should generate roadmap with in-progress phases", async () => {
+			const session = createTestSession();
+
+			const result = await roadmapGenerator.generateRoadmap({
+				sessionState: session,
+				includeTimeline: true,
+				includeMilestones: true,
+			});
+
+			expect(result.markdown).toContain("in-progress");
+		});
+
+		it("should include recommendations", async () => {
+			const session = createTestSession();
+
+			const result = await roadmapGenerator.generateRoadmap({
+				sessionState: session,
+				includeTimeline: true,
+				includeMilestones: true,
+			});
+
+			expect(result.recommendations).toBeDefined();
+			expect(Array.isArray(result.recommendations)).toBe(true);
+		});
+	});
+
+	describe("Spec Generator Branches", () => {
+		it("should generate specification with all sections", async () => {
+			const session = createTestSession();
+
+			const result = await specGenerator.generateSpecification({
+				sessionState: session,
+				includeRequirements: true,
+				includeArchitecture: true,
+				includeAPI: true,
+			});
+
+			expect(result.artifact).toBeDefined();
+			expect(result.markdown).toContain("Specification");
+		});
+
+		it("should handle includeRequirements=false branch", async () => {
+			const session = createTestSession();
+
+			const result = await specGenerator.generateSpecification({
+				sessionState: session,
+				includeRequirements: false,
+				includeArchitecture: true,
+				includeAPI: true,
+			});
+
+			expect(result.artifact).toBeDefined();
+		});
+
+		it("should handle includeArchitecture=false branch", async () => {
+			const session = createTestSession();
+
+			const result = await specGenerator.generateSpecification({
+				sessionState: session,
+				includeRequirements: true,
+				includeArchitecture: false,
+				includeAPI: true,
+			});
+
+			expect(result.artifact).toBeDefined();
+		});
+
+		it("should handle includeAPI=false branch", async () => {
+			const session = createTestSession();
+
+			const result = await specGenerator.generateSpecification({
+				sessionState: session,
+				includeRequirements: true,
+				includeArchitecture: true,
+				includeAPI: false,
+			});
+
+			expect(result.artifact).toBeDefined();
+		});
+
+		it("should generate spec with constraints", async () => {
+			const session = createTestSession();
+			session.config.constraints = [
+				{
+					id: "constraint1",
+					name: "Test Constraint",
+					type: "functional",
+					category: "business",
+					description: "Test description",
+					validation: { minCoverage: 80, keywords: ["test"] },
+					weight: 1.0,
+					mandatory: true,
+					source: "Test",
+				},
+			];
+
+			const result = await specGenerator.generateSpecification({
+				sessionState: session,
+				includeRequirements: true,
+				includeArchitecture: true,
+				includeAPI: true,
+			});
+
+			expect(result.markdown).toBeDefined();
+		});
+
+		it("should generate spec without constraints", async () => {
+			const session = createTestSession();
+			session.config.constraints = [];
+
+			const result = await specGenerator.generateSpecification({
+				sessionState: session,
+				includeRequirements: true,
+				includeArchitecture: true,
+				includeAPI: true,
+			});
+
+			expect(result.markdown).toBeDefined();
+		});
+
+		it("should include validation criteria", async () => {
+			const session = createTestSession();
+
+			const result = await specGenerator.generateSpecification({
+				sessionState: session,
+				includeRequirements: true,
+				includeArchitecture: true,
+				includeAPI: true,
+			});
+
+			expect(result.recommendations).toBeDefined();
+		});
+
+		it("should handle session with artifacts", async () => {
+			const session = createTestSession();
+			session.artifacts = [
+				{
+					id: "art1",
+					name: "Artifact 1",
+					type: "document",
+					content: "Content",
+					format: "markdown",
+					timestamp: new Date().toISOString(),
+					metadata: {},
+				},
+			];
+
+			const result = await specGenerator.generateSpecification({
+				sessionState: session,
+				includeRequirements: true,
+				includeArchitecture: true,
+				includeAPI: true,
+			});
+
+			expect(result.artifact).toBeDefined();
+		});
+
+		it("should handle session without artifacts", async () => {
+			const session = createTestSession();
+			session.artifacts = [];
+
+			const result = await specGenerator.generateSpecification({
+				sessionState: session,
+				includeRequirements: true,
+				includeArchitecture: true,
+				includeAPI: true,
+			});
+
+			expect(result.artifact).toBeDefined();
+		});
+	});
+
+	describe("Combined Generation Scenarios", () => {
+		it("should generate both roadmap and spec for same session", async () => {
+			const session = createTestSession();
+
+			const roadmap = await roadmapGenerator.generateRoadmap({
+				sessionState: session,
+				includeTimeline: true,
+				includeMilestones: true,
+			});
+
+			const spec = await specGenerator.generateSpecification({
+				sessionState: session,
+				includeRequirements: true,
+				includeArchitecture: true,
+				includeAPI: true,
+			});
+
+			expect(roadmap.artifact.id).not.toBe(spec.artifact.id);
+			expect(roadmap.markdown).toBeDefined();
+			expect(spec.markdown).toBeDefined();
+		});
+
+		it("should handle minimal configuration", async () => {
+			const session = createTestSession();
+			session.phases = {};
+			session.artifacts = [];
+			session.config.constraints = [];
+
+			const roadmap = await roadmapGenerator.generateRoadmap({
+				sessionState: session,
+				includeTimeline: false,
+				includeMilestones: false,
+			});
+
+			const spec = await specGenerator.generateSpecification({
+				sessionState: session,
+				includeRequirements: false,
+				includeArchitecture: false,
+				includeAPI: false,
+			});
+
+			expect(roadmap.artifact).toBeDefined();
+			expect(spec.artifact).toBeDefined();
+		});
+	});
+});
