@@ -165,7 +165,10 @@ export function buildProviderTipsSection(
 	style?: "markdown" | "xml",
 ): string {
 	const p = (provider || "gpt-5").toLowerCase();
-	const effectiveStyle = style || (p === "claude-4" ? "xml" : "markdown");
+	// Check if provider is any Claude variant
+	const isClaude = p.includes("claude");
+	const isGemini = p.includes("gemini");
+	const effectiveStyle = style || (isClaude ? "xml" : "markdown");
 	const lines: string[] = [];
 	lines.push(`# Model-Specific Tips`);
 	lines.push("");
@@ -175,7 +178,7 @@ export function buildProviderTipsSection(
 			"- Place instructions at the beginning (and optionally re-assert at the end) in long contexts",
 		);
 		lines.push("- Use explicit step numbering for CoT where helpful");
-	} else if (p === "claude-4") {
+	} else if (isClaude) {
 		lines.push(
 			"- Prefer XML-like structuring for clarity (e.g., <instructions>, <context>, <examples>)",
 		);
@@ -183,7 +186,7 @@ export function buildProviderTipsSection(
 			"- Be very specific about expectations and use extended thinking tags where appropriate",
 		);
 		lines.push("- Tag documents distinctly when doing RAG");
-	} else if (p === "gemini-2.5") {
+	} else if (isGemini) {
 		lines.push(
 			"- Use consistent formatting throughout; keep queries at the end of long contexts",
 		);

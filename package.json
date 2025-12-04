@@ -7,6 +7,8 @@
 	"scripts": {
 		"build": "tsc && npm run copy-yaml",
 		"copy-yaml": "cp src/tools/config/models.yaml dist/tools/config/",
+		"generate:models": "npm run build && node scripts/generate-model-types.js",
+		"validate:models": "node scripts/validate-model-config.js",
 		"start": "npm run build && node dist/index.js",
 		"dev": "tsc --watch",
 		"test": "npm run test:all",

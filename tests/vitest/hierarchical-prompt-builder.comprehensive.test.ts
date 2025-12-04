@@ -6,11 +6,11 @@ describe("hierarchical-prompt-builder comprehensive coverage", () => {
 		const providers = [
 			"gpt-5",
 			"gpt-4.1",
-			"claude-4",
-			"claude-3.7",
-			"gemini-2.5",
+			"claude-opus-4",
+			"claude-sonnet-3.7",
+			"gemini-2.5-pro",
 			"o4-mini",
-			"o3-mini",
+			"o3",
 			"other",
 		];
 		const techniques = [
@@ -138,7 +138,7 @@ describe("hierarchical-prompt-builder comprehensive coverage", () => {
 			includeTechniqueHints: true,
 			includeReferences: true,
 			includePitfalls: true,
-			provider: "claude-4",
+			provider: "claude-opus-4",
 			style: "markdown",
 		});
 
@@ -210,8 +210,8 @@ describe("hierarchical-prompt-builder comprehensive coverage", () => {
 	it("should handle provider-specific optimizations", async () => {
 		const testCases = [
 			{ provider: "gpt-5", expectedOptimization: "advanced reasoning" },
-			{ provider: "claude-4", expectedOptimization: "detailed analysis" },
-			{ provider: "gemini-2.5", expectedOptimization: "multimodal" },
+			{ provider: "claude-opus-4", expectedOptimization: "detailed analysis" },
+			{ provider: "gemini-2.5-pro", expectedOptimization: "multimodal" },
 			{ provider: "o4-mini", expectedOptimization: "efficient" },
 		];
 
