@@ -1,7 +1,33 @@
 # AI Model Definitions
 # This file contains the definitions of supported AI models for the MCP AI Agent Guidelines
 # Source: https://docs.github.com/en/copilot/reference/ai-models/supported-models
-# Last updated: 2025-10-30
+# Last updated: 2025-12-04
+#
+# Schema Fields:
+# Required Fields:
+#   - name: Display name of the model (string)
+#   - provider: Provider/company name (string)
+#   - pricingTier: One of "premium", "mid-tier", or "budget"
+#   - contextTokens: Context window size in tokens (integer)
+#   - baseScore: Base scoring value 0-100 (integer)
+#   - capabilities: Array of capability strings
+#   - strengths: Array of strength descriptions
+#   - limitations: Array of limitation descriptions
+#   - specialFeatures: Array of special feature descriptions
+#   - pricing: Human-readable pricing description
+#
+# Optional Fields (NEW):
+#   - modes: Object with boolean flags for supported modes
+#     - agent: Supports agent mode (boolean)
+#     - reasoning: Deep reasoning capability (boolean)
+#     - vision: Multimodal image input (boolean)
+#     - chat: Chat completions (boolean)
+#     - edit: Code editing mode (boolean)
+#     - completions: Inline suggestions (boolean)
+#   - taskArea: Task categorization - "general-purpose", "deep-reasoning", "fast-simple", or "visual"
+#   - multiplier: Premium request multiplier (number, e.g., 1.0, 1.5, 2.0)
+#   - status: Model status - "ga", "preview", "beta", or "retired"
+#   - documentationUrl: Link to official model documentation (string)
 
 # Default model configuration
 # This model is used as the default across all prompt builders
@@ -31,6 +57,18 @@ models:
       - "Vision capabilities"
       - "Function calling"
     pricing: "Mid-tier ($5-10/1M tokens)"
+    # New metadata fields
+    modes:
+      agent: true
+      reasoning: false
+      vision: true
+      chat: true
+      edit: true
+      completions: true
+    taskArea: "general-purpose"
+    multiplier: 1.0
+    status: "ga"
+    documentationUrl: "https://openai.com/index/gpt-4-1/"
 
   - name: "GPT-5"
     provider: "OpenAI"
@@ -52,6 +90,18 @@ models:
       - "Advanced reasoning"
       - "Complex debugging"
     pricing: "Premium ($10-20/1M tokens)"
+    # New metadata fields
+    modes:
+      agent: true
+      reasoning: true
+      vision: true
+      chat: true
+      edit: true
+      completions: false
+    taskArea: "deep-reasoning"
+    multiplier: 1.5
+    status: "ga"
+    documentationUrl: "https://openai.com/gpt-5/"
 
   - name: "o3"
     provider: "OpenAI"
@@ -115,6 +165,18 @@ models:
       - "Vision support"
       - "Deep reasoning"
     pricing: "Premium ($15-30/1M tokens)"
+    # New metadata fields
+    modes:
+      agent: true
+      reasoning: true
+      vision: true
+      chat: true
+      edit: true
+      completions: false
+    taskArea: "deep-reasoning"
+    multiplier: 2.0
+    status: "ga"
+    documentationUrl: "https://www.anthropic.com/claude/opus"
 
   - name: "Claude Opus 4"
     provider: "Anthropic"
@@ -202,6 +264,18 @@ models:
       - "Vision support"
       - "Balanced speed/quality"
     pricing: "Mid-tier ($3-6/1M tokens)"
+    # New metadata fields
+    modes:
+      agent: true
+      reasoning: true
+      vision: true
+      chat: true
+      edit: true
+      completions: true
+    taskArea: "general-purpose"
+    multiplier: 1.0
+    status: "ga"
+    documentationUrl: "https://www.anthropic.com/claude/sonnet"
 
   - name: "Gemini 2.5 Pro"
     provider: "Google"
@@ -225,6 +299,18 @@ models:
       - "Vision support"
       - "Google integration"
     pricing: "Competitive ($1-3/1M tokens)"
+    # New metadata fields
+    modes:
+      agent: true
+      reasoning: true
+      vision: true
+      chat: true
+      edit: true
+      completions: true
+    taskArea: "general-purpose"
+    multiplier: 1.0
+    status: "ga"
+    documentationUrl: "https://ai.google.dev/gemini-api/docs"
 
   - name: "Gemini 2.0 Flash"
     provider: "Google"

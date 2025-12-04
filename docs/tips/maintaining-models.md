@@ -67,6 +67,18 @@ src/tools/config/
   specialFeatures: # List of special features
     - "Feature 1"
   pricing: "Mid-tier ($5-10/1M tokens)" # Pricing description
+  # Optional: Add new metadata fields
+  modes:
+    agent: true
+    reasoning: false
+    vision: true
+    chat: true
+    edit: true
+    completions: true
+  taskArea: "general-purpose"
+  multiplier: 1.0
+  status: "ga"
+  documentationUrl: "https://example.com/model-docs"
 ```
 
 ### Updating an Existing Model
@@ -97,6 +109,28 @@ src/tools/config/
 - **specialFeatures**: Array of special feature descriptions
 - **pricing**: Human-readable pricing description
 
+### Optional Fields (New)
+
+- **modes**: Object with boolean flags for supported modes
+  - **agent**: Supports agent mode (boolean)
+  - **reasoning**: Deep reasoning capability (boolean)
+  - **vision**: Multimodal image input (boolean)
+  - **chat**: Chat completions (boolean)
+  - **edit**: Code editing mode (boolean)
+  - **completions**: Inline suggestions (boolean)
+- **taskArea**: Task categorization - one of:
+  - "general-purpose": Balanced for various tasks
+  - "deep-reasoning": Complex problem-solving
+  - "fast-simple": Quick responses for simple tasks
+  - "visual": Image/multimodal focus
+- **multiplier**: Premium request multiplier (number, e.g., 1.0, 1.5, 2.0)
+- **status**: Model status - one of:
+  - "ga": Generally available
+  - "preview": Preview/early access
+  - "beta": Beta testing
+  - "retired": Deprecated/removed
+- **documentationUrl**: Link to official model documentation (string, must be valid URL)
+
 ### Capability Keywords
 
 Available capability types:
@@ -114,6 +148,54 @@ Available capability types:
 - **premium**: High-cost, high-capability models ($10-30/1M tokens)
 - **mid-tier**: Balanced cost and performance ($3-10/1M tokens)
 - **budget**: Low-cost, fast models ($0.25-3/1M tokens)
+
+## Understanding New Fields
+
+### Mode Support
+
+The `modes` field helps categorize models by their supported interaction patterns:
+
+- **agent**: Can operate autonomously with extended tool use
+- **reasoning**: Specializes in step-by-step logical analysis
+- **vision**: Accepts and processes image inputs
+- **chat**: Supports conversational interactions
+- **edit**: Optimized for code modification tasks
+- **completions**: Provides inline code suggestions
+
+**Example use cases:**
+- Models with `agent: true` are suitable for autonomous workflows
+- Models with `reasoning: true` excel at complex debugging
+- Models with `vision: true` can analyze diagrams and screenshots
+
+### Task Area
+
+The `taskArea` field categorizes models by their primary use case:
+
+- **general-purpose**: Versatile, balanced for most tasks (e.g., GPT-4.1, Claude Sonnet 4)
+- **deep-reasoning**: Optimized for complex analysis (e.g., GPT-5, Claude Opus 4.1)
+- **fast-simple**: Quick responses for straightforward tasks (e.g., o4-mini)
+- **visual**: Image and multimodal processing focus
+
+### Multiplier
+
+The `multiplier` field indicates premium request cost multiplier:
+
+- `1.0`: Standard pricing
+- `1.5`: 50% premium (advanced features)
+- `2.0`: Double cost (highest capability)
+
+This helps in cost-aware model selection.
+
+### Model Status
+
+The `status` field tracks model lifecycle:
+
+- **ga**: Generally available, production-ready
+- **preview**: Early access, may have limited features
+- **beta**: Testing phase, features may change
+- **retired**: Deprecated, plan migration
+
+Always check status before deploying to production.
 
 ## Syncing with External Sources
 
@@ -226,7 +308,7 @@ The model loader caches data on first load. If changes aren't reflected:
 
 ## Example: Adding a New Model
 
-Complete example of adding "Claude Sonnet 5":
+Complete example of adding "Claude Sonnet 5" with full schema:
 
 ```yaml
 - name: "Claude Sonnet 5"
@@ -250,6 +332,18 @@ Complete example of adding "Claude Sonnet 5":
     - "Vision support"
     - "Extended thinking"
   pricing: "Mid-tier ($4-7/1M tokens)"
+  # New metadata fields
+  modes:
+    agent: true
+    reasoning: true
+    vision: true
+    chat: true
+    edit: true
+    completions: true
+  taskArea: "general-purpose"
+  multiplier: 1.0
+  status: "ga"
+  documentationUrl: "https://www.anthropic.com/claude/sonnet"
 ```
 
 ## Getting Help
