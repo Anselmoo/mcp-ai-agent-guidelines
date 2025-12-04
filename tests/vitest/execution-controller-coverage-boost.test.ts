@@ -967,7 +967,8 @@ describe("ExecutionController Coverage Boost", () => {
 			const nonErrorThrower = registerTool(
 				`throw-string-${toolSuffix}`,
 				async () => {
-					// Throw a string instead of an Error
+					// Test line 269: error instanceof Error check by throwing a non-Error type (string)
+					// This ensures the code path that handles String(error) is covered
 					throw "This is a string error"; // eslint-disable-line no-throw-literal
 				},
 			);
@@ -998,7 +999,8 @@ describe("ExecutionController Coverage Boost", () => {
 			const nonErrorThrower = registerTool(
 				`throw-obj-${toolSuffix}`,
 				async () => {
-					// Throw an object instead of an Error
+					// Test line 315: error instanceof Error check in parallel strategy
+					// This ensures the code path that handles non-Error objects is covered
 					throw { message: "object error" }; // eslint-disable-line no-throw-literal
 				},
 			);
