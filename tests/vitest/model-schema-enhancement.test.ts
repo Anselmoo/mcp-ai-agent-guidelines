@@ -166,12 +166,15 @@ describe("Model Schema Enhancement", () => {
 
 		it("should have valid multiplier values", () => {
 			const models = getModels();
+			// Maximum multiplier of 5.0 allows for extreme premium models
+			// while preventing unrealistic values (e.g., 2x base = 2.0, 5x base = 5.0)
+			const MAX_MULTIPLIER = 5.0;
 
 			for (const model of models) {
 				if (model.multiplier !== undefined) {
 					expect(typeof model.multiplier).toBe("number");
 					expect(model.multiplier).toBeGreaterThan(0);
-					expect(model.multiplier).toBeLessThanOrEqual(5);
+					expect(model.multiplier).toBeLessThanOrEqual(MAX_MULTIPLIER);
 				}
 			}
 		});
