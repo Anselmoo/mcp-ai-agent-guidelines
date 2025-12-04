@@ -376,9 +376,9 @@ describe("Custom Workflow", () => {
 
 ## Next Steps
 
-- Read the [A2A Orchestration Guide](./A2A_ORCHESTRATION_GUIDE.md) for detailed API reference
-- Explore the [agent-orchestrator source](../src/tools/agent-orchestrator.ts) for implementation details
-- Check the [test files](../tests/vitest/) for more examples
+- Read the [A2A Orchestration Guide](./a2a-orchestration-guide.md) for detailed API reference
+- Explore the [agent-orchestrator source](../../src/tools/agent-orchestrator.ts) for implementation details
+- Check the [test files](../../tests/vitest/) for more examples
 
 ---
 

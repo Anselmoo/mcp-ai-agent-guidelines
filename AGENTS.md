@@ -100,7 +100,7 @@ npm run quality           # Type-check + lint
 - [GitHub Copilot Coding Agent Documentation](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent)
 - [AGENTS.md Standard](https://agents.md/)
 - [AGENTS.md GitHub Repository](https://github.com/openai/agents.md)
-- [MCP Protocol Specification](https://spec.modelcontextprotocol.io/)
+- [MCP Protocol Specification](https://modelcontextprotocol.io/specification)
 
 ---
 

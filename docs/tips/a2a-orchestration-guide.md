@@ -854,8 +854,8 @@ context.sharedState.delete("large-object");
 - [MCP Specification](https://modelcontextprotocol.io)
 - [Advanced MCP: Agent Orchestration, Chaining, and Handoffs](https://www.getknit.dev/blog/advanced-mcp-agent-orchestration-chaining-and-handoffs)
 - [arXiv:2504.21030 - Advancing Multi-Agent Systems Through MCP](https://arxiv.org/abs/2504.21030)
-- [Project README](../README.md)
-- [CHANGELOG](../CHANGELOG.md)
+- [Project README](../../README.md)
+- [CHANGELOG](../../CHANGELOG.md)
 
 ---
 
