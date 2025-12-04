@@ -258,7 +258,7 @@ describe("Coverage Dashboard Design Prompt Builder", () => {
 
 	it("should include provider tips section", async () => {
 		const result = await coverageDashboardDesignPromptBuilder({
-			provider: "claude-4",
+			provider: "claude-opus-4",
 		});
 
 		expect(result.content[0].text).toContain("Model-Specific Tips");

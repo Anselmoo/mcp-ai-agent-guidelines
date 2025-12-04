@@ -151,7 +151,7 @@ describe("hierarchical-schema.validation - Schema Validation and Canonicalizatio
 			const result = await hierarchicalPromptBuilder({
 				context: "Microservices architecture",
 				goal: "Build a feature",
-				provider: "claude-4",
+				provider: "claude-opus-4",
 			});
 			expect(result.content[0].type).toBe("text");
 		});

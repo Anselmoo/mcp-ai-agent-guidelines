@@ -38,6 +38,7 @@ import { gapFrameworksAnalyzers } from "./tools/analysis/gap-frameworks-analyzer
 import { strategyFrameworksBuilder } from "./tools/analysis/strategy-frameworks-builder.js";
 import { cleanCodeScorer } from "./tools/clean-code-scorer.js";
 import { codeHygieneAnalyzer } from "./tools/code-hygiene-analyzer.js";
+import { PROVIDER_ENUM_VALUES } from "./tools/config/generated/index.js";
 import { dependencyAuditor } from "./tools/dependency-auditor.js";
 import {
 	type DesignAssistantRequest,
@@ -161,16 +162,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						},
 						provider: {
 							type: "string",
-							enum: [
-								"gpt-5",
-								"gpt-4.1",
-								"claude-4",
-								"claude-3.7",
-								"gemini-2.5",
-								"o4-mini",
-								"o3-mini",
-								"other",
-							],
+							enum: PROVIDER_ENUM_VALUES,
 							description: "Model family for tailored tips",
 						},
 						style: {
@@ -969,16 +961,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						autoSelectTechniques: { type: "boolean" },
 						provider: {
 							type: "string",
-							enum: [
-								"gpt-5",
-								"gpt-4.1",
-								"claude-4",
-								"claude-3.7",
-								"gemini-2.5",
-								"o4-mini",
-								"o3-mini",
-								"other",
-							],
+							enum: PROVIDER_ENUM_VALUES,
 						},
 						style: { type: "string", enum: ["markdown", "xml"] },
 					},
@@ -1587,16 +1570,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						},
 						provider: {
 							type: "string",
-							enum: [
-								"gpt-5",
-								"gpt-4.1",
-								"claude-4",
-								"claude-3.7",
-								"gemini-2.5",
-								"o4-mini",
-								"o3-mini",
-								"other",
-							],
+							enum: PROVIDER_ENUM_VALUES,
 							description: "Model family for tailored tips",
 						},
 						style: {

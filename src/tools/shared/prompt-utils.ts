@@ -82,17 +82,11 @@ export function buildFrontmatter({
 	return lines.join("\n");
 }
 
+// Import MODEL_ALIASES from generated types
+import { MODEL_ALIASES } from "../config/generated/index.js";
+
 // Policy: enforce allowed modes/models/tools and normalize casing
 const ALLOWED_MODES = new Set(["agent"]);
-const MODEL_ALIASES: Record<string, string> = {
-	"gpt-5": "GPT-5",
-	"gpt-4.1": "GPT-4.1",
-	"claude-4": "Claude-4",
-	"claude-4.5": "Claude-4.5",
-	"gemini-2.5": "Gemini-2.5",
-	"o4-mini": "o4-mini",
-	"o3-mini": "o3-mini",
-};
 const ALLOWED_TOOLS = new Set(["githubRepo", "codebase", "editFiles"]);
 
 export function validateAndNormalizeFrontmatter(

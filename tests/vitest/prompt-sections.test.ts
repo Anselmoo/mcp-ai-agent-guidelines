@@ -114,9 +114,9 @@ describe("prompt-sections", () => {
 		expect(gpt).toMatch(/Preferred Style: MARKDOWN/);
 		const gpt5 = buildProviderTipsSection("gpt-5", "markdown");
 		expect(gpt5).toMatch(/Preferred Style: MARKDOWN/);
-		const claude = buildProviderTipsSection("claude-4");
+		const claude = buildProviderTipsSection("claude-opus-4");
 		expect(claude).toMatch(/Preferred Style: XML/);
-		const gemini = buildProviderTipsSection("gemini-2.5");
+		const gemini = buildProviderTipsSection("gemini-2.5-pro");
 		expect(gemini).toMatch(/Preferred Style: MARKDOWN/);
 	});
 
@@ -143,11 +143,11 @@ describe("prompt-sections", () => {
 		expect(gpt).toMatch(/Markdown with clear headings/);
 		expect(gpt).toMatch(/step numbering for CoT/);
 
-		const claude = buildProviderTipsSection("claude-4");
+		const claude = buildProviderTipsSection("claude-opus-4");
 		expect(claude).toMatch(/XML-like structuring/);
 		expect(claude).toMatch(/Tag documents distinctly/);
 
-		const gemini = buildProviderTipsSection("gemini-2.5");
+		const gemini = buildProviderTipsSection("gemini-2.5-pro");
 		expect(gemini).toMatch(/consistent formatting/);
 	});
 
@@ -157,7 +157,7 @@ describe("prompt-sections", () => {
 	});
 
 	it("buildProviderTipsSection includes xml code example for claude", () => {
-		const text = buildProviderTipsSection("claude-4");
+		const text = buildProviderTipsSection("claude-opus-4");
 		expect(text).toMatch(/<instructions>/);
 		expect(text).toMatch(/<context>/);
 	});
@@ -259,7 +259,7 @@ describe("prompt-sections", () => {
 	});
 
 	it("buildProviderTipsSection with explicit markdown style for claude", () => {
-		const text = buildProviderTipsSection("claude-4", "markdown");
+		const text = buildProviderTipsSection("claude-opus-4", "markdown");
 		expect(text).toMatch(/Preferred Style: MARKDOWN/);
 		expect(text).toMatch(/# Instructions/);
 		// Claude's specific tips should still be present even with markdown style
@@ -275,21 +275,21 @@ describe("prompt-sections", () => {
 	});
 
 	it("buildProviderTipsSection with explicit xml style for claude", () => {
-		const text = buildProviderTipsSection("claude-4", "xml");
+		const text = buildProviderTipsSection("claude-opus-4", "xml");
 		expect(text).toMatch(/Preferred Style: XML/);
 		expect(text).toMatch(/<instructions>/);
 		expect(text).toMatch(/XML-like structuring/);
 	});
 
 	it("buildProviderTipsSection with explicit markdown style for gemini", () => {
-		const text = buildProviderTipsSection("gemini-2.5", "markdown");
+		const text = buildProviderTipsSection("gemini-2.5-pro", "markdown");
 		expect(text).toMatch(/Preferred Style: MARKDOWN/);
 		expect(text).toMatch(/# Instructions/);
 		expect(text).toMatch(/consistent formatting/);
 	});
 
 	it("buildProviderTipsSection with explicit xml style for gemini", () => {
-		const text = buildProviderTipsSection("gemini-2.5", "xml");
+		const text = buildProviderTipsSection("gemini-2.5-pro", "xml");
 		expect(text).toMatch(/Preferred Style: XML/);
 		expect(text).toMatch(/<instructions>/);
 		expect(text).toMatch(/consistent formatting/);

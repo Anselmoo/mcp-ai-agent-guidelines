@@ -490,7 +490,7 @@ describe("Enhanced Coverage Improvement - Targeting Uncovered Functions", () => 
 					"tree-of-thoughts",
 				],
 				style: "markdown",
-				provider: "claude-3.7",
+				provider: "claude-sonnet-3.7",
 				autoSelectTechniques: true,
 			});
 
