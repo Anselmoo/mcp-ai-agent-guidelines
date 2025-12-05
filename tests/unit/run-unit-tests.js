@@ -302,12 +302,12 @@ async function run() {
 		);
 	}
 
-	// Additional branch coverage: provider tips variants (claude-opus-4, gemini-2.5-pro)
+	// Additional branch coverage: provider tips variants (claude-opus-4.1, gemini-2.5-pro)
 	async function testProviderTipsVariants() {
 		const resClaude = await hierarchicalPromptBuilder({
 			context: "Docs heavy project",
 			goal: "Test provider tips",
-			provider: "claude-opus-4",
+			provider: "claude-opus-4.1",
 		});
 		const textClaude = resClaude.content[0].text;
 		assert.ok(

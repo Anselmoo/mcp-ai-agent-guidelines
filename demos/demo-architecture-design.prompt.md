@@ -1,7 +1,7 @@
 ---
 # Note: Dropped unknown tools: mermaid
 mode: 'agent'
-model: GPT-5
+model: GPT-5-Codex
 tools: ['codebase', 'editFiles']
 description: 'Architecture design for large-scale system'
 ---

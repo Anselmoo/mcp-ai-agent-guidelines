@@ -1,6 +1,6 @@
 ---
 mode: 'agent'
-model: GPT-5
+model: GPT-5-Codex
 tools: ['codebase', 'editFiles']
 description: 'Code analysis with focus on security'
 ---

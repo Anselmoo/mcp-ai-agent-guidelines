@@ -1,7 +1,7 @@
 ---
 # Note: Dropped unknown tools: vscode-websearch, mermaid
 mode: 'agent'
-model: GPT-5
+model: GPT-5-Codex
 tools: ['githubRepo']
 description: 'Enterprise Architect guidance for AI-Native Platform Transformation'
 ---

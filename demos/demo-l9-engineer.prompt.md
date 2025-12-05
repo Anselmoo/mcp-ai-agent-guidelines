@@ -1,7 +1,7 @@
 ---
 # Note: Dropped unknown tools: vscode-websearch, mermaid, semanticCodeAnalyzer
 mode: 'agent'
-model: GPT-5
+model: GPT-5-Codex
 tools: ['githubRepo']
 description: 'Distinguished Engineer (L9) guidance for Global Distributed Caching System'
 ---

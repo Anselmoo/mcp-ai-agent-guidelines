@@ -1,6 +1,6 @@
 ---
 mode: 'agent'
-model: GPT-5
+model: GPT-5-Codex
 tools: ['codebase', 'githubRepo', 'editFiles']
 description: 'Quick developer prompts for rapid analysis and progress checks'
 ---

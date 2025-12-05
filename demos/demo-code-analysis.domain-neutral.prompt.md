@@ -1,6 +1,6 @@
 ---
 mode: 'agent'
-model: GPT-5
+model: GPT-5-Codex
 tools: ['githubRepo', 'codebase', 'editFiles']
 description: 'Template to run consistent, security-first code hygiene reviews across languages'
 ---

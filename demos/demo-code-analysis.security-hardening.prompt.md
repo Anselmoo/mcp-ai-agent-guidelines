@@ -1,7 +1,7 @@
 ---
 # Note: Dropped unknown tools: security-scanner
 mode: 'agent'
-model: GPT-5
+model: GPT-5-Codex
 tools: ['codebase', 'editFiles']
 description: 'Security vulnerability analysis analysis and hardening recommendations'
 ---
