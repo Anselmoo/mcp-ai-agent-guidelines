@@ -32,7 +32,7 @@ describe("model-compatibility-checker", () => {
 		// Gemini 2.5 Pro should be in recommendations for large-context
 		expect(text).toContain("gemini 2.5 pro".toLowerCase());
 		// Low budget should still surface budget-friendly options in table
-		expect(text).toContain("o4-mini".toLowerCase());
+		expect(text).toContain("gemini 2.0 flash".toLowerCase());
 	});
 
 	it("produces a qualitative analysis with selection snapshot and TS examples", async () => {

@@ -92,7 +92,7 @@ export function pickModel(opts: {
   multimodal?: boolean;
   budget?: 'low' | 'medium' | 'high';
 }): Choice {
-  if (opts.largeContext) return { provider: 'anthropic', model: 'Claude Opus 4.1' };
+  if (opts.largeContext) return { provider: 'google', model: 'Gemini 2.5 Pro' };
   if (opts.complexity === 'advanced') return { provider: 'anthropic', model: 'Claude Opus 4.1' };
   if (opts.complexity === 'simple' || opts.budget === 'low') return { provider: 'google', model: 'Gemini 2.0 Flash' };
   return { provider: 'google', model: 'Gemini 2.5 Pro' };

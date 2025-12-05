@@ -21,7 +21,7 @@ describe("model-aliases", () => {
 	describe("isValidModelIdentifier", () => {
 		it("should return true for valid identifiers", () => {
 			expect(isValidModelIdentifier("gpt-4.1")).toBe(true);
-			expect(isValidModelIdentifier("claude-opus-4")).toBe(true);
+			expect(isValidModelIdentifier("claude-opus-4.1")).toBe(true);
 			expect(isValidModelIdentifier("gemini-2.5-pro")).toBe(true);
 		});
 
@@ -35,7 +35,7 @@ describe("model-aliases", () => {
 	describe("MODEL_ALIASES", () => {
 		it("should contain expected model mappings", () => {
 			expect(MODEL_ALIASES["gpt-5"]).toBe("GPT-5");
-			expect(MODEL_ALIASES["o3"]).toBe("o3");
+			expect(MODEL_ALIASES["gpt-5-codex"]).toBe("GPT-5-Codex");
 		});
 	});
 });

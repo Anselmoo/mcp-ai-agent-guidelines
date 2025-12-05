@@ -88,7 +88,7 @@ describe("Model Schema Enhancement", () => {
 			const models = getModels();
 
 			// Find a model that hasn't been enhanced (e.g., o3)
-			const o3 = models.find((m) => m.name === "o3");
+			const o3 = models.find((m) => m.name === "gpt-5.1");
 
 			// New fields should be undefined for non-enhanced models
 			if (o3 && !o3.modes) {
@@ -173,7 +173,8 @@ describe("Model Schema Enhancement", () => {
 			for (const model of models) {
 				if (model.multiplier !== undefined) {
 					expect(typeof model.multiplier).toBe("number");
-					expect(model.multiplier).toBeGreaterThan(0);
+					// Allow 0.0 for complimentary models (e.g., Grok Code Fast 1)
+					expect(model.multiplier).toBeGreaterThanOrEqual(0);
 					expect(model.multiplier).toBeLessThanOrEqual(MAX_MULTIPLIER);
 				}
 			}

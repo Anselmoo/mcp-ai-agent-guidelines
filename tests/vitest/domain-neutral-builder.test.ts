@@ -44,8 +44,8 @@ describe("domain-neutral-prompt-builder", () => {
 				includePitfalls: false,
 				includeReferences: false,
 				tools: ["editFiles"],
-				model: "claude-opus-4",
-				provider: "claude-opus-4",
+				model: "claude-opus-4.1",
+				provider: "claude-opus-4.1",
 				style: "xml",
 			},
 			asserts: (text: string) => {

@@ -13,15 +13,18 @@ import { z } from "zod";
 export const ProviderEnum = z.enum([
 	"gpt-4.1",
 	"gpt-5",
-	"o3",
-	"o4-mini",
+	"gpt-5.1",
+	"gpt-5-codex",
+	"gpt-5-mini",
 	"claude-opus-4.1",
-	"claude-opus-4",
-	"claude-sonnet-3.5",
-	"claude-sonnet-3.7",
+	"claude-haiku-4.5",
+	"claude-sonnet-4.5",
 	"claude-sonnet-4",
 	"gemini-2.5-pro",
 	"gemini-2.0-flash",
+	"grok-code-fast-1",
+	"qwen2.5",
+	"raptor-mini",
 	"other",
 ]);
 
