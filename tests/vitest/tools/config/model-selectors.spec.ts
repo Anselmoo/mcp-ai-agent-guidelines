@@ -35,6 +35,13 @@ describe("model-selectors", () => {
 			// Should have at least 200k tokens (typical large context)
 			expect(model?.contextTokens).toBeGreaterThanOrEqual(200000);
 		});
+
+		it("should return Gemini 2.5 Pro as the highest context model", () => {
+			const model = getLargeContextModel();
+			expect(model).toBeDefined();
+			expect(model?.name).toBe("Gemini 2.5 Pro");
+			expect(model?.contextTokens).toBe(2000000);
+		});
 	});
 
 	describe("getBalancedModel", () => {

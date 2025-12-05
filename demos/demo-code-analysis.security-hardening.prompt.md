@@ -8,7 +8,7 @@ description: 'Security vulnerability analysis analysis and hardening recommendat
 ## 🛡️ Security Hardening Prompt Template
 
 ### Metadata
-- Updated: 2025-12-04
+- Updated: 2025-12-05
 - Source tool: mcp_ai-agent-guid_security-hardening-prompt-builder
 - Suggested filename: security-hardening-vulnerability-analysis-prompt.prompt.md
 
