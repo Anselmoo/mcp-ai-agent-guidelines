@@ -1,5 +1,5 @@
 // AUTO-GENERATED - DO NOT EDIT
-// Generated from models.yaml on 2025-12-04
+// Generated from models.yaml on 2025-12-05
 // Run `npm run generate:models` to regenerate
 //
 // Model name aliases for display and normalization
