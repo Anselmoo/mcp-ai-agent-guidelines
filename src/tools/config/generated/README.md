@@ -43,4 +43,4 @@ Before committing, validate that generated files are up-to-date:
 npm run validate:models
 ```
 
-Last generated: 2025-12-05
+Last generated: 2025-12-06
