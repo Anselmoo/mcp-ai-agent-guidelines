@@ -1,14 +1,14 @@
 ---
 # Note: Dropped unknown tools: security-scanner
 mode: 'agent'
-model: GPT-5
+model: GPT-5-Codex
 tools: ['codebase', 'editFiles']
 description: 'Security vulnerability analysis analysis and hardening recommendations'
 ---
 ## 🛡️ Security Hardening Prompt Template
 
 ### Metadata
-- Updated: 2025-12-04
+- Updated: 2025-12-06
 - Source tool: mcp_ai-agent-guid_security-hardening-prompt-builder
 - Suggested filename: security-hardening-vulnerability-analysis-prompt.prompt.md
 

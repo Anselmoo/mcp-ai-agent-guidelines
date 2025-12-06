@@ -147,7 +147,7 @@ describe("Basic Function Coverage Tests", () => {
 		);
 
 		// Test with different providers
-		const providers = ["gpt-5", "claude-opus-4", "gemini-2.5-pro"];
+		const providers = ["gpt-5", "claude-opus-4.1", "gemini-2.5-pro"];
 		for (const provider of providers) {
 			const result = await hierarchicalPromptBuilder({
 				context: "Test context",

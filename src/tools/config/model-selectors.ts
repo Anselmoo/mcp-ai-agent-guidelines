@@ -29,11 +29,12 @@ export function selectModelByCategory(criteria: {
 		candidates = candidates.filter((m) => m.pricingTier === "budget");
 	}
 
+	// Sort based on PRIMARY criterion - return early for special cases
 	if (criteria.requireLargeContext) {
-		candidates = candidates.sort((a, b) => b.contextTokens - a.contextTokens);
+		return candidates.sort((a, b) => b.contextTokens - a.contextTokens)[0];
 	}
 
-	// Return highest scored candidate
+	// Default: Return highest scored candidate
 	return candidates.sort((a, b) => b.baseScore - a.baseScore)[0];
 }
 

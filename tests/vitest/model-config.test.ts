@@ -172,8 +172,8 @@ describe("Model Config Exports", () => {
 			expect(DEFAULT_MODEL.trim()).toBe(DEFAULT_MODEL);
 		});
 
-		it("should be GPT-5 as configured", () => {
-			expect(DEFAULT_MODEL).toBe("GPT-5");
+		it("should be GPT-5-Codex as configured", () => {
+			expect(DEFAULT_MODEL).toBe("GPT-5-Codex");
 		});
 
 		it("should exist in the MODELS list", () => {

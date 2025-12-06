@@ -1,14 +1,14 @@
 ---
 # Note: Dropped unknown tools: mermaid
 mode: 'agent'
-model: GPT-5
+model: GPT-5-Codex
 tools: ['codebase', 'editFiles']
 description: 'Architecture design for large-scale system'
 ---
 ## 🏗️ Architecture Design Prompt
 
 ### Metadata
-- Updated: 2025-12-04
+- Updated: 2025-12-06
 - Source tool: mcp_ai-agent-guid_architecture-design-prompt-builder
 - Suggested filename: architecture-design-large.prompt.md
 

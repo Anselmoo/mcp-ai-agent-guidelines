@@ -1,5 +1,5 @@
 // AUTO-GENERATED - DO NOT EDIT
-// Generated from models.yaml on 2025-12-04
+// Generated from models.yaml on 2025-12-06
 // Run `npm run generate:models` to regenerate
 //
 // Barrel export for all generated model types

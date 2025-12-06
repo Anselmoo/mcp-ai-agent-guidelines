@@ -38,7 +38,7 @@ describe("Additional coverage for uncovered lines", () => {
 			style: "xml",
 			techniques: ["chain-of-thought"],
 			includeTechniqueHints: true,
-			provider: "claude-opus-4",
+			provider: "claude-opus-4.1",
 		});
 
 		const content = result.content[0].text;

@@ -1,14 +1,14 @@
 ---
 # Note: Dropped unknown tools: terminal, logs
 mode: 'agent'
-model: GPT-5
+model: GPT-5-Codex
 tools: ['codebase']
 description: 'Systematic debugging and troubleshooting assistant'
 ---
 ## 🐛 Debugging Assistant Prompt
 
 ### Metadata
-- Updated: 2025-12-04
+- Updated: 2025-12-06
 - Source tool: mcp_ai-agent-guid_debugging-assistant-prompt-builder
 - Suggested filename: debugging-assistant.prompt.md
 

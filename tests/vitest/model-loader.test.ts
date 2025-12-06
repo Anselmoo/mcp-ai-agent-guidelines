@@ -157,11 +157,11 @@ describe("Model Loader (YAML)", () => {
 			expect(defaultModel.length).toBeGreaterThan(0);
 		});
 
-		it("should return GPT-5 as the configured default", () => {
+		it("should return GPT-5-Codex as the configured default", () => {
 			const defaultModel = getDefaultModel();
 
-			// This test assumes GPT-5 is set as default in models.yaml
-			expect(defaultModel).toBe("GPT-5");
+			// This test assumes GPT-5-Codex is set as default in models.yaml
+			expect(defaultModel).toBe("GPT-5-Codex");
 		});
 
 		it("should cache results on subsequent calls", () => {
@@ -187,7 +187,7 @@ describe("Model Loader (YAML)", () => {
 			const weights = getCapabilityWeights();
 
 			// Verify they all return valid data from the same config
-			expect(defaultModel).toBe("GPT-5");
+			expect(defaultModel).toBe("GPT-5-Codex");
 			expect(models.length).toBeGreaterThan(0);
 			expect(Object.keys(keywords).length).toBeGreaterThan(0);
 			expect(Object.keys(weights).length).toBeGreaterThan(0);
@@ -331,8 +331,8 @@ describe("Model Loader (YAML)", () => {
 			expect(typeof defaultModel).toBe("string");
 			expect(defaultModel.length).toBeGreaterThan(0);
 
-			// In our current config, it should be "GPT-5"
-			expect(defaultModel).toBe("GPT-5");
+			// In our current config, it should be "GPT-5-Codex"
+			expect(defaultModel).toBe("GPT-5-Codex");
 		});
 
 		it("should verify default model exists in available models list", () => {
@@ -351,7 +351,7 @@ describe("Model Loader (YAML)", () => {
 			// All calls should return the same value
 			const uniqueValues = new Set(calls);
 			expect(uniqueValues.size).toBe(1);
-			expect(uniqueValues.has("GPT-5")).toBe(true);
+			expect(uniqueValues.has("GPT-5-Codex")).toBe(true);
 		});
 	});
 

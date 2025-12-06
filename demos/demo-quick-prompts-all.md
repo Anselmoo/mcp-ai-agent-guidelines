@@ -1,13 +1,13 @@
 ---
 mode: 'agent'
-model: GPT-5
+model: GPT-5-Codex
 tools: ['codebase', 'githubRepo', 'editFiles']
 description: 'Quick developer prompts for rapid analysis and progress checks'
 ---
 ## 🚀 Quick Developer Prompts Bundle
 
 ### Metadata
-- Updated: 2025-12-04
+- Updated: 2025-12-06
 - Source tool: mcp_ai-agent-guid_quick-developer-prompts-builder
 - Suggested filename: quick-developer-prompts-all.prompt.md
 

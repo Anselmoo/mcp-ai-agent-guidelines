@@ -189,7 +189,7 @@ describe("security-hardening-prompt-builder edge cases", () => {
 	it("should handle provider-specific tips", async () => {
 		const result = await securityHardeningPromptBuilder({
 			codeContext: "Test application",
-			provider: "claude-opus-4",
+			provider: "claude-opus-4.1",
 		});
 
 		const text = result.content[0].text;
