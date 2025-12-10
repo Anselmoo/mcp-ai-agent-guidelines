@@ -199,6 +199,54 @@ Always check status before deploying to production.
 
 ## Syncing with External Sources
 
+### Automated Monthly Sync
+
+The project includes an automated workflow that syncs model definitions from GitHub Copilot documentation monthly.
+
+**Workflow**: `.github/workflows/sync-ai-models.yml`
+
+- **Schedule**: Runs automatically on the 1st of each month at midnight UTC
+- **Manual Trigger**: Can be triggered manually via GitHub Actions with optional dry-run mode
+- **Process**:
+  1. Fetches latest model information from GitHub Copilot docs
+  2. Parses model comparison tables
+  3. Updates `models.yaml` with changes
+  4. Generates TypeScript types
+  5. Runs quality checks and tests
+  6. Creates a pull request with detailed changelog
+
+**Manual Invocation**:
+
+Via GitHub Actions UI:
+1. Go to **Actions** → **Sync AI Model Definitions**
+2. Click **Run workflow**
+3. Optionally enable **Dry run** to test without creating a PR
+
+**Scripts**:
+- `scripts/sync-models.js` - Main sync script
+- `scripts/generate-model-changelog.js` - Changelog generator
+
+**Testing the Sync Locally**:
+
+```bash
+# Run the sync script
+node scripts/sync-models.js
+
+# Generate changelog (requires git changes)
+node scripts/generate-model-changelog.js
+
+# Revert changes if testing
+git checkout src/tools/config/models.yaml
+```
+
+**Review Automated PRs**:
+
+When the workflow creates a PR, review:
+1. New models have accurate metadata (contextTokens, baseScore)
+2. Pricing information is correct
+3. Documentation URLs are accessible
+4. Changes to existing models are intentional
+
 ### GitHub Copilot Models
 
 Reference: https://docs.github.com/en/copilot/reference/ai-models/supported-models
@@ -300,11 +348,14 @@ The model loader caches data on first load. If changes aren't reflected:
 
 ## Best Practices
 
-1. **Keep models up-to-date**: Check GitHub Copilot documentation monthly
-2. **Test after changes**: Always run tests after updating the YAML
-3. **Document changes**: Note why models were added/removed in commit messages
-4. **Consistent formatting**: Follow the existing YAML structure
-5. **Accurate pricing**: Keep pricing information current
+1. **Leverage automated sync**: The monthly sync workflow keeps models up-to-date automatically
+2. **Review automated PRs**: Always review and test automated sync PRs before merging
+3. **Manual updates when needed**: For urgent updates, manually edit models.yaml and trigger the workflow
+4. **Test after changes**: Always run tests after updating the YAML
+5. **Document changes**: Note why models were added/removed in commit messages
+6. **Consistent formatting**: Follow the existing YAML structure
+7. **Accurate pricing**: Keep pricing information current
+8. **Check model status**: Verify model status before deploying to production
 
 ## Example: Adding a New Model
 
