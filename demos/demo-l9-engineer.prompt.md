@@ -1,14 +1,14 @@
 ---
 # Note: Dropped unknown tools: vscode-websearch, mermaid, semanticCodeAnalyzer
 mode: 'agent'
-model: GPT-5
+model: GPT-5-Codex
 tools: ['githubRepo']
 description: 'Distinguished Engineer (L9) guidance for Global Distributed Caching System'
 ---
 ## 🎯 Distinguished Engineer (L9) Prompt
 
 ### Metadata
-- Updated: 2025-12-04
+- Updated: 2025-12-06
 - Source tool: mcp_ai-agent-guid_l9-distinguished-engineer-prompt-builder
 - Suggested filename: global-distributed-caching-system-l9-distinguished-engineer.prompt.md
 

@@ -119,7 +119,7 @@ def process_data(data):
 					context: "Software development",
 					goal: "Create a REST API",
 					techniques: ["chain-of-thought", "few-shot"],
-					provider: "claude-sonnet-3.7",
+					provider: "claude-sonnet-4",
 					style: "markdown",
 				},
 				{

@@ -1,7 +1,7 @@
 ## 🤖 AI Model Compatibility Analysis (Qualitative)
 
 ### Metadata
-- Updated: 2025-12-04
+- Updated: 2025-12-06
 - Source tool: mcp_ai-agent-guid_model-compatibility-checker
 
 ### Task Analysis
@@ -22,25 +22,25 @@
 - Vision support
 - Deep reasoning
 
-#### 2. Claude Opus 4 (Anthropic)
-**Fit Summary**: Complex problem-solving
-**Context Handling**: 200,000 tokens (refer to provider docs)
-**Notes**: Higher cost
-
-**Highlights**:
-- Constitutional AI
-- Vision support
-- Deep reasoning
-
-#### 3. Claude Sonnet 3.7 (Anthropic)
-**Fit Summary**: Structured reasoning
+#### 2. Claude Sonnet 4.5 (Anthropic)
+**Fit Summary**: Complex problem-solving challenges
 **Context Handling**: 200,000 tokens (refer to provider docs)
 **Notes**: Moderate cost
 
 **Highlights**:
 - Agent mode
+- Superior reasoning
+- Coding optimization
+
+#### 3. Gemini 2.5 Pro (Google)
+**Fit Summary**: Complex code generation
+**Context Handling**: 2,000,000 tokens (refer to provider docs)
+**Notes**: Limited third-party integration
+
+**Highlights**:
+- 2M token context
 - Vision support
-- Structured output
+- Google integration
 
 
 ### Selection Snapshot
@@ -48,16 +48,19 @@
 | Model | Provider | Best For |
 |-------|----------|----------|
 | Claude Opus 4.1 | Anthropic | Complex problem-solving |
-| Claude Opus 4 | Anthropic | Complex problem-solving |
-| Claude Sonnet 3.7 | Anthropic | Structured reasoning |
+| Claude Sonnet 4.5 | Anthropic | Complex problem-solving challenges |
 | Gemini 2.5 Pro | Google | Complex code generation |
+| GPT-5-Codex | OpenAI | Higher-quality code on complex tasks |
+| GPT-5 mini | OpenAI | Fast, accurate code completions |
 | Claude Sonnet 4 | Anthropic | Performance and practicality |
 | GPT-4.1 | OpenAI | Fast, accurate code completions |
-| o3 | OpenAI | Multi-step problem solving |
+| Grok Code Fast 1 | xAI | Specialized for coding tasks |
+| Qwen2.5 | Alibaba | Code generation |
+| GPT-5.1 | OpenAI | Multi-step problem solving |
 | GPT-5 | OpenAI | Multi-step problem solving |
+| Raptor mini | Meta | Fast, accurate inline suggestions |
+| Claude Haiku 4.5 | Anthropic | Fast, reliable answers |
 | Gemini 2.0 Flash | Google | Real-time responses |
-| Claude Sonnet 3.5 | Anthropic | Quick responses for code |
-| o4-mini | OpenAI | Fast, reliable answers |
 
 ### Selection Guidelines
 
@@ -92,10 +95,10 @@ export function pickModel(opts: {
   multimodal?: boolean;
   budget?: 'low' | 'medium' | 'high';
 }): Choice {
-  if (opts.largeContext) return { provider: 'anthropic', model: 'Claude Opus 4.1' };
-  if (opts.complexity === 'advanced') return { provider: 'anthropic', model: 'Claude Opus 4.1' };
+  if (opts.largeContext) return { provider: 'google', model: 'Gemini 2.5 Pro' };
+  if (opts.complexity === 'advanced') return { provider: 'openai', model: 'GPT-5.1' };
   if (opts.complexity === 'simple' || opts.budget === 'low') return { provider: 'google', model: 'Gemini 2.0 Flash' };
-  return { provider: 'google', model: 'Gemini 2.5 Pro' };
+  return { provider: 'openai', model: 'GPT-5-Codex' };
 }
 
 // Example usage (pseudo—replace with real SDK calls):

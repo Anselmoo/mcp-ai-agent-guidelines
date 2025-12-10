@@ -1,7 +1,7 @@
 # AI Model Definitions
 # This file contains the definitions of supported AI models for the MCP AI Agent Guidelines
 # Source: https://docs.github.com/en/copilot/reference/ai-models/supported-models
-# Last updated: 2025-12-04
+# Last updated: 2025-12-05
 #
 # Schema Fields:
 # Required Fields:
@@ -32,7 +32,7 @@
 # Default model configuration
 # This model is used as the default across all prompt builders
 # Change this value to easily switch the default model project-wide
-defaultModel: "GPT-5"
+defaultModel: "GPT-5-Codex"
 
 models:
   - name: "GPT-4.1"
@@ -103,11 +103,11 @@ models:
     status: "ga"
     documentationUrl: "https://openai.com/gpt-5/"
 
-  - name: "o3"
+  - name: "GPT-5.1"
     provider: "OpenAI"
     pricingTier: "premium"
     contextTokens: 128000
-    baseScore: 55
+    baseScore: 56
     capabilities:
       - "reasoning"
       - "code"
@@ -115,33 +115,91 @@ models:
       - "Multi-step problem solving"
       - "Architecture-level code analysis"
       - "Deep reasoning"
+      - "Superior debugging capabilities"
     limitations:
       - "Higher cost"
       - "Slower inference"
     specialFeatures:
       - "Advanced reasoning chains"
       - "Complex problem solving"
+      - "Architecture-level analysis"
     pricing: "Premium ($15-30/1M tokens)"
+    modes:
+      agent: true
+      reasoning: true
+      vision: false
+      chat: true
+      edit: true
+      completions: false
+    taskArea: "deep-reasoning"
+    multiplier: 2.0
+    status: "ga"
+    documentationUrl: "https://openai.com/gpt-5/"
 
-  - name: "o4-mini"
+  - name: "GPT-5-Codex"
     provider: "OpenAI"
-    pricingTier: "budget"
+    pricingTier: "mid-tier"
     contextTokens: 128000
-    baseScore: 48
+    baseScore: 54
     capabilities:
+      - "code"
+      - "reasoning"
       - "speed"
-      - "cost"
     strengths:
-      - "Fast, reliable answers"
-      - "Lightweight coding questions"
-      - "Lower latency"
+      - "Higher-quality code on complex tasks"
+      - "Features, tests, debugging, refactors"
+      - "Works without lengthy instructions"
     limitations:
-      - "Limited reasoning"
-      - "Simple tasks only"
+      - "Moderate cost"
     specialFeatures:
-      - "Ultra-fast responses"
-      - "Cost efficient"
-    pricing: "Budget ($0.25-1.25/1M tokens)"
+      - "Agent mode"
+      - "Optimized for coding"
+    pricing: "Mid-tier ($5-10/1M tokens)"
+    modes:
+      agent: true
+      reasoning: false
+      vision: false
+      chat: true
+      edit: true
+      completions: true
+    taskArea: "general-purpose"
+    multiplier: 1.0
+    status: "ga"
+    documentationUrl: "https://cdn.openai.com/pdf/97cc5669-7a25-4e63-b15f-5fd5bdc4d149/gpt-5-codex-system-card.pdf"
+
+  - name: "GPT-5 mini"
+    provider: "OpenAI"
+    pricingTier: "mid-tier"
+    contextTokens: 128000
+    baseScore: 53
+    capabilities:
+      - "reasoning"
+      - "speed"
+      - "multimodal"
+      - "code"
+    strengths:
+      - "Fast, accurate code completions"
+      - "Deep reasoning with faster responses"
+      - "Ideal for interactive sessions"
+      - "Step-by-step code analysis"
+    limitations:
+      - "Moderate cost"
+    specialFeatures:
+      - "Agent mode"
+      - "Reasoning capability"
+      - "Vision support"
+    pricing: "Mid-tier ($3-6/1M tokens)"
+    modes:
+      agent: true
+      reasoning: true
+      vision: true
+      chat: true
+      edit: true
+      completions: true
+    taskArea: "general-purpose"
+    multiplier: 1.0
+    status: "ga"
+    documentationUrl: "https://cdn.openai.com/gpt-5-system-card.pdf"
 
   - name: "Claude Opus 4.1"
     provider: "Anthropic"
@@ -178,30 +236,7 @@ models:
     status: "ga"
     documentationUrl: "https://www.anthropic.com/claude/opus"
 
-  - name: "Claude Opus 4"
-    provider: "Anthropic"
-    pricingTier: "premium"
-    contextTokens: 200000
-    baseScore: 54
-    capabilities:
-      - "reasoning"
-      - "large-context"
-      - "multimodal"
-      - "code"
-    strengths:
-      - "Complex problem-solving"
-      - "Sophisticated reasoning"
-      - "Vision capabilities"
-    limitations:
-      - "Higher cost"
-      - "Slower inference"
-    specialFeatures:
-      - "Constitutional AI"
-      - "Vision support"
-      - "Deep reasoning"
-    pricing: "Premium ($15-30/1M tokens)"
-
-  - name: "Claude Sonnet 3.5"
+  - name: "Claude Haiku 4.5"
     provider: "Anthropic"
     pricingTier: "budget"
     contextTokens: 200000
@@ -209,40 +244,62 @@ models:
     capabilities:
       - "speed"
       - "cost"
-      - "multimodal"
+      - "code"
     strengths:
-      - "Quick responses for code"
-      - "Syntax help"
-      - "Documentation"
+      - "Fast, reliable answers"
+      - "Lightweight coding questions"
+      - "Small tasks and utility code"
+      - "Quick syntax help"
     limitations:
-      - "Limited reasoning"
+      - "Limited reasoning depth"
     specialFeatures:
       - "Agent mode"
-      - "Vision support"
-      - "Fast responses"
+      - "Ultra-fast responses"
+      - "Cost efficient"
     pricing: "Budget ($0.25-1.25/1M tokens)"
+    modes:
+      agent: true
+      reasoning: false
+      vision: false
+      chat: true
+      edit: true
+      completions: true
+    taskArea: "fast-simple"
+    multiplier: 0.5
+    status: "ga"
+    documentationUrl: "https://www.anthropic.com/claude/haiku"
 
-  - name: "Claude Sonnet 3.7"
+  - name: "Claude Sonnet 4.5"
     provider: "Anthropic"
     pricingTier: "mid-tier"
     contextTokens: 200000
-    baseScore: 52
+    baseScore: 54
     capabilities:
       - "reasoning"
-      - "multimodal"
-      - "large-context"
       - "code"
+      - "large-context"
     strengths:
-      - "Structured reasoning"
-      - "Large, complex codebases"
-      - "Clear output"
+      - "Complex problem-solving challenges"
+      - "Sophisticated reasoning"
+      - "Perfectly balanced for coding workflows"
     limitations:
       - "Moderate cost"
     specialFeatures:
       - "Agent mode"
-      - "Vision support"
-      - "Structured output"
+      - "Superior reasoning"
+      - "Coding optimization"
     pricing: "Mid-tier ($3-6/1M tokens)"
+    modes:
+      agent: true
+      reasoning: true
+      vision: false
+      chat: true
+      edit: true
+      completions: true
+    taskArea: "general-purpose"
+    multiplier: 1.0
+    status: "ga"
+    documentationUrl: "https://assets.anthropic.com/m/12f214efcc2f457a/original/Claude-Sonnet-4-5-System-Card.pdf"
 
   - name: "Claude Sonnet 4"
     provider: "Anthropic"
@@ -332,6 +389,114 @@ models:
       - "Fast inference"
       - "Low latency"
     pricing: "Budget ($0.25-1/1M tokens)"
+    modes:
+      agent: false
+      reasoning: false
+      vision: true
+      chat: true
+      edit: true
+      completions: true
+    taskArea: "fast-simple"
+    multiplier: 0.5
+    status: "ga"
+    documentationUrl: "https://ai.google.dev/gemini-api/docs"
+
+  - name: "Grok Code Fast 1"
+    provider: "xAI"
+    pricingTier: "mid-tier"
+    contextTokens: 128000
+    baseScore: 52
+    capabilities:
+      - "code"
+      - "speed"
+      - "reasoning"
+    strengths:
+      - "Specialized for coding tasks"
+      - "Code generation and debugging"
+      - "Fast, accurate completions"
+      - "Multi-language support"
+    limitations:
+      - "Moderate cost"
+    specialFeatures:
+      - "Agent mode"
+      - "Optimized for code"
+      - "Complimentary access (limited time)"
+    pricing: "Mid-tier ($3-6/1M tokens, currently complimentary)"
+    modes:
+      agent: true
+      reasoning: false
+      vision: false
+      chat: true
+      edit: true
+      completions: true
+    taskArea: "general-purpose"
+    multiplier: 0.0
+    status: "preview"
+    documentationUrl: "https://data.x.ai/2025-08-20-grok-4-model-card.pdf"
+
+  - name: "Qwen2.5"
+    provider: "Alibaba"
+    pricingTier: "mid-tier"
+    contextTokens: 128000
+    baseScore: 51
+    capabilities:
+      - "code"
+      - "reasoning"
+    strengths:
+      - "Code generation"
+      - "Code repair and debugging"
+      - "Strong reasoning capabilities"
+    limitations:
+      - "Moderate cost"
+      - "Less established ecosystem"
+    specialFeatures:
+      - "Reasoning mode"
+      - "Multi-language code support"
+    pricing: "Mid-tier ($3-6/1M tokens)"
+    modes:
+      agent: false
+      reasoning: true
+      vision: false
+      chat: true
+      edit: true
+      completions: true
+    taskArea: "general-purpose"
+    multiplier: 1.0
+    status: "ga"
+    documentationUrl: "https://arxiv.org/pdf/2409.12186"
+
+  - name: "Raptor mini"
+    provider: "Meta"
+    pricingTier: "budget"
+    contextTokens: 128000
+    baseScore: 50
+    capabilities:
+      - "speed"
+      - "code"
+      - "cost"
+    strengths:
+      - "Fast, accurate inline suggestions"
+      - "Quick code completions"
+      - "Lightweight and responsive"
+    limitations:
+      - "Limited reasoning depth"
+      - "Best for simple tasks"
+    specialFeatures:
+      - "Agent mode"
+      - "Optimized for inline completions"
+      - "Ultra-low latency"
+    pricing: "Budget ($0.25-1.25/1M tokens)"
+    modes:
+      agent: true
+      reasoning: false
+      vision: false
+      chat: true
+      edit: true
+      completions: true
+    taskArea: "general-purpose"
+    multiplier: 0.5
+    status: "preview"
+    documentationUrl: "https://ai.meta.com/raptor"
 
 # Requirement keywords for capability matching
 requirementKeywords:
