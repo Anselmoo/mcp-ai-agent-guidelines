@@ -1,0 +1,139 @@
+name: Sync AI Model Definitions
+
+on:
+  schedule:
+    # Run on the first day of each month at midnight UTC
+    - cron: '0 0 1 * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (no PR created)'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  sync-models:
+    name: Sync AI Models from GitHub Docs
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Fetch and parse GitHub Copilot docs
+        id: fetch
+        run: |
+          echo "Running model sync script..."
+          node scripts/sync-models.js
+          
+          # Check if models.yaml was modified
+          if git diff --quiet src/tools/config/models.yaml; then
+            echo "No changes detected in models.yaml"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "Changes detected in models.yaml"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+        
+      - name: Generate types from updated YAML
+        if: steps.fetch.outputs.has_changes == 'true'
+        run: npm run generate:models
+        
+      - name: Run quality checks
+        if: steps.fetch.outputs.has_changes == 'true'
+        run: npm run quality
+        
+      - name: Run tests
+        if: steps.fetch.outputs.has_changes == 'true'
+        run: npm run test:vitest
+        
+      - name: Generate changelog diff
+        if: steps.fetch.outputs.has_changes == 'true'
+        id: changelog
+        run: |
+          echo "Generating changelog..."
+          CHANGELOG=$(node scripts/generate-model-changelog.js)
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+        
+      - name: Create Pull Request
+        if: steps.fetch.outputs.has_changes == 'true' && github.event.inputs.dry_run != 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore(models): sync AI model definitions from GitHub Copilot docs'
+          title: 'chore(models): sync AI model definitions [automated]'
+          body: |
+            ## 🤖 Automated Model Sync
+            
+            This PR was automatically generated to sync AI model definitions with the official GitHub Copilot documentation.
+            
+            ### 📚 Sources
+            - [Model Comparison](https://docs.github.com/en/copilot/reference/ai-models/model-comparison)
+            - [Supported Models](https://docs.github.com/en/copilot/reference/ai-models/supported-models)
+            
+            ### 📊 Changes Detected
+            
+            ${{ steps.changelog.outputs.changelog }}
+            
+            ### ✅ Verification
+            
+            - ✅ Type generation passed
+            - ✅ Quality checks passed  
+            - ✅ Tests passed
+            
+            ### 📝 Review Notes
+            
+            Please review the following before merging:
+            1. Verify new models have accurate metadata (contextTokens, baseScore, capabilities)
+            2. Check that pricing information is up to date
+            3. Confirm documentation URLs are accessible
+            4. Review any changes to existing models for accuracy
+            
+            ---
+            
+            *Generated on: ${{ github.event.repository.updated_at }}*
+            *Workflow Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}*
+          branch: chore/sync-ai-models-${{ github.run_number }}
+          delete-branch: true
+          labels: |
+            automation
+            models
+            chore
+          assignees: Anselmoo
+          
+      - name: Output dry run summary
+        if: steps.fetch.outputs.has_changes == 'true' && github.event.inputs.dry_run == 'true'
+        run: |
+          echo "## 🧪 Dry Run Mode - No PR Created" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Changes Detected" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.changelog.outputs.changelog }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ All quality checks passed" >> $GITHUB_STEP_SUMMARY
+          
+      - name: No changes summary
+        if: steps.fetch.outputs.has_changes == 'false'
+        run: |
+          echo "## ℹ️ No Changes Detected" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "The model definitions in models.yaml are already up to date with the latest GitHub Copilot documentation." >> $GITHUB_STEP_SUMMARY
