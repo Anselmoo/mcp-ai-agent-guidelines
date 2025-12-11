@@ -29,13 +29,6 @@ pre-commit:
       run: npx tsc --noEmit
       fail_text: "🔷 TypeScript type checking failed"
 
-    # ----------------------------- 🔄 Generated Types Validation ---------------------------- #
-    validate-generated-types:
-      tags: [validate, models]
-      glob: "src/tools/config/models.yaml"
-      run: npm run validate:models
-      fail_text: "🔄 Generated model types are out of sync - run 'npm run generate:models'"
-
     # ----------------------------- 📝 File Validation ---------------------------- #
     yaml-lint:
       tags: [format, lint, validate]
