@@ -245,27 +245,24 @@ export type ModelIdentifier = (typeof ALL_MODEL_IDENTIFIERS)[number];
  * Generate barrel index file
  */
 function generateIndex(): string {
-	return `${generateHeader("Barrel export for all generated model types")}// Provider enum
-export { ProviderEnum, PROVIDER_ENUM_VALUES } from "./provider-enum.js";
-export type { Provider } from "./provider-enum.js";
-
+	return `${generateHeader("Barrel export for all generated model types")}export type { Mode } from "./mode-enum.js";
 // Mode enum
-export { ModeEnum, MODE_ENUM_VALUES } from "./mode-enum.js";
-export type { Mode } from "./mode-enum.js";
-
+export { MODE_ENUM_VALUES, ModeEnum } from "./mode-enum.js";
 // Model aliases
 export {
-	MODEL_ALIASES,
 	getModelDisplayName,
 	isValidModelIdentifier,
+	MODEL_ALIASES,
 } from "./model-aliases.js";
-
+export type { ModelIdentifier } from "./model-identifiers.js";
 // Model identifiers
 export {
 	ALL_MODEL_IDENTIFIERS,
 	// Individual model constants are re-exported as needed
 } from "./model-identifiers.js";
-export type { ModelIdentifier } from "./model-identifiers.js";
+export type { Provider } from "./provider-enum.js";
+// Provider enum
+export { PROVIDER_ENUM_VALUES, ProviderEnum } from "./provider-enum.js";
 `;
 }
 
