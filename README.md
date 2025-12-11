@@ -747,9 +747,11 @@ Setup:
 git clone https://github.com/Anselmoo/mcp-ai-agent-guidelines.git
 cd mcp-ai-agent-guidelines
 npm install
-npm run build
+npm run build    # ⚠️ Required: Generates types from models.yaml
 npm start
 ```
+
+**Important**: The build step generates TypeScript types from `src/tools/config/models.yaml`. These generated files are **not committed to version control** (gitignored) and must be generated locally. See [ADR-0001](docs/adr/ADR-0001-build-time-model-type-generation.md) for the architectural decision.
 
 Project structure:
 

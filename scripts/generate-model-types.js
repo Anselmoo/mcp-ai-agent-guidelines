@@ -7,9 +7,10 @@
  *
  * Usage: npm run generate:models
  */
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import yaml from "js-yaml";
 
 // Get the directory of this module
 const __filename = fileURLToPath(import.meta.url);
@@ -224,8 +225,17 @@ function generateReadme() {
 	return `# Generated Model Types
 
 **⚠️ AUTO-GENERATED - DO NOT EDIT DIRECTLY**
+**🚫 NOT COMMITTED TO GIT - Regenerated at Build Time**
 
 This directory contains TypeScript types, enums, and constants automatically generated from \`models.yaml\`.
+
+## Important: These Files Are Gitignored
+
+These files are **NOT tracked in version control**. They are automatically regenerated during the build process:
+
+- Generated at build time by \`npm run build\`
+- Source of truth: \`src/tools/config/models.yaml\`
+- Output: \`src/tools/config/generated/*.ts\` (gitignored)
 
 ## Generated Files
 
@@ -235,9 +245,19 @@ This directory contains TypeScript types, enums, and constants automatically gen
 - \`model-identifiers.ts\` - Model identifier constants
 - \`index.ts\` - Barrel export for all generated types
 
-## Regeneration
+## Developer Workflow
 
-To regenerate these files after modifying \`models.yaml\`:
+After cloning or pulling changes to \`models.yaml\`:
+
+\`\`\`bash
+npm run build
+\`\`\`
+
+This will automatically regenerate all types. No manual intervention needed!
+
+## Manual Regeneration (Optional)
+
+To regenerate without a full build:
 
 \`\`\`bash
 npm run generate:models
@@ -256,15 +276,13 @@ import { ProviderEnum, MODEL_ALIASES, PROVIDER_ENUM_VALUES } from "./tools/confi
 These generated types are used across the codebase:
 - \`src/tools/shared/types/prompt-sections.types.ts\` - ProviderEnum
 - \`src/tools/shared/prompt-utils.ts\` - MODEL_ALIASES
-- \`src/index.ts\` - PROVIDER_ENUM_VALUES (3 locations)
+- \`src/index.ts\` - PROVIDER_ENUM_VALUES
 
-## Validation
+## Architecture
 
-Before committing, validate that generated files are up-to-date:
+See [ADR-0001](../../../docs/adr/ADR-0001-build-time-model-type-generation.md) for the architectural decision to generate types at build time.
 
-\`\`\`bash
-npm run validate:models
-\`\`\`
+**Single Source of Truth:** \`models.yaml\` is the only file that needs to be maintained and committed.
 
 Last generated: ${getTimestamp()}
 `;
@@ -282,26 +300,32 @@ async function generateTypes() {
 		console.error(`❌ Failed to create output directory: ${error}`);
 		process.exit(1);
 	}
-	// Import the model loader
+	// Load models directly from YAML (no dependency on dist/)
 	let models;
 	try {
-		// Dynamic import to allow this script to run before build
-		const modelLoaderPath = join(
+		const yamlPath = join(
 			__dirname,
 			"..",
-			"dist",
+			"src",
 			"tools",
 			"config",
-			"model-loader.js",
+			"models.yaml",
 		);
-		const { loadModelsFromYaml } = await import(modelLoaderPath);
-		const config = loadModelsFromYaml();
+		console.log(`📖 Reading YAML from: ${yamlPath}`);
+
+		const yamlContent = readFileSync(yamlPath, "utf8");
+		const config = yaml.load(yamlContent);
+
+		if (!config.models || !Array.isArray(config.models)) {
+			throw new Error("Invalid models.yaml: 'models' array not found");
+		}
+
 		models = config.models;
 		console.log(`✅ Loaded ${models.length} models from YAML`);
 	} catch (error) {
 		console.error(
 			`❌ Failed to load models from YAML: ${error}\n` +
-				"   Make sure to run 'npm run build' before generating types.",
+				"   Make sure models.yaml exists and is valid YAML.",
 		);
 		process.exit(1);
 	}
