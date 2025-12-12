@@ -36,7 +36,7 @@ This document formally acknowledges the key references, research, and open-sourc
 The hierarchical prompting approach is fundamental to our prompt builder tools.
 
 - **Learn For Life OT - Prompting Hierarchy**
-  https://learnforlifeot.com.au/resources/f/prompting-hierarchy
+  https://relevanceai.com/prompt-engineering/master-hierarchical-prompting-for-better-ai-interactions
   Educational framework for structured prompting techniques
 
 - **Hierarchical Prompting Taxonomy (arXiv)**
