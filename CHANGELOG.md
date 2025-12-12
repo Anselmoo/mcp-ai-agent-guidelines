@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.12.1] - 2025-12-12
+
 ### Added
 
 - **AI Interaction Tips** (`docs/tips/ai-interaction-tips.md`) - Comprehensive guide for asking targeted questions to better utilize specialized tools
@@ -63,6 +65,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Duplicate template markers in documentation files
 - Category detection accuracy for edge cases
 - Template injection idempotency (can run multiple times safely)
+- Docker build now copies scripts/ directory for model type generation (#451)
 
 ## [0.8.0] - 2025-10-31
 
@@ -102,7 +105,8 @@ For detailed history before v0.7.0, see the [Git commit history](https://github.
 
 ---
 
-[Unreleased]: https://github.com/Anselmoo/mcp-ai-agent-guidelines/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/Anselmoo/mcp-ai-agent-guidelines/compare/v0.12.1...HEAD
+[0.12.1]: https://github.com/Anselmoo/mcp-ai-agent-guidelines/compare/v0.8.0...v0.12.1
 [0.8.0]: https://github.com/Anselmoo/mcp-ai-agent-guidelines/compare/v0.7.0...v0.8.0
 
 ## [0.7.0]: https://github.com/Anselmoo/mcp-ai-agent-guidelines/releases/tag/v0.7.0
