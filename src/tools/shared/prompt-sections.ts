@@ -1,3 +1,4 @@
+import { DEFAULT_MODEL_SLUG } from "../config/model-config.js";
 import { buildFurtherReadingSection } from "./prompt-utils.js";
 import {
 	type Provider,
@@ -161,18 +162,20 @@ export function inferTechniquesFromText(text: string): Technique[] {
 }
 
 export function buildProviderTipsSection(
-	provider: Provider = "gpt-5",
+	provider?: Provider,
 	style?: "markdown" | "xml",
 ): string {
-	const p = (provider || "gpt-5").toLowerCase();
+	const p = (provider || DEFAULT_MODEL_SLUG).toLowerCase();
 	// Check if provider is any Claude variant
 	const isClaude = p.includes("claude");
 	const isGemini = p.includes("gemini");
+	// Check for OpenAI GPT models
+	const isGpt = p.startsWith("gpt-");
 	const effectiveStyle = style || (isClaude ? "xml" : "markdown");
 	const lines: string[] = [];
 	lines.push(`# Model-Specific Tips`);
 	lines.push("");
-	if (p === "gpt-5" || p === "gpt-4.1") {
+	if (isGpt) {
 		lines.push("- Prefer Markdown with clear headings and sections");
 		lines.push(
 			"- Place instructions at the beginning (and optionally re-assert at the end) in long contexts",

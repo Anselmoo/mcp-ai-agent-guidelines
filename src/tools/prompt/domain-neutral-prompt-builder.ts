@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { DEFAULT_MODEL } from "../config/model-config.js";
+import { DEFAULT_MODEL, DEFAULT_MODEL_SLUG } from "../config/model-config.js";
 import {
 	buildPitfallsSection,
 	buildProjectReferencesSection,
@@ -147,7 +147,7 @@ const DomainNeutralSchema = z.object({
 	// Optional model tips
 	techniques: z.array(TechniqueEnum).optional(),
 	autoSelectTechniques: z.boolean().optional().default(false),
-	provider: ProviderEnum.optional().default("gpt-5"),
+	provider: ProviderEnum.optional().default(DEFAULT_MODEL_SLUG),
 	style: StyleEnum.optional(),
 });
 

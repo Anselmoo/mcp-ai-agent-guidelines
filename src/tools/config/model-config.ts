@@ -2,12 +2,14 @@
 // Models are now loaded from YAML for easier maintenance
 // See: https://docs.github.com/en/copilot/reference/ai-models/model-comparison#recommended-models-by-task
 
+import type { Provider } from "./generated/index.js";
 import {
 	getBudgetAdjustments,
 	getBudgetBonus,
 	getBudgetPenalty,
 	getCapabilityWeights,
 	getDefaultModel,
+	getDefaultModelSlug,
 	getModels,
 	getRequirementKeywords,
 } from "./model-loader.js";
@@ -28,3 +30,5 @@ export const BUDGET_ADJUSTMENTS: Record<
 export const BUDGET_BONUS = getBudgetBonus();
 export const BUDGET_PENALTY = getBudgetPenalty();
 export const DEFAULT_MODEL = getDefaultModel();
+// Cast to Provider type for use with ProviderEnum in Zod schemas
+export const DEFAULT_MODEL_SLUG = getDefaultModelSlug() as Provider;

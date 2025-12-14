@@ -7,7 +7,7 @@
  */
 
 import { z } from "zod";
-import { DEFAULT_MODEL } from "../config/model-config.js";
+import { DEFAULT_MODEL, DEFAULT_MODEL_SLUG } from "../config/model-config.js";
 import {
 	buildDesignReferencesSection,
 	buildProviderTipsSection,
@@ -307,7 +307,7 @@ const CoverageDashboardDesignSchema = z.object({
 	techniques: z.array(TechniqueEnum).optional(),
 	includeTechniqueHints: z.boolean().optional().default(false),
 	autoSelectTechniques: z.boolean().optional().default(false),
-	provider: ProviderEnum.optional().default("gpt-5"),
+	provider: ProviderEnum.optional().default(DEFAULT_MODEL_SLUG),
 	style: StyleEnum.optional(),
 });
 
