@@ -1,7 +1,7 @@
 # AI Model Definitions
 # This file contains the definitions of supported AI models for the MCP AI Agent Guidelines
 # Source: https://docs.github.com/en/copilot/reference/ai-models/supported-models
-# Last updated: 2025-12-05
+# Last updated: 2025-12-14
 #
 # Schema Fields:
 # Required Fields:
@@ -136,6 +136,41 @@ models:
     status: "ga"
     documentationUrl: "https://openai.com/gpt-5/"
 
+  - name: "GPT-5.2"
+    provider: "OpenAI"
+    pricingTier: "premium"
+    contextTokens: 128000
+    baseScore: 58
+    capabilities:
+      - "reasoning"
+      - "code"
+    strengths:
+      - "Extended thinking for complex problems"
+      - "Multi-step problem solving"
+      - "Architecture-level code analysis"
+      - "Deep reasoning"
+      - "Superior debugging capabilities"
+    limitations:
+      - "Higher cost"
+      - "Slower inference"
+    specialFeatures:
+      - "Extended thinking capability"
+      - "Advanced reasoning chains"
+      - "Complex problem solving"
+      - "Architecture-level analysis"
+    pricing: "Premium ($15-30/1M tokens)"
+    modes:
+      agent: true
+      reasoning: true
+      vision: false
+      chat: true
+      edit: true
+      completions: false
+    taskArea: "deep-reasoning"
+    multiplier: 2.0
+    status: "ga"
+    documentationUrl: "https://openai.com/gpt-5/"
+
   - name: "GPT-5-Codex"
     provider: "OpenAI"
     pricingTier: "mid-tier"
@@ -166,6 +201,73 @@ models:
     multiplier: 1.0
     status: "ga"
     documentationUrl: "https://cdn.openai.com/pdf/97cc5669-7a25-4e63-b15f-5fd5bdc4d149/gpt-5-codex-system-card.pdf"
+
+  - name: "GPT-5.1-Codex"
+    provider: "OpenAI"
+    pricingTier: "mid-tier"
+    contextTokens: 128000
+    baseScore: 55
+    capabilities:
+      - "code"
+      - "reasoning"
+      - "speed"
+    strengths:
+      - "Higher-quality code on complex tasks"
+      - "Features, tests, debugging, refactors"
+      - "Works without lengthy instructions"
+      - "Improved reasoning for coding workflows"
+    limitations:
+      - "Moderate cost"
+    specialFeatures:
+      - "Agent mode"
+      - "Optimized for coding"
+      - "Enhanced reasoning chains"
+    pricing: "Mid-tier ($5-10/1M tokens)"
+    modes:
+      agent: true
+      reasoning: true
+      vision: false
+      chat: true
+      edit: true
+      completions: true
+    taskArea: "general-purpose"
+    multiplier: 1.0
+    status: "ga"
+    documentationUrl: "https://openai.com/gpt-5/"
+
+  - name: "GPT-5.1-Codex-Mini"
+    provider: "OpenAI"
+    pricingTier: "budget"
+    contextTokens: 128000
+    baseScore: 51
+    capabilities:
+      - "code"
+      - "speed"
+      - "cost"
+    strengths:
+      - "Fast, accurate code completions"
+      - "Lightweight coding questions"
+      - "Quick syntax help"
+      - "Budget-friendly coding assistant"
+    limitations:
+      - "Limited reasoning depth"
+      - "Best for simpler tasks"
+    specialFeatures:
+      - "Agent mode"
+      - "Optimized for inline completions"
+      - "Ultra-low latency"
+    pricing: "Budget ($2-5/1M tokens)"
+    modes:
+      agent: true
+      reasoning: false
+      vision: false
+      chat: true
+      edit: true
+      completions: true
+    taskArea: "general-purpose"
+    multiplier: 0.5
+    status: "ga"
+    documentationUrl: "https://openai.com/gpt-5/"
 
   - name: "GPT-5 mini"
     provider: "OpenAI"

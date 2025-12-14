@@ -43,6 +43,37 @@ describe("Model Loader (YAML)", () => {
 			expect(modelNames).toContain("Gemini 2.5 Pro");
 		});
 
+		it("should include GPT-5.2 deep reasoning model", () => {
+			const models = getModels();
+			const modelNames = models.map((m) => m.name);
+
+			expect(modelNames).toContain("GPT-5.2");
+
+			const gpt52 = models.find((m) => m.name === "GPT-5.2");
+			expect(gpt52).toBeDefined();
+			expect(gpt52?.provider).toBe("OpenAI");
+			expect(gpt52?.taskArea).toBe("deep-reasoning");
+			expect(gpt52?.pricingTier).toBe("premium");
+		});
+
+		it("should include GPT-5.1-Codex models", () => {
+			const models = getModels();
+			const modelNames = models.map((m) => m.name);
+
+			expect(modelNames).toContain("GPT-5.1-Codex");
+			expect(modelNames).toContain("GPT-5.1-Codex-Mini");
+
+			const codex = models.find((m) => m.name === "GPT-5.1-Codex");
+			expect(codex).toBeDefined();
+			expect(codex?.provider).toBe("OpenAI");
+			expect(codex?.taskArea).toBe("general-purpose");
+
+			const codexMini = models.find((m) => m.name === "GPT-5.1-Codex-Mini");
+			expect(codexMini).toBeDefined();
+			expect(codexMini?.provider).toBe("OpenAI");
+			expect(codexMini?.pricingTier).toBe("budget");
+		});
+
 		it("should cache results on subsequent calls", () => {
 			const models1 = getModels();
 			const models2 = getModels();
@@ -136,8 +167,8 @@ describe("Model Loader (YAML)", () => {
 			// as the previous hardcoded TypeScript arrays
 			const models = getModels();
 
-			// Check that we have the expected number of models (11 in original)
-			expect(models.length).toBeGreaterThanOrEqual(11);
+			// Check that we have the expected number of models (14+ with new additions)
+			expect(models.length).toBeGreaterThanOrEqual(14);
 
 			// Verify pricing tier enum values match
 			const pricingTiers = models.map((m) => m.pricingTier);
