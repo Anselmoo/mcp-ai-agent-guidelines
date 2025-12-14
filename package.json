@@ -33,7 +33,7 @@
 		"format:fix": "biome format --write src/",
 		"check": "biome check src/",
 		"check:fix": "biome check --write src/",
-		"type-check": "tsc --noEmit",
+		"type-check": "npm run generate:models:internal && tsc --noEmit",
 		"quality": "npm run type-check && npm run check",
 		"validate": "npm run lint && npm run type-check && npm run test:all",
 		"hooks:install": "lefthook install",
