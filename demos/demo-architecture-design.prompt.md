@@ -8,7 +8,7 @@ description: 'Architecture design for large-scale system'
 ## 🏗️ Architecture Design Prompt
 
 ### Metadata
-- Updated: 2025-12-12
+- Updated: 2025-12-14
 - Source tool: mcp_ai-agent-guid_architecture-design-prompt-builder
 - Suggested filename: architecture-design-large.prompt.md
 

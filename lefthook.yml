@@ -26,7 +26,7 @@ pre-commit:
     typescript-check:
       tags: [types]
       glob: "*.{ts,tsx}"
-      run: npx tsc --noEmit
+      run: npm run generate:models:internal && npx tsc --noEmit
       fail_text: "🔷 TypeScript type checking failed"
 
     # ----------------------------- 📝 File Validation ---------------------------- #
