@@ -6,6 +6,7 @@ import {
 	BUDGET_PENALTY,
 	CAPABILITY_WEIGHTS,
 	DEFAULT_MODEL,
+	DEFAULT_MODEL_SLUG,
 	MODELS,
 	type ModelDefinition,
 	REQUIREMENT_KEYWORDS,
@@ -179,6 +180,30 @@ describe("Model Config Exports", () => {
 		it("should exist in the MODELS list", () => {
 			const modelNames = MODELS.map((m: ModelDefinition) => m.name);
 			expect(modelNames).toContain(DEFAULT_MODEL);
+		});
+	});
+
+	describe("DEFAULT_MODEL_SLUG constant", () => {
+		it("should export a string default model slug", () => {
+			expect(typeof DEFAULT_MODEL_SLUG).toBe("string");
+		});
+
+		it("should be a non-empty string", () => {
+			expect(DEFAULT_MODEL_SLUG.length).toBeGreaterThan(0);
+			expect(DEFAULT_MODEL_SLUG.trim()).toBe(DEFAULT_MODEL_SLUG);
+		});
+
+		it("should be the lowercase slug of DEFAULT_MODEL", () => {
+			// DEFAULT_MODEL is "GPT-5-Codex", slug should be "gpt-5-codex"
+			expect(DEFAULT_MODEL_SLUG).toBe("gpt-5-codex");
+		});
+
+		it("should be lowercase", () => {
+			expect(DEFAULT_MODEL_SLUG).toBe(DEFAULT_MODEL_SLUG.toLowerCase());
+		});
+
+		it("should not contain spaces", () => {
+			expect(DEFAULT_MODEL_SLUG).not.toMatch(/\s/);
 		});
 	});
 

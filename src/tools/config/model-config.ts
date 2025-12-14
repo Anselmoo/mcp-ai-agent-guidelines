@@ -2,7 +2,10 @@
 // Models are now loaded from YAML for easier maintenance
 // See: https://docs.github.com/en/copilot/reference/ai-models/model-comparison#recommended-models-by-task
 
-import type { Provider } from "./generated/index.js";
+import {
+	PROVIDER_ENUM_VALUES,
+	type Provider,
+} from "./generated/provider-enum.js";
 import {
 	getBudgetAdjustments,
 	getBudgetBonus,
@@ -30,5 +33,12 @@ export const BUDGET_ADJUSTMENTS: Record<
 export const BUDGET_BONUS = getBudgetBonus();
 export const BUDGET_PENALTY = getBudgetPenalty();
 export const DEFAULT_MODEL = getDefaultModel();
-// Cast to Provider type for use with ProviderEnum in Zod schemas
-export const DEFAULT_MODEL_SLUG = getDefaultModelSlug() as Provider;
+
+// Get the default model slug and validate it against the ProviderEnum
+const defaultSlug = getDefaultModelSlug();
+if (!PROVIDER_ENUM_VALUES.includes(defaultSlug as Provider)) {
+	throw new Error(
+		`Invalid default model slug "${defaultSlug}". Must be one of: ${PROVIDER_ENUM_VALUES.join(", ")}`,
+	);
+}
+export const DEFAULT_MODEL_SLUG: Provider = defaultSlug as Provider;
