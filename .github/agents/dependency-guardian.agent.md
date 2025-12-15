@@ -2,9 +2,11 @@
 name: Dependency-Guardian
 description: Dependency management and security vulnerability monitoring
 tools:
-  - read
-  - search
   - shell
+  - read
+  - edit
+  - search
+  - runTests
   - runSubagent
   - ai-agent-guidelines/dependency-auditor
   - serena/search_for_pattern

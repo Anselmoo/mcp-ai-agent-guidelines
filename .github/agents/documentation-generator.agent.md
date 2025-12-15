@@ -2,9 +2,11 @@
 name: Documentation-Generator
 description: API documentation and README updates using project patterns
 tools:
+  - shell
   - read
   - edit
   - search
+  - runTests
   - runSubagent
   - ai-agent-guidelines/documentation-generator-prompt-builder
   - ai-agent-guidelines/hierarchical-prompt-builder

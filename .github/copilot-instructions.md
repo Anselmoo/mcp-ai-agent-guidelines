@@ -322,6 +322,38 @@ When implementation complete and tests pass:
 2. After review passes, use `custom-agent` to invoke `@documentation-generator`
 ```
 
+### When to Use Specialized Agents
+
+**IMPORTANT**: When working as the default agent, you SHOULD delegate to specialized agents for better results. Use `custom-agent` to invoke the appropriate agent:
+
+| Task Type | Delegate To | When |
+|-----------|-------------|------|
+| **Code implementation** | `@mcp-tool-builder` | New tools, features, bug fixes |
+| **Writing tests** | `@tdd-workflow` | Test creation, TDD workflow |
+| **Code quality review** | `@code-reviewer` | After implementation, before merge |
+| **Security concerns** | `@security-auditor` | Dependencies, vulnerabilities, OWASP |
+| **Documentation** | `@documentation-generator` | API docs, README updates |
+| **Architecture decisions** | `@architecture-advisor` | Design patterns, ADRs |
+| **Debugging issues** | `@debugging-assistant` | Root cause analysis |
+| **Dependency updates** | `@dependency-guardian` | Renovate PRs, vulnerabilities |
+| **CHANGELOG updates** | `@changelog-curator` | Version updates, releases |
+| **CI/CD issues** | `@ci-fixer` | Workflow failures, build issues |
+| **Performance** | `@performance-optimizer` | Bundle size, runtime optimization |
+| **Prompt design** | `@prompt-architect` | Prompt engineering, optimization |
+
+**Delegation triggers - ALWAYS delegate when:**
+- User asks for code review → `@code-reviewer`
+- User mentions tests or coverage → `@tdd-workflow`
+- User mentions security or OWASP → `@security-auditor`
+- User asks about documentation → `@documentation-generator`
+- User asks about architecture or patterns → `@architecture-advisor`
+- User reports a bug to debug → `@debugging-assistant`
+- User mentions dependencies or Renovate → `@dependency-guardian`
+- User asks about CHANGELOG → `@changelog-curator`
+- User reports CI/CD failure → `@ci-fixer`
+- User asks about performance → `@performance-optimizer`
+- User asks about prompts → `@prompt-architect`
+
 ### MCP Servers Available
 
 This repository has **8 MCP servers** configured for enhanced capabilities:

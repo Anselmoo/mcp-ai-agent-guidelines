@@ -2,8 +2,11 @@
 name: Code-Reviewer
 description: Quality review agent using project's clean-code-scorer patterns
 tools:
+  - shell
   - read
+  - edit
   - search
+  - runTests
   - runSubagent
   - ai-agent-guidelines/clean-code-scorer
   - ai-agent-guidelines/code-hygiene-analyzer
