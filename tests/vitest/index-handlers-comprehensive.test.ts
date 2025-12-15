@@ -362,6 +362,7 @@ describe("index.ts - Tool Handler Coverage", () => {
 	describe("Tool Handler Error Handling", () => {
 		it("handles invalid input gracefully in hierarchical-prompt-builder", async () => {
 			try {
+				// biome-ignore lint/suspicious/noExplicitAny: Testing error handling with invalid inputs
 				await hierarchicalPromptBuilder({} as any);
 			} catch (error) {
 				expect(error).toBeDefined();
@@ -370,6 +371,7 @@ describe("index.ts - Tool Handler Coverage", () => {
 
 		it("handles invalid input gracefully in clean-code-scorer", async () => {
 			try {
+				// biome-ignore lint/suspicious/noExplicitAny: Testing error handling with invalid inputs
 				await cleanCodeScorer({} as any);
 			} catch (error) {
 				expect(error).toBeDefined();
@@ -378,6 +380,7 @@ describe("index.ts - Tool Handler Coverage", () => {
 
 		it("handles invalid input gracefully in design-assistant", async () => {
 			const result = await designAssistant.processRequest({
+				// biome-ignore lint/suspicious/noExplicitAny: Testing error handling with invalid inputs
 				action: "invalid-action" as any,
 				sessionId: "test",
 			});
@@ -418,6 +421,7 @@ describe("index.ts - Tool Handler Coverage", () => {
 			try {
 				await mermaidDiagramGenerator({
 					description: "Test",
+					// biome-ignore lint/suspicious/noExplicitAny: Testing invalid enum value handling
 					diagramType: "invalid-type" as any,
 				});
 			} catch (error) {
@@ -722,6 +726,7 @@ describe("index.ts - Tool Handler Coverage", () => {
 		it("handles boundary values in sprint calculator", async () => {
 			try {
 				const result = await sprintTimelineCalculator({
+					// biome-ignore lint/suspicious/noExplicitAny: Testing boundary value handling
 					tasks: [{ name: "Task", estimate: 0, priority: "low" as any }],
 					sprintLength: 1,
 					teamSize: 1,
