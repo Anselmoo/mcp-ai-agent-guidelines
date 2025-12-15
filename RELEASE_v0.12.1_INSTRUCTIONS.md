@@ -103,12 +103,13 @@ The release is triggered by pushing a tag matching the pattern `v*.*.*` (see `.g
 3. **test-and-build** - Tests on Node.js 20, 22, 24, latest
 4. **build-npm** - Package NPM tarball
 5. **build-docker** - Build multi-arch Docker images
-6. **publish-npm** - Publish to NPM (requires NPM_TOKEN secret)
+6. **publish-npm** - Publish to NPM using trusted publisher (OIDC authentication)
 7. **github-release** - Create GitHub Release with artifacts
 
-### Required Secrets
-- `NPM_TOKEN` - For publishing to npm registry
-- `GITHUB_TOKEN` - Automatically provided by GitHub Actions
+### Authentication
+- **NPM Publishing**: Uses GitHub OIDC trusted publisher (no secrets required)
+- **Docker Registry**: Uses `GITHUB_TOKEN` (automatically provided)
+- **GitHub Releases**: Uses `GITHUB_TOKEN` (automatically provided)
 
 ## Verification
 
