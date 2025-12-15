@@ -740,10 +740,11 @@ describe("index.ts - Tool Handler Coverage", () => {
 	// =================================================================
 
 	describe("Tool Handler Error Paths", () => {
-		it("should format error message when tool throws due to missing required args", async () => {
+		it("handles invalid input gracefully in hierarchical-prompt-builder", async () => {
 			// hierarchical-prompt-builder requires 'context' and 'goal'
 			// Passing empty args should cause a validation error
 			try {
+				// biome-ignore lint/suspicious/noExplicitAny: Testing error handling with invalid inputs
 				await hierarchicalPromptBuilder({} as any);
 			} catch (error) {
 				// The error should be a ZodError due to missing required fields
@@ -752,9 +753,10 @@ describe("index.ts - Tool Handler Coverage", () => {
 			}
 		});
 
-		it("should format error for invalid input types", async () => {
+		it("handles invalid input gracefully in clean-code-scorer", async () => {
 			try {
 				await cleanCodeScorer({
+					// biome-ignore lint/suspicious/noExplicitAny: Testing error handling with invalid input types
 					codeContent: 12345 as any, // Wrong type - should be string
 					language: "javascript",
 				});
@@ -770,6 +772,7 @@ describe("index.ts - Tool Handler Coverage", () => {
 					chainName: "test",
 					steps: [
 						{
+							// biome-ignore lint/suspicious/noExplicitAny: Testing error handling with invalid input
 							name: null as any, // Invalid - should throw
 							prompt: "test",
 						},
