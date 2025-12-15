@@ -126,7 +126,7 @@ describe("Model Loader Error Paths", () => {
 	});
 
 	describe("getDefaultModel fallback behavior", () => {
-		it("should use fallback when defaultModel is undefined", async () => {
+		it("should throw when defaultModel is undefined", async () => {
 			// Mock yaml.load to return config without defaultModel
 			vi.doMock("js-yaml", () => ({
 				load: vi.fn(() => ({
@@ -165,18 +165,19 @@ describe("Model Loader Error Paths", () => {
 				"../../src/tools/config/model-loader.js"
 			);
 
-			const defaultModel = getDefaultModel();
-			expect(defaultModel).toBe("GPT-5");
+			expect(() => getDefaultModel()).toThrow(
+				"No defaultModel configured in models.yaml. Please set a defaultModel value.",
+			);
 
 			vi.doUnmock("js-yaml");
 			vi.doUnmock("node:fs");
 		});
 
-		it("should use fallback when defaultModel is empty string", async () => {
+		it("should throw when defaultModel is empty string", async () => {
 			// Mock yaml.load to return config with empty defaultModel
 			vi.doMock("js-yaml", () => ({
 				load: vi.fn(() => ({
-					defaultModel: "", // Empty string should trigger fallback
+					defaultModel: "", // Empty string should trigger error
 					models: [
 						{
 							name: "GPT-5",
@@ -211,9 +212,10 @@ describe("Model Loader Error Paths", () => {
 				"../../src/tools/config/model-loader.js"
 			);
 
-			const defaultModel = getDefaultModel();
-			// Empty string is falsy, so fallback should be used
-			expect(defaultModel).toBe("GPT-5");
+			// Empty string is falsy, so error should be thrown
+			expect(() => getDefaultModel()).toThrow(
+				"No defaultModel configured in models.yaml. Please set a defaultModel value.",
+			);
 
 			vi.doUnmock("js-yaml");
 			vi.doUnmock("node:fs");
@@ -307,6 +309,39 @@ describe("Model Loader Error Paths", () => {
 
 			vi.doUnmock("js-yaml");
 			vi.doUnmock("node:fs");
+		});
+	});
+
+	describe("DEFAULT_MODEL_SLUG helper tests", () => {
+		it("should verify invalid slugs are not in PROVIDER_ENUM_VALUES", async () => {
+			// Import the PROVIDER_ENUM_VALUES to verify validation logic
+			const { PROVIDER_ENUM_VALUES } = await import(
+				"../../src/tools/config/generated/provider-enum.js"
+			);
+
+			const invalidSlug = "invalid-model-slug-not-in-enum";
+
+			// Verify the slug is indeed not in the enum
+			expect(
+				PROVIDER_ENUM_VALUES.includes(
+					invalidSlug as unknown as (typeof PROVIDER_ENUM_VALUES)[number],
+				),
+			).toBe(false);
+		});
+
+		it("should verify valid slugs are in PROVIDER_ENUM_VALUES", async () => {
+			// Test that the validation passes for valid slugs
+			const { PROVIDER_ENUM_VALUES } = await import(
+				"../../src/tools/config/generated/provider-enum.js"
+			);
+
+			// A valid slug should be in the enum
+			const validSlug = "gpt-5-codex";
+			expect(
+				PROVIDER_ENUM_VALUES.includes(
+					validSlug as unknown as (typeof PROVIDER_ENUM_VALUES)[number],
+				),
+			).toBe(true);
 		});
 	});
 });

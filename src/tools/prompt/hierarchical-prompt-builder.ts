@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { DEFAULT_MODEL } from "../config/model-config.js";
+import { DEFAULT_MODEL, DEFAULT_MODEL_SLUG } from "../config/model-config.js";
 import {
 	buildProviderTipsSection as buildSharedProviderTips,
 	ProviderEnum,
@@ -52,7 +52,7 @@ const HierarchicalPromptSchema = z.object({
 	includeTechniqueHints: z.boolean().optional().default(true),
 	includePitfalls: z.boolean().optional().default(true),
 	autoSelectTechniques: z.boolean().optional().default(false),
-	provider: ProviderEnum.optional().default("gpt-5"),
+	provider: ProviderEnum.optional().default(DEFAULT_MODEL_SLUG),
 	style: StyleEnum.optional(),
 
 	// Export format options (NEW)

@@ -362,6 +362,7 @@ describe("index.ts - Tool Handler Coverage", () => {
 	describe("Tool Handler Error Handling", () => {
 		it("handles invalid input gracefully in hierarchical-prompt-builder", async () => {
 			try {
+				// biome-ignore lint/suspicious/noExplicitAny: Testing error handling with invalid inputs
 				await hierarchicalPromptBuilder({} as any);
 			} catch (error) {
 				expect(error).toBeDefined();
@@ -370,6 +371,7 @@ describe("index.ts - Tool Handler Coverage", () => {
 
 		it("handles invalid input gracefully in clean-code-scorer", async () => {
 			try {
+				// biome-ignore lint/suspicious/noExplicitAny: Testing error handling with invalid inputs
 				await cleanCodeScorer({} as any);
 			} catch (error) {
 				expect(error).toBeDefined();
@@ -378,6 +380,7 @@ describe("index.ts - Tool Handler Coverage", () => {
 
 		it("handles invalid input gracefully in design-assistant", async () => {
 			const result = await designAssistant.processRequest({
+				// biome-ignore lint/suspicious/noExplicitAny: Testing error handling with invalid inputs
 				action: "invalid-action" as any,
 				sessionId: "test",
 			});
@@ -418,6 +421,7 @@ describe("index.ts - Tool Handler Coverage", () => {
 			try {
 				await mermaidDiagramGenerator({
 					description: "Test",
+					// biome-ignore lint/suspicious/noExplicitAny: Testing invalid enum value handling
 					diagramType: "invalid-type" as any,
 				});
 			} catch (error) {
@@ -722,6 +726,7 @@ describe("index.ts - Tool Handler Coverage", () => {
 		it("handles boundary values in sprint calculator", async () => {
 			try {
 				const result = await sprintTimelineCalculator({
+					// biome-ignore lint/suspicious/noExplicitAny: Testing boundary value handling
 					tasks: [{ name: "Task", estimate: 0, priority: "low" as any }],
 					sprintLength: 1,
 					teamSize: 1,
@@ -732,6 +737,64 @@ describe("index.ts - Tool Handler Coverage", () => {
 				// Might throw for invalid configuration
 				expect(error).toBeDefined();
 			}
+		});
+	});
+
+	// =================================================================
+	// Error Path Coverage for src/index.ts
+	// =================================================================
+
+	describe("Tool Handler Error Paths", () => {
+		it("handles invalid input gracefully in hierarchical-prompt-builder", async () => {
+			// hierarchical-prompt-builder requires 'context' and 'goal'
+			// Passing empty args should cause a validation error
+			try {
+				// biome-ignore lint/suspicious/noExplicitAny: Testing error handling with invalid inputs
+				await hierarchicalPromptBuilder({} as any);
+			} catch (error) {
+				// The error should be a ZodError due to missing required fields
+				expect(error).toBeDefined();
+				expect(error).toBeInstanceOf(Error);
+			}
+		});
+
+		it("handles invalid input gracefully in clean-code-scorer", async () => {
+			try {
+				await cleanCodeScorer({
+					// biome-ignore lint/suspicious/noExplicitAny: Testing error handling with invalid input types
+					codeContent: 12345 as any, // Wrong type - should be string
+					language: "javascript",
+				});
+			} catch (error) {
+				expect(error).toBeDefined();
+			}
+		});
+
+		it("should handle tool throwing with Error object", async () => {
+			// Passing invalid nested structure to cause internal error
+			try {
+				await promptChainingBuilder({
+					chainName: "test",
+					steps: [
+						{
+							// biome-ignore lint/suspicious/noExplicitAny: Testing error handling with invalid input
+							name: null as any, // Invalid - should throw
+							prompt: "test",
+						},
+					],
+				});
+			} catch (error) {
+				expect(error).toBeInstanceOf(Error);
+			}
+		});
+
+		it("should handle empty string inputs gracefully", async () => {
+			// Some tools should handle empty strings without crashing
+			const result = await memoryContextOptimizer({
+				contextContent: "",
+				maxTokens: 100,
+			});
+			expect(result.content).toBeDefined();
 		});
 	});
 });

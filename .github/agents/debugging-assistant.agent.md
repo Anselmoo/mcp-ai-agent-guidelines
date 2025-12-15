@@ -4,16 +4,19 @@ description: Root cause analysis and troubleshooting using project patterns
 tools:
   - shell
   - read
+  - edit
+  - execute
+  - memory
   - search
-  - runSubagent
-  - runTests
+  - todo
+  - web
   - ai-agent-guidelines/debugging-assistant-prompt-builder
   - ai-agent-guidelines/semantic-code-analyzer
   - serena/*
   - sequentialthinking/*
   - fetch/*
   - context7/*
-  - custom-agent
+  - agent
 
 ---
 

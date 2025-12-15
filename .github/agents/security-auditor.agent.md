@@ -2,9 +2,14 @@
 name: Security-Auditor
 description: OWASP compliance and security hardening checks using project patterns
 tools:
+  - shell
   - read
+  - edit
+  - execute
+  - memory
   - search
-  - runSubagent
+  - todo
+  - web
   - ai-agent-guidelines/security-hardening-prompt-builder
   - ai-agent-guidelines/dependency-auditor
   - serena/search_for_pattern
@@ -13,7 +18,7 @@ tools:
   - sequentialthinking/*
   - fetch/*
   - context7/*
-  - custom-agent
+  - agent
 
 ---
 

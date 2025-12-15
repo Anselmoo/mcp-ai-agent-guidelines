@@ -129,12 +129,43 @@ export function getBudgetPenalty(): number {
 }
 
 /**
- * Gets the default model name from the YAML configuration.
- * Falls back to "GPT-5" if not specified for backward compatibility.
+ * Converts a model display name to a lowercase slug format.
+ * Examples: "GPT-5-Codex" -> "gpt-5-codex", "Claude Opus 4.1" -> "claude-opus-4.1"
  *
- * @returns Default model name
+ * @param displayName - The display name of the model
+ * @returns Slugified lowercase model name
+ */
+export function slugifyModelName(displayName: string): string {
+	return displayName
+		.toLowerCase()
+		.replace(/\s+/g, "-") // Replace spaces with hyphens
+		.replace(/[^a-z0-9.-]/g, ""); // Remove any characters that aren't alphanumeric, dots, or hyphens
+}
+
+/**
+ * Gets the default model name from the YAML configuration.
+ * The default model is specified in models.yaml under the `defaultModel` key.
+ *
+ * @returns Default model name (display format, e.g., "GPT-5-Codex")
+ * @throws Error if no default model is configured in YAML
  */
 export function getDefaultModel(): string {
 	const config = loadModelsFromYaml();
-	return config.defaultModel || "GPT-5";
+	if (!config.defaultModel) {
+		throw new Error(
+			"No defaultModel configured in models.yaml. Please set a defaultModel value.",
+		);
+	}
+	return config.defaultModel;
+}
+
+/**
+ * Gets the default model slug from the YAML configuration.
+ * Returns a lowercase slug format suitable for use with ProviderEnum.
+ *
+ * @returns Default model slug (lowercase format, e.g., "gpt-5-codex")
+ * @throws Error if no default model is configured in YAML
+ */
+export function getDefaultModelSlug(): string {
+	return slugifyModelName(getDefaultModel());
 }

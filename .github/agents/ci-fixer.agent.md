@@ -5,15 +5,17 @@ tools:
   - shell
   - read
   - edit
+  - execute
+  - memory
   - search
-  - runSubagent
-  - runTests
+  - todo
+  - web
   - serena/search_for_pattern
   - serena/find_symbol
   - sequentialthinking/*
   - fetch/*
   - context7/*
-  - custom-agent
+  - agent
 
 ---
 

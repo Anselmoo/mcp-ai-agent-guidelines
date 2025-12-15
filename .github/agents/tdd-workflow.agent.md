@@ -5,16 +5,18 @@ tools:
   - shell
   - read
   - edit
+  - execute
+  - memory
   - search
-  - runTests
-  - runSubagent
+  - todo
+  - web
   - ai-agent-guidelines/clean-code-scorer
   - ai-agent-guidelines/iterative-coverage-enhancer
   - serena/*
   - sequentialthinking/*
   - context7/*
   - fetch/*
-  - custom-agent
+  - agent
 
 ---
 

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { DEFAULT_MODEL } from "../config/model-config.js";
+import { DEFAULT_MODEL, DEFAULT_MODEL_SLUG } from "../config/model-config.js";
 import type { Technique } from "../shared/prompt-sections.js";
 import {
 	buildPitfallsSection as buildSharedPitfalls,
@@ -99,7 +99,7 @@ const SecurityHardeningSchema = z.object({
 	includeTechniqueHints: z.boolean().optional().default(true),
 	includePitfalls: z.boolean().optional().default(true),
 	autoSelectTechniques: z.boolean().optional().default(true),
-	provider: ProviderEnum.optional().default("gpt-5"),
+	provider: ProviderEnum.optional().default(DEFAULT_MODEL_SLUG),
 	style: StyleEnum.optional(),
 });
 

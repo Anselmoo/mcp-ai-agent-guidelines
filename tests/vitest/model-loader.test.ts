@@ -5,8 +5,10 @@ import {
 	getBudgetPenalty,
 	getCapabilityWeights,
 	getDefaultModel,
+	getDefaultModelSlug,
 	getModels,
 	getRequirementKeywords,
+	slugifyModelName,
 } from "../../src/tools/config/model-loader.js";
 
 describe("Model Loader (YAML)", () => {
@@ -464,6 +466,102 @@ describe("Model Loader (YAML)", () => {
 				expect(Array.isArray(adjustments[level].bonus)).toBe(true);
 				expect(Array.isArray(adjustments[level].penalty)).toBe(true);
 			}
+		});
+	});
+
+	describe("slugifyModelName", () => {
+		it("should convert display name to lowercase slug", () => {
+			expect(slugifyModelName("GPT-5-Codex")).toBe("gpt-5-codex");
+		});
+
+		it("should replace spaces with hyphens", () => {
+			expect(slugifyModelName("Claude Opus 4.1")).toBe("claude-opus-4.1");
+			expect(slugifyModelName("GPT-5 mini")).toBe("gpt-5-mini");
+		});
+
+		it("should preserve dots", () => {
+			expect(slugifyModelName("GPT-4.1")).toBe("gpt-4.1");
+			expect(slugifyModelName("Qwen2.5")).toBe("qwen2.5");
+		});
+
+		it("should remove special characters except dots and hyphens", () => {
+			expect(slugifyModelName("Model@Name!")).toBe("modelname");
+			expect(slugifyModelName("Model#$%^Name")).toBe("modelname");
+		});
+
+		it("should handle already lowercase slugs", () => {
+			expect(slugifyModelName("gpt-5-codex")).toBe("gpt-5-codex");
+		});
+
+		it("should handle empty strings", () => {
+			expect(slugifyModelName("")).toBe("");
+		});
+
+		it("should handle model names from YAML", () => {
+			// Test with actual model names from models.yaml
+			expect(slugifyModelName("GPT-4.1")).toBe("gpt-4.1");
+			expect(slugifyModelName("GPT-5")).toBe("gpt-5");
+			expect(slugifyModelName("Claude Sonnet 4")).toBe("claude-sonnet-4");
+			expect(slugifyModelName("Gemini 2.5 Pro")).toBe("gemini-2.5-pro");
+			expect(slugifyModelName("Gemini 2.0 Flash")).toBe("gemini-2.0-flash");
+			expect(slugifyModelName("Grok Code Fast 1")).toBe("grok-code-fast-1");
+			expect(slugifyModelName("Raptor mini")).toBe("raptor-mini");
+		});
+
+		// Edge case tests for comprehensive coverage
+		it("should handle multiple consecutive spaces by collapsing to single hyphen", () => {
+			expect(slugifyModelName("GPT   5   Codex")).toBe("gpt-5-codex");
+		});
+
+		it("should convert leading/trailing spaces to hyphens", () => {
+			// Leading and trailing spaces become leading and trailing hyphens
+			expect(slugifyModelName("  GPT-5  ")).toBe("-gpt-5-");
+		});
+
+		it("should handle numbers only", () => {
+			expect(slugifyModelName("12345")).toBe("12345");
+		});
+
+		it("should handle unicode characters by removing them", () => {
+			// Unicode characters are removed by the regex [^a-z0-9.-]
+			expect(slugifyModelName("Modèl-Naïve")).toBe("modl-nave");
+		});
+
+		it("should handle strings with only special characters", () => {
+			expect(slugifyModelName("@#$%^&*()")).toBe("");
+		});
+
+		it("should handle mixed case with numbers and dots", () => {
+			expect(slugifyModelName("GPT-4.1-TURBO")).toBe("gpt-4.1-turbo");
+		});
+	});
+
+	describe("getDefaultModelSlug", () => {
+		it("should return lowercase slug of default model", () => {
+			const slug = getDefaultModelSlug();
+			expect(slug).toBe("gpt-5-codex");
+		});
+
+		it("should be lowercase", () => {
+			const slug = getDefaultModelSlug();
+			expect(slug).toBe(slug.toLowerCase());
+		});
+
+		it("should not contain spaces", () => {
+			const slug = getDefaultModelSlug();
+			expect(slug).not.toMatch(/\s/);
+		});
+
+		it("should be consistent with getDefaultModel", () => {
+			const displayName = getDefaultModel();
+			const slug = getDefaultModelSlug();
+			expect(slug).toBe(slugifyModelName(displayName));
+		});
+
+		it("should cache results on subsequent calls", () => {
+			const slug1 = getDefaultModelSlug();
+			const slug2 = getDefaultModelSlug();
+			expect(slug1).toBe(slug2);
 		});
 	});
 });

@@ -2,9 +2,14 @@
 name: Code-Reviewer
 description: Quality review agent using project's clean-code-scorer patterns
 tools:
+  - shell
   - read
+  - edit
+  - execute
+  - memory
   - search
-  - runSubagent
+  - todo
+  - web
   - ai-agent-guidelines/clean-code-scorer
   - ai-agent-guidelines/code-hygiene-analyzer
   - ai-agent-guidelines/semantic-code-analyzer
@@ -13,7 +18,7 @@ tools:
   - serena/search_for_pattern
   - sequentialthinking/*
   - fetch/*
-  - custom-agent
+  - agent
 
 ---
 

@@ -2,8 +2,14 @@
 name: Architecture-Advisor
 description: Design pattern recommendations and ADR generation using project patterns
 tools:
+  - shell
   - read
+  - edit
+  - execute
+  - memory
   - search
+  - todo
+  - web
   - runSubagent
   - ai-agent-guidelines/design-assistant
   - ai-agent-guidelines/architecture-design-prompt-builder
@@ -13,7 +19,7 @@ tools:
   - sequentialthinking/*
   - fetch/*
   - context7/*
-  - custom-agent
+  - agent
 
 ---
 
