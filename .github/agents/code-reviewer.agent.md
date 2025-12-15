@@ -5,9 +5,11 @@ tools:
   - shell
   - read
   - edit
+  - execute
+  - memory
   - search
-  - runTests
-  - runSubagent
+  - todo
+  - web
   - ai-agent-guidelines/clean-code-scorer
   - ai-agent-guidelines/code-hygiene-analyzer
   - ai-agent-guidelines/semantic-code-analyzer
@@ -16,7 +18,7 @@ tools:
   - serena/search_for_pattern
   - sequentialthinking/*
   - fetch/*
-  - custom-agent
+  - agent
 
 ---
 

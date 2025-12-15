@@ -5,15 +5,17 @@ tools:
   - shell
   - read
   - edit
+  - execute
+  - memory
   - search
-  - runTests
-  - runSubagent
+  - todo
+  - web
   - ai-agent-guidelines/dependency-auditor
   - serena/search_for_pattern
   - sequentialthinking/*
   - fetch/*
   - context7/*
-  - custom-agent
+  - agent
 
 ---
 

@@ -5,9 +5,11 @@ tools:
   - shell
   - read
   - edit
+  - execute
+  - memory
   - search
-  - runTests
-  - custom-agent
+  - todo
+  - web
   - ai-agent-guidelines/*
   - serena/*
   - fetch/*

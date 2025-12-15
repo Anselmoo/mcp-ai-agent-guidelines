@@ -4,9 +4,12 @@ description: Performance analysis and bundle optimization
 tools:
   - shell
   - read
+  - edit
+  - execute
+  - memory
   - search
-  - runSubagent
-  - runTests
+  - todo
+  - web
   - ai-agent-guidelines/semantic-code-analyzer
   - ai-agent-guidelines/clean-code-scorer
   - ai-agent-guidelines/memory-context-optimizer
@@ -14,7 +17,7 @@ tools:
   - sequentialthinking/*
   - fetch/*
   - context7/*
-  - custom-agent
+  - agent
 
 ---
 

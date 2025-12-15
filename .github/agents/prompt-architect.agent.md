@@ -5,8 +5,11 @@ tools:
   - shell
   - read
   - edit
+  - execute
+  - memory
   - search
-  - runSubagent
+  - todo
+  - web
   - ai-agent-guidelines/hierarchical-prompt-builder
   - ai-agent-guidelines/prompt-flow-builder
   - ai-agent-guidelines/prompt-chaining-builder
@@ -19,7 +22,7 @@ tools:
   - sequentialthinking/*
   - fetch/*
   - context7/*
-  - custom-agent
+  - agent
 
 ---
 
