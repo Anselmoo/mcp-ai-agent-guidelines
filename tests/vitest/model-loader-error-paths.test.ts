@@ -312,10 +312,9 @@ describe("Model Loader Error Paths", () => {
 		});
 	});
 
-	describe("DEFAULT_MODEL_SLUG validation error path", () => {
-		it("should throw if defaultSlug is not a valid Provider", async () => {
-			// Test the validation logic directly by importing the PROVIDER_ENUM_VALUES
-			// and checking that the validation would throw for an invalid slug
+	describe("DEFAULT_MODEL_SLUG helper tests", () => {
+		it("should verify invalid slugs are not in PROVIDER_ENUM_VALUES", async () => {
+			// Import the PROVIDER_ENUM_VALUES to verify validation logic
 			const { PROVIDER_ENUM_VALUES } = await import(
 				"../../src/tools/config/generated/provider-enum.js"
 			);
@@ -323,15 +322,14 @@ describe("Model Loader Error Paths", () => {
 			const invalidSlug = "invalid-model-slug-not-in-enum";
 
 			// Verify the slug is indeed not in the enum
-			expect(PROVIDER_ENUM_VALUES.includes(invalidSlug as any)).toBe(false);
-
-			// Verify the error message format that would be thrown
-			const expectedError = `Invalid default model slug "${invalidSlug}". Must be one of: ${PROVIDER_ENUM_VALUES.join(", ")}`;
-			expect(expectedError).toContain("Invalid default model slug");
-			expect(expectedError).toContain("Must be one of:");
+			expect(
+				PROVIDER_ENUM_VALUES.includes(
+					invalidSlug as unknown as (typeof PROVIDER_ENUM_VALUES)[number],
+				),
+			).toBe(false);
 		});
 
-		it("should have validation that validates valid slugs correctly", async () => {
+		it("should verify valid slugs are in PROVIDER_ENUM_VALUES", async () => {
 			// Test that the validation passes for valid slugs
 			const { PROVIDER_ENUM_VALUES } = await import(
 				"../../src/tools/config/generated/provider-enum.js"
@@ -339,7 +337,11 @@ describe("Model Loader Error Paths", () => {
 
 			// A valid slug should be in the enum
 			const validSlug = "gpt-5-codex";
-			expect(PROVIDER_ENUM_VALUES.includes(validSlug as any)).toBe(true);
+			expect(
+				PROVIDER_ENUM_VALUES.includes(
+					validSlug as unknown as (typeof PROVIDER_ENUM_VALUES)[number],
+				),
+			).toBe(true);
 		});
 	});
 });
