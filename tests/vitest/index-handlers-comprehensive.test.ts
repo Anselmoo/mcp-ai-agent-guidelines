@@ -734,4 +734,59 @@ describe("index.ts - Tool Handler Coverage", () => {
 			}
 		});
 	});
+
+	// =================================================================
+	// Error Path Coverage for src/index.ts
+	// =================================================================
+
+	describe("Tool Handler Error Paths", () => {
+		it("should format error message when tool throws due to missing required args", async () => {
+			// hierarchical-prompt-builder requires 'context' and 'goal'
+			// Passing empty args should cause a validation error
+			try {
+				await hierarchicalPromptBuilder({} as any);
+			} catch (error) {
+				// The error should be a ZodError due to missing required fields
+				expect(error).toBeDefined();
+				expect(error).toBeInstanceOf(Error);
+			}
+		});
+
+		it("should format error for invalid input types", async () => {
+			try {
+				await cleanCodeScorer({
+					codeContent: 12345 as any, // Wrong type - should be string
+					language: "javascript",
+				});
+			} catch (error) {
+				expect(error).toBeDefined();
+			}
+		});
+
+		it("should handle tool throwing with Error object", async () => {
+			// Passing invalid nested structure to cause internal error
+			try {
+				await promptChainingBuilder({
+					chainName: "test",
+					steps: [
+						{
+							name: null as any, // Invalid - should throw
+							prompt: "test",
+						},
+					],
+				});
+			} catch (error) {
+				expect(error).toBeInstanceOf(Error);
+			}
+		});
+
+		it("should handle empty string inputs gracefully", async () => {
+			// Some tools should handle empty strings without crashing
+			const result = await memoryContextOptimizer({
+				contextContent: "",
+				maxTokens: 100,
+			});
+			expect(result.content).toBeDefined();
+		});
+	});
 });

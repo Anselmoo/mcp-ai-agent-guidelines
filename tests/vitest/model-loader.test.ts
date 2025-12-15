@@ -507,6 +507,33 @@ describe("Model Loader (YAML)", () => {
 			expect(slugifyModelName("Grok Code Fast 1")).toBe("grok-code-fast-1");
 			expect(slugifyModelName("Raptor mini")).toBe("raptor-mini");
 		});
+
+		// Edge case tests for comprehensive coverage
+		it("should handle multiple consecutive spaces by collapsing to single hyphen", () => {
+			expect(slugifyModelName("GPT   5   Codex")).toBe("gpt-5-codex");
+		});
+
+		it("should convert leading/trailing spaces to hyphens", () => {
+			// Leading and trailing spaces become leading and trailing hyphens
+			expect(slugifyModelName("  GPT-5  ")).toBe("-gpt-5-");
+		});
+
+		it("should handle numbers only", () => {
+			expect(slugifyModelName("12345")).toBe("12345");
+		});
+
+		it("should handle unicode characters by removing them", () => {
+			// Unicode characters are removed by the regex [^a-z0-9.-]
+			expect(slugifyModelName("Modèl-Naïve")).toBe("modl-nave");
+		});
+
+		it("should handle strings with only special characters", () => {
+			expect(slugifyModelName("@#$%^&*()")).toBe("");
+		});
+
+		it("should handle mixed case with numbers and dots", () => {
+			expect(slugifyModelName("GPT-4.1-TURBO")).toBe("gpt-4.1-turbo");
+		});
 	});
 
 	describe("getDefaultModelSlug", () => {
