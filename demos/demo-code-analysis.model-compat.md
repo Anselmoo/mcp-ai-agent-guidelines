@@ -50,12 +50,15 @@
 | Claude Opus 4.1 | Anthropic | Complex problem-solving |
 | Claude Sonnet 4.5 | Anthropic | Complex problem-solving challenges |
 | Gemini 2.5 Pro | Google | Complex code generation |
+| GPT-5.1-Codex | OpenAI | Optimized for complex coding tasks |
 | GPT-5-Codex | OpenAI | Higher-quality code on complex tasks |
+| GPT-5.1-Codex-Mini | OpenAI | Fast, accurate code completions |
 | GPT-5 mini | OpenAI | Fast, accurate code completions |
 | Claude Sonnet 4 | Anthropic | Performance and practicality |
 | GPT-4.1 | OpenAI | Fast, accurate code completions |
 | Grok Code Fast 1 | xAI | Specialized for coding tasks |
 | Qwen2.5 | Alibaba | Code generation |
+| GPT-5.2 | OpenAI | Advanced multi-step problem solving |
 | GPT-5.1 | OpenAI | Multi-step problem solving |
 | GPT-5 | OpenAI | Multi-step problem solving |
 | Raptor mini | Meta | Fast, accurate inline suggestions |
@@ -96,9 +99,9 @@ export function pickModel(opts: {
   budget?: 'low' | 'medium' | 'high';
 }): Choice {
   if (opts.largeContext) return { provider: 'google', model: 'Gemini 2.5 Pro' };
-  if (opts.complexity === 'advanced') return { provider: 'openai', model: 'GPT-5.1' };
+  if (opts.complexity === 'advanced') return { provider: 'openai', model: 'GPT-5.2' };
   if (opts.complexity === 'simple' || opts.budget === 'low') return { provider: 'google', model: 'Gemini 2.0 Flash' };
-  return { provider: 'openai', model: 'GPT-5-Codex' };
+  return { provider: 'openai', model: 'GPT-5.1-Codex' };
 }
 
 // Example usage (pseudo—replace with real SDK calls):
