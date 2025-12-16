@@ -316,7 +316,13 @@ jobs:
           cosign sign --yes ${images}
 
   # ============================================================================
-  # Publish to NPM Registry (production)
+  # Publish to NPM Registry (production) - Using Trusted Publishers (OIDC)
+  # See: https://docs.npmjs.com/trusted-publishers
+  # IMPORTANT: Configure trusted publisher on npmjs.com with:
+  #   - Organization/user: Anselmoo
+  #   - Repository: mcp-ai-agent-guidelines
+  #   - Workflow filename: ci-cd.yml
+  #   - Environment: npm (optional but recommended)
   # ============================================================================
   publish-npm:
     name: Publish to NPM 🚀
@@ -328,7 +334,7 @@ jobs:
       url: https://www.npmjs.com/package/mcp-ai-agent-guidelines
     permissions:
       contents: read
-      id-token: write  # for provenance
+      id-token: write  # Required for OIDC trusted publishing
 
     steps:
       - name: Checkout code
@@ -341,8 +347,19 @@ jobs:
           cache: 'npm'
           registry-url: 'https://registry.npmjs.org'
 
+      # Trusted publishing requires npm 11.5.1+
       - name: Update npm to latest version
         run: npm install -g npm@latest
+
+      - name: Verify npm version
+        run: |
+          NPM_VERSION=$(npm --version)
+          echo "npm version: $NPM_VERSION"
+          # Check if version is at least 11.5.1
+          if [ "$(printf '%s\n' "11.5.1" "$NPM_VERSION" | sort -V | head -n1)" != "11.5.1" ]; then
+            echo "Error: npm version must be at least 11.5.1 for trusted publishing"
+            exit 1
+          fi
 
       - name: Install dependencies
         run: npm ci
@@ -350,8 +367,10 @@ jobs:
       - name: Build package
         run: npm run build
 
+      # Trusted publishing with OIDC - no token needed!
+      # Provenance is automatically generated when using trusted publishers
       - name: Publish to NPM with trusted publisher
-        run: npm publish --provenance --access public
+        run: npm publish --access public
 
   # ============================================================================
   # Create GitHub Release with Signed Artifacts
