@@ -112,7 +112,17 @@ export function normalizeTaskArea(taskAreaText) {
  */
 export function inferProvider(modelName) {
 	const name = modelName.toLowerCase();
-	if (name.startsWith("gpt") || name.startsWith("o")) return "OpenAI";
+	// Only match known OpenAI "o-series" prefixes (e.g., o1, o2, o3, o4, o5, oai)
+	if (
+		name.startsWith("gpt") ||
+		name.startsWith("o1") ||
+		name.startsWith("o2") ||
+		name.startsWith("o3") ||
+		name.startsWith("o4") ||
+		name.startsWith("o5") ||
+		name.startsWith("oai")
+	)
+		return "OpenAI";
 	if (name.startsWith("claude")) return "Anthropic";
 	if (name.startsWith("gemini")) return "Google";
 	if (name.startsWith("grok")) return "xAI";

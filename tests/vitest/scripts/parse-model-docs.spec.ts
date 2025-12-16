@@ -4,9 +4,10 @@
  * Tests the parsing utilities for GitHub Copilot model documentation.
  */
 
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
 	DOCS_URLS,
+	fetchWithRetry,
 	inferModes,
 	inferMultiplier,
 	inferPricingTier,
@@ -52,6 +53,15 @@ describe("parse-model-docs", () => {
 			expect(inferProvider("GPT-4")).toBe("OpenAI");
 			expect(inferProvider("gpt-5")).toBe("OpenAI");
 			expect(inferProvider("o1-mini")).toBe("OpenAI");
+			expect(inferProvider("o2-preview")).toBe("OpenAI");
+			expect(inferProvider("o3-standard")).toBe("OpenAI");
+		});
+
+		it("should not misclassify models starting with 'o' that are not OpenAI", () => {
+			// Models like "Oracle AI" or "Orca" should not be classified as OpenAI
+			expect(inferProvider("Oracle AI")).toBe("Unknown");
+			expect(inferProvider("Orca")).toBe("Unknown");
+			expect(inferProvider("Optimus")).toBe("Unknown");
 		});
 
 		it("should infer Anthropic provider", () => {
@@ -283,6 +293,117 @@ describe("parse-model-docs", () => {
 
 		it("should have supported models URL", () => {
 			expect(DOCS_URLS.supported).toContain("supported-models");
+		});
+	});
+
+	describe("fetchWithRetry", () => {
+		// Mock the global fetch and console.log for testing
+		const originalFetch = global.fetch;
+		const originalConsoleLog = console.log;
+
+		beforeEach(() => {
+			// Silence console.log during tests
+			console.log = vi.fn();
+		});
+
+		afterEach(() => {
+			global.fetch = originalFetch;
+			console.log = originalConsoleLog;
+			vi.clearAllMocks();
+		});
+
+		it("should return HTML content on successful fetch", async () => {
+			const mockHtml = "<html><body>Test content</body></html>";
+			global.fetch = vi.fn().mockResolvedValue({
+				ok: true,
+				text: () => Promise.resolve(mockHtml),
+			});
+
+			const result = await fetchWithRetry("https://example.com");
+			expect(result).toBe(mockHtml);
+			expect(global.fetch).toHaveBeenCalledTimes(1);
+		});
+
+		it("should retry on fetch failure and succeed on retry", async () => {
+			const mockHtml = "<html><body>Success</body></html>";
+			global.fetch = vi
+				.fn()
+				.mockRejectedValueOnce(new Error("Network error"))
+				.mockResolvedValueOnce({
+					ok: true,
+					text: () => Promise.resolve(mockHtml),
+				});
+
+			// Use maxRetries=2 to minimize delay (1s total)
+			const result = await fetchWithRetry("https://example.com", 2);
+			expect(result).toBe(mockHtml);
+			expect(global.fetch).toHaveBeenCalledTimes(2);
+		}, 10000);
+
+		it("should throw error after all retries exhausted", async () => {
+			global.fetch = vi.fn().mockRejectedValue(new Error("Network error"));
+
+			// Use maxRetries=1 to avoid delays
+			await expect(fetchWithRetry("https://example.com", 1)).rejects.toThrow(
+				"Network error",
+			);
+			expect(global.fetch).toHaveBeenCalledTimes(1);
+		});
+
+		it("should throw error on HTTP error status", async () => {
+			global.fetch = vi.fn().mockResolvedValue({
+				ok: false,
+				status: 404,
+				statusText: "Not Found",
+			});
+
+			await expect(fetchWithRetry("https://example.com", 1)).rejects.toThrow(
+				"HTTP 404: Not Found",
+			);
+		});
+
+		it("should retry on HTTP error status codes", async () => {
+			const mockHtml = "<html><body>Success</body></html>";
+			global.fetch = vi
+				.fn()
+				.mockResolvedValueOnce({
+					ok: false,
+					status: 500,
+					statusText: "Internal Server Error",
+				})
+				.mockResolvedValueOnce({
+					ok: true,
+					text: () => Promise.resolve(mockHtml),
+				});
+
+			// Use maxRetries=2 to minimize delay
+			const result = await fetchWithRetry("https://example.com", 2);
+			expect(result).toBe(mockHtml);
+			expect(global.fetch).toHaveBeenCalledTimes(2);
+		}, 10000);
+
+		it("should call fetch with the provided URL", async () => {
+			const mockHtml = "<html><body>Test</body></html>";
+			global.fetch = vi.fn().mockResolvedValue({
+				ok: true,
+				text: () => Promise.resolve(mockHtml),
+			});
+
+			await fetchWithRetry("https://example.com/test-url");
+			expect(global.fetch).toHaveBeenCalledWith("https://example.com/test-url");
+		});
+
+		it("should log fetch attempts", async () => {
+			const mockHtml = "<html><body>Test</body></html>";
+			global.fetch = vi.fn().mockResolvedValue({
+				ok: true,
+				text: () => Promise.resolve(mockHtml),
+			});
+
+			await fetchWithRetry("https://example.com");
+			expect(console.log).toHaveBeenCalledWith(
+				expect.stringContaining("Fetching: https://example.com"),
+			);
 		});
 	});
 });
