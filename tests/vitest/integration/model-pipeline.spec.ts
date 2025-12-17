@@ -193,8 +193,11 @@ describe("Model Configuration Pipeline", () => {
 		});
 
 		it("should validate ProviderEnum with zod parse", () => {
+			// Use dynamically retrieved slug instead of hardcoded value
+			const validSlug = getDefaultModelSlug();
+
 			// Valid provider should parse without error
-			expect(() => ProviderEnum.parse("gpt-5-codex")).not.toThrow();
+			expect(() => ProviderEnum.parse(validSlug)).not.toThrow();
 
 			// Invalid provider should throw
 			expect(() => ProviderEnum.parse("invalid-provider")).toThrow();
@@ -247,9 +250,13 @@ describe("Model Configuration Pipeline", () => {
 			expect(defaultModel.length).toBeGreaterThan(0);
 		});
 
-		it("should return GPT-5-Codex as configured default", () => {
+		it("should return the configured default model from YAML", () => {
+			// Retrieve expected default from YAML config (source of truth)
+			const config = loadModelsFromYaml();
+			const expectedDefault = config.defaultModel;
+
 			const defaultModel = getDefaultModel();
-			expect(defaultModel).toBe("GPT-5-Codex");
+			expect(defaultModel).toBe(expectedDefault);
 		});
 
 		it("should have default model in models list", () => {
@@ -260,8 +267,10 @@ describe("Model Configuration Pipeline", () => {
 		});
 
 		it("should return valid slug for default model", () => {
+			const defaultModel = getDefaultModel();
 			const slug = getDefaultModelSlug();
-			expect(slug).toBe("gpt-5-codex");
+			// Slug should be lowercase version of default model name
+			expect(slug).toBe(slugifyModelName(defaultModel));
 		});
 
 		it("should have default model in ProviderEnum", () => {
@@ -281,9 +290,10 @@ describe("Model Configuration Pipeline", () => {
 		});
 
 		it("should get display name for default model", () => {
+			const defaultModel = getDefaultModel();
 			const slug = getDefaultModelSlug();
 			const displayName = getModelDisplayName(slug);
-			expect(displayName).toBe("GPT-5-Codex");
+			expect(displayName).toBe(defaultModel);
 		});
 	});
 
@@ -298,6 +308,13 @@ describe("Model Configuration Pipeline", () => {
 			const models = getModels();
 			// PROVIDER_ENUM_VALUES includes 'other' as catch-all
 			expect(PROVIDER_ENUM_VALUES.length).toBe(models.length + 1);
+		});
+
+		it("should include 'other' as catch-all value in ProviderEnum", () => {
+			// The type generator adds 'other' as a catch-all for unknown providers
+			// This is an intentional design decision in generate-model-types.js
+			expect(PROVIDER_ENUM_VALUES).toContain("other");
+			expect(() => ProviderEnum.parse("other")).not.toThrow();
 		});
 
 		it("should allow full workflow: YAML → slug → validate → display", () => {
@@ -318,18 +335,33 @@ describe("Model Configuration Pipeline", () => {
 			}
 		});
 
-		it("should handle model selection with default fallback", () => {
-			// When no models match criteria, selectModelByCategory returns undefined
-			const noMatch = selectModelByCategory({
+		it("should handle model selection with separate criteria", () => {
+			// Test budget-only criteria
+			const budgetModel = selectModelByCategory({ budget: "low" });
+			if (budgetModel) {
+				expect(budgetModel.pricingTier).toBe("budget");
+			}
+
+			// Test taskArea-only criteria
+			const generalModel = selectModelByCategory({
+				taskArea: "general-purpose",
+			});
+			if (generalModel) {
+				expect(generalModel.taskArea).toBe("general-purpose");
+			}
+
+			// Test combined criteria (may return undefined if no match)
+			const combinedResult = selectModelByCategory({
 				taskArea: "general-purpose",
 				budget: "low",
 			});
-
-			// Should either find a match or return undefined (not throw)
-			if (noMatch) {
-				expect(noMatch.pricingTier).toBe("budget");
+			// Combined criteria filters by both: should either match both or be undefined
+			if (combinedResult) {
+				expect(combinedResult.pricingTier).toBe("budget");
+				expect(combinedResult.taskArea).toBe("general-purpose");
 			} else {
-				expect(noMatch).toBeUndefined();
+				// No model matches both criteria - this is valid behavior
+				expect(combinedResult).toBeUndefined();
 			}
 		});
 
@@ -362,9 +394,16 @@ describe("Model Configuration Pipeline", () => {
 		});
 
 		it("should handle case-sensitive identifiers correctly", () => {
-			// Identifiers are lowercase slugs
-			expect(isValidModelIdentifier("GPT-5-Codex")).toBe(false);
-			expect(isValidModelIdentifier("gpt-5-codex")).toBe(true);
+			// Model identifiers are lowercase slugs created by slugifyModelName()
+			// The slugification process converts to lowercase and replaces spaces with hyphens
+			// Therefore, uppercase identifiers are NOT valid - they must be slugified first
+			const defaultModel = getDefaultModel();
+			const slug = slugifyModelName(defaultModel);
+
+			// Uppercase/display name is NOT a valid identifier
+			expect(isValidModelIdentifier(defaultModel)).toBe(false);
+			// Lowercase slug IS a valid identifier
+			expect(isValidModelIdentifier(slug)).toBe(true);
 		});
 	});
 });
