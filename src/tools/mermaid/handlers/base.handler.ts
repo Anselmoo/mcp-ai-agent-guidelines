@@ -31,10 +31,10 @@ export abstract class BaseDiagramHandler {
 	/**
 	 * Validate input description.
 	 * Can be overridden by handlers with specific validation rules.
+	 * Default implementation allows empty descriptions for fallback behavior.
 	 */
-	protected validateInput(description: string): void {
-		if (!description || description.trim().length === 0) {
-			throw new Error("Description cannot be empty");
-		}
+	protected validateInput(_description: string): void {
+		// Base implementation allows empty descriptions
+		// Handlers can override if they need stricter validation
 	}
 }
