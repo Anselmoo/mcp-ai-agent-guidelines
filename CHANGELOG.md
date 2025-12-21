@@ -13,6 +13,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.12.4] - 2025-12-21
+
+### Added
+
+- Release branch `release/v0.12.4` and annotated tag `v0.12.4` created.
+- Generated model types refreshed via `scripts/generate-model-types.js` during release preparation.
+
+### Changed
+
+- Bumped package version to `0.12.4`.
+
+### Notes
+
+- Full quality checks and test suite (unit, integration, demo, MCP smoke tests) were executed and passed as part of the release workflow.
+
+
 ## [0.12.1] - 2025-12-12
 
 ### Added
