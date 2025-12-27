@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { codeHygieneAnalyzer } from "../../src/tools/code-hygiene-analyzer";
 import { guidelinesValidator } from "../../src/tools/guidelines-validator";
 import { memoryContextOptimizer } from "../../src/tools/memory-context-optimizer";
-import { mermaidDiagramGenerator } from "../../src/tools/mermaid-diagram-generator";
+import { mermaidDiagramGenerator } from "../../src/tools/mermaid/index";
 import { modelCompatibilityChecker } from "../../src/tools/model-compatibility-checker";
 import { hierarchicalPromptBuilder } from "../../src/tools/prompt/hierarchical-prompt-builder";
 import { sprintTimelineCalculator } from "../../src/tools/sprint-timeline-calculator";

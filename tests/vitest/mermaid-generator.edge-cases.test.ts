@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { mermaidDiagramGenerator } from "../../src/tools/mermaid-diagram-generator";
+import { mermaidDiagramGenerator } from "../../src/tools/mermaid/index";
 
 describe("mermaid-diagram-generator additional edge cases", () => {
 	it("handles different diagram types", async () => {

@@ -1,3 +1,10 @@
+/**
+ * @deprecated This file has been refactored into a modular structure.
+ * Use `import { mermaidDiagramGenerator } from "./mermaid/index.js"` instead.
+ * This file is kept temporarily for backwards compatibility but will be removed in a future version.
+ * See ADR-0002 for the refactoring rationale.
+ */
+
 import { z } from "zod";
 
 // Optional runtime validation of generated diagrams using mermaid.parse (if installed)
