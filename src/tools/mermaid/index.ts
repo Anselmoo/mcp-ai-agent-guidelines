@@ -216,3 +216,9 @@ export async function mermaidDiagramGenerator(args: unknown) {
 // Re-export types and utilities for testing
 export { type MermaidDiagramInput, MermaidDiagramSchema } from "./types.js";
 export { __setMermaidModuleProvider } from "./validator.js";
+
+// Export internals for testing
+export { generateDiagram };
+
+// Export helpers for unit testing (coverage targets)
+export { normalizeLegacyTypes, formatResponse };

@@ -401,3 +401,5 @@ __marimo__/
 src/tools/config/generated/*.ts
 src/tools/config/generated/README.md
 !src/tools/config/generated/.gitkeep
+artifacts/coverage-patch.json
+artifacts/coverage-patch.local.json

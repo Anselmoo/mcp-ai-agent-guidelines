@@ -21,6 +21,7 @@
 		"test:coverage:unit": "npm run build && c8 -r text-summary -r lcov -r html -o coverage node tests/unit/run-unit-tests.js",
 		"test:vitest": "vitest",
 		"test:coverage:vitest": "vitest run --coverage",
+		"coverage:patch": "node ./scripts/coverage-patch.mjs --lcov coverage/lcov.info --base main --head HEAD --output artifacts/coverage-patch.json",
 		"coverage:low": "npm run test:coverage:vitest && node ./scripts/generate-low-coverage.cjs",
 		"generate-low-coverage": "node ./scripts/generate-low-coverage.cjs",
 		"check:coverage-threshold": "npm run test:coverage:vitest && node scripts/check-coverage.cjs --threshold=90",
