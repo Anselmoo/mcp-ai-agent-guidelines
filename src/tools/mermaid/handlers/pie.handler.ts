@@ -54,9 +54,7 @@ export class PieHandler extends BaseDiagramHandler {
 		if (titleMatch) title = titleMatch[1].trim();
 
 		// Extract percentages or numbers
-		const percentMatches = description.matchAll(
-			/(\\w+[\\w\\s]*?)[\\s:]+(\\d+)%/gi,
-		);
+		const percentMatches = description.matchAll(/(\w[\w\s]*?)[\s:]+(\d+)%/gi);
 		for (const match of percentMatches) {
 			data.push({
 				label: match[1].trim(),
@@ -66,7 +64,9 @@ export class PieHandler extends BaseDiagramHandler {
 
 		// Extract explicit counts
 		if (data.length === 0) {
-			const countMatches = description.matchAll(/(\\d+)\\s+(\\w+[\\w\\s]*)/gi);
+			const countMatches = description.matchAll(
+				/(\d+)\s+([A-Za-z][A-Za-z\s]*?)(?=\s+\d+|$)/gi,
+			);
 			const items: Array<{ label: string; value: number }> = [];
 			for (const match of countMatches) {
 				items.push({
