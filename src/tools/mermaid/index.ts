@@ -27,20 +27,22 @@ import { validateDiagram } from "./validator.js";
  * Handler registry - Maps diagram types to their handlers.
  * Uses Strategy pattern for O(1) handler lookup.
  */
-const HANDLER_REGISTRY: Record<string, BaseDiagramHandler> = {
-	flowchart: new FlowchartHandler(),
-	sequence: new SequenceHandler(),
-	class: new ClassHandler(),
-	state: new StateHandler(),
-	gantt: new GanttHandler(),
-	pie: new PieHandler(),
-	er: new ERHandler(),
-	journey: new JourneyHandler(),
-	quadrant: new QuadrantHandler(),
-	"git-graph": new GitGraphHandler(),
-	mindmap: new MindmapHandler(),
-	timeline: new TimelineHandler(),
-};
+const HANDLER_REGISTRY: Record<string, BaseDiagramHandler> = {} as Record<
+	string,
+	BaseDiagramHandler
+>;
+HANDLER_REGISTRY.flowchart = new FlowchartHandler();
+HANDLER_REGISTRY.sequence = new SequenceHandler();
+HANDLER_REGISTRY.class = new ClassHandler();
+HANDLER_REGISTRY.state = new StateHandler();
+HANDLER_REGISTRY.gantt = new GanttHandler();
+HANDLER_REGISTRY.pie = new PieHandler();
+HANDLER_REGISTRY.er = new ERHandler();
+HANDLER_REGISTRY.journey = new JourneyHandler();
+HANDLER_REGISTRY.quadrant = new QuadrantHandler();
+HANDLER_REGISTRY["git-graph"] = new GitGraphHandler();
+HANDLER_REGISTRY.mindmap = new MindmapHandler();
+HANDLER_REGISTRY.timeline = new TimelineHandler();
 
 /**
  * Normalize legacy diagram type names.
@@ -222,3 +224,6 @@ export { generateDiagram };
 
 // Export helpers for unit testing (coverage targets)
 export { normalizeLegacyTypes, formatResponse };
+
+// Export handler registry for testing (internal)
+export { HANDLER_REGISTRY };

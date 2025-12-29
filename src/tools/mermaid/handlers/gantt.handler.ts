@@ -118,7 +118,13 @@ export class GanttHandler extends BaseDiagramHandler {
 
 			// Check for section keywords
 			if (lower.includes("phase") || lower.includes("stage")) {
-				section = sentence.split(/[:]/)[0].trim();
+				// Try to extract the section name following the keyword, e.g., "Phase Research: ..." -> "Research"
+				const match = sentence.match(/^(?:phase|stage)\s*[:\-\s]*([^:]+)/i);
+				if (match && match[1]) {
+					section = match[1].trim();
+				} else {
+					section = sentence.split(/[:]/)[0].trim();
+				}
 				continue;
 			}
 

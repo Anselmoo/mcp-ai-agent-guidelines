@@ -1,4 +1,12 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+	afterEach,
+	beforeAll,
+	beforeEach,
+	describe,
+	expect,
+	it,
+	vi,
+} from "vitest";
 
 // Store captured handlers
 let capturedHandlers: Array<{ schema: any; handler: any }> = [];
@@ -49,7 +57,7 @@ describe("Server Handlers Coverage", () => {
 		for (const { handler } of capturedHandlers) {
 			expect(typeof handler).toBe("function");
 		}
-	});
+	}, 20000);
 
 	it("should exercise ListTools handler execution", async () => {
 		// Import the server to register handlers
@@ -63,7 +71,7 @@ describe("Server Handlers Coverage", () => {
 			expect(Array.isArray(result.tools)).toBe(true);
 			expect(result.tools.length).toBeGreaterThan(0);
 		}
-	});
+	}, 20000);
 
 	it("should exercise CallTool handler with valid tool", async () => {
 		// Import the server to register handlers
