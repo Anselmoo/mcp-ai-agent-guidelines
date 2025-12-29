@@ -24,6 +24,12 @@ jobs:
       - name: Install
         run: npm ci
 
+      - name: Generate model types
+        run: npm run generate:models:internal
+
+      - name: Build
+        run: npm run build
+
       - name: Run tests and collect coverage
         run: npm run test:coverage:vitest
 
