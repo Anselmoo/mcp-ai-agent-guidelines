@@ -55,27 +55,29 @@ interface ProjectMemory {
 	category: "architecture" | "workflow" | "conventions" | "dependencies";
 }
 
-export async function projectOnboarding(args: unknown) {
-	const input = ProjectOnboardingSchema.parse(args);
-
-	const profile = await analyzeProject(input);
-	const memories = input.includeMemories
-		? generateProjectMemories(profile)
-		: [];
-
-	const metadata = input.includeMetadata
+export function renderOnboardingMarkdown(
+	profile: ProjectProfile,
+	options: {
+		includeMemories: boolean;
+		includeMetadata: boolean;
+		includeReferences: boolean;
+		memories?: ProjectMemory[];
+	},
+) {
+	const {
+		includeMemories,
+		includeMetadata,
+		includeReferences,
+		memories = [],
+	} = options;
+	const metadata = includeMetadata
 		? buildMetadataSection({
 				sourceTool: "mcp_ai-agent-guid_project-onboarding",
 			})
 		: "";
+	const references = includeReferences ? buildOnboardingReferences() : "";
 
-	const references = input.includeReferences ? buildOnboardingReferences() : "";
-
-	return {
-		content: [
-			{
-				type: "text",
-				text: `## 🚀 Project Onboarding Complete
+	return `## 🚀 Project Onboarding Complete
 
 ${metadata}
 
@@ -117,10 +119,30 @@ ${references}
 - [x] Project structure analyzed
 - [x] Key files and directories identified
 - [x] Dependencies catalogued
-${input.includeMemories ? "- [x] Project memories generated" : "- [ ] Project memories (disabled)"}
+${includeMemories ? "- [x] Project memories generated" : "- [ ] Project memories (disabled)"}
 - [ ] Initial exploration completed
 - [ ] First task identified
-`,
+`;
+}
+
+export async function projectOnboarding(args: unknown) {
+	const input = ProjectOnboardingSchema.parse(args);
+
+	const profile = await analyzeProject(input);
+	const memories = input.includeMemories
+		? generateProjectMemories(profile)
+		: [];
+
+	return {
+		content: [
+			{
+				type: "text",
+				text: renderOnboardingMarkdown(profile, {
+					includeMemories: input.includeMemories,
+					includeMetadata: input.includeMetadata,
+					includeReferences: input.includeReferences,
+					memories,
+				}),
 			},
 		],
 	};
@@ -195,7 +217,7 @@ async function analyzeProject(
 	return profile;
 }
 
-function detectLanguages(keyFiles: string[]): string[] {
+export function detectLanguages(keyFiles: string[]): string[] {
 	const languages: string[] = [];
 
 	if (
@@ -228,7 +250,7 @@ function detectLanguages(keyFiles: string[]): string[] {
 	return languages;
 }
 
-function detectFrameworks(keyFiles: string[]): string[] {
+export function detectFrameworks(keyFiles: string[]): string[] {
 	const frameworks: string[] = [];
 
 	// This is a simplified detection - in practice, would need to read file contents
@@ -239,7 +261,7 @@ function detectFrameworks(keyFiles: string[]): string[] {
 	return frameworks;
 }
 
-function detectBuildSystem(keyFiles: string[]): string | undefined {
+export function detectBuildSystem(keyFiles: string[]): string | undefined {
 	if (keyFiles.includes("package.json")) return "npm/yarn";
 	if (keyFiles.includes("Cargo.toml")) return "cargo";
 	if (keyFiles.includes("go.mod")) return "go build";
@@ -249,7 +271,7 @@ function detectBuildSystem(keyFiles: string[]): string | undefined {
 	return undefined;
 }
 
-function detectTestFramework(keyFiles: string[]): string | undefined {
+export function detectTestFramework(keyFiles: string[]): string | undefined {
 	if (keyFiles.includes("package.json"))
 		return "Jest/Vitest/Mocha (check package.json)";
 	if (keyFiles.includes("requirements.txt")) return "pytest/unittest";
@@ -258,7 +280,7 @@ function detectTestFramework(keyFiles: string[]): string | undefined {
 	return undefined;
 }
 
-function detectDependencies(keyFiles: string[]): string[] {
+export function detectDependencies(keyFiles: string[]): string[] {
 	// Simplified - in practice would parse the dependency files
 	const deps: string[] = [];
 
@@ -298,7 +320,9 @@ function detectEntryPoints(_structure: {
 	return entryPoints;
 }
 
-function generateProjectMemories(profile: ProjectProfile): ProjectMemory[] {
+export function generateProjectMemories(
+	profile: ProjectProfile,
+): ProjectMemory[] {
 	const memories: ProjectMemory[] = [];
 
 	// Architecture memory
@@ -384,7 +408,7 @@ ${profile.dependencies.map((d) => `- ${d}`).join("\n")}
 	return memories;
 }
 
-function buildMemoriesSection(memories: ProjectMemory[]): string {
+export function buildMemoriesSection(memories: ProjectMemory[]): string {
 	let section = "### 🧠 Project Memories Generated\n\n";
 
 	const grouped = memories.reduce(
@@ -409,7 +433,7 @@ function buildMemoriesSection(memories: ProjectMemory[]): string {
 	return section;
 }
 
-function buildOnboardingReferences(): string {
+export function buildOnboardingReferences(): string {
 	return buildFurtherReadingSection([
 		{
 			title: "Atlassian Onboarding Guide",
