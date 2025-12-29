@@ -10,11 +10,21 @@ describe("coverage-patch parser", () => {
 		expect(report.files["src/foo.js"].misses).toBe(1);
 	});
 
-	it("classifies partial based on BRDA", () => {
-		const lcov = `SF:src/foo.js\nBRDA:20,0,0,1\nBRDA:20,0,1,0\nLF:1\nLH:0\n`;
-		const diff = { "src/foo.js": new Set([20]) };
+	it("classifies partial based on BRDA and includes branch/snippet details", () => {
+		const lcov = `SF:src/foo.js\nBRDA:2,0,0,1\nBRDA:2,0,1,0\nLF:1\nLH:0\n`;
+		// write a temporary file matching the LCOV header path to validate snippet extraction
+		require("node:fs").writeFileSync(
+			"src/foo.js",
+			"function test(){\n  if (x) return 1;\n  return 0;\n}\n",
+		);
+
+		const diff = { "src/foo.js": new Set([2]) };
 		const report = computePatchReportFromStrings(lcov, diff);
 		expect(report.files["src/foo.js"].partials).toBe(1);
+		const d = report.files["src/foo.js"].details[0];
+		expect(d.branches).toEqual([1, 0]);
+		expect(typeof d.snippet).toBe("string");
+		expect(d.suggestion).toContain("Partial coverage detected");
 	});
 
 	it("handles files not present in LCOV", () => {

@@ -80,7 +80,26 @@ function classifyLine(fileCoverage, lineNum) {
 	return { kind: "miss" };
 }
 
-function computePatchReportFromStrings(lcovText, diffRanges) {
+function getFileSnippet(filePath, lineNum, ctx = 2) {
+	try {
+		const txt = readFileSync(filePath, "utf8");
+		const lines = txt.split(/\r?\n/);
+		const start = Math.max(0, lineNum - 1 - ctx);
+		const end = Math.min(lines.length, lineNum - 1 + ctx + 1);
+		const snippet = lines
+			.slice(start, end)
+			.map((l, i) => `${start + i + 1}: ${l}`);
+		return snippet.join("\n");
+	} catch (err) {
+		return null;
+	}
+}
+
+function computePatchReportFromStrings(
+	lcovText,
+	diffRanges,
+	repoPath = process.cwd(),
+) {
 	const lcov = parseLCOV(lcovText);
 	const report = { files: {} };
 	for (const [file, setLines] of Object.entries(diffRanges)) {
@@ -98,7 +117,33 @@ function computePatchReportFromStrings(lcovText, diffRanges) {
 			if (cls.kind === "hit") hits++;
 			else if (cls.kind === "partial") partials++;
 			else misses++;
-			details.push({ line: ln, kind: cls.kind });
+
+			// collect branch information for the line if present
+			const branchInfo = cov.branches?.[ln] ? [...cov.branches[ln]] : undefined;
+			const execCount = cov.lines?.[ln] ?? 0;
+
+			// source snippet to help locate the symbol
+			const absPath = path.resolve(repoPath, file);
+			const snippet = getFileSnippet(absPath, ln, 2);
+
+			// suggestion text
+			let suggestion = null;
+			if (cls.kind === "partial") {
+				suggestion =
+					"Partial coverage detected. Add tests to exercise both branches around this line (e.g., success and failure paths). Inspect nearby conditional expressions or ternary operators.";
+			} else if (cls.kind === "miss") {
+				suggestion =
+					"Line not covered: add a focused unit test to execute this code path.";
+			}
+
+			details.push({
+				line: ln,
+				kind: cls.kind,
+				execCount,
+				branches: branchInfo,
+				snippet,
+				suggestion,
+			});
 		}
 		report.files[file] = { total, hits, partials, misses, details };
 	}
@@ -189,4 +234,5 @@ export {
 	computePatchReportFromStrings,
 	classifyLine,
 	parseGitDiffRanges,
+	getFileSnippet,
 };

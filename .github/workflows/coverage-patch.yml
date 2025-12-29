@@ -37,12 +37,16 @@ jobs:
             --output artifacts/coverage-patch.json \
             --threshold 90 || true
 
+      - name: List artifacts directory (debug)
+        run: ls -la artifacts || true
+
       - name: Upload coverage-patch artifact
         uses: actions/upload-artifact@v4
         with:
           name: coverage-patch
           path: artifacts/coverage-patch.json
           retention-days: 7
+          if-no-files-found: ignore
 
       - name: Display artifact summary
         run: cat artifacts/coverage-patch.json || true
