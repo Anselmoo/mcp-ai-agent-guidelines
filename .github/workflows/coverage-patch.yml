@@ -33,6 +33,10 @@ jobs:
       - name: Run tests and collect coverage
         run: npm run test:coverage:vitest
 
+      - name: Enforce branch coverage threshold
+        run: |
+          node ./scripts/check-branch-coverage.mjs --lcov coverage/lcov.info --threshold 90
+
       - name: Compute patch coverage report
         run: |
           mkdir -p artifacts
