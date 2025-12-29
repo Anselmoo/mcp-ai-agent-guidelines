@@ -476,6 +476,15 @@ export class TraceLogger {
 	}
 
 	/**
+	 * Force run cleanup of old spans (public wrapper for tests)
+	 *
+	 * NOTE: Deterministic API used by tests to exercise cleanup branches.
+	 */
+	public forceCleanupOldSpans(): void {
+		this.cleanupOldSpans();
+	}
+
+	/**
 	 * Generate a unique span ID
 	 */
 	private generateSpanId(): string {

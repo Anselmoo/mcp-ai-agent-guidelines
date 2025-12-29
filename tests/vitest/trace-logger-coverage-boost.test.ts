@@ -110,7 +110,8 @@ describe("TraceLogger Coverage Boost", () => {
 			for (let i = 0; i < 50; i++) {
 				logger.startToolSpan(newContext, `new-tool-${i}`, `hash-${i}`);
 			}
-
+			// Force cleanup deterministically in tests
+			logger.forceCleanupOldSpans();
 			// Recent spans should still be there (not old enough to be cleaned)
 			const spans = logger.getSpans(context.correlationId);
 			expect(spans.length).toBe(1);
@@ -134,7 +135,8 @@ describe("TraceLogger Coverage Boost", () => {
 			for (let i = 0; i < 50; i++) {
 				logger.startToolSpan(newContext, `new-tool-${i}`, `hash-${i}`);
 			}
-
+			// Force cleanup deterministically in tests
+			logger.forceCleanupOldSpans();
 			// Old correlation's spans should be removed, triggering activeSpans cleanup (lines 452-454)
 			const spansAfterCleanup = logger.getSpans(context.correlationId);
 			expect(spansAfterCleanup.length).toBe(0);
@@ -151,7 +153,8 @@ describe("TraceLogger Coverage Boost", () => {
 				const spanId = logger.startToolSpan(context, `tool-${i}`, `hash-${i}`);
 				logger.endToolSpan(spanId, "success");
 			}
-
+			// Force cleanup deterministically in tests so limit branch can run
+			logger.forceCleanupOldSpans();
 			// Logger should trim to 1000 spans (lines 458-474)
 			const summary = logger.getSummary();
 			expect(summary).toBeDefined();
