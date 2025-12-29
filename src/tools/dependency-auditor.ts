@@ -173,7 +173,7 @@ export async function dependencyAuditor(args: unknown) {
 /**
  * Handle legacy package.json for backward compatibility
  */
-function handleLegacyPackageJson(
+export function handleLegacyPackageJson(
 	content: string,
 	input: DependencyAuditorInput,
 ) {

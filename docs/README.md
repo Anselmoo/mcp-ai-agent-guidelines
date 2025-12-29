@@ -57,6 +57,7 @@
 
 #### Architecture & Design
 
+- **[Architecture Decision Records (ADRs)](./adr/)** - Architectural decisions and their rationale ⭐
 - **[Bridge Connectors](./tips/bridge-connectors.md)** - External system integration patterns
 - **[Design Module Status](./tips/design-module-status.md)** - Design workflow orchestrator status
 - **[Error Handling](./tips/error-handling.md)** - Error handling patterns and best practices

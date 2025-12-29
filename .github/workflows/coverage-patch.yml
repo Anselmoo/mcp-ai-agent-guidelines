@@ -1,0 +1,62 @@
+name: Coverage Patch Feedback
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [main]
+
+jobs:
+  coverage-patch:
+    name: Coverage Patch Feedback
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install
+        run: npm ci
+
+      - name: Generate model types
+        run: npm run generate:models:internal
+
+      - name: Build
+        run: npm run build
+
+      - name: Run tests and collect coverage
+        run: npm run test:coverage:vitest
+
+      - name: Enforce branch coverage threshold
+        run: |
+          node ./scripts/check-branch-coverage.mjs --lcov coverage/lcov.info --threshold 90
+
+      - name: Compute patch coverage report
+        run: |
+          mkdir -p artifacts
+          node ./scripts/coverage-patch.mjs \
+            --lcov coverage/lcov.info \
+            --base main \
+            --head HEAD \
+            --output artifacts/coverage-patch.json \
+            --threshold 90 || true
+
+      - name: List artifacts directory (debug)
+        run: ls -la artifacts || true
+
+      - name: Upload coverage-patch artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-patch
+          path: artifacts/coverage-patch.json
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Display artifact summary
+        run: cat artifacts/coverage-patch.json || true

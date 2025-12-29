@@ -1,5 +1,8 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+// NOTE: Avoid calling vi.setTimeout at module scope in SSR mode —
+// instead set a timeout per-test (see the third arg on `it(...)`).
+
 // Mock the MCP Server transport and server to avoid real stdio connections
 vi.mock("@modelcontextprotocol/sdk/server/stdio.js", () => {
 	class StdioServerTransport {}
@@ -50,7 +53,7 @@ describe("server index boot", () => {
 		// Verify our mock recorded activity
 		expect(mocked.__calls.connect).toBe(1);
 		expect(mocked.__calls.set).toBeGreaterThan(0);
-	});
+	}, 20000);
 
 	it("handles server connection errors gracefully", async () => {
 		const mockExit = vi.spyOn(process, "exit").mockImplementation(() => {

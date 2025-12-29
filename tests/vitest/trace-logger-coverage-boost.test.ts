@@ -44,8 +44,7 @@ describe("TraceLogger Coverage Boost", () => {
 			const context = createA2AContext();
 
 			const spanId1 = logger.startToolSpan(context, "tool1", "hash1");
-			logger.endToolSpan(spanId1, "success");
-
+			logger.endToolSpan(spanId1, true);
 			// Start another span but don't end it
 			logger.startToolSpan(context, "tool2", "hash2");
 
@@ -72,7 +71,7 @@ describe("TraceLogger Coverage Boost", () => {
 
 			// Create and end a span
 			const spanId = logger.startToolSpan(context, "old-tool", "hash1");
-			logger.endToolSpan(spanId, "success");
+			logger.endToolSpan(spanId, true);
 
 			// Verify span exists
 			const spansBeforeCleanup = logger.getSpans(context.correlationId);
@@ -100,8 +99,7 @@ describe("TraceLogger Coverage Boost", () => {
 
 			// Create and end a span
 			const spanId = logger.startToolSpan(context, "recent-tool", "hash1");
-			logger.endToolSpan(spanId, "success");
-
+			logger.endToolSpan(spanId, true);
 			// Advance time but stay under 1 hour
 			vi.advanceTimersByTime(30 * 60 * 1000); // 30 minutes
 
@@ -110,7 +108,8 @@ describe("TraceLogger Coverage Boost", () => {
 			for (let i = 0; i < 50; i++) {
 				logger.startToolSpan(newContext, `new-tool-${i}`, `hash-${i}`);
 			}
-
+			// Force cleanup deterministically in tests
+			logger.forceCleanupOldSpans();
 			// Recent spans should still be there (not old enough to be cleaned)
 			const spans = logger.getSpans(context.correlationId);
 			expect(spans.length).toBe(1);
@@ -124,7 +123,7 @@ describe("TraceLogger Coverage Boost", () => {
 
 			// Create and end a span
 			const spanId = logger.startToolSpan(context, "old-tool", "hash1");
-			logger.endToolSpan(spanId, "success");
+			logger.endToolSpan(spanId, true);
 
 			// Fast forward time past MAX_SPAN_AGE_MS
 			vi.advanceTimersByTime(3600001);
@@ -134,7 +133,8 @@ describe("TraceLogger Coverage Boost", () => {
 			for (let i = 0; i < 50; i++) {
 				logger.startToolSpan(newContext, `new-tool-${i}`, `hash-${i}`);
 			}
-
+			// Force cleanup deterministically in tests
+			logger.forceCleanupOldSpans();
 			// Old correlation's spans should be removed, triggering activeSpans cleanup (lines 452-454)
 			const spansAfterCleanup = logger.getSpans(context.correlationId);
 			expect(spansAfterCleanup.length).toBe(0);
@@ -149,9 +149,10 @@ describe("TraceLogger Coverage Boost", () => {
 			for (let i = 0; i < 1500; i++) {
 				const context = createA2AContext();
 				const spanId = logger.startToolSpan(context, `tool-${i}`, `hash-${i}`);
-				logger.endToolSpan(spanId, "success");
+				logger.endToolSpan(spanId, true);
 			}
-
+			// Force cleanup deterministically in tests so limit branch can run
+			logger.forceCleanupOldSpans();
 			// Logger should trim to 1000 spans (lines 458-474)
 			const summary = logger.getSummary();
 			expect(summary).toBeDefined();
@@ -177,7 +178,7 @@ describe("TraceLogger Coverage Boost", () => {
 					`old-tool-${i}`,
 					`hash-${i}`,
 				);
-				logger.endToolSpan(spanId, "success");
+				logger.endToolSpan(spanId, true);
 				oldSpanIds.push(spanId);
 			}
 
@@ -192,7 +193,7 @@ describe("TraceLogger Coverage Boost", () => {
 					`new-tool-${i}`,
 					`hash-new-${i}`,
 				);
-				logger.endToolSpan(spanId, "success");
+				logger.endToolSpan(spanId, true);
 				newSpanIds.push(spanId);
 			}
 
@@ -200,14 +201,8 @@ describe("TraceLogger Coverage Boost", () => {
 			const summary = logger.getSummary();
 			// Verify cleanup logic ran (even if not perfectly to 1000 due to randomness)
 			expect(summary.totalSpans).toBeGreaterThan(0);
-		});
-	});
-
-	describe("Critical path finding - Lines 501-541", () => {
-		it("should find critical path with parent-child relationships", () => {
+			// Use a new context for parent/child spans
 			const context = createA2AContext();
-
-			// Create parent span
 			const parentSpanId = logger.startToolSpan(
 				context,
 				"parent-tool",
@@ -225,8 +220,8 @@ describe("TraceLogger Coverage Boost", () => {
 			);
 
 			// End spans
-			logger.endToolSpan(childSpanId, "success");
-			logger.endToolSpan(parentSpanId, "success");
+			logger.endToolSpan(childSpanId, true);
+			logger.endToolSpan(parentSpanId, true);
 
 			const timeline = logger.getTimeline(context.correlationId);
 
@@ -240,8 +235,8 @@ describe("TraceLogger Coverage Boost", () => {
 			const span1 = logger.startToolSpan(context, "root1", "hash1");
 			const span2 = logger.startToolSpan(context, "root2", "hash2");
 
-			logger.endToolSpan(span1, "success");
-			logger.endToolSpan(span2, "success");
+			logger.endToolSpan(span1, true);
+			logger.endToolSpan(span2, true);
 
 			const timeline = logger.getTimeline(context.correlationId);
 
@@ -256,9 +251,9 @@ describe("TraceLogger Coverage Boost", () => {
 			const child1 = logger.startToolSpan(context, "child1", "hash-child1");
 			const child2 = logger.startToolSpan(context, "child2", "hash-child2");
 
-			logger.endToolSpan(child2, "success");
-			logger.endToolSpan(child1, "success");
-			logger.endToolSpan(root, "success");
+			logger.endToolSpan(child2, true);
+			logger.endToolSpan(child1, true);
+			logger.endToolSpan(root, true);
 
 			const timeline = logger.getTimeline(context.correlationId);
 
@@ -280,14 +275,14 @@ describe("TraceLogger Coverage Boost", () => {
 
 			const branch1 = logger.startToolSpan(context, "branch1", "hash-b1");
 			vi.advanceTimersByTime(5);
-			logger.endToolSpan(branch1, "success");
+			logger.endToolSpan(branch1, true);
 
 			const branch2 = logger.startToolSpan(context, "branch2", "hash-b2");
 			vi.advanceTimersByTime(20); // Longer duration
-			logger.endToolSpan(branch2, "success");
+			logger.endToolSpan(branch2, true);
 
 			vi.advanceTimersByTime(5);
-			logger.endToolSpan(rootSpan, "success");
+			logger.endToolSpan(rootSpan, true);
 
 			const timeline = logger.getTimeline(context.correlationId);
 
@@ -303,12 +298,13 @@ describe("TraceLogger Coverage Boost", () => {
 			const span1 = logger.startToolSpan(context, "tool-alpha", "hash1");
 			vi.useFakeTimers();
 			vi.advanceTimersByTime(10);
-			logger.endToolSpan(span1, "success");
+			logger.endToolSpan(span1, true);
 
 			const span2 = logger.startToolSpan(context, "tool-beta", "hash2");
 			vi.advanceTimersByTime(10);
-			logger.endToolSpan(span2, "success");
+			logger.endToolSpan(span2, true);
 
+			// Compute timeline
 			const timeline = logger.getTimeline(context.correlationId);
 
 			// Critical path should contain tool names, not just span IDs
@@ -332,14 +328,14 @@ describe("TraceLogger Coverage Boost", () => {
 
 			const child1 = logger.startToolSpan(context, "child1", "hash-c1");
 			vi.advanceTimersByTime(50);
-			logger.endToolSpan(child1, "success");
+			logger.endToolSpan(child1, true);
 
 			const child2 = logger.startToolSpan(context, "child2", "hash-c2");
 			vi.advanceTimersByTime(80);
-			logger.endToolSpan(child2, "success");
+			logger.endToolSpan(child2, true);
 
 			vi.advanceTimersByTime(20);
-			logger.endToolSpan(root, "success");
+			logger.endToolSpan(root, true);
 
 			const timeline = logger.getTimeline(context.correlationId);
 
@@ -356,8 +352,7 @@ describe("TraceLogger Coverage Boost", () => {
 			const context = createA2AContext();
 
 			const spanId = logger.startToolSpan(context, "test-tool", "hash1");
-			logger.endToolSpan(spanId, "success");
-
+			logger.endToolSpan(spanId, true);
 			const exported = logger.exportTrace(context.correlationId, "json");
 
 			const parsed = JSON.parse(exported);
@@ -369,8 +364,7 @@ describe("TraceLogger Coverage Boost", () => {
 			const context = createA2AContext();
 
 			const spanId = logger.startToolSpan(context, "test-tool", "hash1");
-			logger.endToolSpan(spanId, "success", "Test output");
-
+			logger.endToolSpan(spanId, true, "Test output");
 			const exported = logger.exportTrace(context.correlationId, "otlp");
 
 			const parsed = JSON.parse(exported);
@@ -406,11 +400,10 @@ describe("TraceLogger Coverage Boost", () => {
 			const context = createA2AContext();
 
 			const span1 = logger.startToolSpan(context, "tool1", "hash1");
-			logger.endToolSpan(span1, "success");
+			logger.endToolSpan(span1, true);
 
 			const span2 = logger.startToolSpan(context, "tool2", "hash2");
-			logger.endToolSpan(span2, "success");
-
+			logger.endToolSpan(span2, true);
 			const exported = logger.exportTrace(context.correlationId, "otlp");
 			const parsed = JSON.parse(exported);
 
@@ -431,6 +424,7 @@ describe("TraceLogger Coverage Boost", () => {
 				outputSummary: "success",
 				durationMs: 100,
 				status: "success",
+				depth: context.depth,
 			});
 
 			context.executionLog.push({
@@ -441,10 +435,11 @@ describe("TraceLogger Coverage Boost", () => {
 				durationMs: 50,
 				status: "success",
 				parentToolName: "tool1",
+				depth: context.depth,
 			});
 
+			// Create trace and verify spans were created
 			const trace = createTraceFromContext(context);
-
 			expect(trace.correlationId).toBe(context.correlationId);
 			expect(trace.spans.length).toBe(2);
 		});
@@ -469,6 +464,7 @@ describe("TraceLogger Coverage Boost", () => {
 				outputSummary: "success",
 				durationMs: 100,
 				status: "success",
+				depth: context.depth,
 			});
 
 			const trace = createTraceFromContext(context);
@@ -483,8 +479,7 @@ describe("TraceLogger Coverage Boost", () => {
 
 			const context = createA2AContext();
 			const spanId = traceLogger.startToolSpan(context, "test", "hash1");
-			traceLogger.endToolSpan(spanId, "success");
-
+			traceLogger.endToolSpan(spanId, true);
 			const timeline = traceLogger.getTimeline(context.correlationId);
 			expect(timeline.spans.length).toBe(1);
 		});
@@ -532,7 +527,7 @@ describe("TraceLogger Coverage Boost", () => {
 
 			logger.startChain(context);
 			const spanId = logger.startToolSpan(context, "tool", "hash");
-			logger.endToolSpan(spanId, "success");
+			logger.endToolSpan(spanId, true);
 
 			logger.clear();
 
@@ -547,11 +542,9 @@ describe("TraceLogger Coverage Boost", () => {
 			const context = createA2AContext();
 
 			const span1 = logger.startToolSpan(context, "tool1", "hash1");
-			logger.endToolSpan(span1, "success");
-
+			logger.endToolSpan(span1, true);
 			const span2 = logger.startToolSpan(context, "tool2", "hash2");
-			logger.endToolSpan(span2, "error", "Some error");
-
+			logger.endToolSpan(span2, false, "Some error");
 			const summary = logger.getSummary();
 
 			expect(summary.totalSpans).toBe(2);
