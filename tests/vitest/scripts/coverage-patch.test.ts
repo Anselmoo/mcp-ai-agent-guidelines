@@ -24,7 +24,20 @@ describe("coverage-patch parser", () => {
 		const d = report.files["src/foo.js"].details[0];
 		expect(d.branches).toEqual([1, 0]);
 		expect(typeof d.snippet).toBe("string");
-		expect(d.suggestion).toContain("Partial coverage detected");
+		expect(d.suggestion).toMatch(/Partial coverage detected|uncovered/);
+	});
+
+	it("reports uncovered branch indexes and suggestion text", () => {
+		const lcov = `SF:src/branched.js\nBRDA:10,0,0,1\nBRDA:10,0,1,0\nLF:1\nLH:0\n`;
+		require("node:fs").writeFileSync(
+			"src/branched.js",
+			"function f(){\n  if (a) return 1;\n  if (b) return 2;\n  return 0;\n}\n",
+		);
+		const diff = { "src/branched.js": new Set([10]) };
+		const report = computePatchReportFromStrings(lcov, diff);
+		const d = report.files["src/branched.js"].details[0];
+		expect(d.uncoveredBranches).toEqual([1]);
+		expect(d.suggestion).toContain("uncovered");
 	});
 
 	it("handles files not present in LCOV", () => {

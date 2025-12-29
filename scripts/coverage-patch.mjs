@@ -126,14 +126,26 @@ function computePatchReportFromStrings(
 			const absPath = path.resolve(repoPath, file);
 			const snippet = getFileSnippet(absPath, ln, 2);
 
-			// suggestion text
+			// suggestion text — include details for branch entries when present
 			let suggestion = null;
-			if (cls.kind === "partial") {
-				suggestion =
-					"Partial coverage detected. Add tests to exercise both branches around this line (e.g., success and failure paths). Inspect nearby conditional expressions or ternary operators.";
-			} else if (cls.kind === "miss") {
-				suggestion =
-					"Line not covered: add a focused unit test to execute this code path.";
+			let uncoveredBranches;
+			if (branchInfo) {
+				uncoveredBranches = [];
+				branchInfo.forEach((t, idx) => {
+					if (t === null || t === 0) uncoveredBranches.push(idx);
+				});
+				if (uncoveredBranches.length) {
+					suggestion = `Branches present but not all taken (${uncoveredBranches.length} uncovered). Add tests to exercise alternate branch paths (branch indexes: ${uncoveredBranches.join(", ")}).`;
+				}
+			}
+			if (!suggestion) {
+				if (cls.kind === "partial") {
+					suggestion =
+						"Partial coverage detected. Add tests to exercise both branches around this line (e.g., success and failure paths). Inspect nearby conditional expressions or ternary operators.";
+				} else if (cls.kind === "miss") {
+					suggestion =
+						"Line not covered: add a focused unit test to execute this code path.";
+				}
 			}
 
 			details.push({
@@ -141,6 +153,7 @@ function computePatchReportFromStrings(
 				kind: cls.kind,
 				execCount,
 				branches: branchInfo,
+				uncoveredBranches,
 				snippet,
 				suggestion,
 			});
@@ -157,10 +170,25 @@ function printSummary(report) {
 	);
 	console.log("\n=== Coverage Patch Summary ===\n");
 	for (const line of perFile) console.log(line);
-	console.log("\nDetailed:");
+
+	console.log("\nTop non-hit details (per file):");
+	for (const [f, r] of Object.entries(report.files)) {
+		const bad = r.details.filter((d) => d.kind !== "hit");
+		if (!bad.length) continue;
+		console.log(`\n${f} — ${bad.length} non-hit lines (showing up to 5):`);
+		for (const d of bad.slice(0, 5)) {
+			console.log(`  ${f}:${d.line} → ${d.kind} — ${d.suggestion}`);
+			if (d.snippet) {
+				console.log(d.snippet.split("\n")[0] + "\n");
+			}
+		}
+	}
+
+	console.log("\nDetailed (all non-hits):");
 	for (const [f, r] of Object.entries(report.files)) {
 		for (const d of r.details) {
-			if (d.kind !== "hit") console.log(`  ${f}:${d.line} → ${d.kind}`);
+			if (d.kind !== "hit")
+				console.log(`  ${f}:${d.line} → ${d.kind} — ${d.suggestion}`);
 		}
 	}
 }
@@ -195,19 +223,26 @@ if (process.argv[1] === __filename) {
 	const lcovText = readFileSync(opts.lcov, "utf8");
 	const diffRanges = parseGitDiffRanges(opts.base, opts.head, process.cwd());
 
-	// Filter out non-code files (markdown demos, docs, ADRs) so they don't skew patch coverage
-	function isDocumentationPath(p) {
+	// Filter out non-code files (markdown demos, docs, ADRs, tests, node_modules) so they don't skew patch coverage
+	function isIgnoredPath(p) {
 		return (
 			p.endsWith(".md") ||
 			p.startsWith("demos/") ||
 			p.startsWith("docs/") ||
 			p.includes("/docs/") ||
-			p.includes("/demos/")
+			p.includes("/demos/") ||
+			p.startsWith("tests/") ||
+			p.includes("/tests/") ||
+			p.endsWith(".spec.ts") ||
+			p.endsWith(".test.ts") ||
+			p.endsWith(".spec.js") ||
+			p.endsWith(".test.js") ||
+			p.includes("node_modules")
 		);
 	}
 	const filteredDiffRanges = {};
 	for (const [f, s] of Object.entries(diffRanges)) {
-		if (!isDocumentationPath(f)) filteredDiffRanges[f] = s;
+		if (!isIgnoredPath(f)) filteredDiffRanges[f] = s;
 	}
 
 	const report = computePatchReportFromStrings(lcovText, filteredDiffRanges);
