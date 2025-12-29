@@ -194,7 +194,23 @@ if (process.argv[1] === __filename) {
 
 	const lcovText = readFileSync(opts.lcov, "utf8");
 	const diffRanges = parseGitDiffRanges(opts.base, opts.head, process.cwd());
-	const report = computePatchReportFromStrings(lcovText, diffRanges);
+
+	// Filter out non-code files (markdown demos, docs, ADRs) so they don't skew patch coverage
+	function isDocumentationPath(p) {
+		return (
+			p.endsWith(".md") ||
+			p.startsWith("demos/") ||
+			p.startsWith("docs/") ||
+			p.includes("/docs/") ||
+			p.includes("/demos/")
+		);
+	}
+	const filteredDiffRanges = {};
+	for (const [f, s] of Object.entries(diffRanges)) {
+		if (!isDocumentationPath(f)) filteredDiffRanges[f] = s;
+	}
+
+	const report = computePatchReportFromStrings(lcovText, filteredDiffRanges);
 
 	// ensure artifact dir
 	const outDir = path.dirname(opts.output);
