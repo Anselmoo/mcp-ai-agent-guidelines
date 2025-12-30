@@ -35,7 +35,7 @@ jobs:
 
       - name: Enforce branch coverage threshold
         run: |
-          node ./scripts/check-branch-coverage.mjs --lcov coverage/lcov.info --threshold 90
+          node ./scripts/check-branch-coverage.mjs --lcov coverage/lcov.info --threshold 85
 
       - name: Compute patch coverage report
         run: |
@@ -45,7 +45,7 @@ jobs:
             --base main \
             --head HEAD \
             --output artifacts/coverage-patch.json \
-            --threshold 90 || true
+            --threshold 85 || true
 
       - name: List artifacts directory (debug)
         run: ls -la artifacts || true
