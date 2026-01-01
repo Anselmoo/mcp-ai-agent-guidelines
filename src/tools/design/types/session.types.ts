@@ -2,9 +2,9 @@
 
 import type { Artifact } from "./artifact.types.js";
 import type {
+	DesignPhase,
 	EventType,
 	OutputFormat,
-	PhaseStatus,
 	SessionStatus,
 } from "./common.types.js";
 import type { ConstraintRule } from "./constraint.types.js";
@@ -31,18 +31,9 @@ export interface DesignSessionConfig {
 	forcedMethodology?: string; // Override automatic selection
 }
 
-export interface DesignPhase {
-	id: string;
-	name: string;
-	description: string;
-	inputs: string[];
-	outputs: string[];
-	criteria: string[];
-	coverage: number;
-	status: PhaseStatus;
-	artifacts: Artifact[];
-	dependencies: string[];
-}
+// DesignPhase interface moved to common.types.ts to break circular dependency
+// Re-export for backward compatibility
+export type { DesignPhase } from "./common.types.js";
 
 export interface DesignSessionState {
 	config: DesignSessionConfig;

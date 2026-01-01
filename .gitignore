@@ -403,3 +403,7 @@ src/tools/config/generated/README.md
 !src/tools/config/generated/.gitkeep
 artifacts/coverage-patch.json
 artifacts/coverage-patch.local.json
+
+# Temporary test files
+tests/vitest/tmp/
+src/branched.js
