@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { mermaidDiagramGenerator } from "../../../src/tools/mermaid-diagram-generator.js";
+import { mermaidDiagramGenerator } from "../../../src/tools/mermaid/index.js";
 import { __setMermaidModuleProvider } from "../../../src/tools/test-utils/mermaid.js";
 
 beforeEach(() => {
