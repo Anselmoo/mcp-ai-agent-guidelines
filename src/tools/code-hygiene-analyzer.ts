@@ -1,5 +1,8 @@
 import { z } from "zod";
-import { buildFurtherReadingSection } from "./shared/prompt-utils.js";
+import {
+	buildFurtherReadingSection,
+	buildOptionalSectionsMap,
+} from "./shared/prompt-utils.js";
 
 const CodeHygieneSchema = z.object({
 	codeContent: z.string(),
@@ -16,34 +19,41 @@ export async function codeHygieneAnalyzer(args: unknown) {
 	const input = CodeHygieneSchema.parse(args);
 
 	const analysis = analyzeCodeHygiene(input);
-	const references = input.includeReferences
-		? buildFurtherReadingSection([
-				{
-					title: "Refactoring Legacy Code Best Practices",
-					url: "https://graphite.dev/guides/refactoring-legacy-code-best-practices-techniques",
-					description:
-						"Techniques for safely refactoring and improving legacy codebases",
-				},
-				{
-					title: "Code Hygiene Checklist",
-					url: "https://github.com/topics/code-hygiene",
-					description:
-						"Community resources and tools for maintaining code quality",
-				},
-			])
-		: undefined;
 
-	const metadata = input.includeMetadata
-		? [
-				"### Metadata",
-				`- Updated: ${new Date().toISOString().slice(0, 10)}`,
-				"- Source tool: mcp_ai-agent-guid_code-hygiene-analyzer",
-				input.inputFile ? `- Input file: ${input.inputFile}` : undefined,
-				"",
-			]
-				.filter(Boolean)
-				.join("\n")
-		: "";
+	// Build optional sections using the shared utility
+	const { references, metadata } = buildOptionalSectionsMap(input, {
+		references: {
+			key: "includeReferences",
+			builder: () =>
+				buildFurtherReadingSection([
+					{
+						title: "Refactoring Legacy Code Best Practices",
+						url: "https://graphite.dev/guides/refactoring-legacy-code-best-practices-techniques",
+						description:
+							"Techniques for safely refactoring and improving legacy codebases",
+					},
+					{
+						title: "Code Hygiene Checklist",
+						url: "https://github.com/topics/code-hygiene",
+						description:
+							"Community resources and tools for maintaining code quality",
+					},
+				]),
+		},
+		metadata: {
+			key: "includeMetadata",
+			builder: (cfg) =>
+				[
+					"### Metadata",
+					`- Updated: ${new Date().toISOString().slice(0, 10)}`,
+					"- Source tool: mcp_ai-agent-guid_code-hygiene-analyzer",
+					cfg.inputFile ? `- Input file: ${cfg.inputFile}` : undefined,
+					"",
+				]
+					.filter(Boolean)
+					.join("\n"),
+		},
+	});
 
 	return {
 		content: [

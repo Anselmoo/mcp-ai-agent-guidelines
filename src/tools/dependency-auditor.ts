@@ -8,7 +8,10 @@ import {
 	type PackageFileType,
 	type ReferenceLink,
 } from "./dependency-auditor/index.js";
-import { buildFurtherReadingSection } from "./shared/prompt-utils.js";
+import {
+	buildFurtherReadingSection,
+	buildOptionalSectionsMap,
+} from "./shared/prompt-utils.js";
 
 /**
  * Legacy types for backward compatibility with package.json-only analysis
@@ -140,25 +143,31 @@ export async function dependencyAuditor(args: unknown) {
 		analyzeBundleSize: input.analyzeBundleSize,
 	});
 
-	const references = input.includeReferences
-		? buildFurtherReadingSection(
-				getEcosystemReferences(analysisResult.ecosystem),
-			)
-		: undefined;
-
-	const metadata = input.includeMetadata
-		? [
-				"### Metadata",
-				`- Updated: ${new Date().toISOString().slice(0, 10)}`,
-				"- Source tool: mcp_ai-agent-guid_dependency-auditor",
-				`- Ecosystem: ${analysisResult.ecosystem}`,
-				`- File type: ${analysisResult.fileType}`,
-				input.inputFile ? `- Input file: ${input.inputFile}` : undefined,
-				"",
-			]
-				.filter(Boolean)
-				.join("\n")
-		: "";
+	// Build optional sections using the shared utility
+	const { references, metadata } = buildOptionalSectionsMap(input, {
+		references: {
+			key: "includeReferences",
+			builder: () =>
+				buildFurtherReadingSection(
+					getEcosystemReferences(analysisResult.ecosystem),
+				),
+		},
+		metadata: {
+			key: "includeMetadata",
+			builder: (cfg) =>
+				[
+					"### Metadata",
+					`- Updated: ${new Date().toISOString().slice(0, 10)}`,
+					"- Source tool: mcp_ai-agent-guid_dependency-auditor",
+					`- Ecosystem: ${analysisResult.ecosystem}`,
+					`- File type: ${analysisResult.fileType}`,
+					cfg.inputFile ? `- Input file: ${cfg.inputFile}` : undefined,
+					"",
+				]
+					.filter(Boolean)
+					.join("\n"),
+		},
+	});
 
 	return {
 		content: [
@@ -199,46 +208,53 @@ export function handleLegacyPackageJson(
 	}
 
 	const analysis = analyzeLegacyDependencies(packageJson, input);
-	const references = input.includeReferences
-		? buildFurtherReadingSection([
-				{
-					title: "NPM Audit Official Guide",
-					url: "https://docs.npmjs.com/auditing-package-dependencies-for-security-vulnerabilities",
-					description:
-						"Official documentation for auditing package dependencies",
-				},
-				{
-					title: "Understanding NPM Audit",
-					url: "https://www.niraj.life/blog/understanding-npm-audit-fixing-vulnerabilities-nodejs/",
-					description:
-						"Practical guide to fixing vulnerabilities in Node.js projects",
-				},
-				{
-					title: "Dependency Tree Analysis",
-					url: "https://www.jit.io/resources/appsec-tools/guide-to-using-npm-audit-to-create-a-dependency-tree",
-					description:
-						"Using npm audit to visualize and analyze dependency trees",
-				},
-				{
-					title: "Advanced Dependency Management",
-					url: "https://www.jit.io/resources/appsec-tools/guide-to-using-npm-audit-to-create-a-dependency-tree",
-					description:
-						"Developer tutorial for comprehensive dependency scanning",
-				},
-			])
-		: undefined;
 
-	const metadata = input.includeMetadata
-		? [
-				"### Metadata",
-				`- Updated: ${new Date().toISOString().slice(0, 10)}`,
-				"- Source tool: mcp_ai-agent-guid_dependency-auditor",
-				input.inputFile ? `- Input file: ${input.inputFile}` : undefined,
-				"",
-			]
-				.filter(Boolean)
-				.join("\n")
-		: "";
+	// Build optional sections using the shared utility
+	const { references, metadata } = buildOptionalSectionsMap(input, {
+		references: {
+			key: "includeReferences",
+			builder: () =>
+				buildFurtherReadingSection([
+					{
+						title: "NPM Audit Official Guide",
+						url: "https://docs.npmjs.com/auditing-package-dependencies-for-security-vulnerabilities",
+						description:
+							"Official documentation for auditing package dependencies",
+					},
+					{
+						title: "Understanding NPM Audit",
+						url: "https://www.niraj.life/blog/understanding-npm-audit-fixing-vulnerabilities-nodejs/",
+						description:
+							"Practical guide to fixing vulnerabilities in Node.js projects",
+					},
+					{
+						title: "Dependency Tree Analysis",
+						url: "https://www.jit.io/resources/appsec-tools/guide-to-using-npm-audit-to-create-a-dependency-tree",
+						description:
+							"Using npm audit to visualize and analyze dependency trees",
+					},
+					{
+						title: "Advanced Dependency Management",
+						url: "https://www.jit.io/resources/appsec-tools/guide-to-using-npm-audit-to-create-a-dependency-tree",
+						description:
+							"Developer tutorial for comprehensive dependency scanning",
+					},
+				]),
+		},
+		metadata: {
+			key: "includeMetadata",
+			builder: (cfg) =>
+				[
+					"### Metadata",
+					`- Updated: ${new Date().toISOString().slice(0, 10)}`,
+					"- Source tool: mcp_ai-agent-guid_dependency-auditor",
+					cfg.inputFile ? `- Input file: ${cfg.inputFile}` : undefined,
+					"",
+				]
+					.filter(Boolean)
+					.join("\n"),
+		},
+	});
 
 	return {
 		content: [
