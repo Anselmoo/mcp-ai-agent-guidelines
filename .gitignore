@@ -403,3 +403,8 @@ src/tools/config/generated/README.md
 !src/tools/config/generated/.gitkeep
 artifacts/coverage-patch.json
 artifacts/coverage-patch.local.json
+
+# Test artifacts that should not be committed
+src/foo.js
+src/branched.js
+tests/vitest/tmp/
