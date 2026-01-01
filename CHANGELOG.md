@@ -18,7 +18,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New `src/tools/test-utils/` directory for test-only utilities
 - `src/tools/test-utils/mermaid.ts` - Re-export of `__setMermaidModuleProvider` for test usage
 - `src/tools/test-utils/index.ts` - Barrel export for test utilities
-- `artifacts/exports-audit/exports-2025-12-29.json` - Export audit artifact tracking IMPLEMENTATION_STATUS consolidation
 
 ### Changed
 - **BREAKING**: Removed individual `IMPLEMENTATION_STATUS` re-exports from `src/tools/design/index.ts`
