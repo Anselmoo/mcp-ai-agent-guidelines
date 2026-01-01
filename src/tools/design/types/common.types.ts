@@ -1,5 +1,7 @@
 // Common type definitions used across the Design Assistant Framework
 
+import type { Artifact } from "./artifact.types.js";
+
 export type PhaseStatus =
 	| "pending"
 	| "in-progress"
@@ -52,3 +54,21 @@ export type EventType =
 	| "artifact-generated"
 	| "methodology-selected"
 	| "methodology-changed";
+
+/**
+ * Represents a single phase in the design workflow.
+ * This interface was extracted from session.types.ts to break circular dependency
+ * between session.types.ts and methodology.types.ts.
+ */
+export interface DesignPhase {
+	id: string;
+	name: string;
+	description: string;
+	inputs: string[];
+	outputs: string[];
+	criteria: string[];
+	coverage: number;
+	status: PhaseStatus;
+	artifacts: Artifact[];
+	dependencies: string[];
+}
