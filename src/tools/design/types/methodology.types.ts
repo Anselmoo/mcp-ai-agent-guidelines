@@ -1,7 +1,7 @@
 // Methodology selection type definitions
 
 import type { Artifact } from "./artifact.types.js";
-import type { DesignPhase } from "./session.types.js";
+import type { DesignPhase } from "./common.types.js";
 
 export interface MethodologySignals {
 	projectType: ProjectType;

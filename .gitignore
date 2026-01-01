@@ -409,3 +409,8 @@ artifacts/exports-audit/
 src/foo.js
 src/branched.js
 tests/vitest/tmp/
+
+# Temporary test files
+tests/vitest/tmp/
+src/branched.js
+
