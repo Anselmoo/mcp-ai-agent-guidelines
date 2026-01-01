@@ -10,6 +10,8 @@ tools:
   - search
   - todo
   - web
+  - runTests
+  - runSubagent
   - ai-agent-guidelines/documentation-generator-prompt-builder
   - ai-agent-guidelines/hierarchical-prompt-builder
   - serena/get_symbols_overview

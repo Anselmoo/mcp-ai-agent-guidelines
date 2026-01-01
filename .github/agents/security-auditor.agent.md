@@ -10,6 +10,8 @@ tools:
   - search
   - todo
   - web
+  - runTests
+  - runSubagent
   - ai-agent-guidelines/security-hardening-prompt-builder
   - ai-agent-guidelines/dependency-auditor
   - serena/search_for_pattern

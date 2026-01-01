@@ -10,6 +10,8 @@ tools:
   - search
   - todo
   - web
+  - runTests
+  - runSubagent
   - ai-agent-guidelines/clean-code-scorer
   - ai-agent-guidelines/code-hygiene-analyzer
   - ai-agent-guidelines/semantic-code-analyzer
