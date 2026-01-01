@@ -1,0 +1,212 @@
+{
+	"auditDate": "2025-12-29",
+	"auditVersion": "1.0.0",
+	"purpose": "Track consolidated IMPLEMENTATION_STATUS exports as part of issue #414",
+	"summary": {
+		"totalModules": 14,
+		"individualStatusExportsRemoved": 14,
+		"consolidatedExport": "DESIGN_MODULE_STATUSES",
+		"testUtilsRelocated": 1
+	},
+	"changes": {
+		"removedExports": [
+			{
+				"export": "ADR_GENERATOR_STATUS",
+				"source": "src/tools/design/index.ts",
+				"reason": "Consolidated into DESIGN_MODULE_STATUSES",
+				"replacementPath": "DESIGN_MODULE_STATUSES.adrGenerator"
+			},
+			{
+				"export": "CONFIRMATION_MODULE_STATUS",
+				"source": "src/tools/design/index.ts",
+				"reason": "Consolidated into DESIGN_MODULE_STATUSES",
+				"replacementPath": "DESIGN_MODULE_STATUSES.confirmationModule"
+			},
+			{
+				"export": "CONFIRMATION_PROMPT_BUILDER_STATUS",
+				"source": "src/tools/design/index.ts",
+				"reason": "Consolidated into DESIGN_MODULE_STATUSES",
+				"replacementPath": "DESIGN_MODULE_STATUSES.confirmationPromptBuilder"
+			},
+			{
+				"export": "CONSTRAINT_CONSISTENCY_ENFORCER_STATUS",
+				"source": "src/tools/design/index.ts",
+				"reason": "Consolidated into DESIGN_MODULE_STATUSES",
+				"replacementPath": "DESIGN_MODULE_STATUSES.constraintConsistencyEnforcer"
+			},
+			{
+				"export": "CONSTRAINT_MANAGER_STATUS",
+				"source": "src/tools/design/index.ts",
+				"reason": "Consolidated into DESIGN_MODULE_STATUSES",
+				"replacementPath": "DESIGN_MODULE_STATUSES.constraintManager"
+			},
+			{
+				"export": "COVERAGE_ENFORCER_STATUS",
+				"source": "src/tools/design/index.ts",
+				"reason": "Consolidated into DESIGN_MODULE_STATUSES",
+				"replacementPath": "DESIGN_MODULE_STATUSES.coverageEnforcer"
+			},
+			{
+				"export": "CROSS_SESSION_CONSISTENCY_ENFORCER_STATUS",
+				"source": "src/tools/design/index.ts",
+				"reason": "Consolidated into DESIGN_MODULE_STATUSES",
+				"replacementPath": "DESIGN_MODULE_STATUSES.crossSessionConsistencyEnforcer"
+			},
+			{
+				"export": "DESIGN_ASSISTANT_STATUS",
+				"source": "src/tools/design/index.ts",
+				"reason": "Consolidated into DESIGN_MODULE_STATUSES",
+				"replacementPath": "DESIGN_MODULE_STATUSES.designAssistant"
+			},
+			{
+				"export": "DESIGN_PHASE_WORKFLOW_STATUS",
+				"source": "src/tools/design/index.ts",
+				"reason": "Consolidated into DESIGN_MODULE_STATUSES",
+				"replacementPath": "DESIGN_MODULE_STATUSES.designPhaseWorkflow"
+			},
+			{
+				"export": "METHODOLOGY_SELECTOR_STATUS",
+				"source": "src/tools/design/index.ts",
+				"reason": "Consolidated into DESIGN_MODULE_STATUSES",
+				"replacementPath": "DESIGN_MODULE_STATUSES.methodologySelector"
+			},
+			{
+				"export": "PIVOT_MODULE_STATUS",
+				"source": "src/tools/design/index.ts",
+				"reason": "Consolidated into DESIGN_MODULE_STATUSES",
+				"replacementPath": "DESIGN_MODULE_STATUSES.pivotModule"
+			},
+			{
+				"export": "ROADMAP_GENERATOR_STATUS",
+				"source": "src/tools/design/index.ts",
+				"reason": "Consolidated into DESIGN_MODULE_STATUSES",
+				"replacementPath": "DESIGN_MODULE_STATUSES.roadmapGenerator"
+			},
+			{
+				"export": "SPEC_GENERATOR_STATUS",
+				"source": "src/tools/design/index.ts",
+				"reason": "Consolidated into DESIGN_MODULE_STATUSES",
+				"replacementPath": "DESIGN_MODULE_STATUSES.specGenerator"
+			},
+			{
+				"export": "STRATEGIC_PIVOT_PROMPT_BUILDER_STATUS",
+				"source": "src/tools/design/index.ts",
+				"reason": "Consolidated into DESIGN_MODULE_STATUSES",
+				"replacementPath": "DESIGN_MODULE_STATUSES.strategicPivotPromptBuilder"
+			}
+		],
+		"newExports": [
+			{
+				"export": "DESIGN_MODULE_STATUSES",
+				"source": "src/tools/design/index.ts",
+				"type": "const object",
+				"stability": "stable",
+				"description": "Consolidated implementation status map for all design modules"
+			}
+		],
+		"testUtilities": [
+			{
+				"export": "__setMermaidModuleProvider",
+				"previousLocation": "src/tools/mermaid/index.ts",
+				"newLocation": "src/tools/test-utils/mermaid.ts",
+				"purpose": "Mock Mermaid module loading for tests",
+				"visibility": "internal"
+			}
+		]
+	},
+	"remainingExports": {
+		"designModules": [
+			"adrGenerator",
+			"confirmationModule",
+			"confirmationPromptBuilder",
+			"constraintConsistencyEnforcer",
+			"constraintManager",
+			"coverageEnforcer",
+			"crossSessionConsistencyEnforcer",
+			"designAssistant",
+			"designPhaseWorkflow",
+			"methodologySelector",
+			"pivotModule",
+			"roadmapGenerator",
+			"specGenerator",
+			"strategicPivotPromptBuilder"
+		],
+		"types": [
+			"AlternativeAnalysis",
+			"ConfirmationRationale",
+			"DecisionRecord",
+			"EnhancedConfirmationResult",
+			"RiskAssessment",
+			"ConfirmationPrompt",
+			"ConfirmationPromptRequest",
+			"ConfirmationPromptSection",
+			"RationaleQuestion",
+			"ValidationCheckpoint",
+			"DesignAssistantRequest",
+			"Artifact",
+			"ConfirmationResult",
+			"ConsistencyEnforcementRequest",
+			"ConsistencyEnforcementResult",
+			"ConsistencyRecommendation",
+			"ConsistencyResult",
+			"ConsistencyViolation",
+			"ConstraintConsistencyViolation",
+			"ConstraintDecision",
+			"ConstraintEnforcementHistory",
+			"ConstraintRule",
+			"CoverageReport",
+			"CrossSessionConsistencyReport",
+			"CrossSessionConstraintHistory",
+			"CrossSessionEnforcementConfig",
+			"CrossSessionValidationResult",
+			"DesignPhase",
+			"DesignSessionConfig",
+			"DesignSessionState",
+			"EnforcementAction",
+			"EnforcementOption",
+			"EnforcementPrompt",
+			"HistoricalPattern",
+			"MethodologyProfile",
+			"MethodologySelection",
+			"MethodologySignals",
+			"PivotDecision",
+			"PivotGuidance",
+			"PivotImpact",
+			"StrategicPivotPromptRequest",
+			"StrategicPivotPromptResult"
+		]
+	},
+	"internalConstants": {
+		"note": "Individual IMPLEMENTATION_STATUS constants remain in source files for internal use",
+		"files": [
+			"src/tools/design/adr-generator.ts",
+			"src/tools/design/confirmation-module.ts",
+			"src/tools/design/confirmation-prompt-builder.ts",
+			"src/tools/design/constraint-consistency-enforcer.ts",
+			"src/tools/design/constraint-manager.ts",
+			"src/tools/design/coverage-enforcer.ts",
+			"src/tools/design/cross-session-consistency-enforcer.ts",
+			"src/tools/design/design-assistant.ts",
+			"src/tools/design/design-phase-workflow.ts",
+			"src/tools/design/methodology-selector.ts",
+			"src/tools/design/pivot-module.ts",
+			"src/tools/design/roadmap-generator.ts",
+			"src/tools/design/spec-generator.ts",
+			"src/tools/design/strategic-pivot-prompt-builder.ts"
+		]
+	},
+	"documentation": {
+		"publicApiDoc": "docs/public-api.md",
+		"sections": [
+			"Module Status Map: DESIGN_MODULE_STATUSES",
+			"Public Singletons",
+			"Test Utilities",
+			"Deprecation Policy"
+		]
+	},
+	"migrationGuide": {
+		"before": "import { ADR_GENERATOR_STATUS } from '@/tools/design';",
+		"after": "import { DESIGN_MODULE_STATUSES } from '@/tools/design'; // Use DESIGN_MODULE_STATUSES.adrGenerator",
+		"note": "All individual *_STATUS exports have been removed from the public API. Use DESIGN_MODULE_STATUSES instead."
+	}
+}
