@@ -1,8 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import {
-	__setMermaidModuleProvider,
-	mermaidDiagramGenerator,
-} from "../../../src/tools/mermaid-diagram-generator.js";
+import { mermaidDiagramGenerator } from "../../../src/tools/mermaid-diagram-generator.js";
+import { __setMermaidModuleProvider } from "../../../src/tools/test-utils/mermaid.js";
 
 beforeEach(() => {
 	// reset provider before each test

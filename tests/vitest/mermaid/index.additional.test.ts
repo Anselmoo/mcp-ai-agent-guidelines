@@ -8,7 +8,7 @@ import {
 import * as accessibility from "../../../src/tools/mermaid/utils/accessibility.utils.js";
 import * as repairUtils from "../../../src/tools/mermaid/utils/repair.utils.js";
 import * as validator from "../../../src/tools/mermaid/validator.js";
-import { __setMermaidModuleProvider } from "../../../src/tools/mermaid/validator.js";
+import { __setMermaidModuleProvider } from "../../../src/tools/test-utils/mermaid.js";
 
 describe("mermaid index additional", () => {
 	afterEach(() => {

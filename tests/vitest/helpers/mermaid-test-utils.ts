@@ -16,16 +16,22 @@ export function stubMathRandom(val: number) {
 	return () => spy.mockRestore();
 }
 
+/**
+ * Helper to set a custom Mermaid module provider for testing.
+ * Uses the test-utils export which is designated for test-only usage.
+ */
 export async function withMermaidProvider(
 	provider: (() => any) | null,
 	fn: () => void | Promise<void>,
 ) {
-	const mod = await import("../../../src/tools/mermaid/validator.js");
-	const set = (mod as any).__setMermaidModuleProvider;
-	set(provider);
+	// Import from the designated test-utils location
+	const { __setMermaidModuleProvider } = await import(
+		"../../../src/tools/test-utils/mermaid.js"
+	);
+	__setMermaidModuleProvider(provider);
 	try {
 		return await fn();
 	} finally {
-		set(null);
+		__setMermaidModuleProvider(null);
 	}
 }

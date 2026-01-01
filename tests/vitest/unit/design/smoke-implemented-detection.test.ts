@@ -37,7 +37,7 @@ import {
 	IMPLEMENTATION_STATUS as DESIGN_PHASE_STATUS,
 	designPhaseWorkflow,
 } from "../../../../src/tools/design/design-phase-workflow.ts";
-import { DESIGN_MODULE_STATUS } from "../../../../src/tools/design/index.ts";
+import { DESIGN_MODULE_STATUSES } from "../../../../src/tools/design/index.ts";
 import {
 	IMPLEMENTATION_STATUS as METHODOLOGY_STATUS,
 	methodologySelector,
@@ -243,28 +243,28 @@ describe("Design Module Smoke Tests - Implementation Detection", () => {
 			expect(STRATEGIC_PIVOT_STATUS).toBe("IMPLEMENTED");
 		});
 
-		it("should verify DESIGN_MODULE_STATUS summary is exported", () => {
-			expect(DESIGN_MODULE_STATUS).toBeDefined();
-			expect(DESIGN_MODULE_STATUS.adrGenerator).toBe("IMPLEMENTED");
-			expect(DESIGN_MODULE_STATUS.confirmationModule).toBe("IMPLEMENTED");
-			expect(DESIGN_MODULE_STATUS.confirmationPromptBuilder).toBe(
+		it("should verify DESIGN_MODULE_STATUSES summary is exported", () => {
+			expect(DESIGN_MODULE_STATUSES).toBeDefined();
+			expect(DESIGN_MODULE_STATUSES.adrGenerator).toBe("IMPLEMENTED");
+			expect(DESIGN_MODULE_STATUSES.confirmationModule).toBe("IMPLEMENTED");
+			expect(DESIGN_MODULE_STATUSES.confirmationPromptBuilder).toBe(
 				"IMPLEMENTED",
 			);
-			expect(DESIGN_MODULE_STATUS.constraintConsistencyEnforcer).toBe(
+			expect(DESIGN_MODULE_STATUSES.constraintConsistencyEnforcer).toBe(
 				"IMPLEMENTED",
 			);
-			expect(DESIGN_MODULE_STATUS.constraintManager).toBe("IMPLEMENTED");
-			expect(DESIGN_MODULE_STATUS.coverageEnforcer).toBe("IMPLEMENTED");
-			expect(DESIGN_MODULE_STATUS.crossSessionConsistencyEnforcer).toBe(
+			expect(DESIGN_MODULE_STATUSES.constraintManager).toBe("IMPLEMENTED");
+			expect(DESIGN_MODULE_STATUSES.coverageEnforcer).toBe("IMPLEMENTED");
+			expect(DESIGN_MODULE_STATUSES.crossSessionConsistencyEnforcer).toBe(
 				"IMPLEMENTED",
 			);
-			expect(DESIGN_MODULE_STATUS.designAssistant).toBe("IMPLEMENTED");
-			expect(DESIGN_MODULE_STATUS.designPhaseWorkflow).toBe("IMPLEMENTED");
-			expect(DESIGN_MODULE_STATUS.methodologySelector).toBe("IMPLEMENTED");
-			expect(DESIGN_MODULE_STATUS.pivotModule).toBe("IMPLEMENTED");
-			expect(DESIGN_MODULE_STATUS.roadmapGenerator).toBe("IMPLEMENTED");
-			expect(DESIGN_MODULE_STATUS.specGenerator).toBe("IMPLEMENTED");
-			expect(DESIGN_MODULE_STATUS.strategicPivotPromptBuilder).toBe(
+			expect(DESIGN_MODULE_STATUSES.designAssistant).toBe("IMPLEMENTED");
+			expect(DESIGN_MODULE_STATUSES.designPhaseWorkflow).toBe("IMPLEMENTED");
+			expect(DESIGN_MODULE_STATUSES.methodologySelector).toBe("IMPLEMENTED");
+			expect(DESIGN_MODULE_STATUSES.pivotModule).toBe("IMPLEMENTED");
+			expect(DESIGN_MODULE_STATUSES.roadmapGenerator).toBe("IMPLEMENTED");
+			expect(DESIGN_MODULE_STATUSES.specGenerator).toBe("IMPLEMENTED");
+			expect(DESIGN_MODULE_STATUSES.strategicPivotPromptBuilder).toBe(
 				"IMPLEMENTED",
 			);
 		});
