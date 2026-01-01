@@ -20,6 +20,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `src/tools/test-utils/index.ts` - Barrel export for test utilities
 
 ### Changed
+- **BREAKING**: Removed individual `IMPLEMENTATION_STATUS` re-exports from `src/tools/design/index.ts`
+  - Removed: `ADR_GENERATOR_STATUS`, `CONFIRMATION_MODULE_STATUS`, `CONFIRMATION_PROMPT_BUILDER_STATUS`,
+    `CONSTRAINT_CONSISTENCY_ENFORCER_STATUS`, `CONSTRAINT_MANAGER_STATUS`, `COVERAGE_ENFORCER_STATUS`,
+    `CROSS_SESSION_CONSISTENCY_ENFORCER_STATUS`, `DESIGN_ASSISTANT_STATUS`, `DESIGN_PHASE_WORKFLOW_STATUS`,
+    `METHODOLOGY_SELECTOR_STATUS`, `PIVOT_MODULE_STATUS`, `ROADMAP_GENERATOR_STATUS`,
+    `SPEC_GENERATOR_STATUS`, `STRATEGIC_PIVOT_PROMPT_BUILDER_STATUS`
+  - **Migration**: Use `DESIGN_MODULE_STATUSES` object instead
+    - Before: `import { ADR_GENERATOR_STATUS } from '@/tools/design';`
+    - After: `import { DESIGN_MODULE_STATUSES } from '@/tools/design'; // Use DESIGN_MODULE_STATUSES.adrGenerator`
 - **RENAMED**: `DESIGN_MODULE_STATUS` → `DESIGN_MODULE_STATUSES` in `src/tools/design/index.ts` (plural form)
   - Updated with comprehensive JSDoc documentation and stability promise
   - This is the canonical source for design module implementation status
@@ -36,6 +45,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Internal
 - Individual `IMPLEMENTATION_STATUS` constants remain in source files for internal use but are no longer re-exported from `src/tools/design/index.ts`
 - Added `@internal` JSDoc tags to test-only functions to clarify intended usage
+
+### Fixed
+- Reduced maintenance burden by consolidating 14 individual status exports into single `DESIGN_MODULE_STATUSES` object (supports issue #414)
 
 
 ## [0.12.4] - 2025-12-21
