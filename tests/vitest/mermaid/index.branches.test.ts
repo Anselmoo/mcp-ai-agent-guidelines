@@ -1,6 +1,5 @@
 import { afterEach, describe, expect, it, test } from "vitest";
 import {
-	__setMermaidModuleProvider,
 	formatResponse,
 	generateDiagram,
 	HANDLER_REGISTRY,
@@ -8,6 +7,7 @@ import {
 	normalizeLegacyTypes,
 } from "../../../src/tools/mermaid/index.js";
 import type { MermaidDiagramInput } from "../../../src/tools/mermaid/types.js";
+import { __setMermaidModuleProvider } from "../../../src/tools/test-utils/mermaid.js";
 import { withMermaidProvider } from "../helpers/mermaid-test-utils.js";
 
 afterEach(() => {

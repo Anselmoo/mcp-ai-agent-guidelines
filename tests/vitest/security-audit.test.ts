@@ -46,17 +46,26 @@ describe("Security Audit", () => {
 	}, 30000); // Increase timeout for npm audit
 
 	it("should run production audit successfully", async () => {
-		// Run production audit
-		const { stdout } = await execAsync(
-			"npm audit --omit=dev --audit-level=moderate",
-			{
-				cwd: process.cwd(),
-			},
-		);
+		// Run production audit - this should pass with 0 vulnerabilities
+		try {
+			const { stdout } = await execAsync(
+				"npm audit --omit=dev --audit-level=moderate",
+				{
+					cwd: process.cwd(),
+				},
+			);
 
-		// Should complete successfully
-		expect(stdout).toBeDefined();
-		expect(stdout).toContain("vulnerabilities");
+			// Should complete successfully with no vulnerabilities
+			expect(stdout).toBeDefined();
+			expect(stdout).toContain("found 0 vulnerabilities");
+		} catch (error: unknown) {
+			// If vulnerabilities are found, the test should fail
+			const err = error as { stdout?: string; stderr?: string };
+			const output = err.stdout || err.stderr || "";
+			throw new Error(
+				`Production dependencies have vulnerabilities:\n${output}`,
+			);
+		}
 	}, 30000);
 
 	it("should have security-audit job in CI/CD workflow", () => {
