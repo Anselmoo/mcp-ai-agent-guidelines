@@ -7,7 +7,7 @@ description: 'A compact, skimmable card with risk badges, prioritized checklist,
 ## ⚡ Spark Prompt Template
 
 ### Metadata
-- Updated: 2025-12-29
+- Updated: 2026-01-01
 - Source tool: mcp_ai-agent-guid_spark-prompt-builder
 - Suggested filename: spark-prompt-code-hygiene-review-card.prompt.md
 

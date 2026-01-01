@@ -24,6 +24,11 @@ function resetMermaidLoaderState(): void {
 	mermaidLoadError = null;
 }
 
+/**
+ * @deprecated Use `import { __setMermaidModuleProvider } from "./test-utils/mermaid.js"` instead.
+ * This export is kept temporarily for backwards compatibility in tests.
+ * @internal Exported for tests only
+ */
 export function __setMermaidModuleProvider(
 	provider: MermaidModuleProvider | null,
 ): void {

@@ -10,6 +10,7 @@ tools:
   - search
   - todo
   - web
+  - runSubagent
   - serena/search_for_pattern
   - serena/get_symbols_overview
   - sequentialthinking/*

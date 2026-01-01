@@ -108,8 +108,23 @@ export type {
 	StrategicPivotPromptResult,
 } from "./types/index.js";
 
-// Module implementation status summary
-export const DESIGN_MODULE_STATUS = {
+/**
+ * Consolidated implementation status for all design modules.
+ *
+ * This map provides a centralized view of module implementation status,
+ * replacing individual IMPLEMENTATION_STATUS exports from each module.
+ *
+ * @example
+ * ```typescript
+ * import { DESIGN_MODULE_STATUSES } from './tools/design';
+ * if (DESIGN_MODULE_STATUSES.adrGenerator === 'IMPLEMENTED') {
+ *   // Use ADR generator
+ * }
+ * ```
+ *
+ * @stability stable - This export is part of the public API
+ */
+export const DESIGN_MODULE_STATUSES = {
 	adrGenerator: "IMPLEMENTED",
 	confirmationModule: "IMPLEMENTED",
 	confirmationPromptBuilder: "IMPLEMENTED",

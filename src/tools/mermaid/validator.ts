@@ -26,7 +26,12 @@ function resetMermaidLoaderState(): void {
 
 /**
  * Set a custom mermaid module provider for testing.
+ *
+ * **Exported for tests only** - Use via `import { __setMermaidModuleProvider } from '@/tools/test-utils/mermaid'`
+ * This function is re-exported from test-utils for convenience. Direct import is discouraged.
+ *
  * @param provider - Custom module provider function
+ * @internal
  */
 export function __setMermaidModuleProvider(
 	provider: MermaidModuleProvider | null,

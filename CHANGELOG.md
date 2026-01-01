@@ -13,6 +13,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- New `docs/public-api.md` documenting the public API surface, including stable exports, singletons, and test utilities
+- New `src/tools/test-utils/` directory for test-only utilities
+- `src/tools/test-utils/mermaid.ts` - Re-export of `__setMermaidModuleProvider` for test usage
+- `src/tools/test-utils/index.ts` - Barrel export for test utilities
+
+### Changed
+- **RENAMED**: `DESIGN_MODULE_STATUS` → `DESIGN_MODULE_STATUSES` in `src/tools/design/index.ts` (plural form)
+  - Updated with comprehensive JSDoc documentation and stability promise
+  - This is the canonical source for design module implementation status
+- Updated `tests/vitest/unit/design/smoke-implemented-detection.test.ts` to use `DESIGN_MODULE_STATUSES`
+- Updated test imports across `tests/vitest/mermaid/*.test.ts` to use `src/tools/test-utils/mermaid`
+- Updated `tests/vitest/helpers/mermaid-test-utils.ts` to import from test-utils
+
+### Deprecated
+- `__setMermaidModuleProvider` export from `src/tools/mermaid/index.ts` (removed from public exports, added comment)
+- `__setMermaidModuleProvider` export from `src/tools/mermaid-diagram-generator.ts` (marked with `@deprecated`)
+  - Migration: Import from `src/tools/test-utils/mermaid.ts` instead
+  - Will be removed in v1.0.0
+
+### Internal
+- Individual `IMPLEMENTATION_STATUS` constants remain in source files for internal use but are no longer re-exported from `src/tools/design/index.ts`
+- Added `@internal` JSDoc tags to test-only functions to clarify intended usage
+
+
 ## [0.12.4] - 2025-12-21
 
 ### Added
