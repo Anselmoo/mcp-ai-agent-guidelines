@@ -5,7 +5,6 @@ import type {
 	DesignPhase,
 	EventType,
 	OutputFormat,
-	PhaseStatus,
 	SessionStatus,
 } from "./common.types.js";
 import type { ConstraintRule } from "./constraint.types.js";
