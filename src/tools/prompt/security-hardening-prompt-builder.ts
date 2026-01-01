@@ -12,6 +12,8 @@ import {
 	buildFrontmatterWithPolicy as buildFrontmatter,
 	buildFurtherReadingSection,
 	buildMetadataSection,
+	buildOptionalSections,
+	buildOptionalSectionsMap,
 	slugify,
 } from "../shared/prompt-utils.js";
 import { applyTechniques } from "./technique-applicator.js";
@@ -934,27 +936,34 @@ export async function securityHardeningPromptBuilder(args: unknown) {
 	})();
 	const input = SecurityHardeningSchema.parse(normalized);
 
-	const frontmatter = input.includeFrontmatter
-		? `${buildSecurityHardeningFrontmatter(input)}\n`
-		: "";
-
-	const metadata = input.includeMetadata
-		? `${buildMetadataSection({
-				sourceTool: "mcp_ai-agent-guid_security-hardening-prompt-builder",
-				inputFile: input.inputFile,
-				filenameHint: `security-hardening-${slugify(input.securityFocus)}-prompt.prompt.md`,
-			})}\n`
-		: "";
+	// Build optional sections using the shared utility (returns object with named keys)
+	const { frontmatter, metadata, references, disclaimer } =
+		buildOptionalSectionsMap(input, {
+			frontmatter: {
+				key: "includeFrontmatter",
+				builder: (cfg) => `${buildSecurityHardeningFrontmatter(cfg)}\n`,
+			},
+			metadata: {
+				key: "includeMetadata",
+				builder: (cfg) =>
+					`${buildMetadataSection({
+						sourceTool: "mcp_ai-agent-guid_security-hardening-prompt-builder",
+						inputFile: cfg.inputFile,
+						filenameHint: `security-hardening-${slugify(cfg.securityFocus)}-prompt.prompt.md`,
+					})}\n`,
+			},
+			references: {
+				key: "includeReferences",
+				builder: () => `${buildSecurityReferencesSection()}\n`,
+			},
+			disclaimer: {
+				key: "includeDisclaimer",
+				builder: () =>
+					`\n## Disclaimer\n- Security recommendations are based on common best practices and may need customization for your specific environment\n- Always validate security measures with penetration testing and security audits\n- Compliance requirements may vary by jurisdiction and industry\n- Keep security tools and dependencies up to date\n`,
+			},
+		});
 
 	const prompt = buildSecurityHardeningPrompt(input);
-
-	const references = input.includeReferences
-		? `${buildSecurityReferencesSection()}\n`
-		: "";
-
-	const disclaimer = input.includeDisclaimer
-		? `\n## Disclaimer\n- Security recommendations are based on common best practices and may need customization for your specific environment\n- Always validate security measures with penetration testing and security audits\n- Compliance requirements may vary by jurisdiction and industry\n- Keep security tools and dependencies up to date\n`
-		: "";
 
 	return {
 		content: [
@@ -1138,29 +1147,40 @@ function buildSecurityHardeningPrompt(input: SecurityHardeningInput): string {
 		prompt += `4. **Low**: Best practice recommendations with minimal risk\n`;
 	}
 
-	// Optional technique hints - using context-aware TechniqueApplicator
-	if (input.includeTechniqueHints !== false) {
-		prompt += applyTechniques({
-			context: {
-				context: input.codeContext,
-				goal: `Security ${input.securityFocus.replace("-", " ")} analysis`,
-				requirements: input.securityRequirements,
-			},
-			techniques: input.techniques as Technique[] | undefined,
-			autoSelectTechniques: input.autoSelectTechniques,
-		});
-	}
+	// Build optional sections that append to prompt
+	const optionalSections = buildOptionalSections(input, [
+		{
+			key: "includeTechniqueHints",
+			builder: (cfg) =>
+				applyTechniques({
+					context: {
+						context: cfg.codeContext,
+						goal: `Security ${cfg.securityFocus.replace("-", " ")} analysis`,
+						requirements: cfg.securityRequirements,
+					},
+					techniques: cfg.techniques as Technique[] | undefined,
+					autoSelectTechniques: cfg.autoSelectTechniques,
+				}),
+		},
+	]);
+
+	// Append optional sections
+	prompt += optionalSections.join("");
 
 	// Provider-specific tips
 	if (input.provider) {
 		prompt += buildSharedProviderTips(input.provider);
 	}
 
-	// Pitfalls section
-	if (input.includePitfalls !== false) {
-		prompt += buildSharedPitfalls();
-		prompt += buildSecuritySpecificPitfalls();
-	}
+	// Build pitfalls section
+	const pitfallsSections = buildOptionalSections(input, [
+		{
+			key: "includePitfalls",
+			builder: () => buildSharedPitfalls() + buildSecuritySpecificPitfalls(),
+		},
+	]);
+
+	prompt += pitfallsSections.join("");
 
 	return prompt;
 }
