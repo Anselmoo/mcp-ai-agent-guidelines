@@ -1,5 +1,8 @@
 import { z } from "zod";
-import { buildFurtherReadingSection } from "./shared/prompt-utils.js";
+import {
+	buildFurtherReadingSection,
+	buildOptionalSectionsMap,
+} from "./shared/prompt-utils.js";
 
 const CleanCodeScorerSchema = z.object({
 	projectPath: z.string().optional(),
@@ -41,42 +44,49 @@ export async function cleanCodeScorer(args: unknown) {
 	const input = CleanCodeScorerSchema.parse(args);
 
 	const scoreResult = calculateCleanCodeScore(input);
-	const references = input.includeReferences
-		? buildFurtherReadingSection([
-				{
-					title: "Clean Code Principles",
-					url: "https://www.freecodecamp.org/news/clean-coding-for-beginners/",
-					description:
-						"Beginner-friendly guide to writing clean, maintainable code",
-				},
-				{
-					title: "SonarQube Metric Definitions",
-					url: "https://docs.sonarqube.org/latest/user-guide/metric-definitions/",
-					description: "Comprehensive definitions of code quality metrics",
-				},
-				{
-					title: "Test Coverage Best Practices",
-					url: "https://martinfowler.com/bliki/TestCoverage.html",
-					description: "Martin Fowler on meaningful test coverage strategies",
-				},
-				{
-					title: "TypeScript Do's and Don'ts",
-					url: "https://www.typescriptlang.org/docs/handbook/declaration-files/do-s-and-don-ts.html",
-					description: "Official TypeScript best practices and style guide",
-				},
-			])
-		: undefined;
 
-	const metadata = input.includeMetadata
-		? [
-				"### Metadata",
-				`- Updated: ${new Date().toISOString().slice(0, 10)}`,
-				"- Source tool: mcp_ai-agent-guid_clean-code-scorer",
-				input.inputFile ? `- Input file: ${input.inputFile}` : undefined,
-			]
-				.filter(Boolean)
-				.join("\n")
-		: undefined;
+	// Build optional sections using the shared utility
+	const { references, metadata } = buildOptionalSectionsMap(input, {
+		references: {
+			key: "includeReferences",
+			builder: () =>
+				buildFurtherReadingSection([
+					{
+						title: "Clean Code Principles",
+						url: "https://www.freecodecamp.org/news/clean-coding-for-beginners/",
+						description:
+							"Beginner-friendly guide to writing clean, maintainable code",
+					},
+					{
+						title: "SonarQube Metric Definitions",
+						url: "https://docs.sonarqube.org/latest/user-guide/metric-definitions/",
+						description: "Comprehensive definitions of code quality metrics",
+					},
+					{
+						title: "Test Coverage Best Practices",
+						url: "https://martinfowler.com/bliki/TestCoverage.html",
+						description: "Martin Fowler on meaningful test coverage strategies",
+					},
+					{
+						title: "TypeScript Do's and Don'ts",
+						url: "https://www.typescriptlang.org/docs/handbook/declaration-files/do-s-and-don-ts.html",
+						description: "Official TypeScript best practices and style guide",
+					},
+				]),
+		},
+		metadata: {
+			key: "includeMetadata",
+			builder: (cfg) =>
+				[
+					"### Metadata",
+					`- Updated: ${new Date().toISOString().slice(0, 10)}`,
+					"- Source tool: mcp_ai-agent-guid_clean-code-scorer",
+					cfg.inputFile ? `- Input file: ${cfg.inputFile}` : undefined,
+				]
+					.filter(Boolean)
+					.join("\n"),
+		},
+	});
 
 	return {
 		content: [

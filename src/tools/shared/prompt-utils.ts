@@ -301,3 +301,57 @@ function convertMarkdownTableToCSV(markdown: string): string {
 		includeHeaders: true,
 	});
 }
+
+/**
+ * Section builder definition for buildOptionalSections
+ */
+export interface SectionBuilder<T extends Record<string, unknown>> {
+	/** Config key to check (e.g., 'includeMetadata') */
+	key: keyof T;
+	/** Function to build the section when key is truthy */
+	builder: (config: T) => string;
+}
+
+/**
+ * Build optional sections based on config flags.
+ * Reduces repetitive conditional logic like:
+ *   const metadata = config.includeMetadata ? buildMetadata(config) : "";
+ *
+ * @example
+ * const sections = buildOptionalSections(config, [
+ *   { key: 'includeMetadata', builder: (c) => buildMetadata(c) },
+ *   { key: 'includeReferences', builder: (c) => buildReferences(c) }
+ * ]);
+ */
+export function buildOptionalSections<T extends Record<string, unknown>>(
+	config: T,
+	sectionMap: Array<SectionBuilder<T>>,
+): string[] {
+	return sectionMap
+		.filter(({ key }) => config[key])
+		.map(({ builder }) => builder(config));
+}
+
+/**
+ * Build optional sections as an object with named keys.
+ * Similar to buildOptionalSections but returns an object instead of array,
+ * making it safer for destructuring with specific section names.
+ *
+ * @example
+ * const { metadata, references } = buildOptionalSectionsMap(config, {
+ *   metadata: { key: 'includeMetadata', builder: (c) => buildMetadata(c) },
+ *   references: { key: 'includeReferences', builder: (c) => buildReferences(c) }
+ * });
+ */
+export function buildOptionalSectionsMap<
+	T extends Record<string, unknown>,
+	K extends string,
+>(config: T, sectionMap: Record<K, SectionBuilder<T>>): Record<K, string> {
+	const result = {} as Record<K, string>;
+	for (const [name, builder] of Object.entries(sectionMap) as Array<
+		[K, SectionBuilder<T>]
+	>) {
+		result[name] = config[builder.key] ? builder.builder(config) : "";
+	}
+	return result;
+}
