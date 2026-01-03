@@ -17,6 +17,10 @@
  *   --skip-parents       Skip parent issues (only create sub-tasks)
  *   --create-milestones  Create GitHub milestones from milestones.md
  *   --milestone <id>     Only create specific milestone (requires --create-milestones)
+ *   --link-sub-issues    Link sub-issues to parent epics (requires existing issues)
+ *   --update-parents     Update parent issue bodies to replace #TBD with issue numbers
+ *   --export-mapping     Export task-ID-to-issue-number mapping to unique JSON file
+ *   --mapping <file>     Use specific mapping file for --update-parents
  */
 
 import { execFileSync, execSync } from "node:child_process";
@@ -207,6 +211,10 @@ const options = {
 	createMilestones: args.includes("--create-milestones"),
 	milestone: args.find((a) => a.startsWith("--milestone="))?.split("=")[1],
 	createLabels: args.includes("--create-labels"),
+	linkSubIssues: args.includes("--link-sub-issues"),
+	updateParents: args.includes("--update-parents"),
+	exportMapping: args.includes("--export-mapping"),
+	mappingFile: args.find((a) => a.startsWith("--mapping="))?.split("=")[1],
 };
 
 /**
@@ -582,12 +590,259 @@ async function createMilestones() {
 }
 
 /**
+ * Get issue ID from GitHub API
+ */
+function getIssueId(issueNumber) {
+	try {
+		const output = execSync(
+			`gh api repos/${REPO}/issues/${issueNumber} --jq '.node_id'`,
+			{ encoding: "utf-8" },
+		);
+		return output.trim();
+	} catch {
+		console.error(`❌ Failed to get ID for issue #${issueNumber}`);
+		return null;
+	}
+}
+
+/**
+ * Link sub-issues to parent epic using GitHub sub-issues API
+ */
+async function linkSubIssuesToParents() {
+	console.log("🔗 Linking Sub-Issues to Parent Epics\n");
+
+	// Get all epic issues
+	const epicsOutput = execSync(
+		`gh issue list --repo ${REPO} --label epic --state open --json number,title`,
+		{ encoding: "utf-8" },
+	);
+	const epics = JSON.parse(epicsOutput);
+
+	console.log(`Found ${epics.length} epic issues\n`);
+
+	// For each epic, find matching sub-issues by phase
+	for (const epic of epics) {
+		const phaseMatch = epic.title.match(/Phase (\d+)/);
+		if (!phaseMatch) continue;
+
+		const phase = phaseMatch[1];
+		console.log(`\n📋 Processing ${epic.title}`);
+
+		// Get all phase issues that aren't epics
+		const phaseIssuesOutput = execSync(
+			`gh issue list --repo ${REPO} --label "phase-${phase}" --state open --json number,title,labels`,
+			{ encoding: "utf-8" },
+		);
+		const allPhaseIssues = JSON.parse(phaseIssuesOutput);
+
+		// Filter out epics in JavaScript
+		const phaseIssues = allPhaseIssues.filter(
+			(issue) => !issue.labels.some((label) => label.name === "epic"),
+		);
+
+		console.log(`   Found ${phaseIssues.length} sub-issues for phase ${phase}`);
+
+		// Get parent issue ID
+		const parentId = getIssueId(epic.number);
+		if (!parentId) continue;
+
+		// Link each sub-issue
+		for (const subIssue of phaseIssues) {
+			const subIssueId = getIssueId(subIssue.number);
+			if (!subIssueId) continue;
+
+			try {
+				// Use GraphQL mutation to add sub-issue
+				const mutation = `mutation {
+					addSubIssue(input: {
+						issueId: "${parentId}"
+						subIssueId: "${subIssueId}"
+					}) {
+						issue {
+							number
+						}
+					}
+				}`;
+
+				execSync(`gh api graphql -f query='${mutation}'`, {
+					encoding: "utf-8",
+				});
+
+				console.log(`   ✅ Linked #${subIssue.number} to epic #${epic.number}`);
+
+				// Rate limit
+				await new Promise((resolve) => setTimeout(resolve, 300));
+			} catch (error) {
+				console.error(
+					`   ⚠️  Failed to link #${subIssue.number}: ${error.message}`,
+				);
+			}
+		}
+	}
+
+	console.log(`\n✨ Done linking sub-issues!`);
+}
+
+/**
+ * Update parent issue bodies to replace #TBD with actual issue numbers
+ */
+async function updateParentIssueBodies() {
+	console.log("📝 Updating Parent Issue Bodies\n");
+
+	// Load mapping file if specified
+	let mappingData = null;
+	if (options.mappingFile) {
+		try {
+			const mappingContent = await fs.readFile(options.mappingFile, "utf-8");
+			mappingData = JSON.parse(mappingContent);
+			console.log(`📋 Loaded mapping from ${options.mappingFile}\n`);
+		} catch (error) {
+			console.error(`❌ Failed to load mapping file: ${error.message}`);
+			process.exit(1);
+		}
+	}
+
+	// Get all epic issues
+	const epicsOutput = execSync(
+		`gh issue list --repo ${REPO} --label epic --state open --json number,title,body`,
+		{ encoding: "utf-8" },
+	);
+	const epics = JSON.parse(epicsOutput);
+
+	console.log(`Found ${epics.length} epic issues\n`);
+
+	for (const epic of epics) {
+		const phaseMatch = epic.title.match(/Phase (\d+)/);
+		if (!phaseMatch) continue;
+
+		const phase = phaseMatch[1];
+		console.log(`\n📋 Processing ${epic.title}`);
+
+		// Check if body contains #TBD
+		if (!epic.body.includes("#TBD")) {
+			console.log(`   ℹ️  No #TBD placeholders found, skipping`);
+			continue;
+		}
+
+		// Build task map from either mapping file or GitHub API
+		const taskMap = {};
+
+		if (mappingData) {
+			// Use mapping file: convert P1-001 keys to numeric taskNum
+			for (const [taskId, issueNum] of Object.entries(mappingData)) {
+				const match = taskId.match(/P\d+-(\d+)/);
+				if (match) {
+					const taskNum = Number.parseInt(match[1], 10);
+					taskMap[taskNum] = issueNum;
+				}
+			}
+			console.log(`   Using ${Object.keys(taskMap).length} mappings from file`);
+		} else {
+			// Query GitHub API for phase issues
+			const phaseIssuesOutput = execSync(
+				`gh issue list --repo ${REPO} --label "phase-${phase}" --state open --json number,title,labels --limit 100`,
+				{ encoding: "utf-8" },
+			);
+			const allPhaseIssues = JSON.parse(phaseIssuesOutput);
+
+			// Filter out epics in JavaScript instead of jq
+			const phaseIssues = allPhaseIssues
+				.filter((issue) => !issue.labels.some((label) => label.name === "epic"))
+				.sort((a, b) => a.number - b.number);
+
+			console.log(`   Found ${phaseIssues.length} sub-issues from GitHub`);
+
+			// Extract task IDs from sub-issue titles (e.g., "P1-001", "P2-015")
+			for (const issue of phaseIssues) {
+				const taskMatch = issue.title.match(/P\d+-(\d+)/);
+				if (taskMatch) {
+					const taskNum = Number.parseInt(taskMatch[1], 10);
+					taskMap[taskNum] = issue.number;
+				}
+			}
+		}
+
+		// Replace #TBD with actual issue numbers
+		let updatedBody = epic.body;
+		const tableRows = updatedBody.match(/\|\s*\d+\s*\|\s*#TBD\s*\|[^\n]+/g);
+
+		if (tableRows) {
+			for (const row of tableRows) {
+				const rowMatch = row.match(
+					/\|\s*(\d+)\s*\|\s*#TBD\s*\|\s*P\d+-(\d+)\s*\|/,
+				);
+				if (rowMatch) {
+					const taskNum = Number.parseInt(rowMatch[2], 10);
+					const issueNumber = taskMap[taskNum];
+					if (issueNumber) {
+						const newRow = row.replace("#TBD", `#${issueNumber}`);
+						updatedBody = updatedBody.replace(row, newRow);
+						console.log(
+							`   Updated row ${rowMatch[1]}: #TBD → #${issueNumber}`,
+						);
+					}
+				}
+			}
+
+			// Update the issue body
+			if (updatedBody !== epic.body) {
+				if (options.dryRun) {
+					console.log(`   [DRY RUN] Would update issue #${epic.number}`);
+				} else {
+					try {
+						// Write body to temp file
+						const bodyFile = `/tmp/gh-epic-body-${Date.now()}.md`;
+						writeFileSync(bodyFile, updatedBody);
+
+						execFileSync(
+							"gh",
+							[
+								"issue",
+								"edit",
+								epic.number.toString(),
+								"--body-file",
+								bodyFile,
+							],
+							{ encoding: "utf-8" },
+						);
+
+						unlinkSync(bodyFile);
+						console.log(`   ✅ Updated issue #${epic.number}`);
+
+						// Rate limit
+						await new Promise((resolve) => setTimeout(resolve, 500));
+					} catch (error) {
+						console.error(
+							`   ❌ Failed to update #${epic.number}: ${error.message}`,
+						);
+					}
+				}
+			}
+		}
+	}
+
+	console.log(`\n✨ Done updating parent issues!`);
+}
+
+/**
  * Main execution
  */
 async function main() {
 	// Handle milestone creation mode
 	if (options.createMilestones) {
 		await createMilestones();
+		return;
+	}
+
+	// Handle link sub-issues mode
+	if (options.linkSubIssues) {
+		await linkSubIssuesToParents();
+		return;
+	}
+
+	// Handle update parents mode
+	if (options.updateParents) {
+		await updateParentIssueBodies();
 		return;
 	}
 
@@ -662,21 +917,38 @@ async function main() {
 
 	console.log(`\n✨ Done! Created ${created.length} issues`);
 
-	// Save mapping file
+	// Save mapping file with unique timestamp
 	if (!options.dryRun && created.length > 0) {
-		const mapping = created.map((i) => ({
-			file: i.file,
-			title: i.title,
-			url: i.url,
-			issueNumber: i.url.split("/").pop(),
-		}));
+		const timestamp = new Date()
+			.toISOString()
+			.replace(/[:.]/g, "-")
+			.slice(0, -5);
+		const mappingFile = options.exportMapping
+			? `artifacts/issue-mapping-${timestamp}.json`
+			: "plan-v0.13.x/issue-mapping.json";
 
-		await fs.writeFile(
-			"plan-v0.13.x/issue-mapping.json",
-			JSON.stringify(mapping, null, 2),
-		);
+		// Ensure artifacts directory exists if using --export-mapping
+		if (options.exportMapping) {
+			await fs.mkdir("artifacts", { recursive: true });
+		}
 
-		console.log(`📝 Saved issue mapping to plan-v0.13.x/issue-mapping.json`);
+		// Create mapping with task IDs extracted from titles
+		const mapping = {};
+		for (const issue of created) {
+			const taskMatch = issue.title.match(/P(\d+)-(\d+)/);
+			if (taskMatch) {
+				const taskId = `P${taskMatch[1]}-${taskMatch[2]}`;
+				const issueNumber = issue.url.split("/").pop();
+				mapping[taskId] = Number.parseInt(issueNumber, 10);
+			}
+		}
+
+		await fs.writeFile(mappingFile, JSON.stringify(mapping, null, 2));
+
+		console.log(`📝 Saved issue mapping to ${mappingFile}`);
+		if (options.exportMapping) {
+			console.log(`   Use: --mapping=${mappingFile} to update parent tables`);
+		}
 	}
 }
 
