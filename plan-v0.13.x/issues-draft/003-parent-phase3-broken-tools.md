@@ -51,7 +51,7 @@ These tools damage user trust when they fail silently. Fixing them is critical f
 ## Dependency Graph
 
 ```mermaid
-flowchart TB
+flowchart LR
     subgraph "Week 9: mode-switcher & project-onboarding"
         P3001[P3-001: Analyze mode-switcher] --> P3002[P3-002: ModeManager]
         P3002 --> P3003[P3-003: Refactor mode-switcher]

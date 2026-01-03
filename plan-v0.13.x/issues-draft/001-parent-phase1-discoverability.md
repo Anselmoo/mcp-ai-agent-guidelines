@@ -44,7 +44,7 @@ Phase 1 addresses the **LLM Tool Discoverability Crisis** — the most impactful
 ## Dependency Graph
 
 ```mermaid
-flowchart TB
+flowchart LR
     subgraph "Week 3: Annotations & Descriptions"
         P1001[P1-001: Create Annotation Presets]
         P1002[P1-002: Annotate Analysis Tools]

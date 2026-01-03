@@ -61,7 +61,7 @@ Phase 2 is the **core architectural refactoring** — extracting pure domain log
 ## Dependency Graph
 
 ```mermaid
-flowchart TB
+flowchart LR
     subgraph "Phase 2a: Domain Extraction"
         P2001[P2-001: ErrorCode] --> P2002[P2-002: McpToolError]
         P2002 --> P2003[P2-003: Error Factories]
