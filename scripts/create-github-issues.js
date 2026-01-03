@@ -10,11 +10,13 @@
  *   node scripts/create-github-issues.js [options]
  *
  * Options:
- *   --dry-run          Preview issues without creating them
- *   --phase <number>   Only create issues for specific phase (0-4)
- *   --parallel         Only create parallel issues (can run concurrently)
- *   --serial           Only create serial issues (must run sequentially)
- *   --skip-parents     Skip parent issues (only create sub-tasks)
+ *   --dry-run            Preview issues without creating them
+ *   --phase <number>     Only create issues for specific phase (0-4)
+ *   --parallel           Only create parallel issues (can run concurrently)
+ *   --serial             Only create serial issues (must run sequentially)
+ *   --skip-parents       Skip parent issues (only create sub-tasks)
+ *   --create-milestones  Create GitHub milestones from milestones.md
+ *   --milestone <id>     Only create specific milestone (requires --create-milestones)
  */
 
 import { execSync } from "node:child_process";
@@ -22,6 +24,7 @@ import { promises as fs, unlinkSync, writeFileSync } from "node:fs";
 import { basename, join } from "node:path";
 
 const ISSUES_DRAFT_DIR = "plan-v0.13.x/issues-draft";
+const MILESTONES_FILE = "plan-v0.13.x/issues-draft/milestones.md";
 const REPO = "Anselmoo/mcp-ai-agent-guidelines";
 
 // Parse command line arguments
@@ -32,7 +35,102 @@ const options = {
 	parallel: args.includes("--parallel"),
 	serial: args.includes("--serial"),
 	skipParents: args.includes("--skip-parents"),
+	createMilestones: args.includes("--create-milestones"),
+	milestone: args.find((a) => a.startsWith("--milestone="))?.split("=")[1],
 };
+
+/**
+ * Parse milestones from milestones.md
+ */
+function parseMilestones(content) {
+	const milestones = [];
+	const milestoneBlocks = content.split(/^### M\d+:/gm).slice(1);
+
+	for (const block of milestoneBlocks) {
+		const yamlMatch = block.match(/```yaml\n([\s\S]+?)\n```/);
+		if (!yamlMatch) continue;
+
+		const yamlContent = yamlMatch[1];
+		const milestone = {};
+
+		// Parse YAML manually (simple key: value format)
+		const lines = yamlContent.split("\n");
+		let currentKey = null;
+		let currentValue = [];
+
+		for (const line of lines) {
+			if (line.match(/^[a-z_]+:/)) {
+				// Save previous key if exists
+				if (currentKey) {
+					milestone[currentKey] = currentValue.join("\n").trim();
+				}
+
+				// Start new key
+				const [key, ...valueParts] = line.split(":");
+				currentKey = key.trim();
+				currentValue = [valueParts.join(":").trim()];
+			} else if (currentKey && line.trim()) {
+				// Continue multi-line value
+				currentValue.push(line.trim());
+			}
+		}
+
+		// Save last key
+		if (currentKey) {
+			milestone[currentKey] = currentValue.join("\n").trim();
+		}
+
+		// Remove pipe character from description
+		if (milestone.description) {
+			milestone.description = milestone.description.replace(/^\|/gm, "").trim();
+		}
+
+		if (milestone.id && milestone.title) {
+			milestones.push(milestone);
+		}
+	}
+
+	return milestones;
+}
+
+/**
+ * Create GitHub milestone using gh CLI
+ */
+function createGitHubMilestone(milestoneData, dryRun = false) {
+	const { id, title, description, due_on, state } = milestoneData;
+
+	if (dryRun) {
+		console.log(`\n📅 [DRY RUN] Would create milestone:`);
+		console.log(`   ID: ${id}`);
+		console.log(`   Title: ${title}`);
+		console.log(`   Due: ${due_on}`);
+		console.log(`   State: ${state}`);
+		return null;
+	}
+
+	try {
+		const cmd = `gh api repos/${REPO}/milestones --method POST -f title="${title}" -f description="${description}" -f due_on="${due_on}" -f state="${state}"`;
+
+		const output = execSync(cmd, { encoding: "utf-8" });
+		const result = JSON.parse(output);
+
+		console.log(`✅ Created milestone: ${title}`);
+		console.log(`   Number: ${result.number}`);
+		console.log(`   URL: ${result.html_url}`);
+
+		return result;
+	} catch (error) {
+		// Check if milestone already exists
+		if (error.message.includes("already_exists")) {
+			console.log(`⚠️  Milestone already exists: ${title}`);
+			return null;
+		}
+
+		console.error(`❌ Failed to create milestone: ${title}`);
+		console.error(error.message);
+		return null;
+	}
+}
 
 /**
  * Extract metadata from issue markdown header
@@ -213,9 +311,60 @@ async function processIssueFile(filePath) {
 }
 
 /**
+ * Create milestones from milestones.md
+ */
+async function createMilestones() {
+	console.log("📅 GitHub Milestone Creation Tool\n");
+
+	if (options.dryRun) {
+		console.log("📋 Running in DRY RUN mode (no milestones will be created)\n");
+	}
+
+	// Read milestones file
+	const content = await fs.readFile(MILESTONES_FILE, "utf-8");
+	const milestones = parseMilestones(content);
+
+	console.log(`Found ${milestones.length} milestone definitions\n`);
+
+	// Filter by milestone if specified
+	let filteredMilestones = milestones;
+	if (options.milestone) {
+		filteredMilestones = milestones.filter((m) => m.id === options.milestone);
+		if (filteredMilestones.length === 0) {
+			console.error(`❌ Milestone "${options.milestone}" not found`);
+			process.exit(1);
+		}
+	}
+
+	console.log(`Creating ${filteredMilestones.length} milestones...\n`);
+
+	// Create milestones
+	const created = [];
+	for (const milestone of filteredMilestones) {
+		const result = createGitHubMilestone(milestone, options.dryRun);
+		if (result) {
+			created.push(result);
+		}
+
+		// Rate limit
+		if (!options.dryRun) {
+			await new Promise((resolve) => setTimeout(resolve, 500));
+		}
+	}
+
+	console.log(`\n✨ Done! Created ${created.length} milestones`);
+}
+
+/**
  * Main execution
  */
 async function main() {
+	// Handle milestone creation mode
+	if (options.createMilestones) {
+		await createMilestones();
+		return;
+	}
+
 	console.log("🚀 GitHub Issue Creation Tool\n");
 
 	if (options.dryRun) {

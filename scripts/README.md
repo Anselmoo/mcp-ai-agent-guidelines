@@ -20,7 +20,33 @@ Automated workflow for converting markdown issue drafts to GitHub issues.
 
 ## Workflow
 
-### Step 1: Create GitHub Labels
+### Step 1: Create GitHub Milestones
+
+Create all milestones defined in `milestones.md`:
+
+```bash
+# Preview milestones (dry run)
+node scripts/create-github-issues.js --create-milestones --dry-run
+
+# Create all milestones
+node scripts/create-github-issues.js --create-milestones
+
+# Create specific milestone
+node scripts/create-github-issues.js --create-milestones --milestone=M1
+node scripts/create-github-issues.js --create-milestones --milestone=M2
+```
+
+**What it creates:**
+- M1: Foundation (End Week 2) - Due: 2026-01-17
+- M2: Discoverability (End Week 4) - Due: 2026-01-31
+- M3: Domain Layer (End Week 8) - Due: 2026-02-28
+- M4: Tools Fixed (End Week 10) - Due: 2026-03-14
+- M5: Spec-Kit Core (End Week 12) - Due: 2026-03-28
+- M6: Spec-Kit Validation (End Week 14) - Due: 2026-04-11
+- M7: Spec-Kit Progress - Due: 2026-04-11
+- M8: v0.13.0 Release (End Week 16) - Due: 2026-04-25
+
+### Step 2: Create GitHub Labels
 
 Create all labels in the repository:
 
@@ -34,17 +60,6 @@ gh label create "phase-4a" --color "ddd8ff" --description "Spec-Kit Core"
 **Or use the batch script:**
 ```bash
 ./scripts/create-labels.sh  # TODO: Create this script
-```
-
-### Step 2: Create Milestones
-
-```bash
-gh api repos/Anselmoo/mcp-ai-agent-guidelines/milestones \
-  --method POST \
-  --field title="M2: Discoverability (End Week 4)" \
-  --field due_on="2026-02-27T23:59:59Z"
-
-# Repeat for M3, M4, M5, M6, M7
 ```
 
 ### Step 3: Create Parent Issues First
@@ -111,12 +126,8 @@ node scripts/create-github-issues.js [options]
 - `--parallel` - Only create parallel issues
 - `--serial` - Only create serial issues
 - `--skip-parents` - Skip parent/epic issues (only create sub-tasks)
-
-**Input Format:** Issue files with markdown headers:
-```markdown
-# 🔧 P4-001: Analyze CONSTITUTION.md Structure [serial]
-
-> **Labels**: `phase-4a`, `priority-high`, `serial`, `copilot-suitable`
+- `--create-milestones` - Create GitHub milestones from milestones.md
+- `--milestone=<ID>` - Only create specific milestone (requires --create-milestones)
 > **Milestone**: M5: Spec-Kit Core
 > **Estimate**: 2 hours
 > **Depends On**: None
@@ -131,6 +142,7 @@ node scripts/create-github-issues.js [options]
 - Detects Copilot suitability and MCP Serena requirement
 - Rate limiting (1 second between creates)
 - Generates `issue-mapping.json`
+- **NEW**: Creates GitHub milestones from `milestones.md`
 
 **Example output:**
 ```
