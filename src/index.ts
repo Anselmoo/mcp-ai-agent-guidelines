@@ -70,6 +70,7 @@ import { securityHardeningPromptBuilder } from "./tools/prompt/security-hardenin
 import { sparkPromptBuilder } from "./tools/prompt/spark-prompt-builder.js";
 import { semanticCodeAnalyzer } from "./tools/semantic-code-analyzer.js";
 import { GENERATION_TOOL_ANNOTATIONS } from "./tools/shared/annotation-presets.js";
+import { SESSION_TOOL_ANNOTATIONS } from "./tools/shared/annotation-presets.js";
 import { sprintTimelineCalculator } from "./tools/sprint-timeline-calculator.js";
 
 const server = new Server(
@@ -1899,6 +1900,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 					},
 					required: ["targetMode"],
 				},
+				annotations: {
+					...SESSION_TOOL_ANNOTATIONS,
+					title: "Agent Mode Switcher",
+				},
 			},
 			{
 				name: "prompting-hierarchy-evaluator",
@@ -2083,6 +2088,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						},
 					},
 					required: ["action", "sessionId"],
+				},
+				annotations: {
+					...SESSION_TOOL_ANNOTATIONS,
+					title: "Design Session Assistant",
 				},
 			},
 		],
