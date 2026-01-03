@@ -18,7 +18,7 @@
  */
 
 import { execSync } from "node:child_process";
-import { promises as fs } from "node:fs";
+import { promises as fs, unlinkSync, writeFileSync } from "node:fs";
 import { basename, join } from "node:path";
 
 const ISSUES_DRAFT_DIR = "plan-v0.13.x/issues-draft";
@@ -156,7 +156,7 @@ function createGitHubIssue(issueData, dryRun = false) {
 
 	// Create temporary file for issue body
 	const bodyFile = `/tmp/gh-issue-${Date.now()}.md`;
-	fs.writeFileSync(bodyFile, body);
+	writeFileSync(bodyFile, body);
 
 	try {
 		const cmd = `gh issue create --repo ${REPO} --title "${title}" ${labelArgs} ${milestoneArg} ${assigneeArg} --body-file "${bodyFile}"`;
@@ -168,7 +168,7 @@ function createGitHubIssue(issueData, dryRun = false) {
 		console.log(`   ${issueUrl}`);
 
 		// Clean up temp file
-		fs.unlinkSync(bodyFile);
+		unlinkSync(bodyFile);
 
 		return issueUrl;
 	} catch (error) {
