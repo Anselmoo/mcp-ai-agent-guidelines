@@ -69,6 +69,7 @@ import { quickDeveloperPromptsBuilder } from "./tools/prompt/quick-developer-pro
 import { securityHardeningPromptBuilder } from "./tools/prompt/security-hardening-prompt-builder.js";
 import { sparkPromptBuilder } from "./tools/prompt/spark-prompt-builder.js";
 import { semanticCodeAnalyzer } from "./tools/semantic-code-analyzer.js";
+import { ANALYSIS_TOOL_ANNOTATIONS } from "./tools/shared/annotation-presets.js";
 import { GENERATION_TOOL_ANNOTATIONS } from "./tools/shared/annotation-presets.js";
 import { SESSION_TOOL_ANNOTATIONS } from "./tools/shared/annotation-presets.js";
 import { sprintTimelineCalculator } from "./tools/sprint-timeline-calculator.js";
@@ -632,6 +633,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 					},
 					required: ["frameworks", "currentState", "desiredState", "context"],
 				},
+				annotations: {
+					...ANALYSIS_TOOL_ANNOTATIONS,
+					title: "Gap Analysis Framework",
+				},
 			},
 			{
 				name: "spark-prompt-builder",
@@ -1054,6 +1059,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 					},
 					required: [],
 				},
+				annotations: {
+					...ANALYSIS_TOOL_ANNOTATIONS,
+					title: "Clean Code Quality Scorer",
+				},
 			},
 			{
 				name: "code-hygiene-analyzer",
@@ -1077,6 +1086,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						},
 					},
 					required: ["codeContent", "language"],
+				},
+				annotations: {
+					...ANALYSIS_TOOL_ANNOTATIONS,
+					title: "Code Hygiene Analyzer",
 				},
 			},
 			{
@@ -1157,6 +1170,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 					},
 					required: [],
 				},
+				annotations: {
+					...ANALYSIS_TOOL_ANNOTATIONS,
+					title: "Dependency Security Auditor",
+				},
 			},
 			{
 				name: "iterative-coverage-enhancer",
@@ -1232,6 +1249,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						},
 					},
 					required: [],
+				},
+				annotations: {
+					...ANALYSIS_TOOL_ANNOTATIONS,
+					title: "Test Coverage Enhancer",
 				},
 			},
 			{
@@ -1796,6 +1817,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						},
 					},
 					required: ["codeContent"],
+				},
+				annotations: {
+					...ANALYSIS_TOOL_ANNOTATIONS,
+					title: "Semantic Code Analyzer",
 				},
 			},
 			{
