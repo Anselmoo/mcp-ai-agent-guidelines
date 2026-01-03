@@ -10,6 +10,7 @@
 // A2A Orchestration exports
 export * from "./a2a-context.js";
 export * from "./a2a-errors.js";
+export * from "./annotation-presets.js";
 export * from "./async-patterns.js";
 export * from "./constants.js";
 export * from "./errors.js";
