@@ -69,6 +69,7 @@ import { quickDeveloperPromptsBuilder } from "./tools/prompt/quick-developer-pro
 import { securityHardeningPromptBuilder } from "./tools/prompt/security-hardening-prompt-builder.js";
 import { sparkPromptBuilder } from "./tools/prompt/spark-prompt-builder.js";
 import { semanticCodeAnalyzer } from "./tools/semantic-code-analyzer.js";
+import { GENERATION_TOOL_ANNOTATIONS } from "./tools/shared/annotation-presets.js";
 import { sprintTimelineCalculator } from "./tools/sprint-timeline-calculator.js";
 
 const server = new Server(
@@ -173,6 +174,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 					},
 					required: ["context", "goal"],
 				},
+				annotations: {
+					...GENERATION_TOOL_ANNOTATIONS,
+					title: "Hierarchical Prompt Builder",
+				},
 			},
 			{
 				name: "code-analysis-prompt-builder",
@@ -205,6 +210,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 					},
 					required: ["codebase"],
 				},
+				annotations: {
+					...GENERATION_TOOL_ANNOTATIONS,
+					title: "Code Analysis Prompt Generator",
+				},
 			},
 			{
 				name: "architecture-design-prompt-builder",
@@ -236,6 +245,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						forcePromptMdStyle: { type: "boolean" },
 					},
 					required: ["systemRequirements"],
+				},
+				annotations: {
+					...GENERATION_TOOL_ANNOTATIONS,
+					title: "Architecture Design Prompt Generator",
 				},
 			},
 			{
@@ -355,6 +368,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						forcePromptMdStyle: { type: "boolean" },
 					},
 					required: ["errorDescription"],
+				},
+				annotations: {
+					...GENERATION_TOOL_ANNOTATIONS,
+					title: "Debug Assistant Prompt Generator",
 				},
 			},
 			{
@@ -511,6 +528,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						forcePromptMdStyle: { type: "boolean" },
 					},
 					required: ["contentType"],
+				},
+				annotations: {
+					...GENERATION_TOOL_ANNOTATIONS,
+					title: "Documentation Prompt Generator",
 				},
 			},
 			{
@@ -787,6 +808,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						"spacingContext",
 						"mobileLayout",
 					],
+				},
+				annotations: {
+					...GENERATION_TOOL_ANNOTATIONS,
+					title: "Spark Design Prompt Builder",
 				},
 			},
 			{
@@ -1434,6 +1459,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 					},
 					required: ["title", "summary"],
 				},
+				annotations: {
+					...GENERATION_TOOL_ANNOTATIONS,
+					title: "Domain-Neutral Prompt Builder",
+				},
 			},
 			{
 				name: "security-hardening-prompt-builder",
@@ -1581,6 +1610,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 					},
 					required: ["codeContext"],
 				},
+				annotations: {
+					...GENERATION_TOOL_ANNOTATIONS,
+					title: "Security Hardening Prompt Generator",
+				},
 			},
 			{
 				name: "quick-developer-prompts-builder",
@@ -1611,6 +1644,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						forcePromptMdStyle: { type: "boolean" },
 					},
 					required: [],
+				},
+				annotations: {
+					...GENERATION_TOOL_ANNOTATIONS,
+					title: "Quick Developer Prompts",
 				},
 			},
 			{
@@ -1901,6 +1938,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 					},
 					required: ["promptText"],
 				},
+				annotations: {
+					...GENERATION_TOOL_ANNOTATIONS,
+					title: "Prompt Quality Evaluator",
+				},
 			},
 			{
 				name: "hierarchy-level-selector",
@@ -1938,6 +1979,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						},
 					},
 					required: ["taskDescription"],
+				},
+				annotations: {
+					...GENERATION_TOOL_ANNOTATIONS,
+					title: "Prompt Hierarchy Level Selector",
 				},
 			},
 			promptChainingBuilderSchema,
