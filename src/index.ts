@@ -74,7 +74,7 @@ import {
 	ANALYSIS_TOOL_ANNOTATIONS,
 	FILESYSTEM_TOOL_ANNOTATIONS,
 	GENERATION_TOOL_ANNOTATIONS,
-  SESSION_TOOL_ANNOTATIONS,
+	SESSION_TOOL_ANNOTATIONS,
 } from "./tools/shared/annotation-presets.js";
 import { sprintTimelineCalculator } from "./tools/sprint-timeline-calculator.js";
 
@@ -1013,6 +1013,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						style: { type: "string", enum: ["markdown", "xml"] },
 					},
 					required: [],
+				},
+				annotations: {
+					...GENERATION_TOOL_ANNOTATIONS,
+					title: "Coverage Dashboard Design Prompt Builder",
 				},
 			},
 			{
