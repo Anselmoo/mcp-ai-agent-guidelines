@@ -69,9 +69,13 @@ import { quickDeveloperPromptsBuilder } from "./tools/prompt/quick-developer-pro
 import { securityHardeningPromptBuilder } from "./tools/prompt/security-hardening-prompt-builder.js";
 import { sparkPromptBuilder } from "./tools/prompt/spark-prompt-builder.js";
 import { semanticCodeAnalyzer } from "./tools/semantic-code-analyzer.js";
-import { ANALYSIS_TOOL_ANNOTATIONS } from "./tools/shared/annotation-presets.js";
-import { GENERATION_TOOL_ANNOTATIONS } from "./tools/shared/annotation-presets.js";
-import { SESSION_TOOL_ANNOTATIONS } from "./tools/shared/annotation-presets.js";
+// Import annotation presets
+import {
+	ANALYSIS_TOOL_ANNOTATIONS,
+	FILESYSTEM_TOOL_ANNOTATIONS,
+	GENERATION_TOOL_ANNOTATIONS,
+	SESSION_TOOL_ANNOTATIONS,
+} from "./tools/shared/annotation-presets.js";
 import { sprintTimelineCalculator } from "./tools/sprint-timeline-calculator.js";
 
 const server = new Server(
@@ -340,6 +344,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 					},
 					required: ["initiativeName", "problemStatement"],
 				},
+				annotations: {
+					...GENERATION_TOOL_ANNOTATIONS,
+					title: "Enterprise Architect Prompt Generator",
+				},
 			},
 			{
 				name: "debugging-assistant-prompt-builder",
@@ -499,6 +507,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 					},
 					required: ["projectName", "technicalChallenge"],
 				},
+				annotations: {
+					...GENERATION_TOOL_ANNOTATIONS,
+					title: "L9 Engineer Prompt Generator",
+				},
 			},
 			{
 				name: "documentation-generator-prompt-builder",
@@ -583,6 +595,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						inputFile: { type: "string" },
 					},
 					required: ["frameworks", "context"],
+				},
+				annotations: {
+					...GENERATION_TOOL_ANNOTATIONS,
+					title: "Strategy Framework Builder",
 				},
 			},
 			{
@@ -998,6 +1014,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 					},
 					required: [],
 				},
+				annotations: {
+					...GENERATION_TOOL_ANNOTATIONS,
+					title: "Coverage Dashboard Design Prompt Builder",
+				},
 			},
 			{
 				name: "clean-code-scorer",
@@ -1330,6 +1350,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 					},
 					required: ["description", "diagramType"],
 				},
+				annotations: {
+					...GENERATION_TOOL_ANNOTATIONS,
+					title: "Mermaid Diagram Generator",
+				},
 			},
 			{
 				name: "memory-context-optimizer",
@@ -1354,6 +1378,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						},
 					},
 					required: ["contextContent"],
+				},
+				annotations: {
+					...ANALYSIS_TOOL_ANNOTATIONS,
+					title: "Memory Context Optimizer",
 				},
 			},
 			{
@@ -1710,6 +1738,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 					},
 					required: ["tasks", "teamSize"],
 				},
+				annotations: {
+					...GENERATION_TOOL_ANNOTATIONS,
+					title: "Sprint Timeline Calculator",
+				},
 			},
 			{
 				name: "model-compatibility-checker",
@@ -1754,6 +1786,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 					},
 					required: ["taskDescription"],
 				},
+				annotations: {
+					...ANALYSIS_TOOL_ANNOTATIONS,
+					title: "AI Model Compatibility Checker",
+				},
 			},
 			{
 				name: "guidelines-validator",
@@ -1780,6 +1816,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						},
 					},
 					required: ["practiceDescription", "category"],
+				},
+				annotations: {
+					...ANALYSIS_TOOL_ANNOTATIONS,
+					title: "AI Guidelines Validator",
 				},
 			},
 			{
@@ -1862,6 +1902,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						},
 					},
 					required: ["projectPath"],
+				},
+				annotations: {
+					...FILESYSTEM_TOOL_ANNOTATIONS,
+					title: "Project Onboarding Scanner",
 				},
 			},
 			{
@@ -2242,6 +2286,9 @@ async function main() {
 	await server.connect(transport);
 	console.error("MCP AI Agent Guide Server running on stdio");
 }
+
+// Export server for testing
+export { server };
 
 main().catch((error) => {
 	console.error("Server error:", error);

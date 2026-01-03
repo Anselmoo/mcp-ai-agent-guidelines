@@ -1,5 +1,7 @@
 // Tool schemas for flow-based prompting tools
 
+import { GENERATION_TOOL_ANNOTATIONS } from "../tools/shared/annotation-presets.js";
+
 export const promptChainingBuilderSchema = {
 	name: "prompt-chaining-builder",
 	description:
@@ -64,6 +66,10 @@ export const promptChainingBuilderSchema = {
 			},
 		},
 		required: ["chainName", "steps"],
+	},
+	annotations: {
+		...GENERATION_TOOL_ANNOTATIONS,
+		title: "Prompt Chain Builder",
 	},
 };
 
@@ -189,5 +195,9 @@ export const promptFlowBuilderSchema = {
 			},
 		},
 		required: ["flowName", "nodes"],
+	},
+	annotations: {
+		...GENERATION_TOOL_ANNOTATIONS,
+		title: "Prompt Flow Builder",
 	},
 };
