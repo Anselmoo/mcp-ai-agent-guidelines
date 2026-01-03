@@ -18,26 +18,26 @@ Phase 1 addresses the **LLM Tool Discoverability Crisis** — the most impactful
 
 ## Implementation Plan
 
-| Order | Issue | Task ID | Priority | Execution | Assignee |
-|-------|-------|---------|----------|-----------|----------|
-| 1 | #TBD | P1-001 | High | Serial | @copilot |
-| 2 | #TBD | P1-002 | High | Parallel | @copilot |
-| 3 | #TBD | P1-003 | High | Parallel | @copilot |
-| 4 | #TBD | P1-004 | High | Parallel | @copilot |
-| 5 | #TBD | P1-005 | Medium | Parallel | @copilot |
-| 6 | #TBD | P1-006 | Medium | Parallel | @copilot |
-| 7 | #TBD | P1-007 | High | Serial | @copilot |
-| 8 | #TBD | P1-008 | High | Serial | @copilot |
-| 9 | #TBD | P1-009 | Medium | Serial | @copilot |
-| 10 | #TBD | P1-010 | High | Serial | @copilot |
-| 11 | #TBD | P1-011 | High | Parallel | @copilot |
-| 12 | #TBD | P1-012 | Medium | Parallel | @copilot |
-| 13 | #TBD | P1-013 | High | Serial | @copilot |
-| 14 | #TBD | P1-014 | High | Serial | @copilot |
-| 15 | #TBD | P1-015 | Medium | Serial | @copilot |
-| 16 | #TBD | P1-016 | High | Serial | @copilot |
-| 17 | #TBD | P1-017 | Medium | Serial | @copilot |
-| 18 | #TBD | P1-018 | Medium | Serial | @copilot |
+| Order | Issue | Task ID | Priority | Execution | Assignee | Description               |
+| ----- | ----- | ------- | -------- | --------- | -------- | ------------------------- |
+| 1     | #TBD  | P1-001  | High     | Serial    | @copilot | Create Annotation Presets |
+| 2     | #TBD  | P1-002  | High     | Parallel  | @copilot | Annotate Analysis Tools   |
+| 3     | #TBD  | P1-003  | High     | Parallel  | @copilot | Annotate Prompt Tools     |
+| 4     | #TBD  | P1-004  | High     | Parallel  | @copilot | Annotate Session Tools    |
+| 5     | #TBD  | P1-005  | Medium   | Parallel  | @copilot | Annotate Remaining Tools  |
+| 6     | #TBD  | P1-006  | Medium   | Parallel  | @copilot | Export Descriptions CSV   |
+| 7     | #TBD  | P1-007  | High     | Serial    | @copilot | Rewrite Batch 1           |
+| 8     | #TBD  | P1-008  | High     | Serial    | @copilot | Rewrite Batch 2           |
+| 9     | #TBD  | P1-009  | Medium   | Serial    | @copilot | Rewrite Batch 3           |
+| 10    | #TBD  | P1-010  | High     | Serial    | @copilot | Uniqueness Test           |
+| 11    | #TBD  | P1-011  | High     | Parallel  | @copilot | Schema Examples Core      |
+| 12    | #TBD  | P1-012  | Medium   | Parallel  | @copilot | Schema Examples All       |
+| 13    | #TBD  | P1-013  | High     | Serial    | @copilot | Design Unified Tool       |
+| 14    | #TBD  | P1-014  | High     | Serial    | @copilot | Implement Unified Tool    |
+| 15    | #TBD  | P1-015  | Medium   | Serial    | @copilot | Deprecation Warnings      |
+| 16    | #TBD  | P1-016  | High     | Serial    | @copilot | Register Tool             |
+| 17    | #TBD  | P1-017  | Medium   | Serial    | @copilot | Update Documentation      |
+| 18    | #TBD  | P1-018  | Medium   | Serial    | @copilot | Phase 1 Tests             |
 
 ---
 
@@ -110,15 +110,15 @@ flowchart LR
 
 ### Files Changed
 
-| Category | Files |
-|----------|-------|
-| Create | `src/tools/shared/annotation-presets.ts` |
-| Create | `src/tools/prompt/prompt-hierarchy.ts` |
-| Create | `docs/api/prompt-hierarchy.md` |
-| Create | `tests/vitest/discoverability/unique-descriptions.spec.ts` |
-| Modify | `src/index.ts` (major changes) |
-| Modify | `src/schemas/*.ts` (add examples) |
-| Modify | `src/tools/prompt/*.ts` (deprecation warnings) |
+| Category | Files                                                      |
+| -------- | ---------------------------------------------------------- |
+| Create   | `src/tools/shared/annotation-presets.ts`                   |
+| Create   | `src/tools/prompt/prompt-hierarchy.ts`                     |
+| Create   | `docs/api/prompt-hierarchy.md`                             |
+| Create   | `tests/vitest/discoverability/unique-descriptions.spec.ts` |
+| Modify   | `src/index.ts` (major changes)                             |
+| Modify   | `src/schemas/*.ts` (add examples)                          |
+| Modify   | `src/tools/prompt/*.ts` (deprecation warnings)             |
 
 ---
 
@@ -136,12 +136,12 @@ flowchart LR
 
 ## Success Metrics
 
-| Metric | Before | Target |
-|--------|--------|--------|
-| Unique first-5-words | ~40% | 100% |
-| Tools with annotations | 0 | 30+ |
-| Tools with examples | ~10 | 30+ |
-| Overlapping tools | 3 sets | 0 |
+| Metric                 | Before | Target |
+| ---------------------- | ------ | ------ |
+| Unique first-5-words   | ~40%   | 100%   |
+| Tools with annotations | 0      | 30+    |
+| Tools with examples    | ~10    | 30+    |
+| Overlapping tools      | 3 sets | 0      |
 
 ---
 

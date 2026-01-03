@@ -21,37 +21,37 @@ This aligns with Spec-Driven Development (SDD) workflow: specify → plan → ta
 
 ### Phase 4a: Core Spec-Kit (Week 11-12) — 12 Tasks
 
-| Order | Task ID | Priority | Execution | Assignee | Description |
-|-------|---------|----------|-----------|----------|-------------|
-| 1 | P4-001 | High | Serial | @copilot | Analyze CONSTITUTION.md structure |
-| 2 | P4-002 | High | Serial | @copilot | Implement constitution parser |
-| 3 | P4-003 | High | Parallel | @copilot | Create Spec-Kit types |
-| 4 | P4-004 | High | Serial | @copilot | Implement spec.md generation |
-| 5 | P4-005 | High | Serial | @copilot | Implement plan.md generation |
-| 6 | P4-006 | High | Serial | @copilot | Implement task derivation |
-| 7 | P4-007 | High | Serial | @copilot | Implement tasks.md generation |
-| 8 | P4-008 | High | Serial | @copilot | Implement progress.md generation |
-| 9 | P4-009 | High | Serial | @copilot | Wire SpecKitStrategy to gateway |
-| 10 | P4-010 | High | Serial | @copilot | Add speckit-generator tool |
-| 11 | P4-011 | High | Serial | @copilot | Integrate with design-assistant |
-| 12 | P4-012 | Medium | Serial | @copilot | Phase 4a integration tests |
+| Order | Issue | Task ID | Priority | Execution | Assignee | Description                       |
+| ----- | ----- | ------- | -------- | --------- | -------- | --------------------------------- |
+| 1     | #TBD  | P4-001  | High     | Serial    | @copilot | Analyze CONSTITUTION.md structure |
+| 2     | #TBD  | P4-002  | High     | Serial    | @copilot | Implement constitution parser     |
+| 3     | #TBD  | P4-003  | High     | Parallel  | @copilot | Create Spec-Kit types             |
+| 4     | #TBD  | P4-004  | High     | Serial    | @copilot | Implement spec.md generation      |
+| 5     | #TBD  | P4-005  | High     | Serial    | @copilot | Implement plan.md generation      |
+| 6     | #TBD  | P4-006  | High     | Serial    | @copilot | Implement task derivation         |
+| 7     | #TBD  | P4-007  | High     | Serial    | @copilot | Implement tasks.md generation     |
+| 8     | #TBD  | P4-008  | High     | Serial    | @copilot | Implement progress.md generation  |
+| 9     | #TBD  | P4-009  | High     | Serial    | @copilot | Wire SpecKitStrategy to gateway   |
+| 10    | #TBD  | P4-010  | High     | Serial    | @copilot | Add speckit-generator tool        |
+| 11    | #TBD  | P4-011  | High     | Serial    | @copilot | Integrate with design-assistant   |
+| 12    | #TBD  | P4-012  | Medium   | Serial    | @copilot | Phase 4a integration tests        |
 
 ### Phase 4b: Validation & Polish (Week 13-14) — 12 Tasks
 
-| Order | Task ID | Priority | Execution | Assignee | Description |
-|-------|---------|----------|-----------|----------|-------------|
-| 13 | P4-013 | High | Serial | @copilot | Implement spec validation |
-| 14 | P4-014 | High | Serial | @copilot | Implement constitution compliance check |
-| 15 | P4-015 | Medium | Serial | @copilot | Add validation warnings |
-| 16 | P4-016 | Medium | Serial | @copilot | Implement validation suggestions |
-| 17 | P4-017 | High | Serial | @copilot | Implement progress tracking |
-| 18 | P4-018 | Medium | Serial | @copilot | Add progress metrics calculation |
-| 19 | P4-019 | Medium | Serial | @copilot | Implement /speckit.analyze equivalent |
-| 20 | P4-020 | Medium | Serial | @copilot | Add checklist generation |
-| 21 | P4-021 | Low | Parallel | @copilot | Add export to GitHub Issues |
-| 22 | P4-022 | Low | Parallel | @copilot | Add export to local files |
-| 23 | P4-023 | Medium | Serial | @copilot | Full workflow integration test |
-| 24 | P4-024 | High | Serial | @copilot | Documentation and examples |
+| Order | Issue | Task ID | Priority | Execution | Assignee | Description                             |
+| ----- | ----- | ------- | -------- | --------- | -------- | --------------------------------------- |
+| 13    | #TBD  | P4-013  | High     | Serial    | @copilot | Implement spec validation               |
+| 14    | #TBD  | P4-014  | High     | Serial    | @copilot | Implement constitution compliance check |
+| 15    | #TBD  | P4-015  | Medium   | Serial    | @copilot | Add validation warnings                 |
+| 16    | #TBD  | P4-016  | Medium   | Serial    | @copilot | Implement validation suggestions        |
+| 17    | #TBD  | P4-017  | High     | Serial    | @copilot | Implement progress tracking             |
+| 18    | #TBD  | P4-018  | Medium   | Serial    | @copilot | Add progress metrics calculation        |
+| 19    | #TBD  | P4-019  | Medium   | Serial    | @copilot | Implement /speckit.analyze equivalent   |
+| 20    | #TBD  | P4-020  | Medium   | Serial    | @copilot | Add checklist generation                |
+| 21    | #TBD  | P4-021  | Low      | Parallel  | @copilot | Add export to GitHub Issues             |
+| 22    | #TBD  | P4-022  | Low      | Parallel  | @copilot | Add export to local files               |
+| 23    | #TBD  | P4-023  | Medium   | Serial    | @copilot | Full workflow integration test          |
+| 24    | #TBD  | P4-024  | High     | Serial    | @copilot | Documentation and examples              |
 
 ---
 
@@ -191,12 +191,12 @@ sequenceDiagram
 
 ## Success Metrics
 
-| Metric | Target |
-|--------|--------|
-| Constitution sections parsed | 5 types (P, C, AR, DP, QG) |
+| Metric                       | Target                          |
+| ---------------------------- | ------------------------------- |
+| Constitution sections parsed | 5 types (P, C, AR, DP, QG)      |
 | Spec-Kit documents generated | 4 (spec, plan, tasks, progress) |
-| Task derivation accuracy | ~80% match to manual tasks |
-| Validation coverage | All constitution constraints |
+| Task derivation accuracy     | ~80% match to manual tasks      |
+| Validation coverage          | All constitution constraints    |
 
 ---
 
