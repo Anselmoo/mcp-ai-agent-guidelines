@@ -1,6 +1,6 @@
 # 🔧 P2-026: Wire Gateway with Feature Flag [serial]
 
-> **Parent**: #TBD
+> **Parent**: #696
 > **Labels**: `phase-2`, `priority-high`, `serial`, `copilot-suitable`, `mcp-serena`
 > **Milestone**: M3: Domain Layer
 > **Estimate**: 3 hours

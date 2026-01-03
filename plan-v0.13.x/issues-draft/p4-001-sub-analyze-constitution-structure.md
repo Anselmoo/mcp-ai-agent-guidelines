@@ -1,6 +1,6 @@
 # 🔧 P4-001: Analyze CONSTITUTION.md Structure [serial]
 
-> **Parent**: #TBD
+> **Parent**: #698
 > **Labels**: `phase-4a`, `priority-high`, `serial`, `copilot-suitable`
 > **Milestone**: M5: Spec-Kit Core
 > **Estimate**: 2 hours

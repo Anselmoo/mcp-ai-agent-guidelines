@@ -1,6 +1,6 @@
 # 🔧 Sub-Issue: Add Deprecation Warnings (P1-015)
 
-> **Parent**: #TBD
+> **Parent**: #695
 > **Labels**: `phase-1`, `serial`, `copilot-suitable`, `priority-medium`
 > **Milestone**: M2: Test-Stable
 

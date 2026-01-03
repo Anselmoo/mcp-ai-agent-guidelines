@@ -1,6 +1,6 @@
 # 🔧 P3-018: Documentation Update for Phase 3 [serial]
 
-> **Parent**: #TBD
+> **Parent**: #697
 > **Labels**: `phase-3`, `priority-medium`, `serial`, `copilot-suitable`
 > **Milestone**: M4: Broken Tools
 > **Estimate**: 2 hours

@@ -1,6 +1,6 @@
 # 🔧 Sub-Issue: Phase 1 Integration Tests (P1-018)
 
-> **Parent**: #TBD
+> **Parent**: #695
 > **Labels**: `phase-1`, `serial`, `copilot-suitable`, `priority-high`
 > **Milestone**: M2: Test-Stable
 

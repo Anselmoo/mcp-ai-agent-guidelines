@@ -1,6 +1,6 @@
 # 🔧 P4-023: Export All Spec-Kit from Barrel [serial]
 
-> **Parent**: #TBD
+> **Parent**: #698
 > **Labels**: `phase-4b`, `priority-low`, `serial`, `copilot-suitable`
 > **Milestone**: M7: Spec-Kit Progress
 > **Estimate**: 1 hour

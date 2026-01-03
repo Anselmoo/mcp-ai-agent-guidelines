@@ -1,6 +1,6 @@
 # 🔧 P4-018: Add Git Integration for Progress [serial]
 
-> **Parent**: #TBD
+> **Parent**: #698
 > **Labels**: `phase-4b`, `priority-low`, `serial`, `copilot-suitable`
 > **Milestone**: M7: Spec-Kit Progress
 > **Estimate**: 3 hours

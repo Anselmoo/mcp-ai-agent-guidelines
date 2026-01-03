@@ -1,6 +1,6 @@
 # 🔧 P3-005: Analyze project-onboarding Current Implementation [parallel]
 
-> **Parent**: #TBD
+> **Parent**: #697
 > **Labels**: `phase-3`, `priority-high`, `parallel`, `copilot-suitable`, `mcp-serena`
 > **Milestone**: M4: Broken Tools
 > **Estimate**: 2 hours

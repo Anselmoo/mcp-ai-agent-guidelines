@@ -20,24 +20,24 @@ Phase 1 addresses the **LLM Tool Discoverability Crisis** — the most impactful
 
 | Order | Issue | Task ID | Priority | Execution | Assignee | Description               |
 | ----- | ----- | ------- | -------- | --------- | -------- | ------------------------- |
-| 1     | #TBD  | P1-001  | High     | Serial    | @copilot | Create Annotation Presets |
-| 2     | #TBD  | P1-002  | High     | Parallel  | @copilot | Annotate Analysis Tools   |
-| 3     | #TBD  | P1-003  | High     | Parallel  | @copilot | Annotate Prompt Tools     |
-| 4     | #TBD  | P1-004  | High     | Parallel  | @copilot | Annotate Session Tools    |
-| 5     | #TBD  | P1-005  | Medium   | Parallel  | @copilot | Annotate Remaining Tools  |
-| 6     | #TBD  | P1-006  | Medium   | Parallel  | @copilot | Export Descriptions CSV   |
-| 7     | #TBD  | P1-007  | High     | Serial    | @copilot | Rewrite Batch 1           |
-| 8     | #TBD  | P1-008  | High     | Serial    | @copilot | Rewrite Batch 2           |
-| 9     | #TBD  | P1-009  | Medium   | Serial    | @copilot | Rewrite Batch 3           |
-| 10    | #TBD  | P1-010  | High     | Serial    | @copilot | Uniqueness Test           |
-| 11    | #TBD  | P1-011  | High     | Parallel  | @copilot | Schema Examples Core      |
-| 12    | #TBD  | P1-012  | Medium   | Parallel  | @copilot | Schema Examples All       |
-| 13    | #TBD  | P1-013  | High     | Serial    | @copilot | Design Unified Tool       |
-| 14    | #TBD  | P1-014  | High     | Serial    | @copilot | Implement Unified Tool    |
-| 15    | #TBD  | P1-015  | Medium   | Serial    | @copilot | Deprecation Warnings      |
-| 16    | #TBD  | P1-016  | High     | Serial    | @copilot | Register Tool             |
-| 17    | #TBD  | P1-017  | Medium   | Serial    | @copilot | Update Documentation      |
-| 18    | #TBD  | P1-018  | Medium   | Serial    | @copilot | Phase 1 Tests             |
+| 1     | #699  | P1-001  | High     | Serial    | @copilot | Create Annotation Presets |
+| 2     | #700  | P1-002  | High     | Parallel  | @copilot | Annotate Analysis Tools   |
+| 3     | #701  | P1-003  | High     | Parallel  | @copilot | Annotate Prompt Tools     |
+| 4     | #702  | P1-004  | High     | Parallel  | @copilot | Annotate Session Tools    |
+| 5     | #703  | P1-005  | Medium   | Parallel  | @copilot | Annotate Remaining Tools  |
+| 6     | #704  | P1-006  | Medium   | Parallel  | @copilot | Export Descriptions CSV   |
+| 7     | #705  | P1-007  | High     | Serial    | @copilot | Rewrite Batch 1           |
+| 8     | #706  | P1-008  | High     | Serial    | @copilot | Rewrite Batch 2           |
+| 9     | #707  | P1-009  | Medium   | Serial    | @copilot | Rewrite Batch 3           |
+| 10    | #708  | P1-010  | High     | Serial    | @copilot | Uniqueness Test           |
+| 11    | #709  | P1-011  | High     | Parallel  | @copilot | Schema Examples Core      |
+| 12    | #710  | P1-012  | Medium   | Parallel  | @copilot | Schema Examples All       |
+| 13    | #711  | P1-013  | High     | Serial    | @copilot | Design Unified Tool       |
+| 14    | #712  | P1-014  | High     | Serial    | @copilot | Implement Unified Tool    |
+| 15    | #713  | P1-015  | Medium   | Serial    | @copilot | Deprecation Warnings      |
+| 16    | #714  | P1-016  | High     | Serial    | @copilot | Register Tool             |
+| 17    | #715  | P1-017  | Medium   | Serial    | @copilot | Update Documentation      |
+| 18    | #716  | P1-018  | Medium   | Serial    | @copilot | Phase 1 Tests             |
 
 ---
 

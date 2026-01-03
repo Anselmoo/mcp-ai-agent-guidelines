@@ -1,6 +1,6 @@
 # 🔧 Sub-Issue: Remaining Schema Examples (P1-012)
 
-> **Parent**: #TBD
+> **Parent**: #695
 > **Labels**: `phase-1`, `parallel`, `copilot-suitable`, `priority-medium`
 > **Milestone**: M2: Test-Stable
 

@@ -124,6 +124,11 @@ async function preCalculateNumbers() {
 	console.log(`   Last sub-issue: #${nextNumber - 1}`);
 	console.log(`   Total to create: ${mapping.totalIssues}`);
 
+	console.log("\n🎯 Parent Epic Issues (will be created):");
+	for (const [filename, issueNum] of Object.entries(parentMapping)) {
+		console.log(`   #${issueNum} - ${filename}`);
+	}
+
 	console.log("\n📝 Next steps:");
 	console.log("   1. Review mapping: cat artifacts/issue-number-mapping.json");
 	console.log("   2. Update files: node scripts/update-issue-numbers.js");

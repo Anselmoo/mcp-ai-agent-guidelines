@@ -1,6 +1,6 @@
 # 🔧 P2-011: Extract Security Prompt Domain Logic [parallel]
 
-> **Parent**: #TBD
+> **Parent**: #696
 > **Labels**: `phase-2`, `priority-medium`, `parallel`, `copilot-suitable`, `mcp-serena`
 > **Milestone**: M3: Domain Layer
 > **Estimate**: 4 hours

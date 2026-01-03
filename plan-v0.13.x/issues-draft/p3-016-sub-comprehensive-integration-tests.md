@@ -1,6 +1,6 @@
 # 🔧 P3-016: Comprehensive Integration Tests [serial]
 
-> **Parent**: #TBD
+> **Parent**: #697
 > **Labels**: `phase-3`, `priority-high`, `serial`, `copilot-suitable`
 > **Milestone**: M4: Broken Tools
 > **Estimate**: 4 hours

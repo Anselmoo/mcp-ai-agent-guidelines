@@ -1,6 +1,6 @@
 # 🔧 P4-020: Create Spec-Kit Demo [serial]
 
-> **Parent**: #TBD
+> **Parent**: #698
 > **Labels**: `phase-4b`, `priority-medium`, `serial`, `copilot-suitable`
 > **Milestone**: M7: Spec-Kit Progress
 > **Estimate**: 3 hours

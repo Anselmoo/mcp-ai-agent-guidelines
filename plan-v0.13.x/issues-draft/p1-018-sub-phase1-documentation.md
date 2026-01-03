@@ -1,6 +1,6 @@
 # 🔧 Sub-Issue: Phase 1 Documentation (P1-017)
 
-> **Parent**: #TBD
+> **Parent**: #695
 > **Labels**: `phase-1`, `serial`, `copilot-suitable`, `priority-medium`
 > **Milestone**: M2: Test-Stable
 

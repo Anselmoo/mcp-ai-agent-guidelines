@@ -1,6 +1,6 @@
 # 🔧 Sub-Issue: Core Schema Examples (P1-011)
 
-> **Parent**: #TBD
+> **Parent**: #695
 > **Labels**: `phase-1`, `parallel`, `copilot-suitable`, `priority-medium`
 > **Milestone**: M2: Test-Stable
 

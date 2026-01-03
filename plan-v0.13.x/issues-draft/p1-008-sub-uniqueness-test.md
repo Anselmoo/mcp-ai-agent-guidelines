@@ -1,6 +1,6 @@
 # 🔧 P1-010: Create Description Uniqueness Test [serial]
 
-> **Parent**: #TBD
+> **Parent**: #695
 > **Labels**: `phase-1`, `priority-high`, `serial`, `copilot-suitable`
 > **Milestone**: M2: Discoverability
 > **Estimate**: 2 hours

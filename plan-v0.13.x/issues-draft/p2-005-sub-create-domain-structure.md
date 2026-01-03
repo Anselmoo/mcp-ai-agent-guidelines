@@ -1,6 +1,6 @@
 # 🔧 P2-005: Create Domain Layer Directory Structure [serial]
 
-> **Parent**: #TBD
+> **Parent**: #696
 > **Labels**: `phase-2`, `priority-high`, `serial`, `copilot-suitable`
 > **Milestone**: M3: Domain Layer
 > **Estimate**: 1 hour

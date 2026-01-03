@@ -1,6 +1,6 @@
 # 🔧 P2-022: Implement TOGAF/Enterprise Strategies [parallel]
 
-> **Parent**: #TBD
+> **Parent**: #696
 > **Labels**: `phase-2`, `priority-medium`, `parallel`, `copilot-suitable`, `mcp-serena`
 > **Milestone**: M3: Domain Layer
 > **Estimate**: 6 hours

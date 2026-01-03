@@ -1,6 +1,6 @@
 # 🔧 P4-003: Create Spec-Kit Types [parallel]
 
-> **Parent**: #TBD
+> **Parent**: #698
 > **Labels**: `phase-4a`, `priority-high`, `parallel`, `copilot-suitable`, `mcp-serena`
 > **Milestone**: M5: Spec-Kit Core
 > **Estimate**: 2 hours

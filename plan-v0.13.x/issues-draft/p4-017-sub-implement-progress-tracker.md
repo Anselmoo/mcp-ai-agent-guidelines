@@ -1,6 +1,6 @@
 # 🔧 P4-017: Implement ProgressTracker [serial]
 
-> **Parent**: #TBD
+> **Parent**: #698
 > **Labels**: `phase-4b`, `priority-high`, `serial`, `copilot-suitable`, `mcp-serena`
 > **Milestone**: M7: Spec-Kit Progress
 > **Estimate**: 4 hours

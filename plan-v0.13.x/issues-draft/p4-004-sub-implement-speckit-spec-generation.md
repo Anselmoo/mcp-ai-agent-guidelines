@@ -1,6 +1,6 @@
 # 🔧 P4-004: Implement SpecKitStrategy - spec.md Generation [serial]
 
-> **Parent**: #TBD
+> **Parent**: #698
 > **Labels**: `phase-4a`, `priority-high`, `serial`, `copilot-suitable`, `mcp-serena`
 > **Milestone**: M5: Spec-Kit Core
 > **Estimate**: 6 hours

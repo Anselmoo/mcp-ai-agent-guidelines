@@ -1,6 +1,6 @@
 # 🔧 P1-005: Add ToolAnnotations to Remaining Tools [parallel]
 
-> **Parent**: #TBD
+> **Parent**: #695
 > **Labels**: `phase-1`, `priority-medium`, `parallel`, `copilot-suitable`, `mcp-serena`
 > **Milestone**: M2: Discoverability
 > **Estimate**: 3 hours

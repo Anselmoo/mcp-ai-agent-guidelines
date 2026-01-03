@@ -1,6 +1,6 @@
 # 🔧 P2-017: Implement RFCStrategy [parallel]
 
-> **Parent**: #TBD
+> **Parent**: #696
 > **Labels**: `phase-2`, `priority-high`, `parallel`, `copilot-suitable`, `mcp-serena`
 > **Milestone**: M3: Domain Layer
 > **Estimate**: 4 hours

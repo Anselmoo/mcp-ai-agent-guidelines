@@ -1,6 +1,6 @@
 # 🔧 Sub-Issue: Register Unified Prompt Tool (P1-016)
 
-> **Parent**: #TBD
+> **Parent**: #695
 > **Labels**: `phase-1`, `serial`, `copilot-suitable`, `priority-high`
 > **Milestone**: M2: Test-Stable
 

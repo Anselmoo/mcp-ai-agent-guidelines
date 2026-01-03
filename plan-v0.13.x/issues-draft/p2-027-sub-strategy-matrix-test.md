@@ -1,6 +1,6 @@
 # 🔧 P2-027: Strategy Matrix Integration Test [serial]
 
-> **Parent**: #TBD
+> **Parent**: #696
 > **Labels**: `phase-2`, `priority-high`, `serial`, `copilot-suitable`
 > **Milestone**: M3: Domain Layer
 > **Estimate**: 4 hours

@@ -22,32 +22,32 @@ Phase 2 is the **core architectural refactoring** — extracting pure domain log
 
 | Order | Issue | Task ID | Priority | Execution | Assignee | Description                        |
 | ----- | ----- | ------- | -------- | --------- | -------- | ---------------------------------- |
-| 1     | #TBD  | P2-001  | High     | Serial    | @copilot | Create ErrorCode enum              |
-| 2     | #TBD  | P2-002  | High     | Serial    | @copilot | Create McpToolError class          |
-| 3     | #TBD  | P2-003  | High     | Serial    | @copilot | Create error factory functions     |
-| 4     | #TBD  | P2-004  | High     | Serial    | @copilot | Create central error handler       |
-| 5     | #TBD  | P2-005  | High     | Parallel  | @copilot | Create domain layer structure      |
-| 6     | #TBD  | P2-006  | High     | Parallel  | human    | Extract hierarchical-prompt domain |
-| 7     | #TBD  | P2-007  | High     | Parallel  | human    | Extract clean-code-scorer domain   |
-| 8     | #TBD  | P2-008  | High     | Serial    | human    | Migrate design-assistant errors    |
-| 9     | #TBD  | P2-009  | Medium   | Parallel  | @copilot | Migrate prompt tools errors        |
-| 10    | #TBD  | P2-010  | Medium   | Parallel  | @copilot | Migrate analysis tools errors      |
-| 11    | #TBD  | P2-011  | Medium   | Parallel  | @copilot | Extract security-prompt domain     |
-| 12    | #TBD  | P2-012  | High     | Serial    | human    | Extract design-session domain      |
-| 13    | #TBD  | P2-013  | Low      | Serial    | @copilot | Remove legacy error classes        |
-| 14    | #TBD  | P2-014  | High     | Serial    | @copilot | Domain layer integration test      |
+| 1     | #717  | P2-001  | High     | Serial    | @copilot | Create ErrorCode enum              |
+| 2     | #718  | P2-002  | High     | Serial    | @copilot | Create McpToolError class          |
+| 3     | #719  | P2-003  | High     | Serial    | @copilot | Create error factory functions     |
+| 4     | #720  | P2-004  | High     | Serial    | @copilot | Create central error handler       |
+| 5     | #721  | P2-005  | High     | Parallel  | @copilot | Create domain layer structure      |
+| 6     | #722  | P2-006  | High     | Parallel  | human    | Extract hierarchical-prompt domain |
+| 7     | #723  | P2-007  | High     | Parallel  | human    | Extract clean-code-scorer domain   |
+| 8     | #724  | P2-008  | High     | Serial    | human    | Migrate design-assistant errors    |
+| 9     | #725  | P2-009  | Medium   | Parallel  | @copilot | Migrate prompt tools errors        |
+| 10    | #726  | P2-010  | Medium   | Parallel  | @copilot | Migrate analysis tools errors      |
+| 11    | #727  | P2-011  | Medium   | Parallel  | @copilot | Extract security-prompt domain     |
+| 12    | #728  | P2-012  | High     | Serial    | human    | Extract design-session domain      |
+| 13    | #729  | P2-013  | Low      | Serial    | @copilot | Remove legacy error classes        |
+| 14    | #730  | P2-014  | High     | Serial    | @copilot | Domain layer integration test      |
 
 ### Phase 2b: Output Strategy (Week 7-8) — 14 Tasks
 
 | Order | Issue  | Task ID | Priority | Execution | Assignee                            | Description                     |
 | ----- | ------ | ------- | -------- | --------- | ----------------------------------- | ------------------------------- |
-| 15    | #TBD   | P2-015  | High     | Serial    | human                               | Create OutputStrategy interface |
-| 16    | #TBD   | P2-016  | High     | Serial    | @copilot                            | Implement ChatStrategy          |
-| 17    | #TBD   | P2-017  | High     | Parallel  | @copilot                            | Implement RFCStrategy           |
-| 18    | #TBD   | P2-018  | High     | Parallel  | @copilot                            | Implement ADRStrategy           |
-| 19    | #TBD   | P2-019  | High     | Parallel  | @copilot                            | Implement SDDStrategy           |
-| 20    | #TBD   | P2-020  | High     | Serial    | human                               | Implement CrossCuttingManager   |
-| 21    | #TBD   | P2-021  | Medium   | Parallel  | @copilot                            | Implement SpecKitStrategy       |
+| 15    | #731   | P2-015  | High     | Serial    | human                               | Create OutputStrategy interface |
+| 16    | #732   | P2-016  | High     | Serial    | @copilot                            | Implement ChatStrategy          |
+| 17    | #733   | P2-017  | High     | Parallel  | @copilot                            | Implement RFCStrategy           |
+| 18    | #734   | P2-018  | High     | Parallel  | @copilot                            | Implement ADRStrategy           |
+| 19    | #735   | P2-019  | High     | Parallel  | @copilot                            | Implement SDDStrategy           |
+| 20    | #736   | P2-020  | High     | Serial    | human                               | Implement CrossCuttingManager   |
+| 21    | #737   | P2-021  | Medium   | Parallel  | @copilot                            | Implement SpecKitStrategy       |
 | 22    | P2-022 | Medium  | Parallel | @copilot  | Implement TOGAFStrategy             |
 | 23    | P2-023 | Medium  | Parallel | @copilot  | Implement EnterpriseStrategy        |
 | 24    | P2-024 | High    | Serial   | human     | Implement PolyglotGateway           |

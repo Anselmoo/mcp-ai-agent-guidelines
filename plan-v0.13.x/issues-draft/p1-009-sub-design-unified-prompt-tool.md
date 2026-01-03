@@ -1,6 +1,6 @@
 # 🔧 P1-013: Design Unified Prompt-Hierarchy Tool API [serial]
 
-> **Parent**: #TBD
+> **Parent**: #695
 > **Labels**: `phase-1`, `priority-high`, `serial`, `copilot-suitable`, `human-required`
 > **Milestone**: M2: Discoverability
 > **Estimate**: 4 hours

@@ -1,6 +1,6 @@
 # 🔧 P4-019: Add update-progress Tool [serial]
 
-> **Parent**: #TBD
+> **Parent**: #698
 > **Labels**: `phase-4b`, `priority-medium`, `serial`, `copilot-suitable`, `mcp-serena`
 > **Milestone**: M7: Spec-Kit Progress
 > **Estimate**: 2 hours

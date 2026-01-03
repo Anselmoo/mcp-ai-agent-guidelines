@@ -1,6 +1,6 @@
 # 🔧 P2-028: Update Documentation for Phase 2 [serial]
 
-> **Parent**: #TBD
+> **Parent**: #696
 > **Labels**: `phase-2`, `priority-medium`, `serial`, `copilot-suitable`
 > **Milestone**: M3: Domain Layer
 > **Estimate**: 3 hours

@@ -22,29 +22,29 @@ These tools damage user trust when they fail silently. Fixing them is critical f
 
 | Order | Issue | Task ID | Priority | Execution | Assignee | Description                              |
 | ----- | ----- | ------- | -------- | --------- | -------- | ---------------------------------------- |
-| 1     | #TBD  | P3-001  | High     | Serial    | @copilot | Analyze mode-switcher current state      |
-| 2     | #TBD  | P3-002  | High     | Serial    | human    | Implement ModeManager singleton          |
-| 3     | #TBD  | P3-003  | High     | Serial    | @copilot | Refactor mode-switcher tool              |
-| 4     | #TBD  | P3-004  | Medium   | Serial    | @copilot | Add mode-aware tool filtering            |
-| 5     | #TBD  | P3-005  | High     | Parallel  | @copilot | Analyze project-onboarding current state |
-| 6     | #TBD  | P3-006  | High     | Serial    | human    | Implement ProjectScanner service         |
-| 7     | #TBD  | P3-007  | High     | Serial    | @copilot | Refactor project-onboarding tool         |
-| 8     | #TBD  | P3-008  | Medium   | Serial    | @copilot | Update ToolAnnotations for fixed tools   |
+| 1     | #745  | P3-001  | High     | Serial    | @copilot | Analyze mode-switcher current state      |
+| 2     | #746  | P3-002  | High     | Serial    | human    | Implement ModeManager singleton          |
+| 3     | #747  | P3-003  | High     | Serial    | @copilot | Refactor mode-switcher tool              |
+| 4     | #748  | P3-004  | Medium   | Serial    | @copilot | Add mode-aware tool filtering            |
+| 5     | #749  | P3-005  | High     | Parallel  | @copilot | Analyze project-onboarding current state |
+| 6     | #750  | P3-006  | High     | Serial    | human    | Implement ProjectScanner service         |
+| 7     | #751  | P3-007  | High     | Serial    | @copilot | Refactor project-onboarding tool         |
+| 8     | #752  | P3-008  | Medium   | Serial    | @copilot | Update ToolAnnotations for fixed tools   |
 
 ### Week 10: agent-orchestrator & Integration — 10 Tasks
 
 | Order | Issue | Task ID | Priority | Execution | Assignee | Description                            |
 | ----- | ----- | ------- | -------- | --------- | -------- | -------------------------------------- |
-| 9     | #TBD  | P3-009  | High     | Serial    | human    | Design agent orchestrator architecture |
-| 10    | #TBD  | P3-010  | High     | Serial    | human    | Implement AgentRegistry                |
-| 11    | #TBD  | P3-011  | High     | Serial    | human    | Implement HandoffProtocol              |
-| 12    | #TBD  | P3-012  | High     | Serial    | @copilot | Implement WorkflowEngine               |
-| 13    | #TBD  | P3-013  | High     | Serial    | @copilot | Implement agent-orchestrator tool      |
-| 14    | #TBD  | P3-014  | High     | Serial    | @copilot | Add predefined workflows               |
-| 15    | #TBD  | P3-015  | Medium   | Serial    | @copilot | Integration test: mode-switcher        |
-| 16    | #TBD  | P3-016  | Medium   | Serial    | @copilot | Integration test: project-onboarding   |
-| 17    | #TBD  | P3-017  | Medium   | Serial    | @copilot | Integration test: agent-orchestrator   |
-| 18    | #TBD  | P3-018  | High     | Serial    | @copilot | Phase 3 documentation                  |
+| 9     | #753  | P3-009  | High     | Serial    | human    | Design agent orchestrator architecture |
+| 10    | #754  | P3-010  | High     | Serial    | human    | Implement AgentRegistry                |
+| 11    | #755  | P3-011  | High     | Serial    | human    | Implement HandoffProtocol              |
+| 12    | #756  | P3-012  | High     | Serial    | @copilot | Implement WorkflowEngine               |
+| 13    | #757  | P3-013  | High     | Serial    | @copilot | Implement agent-orchestrator tool      |
+| 14    | #758  | P3-014  | High     | Serial    | @copilot | Add predefined workflows               |
+| 15    | #759  | P3-015  | Medium   | Serial    | @copilot | Integration test: mode-switcher        |
+| 16    | #760  | P3-016  | Medium   | Serial    | @copilot | Integration test: project-onboarding   |
+| 17    | #761  | P3-017  | Medium   | Serial    | @copilot | Integration test: agent-orchestrator   |
+| 18    | #762  | P3-018  | High     | Serial    | @copilot | Phase 3 documentation                  |
 
 ---
 

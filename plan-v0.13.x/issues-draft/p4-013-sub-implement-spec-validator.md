@@ -1,6 +1,6 @@
 # 🔧 P4-013: Implement SpecValidator [serial]
 
-> **Parent**: #TBD
+> **Parent**: #698
 > **Labels**: `phase-4b`, `priority-high`, `serial`, `copilot-suitable`, `mcp-serena`
 > **Milestone**: M6: Spec-Kit Validation
 > **Estimate**: 6 hours

@@ -1,6 +1,6 @@
 # 🔧 P1-004: Add ToolAnnotations to Session/Design Tools [parallel]
 
-> **Parent**: #TBD
+> **Parent**: #695
 > **Labels**: `phase-1`, `priority-high`, `parallel`, `copilot-suitable`, `mcp-serena`
 > **Milestone**: M2: Discoverability
 > **Estimate**: 2 hours

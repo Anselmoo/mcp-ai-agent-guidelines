@@ -1,6 +1,6 @@
 # 🔧 Sub-Issue: Rewrite Descriptions Batch 3 (P1-009)
 
-> **Parent**: #TBD
+> **Parent**: #695
 > **Labels**: `phase-1`, `parallel`, `copilot-suitable`, `priority-medium`
 > **Milestone**: M2: Test-Stable
 

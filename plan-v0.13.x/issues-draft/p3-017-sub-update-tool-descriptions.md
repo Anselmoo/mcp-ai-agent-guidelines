@@ -1,6 +1,6 @@
 # 🔧 P3-017: Update Tool Descriptions [serial]
 
-> **Parent**: #TBD
+> **Parent**: #697
 > **Labels**: `phase-3`, `priority-medium`, `serial`, `copilot-suitable`, `mcp-serena`
 > **Milestone**: M4: Broken Tools
 > **Estimate**: 1 hour

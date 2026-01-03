@@ -1,6 +1,6 @@
 # 🔧 P2-025: Create PolyglotGateway Orchestrator [serial]
 
-> **Parent**: #TBD
+> **Parent**: #696
 > **Labels**: `phase-2`, `priority-critical`, `serial`, `copilot-suitable`, `mcp-serena`
 > **Milestone**: M3: Domain Layer
 > **Estimate**: 6 hours

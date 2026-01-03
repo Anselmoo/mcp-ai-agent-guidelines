@@ -1,6 +1,6 @@
 # 🔧 P3-013: Implement Pre-defined Workflows [serial]
 
-> **Parent**: #TBD
+> **Parent**: #697
 > **Labels**: `phase-3`, `priority-medium`, `serial`, `copilot-suitable`, `mcp-serena`
 > **Milestone**: M4: Broken Tools
 > **Estimate**: 4 hours

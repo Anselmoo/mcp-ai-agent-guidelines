@@ -1,6 +1,6 @@
 # 🔧 P1-007: Rewrite Tool Descriptions — Batch 1 (Core Tools) [serial]
 
-> **Parent**: #TBD
+> **Parent**: #695
 > **Labels**: `phase-1`, `priority-high`, `serial`, `copilot-suitable`, `mcp-serena`
 > **Milestone**: M2: Discoverability
 > **Estimate**: 4 hours

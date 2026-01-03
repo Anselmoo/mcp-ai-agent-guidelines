@@ -1,6 +1,6 @@
 # 🔧 P4-012: Strategy Selection for Spec-Kit [serial]
 
-> **Parent**: #TBD
+> **Parent**: #698
 > **Labels**: `phase-4a`, `priority-medium`, `serial`, `copilot-suitable`
 > **Milestone**: M5: Spec-Kit Core
 > **Estimate**: 2 hours

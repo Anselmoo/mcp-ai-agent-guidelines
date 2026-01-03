@@ -1,6 +1,6 @@
 # 🔧 P4-011: Integrate Spec-Kit with Design-Assistant [serial]
 
-> **Parent**: #TBD
+> **Parent**: #698
 > **Labels**: `phase-4a`, `priority-high`, `serial`, `copilot-suitable`, `mcp-serena`
 > **Milestone**: M5: Spec-Kit Core
 > **Estimate**: 4 hours

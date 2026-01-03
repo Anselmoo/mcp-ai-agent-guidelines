@@ -1,6 +1,6 @@
 # 🔧 P3-015: Add Execution Graph Logging [parallel]
 
-> **Parent**: #TBD
+> **Parent**: #697
 > **Labels**: `phase-3`, `priority-low`, `parallel`, `copilot-suitable`, `mcp-serena`
 > **Milestone**: M4: Broken Tools
 > **Estimate**: 3 hours

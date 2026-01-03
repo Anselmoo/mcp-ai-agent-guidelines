@@ -1,6 +1,6 @@
 # 🔧 P3-001: Analyze mode-switcher Current Implementation [serial]
 
-> **Parent**: #TBD
+> **Parent**: #697
 > **Labels**: `phase-3`, `priority-high`, `serial`, `copilot-suitable`, `mcp-serena`
 > **Milestone**: M4: Broken Tools
 > **Estimate**: 2 hours

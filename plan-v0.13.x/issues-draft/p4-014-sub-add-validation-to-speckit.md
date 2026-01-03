@@ -1,6 +1,6 @@
 # 🔧 P4-014: Add Validation to SpecKitStrategy [serial]
 
-> **Parent**: #TBD
+> **Parent**: #698
 > **Labels**: `phase-4b`, `priority-high`, `serial`, `copilot-suitable`
 > **Milestone**: M6: Spec-Kit Validation
 > **Estimate**: 3 hours

@@ -1,6 +1,6 @@
 # 🔧 P1-001: Create Annotation Presets [serial]
 
-> **Parent**: #TBD
+> **Parent**: #695
 > **Labels**: `phase-1`, `priority-high`, `serial`, `copilot-suitable`, `mcp-serena`
 > **Milestone**: M2: Discoverability
 > **Estimate**: 2 hours

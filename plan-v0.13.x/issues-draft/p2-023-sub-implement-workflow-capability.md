@@ -1,6 +1,6 @@
 # 🔧 P2-023: Implement Workflow Capability Handler [parallel]
 
-> **Parent**: #TBD
+> **Parent**: #696
 > **Labels**: `phase-2`, `priority-medium`, `parallel`, `copilot-suitable`, `mcp-serena`
 > **Milestone**: M3: Domain Layer
 > **Estimate**: 3 hours

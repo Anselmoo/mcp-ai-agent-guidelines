@@ -1,6 +1,6 @@
 # 🔧 P3-014: Refactor agent-orchestrator Tool [serial]
 
-> **Parent**: #TBD
+> **Parent**: #697
 > **Labels**: `phase-3`, `priority-high`, `serial`, `copilot-suitable`, `mcp-serena`
 > **Milestone**: M4: Broken Tools
 > **Estimate**: 4 hours

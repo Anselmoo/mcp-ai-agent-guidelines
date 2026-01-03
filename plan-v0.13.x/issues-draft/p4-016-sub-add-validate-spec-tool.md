@@ -1,6 +1,6 @@
 # 🔧 P4-016: Add validate-spec Tool [serial]
 
-> **Parent**: #TBD
+> **Parent**: #698
 > **Labels**: `phase-4b`, `priority-medium`, `serial`, `copilot-suitable`, `mcp-serena`
 > **Milestone**: M6: Spec-Kit Validation
 > **Estimate**: 3 hours

@@ -1,6 +1,6 @@
 # 🔧 P3-011: Implement Basic AgentOrchestrator [serial]
 
-> **Parent**: #TBD
+> **Parent**: #697
 > **Labels**: `phase-3`, `priority-high`, `serial`, `copilot-suitable`, `mcp-serena`
 > **Milestone**: M4: Broken Tools
 > **Estimate**: 6 hours

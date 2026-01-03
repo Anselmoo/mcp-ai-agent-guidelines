@@ -1,6 +1,6 @@
 # 🔧 P2-014: Domain Layer Integration Test [serial]
 
-> **Parent**: #TBD
+> **Parent**: #696
 > **Labels**: `phase-2`, `priority-high`, `serial`, `copilot-suitable`
 > **Milestone**: M3: Domain Layer
 > **Estimate**: 3 hours

@@ -1,6 +1,6 @@
 # 🔧 P2-013: Remove Legacy Error Classes [serial]
 
-> **Parent**: #TBD
+> **Parent**: #696
 > **Labels**: `phase-2`, `priority-low`, `serial`, `copilot-suitable`, `mcp-serena`
 > **Milestone**: M3: Domain Layer
 > **Estimate**: 2 hours

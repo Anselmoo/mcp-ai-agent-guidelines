@@ -1,6 +1,6 @@
 # 🔧 P4-010: Add speckit-generator Tool [serial]
 
-> **Parent**: #TBD
+> **Parent**: #698
 > **Labels**: `phase-4a`, `priority-high`, `serial`, `copilot-suitable`, `mcp-serena`
 > **Milestone**: M5: Spec-Kit Core
 > **Estimate**: 3 hours

@@ -1,6 +1,6 @@
 # 🔧 P4-015: Create Validation Report Format [serial]
 
-> **Parent**: #TBD
+> **Parent**: #698
 > **Labels**: `phase-4b`, `priority-medium`, `serial`, `copilot-suitable`
 > **Milestone**: M6: Spec-Kit Validation
 > **Estimate**: 2 hours

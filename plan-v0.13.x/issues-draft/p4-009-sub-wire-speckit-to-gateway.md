@@ -1,6 +1,6 @@
 # 🔧 P4-009: Wire SpecKitStrategy to Gateway [serial]
 
-> **Parent**: #TBD
+> **Parent**: #698
 > **Labels**: `phase-4a`, `priority-high`, `serial`, `copilot-suitable`, `mcp-serena`
 > **Milestone**: M5: Spec-Kit Core
 > **Estimate**: 2 hours

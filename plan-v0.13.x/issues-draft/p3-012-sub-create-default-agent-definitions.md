@@ -1,6 +1,6 @@
 # 🔧 P3-012: Create Default Agent Definitions [parallel]
 
-> **Parent**: #TBD
+> **Parent**: #697
 > **Labels**: `phase-3`, `priority-medium`, `parallel`, `copilot-suitable`, `mcp-serena`
 > **Milestone**: M4: Broken Tools
 > **Estimate**: 3 hours
