@@ -855,7 +855,7 @@ async function main() {
 	// Read all issue draft files
 	const files = await fs.readdir(ISSUES_DRAFT_DIR);
 	const issueFiles = files
-		.filter((f) => f.match(/^\d{3}-(sub|parent)-.+\.md$/))
+		.filter((f) => f.match(/^(\d{3}-(sub|parent)-|p\d+-\d+-sub-).+\.md$/))
 		.sort();
 
 	console.log(`Found ${issueFiles.length} issue draft files\n`);
