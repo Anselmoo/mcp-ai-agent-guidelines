@@ -19,13 +19,182 @@
  *   --milestone <id>     Only create specific milestone (requires --create-milestones)
  */
 
-import { execSync } from "node:child_process";
+import { execFileSync, execSync } from "node:child_process";
 import { promises as fs, unlinkSync, writeFileSync } from "node:fs";
 import { basename, join } from "node:path";
 
 const ISSUES_DRAFT_DIR = "plan-v0.13.x/issues-draft";
 const MILESTONES_FILE = "plan-v0.13.x/issues-draft/milestones.md";
 const REPO = "Anselmoo/mcp-ai-agent-guidelines";
+
+// Label definitions with colors (for auto-creation)
+const LABEL_DEFINITIONS = {
+	"phase-1": {
+		color: "1d76db",
+		description: "Phase 1: LLM Tool Discoverability",
+	},
+	"phase-2": {
+		color: "0e8a16",
+		description: "Phase 2: Domain Layer Extraction",
+	},
+	"phase-3": { color: "d93f0b", description: "Phase 3: Broken Tools Fix" },
+	"phase-4": { color: "5319e7", description: "Phase 4: Spec-Kit Integration" },
+	"phase-4a": {
+		color: "6f42c1",
+		description: "Phase 4a: Constitution & Generation",
+	},
+	"phase-4b": {
+		color: "7c3aed",
+		description: "Phase 4b: Validation & Progress",
+	},
+	"priority-critical": { color: "b60205", description: "Critical priority" },
+	"priority-high": { color: "d93f0b", description: "High priority" },
+	"priority-medium": { color: "fbca04", description: "Medium priority" },
+	"priority-low": { color: "0e8a16", description: "Low priority" },
+	"copilot-suitable": {
+		color: "84b6eb",
+		description: "Suitable for GitHub Copilot Coding Agent",
+	},
+	"mcp-serena": {
+		color: "c5def5",
+		description: "Recommend MCP Serena for semantic code operations",
+	},
+	"human-required": {
+		color: "e99695",
+		description: "Requires human decision or review",
+	},
+	serial: { color: "fef2c0", description: "Must be executed sequentially" },
+	parallel: { color: "c2e0c6", description: "Can be executed in parallel" },
+	epic: { color: "3e4b9e", description: "Epic/Parent issue" },
+};
+
+// Cache for existing labels
+let existingLabelsCache = null;
+
+// Cache for existing milestones
+let existingMilestonesCache = null;
+
+/**
+ * Get existing labels from repo (cached)
+ */
+function getExistingLabels() {
+	if (existingLabelsCache !== null) {
+		return existingLabelsCache;
+	}
+
+	try {
+		const output = execSync(
+			`gh label list --repo ${REPO} --json name --limit 200`,
+			{
+				encoding: "utf-8",
+			},
+		);
+		const labels = JSON.parse(output);
+		existingLabelsCache = new Set(labels.map((l) => l.name));
+		return existingLabelsCache;
+	} catch {
+		existingLabelsCache = new Set();
+		return existingLabelsCache;
+	}
+}
+
+/**
+ * Get existing milestones from repo (cached)
+ */
+function getExistingMilestones() {
+	if (existingMilestonesCache !== null) {
+		return existingMilestonesCache;
+	}
+
+	try {
+		const output = execSync(
+			`gh api repos/${REPO}/milestones --jq '.[].title'`,
+			{
+				encoding: "utf-8",
+			},
+		);
+		existingMilestonesCache = output.trim().split("\n").filter(Boolean);
+		return existingMilestonesCache;
+	} catch {
+		existingMilestonesCache = [];
+		return existingMilestonesCache;
+	}
+}
+
+/**
+ * Find matching milestone by prefix (e.g., "M2: Discoverability" matches "M2: Discoverability (End Week 4)")
+ */
+function findMatchingMilestone(milestoneName) {
+	const milestones = getExistingMilestones();
+
+	// Try exact match first
+	if (milestones.includes(milestoneName)) {
+		return milestoneName;
+	}
+
+	// Try prefix match (milestone name starts with the short version)
+	const match = milestones.find((m) => m.startsWith(milestoneName));
+	if (match) {
+		return match;
+	}
+
+	// Try matching by milestone ID (e.g., "M2:")
+	const idMatch = milestoneName.match(/^(M\d+):/);
+	if (idMatch) {
+		const idPrefix = idMatch[1] + ":";
+		const idMatched = milestones.find((m) => m.startsWith(idPrefix));
+		if (idMatched) {
+			return idMatched;
+		}
+	}
+
+	return null;
+}
+
+/**
+ * Create a label if it doesn't exist
+ */
+function ensureLabel(labelName) {
+	const existing = getExistingLabels();
+	if (existing.has(labelName)) {
+		return true;
+	}
+
+	const definition = LABEL_DEFINITIONS[labelName];
+	if (!definition) {
+		console.warn(
+			`⚠️  Unknown label: ${labelName} (will attempt to create with default color)`,
+		);
+	}
+
+	const color = definition?.color || "ededed";
+	const description = definition?.description || "";
+
+	try {
+		execFileSync(
+			"gh",
+			[
+				"label",
+				"create",
+				labelName,
+				"--repo",
+				REPO,
+				"--color",
+				color,
+				"--description",
+				description,
+				"--force",
+			],
+			{ encoding: "utf-8" },
+		);
+		console.log(`🏷️  Created label: ${labelName}`);
+		existingLabelsCache.add(labelName);
+		return true;
+	} catch {
+		console.error(`❌ Failed to create label: ${labelName}`);
+		return false;
+	}
+}
 
 // Parse command line arguments
 const args = process.argv.slice(2);
@@ -37,6 +206,7 @@ const options = {
 	skipParents: args.includes("--skip-parents"),
 	createMilestones: args.includes("--create-milestones"),
 	milestone: args.find((a) => a.startsWith("--milestone="))?.split("=")[1],
+	createLabels: args.includes("--create-labels"),
 };
 
 /**
@@ -99,22 +269,39 @@ function parseMilestones(content) {
 function createGitHubMilestone(milestoneData, dryRun = false) {
 	const { id, title, description, due_on, state } = milestoneData;
 
+	// Clean title - remove surrounding quotes if present
+	const cleanTitle = title.replace(/^"|"$/g, "");
+	// Clean due_on - remove surrounding quotes if present
+	const cleanDueOn = due_on.replace(/^"|"$/g, "");
+
 	if (dryRun) {
 		console.log(`\n📅 [DRY RUN] Would create milestone:`);
 		console.log(`   ID: ${id}`);
-		console.log(`   Title: ${title}`);
-		console.log(`   Due: ${due_on}`);
+		console.log(`   Title: ${cleanTitle}`);
+		console.log(`   Due: ${cleanDueOn}`);
 		console.log(`   State: ${state}`);
 		return null;
 	}
 
 	try {
-		const cmd = `gh api repos/${REPO}/milestones --method POST -f title="${title}" -f description="${description}" -f due_on="${due_on}" -f state="${state}"`;
+		// Use JSON input via stdin to avoid shell escaping issues
+		const payload = JSON.stringify({
+			title: cleanTitle,
+			description: description || "",
+			due_on: cleanDueOn,
+			state: state || "open",
+		});
 
-		const output = execSync(cmd, { encoding: "utf-8" });
+		const output = execSync(
+			`gh api repos/${REPO}/milestones --method POST --input -`,
+			{
+				encoding: "utf-8",
+				input: payload,
+			},
+		);
 		const result = JSON.parse(output);
 
-		console.log(`✅ Created milestone: ${title}`);
+		console.log(`✅ Created milestone: ${cleanTitle}`);
 		console.log(`   Number: ${result.number}`);
 		console.log(`   URL: ${result.html_url}`);
 
@@ -122,11 +309,11 @@ function createGitHubMilestone(milestoneData, dryRun = false) {
 	} catch (error) {
 		// Check if milestone already exists
 		if (error.message.includes("already_exists")) {
-			console.log(`⚠️  Milestone already exists: ${title}`);
+			console.log(`⚠️  Milestone already exists: ${cleanTitle}`);
 			return null;
 		}
 
-		console.error(`❌ Failed to create milestone: ${title}`);
+		console.error(`❌ Failed to create milestone: ${cleanTitle}`);
 		console.error(error.message);
 		return null;
 	}
@@ -248,18 +435,51 @@ function createGitHubIssue(issueData, dryRun = false) {
 		return null;
 	}
 
-	const labelArgs = labels.map((l) => `--label "${l}"`).join(" ");
-	const milestoneArg = milestone ? `--milestone "${milestone}"` : "";
-	const assigneeArg = assignee ? `--assignee "${assignee}"` : "";
+	// Ensure all labels exist before creating the issue
+	for (const label of labels) {
+		ensureLabel(label);
+	}
 
 	// Create temporary file for issue body
 	const bodyFile = `/tmp/gh-issue-${Date.now()}.md`;
 	writeFileSync(bodyFile, body);
 
 	try {
-		const cmd = `gh issue create --repo ${REPO} --title "${title}" ${labelArgs} ${milestoneArg} ${assigneeArg} --body-file "${bodyFile}"`;
+		// Build command with proper argument handling
+		const args = [
+			"issue",
+			"create",
+			"--repo",
+			REPO,
+			"--title",
+			title, // Will be properly escaped by execFileSync
+			"--body-file",
+			bodyFile,
+		];
 
-		const output = execSync(cmd, { encoding: "utf-8" });
+		// Add labels
+		for (const label of labels) {
+			args.push("--label", label);
+		}
+
+		// Add milestone (find matching milestone by prefix)
+		if (milestone) {
+			// Clean up milestone name - extract just the short title if it's a full description
+			const shortMilestone = milestone.split("(")[0].trim();
+			const matchedMilestone = findMatchingMilestone(shortMilestone);
+			if (matchedMilestone) {
+				args.push("--milestone", matchedMilestone);
+			} else {
+				console.warn(`⚠️  Milestone not found: ${shortMilestone}`);
+			}
+		}
+
+		// Add assignee
+		if (assignee) {
+			args.push("--assignee", assignee);
+		}
+
+		const output = execFileSync("gh", args, { encoding: "utf-8" });
 		const issueUrl = output.trim();
 
 		console.log(`✅ Created: ${title}`);
@@ -270,6 +490,12 @@ function createGitHubIssue(issueData, dryRun = false) {
 
 		return issueUrl;
 	} catch (error) {
+		// Clean up temp file even on error
+		try {
+			unlinkSync(bodyFile);
+		} catch {
+			// Ignore cleanup errors
+		}
 		console.error(`❌ Failed to create issue: ${title}`);
 		console.error(error.message);
 		return null;
