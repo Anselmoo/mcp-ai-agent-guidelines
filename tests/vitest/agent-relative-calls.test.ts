@@ -295,25 +295,30 @@ describe("Agent-Relative Calls Support", () => {
 			const fs = await import("node:fs");
 			const indexContent = fs.readFileSync("src/index.ts", "utf-8");
 
-			// Check that all tools have the "Use this MCP" pattern
-			const toolDescriptionMatches = indexContent.match(
+			// Check that tools have either the old "Use this MCP" pattern or new "BEST FOR:" pattern
+			const oldPatternMatches = indexContent.match(
 				/description:\s*"[^"]*Use this MCP to[^"]*"/g,
 			);
+			const newPatternMatches = indexContent.match(
+				/description:\s*"[^"]*BEST FOR:[^"]*"/g,
+			);
 
-			// We should have at least 25 tools with this pattern
-			expect(toolDescriptionMatches).toBeDefined();
-			if (toolDescriptionMatches) {
-				expect(toolDescriptionMatches.length).toBeGreaterThanOrEqual(25);
-			}
+			// We should have descriptions with at least one of these patterns
+			const totalMatches =
+				(oldPatternMatches?.length || 0) + (newPatternMatches?.length || 0);
+			expect(totalMatches).toBeGreaterThanOrEqual(25);
 
-			// Check that all tools have examples
+			// Check that tools have either examples or OUTPUTS section
 			const exampleMatches = indexContent.match(
 				/description:\s*"[^"]*Example:[^"]*"/g,
 			);
-			expect(exampleMatches).toBeDefined();
-			if (exampleMatches) {
-				expect(exampleMatches.length).toBeGreaterThanOrEqual(25);
-			}
+			const outputsMatches = indexContent.match(
+				/description:\s*"[^"]*OUTPUTS:[^"]*"/g,
+			);
+
+			const totalDocMatches =
+				(exampleMatches?.length || 0) + (outputsMatches?.length || 0);
+			expect(totalDocMatches).toBeGreaterThanOrEqual(25);
 		});
 
 		it("should validate prompt builder tools have consistent descriptions", async () => {
@@ -340,13 +345,20 @@ describe("Agent-Relative Calls Support", () => {
 				expect(match, `Tool ${tool} should be found in index.ts`).toBeTruthy();
 				if (match) {
 					const description = match[1];
+					// Accept either old or new format
+					const hasOldFormat = description.includes("Use this MCP");
+					const hasNewFormat = description.includes("BEST FOR:");
 					expect(
-						description,
-						`${tool} should have "Use this MCP" pattern`,
-					).toContain("Use this MCP");
-					expect(description, `${tool} should have Example`).toContain(
-						"Example:",
-					);
+						hasOldFormat || hasNewFormat,
+						`${tool} should have either "Use this MCP" or "BEST FOR:" pattern`,
+					).toBeTruthy();
+
+					const hasExample = description.includes("Example:");
+					const hasOutputs = description.includes("OUTPUTS:");
+					expect(
+						hasExample || hasOutputs,
+						`${tool} should have either Example or OUTPUTS`,
+					).toBeTruthy();
 				}
 			}
 		});
@@ -372,13 +384,20 @@ describe("Agent-Relative Calls Support", () => {
 				expect(match, `Tool ${tool} should be found in index.ts`).toBeTruthy();
 				if (match) {
 					const description = match[1];
+					// Accept either old or new format
+					const hasOldFormat = description.includes("Use this MCP");
+					const hasNewFormat = description.includes("BEST FOR:");
 					expect(
-						description,
-						`${tool} should have "Use this MCP" pattern`,
-					).toContain("Use this MCP");
-					expect(description, `${tool} should have Example`).toContain(
-						"Example:",
-					);
+						hasOldFormat || hasNewFormat,
+						`${tool} should have either "Use this MCP" or "BEST FOR:" pattern`,
+					).toBeTruthy();
+
+					const hasExample = description.includes("Example:");
+					const hasOutputs = description.includes("OUTPUTS:");
+					expect(
+						hasExample || hasOutputs,
+						`${tool} should have either Example or OUTPUTS`,
+					).toBeTruthy();
 				}
 			}
 		});
@@ -404,13 +423,20 @@ describe("Agent-Relative Calls Support", () => {
 				expect(match, `Tool ${tool} should be found in index.ts`).toBeTruthy();
 				if (match) {
 					const description = match[1];
+					// Accept either old or new format
+					const hasOldFormat = description.includes("Use this MCP");
+					const hasNewFormat = description.includes("BEST FOR:");
 					expect(
-						description,
-						`${tool} should have "Use this MCP" pattern`,
-					).toContain("Use this MCP");
-					expect(description, `${tool} should have Example`).toContain(
-						"Example:",
-					);
+						hasOldFormat || hasNewFormat,
+						`${tool} should have either "Use this MCP" or "BEST FOR:" pattern`,
+					).toBeTruthy();
+
+					const hasExample = description.includes("Example:");
+					const hasOutputs = description.includes("OUTPUTS:");
+					expect(
+						hasExample || hasOutputs,
+						`${tool} should have either Example or OUTPUTS`,
+					).toBeTruthy();
 				}
 			}
 		});

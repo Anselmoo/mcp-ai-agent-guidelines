@@ -99,7 +99,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "hierarchical-prompt-builder",
 				description:
-					"Build structured prompts with clear hierarchies and layers of specificity. Use this MCP to create prompts with context → goal → requirements hierarchy, supporting multiple prompting techniques (chain-of-thought, few-shot, etc.). Example: 'Use the hierarchical-prompt-builder MCP to create a code review prompt for React components focusing on performance optimization'",
+					"Create AI prompts with context→goal→requirements hierarchy. BEST FOR: code reviews, feature specs, technical decisions. OUTPUTS: Markdown prompt ready for LLM injection.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1022,7 +1022,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "clean-code-scorer",
 				description:
-					"Calculate comprehensive Clean Code score (0-100) based on multiple quality metrics including code hygiene, test coverage, TypeScript, linting, documentation, and security. Use this MCP to get an overall quality assessment of your codebase. Example: 'Use the clean-code-scorer MCP to evaluate the quality of our authentication module and identify improvement areas'",
+					"Calculate code quality score (0-100) with metric breakdown. BEST FOR: code reviews, refactoring decisions, CI quality gates. OUTPUTS: Score, metrics table, improvement suggestions.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1115,7 +1115,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "dependency-auditor",
 				description:
-					"Multi-language dependency auditor for analyzing package files across multiple ecosystems including JavaScript/TypeScript (package.json), Python (requirements.txt, pyproject.toml), Go (go.mod), Rust (Cargo.toml), Ruby (Gemfile), C++ (vcpkg.json), and Lua (rockspec). Detects outdated, deprecated, or insecure packages and recommends modern, secure alternatives. Use this MCP to audit project dependencies for security vulnerabilities and modernization opportunities across polyglot codebases. Example: 'Use the dependency-auditor MCP to check our requirements.txt for security vulnerabilities and deprecated packages'",
+					"Audit dependencies for vulnerabilities and deprecations. BEST FOR: security scans, upgrade planning, CI/CD gates. OUTPUTS: Vulnerability report, upgrade recommendations.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1517,7 +1517,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "security-hardening-prompt-builder",
 				description:
-					"Build specialized security hardening and vulnerability analysis prompts for AI-guided security assessment with OWASP Top 10, NIST, and compliance framework support. Use this MCP to create comprehensive security analysis prompts with threat modeling and compliance checks. Example: 'Use the security-hardening-prompt-builder MCP to analyze our API endpoints for OWASP Top 10 vulnerabilities and PCI-DSS compliance'",
+					"Generate OWASP-aligned security assessment prompts. BEST FOR: threat modeling, security audits, compliance checks. OUTPUTS: Security prompt with threat matrix.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -2064,7 +2064,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "design-assistant",
 				description:
-					"Comprehensive multi-phase design workflow orchestration with constraint validation, coverage enforcement, and artifact generation (ADRs, specifications, roadmaps). This deterministic, context-driven design assistant utilizes a constraint framework for structured design sessions, providing context-aware design recommendations tailored to language, framework, and code patterns—including SOLID principles, design patterns, and framework-specific best practices. Use this MCP to manage complex design processes through discovery, requirements, architecture, and implementation phases. Example: 'Use the design-assistant MCP to start a design session for our new API gateway and guide it through all design phases'",
+					"Orchestrate multi-phase design sessions with ADR/spec generation. BEST FOR: architecture decisions, feature design, technical planning. OUTPUTS: ADRs, specifications, roadmaps.",
 				inputSchema: {
 					type: "object",
 					properties: {
