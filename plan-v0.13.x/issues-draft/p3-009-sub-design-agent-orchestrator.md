@@ -1,6 +1,6 @@
 # 🔧 P3-009: Design Agent Orchestrator Architecture [serial]
 
-> **Parent**: [003-parent-phase3-broken-tools.md](https://github.com/Anselmoo/mcp-ai-agent-guidelines/blob/development/plan-v0.13.x/issues-draft/003-parent-phase3-broken-tools.md)
+> **Parent**: #TBD
 > **Labels**: `phase-3`, `priority-high`, `serial`, `copilot-suitable`
 > **Milestone**: M4: Broken Tools
 > **Estimate**: 4 hours

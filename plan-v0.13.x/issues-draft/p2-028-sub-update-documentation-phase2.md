@@ -1,6 +1,6 @@
 # 🔧 P2-028: Update Documentation for Phase 2 [serial]
 
-> **Parent**: [002-parent-phase2-domain-extraction.md](https://github.com/Anselmoo/mcp-ai-agent-guidelines/blob/development/plan-v0.13.x/issues-draft/002-parent-phase2-domain-extraction.md)
+> **Parent**: #TBD
 > **Labels**: `phase-2`, `priority-medium`, `serial`, `copilot-suitable`
 > **Milestone**: M3: Domain Layer
 > **Estimate**: 3 hours

@@ -1,6 +1,6 @@
 # 🔧 P3-005: Analyze project-onboarding Current Implementation [parallel]
 
-> **Parent**: [003-parent-phase3-broken-tools.md](https://github.com/Anselmoo/mcp-ai-agent-guidelines/blob/development/plan-v0.13.x/issues-draft/003-parent-phase3-broken-tools.md)
+> **Parent**: #TBD
 > **Labels**: `phase-3`, `priority-high`, `parallel`, `copilot-suitable`, `mcp-serena`
 > **Milestone**: M4: Broken Tools
 > **Estimate**: 2 hours

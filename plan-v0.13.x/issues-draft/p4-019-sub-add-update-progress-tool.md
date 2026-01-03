@@ -1,6 +1,6 @@
 # 🔧 P4-019: Add update-progress Tool [serial]
 
-> **Parent**: [004-parent-phase4-speckit.md](https://github.com/Anselmoo/mcp-ai-agent-guidelines/blob/development/plan-v0.13.x/issues-draft/004-parent-phase4-speckit.md)
+> **Parent**: #TBD
 > **Labels**: `phase-4b`, `priority-medium`, `serial`, `copilot-suitable`, `mcp-serena`
 > **Milestone**: M7: Spec-Kit Progress
 > **Estimate**: 2 hours

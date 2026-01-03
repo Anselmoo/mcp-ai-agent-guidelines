@@ -1,6 +1,6 @@
 # 🔧 Sub-Issue: Register Unified Prompt Tool (P1-016)
 
-> **Parent**: [001-parent-phase1-discoverability.md](https://github.com/Anselmoo/mcp-ai-agent-guidelines/blob/development/plan-v0.13.x/issues-draft/001-parent-phase1-discoverability.md)
+> **Parent**: #TBD
 > **Labels**: `phase-1`, `serial`, `copilot-suitable`, `priority-high`
 > **Milestone**: M2: Test-Stable
 

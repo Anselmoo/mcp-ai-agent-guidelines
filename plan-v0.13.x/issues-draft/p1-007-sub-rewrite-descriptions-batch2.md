@@ -1,5 +1,6 @@
 # 🔧 P1-008: Rewrite Tool Descriptions — Batch 2 (Prompt Builders) [serial]
 
+> **Parent**: #TBD
 > **Labels**: `phase-1`, `priority-high`, `serial`, `copilot-suitable`, `mcp-serena`
 > **Milestone**: M2: Discoverability
 > **Estimate**: 4 hours

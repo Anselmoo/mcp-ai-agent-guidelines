@@ -1,5 +1,6 @@
 # 🔧 P1-006: Export Tool Descriptions to CSV for Analysis [parallel]
 
+> **Parent**: #TBD
 > **Labels**: `phase-1`, `priority-medium`, `parallel`, `copilot-suitable`
 > **Milestone**: M2: Discoverability
 > **Estimate**: 1 hour

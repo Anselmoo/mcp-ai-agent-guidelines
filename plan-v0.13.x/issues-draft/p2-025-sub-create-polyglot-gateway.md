@@ -1,6 +1,6 @@
 # 🔧 P2-025: Create PolyglotGateway Orchestrator [serial]
 
-> **Parent**: [002-parent-phase2-domain-extraction.md](https://github.com/Anselmoo/mcp-ai-agent-guidelines/blob/development/plan-v0.13.x/issues-draft/002-parent-phase2-domain-extraction.md)
+> **Parent**: #TBD
 > **Labels**: `phase-2`, `priority-critical`, `serial`, `copilot-suitable`, `mcp-serena`
 > **Milestone**: M3: Domain Layer
 > **Estimate**: 6 hours

@@ -1,6 +1,6 @@
 # 🔧 P4-001: Analyze CONSTITUTION.md Structure [serial]
 
-> **Parent**: [004-parent-phase4-speckit.md](https://github.com/Anselmoo/mcp-ai-agent-guidelines/blob/development/plan-v0.13.x/issues-draft/004-parent-phase4-speckit.md)
+> **Parent**: #TBD
 > **Labels**: `phase-4a`, `priority-high`, `serial`, `copilot-suitable`
 > **Milestone**: M5: Spec-Kit Core
 > **Estimate**: 2 hours

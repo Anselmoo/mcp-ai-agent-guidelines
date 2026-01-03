@@ -1,6 +1,6 @@
 # 🔧 P4-012: Strategy Selection for Spec-Kit [serial]
 
-> **Parent**: [004-parent-phase4-speckit.md](https://github.com/Anselmoo/mcp-ai-agent-guidelines/blob/development/plan-v0.13.x/issues-draft/004-parent-phase4-speckit.md)
+> **Parent**: #TBD
 > **Labels**: `phase-4a`, `priority-medium`, `serial`, `copilot-suitable`
 > **Milestone**: M5: Spec-Kit Core
 > **Estimate**: 2 hours

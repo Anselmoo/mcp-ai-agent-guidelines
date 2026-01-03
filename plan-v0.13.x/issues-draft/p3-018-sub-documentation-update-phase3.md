@@ -1,6 +1,6 @@
 # 🔧 P3-018: Documentation Update for Phase 3 [serial]
 
-> **Parent**: [003-parent-phase3-broken-tools.md](https://github.com/Anselmoo/mcp-ai-agent-guidelines/blob/development/plan-v0.13.x/issues-draft/003-parent-phase3-broken-tools.md)
+> **Parent**: #TBD
 > **Labels**: `phase-3`, `priority-medium`, `serial`, `copilot-suitable`
 > **Milestone**: M4: Broken Tools
 > **Estimate**: 2 hours

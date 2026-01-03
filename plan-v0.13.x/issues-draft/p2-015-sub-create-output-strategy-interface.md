@@ -1,6 +1,6 @@
 # 🔧 P2-015: Create OutputStrategy Interface [serial]
 
-> **Parent**: [002-parent-phase2-domain-extraction.md](https://github.com/Anselmoo/mcp-ai-agent-guidelines/blob/development/plan-v0.13.x/issues-draft/002-parent-phase2-domain-extraction.md)
+> **Parent**: #TBD
 > **Labels**: `phase-2`, `priority-high`, `serial`, `copilot-suitable`, `mcp-serena`
 > **Milestone**: M3: Domain Layer
 > **Estimate**: 3 hours

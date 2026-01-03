@@ -1,6 +1,6 @@
 # 🔧 P3-007: Refactor project-onboarding Tool [serial]
 
-> **Parent**: [003-parent-phase3-broken-tools.md](https://github.com/Anselmoo/mcp-ai-agent-guidelines/blob/development/plan-v0.13.x/issues-draft/003-parent-phase3-broken-tools.md)
+> **Parent**: #TBD
 > **Labels**: `phase-3`, `priority-high`, `serial`, `copilot-suitable`, `mcp-serena`
 > **Milestone**: M4: Broken Tools
 > **Estimate**: 4 hours

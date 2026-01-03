@@ -1,6 +1,6 @@
 # 🔧 P4-014: Add Validation to SpecKitStrategy [serial]
 
-> **Parent**: [004-parent-phase4-speckit.md](https://github.com/Anselmoo/mcp-ai-agent-guidelines/blob/development/plan-v0.13.x/issues-draft/004-parent-phase4-speckit.md)
+> **Parent**: #TBD
 > **Labels**: `phase-4b`, `priority-high`, `serial`, `copilot-suitable`
 > **Milestone**: M6: Spec-Kit Validation
 > **Estimate**: 3 hours

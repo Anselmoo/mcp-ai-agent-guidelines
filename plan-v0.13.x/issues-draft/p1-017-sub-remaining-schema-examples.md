@@ -1,6 +1,6 @@
 # 🔧 Sub-Issue: Remaining Schema Examples (P1-012)
 
-> **Parent**: [001-parent-phase1-discoverability.md](https://github.com/Anselmoo/mcp-ai-agent-guidelines/blob/development/plan-v0.13.x/issues-draft/001-parent-phase1-discoverability.md)
+> **Parent**: #TBD
 > **Labels**: `phase-1`, `parallel`, `copilot-suitable`, `priority-medium`
 > **Milestone**: M2: Test-Stable
 

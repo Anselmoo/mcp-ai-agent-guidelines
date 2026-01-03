@@ -1,6 +1,6 @@
 # 🔧 P4-018: Add Git Integration for Progress [serial]
 
-> **Parent**: [004-parent-phase4-speckit.md](https://github.com/Anselmoo/mcp-ai-agent-guidelines/blob/development/plan-v0.13.x/issues-draft/004-parent-phase4-speckit.md)
+> **Parent**: #TBD
 > **Labels**: `phase-4b`, `priority-low`, `serial`, `copilot-suitable`
 > **Milestone**: M7: Spec-Kit Progress
 > **Estimate**: 3 hours
