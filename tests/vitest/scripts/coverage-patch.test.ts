@@ -34,13 +34,21 @@ describe("coverage-patch parser", () => {
 
 	it("reports uncovered branch indexes and suggestion text", () => {
 		const lcov = `SF:src/branched.js\nBRDA:10,0,0,1\nBRDA:10,0,1,0\nLF:1\nLH:0\n`;
-		require("node:fs").writeFileSync(
-			"src/branched.js",
+		const fs = require("node:fs");
+		const path = require("node:path");
+		const tmpDir = "tests/vitest/tmp";
+		fs.mkdirSync(tmpDir, { recursive: true });
+		const tmpFile = path.join(tmpDir, "branched.js");
+		fs.writeFileSync(
+			tmpFile,
 			"function f(){\n  if (a) return 1;\n  if (b) return 2;\n  return 0;\n}\n",
 		);
-		const diff = { "src/branched.js": new Set([10]) };
-		const report = computePatchReportFromStrings(lcov, diff);
-		const d = report.files["src/branched.js"].details[0];
+		const diff = { [tmpFile]: new Set([10]) };
+		const report = computePatchReportFromStrings(
+			lcov.replace("SF:src/branched.js", `SF:${tmpFile}`),
+			diff,
+		);
+		const d = report.files[tmpFile].details[0];
 		expect(d.uncoveredBranches).toEqual([1]);
 		expect(d.suggestion).toContain("uncovered");
 	});

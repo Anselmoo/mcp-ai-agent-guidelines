@@ -8,8 +8,8 @@
  * analysis, mermaid diagram generation, memory optimization, and sprint planning.
  */
 
-// Dynamic version from package.json using createRequire for ESM compatibility
 import { createRequire } from "node:module";
+// Dynamic version from package.json using createRequire for ESM compatibility
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 
 const require = createRequire(import.meta.url);
@@ -64,6 +64,7 @@ import { hierarchyLevelSelector } from "./tools/prompt/hierarchy-level-selector.
 import { l9DistinguishedEngineerPromptBuilder } from "./tools/prompt/l9-distinguished-engineer-prompt-builder.js";
 import { promptChainingBuilder } from "./tools/prompt/prompt-chaining-builder.js";
 import { promptFlowBuilder } from "./tools/prompt/prompt-flow-builder.js";
+import { promptHierarchy } from "./tools/prompt/prompt-hierarchy.js";
 import { promptingHierarchyEvaluator } from "./tools/prompt/prompting-hierarchy-evaluator.js";
 import { quickDeveloperPromptsBuilder } from "./tools/prompt/quick-developer-prompts-builder.js";
 import { securityHardeningPromptBuilder } from "./tools/prompt/security-hardening-prompt-builder.js";
@@ -2018,6 +2019,111 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 				},
 			},
 			{
+				name: "prompt-hierarchy",
+				description:
+					"Unified hierarchy tool: 'build' (create prompts), 'select' (recommend level), 'evaluate' (score). BEST FOR: all hierarchy operations. OUTPUTS: Mode-specific.",
+				inputSchema: {
+					type: "object",
+					properties: {
+						mode: {
+							type: "string",
+							enum: ["build", "select", "evaluate"],
+							description:
+								"Operation mode: 'build' creates prompts, 'select' recommends hierarchy level, 'evaluate' scores prompts",
+						},
+						// Build mode fields
+						context: {
+							type: "string",
+							description: "Build mode: Broad context or domain",
+						},
+						goal: {
+							type: "string",
+							description: "Build mode: Specific goal or objective",
+						},
+						requirements: {
+							type: "array",
+							items: { type: "string" },
+							description: "Build mode: Detailed requirements and constraints",
+						},
+						outputFormat: {
+							type: "string",
+							description: "Build mode: Desired output format",
+						},
+						audience: {
+							type: "string",
+							description: "Build mode: Target audience or expertise level",
+						},
+						// Select mode fields
+						taskDescription: {
+							type: "string",
+							description: "Select mode: Description of the task",
+						},
+						agentCapability: {
+							type: "string",
+							enum: ["novice", "intermediate", "advanced", "expert"],
+							description: "Select mode: Agent's capability level",
+						},
+						taskComplexity: {
+							type: "string",
+							enum: ["simple", "moderate", "complex", "very-complex"],
+							description: "Select mode: Task complexity level",
+						},
+						autonomyPreference: {
+							type: "string",
+							enum: ["low", "medium", "high"],
+							description: "Select mode: Desired autonomy level",
+						},
+						// Evaluate mode fields
+						promptText: {
+							type: "string",
+							description: "Evaluate mode: The prompt text to evaluate",
+						},
+						targetLevel: {
+							type: "string",
+							enum: [
+								"independent",
+								"indirect",
+								"direct",
+								"modeling",
+								"scaffolding",
+								"full-physical",
+							],
+							description: "Evaluate mode: Expected hierarchy level",
+						},
+						// Shared optional fields
+						includeExamples: {
+							type: "boolean",
+							description: "Include examples in output",
+						},
+						includeReferences: {
+							type: "boolean",
+							description: "Include reference links",
+						},
+						includeRecommendations: {
+							type: "boolean",
+							description: "Include improvement recommendations",
+						},
+						includeMetadata: {
+							type: "boolean",
+							description: "Include metadata section",
+						},
+						includeFrontmatter: {
+							type: "boolean",
+							description: "Include YAML frontmatter",
+						},
+						includeDisclaimer: {
+							type: "boolean",
+							description: "Include disclaimer section",
+						},
+					},
+					required: ["mode"],
+				},
+				annotations: {
+					...GENERATION_TOOL_ANNOTATIONS,
+					title: "Unified Prompt Hierarchy Tool",
+				},
+			},
+			{
 				name: "hierarchy-level-selector",
 				description:
 					"Select optimal prompting hierarchy level based on task complexity and agent capability. BEST FOR: prompt guidance selection, autonomy tuning, task matching. OUTPUTS: Recommended hierarchy level.",
@@ -2226,6 +2332,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 				return modeSwitcher(args);
 			case "prompting-hierarchy-evaluator":
 				return promptingHierarchyEvaluator(args);
+			case "prompt-hierarchy":
+				return promptHierarchy(args);
 			case "hierarchy-level-selector":
 				return hierarchyLevelSelector(args);
 			case "prompt-chaining-builder":
