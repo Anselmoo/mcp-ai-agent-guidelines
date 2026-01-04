@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { DEFAULT_MODEL, DEFAULT_MODEL_SLUG } from "../config/model-config.js";
+import { emitDeprecationWarning } from "../shared/deprecation.js";
 import {
 	buildProviderTipsSection as buildSharedProviderTips,
 	ProviderEnum,
@@ -97,6 +98,13 @@ function buildActionableInstructions(input: HierarchicalPromptInput): string {
 }
 
 export async function hierarchicalPromptBuilder(args: unknown) {
+	emitDeprecationWarning({
+		tool: "hierarchical-prompt-builder",
+		replacement: "prompt-hierarchy",
+		deprecatedIn: "v0.14.0",
+		removedIn: "v0.15.0",
+	});
+
 	const input = HierarchicalPromptSchema.parse(args);
 
 	// If enforcing *.prompt.md style, ensure frontmatter + metadata are on

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { emitDeprecationWarning } from "../shared/deprecation.js";
 import { logger } from "../shared/logger.js";
 import {
 	buildFurtherReadingSection,
@@ -92,6 +93,13 @@ type FlowEdge = z.infer<typeof FlowEdgeSchema>;
  * @returns Formatted flow specification with visualization and execution guide
  */
 export async function promptFlowBuilder(args: unknown) {
+	emitDeprecationWarning({
+		tool: "prompt-flow-builder",
+		replacement: "prompt-hierarchy",
+		deprecatedIn: "v0.14.0",
+		removedIn: "v0.15.0",
+	});
+
 	const input = PromptFlowSchema.parse(args);
 
 	// Validate flow structure (edges, reachability, node configs)

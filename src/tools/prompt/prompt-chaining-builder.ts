@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { emitDeprecationWarning } from "../shared/deprecation.js";
 import {
 	buildFurtherReadingSection,
 	buildMetadataSection,
@@ -76,6 +77,13 @@ type ChainStep = z.infer<typeof ChainStepSchema>;
  * @returns Formatted chain specification with visualization
  */
 export async function promptChainingBuilder(args: unknown) {
+	emitDeprecationWarning({
+		tool: "prompt-chaining-builder",
+		replacement: "prompt-hierarchy",
+		deprecatedIn: "v0.14.0",
+		removedIn: "v0.15.0",
+	});
+
 	const input = PromptChainingSchema.parse(args);
 
 	// Validate dependencies are acyclic and reference valid steps
