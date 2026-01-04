@@ -100,7 +100,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "hierarchical-prompt-builder",
 				description:
-					"Create AI prompts with context→goal→requirements hierarchy. BEST FOR: code reviews, feature specs, technical decisions. OUTPUTS: Markdown prompt ready for LLM injection.",
+					"Create AI prompts with context→goal→requirements hierarchy supporting chain-of-thought, few-shot, and zero-shot techniques. BEST FOR: code reviews, feature specifications, technical decisions, complex task breakdown. OUTPUTS: Structured markdown prompts for LLM injection.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -189,7 +189,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "code-analysis-prompt-builder",
 				description:
-					"Generate targeted code review prompts for specific quality concerns. BEST FOR: security reviews, performance audits, refactoring analysis. OUTPUTS: Review checklist prompt.",
+					"Generate targeted code review prompts focusing on security vulnerabilities, performance bottlenecks, maintainability, and quality assessment. BEST FOR: security audits, performance optimization, refactoring planning, code quality gates. OUTPUTS: Comprehensive review checklist prompts.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -225,7 +225,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "architecture-design-prompt-builder",
 				description:
-					"Generate architecture design prompts scaled to project size. BEST FOR: system design, microservices planning, tech stack decisions. OUTPUTS: Architecture prompt with constraints.",
+					"Generate system architecture design prompts tailored to project scale with technology recommendations, scalability guidance, and architectural patterns. BEST FOR: microservices planning, system design, architecture decisions, tech stack evaluation. OUTPUTS: Architecture prompts with constraints.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -261,7 +261,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "digital-enterprise-architect-prompt-builder",
 				description:
-					"Enterprise architecture strategy with mentor insights and research. BEST FOR: strategic planning, cloud migration, transformation. OUTPUTS: Architecture decision prompts.",
+					"Guide enterprise architecture strategy with mentor insights, current research, and decision frameworks for digital transformation. BEST FOR: strategic IT planning, cloud migration, enterprise transformation, technology modernization. OUTPUTS: Architecture decision prompts with business alignment.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -353,7 +353,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "debugging-assistant-prompt-builder",
 				description:
-					"Create systematic debugging prompts with hypothesis generation. BEST FOR: root cause analysis, bug reproduction, error investigation. OUTPUTS: Debug workflow prompt.",
+					"Create systematic debugging prompts with hypothesis generation, error reproduction steps, and root cause analysis workflows. BEST FOR: production bug investigation, error diagnosis, system failure analysis, intermittent issue debugging. OUTPUTS: Structured debug workflow prompts.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -388,7 +388,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "l9-distinguished-engineer-prompt-builder",
 				description:
-					"Distinguished Engineer (L9) technical design prompts for software architecture. BEST FOR: high-level architecture, distributed systems, platform design. OUTPUTS: Expert-level architecture prompts.",
+					"Generate Distinguished Engineer (L9) technical design prompts for complex software architecture including distributed systems, platform engineering, and high-scale infrastructure. BEST FOR: staff-level architecture, distributed systems, platform strategy. OUTPUTS: Expert-level architecture prompts.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -516,7 +516,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "documentation-generator-prompt-builder",
 				description:
-					"Create documentation prompts for various doc types. BEST FOR: API docs, user guides, README generation. OUTPUTS: Documentation template prompt.",
+					"Create documentation generation prompts for API references, user guides, README files, and technical specifications with audience-appropriate detail. BEST FOR: API documentation, user manuals, README generation, onboarding docs, technical writing. OUTPUTS: Structured documentation template prompts.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -658,7 +658,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "spark-prompt-builder",
 				description:
-					"UI/UX product design prompts from structured inputs (colors, typography, spacing). BEST FOR: design systems, developer tools, interface design. OUTPUTS: Comprehensive design prompts.",
+					"Build UI/UX product design prompts from structured inputs including color schemes, typography, spacing, component libraries, and interaction patterns. BEST FOR: design systems, developer tool interfaces, component libraries, UI style guides. OUTPUTS: Detailed design specification prompts.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -840,7 +840,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "coverage-dashboard-design-prompt-builder",
 				description:
-					"UI/UX design prompts for coverage reporting dashboards with accessibility. BEST FOR: test coverage UIs, metrics dashboards, WCAG compliance. OUTPUTS: Accessible dashboard design prompts.",
+					"Generate UI/UX design prompts for test coverage dashboards with accessibility, WCAG compliance, interactive visualizations, and responsive layouts. BEST FOR: test coverage interfaces, metrics dashboards, data visualization, accessibility-first UI. OUTPUTS: Accessible dashboard design prompts.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1023,7 +1023,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "clean-code-scorer",
 				description:
-					"Calculate code quality score (0-100) with metric breakdown. BEST FOR: code reviews, refactoring decisions, CI quality gates. OUTPUTS: Score, metrics table, improvement suggestions.",
+					"Calculate code quality scores (0-100) with metrics for hygiene, test coverage, TypeScript, linting, documentation, and security. BEST FOR: code review automation, refactoring prioritization, CI quality gates. OUTPUTS: Quality score, metrics, improvement recommendations.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1088,7 +1088,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "code-hygiene-analyzer",
 				description:
-					"Analyze codebase for outdated patterns, unused dependencies, and hygiene issues. BEST FOR: technical debt, code smells, modernization. OUTPUTS: Hygiene analysis and recommendations.",
+					"Analyze codebase for outdated patterns, unused dependencies, deprecated APIs, code smells, and technical debt with modernization recommendations. BEST FOR: legacy code assessment, dependency cleanup, code modernization. OUTPUTS: Hygiene analysis with prioritized recommendations.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1116,7 +1116,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "dependency-auditor",
 				description:
-					"Audit dependencies for vulnerabilities and deprecations. BEST FOR: security scans, upgrade planning, CI/CD gates. OUTPUTS: Vulnerability report, upgrade recommendations.",
+					"Multi-language dependency auditor for JavaScript, Python, Go, Rust, Ruby, C++, and Lua to detect vulnerabilities, deprecated packages, and outdated versions. BEST FOR: security scanning, dependency updates, vulnerability assessment. OUTPUTS: Vulnerability reports with remediation guidance.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1199,7 +1199,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "iterative-coverage-enhancer",
 				description:
-					"Analyze code coverage, detect dead code, and generate test suggestions iteratively. BEST FOR: coverage gaps, test improvement, threshold tuning. OUTPUTS: Test suggestions and coverage analysis.",
+					"Iteratively analyze test coverage gaps, detect dead code, generate test suggestions, and recommend adaptive coverage thresholds. BEST FOR: test coverage optimization, dead code elimination, test suite enhancement, coverage threshold management. OUTPUTS: Test suggestions with coverage gap analysis.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1359,7 +1359,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "memory-context-optimizer",
 				description:
-					"Optimize prompt caching and context window usage for AI agents. BEST FOR: token reduction, context efficiency, long conversations. OUTPUTS: Optimized context and caching strategies.",
+					"Optimize AI agent prompt caching and context window utilization for token efficiency, reduced API costs, and improved response quality. BEST FOR: token reduction, context management, API cost optimization, long-running sessions. OUTPUTS: Optimized context and caching recommendations.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1388,7 +1388,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "domain-neutral-prompt-builder",
 				description:
-					"Build prompts from objectives without domain assumptions. BEST FOR: cross-domain tasks, general guidance, flexible workflows. OUTPUTS: Adaptable prompt structure.",
+					"Build domain-agnostic prompts from objectives, workflows, and capabilities without domain assumptions for flexible cross-domain execution. BEST FOR: cross-domain applications, general workflows, domain-independent tasks, flexible templates. OUTPUTS: Domain-neutral structured prompts.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1518,7 +1518,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "security-hardening-prompt-builder",
 				description:
-					"Generate OWASP-aligned security assessment prompts. BEST FOR: threat modeling, security audits, compliance checks. OUTPUTS: Security prompt with threat matrix.",
+					"Generate OWASP-aligned security assessment prompts with threat modeling, vulnerability analysis, compliance support (NIST, ISO-27001, SOC-2), and remediation guidance. BEST FOR: security audits, penetration testing, threat modeling. OUTPUTS: Security analysis prompts with threat matrices.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1669,7 +1669,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "quick-developer-prompts-builder",
 				description:
-					"Quick developer prompts bundle with 25 checklist prompts for code analysis and planning. BEST FOR: rapid analysis, progress checks, 5 dev categories. OUTPUTS: Actionable prompt checklists.",
+					"Generate 'Best of 25' developer prompts with checklist prompts across 5 categories: strategy & planning, code quality, testing, documentation, and DevOps. BEST FOR: rapid code analysis, daily standups, progress tracking, quick reviews. OUTPUTS: Category-organized actionable checklists.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1795,7 +1795,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "guidelines-validator",
 				description:
-					"Validate development practices against AI agent guidelines for prompting and workflows. BEST FOR: practice validation, AI best practices, workflow compliance. OUTPUTS: Validation results.",
+					"Validate development practices, workflows, and architectural decisions against AI agent guidelines for prompting strategies, code management, and architecture patterns. BEST FOR: practice auditing, workflow compliance, AI best practices validation. OUTPUTS: Detailed validation reports.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1826,7 +1826,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "semantic-code-analyzer",
 				description:
-					"Semantic code analysis for symbols, structure, and dependencies with language servers. BEST FOR: code understanding, dependency mapping, reference finding. OUTPUTS: Semantic analysis results.",
+					"Perform semantic code analysis with language server protocols to identify symbols, analyze structure, map dependencies, and find references. BEST FOR: code navigation, dependency analysis, symbol discovery, reference tracking. OUTPUTS: Comprehensive semantic analysis reports.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1867,7 +1867,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "project-onboarding",
 				description:
-					"Project onboarding with structure analysis, dependency detection, and documentation. BEST FOR: developer onboarding, project documentation, structure analysis. OUTPUTS: Onboarding documentation.",
+					"Execute comprehensive project onboarding including structure analysis, dependency detection, technology stack identification, and documentation generation. BEST FOR: new developer onboarding, project documentation, codebase exploration. OUTPUTS: Onboarding documentation with setup instructions.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1912,7 +1912,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "mode-switcher",
 				description:
-					"Switch between agent operation modes with tailored tool sets and prompting strategies. BEST FOR: workflow transitions, mode switching, context adaptation. OUTPUTS: Mode configuration and toolsets.",
+					"Switch between specialized agent modes (planning, editing, analysis, debugging, refactoring, documentation) with mode-appropriate tool sets and prompting strategies. BEST FOR: workflow transitions, context switching, mode-based optimization. OUTPUTS: Mode configuration with tailored toolsets.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1978,7 +1978,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "prompting-hierarchy-evaluator",
 				description:
-					"Evaluate prompts with hierarchical taxonomy and scoring for clarity and complexity. BEST FOR: prompt assessment, quality improvement, effectiveness scoring. OUTPUTS: Scores and recommendations.",
+					"Evaluate prompt quality with hierarchical taxonomy and numeric scoring based on clarity, specificity, completeness, and cognitive complexity. BEST FOR: prompt quality assessment, effectiveness measurement, prompt optimization. OUTPUTS: Detailed scores with improvement recommendations.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -2021,7 +2021,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "prompt-hierarchy",
 				description:
-					"Unified hierarchy tool: 'build' (create prompts), 'select' (recommend level), 'evaluate' (score). BEST FOR: all hierarchy operations. OUTPUTS: Mode-specific.",
+					"Unified prompting hierarchy tool with modes: 'build' (create prompts), 'select' (recommend level), 'evaluate' (score quality). BEST FOR: all hierarchy operations, prompt creation, level selection, quality assessment. OUTPUTS: Mode-specific structured responses.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -2126,7 +2126,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "hierarchy-level-selector",
 				description:
-					"Select optimal prompting hierarchy level based on task complexity and agent capability. BEST FOR: prompt guidance selection, autonomy tuning, task matching. OUTPUTS: Recommended hierarchy level.",
+					"Select optimal prompting hierarchy level (independent, indirect, direct, modeling, scaffolding, full-physical) based on task complexity and agent capability. BEST FOR: prompt guidance calibration, autonomy tuning, task-capability matching. OUTPUTS: Recommended hierarchy level with justification.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -2170,7 +2170,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "design-assistant",
 				description:
-					"Orchestrate multi-phase design sessions with ADR/spec generation. BEST FOR: architecture decisions, feature design, technical planning. OUTPUTS: ADRs, specifications, roadmaps.",
+					"Orchestrate multi-phase design workflows with constraint validation, coverage enforcement, ADR generation, and specification creation. BEST FOR: architecture decisions, feature design, technical planning, design documentation. OUTPUTS: ADRs, specifications, roadmaps.",
 				inputSchema: {
 					type: "object",
 					properties: {
