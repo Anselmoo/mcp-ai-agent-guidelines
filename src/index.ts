@@ -2021,14 +2021,15 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "prompt-hierarchy",
 				description:
-					"Unified prompt hierarchy tool with 3 modes: 'build' (create structured prompts), 'select' (recommend hierarchy level), 'evaluate' (score prompts). BEST FOR: all prompt hierarchy operations in one tool. OUTPUTS: Mode-dependent results.",
+					"Unified hierarchy tool: 'build' (create prompts), 'select' (recommend level), 'evaluate' (score). BEST FOR: all hierarchy operations. OUTPUTS: Mode-specific.",
 				inputSchema: {
 					type: "object",
 					properties: {
 						mode: {
 							type: "string",
 							enum: ["build", "select", "evaluate"],
-							description: "Operation mode: 'build' creates prompts, 'select' recommends hierarchy level, 'evaluate' scores prompts",
+							description:
+								"Operation mode: 'build' creates prompts, 'select' recommends hierarchy level, 'evaluate' scores prompts",
 						},
 						// Build mode fields
 						context: {
@@ -2079,7 +2080,14 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						},
 						targetLevel: {
 							type: "string",
-							enum: ["independent", "indirect", "direct", "modeling", "scaffolding", "full-physical"],
+							enum: [
+								"independent",
+								"indirect",
+								"direct",
+								"modeling",
+								"scaffolding",
+								"full-physical",
+							],
 							description: "Evaluate mode: Expected hierarchy level",
 						},
 						// Shared optional fields
