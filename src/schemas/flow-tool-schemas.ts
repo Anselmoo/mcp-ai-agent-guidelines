@@ -5,7 +5,7 @@ import { GENERATION_TOOL_ANNOTATIONS } from "../tools/shared/annotation-presets.
 export const promptChainingBuilderSchema = {
 	name: "prompt-chaining-builder",
 	description:
-		"Multi-step prompt chains with output passing, dependencies, and error handling. BEST FOR: sequential workflows, chain-of-thought, multi-step analysis. OUTPUTS: Prompt chain definitions.",
+		"Use this MCP to build prompt chains with dependency-aware steps and output passing. BEST FOR: sequential workflows. Example: review → security → remediation. OUTPUTS: chain definition.",
 	inputSchema: {
 		type: "object" as const,
 		properties: {
@@ -76,7 +76,7 @@ export const promptChainingBuilderSchema = {
 export const promptFlowBuilderSchema = {
 	name: "prompt-flow-builder",
 	description:
-		"Declarative prompt flows with conditional branching, loops, and parallel execution. BEST FOR: non-linear workflows, complex orchestration, parallel processing. OUTPUTS: Prompt flow definitions.",
+		"Use this MCP to design prompt flows with branching, loops, and parallel paths. BEST FOR: non-linear orchestration. Example: dev workflow with parallel tests. OUTPUTS: flow definition.",
 	inputSchema: {
 		type: "object" as const,
 		properties: {
