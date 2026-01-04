@@ -137,6 +137,7 @@ export async function promptHierarchy(args: unknown) {
 			}
 			return promptingHierarchyEvaluator(input);
 
+		/* c8 ignore next 3 */
 		default:
 			// TypeScript ensures this is unreachable, but add for runtime safety
 			throw new Error(`Unknown mode: ${input.mode}`);
