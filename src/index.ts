@@ -8,8 +8,8 @@
  * analysis, mermaid diagram generation, memory optimization, and sprint planning.
  */
 
-// Dynamic version from package.json using createRequire for ESM compatibility
 import { createRequire } from "node:module";
+// Dynamic version from package.json using createRequire for ESM compatibility
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 
 const require = createRequire(import.meta.url);
