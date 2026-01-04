@@ -213,11 +213,11 @@ pre-commit:
 
           # Run only affected tests (fast check)
           echo "🧪 Running affected tests..."
-          npm run test:vitest -- --run --bail || {
+          npm run test:vitest -- --run --bail=1 || {
             echo ""
             echo "❌ TESTS FAILED! This would fail in CI."
             echo "   Fix test failures before committing to avoid:"
-            echo "   - Expensive CI reruns ($0.10+ per failure)"
+            echo "   - Expensive CI reruns (\$0.10+ per failure)"
             echo "   - Delayed merge time"
             echo "   - Agent rerun costs"
             echo ""
@@ -247,7 +247,7 @@ pre-push:
           echo "❌ FULL TEST SUITE FAILED!"
           echo "   This would fail in CI and cause:"
           echo "   - Expensive CI reruns"
-          echo "   - Agent rerun costs ($0.10+ per run)"
+          echo "   - Agent rerun costs (\$0.10+ per run)"
           echo "   - PR delays"
           echo ""
           echo "   Fix all test failures before pushing."
