@@ -188,7 +188,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "code-analysis-prompt-builder",
 				description:
-					"Generate comprehensive code analysis prompts with customizable focus areas (security, performance, maintainability). Use this MCP to create targeted code review prompts for specific quality concerns. Example: 'Use the code-analysis-prompt-builder MCP to analyze authentication code for security vulnerabilities'",
+					"Generate targeted code review prompts for specific quality concerns. BEST FOR: security reviews, performance audits, refactoring analysis. OUTPUTS: Review checklist prompt.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -224,7 +224,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "architecture-design-prompt-builder",
 				description:
-					"Generate system architecture design prompts with scale-appropriate guidance. Use this MCP to create architecture planning prompts for different system scales and technology stacks. Example: 'Use the architecture-design-prompt-builder MCP to design a microservices architecture for a medium-scale e-commerce platform'",
+					"Generate architecture design prompts scaled to project size. BEST FOR: system design, microservices planning, tech stack decisions. OUTPUTS: Architecture prompt with constraints.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -352,7 +352,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "debugging-assistant-prompt-builder",
 				description:
-					"Generate systematic debugging and troubleshooting prompts with structured analysis. Use this MCP to create diagnostic prompts for error investigation and root cause analysis. Example: 'Use the debugging-assistant-prompt-builder MCP to troubleshoot a production database connection timeout issue'",
+					"Create systematic debugging prompts with hypothesis generation. BEST FOR: root cause analysis, bug reproduction, error investigation. OUTPUTS: Debug workflow prompt.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -515,7 +515,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "documentation-generator-prompt-builder",
 				description:
-					"Generate technical documentation prompts tailored to content type and audience. Use this MCP to create structured documentation generation prompts for API docs, user guides, or technical specs. Example: 'Use the documentation-generator-prompt-builder MCP to create API documentation for our REST endpoints'",
+					"Create documentation prompts for various doc types. BEST FOR: API docs, user guides, README generation. OUTPUTS: Documentation template prompt.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1387,7 +1387,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "domain-neutral-prompt-builder",
 				description:
-					"Build comprehensive domain-neutral prompts with objectives, scope, inputs/outputs, workflow, capabilities, risks, and acceptance criteria. Use this MCP to create structured specification documents or technical requirements. Example: 'Use the domain-neutral-prompt-builder MCP to create a technical specification for our API gateway service'",
+					"Build prompts from objectives without domain assumptions. BEST FOR: cross-domain tasks, general guidance, flexible workflows. OUTPUTS: Adaptable prompt structure.",
 				inputSchema: {
 					type: "object",
 					properties: {
