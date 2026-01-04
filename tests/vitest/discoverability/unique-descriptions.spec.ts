@@ -12,12 +12,12 @@
 import { describe, expect, it, vi } from "vitest";
 
 // Store captured handlers - needs to persist across tests
+// biome-ignore lint/suspicious/noExplicitAny: Required for vitest mock compatibility
 const capturedHandlers: Array<{ schema: any; handler: any }> = [];
 
 vi.mock("@modelcontextprotocol/sdk/server/index.js", () => {
 	class Server {
-		constructor(_info?: unknown, _caps?: unknown) {}
-
+		// biome-ignore lint/suspicious/noExplicitAny: Required for mock handler compatibility
 		setRequestHandler(schema: any, handler: any) {
 			capturedHandlers.push({ schema, handler });
 		}
