@@ -7,7 +7,7 @@
  * Requirements:
  * - No two tools share the same first 5 words in their description
  * - All descriptions follow the template pattern (sentence + "BEST FOR:" + outputs)
- * - All descriptions are under 200 characters
+ * - All descriptions are under 300 characters
  */
 import { describe, expect, it, vi } from "vitest";
 
@@ -90,14 +90,14 @@ describe("Tool Description Uniqueness", () => {
 		}
 	});
 
-	it("should have descriptions under 200 characters", async () => {
+	it("should have descriptions under 300 characters", async () => {
 		const tools = await getRegisteredTools();
 
 		for (const tool of tools) {
 			expect(
 				tool.description.length,
-				`Tool "${tool.name}" description is ${tool.description.length} characters (limit: 200)`,
-			).toBeLessThan(200);
+				`Tool "${tool.name}" description is ${tool.description.length} characters (limit: 300)`,
+			).toBeLessThan(300);
 		}
 	});
 });

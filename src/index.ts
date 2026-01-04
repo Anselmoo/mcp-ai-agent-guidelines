@@ -552,7 +552,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "strategy-frameworks-builder",
 				description:
-					"Strategy analysis using established frameworks (SWOT, BSC, VRIO, Porter's). BEST FOR: business analysis, market expansion, strategic planning. OUTPUTS: Framework-based analysis sections.",
+					"Build strategic analysis using SWOT, Porter's Five Forces, Value Chain, and 20+ other frameworks for comprehensive business strategy evaluation. BEST FOR: market expansion, competitive analysis, strategic planning. OUTPUTS: Framework-based analysis sections.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -605,7 +605,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "gap-frameworks-analyzers",
 				description:
-					"Gap analysis between current and desired states using frameworks. BEST FOR: capability gaps, technology migration, performance assessment. OUTPUTS: Gap analysis reports.",
+					"Analyze capability, performance, or technology gaps between current and target states to generate actionable roadmaps with prioritized recommendations. BEST FOR: digital transformation, capability assessment, migration planning. OUTPUTS: Gap analysis reports with remediation steps.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1279,7 +1279,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "mermaid-diagram-generator",
 				description:
-					"Generate Mermaid diagrams from text descriptions with validation and auto-repair. BEST FOR: flowcharts, sequence diagrams, architecture docs. OUTPUTS: Validated Mermaid diagram syntax.",
+					"Generate Mermaid diagrams from descriptions with support for flowcharts, sequence diagrams, class diagrams, state machines, and ERDs including auto-validation and repair. BEST FOR: architecture documentation, process flows, data modeling. OUTPUTS: Validated Mermaid syntax.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1704,7 +1704,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "sprint-timeline-calculator",
 				description:
-					"Calculate optimal development cycles and sprint timelines with dependency scheduling. BEST FOR: project estimates, sprint planning, team allocation. OUTPUTS: Timeline and sprint breakdowns.",
+					"Calculate sprint timelines, velocity projections, and iteration schedules by inputting story points and team capacity to generate realistic delivery forecasts. BEST FOR: project estimation, sprint planning, capacity analysis. OUTPUTS: Timeline and resource allocation.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1747,7 +1747,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "model-compatibility-checker",
 				description:
-					"Recommend optimal AI models for tasks based on capabilities, budget, and use case. BEST FOR: model selection, task matching, budget planning. OUTPUTS: Model recommendations with rationale.",
+					"Recommend optimal AI models for tasks by comparing Claude, GPT-4, Gemini, and other models based on capabilities, context length, budget, and task-specific requirements. BEST FOR: model selection, cost optimization, capability matching. OUTPUTS: Ranked recommendations with rationale.",
 				inputSchema: {
 					type: "object",
 					properties: {
