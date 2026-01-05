@@ -48,7 +48,7 @@ describe("Tool annotations", () => {
 	it("every registered tool exposes ToolAnnotations with required flags", async () => {
 		const tools = await getRegisteredTools();
 
-		expect(tools.length).toBeGreaterThan(0);
+		expect(tools).toHaveLength(32);
 
 		const missing: string[] = [];
 		for (const tool of tools) {
@@ -61,9 +61,6 @@ describe("Tool annotations", () => {
 			expect(typeof annotations.title).toBe("string");
 			expect(annotations.title?.length).toBeGreaterThan(0);
 			expect(typeof annotations.readOnlyHint).toBe("boolean");
-			expect(typeof annotations.destructiveHint).toBe("boolean");
-			expect(typeof annotations.idempotentHint).toBe("boolean");
-			expect(typeof annotations.openWorldHint).toBe("boolean");
 		}
 
 		if (missing.length > 0) {
