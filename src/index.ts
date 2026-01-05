@@ -61,10 +61,10 @@ import { enterpriseArchitectPromptBuilder } from "./tools/prompt/enterprise-arch
 // Import tool implementations
 import { hierarchicalPromptBuilder } from "./tools/prompt/hierarchical-prompt-builder.js";
 import { hierarchyLevelSelector } from "./tools/prompt/hierarchy-level-selector.js";
+import { promptHierarchy } from "./tools/prompt/index.js";
 import { l9DistinguishedEngineerPromptBuilder } from "./tools/prompt/l9-distinguished-engineer-prompt-builder.js";
 import { promptChainingBuilder } from "./tools/prompt/prompt-chaining-builder.js";
 import { promptFlowBuilder } from "./tools/prompt/prompt-flow-builder.js";
-import { promptHierarchy } from "./tools/prompt/prompt-hierarchy.js";
 import { promptingHierarchyEvaluator } from "./tools/prompt/prompting-hierarchy-evaluator.js";
 import { quickDeveloperPromptsBuilder } from "./tools/prompt/quick-developer-prompts-builder.js";
 import { securityHardeningPromptBuilder } from "./tools/prompt/security-hardening-prompt-builder.js";
@@ -2030,6 +2030,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 							enum: ["build", "select", "evaluate"],
 							description:
 								"Operation mode: 'build' creates prompts, 'select' recommends hierarchy level, 'evaluate' scores prompts",
+							examples: ["build", "evaluate", "select"],
 						},
 						// Build mode fields
 						context: {
@@ -2057,6 +2058,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						taskDescription: {
 							type: "string",
 							description: "Select mode: Description of the task",
+							examples: [
+								"Review code for security vulnerabilities",
+								"Design a caching strategy for user sessions",
+							],
 						},
 						agentCapability: {
 							type: "string",
