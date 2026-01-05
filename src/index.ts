@@ -61,10 +61,7 @@ import { enterpriseArchitectPromptBuilder } from "./tools/prompt/enterprise-arch
 // Import tool implementations
 import { hierarchicalPromptBuilder } from "./tools/prompt/hierarchical-prompt-builder.js";
 import { hierarchyLevelSelector } from "./tools/prompt/hierarchy-level-selector.js";
-import {
-	promptHierarchy,
-	promptHierarchySchema,
-} from "./tools/prompt/index.js";
+import { promptHierarchy } from "./tools/prompt/index.js";
 import { l9DistinguishedEngineerPromptBuilder } from "./tools/prompt/l9-distinguished-engineer-prompt-builder.js";
 import { promptChainingBuilder } from "./tools/prompt/prompt-chaining-builder.js";
 import { promptFlowBuilder } from "./tools/prompt/prompt-flow-builder.js";
