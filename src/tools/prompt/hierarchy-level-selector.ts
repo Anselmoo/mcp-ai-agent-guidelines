@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { emitDeprecationWarning } from "../shared/deprecation.js";
 import { buildFurtherReadingSection } from "../shared/prompt-utils.js";
 import {
 	HIERARCHY_LEVEL_DEFINITIONS,
@@ -188,6 +189,13 @@ function selectHierarchyLevel(
 }
 
 export async function hierarchyLevelSelector(args: unknown) {
+	emitDeprecationWarning({
+		tool: "hierarchy-level-selector",
+		replacement: "prompt-hierarchy",
+		deprecatedIn: "v0.14.0",
+		removedIn: "v0.15.0",
+	});
+
 	const input = HierarchyLevelSelectorSchema.parse(args);
 
 	const recommendations = selectHierarchyLevel(input);
