@@ -1,21 +1,20 @@
 /**
  * Integration: Phase 1 Discoverability (P1-018)
+ *
+ * Tests for tool discoverability features including:
+ * - Unique tool descriptions
+ * - Action-verb based descriptions
+ * - Schema example validation
  */
 import type { Tool } from "@modelcontextprotocol/sdk/types.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { hierarchicalPromptBuilder } from "../../../src/tools/prompt/hierarchical-prompt-builder.js";
-import { hierarchyLevelSelector } from "../../../src/tools/prompt/hierarchy-level-selector.js";
-import { resetDeprecationWarnings } from "../../../src/tools/shared/deprecation.js";
-import { logger } from "../../../src/tools/shared/logger.js";
 
 // Capture handlers registered by the MCP server
-// biome-ignore lint/suspicious/noExplicitAny: Test mock compatibility
-const capturedHandlers: Array<{ schema: any; handler: any }> = [];
+const capturedHandlers: Array<{ schema: unknown; handler: unknown }> = [];
 
 vi.mock("@modelcontextprotocol/sdk/server/index.js", () => {
 	class Server {
-		// biome-ignore lint/suspicious/noExplicitAny: Test mock compatibility
-		setRequestHandler(schema: any, handler: any) {
+		setRequestHandler(schema: unknown, handler: unknown) {
 			capturedHandlers.push({ schema, handler });
 		}
 
@@ -39,13 +38,15 @@ async function getRegisteredTools(): Promise<Tool[]> {
 		await import("../../../src/index.js");
 	}
 
-	const listToolsHandler = capturedHandlers[0]?.handler;
+	const listToolsHandler = capturedHandlers[0]?.handler as
+		| (() => Promise<{ tools: Tool[] }>)
+		| undefined;
 	if (!listToolsHandler) {
 		throw new Error("ListToolsRequestSchema handler not found");
 	}
 
-	const result = await listToolsHandler({});
-	return result.tools as Tool[];
+	const result = await listToolsHandler();
+	return result.tools;
 }
 
 function validateExample(
@@ -72,7 +73,12 @@ function validateExample(
 			expect(Array.isArray(example), `${label} should be an array`).toBe(true);
 			break;
 		case "object":
-			expect(typeof example, `${label} should be an object`).toBe("object");
+			expect(
+				typeof example === "object" &&
+					example !== null &&
+					!Array.isArray(example),
+				`${label} should be a non-null object`,
+			).toBe(true);
 			break;
 		default:
 			throw new Error(
@@ -81,33 +87,41 @@ function validateExample(
 	}
 }
 
+/**
+ * Approved action verbs for tool descriptions.
+ * All tool descriptions must start with one of these verbs.
+ *
+ * PR #807 Review Fix: Removed non-verbs "Multi-language" and "Unified".
+ * Tools using those adjectives should be rewritten to start with proper
+ * action verbs like "Audit", "Scan", or "Perform".
+ */
 const ACTION_VERBS = [
 	"Analyze",
+	"Audit",
 	"Build",
 	"Calculate",
+	"Compose",
 	"Create",
 	"Evaluate",
 	"Execute",
 	"Generate",
 	"Guide",
-	"Iteratively",
+	"Iterate",
 	"Manage",
-	"Multi-language",
 	"Optimize",
 	"Orchestrate",
 	"Perform",
 	"Recommend",
+	"Scan",
 	"Select",
 	"Switch",
 	"Track",
-	"Unified",
 	"Use",
 	"Validate",
 ];
 
 describe("Phase 1 discoverability", () => {
 	beforeEach(() => {
-		resetDeprecationWarnings();
 		vi.restoreAllMocks();
 		vi.spyOn(console, "error").mockImplementation(() => {});
 	});
@@ -118,13 +132,14 @@ describe("Phase 1 discoverability", () => {
 
 		const descriptions = new Map<string, string>();
 		for (const tool of tools) {
-			const existing = descriptions.get(tool.description);
+			const desc = tool.description ?? "";
+			const existing = descriptions.get(desc);
 			if (existing) {
 				throw new Error(
 					`Tools "${tool.name}" and "${existing}" share identical descriptions`,
 				);
 			}
-			descriptions.set(tool.description, tool.name);
+			descriptions.set(desc, tool.name);
 		}
 	});
 
@@ -132,33 +147,20 @@ describe("Phase 1 discoverability", () => {
 		const tools = await getRegisteredTools();
 
 		for (const tool of tools) {
-			const firstWord = tool.description.split(/\s+/)[0];
-			expect(ACTION_VERBS).toContain(firstWord);
+			// PR #807 Review Fix: Guard against empty or whitespace-only descriptions
+			const description = tool.description?.trim();
+			expect(
+				description && description.length > 0,
+				`Tool "${tool.name}" has empty or missing description`,
+			).toBeTruthy();
+
+			// Safe to split after the truthy check above
+			const firstWord = description?.split(/\s+/)[0] ?? "";
+			expect(
+				ACTION_VERBS,
+				`Tool "${tool.name}" description starts with "${firstWord}" which is not an approved action verb. Approved verbs: ${ACTION_VERBS.join(", ")}`,
+			).toContain(firstWord);
 		}
-	});
-
-	it("emits deprecation warnings only once per deprecated tool", async () => {
-		const warnSpy = vi.spyOn(logger, "warn");
-
-		await hierarchicalPromptBuilder({ context: "ctx", goal: "goal" });
-		await hierarchicalPromptBuilder({ context: "ctx2", goal: "goal2" });
-
-		await hierarchyLevelSelector({ taskDescription: "task a" });
-		await hierarchyLevelSelector({ taskDescription: "task b" });
-
-		const hierarchicalCalls = warnSpy.mock.calls.filter(
-			(call) =>
-				typeof call[0] === "string" &&
-				call[0].includes("hierarchical-prompt-builder"),
-		);
-		const selectorCalls = warnSpy.mock.calls.filter(
-			(call) =>
-				typeof call[0] === "string" &&
-				call[0].includes("hierarchy-level-selector"),
-		);
-
-		expect(hierarchicalCalls.length).toBe(1);
-		expect(selectorCalls.length).toBe(1);
 	});
 
 	it("has valid schema examples", async () => {

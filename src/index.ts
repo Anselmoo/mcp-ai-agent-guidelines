@@ -1116,7 +1116,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "dependency-auditor",
 				description:
-					"Multi-language dependency auditor for JavaScript, Python, Go, Rust, Ruby, C++, and Lua to detect vulnerabilities, deprecated packages, and outdated versions. BEST FOR: security scanning, dependency updates, vulnerability assessment. OUTPUTS: Vulnerability reports with remediation guidance.",
+					"Audit dependency files across multiple languages to identify outdated, deprecated, or insecure packages. BEST FOR: Ensuring project dependencies meet security and version requirements. Example: 'Use the dependency-auditor MCP to check our requirements.txt for security vulnerabilities.'",
+
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -1199,7 +1200,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "iterative-coverage-enhancer",
 				description:
-					"Iteratively analyze test coverage gaps, detect dead code, generate test suggestions, and recommend adaptive coverage thresholds. BEST FOR: test coverage optimization, dead code elimination, test suite enhancement, coverage threshold management. OUTPUTS: Test suggestions with coverage gap analysis.",
+					"Iterate on test coverage gaps, detect dead code, generate test suggestions, and recommend adaptive coverage thresholds. BEST FOR: test coverage optimization, dead code elimination, test suite enhancement, coverage threshold management. OUTPUTS: Test suggestions with coverage gap analysis.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -2021,7 +2022,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "prompt-hierarchy",
 				description:
-					"Unified prompting hierarchy tool with modes: 'build' (create prompts), 'select' (recommend level), 'evaluate' (score quality). BEST FOR: all hierarchy operations, prompt creation, level selection, quality assessment. OUTPUTS: Mode-specific structured responses.",
+					"Manage prompting hierarchy operations with modes: 'build' (create prompts), 'select' (recommend level), 'evaluate' (score quality). BEST FOR: all hierarchy operations, prompt creation, level selection, quality assessment. OUTPUTS: Mode-specific structured responses.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -2175,7 +2176,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "design-assistant",
 				description:
-					"Orchestrate multi-phase design workflows with constraint validation, coverage enforcement, ADR generation, and specification creation. BEST FOR: architecture decisions, feature design, technical planning, design documentation. OUTPUTS: ADRs, specifications, roadmaps.",
+					"Orchestrate multi-phase design workflows with constraint validation, coverage enforcement, and artifact generation. BEST FOR: Coordinating design sessions, enforcing constraints, and producing ADRs and roadmaps. Example: 'Use the design-assistant to start a design session for an API gateway.'",
+
 				inputSchema: {
 					type: "object",
 					properties: {

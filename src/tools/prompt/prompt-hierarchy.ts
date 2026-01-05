@@ -1,15 +1,22 @@
 import { z } from "zod";
 import { hierarchicalPromptBuilder } from "./hierarchical-prompt-builder.js";
 import { hierarchyLevelSelector } from "./hierarchy-level-selector.js";
+import { promptChainingBuilder } from "./prompt-chaining-builder.js";
+import { promptFlowBuilder } from "./prompt-flow-builder.js";
 import { promptingHierarchyEvaluator } from "./prompting-hierarchy-evaluator.js";
+import { quickDeveloperPromptsBuilder } from "./quick-developer-prompts-builder.js";
 
 /**
  * Unified Prompt Hierarchy Tool
  *
- * Consolidates three prompt hierarchy tools into a single interface with mode-based routing:
+ * Consolidates prompt hierarchy tools into a single interface with mode-based routing:
  * - 'build': Create structured hierarchical prompts (context → goal → requirements)
- * - 'select': Recommend optimal hierarchy level based on task and agent characteristics
+ * - 'select': (Deprecated) Alias for 'select-level', use 'select-level' instead
+ * - 'select-level': Recommend optimal hierarchy level based on task and agent characteristics
  * - 'evaluate': Score and analyze existing prompts against hierarchy criteria
+ * - 'chain': Build sequential prompt chains with dependencies
+ * - 'flow': Build declarative prompt flows with branching and parallelism
+ * - 'quick': Generate quick developer prompts from the Best of 25 bundle
  *
  * This tool provides a unified API for all prompt hierarchy operations while maintaining
  * backward compatibility with existing tool implementations.
@@ -28,7 +35,7 @@ export const promptHierarchySchema = z.object({
 			"quick",
 		])
 		.describe(
-			"Operation mode: 'build' creates prompts, 'select-level' recommends hierarchy level, 'evaluate' scores prompts, 'chain' builds prompt chains, 'flow' builds prompt flows, 'quick' returns quick prompts",
+			"Operation mode: 'build' creates prompts, 'select-level' recommends hierarchy level (note: 'select' is deprecated, use 'select-level'), 'evaluate' scores prompts, 'chain' builds prompt chains, 'flow' builds prompt flows, 'quick' returns quick prompts",
 		),
 
 	// Build mode fields (from hierarchical-prompt-builder)
@@ -88,6 +95,72 @@ export const promptHierarchySchema = z.object({
 		.optional()
 		.describe("Evaluate mode: Expected hierarchy level"),
 
+	// Chain mode fields (from prompt-chaining-builder)
+	chainName: z.string().optional().describe("Chain mode: Name of the chain"),
+	steps: z
+		.array(
+			z.object({
+				name: z.string(),
+				description: z.string().optional(),
+				prompt: z.string(),
+				outputKey: z.string().optional(),
+				dependencies: z.array(z.string()).optional(),
+				errorHandling: z.enum(["skip", "retry", "abort"]).optional(),
+			}),
+		)
+		.optional()
+		.describe("Chain mode: Steps in the prompt chain"),
+	executionStrategy: z
+		.enum(["sequential", "parallel-where-possible"])
+		.optional()
+		.describe("Chain mode: Execution strategy"),
+
+	// Flow mode fields (from prompt-flow-builder)
+	flowName: z.string().optional().describe("Flow mode: Name of the flow"),
+	nodes: z
+		.array(
+			z.object({
+				id: z.string(),
+				type: z.enum([
+					"prompt",
+					"condition",
+					"loop",
+					"parallel",
+					"merge",
+					"transform",
+				]),
+				name: z.string(),
+				description: z.string().optional(),
+				config: z.record(z.unknown()).optional(),
+			}),
+		)
+		.optional()
+		.describe("Flow mode: Nodes in the flow"),
+	edges: z
+		.array(
+			z.object({
+				from: z.string(),
+				to: z.string(),
+				condition: z.string().optional(),
+			}),
+		)
+		.optional()
+		.describe("Flow mode: Edges connecting nodes"),
+	entryPoint: z.string().optional().describe("Flow mode: Entry node ID"),
+
+	// Quick mode fields (from quick-developer-prompts-builder)
+	category: z
+		.enum([
+			"all",
+			"strategy-planning",
+			"code-quality",
+			"testing",
+			"documentation",
+			"devops",
+		])
+		.optional()
+		.describe("Quick mode: Category of prompts to return"),
+
 	// Shared optional fields
 	includeExamples: z
 		.boolean()
@@ -107,45 +180,64 @@ export const promptHierarchySchema = z.object({
 		.boolean()
 		.optional()
 		.describe("Include disclaimer section"),
+	includeVisualization: z
+		.boolean()
+		.optional()
+		.describe("Include visualization (Mermaid diagrams)"),
+	includeExecutionGuide: z
+		.boolean()
+		.optional()
+		.describe("Include execution guide"),
 });
 
 export type PromptHierarchyInput = z.infer<typeof promptHierarchySchema>;
 
 type PromptHierarchyMode = PromptHierarchyInput["mode"];
 
+/**
+ * Normalize tool results into a structured shape.
+ *
+ * PR #807 Review Fix: Added comprehensive documentation about precedence rules.
+ *
+ * Precedence rules:
+ * - Top-level `mode` and `prompt` on the returned object always override any
+ *   same-named fields from `result`.
+ * - Metadata is merged in the following order:
+ *   1) `result.metadata` (if present)
+ *   2) `metadata` argument
+ *   3) wrapper-controlled fields: `mode` and `source`
+ *
+ * This ensures callers can rely on consistent `mode`/`prompt` semantics while
+ * still preserving metadata produced by underlying tools.
+ */
 function toStructuredResult(
 	mode: PromptHierarchyMode,
-	result: { content?: Array<{ type: string; text: string }> },
+	result: {
+		content?: Array<{ type: string; text: string }>;
+		mode?: PromptHierarchyMode;
+		prompt?: string;
+		metadata?: Record<string, unknown>;
+	},
 	metadata: Record<string, unknown> = {},
 ) {
 	const promptText = result.content?.[0]?.text ?? "";
+	const existingMetadata = (result.metadata ?? {}) as Record<string, unknown>;
+
 	return {
+		// Spread the original result first so we can override specific fields below
 		...result,
+		// Enforce canonical top-level fields
 		mode,
 		prompt: promptText,
 		metadata: {
-			mode,
-			source: "prompt-hierarchy",
+			// Preserve metadata from underlying tools
+			...existingMetadata,
+			// Allow caller-provided metadata to augment/override tool metadata
 			...metadata,
+			// Wrapper-controlled metadata fields
+			source: "prompt-hierarchy",
 		},
 	};
-}
-
-function buildFallbackPrompt(
-	mode: Exclude<
-		PromptHierarchyMode,
-		"build" | "select" | "select-level" | "evaluate"
-	>,
-	input: PromptHierarchyInput,
-) {
-	const task = input.taskDescription || input.goal || input.context || "task";
-	const heading =
-		mode === "chain"
-			? "Prompt Chain"
-			: mode === "flow"
-				? "Prompt Flow"
-				: "Quick Prompt Pack";
-	return `# ${heading}\n${task}`;
 }
 
 /**
@@ -181,9 +273,7 @@ export async function promptHierarchy(args: unknown) {
 			return toStructuredResult(
 				input.mode,
 				await hierarchyLevelSelector(input),
-				{
-					strategy: "select",
-				},
+				{ strategy: "select" },
 			);
 
 		case "evaluate":
@@ -194,28 +284,69 @@ export async function promptHierarchy(args: unknown) {
 			return toStructuredResult(
 				input.mode,
 				await promptingHierarchyEvaluator(input),
-				{
-					strategy: "evaluate",
-				},
+				{ strategy: "evaluate" },
 			);
 
-		case "chain":
-		case "flow":
+		case "chain": {
+			// PR #807 Review Fix: Properly delegate to prompt-chaining-builder
+			if (!input.chainName || !input.steps || input.steps.length === 0) {
+				throw new Error(
+					"Chain mode requires 'chainName' and at least one step in 'steps'",
+				);
+			}
+			return toStructuredResult(
+				input.mode,
+				await promptChainingBuilder({
+					chainName: input.chainName,
+					steps: input.steps,
+					context: input.context,
+					executionStrategy: input.executionStrategy,
+					includeMetadata: input.includeMetadata,
+					includeReferences: input.includeReferences,
+					includeVisualization: input.includeVisualization,
+				}),
+				{ strategy: "chain" },
+			);
+		}
+
+		case "flow": {
+			// PR #807 Review Fix: Properly delegate to prompt-flow-builder
+			if (!input.flowName || !input.nodes || input.nodes.length === 0) {
+				throw new Error(
+					"Flow mode requires 'flowName' and at least one node in 'nodes'",
+				);
+			}
+			return toStructuredResult(
+				input.mode,
+				await promptFlowBuilder({
+					flowName: input.flowName,
+					nodes: input.nodes,
+					edges: input.edges,
+					entryPoint: input.entryPoint,
+					includeMetadata: input.includeMetadata,
+					includeReferences: input.includeReferences,
+					includeExecutionGuide: input.includeExecutionGuide,
+				}),
+				{ strategy: "flow" },
+			);
+		}
+
 		case "quick": {
-			const fallback = {
-				content: [
-					{
-						type: "text",
-						text: buildFallbackPrompt(input.mode, input),
-					},
-				],
-			};
-			return toStructuredResult(input.mode, fallback, { strategy: input.mode });
+			// PR #807 Review Fix: Properly delegate to quick-developer-prompts-builder
+			return toStructuredResult(
+				input.mode,
+				await quickDeveloperPromptsBuilder({
+					category: input.category ?? "all",
+					includeMetadata: input.includeMetadata,
+					includeFrontmatter: input.includeFrontmatter,
+				}),
+				{ strategy: "quick" },
+			);
 		}
 
 		/* c8 ignore next 3 */
 		default:
 			// TypeScript ensures this is unreachable, but add for runtime safety
-			throw new Error(`Unknown mode: ${input.mode}`);
+			throw new Error(`Unknown mode: ${String(input.mode)}`);
 	}
 }
