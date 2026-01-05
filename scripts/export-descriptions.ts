@@ -17,6 +17,8 @@ const sourceFile = ts.createSourceFile(
 );
 
 const toolMap = new Map<string, string>();
+const getFirstFiveWords = (text: string) =>
+	text.trim().split(/\s+/).slice(0, 5).join(" ");
 
 const getPropertyName = (name: ts.PropertyName): string | undefined => {
 	if (ts.isIdentifier(name) || ts.isStringLiteral(name)) {
@@ -58,9 +60,16 @@ const extractToolsFromArray = (arrayLiteral: ts.ArrayLiteralExpression) => {
 		const name = getStringInitializer(element, "name");
 		const description = getStringInitializer(element, "description");
 
-		if (name && description && !toolMap.has(name)) {
-			toolMap.set(name, description);
+		if (!name || !description) {
+			return;
 		}
+
+		if (toolMap.has(name)) {
+			console.warn(`Duplicate tool name encountered: ${name}`);
+			return;
+		}
+
+		toolMap.set(name, description);
 	});
 };
 
@@ -85,30 +94,30 @@ if (toolMap.size === 0) {
 const records: Array<
 	ToolRecord & { charCount: number; firstFiveWords: string }
 > = Array.from(toolMap.entries()).map(([name, description]) => {
-	const normalizedWords = description.trim().split(/\s+/).slice(0, 5).join(" ");
-
 	return {
 		name,
 		description,
 		charCount: description.length,
-		firstFiveWords: normalizedWords,
+		firstFiveWords: getFirstFiveWords(description),
 	};
 });
 
 const artifactsDir = path.resolve("artifacts");
 fs.mkdirSync(artifactsDir, { recursive: true });
 
-const escapeCsv = (value: string) =>
-	`"${value.replace(/"/g, '""').replace(/\r?\n|\r/g, " ")}"`;
+const formatCsvValue = (value: string) => {
+	const normalized = value.replace(/\r?\n|\r/g, " ").trim();
+	return `"${normalized.replace(/"/g, '""')}"`;
+};
 
 const header = "Tool Name,Current Description,Character Count,First 5 Words\n";
 const rows = records
 	.map((record) =>
 		[
-			escapeCsv(record.name),
-			escapeCsv(record.description),
+			formatCsvValue(record.name),
+			formatCsvValue(record.description),
 			record.charCount,
-			escapeCsv(record.firstFiveWords),
+			formatCsvValue(record.firstFiveWords),
 		].join(","),
 	)
 	.join("\n");
