@@ -73,7 +73,12 @@ function validateExample(
 			expect(Array.isArray(example), `${label} should be an array`).toBe(true);
 			break;
 		case "object":
-			expect(typeof example, `${label} should be an object`).toBe("object");
+			expect(
+				typeof example === "object" &&
+					example !== null &&
+					!Array.isArray(example),
+				`${label} should be a non-null object`,
+			).toBe(true);
 			break;
 		default:
 			throw new Error(
@@ -101,7 +106,7 @@ const ACTION_VERBS = [
 	"Execute",
 	"Generate",
 	"Guide",
-	"Iteratively",
+	"Iterate",
 	"Manage",
 	"Optimize",
 	"Orchestrate",
@@ -150,7 +155,7 @@ describe("Phase 1 discoverability", () => {
 			).toBeTruthy();
 
 			// Safe to split after the truthy check above
-			const firstWord = (description ?? "").split(/\s+/)[0];
+			const firstWord = description?.split(/\s+/)[0] ?? "";
 			expect(
 				ACTION_VERBS,
 				`Tool "${tool.name}" description starts with "${firstWord}" which is not an approved action verb. Approved verbs: ${ACTION_VERBS.join(", ")}`,
