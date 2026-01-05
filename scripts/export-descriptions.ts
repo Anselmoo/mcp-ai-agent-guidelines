@@ -88,7 +88,9 @@ const visit = (node: ts.Node) => {
 visit(sourceFile);
 
 if (toolMap.size === 0) {
-	throw new Error("No tools extracted from src/index.ts");
+	throw new Error(
+		"No tools extracted from src/index.ts. Verify the ListTools handler contains a tools array.",
+	);
 }
 
 const records: Array<
@@ -105,6 +107,7 @@ const records: Array<
 const artifactsDir = path.resolve("artifacts");
 fs.mkdirSync(artifactsDir, { recursive: true });
 
+// Lightweight CSV formatter to avoid adding extra dependencies for a simple export.
 const formatCsvValue = (value: string) => {
 	const normalized = value.replace(/\r?\n|\r/g, " ").trim();
 	return `"${normalized.replace(/"/g, '""')}"`;
@@ -123,6 +126,6 @@ const rows = records
 	.join("\n");
 
 const outputPath = path.join(artifactsDir, "tool-descriptions.csv");
-fs.writeFileSync(outputPath, header + rows);
+fs.writeFileSync(outputPath, `${header}${rows}\n`);
 
 console.log(`Wrote ${records.length} tool descriptions to ${outputPath}`);
