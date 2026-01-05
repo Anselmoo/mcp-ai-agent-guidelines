@@ -234,8 +234,7 @@ function toStructuredResult(
 			...existingMetadata,
 			// Allow caller-provided metadata to augment/override tool metadata
 			...metadata,
-			// Ensure wrapper-controlled metadata fields are authoritative
-			mode,
+			// Wrapper-controlled metadata fields
 			source: "prompt-hierarchy",
 		},
 	};

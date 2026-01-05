@@ -1199,7 +1199,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "iterative-coverage-enhancer",
 				description:
-					"Iteratively analyze test coverage gaps, detect dead code, generate test suggestions, and recommend adaptive coverage thresholds. BEST FOR: test coverage optimization, dead code elimination, test suite enhancement, coverage threshold management. OUTPUTS: Test suggestions with coverage gap analysis.",
+					"Iterate on test coverage gaps, detect dead code, generate test suggestions, and recommend adaptive coverage thresholds. BEST FOR: test coverage optimization, dead code elimination, test suite enhancement, coverage threshold management. OUTPUTS: Test suggestions with coverage gap analysis.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -2021,7 +2021,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "prompt-hierarchy",
 				description:
-					"Unified prompting hierarchy tool with modes: 'build' (create prompts), 'select' (recommend level), 'evaluate' (score quality). BEST FOR: all hierarchy operations, prompt creation, level selection, quality assessment. OUTPUTS: Mode-specific structured responses.",
+					"Manage prompting hierarchy operations with modes: 'build' (create prompts), 'select' (recommend level), 'evaluate' (score quality). BEST FOR: all hierarchy operations, prompt creation, level selection, quality assessment. OUTPUTS: Mode-specific structured responses.",
 				inputSchema: {
 					type: "object",
 					properties: {

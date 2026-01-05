@@ -68,7 +68,7 @@ describe("prompt-hierarchy integration", () => {
 			expect(result.mode).toBe(mode);
 			expect(result.prompt?.length ?? 0).toBeGreaterThan(0);
 			expect(result.metadata).toBeDefined();
-			expect(result.metadata?.mode).toBe(mode);
+			expect(result.metadata?.source).toBe("prompt-hierarchy");
 			expect(result.content).toBeInstanceOf(Array);
 		}
 	});
@@ -89,7 +89,22 @@ describe("prompt-hierarchy integration", () => {
 		expect(text).toContain("Adopt JWT tokens");
 	});
 
-	it("handles select mode end-to-end", async () => {
+	it("handles select-level mode end-to-end", async () => {
+		const result = await promptHierarchy({
+			mode: "select-level",
+			taskDescription: "Implement payment processing",
+			agentCapability: "intermediate",
+			taskComplexity: "complex",
+			autonomyPreference: "medium",
+		});
+
+		expect(result.content).toBeInstanceOf(Array);
+		const text = result.content[0]?.text ?? "";
+		expect(text).toMatch(/Hierarchy Level Recommendation/i);
+		expect(text.length).toBeGreaterThan(0);
+	});
+
+	it("supports deprecated select mode (backward compatibility)", async () => {
 		const result = await promptHierarchy({
 			mode: "select",
 			taskDescription: "Implement payment processing",
@@ -98,6 +113,7 @@ describe("prompt-hierarchy integration", () => {
 			autonomyPreference: "medium",
 		});
 
+		// Should behave identically to select-level mode
 		expect(result.content).toBeInstanceOf(Array);
 		const text = result.content[0]?.text ?? "";
 		expect(text).toMatch(/Hierarchy Level Recommendation/i);
