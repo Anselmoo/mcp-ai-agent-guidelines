@@ -50,6 +50,82 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reduced maintenance burden by consolidating 14 individual status exports into single `DESIGN_MODULE_STATUSES` object (supports issue #414)
 
 
+## [0.14.0-alpha.1] - 2026-01-05
+
+### Added
+
+**Phase 1: Discoverability Improvements**
+
+- **ToolAnnotations** for all 32 tools providing metadata hints to LLMs:
+  - `title`: Human-readable tool name
+  - `readOnlyHint`: Whether tool modifies state (true/false)
+  - `idempotentHint`: Whether repeated calls with same inputs produce same outputs (true/false)
+  - `destructiveHint`: Whether tool may delete/destroy data (false for all current tools)
+  - `openWorldHint`: Whether tool accesses external systems (true only for project-onboarding)
+- **Annotation Presets** in `src/tools/shared/annotation-presets.ts`:
+  - `ANALYSIS_TOOL_ANNOTATIONS` - For read-only analysis tools
+  - `GENERATION_TOOL_ANNOTATIONS` - For content generation tools
+  - `SESSION_TOOL_ANNOTATIONS` - For session-based stateful tools
+  - `FILESYSTEM_TOOL_ANNOTATIONS` - For tools accessing external filesystem
+- **Unified Prompt Tool** - `prompt-hierarchy` consolidating 6 prompt tools into one API:
+  - Mode `build`: Create hierarchical prompts (replaces `hierarchical-prompt-builder`)
+  - Mode `evaluate`: Score prompt quality (replaces `prompting-hierarchy-evaluator`)
+  - Mode `select-level`: Recommend hierarchy level (replaces `hierarchy-level-selector`)
+  - Mode `chain`: Build sequential prompt chains (replaces `prompt-chaining-builder`)
+  - Mode `flow`: Create declarative flows (replaces `prompt-flow-builder`)
+  - Mode `quick`: Access quick developer prompts (replaces `quick-developer-prompts-builder`)
+- **Schema Examples** in all tool input schemas for improved LLM comprehension
+- **Description Uniqueness Test** (`tests/vitest/integration/phase1-discoverability.spec.ts`)
+- **Comprehensive Documentation**:
+  - `docs/tools.md` - Complete tool reference with ToolAnnotations and complexity ratings
+  - `docs/migration.md` - Migration guide from v0.13.x to v0.14.x with examples
+  - `docs/api/prompt-hierarchy.md` - Detailed API reference for unified prompt tool
+
+### Changed
+
+**Tool Descriptions Rewrite** - All 32 tool descriptions rewritten in active voice format:
+- Template: `[ACTION VERB] [WHAT IT DOES] with [KEY DIFFERENTIATOR]. BEST FOR: [use cases]. OUTPUTS: [format].`
+- Improved discoverability through standardized naming and clear use cases
+- Examples added to all schema properties for better LLM understanding
+
+**Documentation Updates**:
+- README.md tool count updated from 27 to 32 tools
+- Added deprecation notices for 6 prompt tools in README.md
+- Updated Prompt Builders section to highlight new `prompt-hierarchy` tool
+- Reorganized Utilities section to separate active from deprecated tools
+
+### Deprecated
+
+**Prompt Tools** (deprecated in v0.14.0, will be removed in v0.15.0):
+- `hierarchical-prompt-builder` → Use `prompt-hierarchy` with `mode: "build"`
+- `prompting-hierarchy-evaluator` → Use `prompt-hierarchy` with `mode: "evaluate"`
+- `hierarchy-level-selector` → Use `prompt-hierarchy` with `mode: "select-level"`
+- `prompt-chaining-builder` → Use `prompt-hierarchy` with `mode: "chain"`
+- `prompt-flow-builder` → Use `prompt-hierarchy` with `mode: "flow"`
+- `quick-developer-prompts-builder` → Use `prompt-hierarchy` with `mode: "quick"`
+
+**Deprecation Mechanism**:
+- All deprecated tools emit deprecation warnings via `emitDeprecationWarning()` helper
+- Warnings include: deprecation version, replacement tool, removal version
+- Warnings are emitted only once per session per tool to avoid log spam
+
+### Notes
+
+**Breaking Changes**: None - all deprecated tools remain fully functional with warnings
+
+**Migration Path**: See [docs/migration.md](./docs/migration.md) for detailed migration guide with before/after examples
+
+**Testing**:
+- All existing tests pass with deprecated tools
+- New integration tests validate ToolAnnotations coverage
+- Phase 1 discoverability tests ensure description uniqueness and schema examples
+
+**Related Issues**:
+- Implements Phase 1 (P1-017) from [TASKS-phase-1-discoverability.md](./plan-v0.13.x/tasks/TASKS-phase-1-discoverability.md)
+- Addresses [SPEC-002: Tool Harmonization](./plan-v0.13.x/specs/SPEC-002-tool-harmonization.md)
+
+
+
 ## [0.12.4] - 2025-12-21
 
 ### Added
@@ -158,7 +234,9 @@ For detailed history before v0.7.0, see the [Git commit history](https://github.
 
 ---
 
-[Unreleased]: https://github.com/Anselmoo/mcp-ai-agent-guidelines/compare/v0.12.1...HEAD
+[Unreleased]: https://github.com/Anselmoo/mcp-ai-agent-guidelines/compare/v0.14.0-alpha.1...HEAD
+[0.14.0-alpha.1]: https://github.com/Anselmoo/mcp-ai-agent-guidelines/compare/v0.12.4...v0.14.0-alpha.1
+[0.12.4]: https://github.com/Anselmoo/mcp-ai-agent-guidelines/compare/v0.12.1...v0.12.4
 [0.12.1]: https://github.com/Anselmoo/mcp-ai-agent-guidelines/compare/v0.8.0...v0.12.1
 [0.8.0]: https://github.com/Anselmoo/mcp-ai-agent-guidelines/compare/v0.7.0...v0.8.0
 
