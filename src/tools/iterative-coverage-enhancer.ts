@@ -45,7 +45,7 @@ const IterativeCoverageEnhancerSchema = z.object({
 	includeReferences: z.boolean().optional().default(true),
 	includeCodeExamples: z.boolean().optional().default(true),
 	generateCIActions: z.boolean().optional().default(true),
-});;
+});
 
 type IterativeCoverageEnhancerInput = z.infer<
 	typeof IterativeCoverageEnhancerSchema

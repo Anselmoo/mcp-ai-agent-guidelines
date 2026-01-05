@@ -107,10 +107,20 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						context: {
 							type: "string",
 							description: "The broad context or domain",
+							examples: [
+								"Microservices authentication system",
+								"E-commerce payment processing module",
+								"Real-time analytics dashboard",
+							],
 						},
 						goal: {
 							type: "string",
 							description: "The specific goal or objective",
+							examples: [
+								"Implement OAuth2 authorization flow with JWT tokens",
+								"Optimize database query performance for product search",
+								"Add real-time WebSocket updates to user dashboard",
+							],
 						},
 						requirements: {
 							type: "array",
@@ -196,6 +206,11 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						codebase: {
 							type: "string",
 							description: "The codebase or code snippet to analyze",
+							examples: [
+								"src/auth/authentication.ts",
+								"function processPayment(amount, currency) { ... }",
+								"./services/user-management",
+							],
 						},
 						focusArea: {
 							type: "string",
@@ -205,6 +220,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						language: {
 							type: "string",
 							description: "Programming language of the code",
+							examples: ["typescript", "python", "java", "go"],
 						},
 						mode: { type: "string" },
 						model: { type: "string" },
@@ -232,6 +248,11 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						systemRequirements: {
 							type: "string",
 							description: "System requirements and constraints",
+							examples: [
+								"Handle 10,000 concurrent users with <100ms response time",
+								"Process 1M events per day with 99.9% uptime SLA",
+								"Support multi-region deployment with data sovereignty compliance",
+							],
 						},
 						scale: {
 							type: "string",
@@ -241,6 +262,11 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						technologyStack: {
 							type: "string",
 							description: "Preferred or required technology stack",
+							examples: [
+								"Node.js, PostgreSQL, Redis, Docker",
+								"Python FastAPI, MongoDB, RabbitMQ",
+								"Java Spring Boot, Kafka, Kubernetes",
+							],
 						},
 						mode: { type: "string" },
 						model: { type: "string" },
@@ -360,10 +386,20 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						errorDescription: {
 							type: "string",
 							description: "Description of the error or issue",
+							examples: [
+								"Database connection pool exhausted after 1000 concurrent requests",
+								"Memory leak in Node.js worker process consuming 2GB over 24 hours",
+								"Intermittent 504 Gateway Timeout on /api/checkout endpoint",
+							],
 						},
 						context: {
 							type: "string",
 							description: "Additional context about the problem",
+							examples: [
+								"Occurs only during peak traffic hours (9am-5pm EST)",
+								"Started after deploying v2.3.0 with new caching layer",
+								"Affects 15% of users on mobile Safari browsers",
+							],
 						},
 						attemptedSolutions: {
 							type: "string",
@@ -395,11 +431,21 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						projectName: {
 							type: "string",
 							description: "Name of the software project or system initiative",
+							examples: [
+								"Global CDN Migration",
+								"Real-time Fraud Detection Platform",
+								"Multi-tenant SaaS Infrastructure",
+							],
 						},
 						technicalChallenge: {
 							type: "string",
 							description:
 								"Core technical problem, architectural complexity, or scale challenge",
+							examples: [
+								"Design distributed consensus system for 1000+ nodes across 5 regions",
+								"Migrate monolith to event-driven microservices with zero downtime",
+								"Build real-time ML inference pipeline processing 100k requests/sec",
+							],
 						},
 						technicalDrivers: {
 							type: "array",
@@ -524,10 +570,20 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 							type: "string",
 							description:
 								"Type of documentation (API, user guide, technical spec)",
+							examples: [
+								"REST API Reference",
+								"User Onboarding Guide",
+								"Technical Architecture Specification",
+							],
 						},
 						targetAudience: {
 							type: "string",
 							description: "Intended audience for the documentation",
+							examples: [
+								"Backend developers integrating with our API",
+								"Non-technical end users",
+								"DevOps engineers setting up infrastructure",
+							],
 						},
 						existingContent: {
 							type: "string",
@@ -585,8 +641,21 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 								],
 							},
 							description: "Framework identifiers to include",
+							examples: [
+								["swot", "portersFiveForces"],
+								["balancedScorecard", "objectives"],
+								["vrio", "blueOcean", "ansoffMatrix"],
+							],
 						},
-						context: { type: "string", description: "Business context" },
+						context: {
+							type: "string",
+							description: "Business context",
+							examples: [
+								"SaaS startup entering competitive CRM market",
+								"Enterprise retail chain digital transformation initiative",
+								"Healthcare provider network expansion strategy",
+							],
+						},
 						objectives: { type: "array", items: { type: "string" } },
 						market: { type: "string" },
 						stakeholders: { type: "array", items: { type: "string" } },
@@ -629,14 +698,29 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 								],
 							},
 							description: "Gap analysis framework types to include",
+							examples: [
+								["capability", "technology"],
+								["maturity", "skills", "process"],
+								["security", "compliance"],
+							],
 						},
 						currentState: {
 							type: "string",
 							description: "Current state description",
+							examples: [
+								"Monolithic PHP application with MySQL, manual deployments",
+								"Team of 5 developers, waterfall process, 6-month release cycles",
+								"On-premise infrastructure, basic monitoring, no CI/CD",
+							],
 						},
 						desiredState: {
 							type: "string",
 							description: "Desired state description",
+							examples: [
+								"Microservices architecture with containerized deployments, auto-scaling",
+								"Agile team of 15, DevOps culture, weekly releases with feature flags",
+								"Cloud-native platform, observability stack, automated GitOps pipelines",
+							],
 						},
 						context: { type: "string", description: "Analysis context" },
 						objectives: { type: "array", items: { type: "string" } },
@@ -1288,6 +1372,11 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 							type: "string",
 							description:
 								"Description of the system or process to diagram. Be specific and detailed for better diagram generation.",
+							examples: [
+								"OAuth2 authentication flow with authorization code grant, including user, client, authorization server, and resource server interactions",
+								"E-commerce checkout process from cart review to order confirmation with payment gateway integration",
+								"Microservices architecture showing API gateway, service mesh, and database interactions for order processing system",
+							],
 						},
 						diagramType: {
 							type: "string",
@@ -1306,6 +1395,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 								"timeline",
 							],
 							description: "Type of diagram to generate",
+							examples: ["sequence", "flowchart", "class"],
 						},
 						theme: {
 							type: "string",
@@ -1367,8 +1457,17 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						contextContent: {
 							type: "string",
 							description: "Context content to optimize",
+							examples: [
+								"Large codebase documentation with 50k tokens of API specifications",
+								"Multi-file context including design docs, requirements, and code samples",
+								"Long conversation history with technical architecture decisions",
+							],
 						},
-						maxTokens: { type: "number", description: "Maximum token limit" },
+						maxTokens: {
+							type: "number",
+							description: "Maximum token limit",
+							examples: [4000, 8000, 16000],
+						},
 						cacheStrategy: {
 							type: "string",
 							enum: ["aggressive", "conservative", "balanced"],
@@ -1393,8 +1492,24 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 				inputSchema: {
 					type: "object",
 					properties: {
-						title: { type: "string", description: "Document title" },
-						summary: { type: "string", description: "One-paragraph summary" },
+						title: {
+							type: "string",
+							description: "Document title",
+							examples: [
+								"User Authentication System Specification",
+								"Data Pipeline Processing Workflow",
+								"API Gateway Configuration Requirements",
+							],
+						},
+						summary: {
+							type: "string",
+							description: "One-paragraph summary",
+							examples: [
+								"Design and implement secure OAuth2-based authentication supporting JWT tokens, multi-factor authentication, and session management for web and mobile clients.",
+								"Build ETL pipeline to ingest, transform, and load customer data from multiple sources into data warehouse with validation and error handling.",
+								"Configure API gateway for routing, rate limiting, and authentication across 20+ microservices with observability integration.",
+							],
+						},
 						objectives: { type: "array", items: { type: "string" } },
 						nonGoals: { type: "array", items: { type: "string" } },
 						background: { type: "string" },
@@ -1527,6 +1642,11 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 							type: "string",
 							description:
 								"The code context or description to analyze for security",
+							examples: [
+								"User authentication API endpoint handling password reset tokens",
+								"Payment processing service with credit card tokenization",
+								"File upload handler accepting user-submitted documents",
+							],
 						},
 						securityFocus: {
 							type: "string",
@@ -1538,6 +1658,11 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 								"penetration-testing",
 							],
 							description: "Primary security analysis focus",
+							examples: [
+								"vulnerability-analysis",
+								"compliance-check",
+								"threat-modeling",
+							],
 						},
 						securityRequirements: {
 							type: "array",
@@ -1686,6 +1811,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 							],
 							description:
 								"Category of prompts to generate. Use 'all' for all 25 prompts or select a specific category",
+							examples: ["all", "testing", "code-quality"],
 						},
 						mode: { type: "string" },
 						model: { type: "string" },
@@ -1714,7 +1840,11 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 							items: { type: "object" },
 							description: "List of tasks with estimates",
 						},
-						teamSize: { type: "number", description: "Number of team members" },
+						teamSize: {
+							type: "number",
+							description: "Number of team members",
+							examples: [5, 8, 12],
+						},
 						sprintLength: {
 							type: "number",
 							description: "Sprint length in days",
@@ -1722,6 +1852,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						velocity: {
 							type: "number",
 							description: "Team velocity (story points per sprint)",
+							examples: [40, 60, 80],
 						},
 						optimizationStrategy: {
 							type: "string",
@@ -1755,6 +1886,11 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						taskDescription: {
 							type: "string",
 							description: "Description of the task",
+							examples: [
+								"Code generation for complex TypeScript refactoring",
+								"Multi-modal image analysis with text extraction",
+								"Long-context document summarization (50k+ tokens)",
+							],
 						},
 						requirements: {
 							type: "array",
@@ -1766,6 +1902,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 							type: "string",
 							enum: ["low", "medium", "high"],
 							description: "Budget constraints",
+							examples: ["low", "medium", "high"],
 						},
 						language: {
 							type: "string",
@@ -1944,6 +2081,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 								"documentation",
 							],
 							description: "Mode to switch to",
+							examples: ["editing", "debugging", "refactoring"],
 						},
 						context: {
 							type: "string",
@@ -1959,6 +2097,11 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						reason: {
 							type: "string",
 							description: "Reason for mode switch",
+							examples: [
+								"Completed feature planning, ready to implement code changes",
+								"Tests failing, need to debug root cause of authentication error",
+								"Code review complete, refactoring needed to improve maintainability",
+							],
 						},
 						includeReferences: {
 							type: "boolean",
@@ -2139,6 +2282,11 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 						taskDescription: {
 							type: "string",
 							description: "Description of the task the prompt will address",
+							examples: [
+								"Refactor legacy authentication module to use modern JWT-based approach",
+								"Debug intermittent race condition in distributed cache layer",
+								"Design scalable event-driven architecture for order processing system",
+							],
 						},
 						agentCapability: {
 							type: "string",
@@ -2149,6 +2297,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 							type: "string",
 							enum: ["simple", "moderate", "complex", "very-complex"],
 							description: "Complexity of the task",
+							examples: ["simple", "complex", "very-complex"],
 						},
 						autonomyPreference: {
 							type: "string",
@@ -2201,10 +2350,20 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 								"generate-context-aware-guidance",
 							],
 							description: "Action to perform",
+							examples: [
+								"start-session",
+								"advance-phase",
+								"generate-artifacts",
+							],
 						},
 						sessionId: {
 							type: "string",
 							description: "Unique session identifier",
+							examples: [
+								"api-gateway-design-2024",
+								"payment-service-architecture",
+								"auth-system-refactor-q1",
+							],
 						},
 						config: {
 							type: "object",
