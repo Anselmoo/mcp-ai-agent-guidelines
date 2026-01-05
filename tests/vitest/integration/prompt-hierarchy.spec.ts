@@ -12,8 +12,38 @@ const TARGET_LEVELS = [
 	"scaffolding",
 	"full-physical",
 ];
+const UNIFIED_MODES = [
+	"build",
+	"evaluate",
+	"select-level",
+	"chain",
+	"flow",
+	"quick",
+] as const;
 
 describe("prompt-hierarchy integration", () => {
+	it("returns structured output for unified modes", async () => {
+		for (const mode of UNIFIED_MODES) {
+			const result = await promptHierarchy({
+				mode,
+				context:
+					mode === "build" ? "Refactor authentication module" : undefined,
+				goal: mode === "build" ? "Adopt JWT tokens" : undefined,
+				promptText: mode === "evaluate" ? "Assess prompt quality" : undefined,
+				taskDescription:
+					mode !== "build" && mode !== "evaluate"
+						? "Validate mode handling"
+						: undefined,
+			});
+
+			expect(result.mode).toBe(mode);
+			expect(result.prompt?.length ?? 0).toBeGreaterThan(0);
+			expect(result.metadata).toBeDefined();
+			expect(result.metadata?.mode).toBe(mode);
+			expect(result.content).toBeInstanceOf(Array);
+		}
+	});
+
 	it("handles build mode end-to-end", async () => {
 		const result = await promptHierarchy({
 			mode: "build",

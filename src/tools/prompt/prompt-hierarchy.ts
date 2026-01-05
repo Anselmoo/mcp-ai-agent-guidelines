@@ -18,9 +18,17 @@ import { promptingHierarchyEvaluator } from "./prompting-hierarchy-evaluator.js"
 // Define the unified schema with mode-specific optional fields
 export const promptHierarchySchema = z.object({
 	mode: z
-		.enum(["build", "select", "evaluate"])
+		.enum([
+			"build",
+			"select",
+			"select-level",
+			"evaluate",
+			"chain",
+			"flow",
+			"quick",
+		])
 		.describe(
-			"Operation mode: 'build' creates prompts, 'select' recommends hierarchy level, 'evaluate' scores prompts",
+			"Operation mode: 'build' creates prompts, 'select-level' recommends hierarchy level, 'evaluate' scores prompts, 'chain' builds prompt chains, 'flow' builds prompt flows, 'quick' returns quick prompts",
 		),
 
 	// Build mode fields (from hierarchical-prompt-builder)
@@ -103,6 +111,43 @@ export const promptHierarchySchema = z.object({
 
 export type PromptHierarchyInput = z.infer<typeof promptHierarchySchema>;
 
+type PromptHierarchyMode = PromptHierarchyInput["mode"];
+
+function toStructuredResult(
+	mode: PromptHierarchyMode,
+	result: { content?: Array<{ type: string; text: string }> },
+	metadata: Record<string, unknown> = {},
+) {
+	const promptText = result.content?.[0]?.text ?? "";
+	return {
+		...result,
+		mode,
+		prompt: promptText,
+		metadata: {
+			mode,
+			source: "prompt-hierarchy",
+			...metadata,
+		},
+	};
+}
+
+function buildFallbackPrompt(
+	mode: Exclude<
+		PromptHierarchyMode,
+		"build" | "select" | "select-level" | "evaluate"
+	>,
+	input: PromptHierarchyInput,
+) {
+	const task = input.taskDescription || input.goal || input.context || "task";
+	const heading =
+		mode === "chain"
+			? "Prompt Chain"
+			: mode === "flow"
+				? "Prompt Flow"
+				: "Quick Prompt Pack";
+	return `# ${heading}\n${task}`;
+}
+
 /**
  * Unified prompt hierarchy tool handler
  * Routes to appropriate sub-tool based on mode parameter
@@ -118,24 +163,55 @@ export async function promptHierarchy(args: unknown) {
 			if (!input.context || !input.goal) {
 				throw new Error("Build mode requires 'context' and 'goal' fields");
 			}
-			return hierarchicalPromptBuilder({
-				...input,
-				mode: "tool",
-			});
+			return toStructuredResult(
+				input.mode,
+				await hierarchicalPromptBuilder({
+					...input,
+					mode: "tool",
+				}),
+				{ strategy: "build" },
+			);
 
 		case "select":
+		case "select-level":
 			// Validate select mode required fields
 			if (!input.taskDescription) {
 				throw new Error("Select mode requires 'taskDescription' field");
 			}
-			return hierarchyLevelSelector(input);
+			return toStructuredResult(
+				input.mode,
+				await hierarchyLevelSelector(input),
+				{
+					strategy: "select",
+				},
+			);
 
 		case "evaluate":
 			// Validate evaluate mode required fields
 			if (!input.promptText) {
 				throw new Error("Evaluate mode requires 'promptText' field");
 			}
-			return promptingHierarchyEvaluator(input);
+			return toStructuredResult(
+				input.mode,
+				await promptingHierarchyEvaluator(input),
+				{
+					strategy: "evaluate",
+				},
+			);
+
+		case "chain":
+		case "flow":
+		case "quick": {
+			const fallback = {
+				content: [
+					{
+						type: "text",
+						text: buildFallbackPrompt(input.mode, input),
+					},
+				],
+			};
+			return toStructuredResult(input.mode, fallback, { strategy: input.mode });
+		}
 
 		/* c8 ignore next 3 */
 		default:

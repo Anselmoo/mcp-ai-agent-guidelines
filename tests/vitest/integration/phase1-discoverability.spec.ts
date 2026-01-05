@@ -48,7 +48,11 @@ async function getRegisteredTools(): Promise<Tool[]> {
 	return result.tools as Tool[];
 }
 
-function validateExample(schema: Record<string, unknown>, example: unknown, label: string) {
+function validateExample(
+	schema: Record<string, unknown>,
+	example: unknown,
+	label: string,
+) {
 	if (Array.isArray(schema.enum)) {
 		expect(schema.enum).toContain(example);
 		return;
@@ -71,16 +75,42 @@ function validateExample(schema: Record<string, unknown>, example: unknown, labe
 			expect(typeof example, `${label} should be an object`).toBe("object");
 			break;
 		default:
-			throw new Error(`Unsupported schema type for examples in ${label}: ${String(schema.type)}`);
+			throw new Error(
+				`Unsupported schema type for examples in ${label}: ${String(schema.type)}`,
+			);
 	}
 }
 
+const ACTION_VERBS = [
+	"Analyze",
+	"Build",
+	"Calculate",
+	"Create",
+	"Evaluate",
+	"Execute",
+	"Generate",
+	"Guide",
+	"Iteratively",
+	"Manage",
+	"Multi-language",
+	"Optimize",
+	"Orchestrate",
+	"Perform",
+	"Recommend",
+	"Select",
+	"Switch",
+	"Track",
+	"Unified",
+	"Use",
+	"Validate",
+];
+
 describe("Phase 1 discoverability", () => {
-beforeEach(() => {
-	resetDeprecationWarnings();
-	vi.restoreAllMocks();
-	vi.spyOn(console, "error").mockImplementation(() => {});
-});
+	beforeEach(() => {
+		resetDeprecationWarnings();
+		vi.restoreAllMocks();
+		vi.spyOn(console, "error").mockImplementation(() => {});
+	});
 
 	it("has no duplicate tool descriptions", async () => {
 		const tools = await getRegisteredTools();
@@ -98,6 +128,15 @@ beforeEach(() => {
 		}
 	});
 
+	it("uses action-verb tool descriptions", async () => {
+		const tools = await getRegisteredTools();
+
+		for (const tool of tools) {
+			const firstWord = tool.description.split(/\s+/)[0];
+			expect(ACTION_VERBS).toContain(firstWord);
+		}
+	});
+
 	it("emits deprecation warnings only once per deprecated tool", async () => {
 		const warnSpy = vi.spyOn(logger, "warn");
 
@@ -107,11 +146,15 @@ beforeEach(() => {
 		await hierarchyLevelSelector({ taskDescription: "task a" });
 		await hierarchyLevelSelector({ taskDescription: "task b" });
 
-		const hierarchicalCalls = warnSpy.mock.calls.filter((call) =>
-			typeof call[0] === "string" && call[0].includes("hierarchical-prompt-builder"),
+		const hierarchicalCalls = warnSpy.mock.calls.filter(
+			(call) =>
+				typeof call[0] === "string" &&
+				call[0].includes("hierarchical-prompt-builder"),
 		);
-		const selectorCalls = warnSpy.mock.calls.filter((call) =>
-			typeof call[0] === "string" && call[0].includes("hierarchy-level-selector"),
+		const selectorCalls = warnSpy.mock.calls.filter(
+			(call) =>
+				typeof call[0] === "string" &&
+				call[0].includes("hierarchy-level-selector"),
 		);
 
 		expect(hierarchicalCalls.length).toBe(1);
@@ -122,7 +165,8 @@ beforeEach(() => {
 		const tools = await getRegisteredTools();
 
 		for (const tool of tools) {
-			const properties = (tool.inputSchema as Record<string, unknown>)?.properties;
+			const properties = (tool.inputSchema as Record<string, unknown>)
+				?.properties;
 			if (!properties || typeof properties !== "object") {
 				continue;
 			}
@@ -134,7 +178,11 @@ beforeEach(() => {
 				}
 
 				for (const example of examples) {
-					validateExample(schema as Record<string, unknown>, example, `${tool.name}.${propertyName}`);
+					validateExample(
+						schema as Record<string, unknown>,
+						example,
+						`${tool.name}.${propertyName}`,
+					);
 				}
 			}
 		}
