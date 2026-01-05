@@ -412,7 +412,7 @@ Input schemas now include examples for better LLM comprehension:
 
 - 📖 **Documentation**: See [docs/api/prompt-hierarchy.md](./api/prompt-hierarchy.md) for full `prompt-hierarchy` API reference
 - 🐛 **Issues**: Report migration problems at [GitHub Issues](https://github.com/Anselmoo/mcp-ai-agent-guidelines/issues)
-- 💬 **Discussions**: Ask questions in [GitHub Discussions](https://github.com/Anselmoo/mcp-ai-agent-guidelines/discussions)
+- 💬 **Questions**: Ask questions in [GitHub Issues](https://github.com/Anselmoo/mcp-ai-agent-guidelines/issues) with the `question` label
 - 📧 **Contact**: Reach maintainers via GitHub
 
 ---
