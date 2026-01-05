@@ -22,7 +22,9 @@ import {
 } from "./shared/prompt-utils.js";
 
 const SemanticCodeAnalyzerSchema = z.object({
-	codeContent: z.string().describe("Code content to analyze"),
+	codeContent: z
+		.string()
+		.describe("Code content to analyze"),
 	language: z
 		.string()
 		.optional()

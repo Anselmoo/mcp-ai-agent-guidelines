@@ -83,7 +83,7 @@ const DependencyAuditorSchema = z.object({
 	includeReferences: z.boolean().optional().default(true),
 	includeMetadata: z.boolean().optional().default(true),
 	inputFile: z.string().optional(),
-});
+});;
 
 type DependencyAuditorInput = z.infer<typeof DependencyAuditorSchema>;
 
