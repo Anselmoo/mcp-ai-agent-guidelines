@@ -69,7 +69,7 @@ describe("Tool registration", () => {
 		 * Note: prompt-hierarchy (unified) is implemented but not yet registered.
 		 * If this test fails after adding/removing tools, update the count below.
 		 */
-		const EXPECTED_TOOL_COUNT = 31;
+		const EXPECTED_TOOL_COUNT = 32;
 		expect(
 			tools.length,
 			`Expected ${EXPECTED_TOOL_COUNT} tools, got ${tools.length}. Update EXPECTED_TOOL_COUNT if tools were intentionally added/removed.`,
