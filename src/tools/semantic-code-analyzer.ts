@@ -22,26 +22,39 @@ import {
 } from "./shared/prompt-utils.js";
 
 const SemanticCodeAnalyzerSchema = z.object({
-	codeContent: z.string().describe("Code content to analyze"),
+	codeContent: z
+		.string()
+		.describe(
+			"Code content to analyze. Example: TypeScript class with dependencies, Python module with imports, or any code snippet with symbols and structure",
+		),
 	language: z
 		.string()
 		.optional()
-		.describe("Programming language (auto-detected if not provided)"),
+		.describe(
+			"Programming language (auto-detected if not provided). Examples: 'typescript', 'python', 'javascript', 'go', 'rust'",
+		),
 	analysisType: z
 		.enum(["symbols", "structure", "dependencies", "patterns", "all"])
 		.default("all")
-		.describe("Type of semantic analysis to perform"),
+		.describe(
+			"Type of semantic analysis to perform. Examples: 'symbols' (functions, classes), 'dependencies' (imports, references), 'patterns' (design patterns), 'all' (comprehensive)",
+		),
 	includeReferences: z
 		.boolean()
 		.optional()
 		.default(false)
-		.describe("Include external reference links"),
+		.describe("Include external reference links. Example: true"),
 	includeMetadata: z
 		.boolean()
 		.optional()
 		.default(false)
-		.describe("Include metadata section"),
-	inputFile: z.string().optional().describe("Optional input file path"),
+		.describe("Include metadata section. Example: true"),
+	inputFile: z
+		.string()
+		.optional()
+		.describe(
+			"Optional input file path. Example: 'src/services/UserService.ts'",
+		),
 });
 
 export async function semanticCodeAnalyzer(args: unknown) {

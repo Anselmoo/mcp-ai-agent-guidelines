@@ -7,44 +7,135 @@ import { buildFurtherReadingSection } from "./shared/prompt-utils.js";
 
 const IterativeCoverageEnhancerSchema = z.object({
 	// Analysis Configuration
-	projectPath: z.string().optional().default("."),
-	language: z.string().default("typescript"),
-	framework: z.string().optional(),
+	projectPath: z
+		.string()
+		.optional()
+		.default(".")
+		.describe(
+			"Path to the project root directory. Examples: '.', '/src', './app'",
+		),
+	language: z
+		.string()
+		.default("typescript")
+		.describe(
+			"Primary programming language. Examples: 'typescript', 'javascript', 'python'",
+		),
+	framework: z
+		.string()
+		.optional()
+		.describe(
+			"Framework or technology stack. Examples: 'vitest', 'jest', 'pytest'",
+		),
 
 	// Coverage Analysis Options
-	analyzeCoverageGaps: z.boolean().optional().default(true),
-	detectDeadCode: z.boolean().optional().default(true),
-	generateTestSuggestions: z.boolean().optional().default(true),
-	adaptThresholds: z.boolean().optional().default(true),
+	analyzeCoverageGaps: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe("Analyze and identify coverage gaps. Example: true"),
+	detectDeadCode: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe("Detect unused code for elimination. Example: true"),
+	generateTestSuggestions: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe("Generate test suggestions for uncovered code. Example: true"),
+	adaptThresholds: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe(
+			"Recommend adaptive coverage threshold adjustments. Example: true",
+		),
 
 	// Current Coverage Data (from tools like vitest, jest, etc.)
 	currentCoverage: z
 		.object({
-			statements: z.number().min(0).max(100),
-			functions: z.number().min(0).max(100),
-			lines: z.number().min(0).max(100),
-			branches: z.number().min(0).max(100),
+			statements: z
+				.number()
+				.min(0)
+				.max(100)
+				.describe("Current statement coverage percentage. Example: 65.5"),
+			functions: z
+				.number()
+				.min(0)
+				.max(100)
+				.describe("Current function coverage percentage. Example: 70.0"),
+			lines: z
+				.number()
+				.min(0)
+				.max(100)
+				.describe("Current line coverage percentage. Example: 68.3"),
+			branches: z
+				.number()
+				.min(0)
+				.max(100)
+				.describe("Current branch coverage percentage. Example: 45.2"),
 		})
-		.optional(),
+		.optional()
+		.describe(
+			"Current coverage metrics from your test runner. Example: { statements: 65, branches: 45, functions: 70, lines: 68 }",
+		),
 
 	// Target Coverage Goals
 	targetCoverage: z
 		.object({
-			statements: z.number().min(0).max(100).optional(),
-			functions: z.number().min(0).max(100).optional(),
-			lines: z.number().min(0).max(100).optional(),
-			branches: z.number().min(0).max(100).optional(),
+			statements: z
+				.number()
+				.min(0)
+				.max(100)
+				.optional()
+				.describe("Target statement coverage percentage. Example: 80"),
+			functions: z
+				.number()
+				.min(0)
+				.max(100)
+				.optional()
+				.describe("Target function coverage percentage. Example: 85"),
+			lines: z
+				.number()
+				.min(0)
+				.max(100)
+				.optional()
+				.describe("Target line coverage percentage. Example: 80"),
+			branches: z
+				.number()
+				.min(0)
+				.max(100)
+				.optional()
+				.describe("Target branch coverage percentage. Example: 70"),
 		})
-		.optional(),
+		.optional()
+		.describe(
+			"Target coverage goals to achieve. Example: { statements: 80, branches: 70, functions: 85, lines: 80 }",
+		),
 
 	// Output Configuration
 	outputFormat: z
 		.enum(["markdown", "json", "text"])
 		.optional()
-		.default("markdown"),
-	includeReferences: z.boolean().optional().default(true),
-	includeCodeExamples: z.boolean().optional().default(true),
-	generateCIActions: z.boolean().optional().default(true),
+		.default("markdown")
+		.describe(
+			"Output format for the report. Examples: 'markdown', 'json', 'text'",
+		),
+	includeReferences: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe("Include external reference links in output. Example: true"),
+	includeCodeExamples: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe("Include code examples in suggestions. Example: true"),
+	generateCIActions: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe("Generate CI/CD integration actions. Example: true"),
 });
 
 type IterativeCoverageEnhancerInput = z.infer<
