@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { emitDeprecationWarning } from "../shared/deprecation.js";
 import { buildFurtherReadingSection } from "../shared/prompt-utils.js";
 import {
 	type HierarchyLevelDefinition,
@@ -383,6 +384,13 @@ function getHierarchyAdjustmentAdvice(
 }
 
 export async function promptingHierarchyEvaluator(args: unknown) {
+	emitDeprecationWarning({
+		tool: "prompting-hierarchy-evaluator",
+		replacement: "prompt-hierarchy",
+		deprecatedIn: "v0.14.0",
+		removedIn: "v0.15.0",
+	});
+
 	const input = PromptingHierarchyEvaluatorSchema.parse(args);
 
 	const evaluation = evaluatePromptHierarchy(input);

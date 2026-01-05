@@ -1,9 +1,11 @@
 // Tool schemas for flow-based prompting tools
 
+import { GENERATION_TOOL_ANNOTATIONS } from "../tools/shared/annotation-presets.js";
+
 export const promptChainingBuilderSchema = {
 	name: "prompt-chaining-builder",
 	description:
-		"Build multi-step prompt chains with output passing, dependencies, and error handling for complex sequential workflows. Use this MCP to create step-by-step prompt sequences where outputs feed into subsequent steps. Example: 'Use the prompt-chaining-builder MCP to create a chain for code review → security analysis → remediation planning'",
+		"Use this MCP to build prompt chains with dependency-aware steps and output passing. BEST FOR: sequential workflows. Example: review → security → remediation. OUTPUTS: chain definition.",
 	inputSchema: {
 		type: "object" as const,
 		properties: {
@@ -65,12 +67,16 @@ export const promptChainingBuilderSchema = {
 		},
 		required: ["chainName", "steps"],
 	},
+	annotations: {
+		...GENERATION_TOOL_ANNOTATIONS,
+		title: "Prompt Chain Builder",
+	},
 };
 
 export const promptFlowBuilderSchema = {
 	name: "prompt-flow-builder",
 	description:
-		"Build declarative prompt flows with conditional branching, loops, parallel execution, and dynamic orchestration for complex non-linear workflows. Use this MCP to design sophisticated prompt flows with parallel processing and conditional logic. Example: 'Use the prompt-flow-builder MCP to design a feature development workflow with parallel testing and conditional deployment steps'",
+		"Use this MCP to design prompt flows with branching, loops, and parallel paths. BEST FOR: non-linear orchestration. Example: dev workflow with parallel tests. OUTPUTS: flow definition.",
 	inputSchema: {
 		type: "object" as const,
 		properties: {
@@ -189,5 +195,9 @@ export const promptFlowBuilderSchema = {
 			},
 		},
 		required: ["flowName", "nodes"],
+	},
+	annotations: {
+		...GENERATION_TOOL_ANNOTATIONS,
+		title: "Prompt Flow Builder",
 	},
 };

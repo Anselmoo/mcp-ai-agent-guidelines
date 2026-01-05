@@ -5,6 +5,45 @@ Thank you for contributing! This template helps maintain code quality and stream
 Compatible with GitHub Copilot for automated PR creation.
 -->
 
+---
+
+## 🚦 PRE-FLIGHT VALIDATION (REQUIRED)
+
+> **⚠️ IMPORTANT**: Complete this checklist **BEFORE** requesting agent review to avoid costly reruns ($0.10+ per rerun)
+
+### Local Quality Gates (MUST PASS)
+
+Run these commands locally and ensure they all pass:
+
+- [ ] ✅ `npm run quality` (type-check + lint) - **MUST PASS**
+- [ ] ✅ `npx lefthook run pre-commit` (security + formatting) - **MUST PASS**
+- [ ] ✅ `npx lefthook run pre-push` (tests + validation) - **MUST PASS**
+- [ ] ✅ `npm run test:all` (all tests) - **MUST PASS**
+
+### Code Standards (VERIFY BEFORE COMMITTING)
+
+- [ ] All imports use `.js` extensions (e.g., `from './foo.js'`)
+- [ ] No `any` types used (use proper TypeScript types)
+- [ ] All new code has tests (90% coverage required)
+- [ ] Tests mirror `src/` structure in `tests/vitest/`
+- [ ] Updated demos if tools modified (`node demos/demo-tools.js`)
+
+### Why This Matters
+
+**PRs that fail these checks will:**
+- ❌ Fail CI/CD workflows
+- ❌ Require agent reruns (costs money!)
+- ❌ Delay merge time
+- ❌ Create extra review cycles
+
+**✅ Passing these checks means:**
+- ✅ Fast CI/CD passes
+- ✅ No wasted agent invocations
+- ✅ Quick merge process
+- ✅ Happy reviewers!
+
+---
+
 ### ⚡ Quick Check (optional - for trivial changes)
 
 <!-- Check this box to skip detailed sections below for minor changes like typos, small docs updates, or formatting -->
