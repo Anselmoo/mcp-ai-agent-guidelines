@@ -2,7 +2,80 @@
  * Centralized error handling utilities with typed errors for improved debugging and resilience
  */
 
+import { ERROR_MESSAGES, type ErrorCode, isRetryable } from "./error-codes.js";
 import { logger } from "./logger.js";
+
+/**
+ * Structured context payload for McpToolError instances.
+ */
+export interface McpToolErrorContext {
+	[key: string]: unknown;
+}
+
+/**
+ * MCP-aware error with standardized codes, retry hints, and response formatting.
+ * @public
+ */
+export class McpToolError extends Error {
+	public readonly code: ErrorCode;
+	public readonly context: McpToolErrorContext;
+	public readonly timestamp: Date;
+	public readonly cause?: Error;
+
+	constructor(
+		code: ErrorCode,
+		message?: string,
+		context?: McpToolErrorContext,
+		cause?: Error,
+	) {
+		super(message ?? ERROR_MESSAGES[code]);
+		this.name = "McpToolError";
+		this.code = code;
+		this.context = context ?? {};
+		this.timestamp = new Date();
+		this.cause = cause;
+
+		if (Error.captureStackTrace) {
+			Error.captureStackTrace(this, McpToolError);
+		}
+	}
+
+	/**
+	 * Determines if this error is safe to retry based on its code category.
+	 */
+	isRetryable(): boolean {
+		return isRetryable(this.code);
+	}
+
+	/**
+	 * Formats the error into an MCP-compatible response payload.
+	 */
+	toResponse(): {
+		isError: true;
+		content: Array<{ type: "text"; text: string }>;
+	} {
+		return {
+			isError: true,
+			content: [
+				{
+					type: "text",
+					text: JSON.stringify(
+						{
+							error: this.name,
+							code: this.code,
+							message: this.message,
+							context: this.context,
+							retryable: this.isRetryable(),
+							timestamp: this.timestamp.toISOString(),
+						},
+						null,
+						2,
+					),
+				},
+			],
+		};
+	}
+}
 
 /**
  * Base class for all operational errors in the application
