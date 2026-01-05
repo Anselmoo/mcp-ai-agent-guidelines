@@ -1,8 +1,11 @@
 import { z } from "zod";
+import {
+	buildHierarchicalPrompt,
+	type PromptSection,
+} from "../../domain/prompting/hierarchical-builder.js";
 import { DEFAULT_MODEL, DEFAULT_MODEL_SLUG } from "../config/model-config.js";
 import { emitDeprecationWarning } from "../shared/deprecation.js";
 import {
-	buildProviderTipsSection as buildSharedProviderTips,
 	ProviderEnum,
 	StyleEnum,
 	TechniqueEnum,
@@ -15,7 +18,6 @@ import {
 	slugify,
 } from "../shared/prompt-utils.js";
 import { ExportFormatEnum } from "../shared/types/export-format.types.js";
-import { applyTechniques } from "./technique-applicator.js";
 
 // Strict mode enum for YAML frontmatter
 const ModeEnum = z.enum(["agent", "tool", "workflow"]);
@@ -24,6 +26,7 @@ const HierarchicalPromptSchema = z.object({
 	context: z.string(),
 	goal: z.string(),
 	requirements: z.array(z.string()).optional(),
+	constraints: z.array(z.string()).optional(),
 	outputFormat: z.string().optional(),
 	audience: z.string().optional(),
 	// YAML prompt frontmatter (experimental prompt file support)
@@ -76,27 +79,6 @@ function buildHierarchicalFrontmatter(input: HierarchicalPromptInput): string {
 	});
 }
 
-/**
- * Build context-aware, actionable instructions based on selected techniques.
- * This generates specific, tailored guidance rather than generic advice.
- *
- * @deprecated This function is deprecated. Use applyTechniques from technique-applicator.ts instead.
- */
-function buildActionableInstructions(input: HierarchicalPromptInput): string {
-	return applyTechniques({
-		context: {
-			context: input.context,
-			goal: input.goal,
-			requirements: input.requirements,
-			outputFormat: input.outputFormat,
-			audience: input.audience,
-			issues: input.issues,
-		},
-		techniques: input.techniques,
-		autoSelectTechniques: input.autoSelectTechniques,
-	});
-}
-
 export async function hierarchicalPromptBuilder(args: unknown) {
 	emitDeprecationWarning({
 		tool: "hierarchical-prompt-builder",
@@ -112,7 +94,14 @@ export async function hierarchicalPromptBuilder(args: unknown) {
 	const effectiveIncludeFrontmatter = enforce ? true : input.includeFrontmatter;
 	const effectiveIncludeMetadata = enforce ? true : input.includeMetadata;
 
-	const prompt = buildHierarchicalPrompt(input);
+	const normalizedOutputFormat = input.outputFormat
+		? normalizeOutputFormat(input.outputFormat)
+		: undefined;
+	const promptResult = buildHierarchicalPrompt({
+		...input,
+		outputFormat: normalizedOutputFormat,
+	});
+	const prompt = formatHierarchicalPrompt(promptResult.sections);
 	const frontmatter = effectiveIncludeFrontmatter
 		? `${buildHierarchicalFrontmatter(input)}\n`
 		: "";
@@ -150,58 +139,12 @@ export async function hierarchicalPromptBuilder(args: unknown) {
 	};
 }
 
-function buildHierarchicalPrompt(input: HierarchicalPromptInput): string {
+function formatHierarchicalPrompt(sections: PromptSection[]): string {
 	let prompt = "";
-
-	// Layer 1: Context
-	prompt += `# Context\n${input.context}\n\n`;
-
-	// Layer 2: Goal
-	prompt += `# Goal\n${input.goal}\n\n`;
-
-	// Layer 3: Requirements (if provided)
-	if (input.requirements && input.requirements.length > 0) {
-		prompt += `# Requirements\n`;
-		input.requirements.forEach((req, index) => {
-			prompt += `${index + 1}. ${req}\n`;
-		});
-		prompt += "\n";
+	for (const section of sections) {
+		prompt += `# ${section.title}\n${section.body}\n\n`;
 	}
-
-	// Layer 3b: Problem Indicators (if provided)
-	if (input.issues && input.issues.length > 0) {
-		prompt += `# Problem Indicators\n`;
-		input.issues.forEach((iss, index) => {
-			prompt += `${index + 1}. ${iss}\n`;
-		});
-		prompt += "\n";
-	}
-
-	// Layer 4: Output Format (if provided)
-	if (input.outputFormat) {
-		// Normalize list numbering and layout: convert "1) Item" -> "1. Item"
-		// and transform inline comma-separated enumerations into multi-line ordered lists.
-		const normalizedOutputFormat = normalizeOutputFormat(input.outputFormat);
-		prompt += `# Output Format\n${normalizedOutputFormat}\n\n`;
-	}
-
-	// Layer 5: Audience (if provided)
-	if (input.audience) {
-		prompt += `# Target Audience\n${input.audience}\n\n`;
-	}
-
-	// Optional: Context-aware actionable instructions based on techniques
-	if (input.includeTechniqueHints !== false) {
-		prompt += buildActionableInstructions(input);
-	}
-
-	// Optional: Model-specific tips based on provider/style
-	prompt += buildSharedProviderTips(input.provider, input.style);
-
-	// Final instruction
-	prompt += `# Instructions\nFollow the structure above. If you detect additional issues in the codebase, explicitly add them under Problem Indicators, propose minimal diffs, and flag risky changes. Treat tools/models as recommendations to validate against current provider documentation.`;
-
-	return prompt;
+	return prompt.trimEnd();
 }
 
 /**
