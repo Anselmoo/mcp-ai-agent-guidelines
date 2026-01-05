@@ -12,10 +12,20 @@ export const promptChainingBuilderSchema = {
 			chainName: {
 				type: "string",
 				description: "Name of the prompt chain",
+				examples: [
+					"code-review-security-remediation",
+					"feature-plan-implement-test",
+					"bug-analysis-fix-verify",
+				],
 			},
 			description: {
 				type: "string",
 				description: "Description of what the chain accomplishes",
+				examples: [
+					"Multi-stage code review with security analysis and automated remediation",
+					"Complete feature development workflow from planning to testing",
+					"Bug investigation, fix implementation, and verification pipeline",
+				],
 			},
 			steps: {
 				type: "array",
@@ -42,6 +52,11 @@ export const promptChainingBuilderSchema = {
 			context: {
 				type: "string",
 				description: "Global context for the chain",
+				examples: [
+					"Node.js REST API with authentication",
+					"React frontend with Redux state management",
+					"Python microservice with PostgreSQL",
+				],
 			},
 			globalVariables: {
 				type: "object",
@@ -83,10 +98,20 @@ export const promptFlowBuilderSchema = {
 			flowName: {
 				type: "string",
 				description: "Name of the prompt flow",
+				examples: [
+					"feature-development-with-parallel-tests",
+					"conditional-deployment-pipeline",
+					"multi-environment-validation-flow",
+				],
 			},
 			description: {
 				type: "string",
 				description: "Description of the flow purpose",
+				examples: [
+					"Feature development workflow with parallel unit and integration tests",
+					"Deployment pipeline with conditional approval gates based on environment",
+					"Multi-stage validation across dev, staging, and production environments",
+				],
 			},
 			nodes: {
 				type: "array",
@@ -171,6 +196,7 @@ export const promptFlowBuilderSchema = {
 			entryPoint: {
 				type: "string",
 				description: "ID of the starting node",
+				examples: ["start", "initialize", "entry-point"],
 			},
 			variables: {
 				type: "object",

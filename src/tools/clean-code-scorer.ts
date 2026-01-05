@@ -20,7 +20,7 @@ const CleanCodeScorerSchema = z.object({
 	includeReferences: z.boolean().optional().default(true),
 	includeMetadata: z.boolean().optional().default(true),
 	inputFile: z.string().optional(),
-});;
+});
 
 type CleanCodeScorerInput = z.infer<typeof CleanCodeScorerSchema>;
 
