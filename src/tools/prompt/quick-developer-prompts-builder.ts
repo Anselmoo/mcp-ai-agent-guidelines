@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { DEFAULT_MODEL } from "../config/model-config.js";
+import { emitDeprecationWarning } from "../shared/deprecation.js";
 import {
 	buildFrontmatterWithPolicy as buildFrontmatter,
 	buildMetadataSection,
@@ -131,6 +132,13 @@ function buildQuickPromptsContent(input: QuickDeveloperPromptsInput): string {
 }
 
 export async function quickDeveloperPromptsBuilder(args: unknown) {
+	emitDeprecationWarning({
+		tool: "quick-developer-prompts-builder",
+		replacement: "prompt-hierarchy",
+		deprecatedIn: "v0.14.0",
+		removedIn: "v0.15.0",
+	});
+
 	const input = QuickDeveloperPromptsSchema.parse(args);
 
 	// If enforcing *.prompt.md style, ensure frontmatter + metadata are on
