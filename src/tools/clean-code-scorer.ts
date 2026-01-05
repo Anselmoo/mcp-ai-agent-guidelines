@@ -6,17 +6,8 @@ import {
 
 const CleanCodeScorerSchema = z.object({
 	projectPath: z.string().optional(),
-	codeContent: z
-		.string()
-		.optional()
-		.examples([
-			"export function add(a: number, b: number) { return a + b; }",
-			"class UserService { constructor(private repo: Repo) {} findAll() { return this.repo.findAll(); } }",
-		]),
-	language: z
-		.string()
-		.optional()
-		.examples(["typescript", "python", "javascript"]),
+	codeContent: z.string().optional(),
+	language: z.string().optional(),
 	framework: z.string().optional(),
 	coverageMetrics: z
 		.object({

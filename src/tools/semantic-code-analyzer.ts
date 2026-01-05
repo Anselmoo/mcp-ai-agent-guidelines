@@ -24,10 +24,7 @@ import {
 const SemanticCodeAnalyzerSchema = z.object({
 	codeContent: z
 		.string()
-		.describe("Code content to analyze")
-		.examples([
-			"class UserService {\\n  constructor(private repo: Repo) {}\\n  list() { return this.repo.findAll(); }\\n}",
-		]),
+		.describe("Code content to analyze"),
 	language: z
 		.string()
 		.optional()
@@ -35,8 +32,7 @@ const SemanticCodeAnalyzerSchema = z.object({
 	analysisType: z
 		.enum(["symbols", "structure", "dependencies", "patterns", "all"])
 		.default("all")
-		.describe("Type of semantic analysis to perform")
-		.examples(["symbols", "dependencies", "patterns"]),
+		.describe("Type of semantic analysis to perform"),
 	includeReferences: z
 		.boolean()
 		.optional()
