@@ -5,22 +5,76 @@ import {
 } from "./shared/prompt-utils.js";
 
 const CleanCodeScorerSchema = z.object({
-	projectPath: z.string().optional(),
-	codeContent: z.string().optional(),
-	language: z.string().optional(),
-	framework: z.string().optional(),
+	projectPath: z
+		.string()
+		.optional()
+		.describe("Path to the project root directory. Example: '/src' or './app'"),
+	codeContent: z
+		.string()
+		.optional()
+		.describe(
+			"Source code to analyze for quality metrics. Example: 'function add(a, b) { return a + b; }' or a full class with methods",
+		),
+	language: z
+		.string()
+		.optional()
+		.describe(
+			"Programming language (auto-detected if not specified). Examples: 'typescript', 'python', 'javascript'",
+		),
+	framework: z
+		.string()
+		.optional()
+		.describe(
+			"Framework or technology stack. Examples: 'react', 'express', 'django'",
+		),
 	coverageMetrics: z
 		.object({
-			statements: z.number().min(0).max(100).optional(),
-			branches: z.number().min(0).max(100).optional(),
-			functions: z.number().min(0).max(100).optional(),
-			lines: z.number().min(0).max(100).optional(),
+			statements: z
+				.number()
+				.min(0)
+				.max(100)
+				.optional()
+				.describe("Statement coverage percentage (0-100). Example: 85.5"),
+			branches: z
+				.number()
+				.min(0)
+				.max(100)
+				.optional()
+				.describe("Branch coverage percentage (0-100). Example: 72.3"),
+			functions: z
+				.number()
+				.min(0)
+				.max(100)
+				.optional()
+				.describe("Function coverage percentage (0-100). Example: 90.0"),
+			lines: z
+				.number()
+				.min(0)
+				.max(100)
+				.optional()
+				.describe("Line coverage percentage (0-100). Example: 88.2"),
 		})
-		.optional(),
-	includeReferences: z.boolean().optional().default(true),
-	includeMetadata: z.boolean().optional().default(true),
-	inputFile: z.string().optional(),
-});;
+		.optional()
+		.describe(
+			"Test coverage metrics from your test runner. Example: { statements: 85, branches: 70, functions: 80, lines: 85 }",
+		),
+	includeReferences: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe("Include external reference links in output. Example: true"),
+	includeMetadata: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe("Include metadata section in output. Example: true"),
+	inputFile: z
+		.string()
+		.optional()
+		.describe(
+			"Reference to input file being analyzed. Example: 'src/utils/helper.ts'",
+		),
+});
 
 type CleanCodeScorerInput = z.infer<typeof CleanCodeScorerSchema>;
 

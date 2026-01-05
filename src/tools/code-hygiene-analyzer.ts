@@ -5,12 +5,38 @@ import {
 } from "./shared/prompt-utils.js";
 
 const CodeHygieneSchema = z.object({
-	codeContent: z.string(),
-	language: z.string(),
-	framework: z.string().optional(),
-	includeReferences: z.boolean().optional().default(true),
-	includeMetadata: z.boolean().optional().default(true),
-	inputFile: z.string().optional(),
+	codeContent: z
+		.string()
+		.describe(
+			"Code content to analyze for hygiene issues. Example: A TypeScript file with potential issues like unused imports, any types, or console.log statements",
+		),
+	language: z
+		.string()
+		.describe(
+			"Programming language of the code. Examples: 'typescript', 'python', 'javascript', 'go'",
+		),
+	framework: z
+		.string()
+		.optional()
+		.describe(
+			"Framework or technology stack. Examples: 'react', 'express', 'nextjs'",
+		),
+	includeReferences: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe("Include external reference links in output. Example: true"),
+	includeMetadata: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe("Include metadata section in output. Example: true"),
+	inputFile: z
+		.string()
+		.optional()
+		.describe(
+			"Reference to input file being analyzed. Example: 'src/components/Button.tsx'",
+		),
 });
 
 type CodeHygieneInput = z.infer<typeof CodeHygieneSchema>;

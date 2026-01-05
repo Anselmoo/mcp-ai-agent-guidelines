@@ -58,32 +58,65 @@ const DependencyAuditorSchema = z.object({
 		.string()
 		.optional()
 		.describe(
-			"Content of dependency file (package.json, requirements.txt, go.mod, Cargo.toml, Gemfile, csproj, etc.)",
+			"Content of dependency file (package.json, requirements.txt, go.mod, Cargo.toml, Gemfile, csproj, etc.). Example: Full content of a package.json with dependencies object, or requirements.txt with pinned versions",
 		),
 	// Backward compatibility: packageJsonContent still works for JS/TS
 	packageJsonContent: z
 		.string()
 		.optional()
 		.describe(
-			"Content of package.json file (deprecated: use dependencyContent)",
+			"Content of package.json file (deprecated: use dependencyContent). Example: JSON string with dependencies, devDependencies, and package metadata",
 		),
 	// File type specification
 	fileType: FileTypeEnum.optional()
 		.default("auto")
 		.describe(
-			"Type of dependency file. Use 'auto' for automatic detection based on content.",
+			"Type of dependency file. Use 'auto' for automatic detection based on content. Examples: 'package.json', 'requirements.txt', 'pyproject.toml', 'go.mod', 'Cargo.toml'",
 		),
 	// Analysis options
-	checkOutdated: z.boolean().optional().default(true),
-	checkDeprecated: z.boolean().optional().default(true),
-	checkVulnerabilities: z.boolean().optional().default(true),
-	suggestAlternatives: z.boolean().optional().default(true),
-	analyzeBundleSize: z.boolean().optional().default(true),
+	checkOutdated: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe("Check for outdated version patterns. Example: true"),
+	checkDeprecated: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe("Check for deprecated packages. Example: true"),
+	checkVulnerabilities: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe("Check for known vulnerabilities. Example: true"),
+	suggestAlternatives: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe("Suggest modern alternatives to packages. Example: true"),
+	analyzeBundleSize: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe("Analyze bundle size concerns (JavaScript only). Example: true"),
 	// Output options
-	includeReferences: z.boolean().optional().default(true),
-	includeMetadata: z.boolean().optional().default(true),
-	inputFile: z.string().optional(),
-});;
+	includeReferences: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe("Include external reference links in output. Example: true"),
+	includeMetadata: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe("Include metadata section in output. Example: true"),
+	inputFile: z
+		.string()
+		.optional()
+		.describe(
+			"Reference to input file being analyzed. Example: 'package.json' or 'requirements.txt'",
+		),
+});
 
 type DependencyAuditorInput = z.infer<typeof DependencyAuditorSchema>;
 
