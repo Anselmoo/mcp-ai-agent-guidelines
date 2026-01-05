@@ -178,7 +178,7 @@ Demos are automatically regenerated when tool code changes via GitHub Actions.
 
 ## Features & Tools
 
-**27 professional tools** for AI-powered development workflows. Each tool is rated by complexity:
+**32 professional tools** (31 active + 1 unified tool) for AI-powered development workflows. Each tool is rated by complexity:
 
 **⭐ Complexity Ratings:**
 
@@ -192,21 +192,24 @@ Demos are automatically regenerated when tool code changes via GitHub Actions.
 
 ---
 
-### 🎨 Prompt Builders (9 tools)
+### 🎨 Prompt Builders (10 tools)
 
 Build structured, effective prompts for various use cases.
 
-| Tool                                          | Purpose                                                         | Complexity | Learn More                                                           |
-| --------------------------------------------- | --------------------------------------------------------------- | ---------- | -------------------------------------------------------------------- |
-| `hierarchical-prompt-builder`                 | Multi-level specificity prompts (context → goal → requirements) | ⭐⭐       | [Guide](./docs/tools/hierarchical-prompt-builder.md)                 |
-| `code-analysis-prompt-builder`                | Code review prompts (security, performance, maintainability)    | ⭐⭐       | [Guide](./docs/tools/code-analysis-prompt-builder.md)                |
-| `architecture-design-prompt-builder`          | Architecture design with scale-appropriate guidance             | ⭐⭐⭐     | [Guide](./docs/tools/architecture-design-prompt-builder.md)          |
-| `digital-enterprise-architect-prompt-builder` | Enterprise architecture with mentor perspectives & research     | ⭐⭐⭐⭐   | [Guide](./docs/tools/digital-enterprise-architect-prompt-builder.md) |
-| `debugging-assistant-prompt-builder`          | Systematic debugging prompts with structured analysis           | ⭐⭐       | [Guide](./docs/tools/debugging-assistant-prompt-builder.md)          |
-| `l9-distinguished-engineer-prompt-builder`    | L9 (Distinguished Engineer) high-level technical design         | ⭐⭐⭐⭐⭐ | [Guide](./docs/tools/l9-distinguished-engineer-prompt-builder.md)    |
-| `documentation-generator-prompt-builder`      | Technical docs tailored to audience (API, user guide, spec)     | ⭐⭐       | [Guide](./docs/tools/documentation-generator-prompt-builder.md)      |
-| `domain-neutral-prompt-builder`               | Generic templates with objectives and workflows                 | ⭐⭐⭐     | [Guide](./docs/tools/domain-neutral-prompt-builder.md)               |
-| `security-hardening-prompt-builder`           | Security analysis with OWASP/compliance focus                   | ⭐⭐⭐     | [Guide](./docs/tools/security-hardening-prompt-builder.md)           |
+> **⚠️ Deprecation Notice**: Six individual prompt tools (`hierarchical-prompt-builder`, `prompting-hierarchy-evaluator`, `hierarchy-level-selector`, `prompt-chaining-builder`, `prompt-flow-builder`, `quick-developer-prompts-builder`) are deprecated as of v0.14.0 and will be removed in v0.15.0. Use `prompt-hierarchy` instead. See [Migration Guide](./docs/migration.md) for details.
+
+| Tool                                          | Purpose                                                                                     | Complexity | Learn More                                                           |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------- | ---------- | -------------------------------------------------------------------- |
+| `prompt-hierarchy` ⭐ **NEW**                  | Unified prompt API with 6 modes: build, evaluate, select-level, chain, flow, quick         | ⭐⭐⭐     | [Guide](./docs/api/prompt-hierarchy.md)                              |
+| `hierarchical-prompt-builder` 🔻              | ⚠️ **Deprecated** - Use `prompt-hierarchy` mode=`build` instead                             | ⭐⭐       | [Guide](./docs/tools/hierarchical-prompt-builder.md)                 |
+| `code-analysis-prompt-builder`                | Code review prompts (security, performance, maintainability)                                | ⭐⭐       | [Guide](./docs/tools/code-analysis-prompt-builder.md)                |
+| `architecture-design-prompt-builder`          | Architecture design with scale-appropriate guidance                                         | ⭐⭐⭐     | [Guide](./docs/tools/architecture-design-prompt-builder.md)          |
+| `digital-enterprise-architect-prompt-builder` | Enterprise architecture with mentor perspectives & research                                 | ⭐⭐⭐⭐   | [Guide](./docs/tools/digital-enterprise-architect-prompt-builder.md) |
+| `debugging-assistant-prompt-builder`          | Systematic debugging prompts with structured analysis                                       | ⭐⭐       | [Guide](./docs/tools/debugging-assistant-prompt-builder.md)          |
+| `l9-distinguished-engineer-prompt-builder`    | L9 (Distinguished Engineer) high-level technical design                                     | ⭐⭐⭐⭐⭐ | [Guide](./docs/tools/l9-distinguished-engineer-prompt-builder.md)    |
+| `documentation-generator-prompt-builder`      | Technical docs tailored to audience (API, user guide, spec)                                 | ⭐⭐       | [Guide](./docs/tools/documentation-generator-prompt-builder.md)      |
+| `domain-neutral-prompt-builder`               | Generic templates with objectives and workflows                                             | ⭐⭐⭐     | [Guide](./docs/tools/domain-neutral-prompt-builder.md)               |
+| `security-hardening-prompt-builder`           | Security analysis with OWASP/compliance focus                                               | ⭐⭐⭐     | [Guide](./docs/tools/security-hardening-prompt-builder.md)           |
 
 ### 🔍 Code Analysis & Quality (7 tools)
 
@@ -242,17 +245,25 @@ Multi-phase design orchestration with constraint enforcement.
 | ------------------ | ---------------------------------------------------------------------------------- | ---------- | ----------------------------------------- |
 | `design-assistant` | Constraint-driven design sessions with artifact generation (ADRs, specs, roadmaps) | ⭐⭐⭐⭐   | [Guide](./docs/tools/design-assistant.md) |
 
-### 🛠️ Utilities (5 tools)
+### 🛠️ Utilities (3 tools)
 
 Supporting tools for workflow optimization.
 
-| Tool                            | Purpose                                                                             | Complexity | Learn More                                             |
-| ------------------------------- | ----------------------------------------------------------------------------------- | ---------- | ------------------------------------------------------ |
-| `memory-context-optimizer`      | Optimize prompt caching and context window usage                                    | ⭐⭐       | [Guide](./docs/tools/memory-context-optimizer.md)      |
-| `mode-switcher`                 | Switch between agent operation modes (planning, debugging, refactoring)             | ⭐         | [Guide](./docs/tools/mode-switcher.md)                 |
-| `prompting-hierarchy-evaluator` | Evaluate prompts with numeric scoring (clarity, specificity, completeness)          | ⭐⭐       | [Guide](./docs/tools/prompting-hierarchy-evaluator.md) |
-| `hierarchy-level-selector`      | Select optimal prompting level for task complexity                                  | ⭐         | [Guide](./docs/tools/hierarchy-level-selector.md)      |
-| `spark-prompt-builder`          | Build UI/UX product prompts with structured inputs (colors, typography, components) | ⭐⭐⭐     | [Guide](./docs/tools/spark-prompt-builder.md)          |
+| Tool                       | Purpose                                                         | Complexity | Learn More                                        |
+| -------------------------- | --------------------------------------------------------------- | ---------- | ------------------------------------------------- |
+| `memory-context-optimizer` | Optimize prompt caching and context window usage                | ⭐⭐       | [Guide](./docs/tools/memory-context-optimizer.md) |
+| `mode-switcher`            | Switch between agent operation modes (planning, debugging, etc.) | ⭐         | [Guide](./docs/tools/mode-switcher.md)            |
+| `spark-prompt-builder`     | Build UI/UX product prompts with structured inputs              | ⭐⭐⭐     | [Guide](./docs/tools/spark-prompt-builder.md)     |
+
+**Deprecated Utilities** (use `prompt-hierarchy` instead):
+
+| Tool                            | Replacement                           | Status                    |
+| ------------------------------- | ------------------------------------- | ------------------------- |
+| `prompting-hierarchy-evaluator` | `prompt-hierarchy` mode=`evaluate`    | ⚠️ Deprecated in v0.14.0  |
+| `hierarchy-level-selector`      | `prompt-hierarchy` mode=`select-level` | ⚠️ Deprecated in v0.14.0  |
+| `quick-developer-prompts-builder` | `prompt-hierarchy` mode=`quick`      | ⚠️ Deprecated in v0.14.0  |
+| `prompt-chaining-builder`       | `prompt-hierarchy` mode=`chain`       | ⚠️ Deprecated in v0.14.0  |
+| `prompt-flow-builder`           | `prompt-hierarchy` mode=`flow`        | ⚠️ Deprecated in v0.14.0  |
 
 **💡 Pro Tip**: Start with ⭐ tools to learn the basics, then progress to ⭐⭐⭐+ tools for advanced workflows.
 
