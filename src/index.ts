@@ -1116,7 +1116,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "dependency-auditor",
 				description:
-					"Audit multi-language dependency files across ecosystems including JavaScript/TypeScript (package.json), Python (requirements.txt, pyproject.toml), Go (go.mod), Rust (Cargo.toml), Ruby (Gemfile), C++ (vcpkg.json), and Lua (rockspec). Detects outdated, deprecated, or insecure packages and recommends modern, secure alternatives. Use this MCP to audit project dependencies for security vulnerabilities and modernization opportunities across polyglot codebases. Example: 'Use the dependency-auditor MCP to check our requirements.txt for security vulnerabilities and deprecated packages'",
+					"Audit dependency files across multiple languages to identify outdated, deprecated, or insecure packages. BEST FOR: Ensuring project dependencies meet security and version requirements. Example: 'Use the dependency-auditor MCP to check our requirements.txt for security vulnerabilities.'",
+
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -2175,7 +2176,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			{
 				name: "design-assistant",
 				description:
-					"Orchestrate multi-phase design workflows with constraint validation, coverage enforcement, and artifact generation (ADRs, specifications, roadmaps). This deterministic, context-driven design assistant utilizes a constraint framework for structured design sessions, providing context-aware design recommendations tailored to language, framework, and code patterns—including SOLID principles, design patterns, and framework-specific best practices. Use this MCP to manage complex design processes through discovery, requirements, architecture, and implementation phases. Example: 'Use the design-assistant MCP to start a design session for our new API gateway and guide it through all design phases'",
+					"Orchestrate multi-phase design workflows with constraint validation, coverage enforcement, and artifact generation. BEST FOR: Coordinating design sessions, enforcing constraints, and producing ADRs and roadmaps. Example: 'Use the design-assistant to start a design session for an API gateway.'",
+
 				inputSchema: {
 					type: "object",
 					properties: {
