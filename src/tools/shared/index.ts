@@ -15,6 +15,7 @@ export * from "./async-patterns.js";
 export * from "./constants.js";
 export * from "./deprecation.js";
 export * from "./error-codes.js";
+export * from "./error-factory.js";
 export * from "./errors.js";
 export * from "./execution-controller.js";
 export * from "./export-utils.js";
