@@ -7,7 +7,7 @@ import { buildFurtherReadingSection } from "./shared/prompt-utils.js";
 
 const IterativeCoverageEnhancerSchema = z.object({
 	// Analysis Configuration
-	projectPath: z.string().optional().default("."),
+	projectPath: z.string().optional().default(".").examples(["/src", "./app"]),
 	language: z.string().default("typescript"),
 	framework: z.string().optional(),
 
@@ -25,7 +25,10 @@ const IterativeCoverageEnhancerSchema = z.object({
 			lines: z.number().min(0).max(100),
 			branches: z.number().min(0).max(100),
 		})
-		.optional(),
+		.optional()
+		.examples([
+			{ lines: 65, branches: 45, functions: 70, statements: 68 },
+		]),
 
 	// Target Coverage Goals
 	targetCoverage: z
@@ -35,7 +38,10 @@ const IterativeCoverageEnhancerSchema = z.object({
 			lines: z.number().min(0).max(100).optional(),
 			branches: z.number().min(0).max(100).optional(),
 		})
-		.optional(),
+		.optional()
+		.examples([
+			{ lines: 80, branches: 70, functions: 85, statements: 80 },
+		]),
 
 	// Output Configuration
 	outputFormat: z
@@ -45,7 +51,7 @@ const IterativeCoverageEnhancerSchema = z.object({
 	includeReferences: z.boolean().optional().default(true),
 	includeCodeExamples: z.boolean().optional().default(true),
 	generateCIActions: z.boolean().optional().default(true),
-});
+});;
 
 type IterativeCoverageEnhancerInput = z.infer<
 	typeof IterativeCoverageEnhancerSchema

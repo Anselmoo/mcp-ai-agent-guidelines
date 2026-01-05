@@ -59,20 +59,28 @@ const DependencyAuditorSchema = z.object({
 		.optional()
 		.describe(
 			"Content of dependency file (package.json, requirements.txt, go.mod, Cargo.toml, Gemfile, csproj, etc.)",
-		),
+		)
+		.examples([
+			'{"name":"demo","version":"1.0.0","dependencies":{"lodash":"^4.17.21"}}',
+			"requests==2.31.0\nflask==3.0.0",
+		]),
 	// Backward compatibility: packageJsonContent still works for JS/TS
 	packageJsonContent: z
 		.string()
 		.optional()
 		.describe(
 			"Content of package.json file (deprecated: use dependencyContent)",
-		),
+		)
+		.examples([
+			'{"name":"legacy-app","dependencies":{"express":"^5.0.0"}}',
+		]),
 	// File type specification
 	fileType: FileTypeEnum.optional()
 		.default("auto")
 		.describe(
 			"Type of dependency file. Use 'auto' for automatic detection based on content.",
-		),
+		)
+		.examples(["package.json", "requirements.txt", "pyproject.toml"]),
 	// Analysis options
 	checkOutdated: z.boolean().optional().default(true),
 	checkDeprecated: z.boolean().optional().default(true),
@@ -83,7 +91,7 @@ const DependencyAuditorSchema = z.object({
 	includeReferences: z.boolean().optional().default(true),
 	includeMetadata: z.boolean().optional().default(true),
 	inputFile: z.string().optional(),
-});
+});;
 
 type DependencyAuditorInput = z.infer<typeof DependencyAuditorSchema>;
 

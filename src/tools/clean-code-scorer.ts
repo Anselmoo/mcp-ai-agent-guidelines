@@ -6,8 +6,17 @@ import {
 
 const CleanCodeScorerSchema = z.object({
 	projectPath: z.string().optional(),
-	codeContent: z.string().optional(),
-	language: z.string().optional(),
+	codeContent: z
+		.string()
+		.optional()
+		.examples([
+			"export function add(a: number, b: number) { return a + b; }",
+			"class UserService { constructor(private repo: Repo) {} findAll() { return this.repo.findAll(); } }",
+		]),
+	language: z
+		.string()
+		.optional()
+		.examples(["typescript", "python", "javascript"]),
 	framework: z.string().optional(),
 	coverageMetrics: z
 		.object({
@@ -20,7 +29,7 @@ const CleanCodeScorerSchema = z.object({
 	includeReferences: z.boolean().optional().default(true),
 	includeMetadata: z.boolean().optional().default(true),
 	inputFile: z.string().optional(),
-});
+});;
 
 type CleanCodeScorerInput = z.infer<typeof CleanCodeScorerSchema>;
 

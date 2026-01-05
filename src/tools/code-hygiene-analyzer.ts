@@ -5,8 +5,13 @@ import {
 } from "./shared/prompt-utils.js";
 
 const CodeHygieneSchema = z.object({
-	codeContent: z.string(),
-	language: z.string(),
+	codeContent: z
+		.string()
+		.examples([
+			'import fs from "fs";\nconst data: any = readConfig();\nconsole.log(data);',
+			"from math import sqrt\nunused = 42\n\ndef add(a, b):\n    return a + b",
+		]),
+	language: z.string().examples(["typescript", "python", "go"]),
 	framework: z.string().optional(),
 	includeReferences: z.boolean().optional().default(true),
 	includeMetadata: z.boolean().optional().default(true),
