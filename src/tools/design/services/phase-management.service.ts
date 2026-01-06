@@ -1,5 +1,8 @@
 // Phase Management Service - Handles design phase workflow operations
-import { sessionNotFoundError, validationError } from "../../shared/error-factory.js";
+import {
+	sessionNotFoundError,
+	validationError,
+} from "../../shared/error-factory.js";
 import { confirmationModule } from "../confirmation-module.js";
 import { coverageEnforcer } from "../coverage-enforcer.js";
 import { designPhaseWorkflow } from "../design-phase-workflow.js";

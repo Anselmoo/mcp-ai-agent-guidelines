@@ -1,10 +1,10 @@
 // Design Assistant - Main orchestrator/facade for the deterministic design framework
 import { z } from "zod";
-import { handleToolError } from "../shared/error-handler.js";
 import {
 	missingRequiredError,
 	validationError,
 } from "../shared/error-factory.js";
+import { handleToolError } from "../shared/error-handler.js";
 import { confirmationModule } from "./confirmation-module.js";
 import {
 	constraintManager,
