@@ -1,4 +1,8 @@
 // Phase Management Service - Handles design phase workflow operations
+import {
+	sessionNotFoundError,
+	validationError,
+} from "../../shared/error-factory.js";
 import { confirmationModule } from "../confirmation-module.js";
 import { coverageEnforcer } from "../coverage-enforcer.js";
 import { designPhaseWorkflow } from "../design-phase-workflow.js";
@@ -32,14 +36,7 @@ class PhaseManagementServiceImpl {
 	): Promise<PhaseManagementResponse> {
 		const sessionState = designPhaseWorkflow.getSession(sessionId);
 		if (!sessionState) {
-			return {
-				success: false,
-				sessionId,
-				status: "error",
-				message: `Session ${sessionId} not found`,
-				recommendations: ["Start a new session"],
-				artifacts: [],
-			};
+			throw sessionNotFoundError(sessionId);
 		}
 
 		// Validate current phase if content is provided
@@ -53,16 +50,11 @@ class PhaseManagementServiceImpl {
 			});
 
 			if (!validationResults.canProceed) {
-				return {
-					success: false,
+				throw validationError("Current phase validation failed", {
 					sessionId,
 					currentPhase: sessionState.currentPhase,
-					status: "validation-failed",
-					message: "Current phase validation failed",
 					recommendations: validationResults.recommendations,
-					artifacts: [],
-					validationResults,
-				};
+				});
 			}
 		}
 
@@ -110,14 +102,7 @@ class PhaseManagementServiceImpl {
 	): Promise<PhaseManagementResponse> {
 		const sessionState = designPhaseWorkflow.getSession(sessionId);
 		if (!sessionState) {
-			return {
-				success: false,
-				sessionId,
-				status: "error",
-				message: `Session ${sessionId} not found`,
-				recommendations: ["Start a new session"],
-				artifacts: [],
-			};
+			throw sessionNotFoundError(sessionId);
 		}
 
 		// Perform comprehensive validation
@@ -139,15 +124,22 @@ class PhaseManagementServiceImpl {
 			...coverageResult.recommendations,
 		];
 
+		if (!validationResults.passed || !coverageResult.passed) {
+			throw validationError(`Phase ${phaseId} validation failed`, {
+				sessionId,
+				phaseId,
+				recommendations,
+				coverage: coverageResult.coverage,
+			});
+		}
+
 		return {
-			success: validationResults.passed && coverageResult.passed,
+			success: true,
 			sessionId,
 			currentPhase: sessionState.currentPhase,
 			coverage: validationResults.coverage,
-			status: validationResults.passed ? "validated" : "validation-failed",
-			message: validationResults.passed
-				? `Phase ${phaseId} validation successful`
-				: `Phase ${phaseId} validation failed`,
+			status: "validated",
+			message: `Phase ${phaseId} validation successful`,
 			recommendations: [...new Set(recommendations)], // Remove duplicates
 			artifacts: [],
 			validationResults,

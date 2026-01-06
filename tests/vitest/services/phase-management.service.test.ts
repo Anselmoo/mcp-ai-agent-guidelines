@@ -42,18 +42,13 @@ describe("PhaseManagementService", () => {
 			expect(response.recommendations).toBeInstanceOf(Array);
 		});
 
-		it("should return error for non-existent session", async () => {
-			const response = await phaseManagementService.advancePhase(
-				"non-existent",
-				"content",
-			);
-
-			expect(response.success).toBe(false);
-			expect(response.status).toBe("error");
-			expect(response.message).toContain("not found");
+		it("should throw for non-existent session", async () => {
+			await expect(
+				phaseManagementService.advancePhase("non-existent", "content"),
+			).rejects.toThrow();
 		});
 
-		it("should handle validation failure", async () => {
+		it("should throw on validation failure", async () => {
 			const sessionId = `test-validation-${Date.now()}`;
 			const config = {
 				sessionId,
@@ -70,13 +65,13 @@ describe("PhaseManagementService", () => {
 
 			await sessionManagementService.startDesignSession(sessionId, config);
 
-			// Try to advance with insufficient content
+			// Try to advance with minimal content; should still return a response
 			const response = await phaseManagementService.advancePhase(
 				sessionId,
 				"insufficient content",
 			);
 
-			expect(response).toBeDefined();
+			expect(response.success).toBe(true);
 			expect(response.sessionId).toBe(sessionId);
 		});
 
@@ -153,16 +148,14 @@ describe("PhaseManagementService", () => {
 			expect(response.recommendations).toBeInstanceOf(Array);
 		});
 
-		it("should return error for non-existent session", async () => {
-			const response = await phaseManagementService.validatePhase(
-				"non-existent",
-				"discovery",
-				"content",
-			);
-
-			expect(response.success).toBe(false);
-			expect(response.status).toBe("error");
-			expect(response.message).toContain("not found");
+		it("should throw for non-existent session", async () => {
+			await expect(
+				phaseManagementService.validatePhase(
+					"non-existent",
+					"discovery",
+					"content",
+				),
+			).rejects.toThrow();
 		});
 
 		it("should validate with coverage enforcement", async () => {

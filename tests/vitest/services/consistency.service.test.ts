@@ -47,15 +47,10 @@ describe("ConsistencyService", () => {
 			expect(response.recommendations).toBeInstanceOf(Array);
 		});
 
-		it("should return error for non-existent session", async () => {
-			const response = await consistencyService.enforceCoverage(
-				"non-existent",
-				"content",
-			);
-
-			expect(response.success).toBe(false);
-			expect(response.status).toBe("error");
-			expect(response.message).toContain("not found");
+		it("should throw for non-existent session", async () => {
+			await expect(
+				consistencyService.enforceCoverage("non-existent", "content"),
+			).rejects.toThrow();
 		});
 
 		it("should handle coverage pass scenario", async () => {
@@ -93,7 +88,7 @@ describe("ConsistencyService", () => {
 			expect(response.sessionId).toBe(sessionId);
 		});
 
-		it("should handle coverage fail scenario", async () => {
+		it("should handle coverage fail scenario gracefully", async () => {
 			const sessionId = `test-fail-${Date.now()}`;
 			const config = {
 				sessionId,
@@ -117,7 +112,7 @@ describe("ConsistencyService", () => {
 				content,
 			);
 
-			expect(response).toBeDefined();
+			expect(response.success).toBe(true);
 			expect(response.sessionId).toBe(sessionId);
 		});
 	});
@@ -151,13 +146,10 @@ describe("ConsistencyService", () => {
 			expect(response.sessionId).toBe(sessionId);
 		});
 
-		it("should return error for non-existent session", async () => {
-			const response =
-				await consistencyService.enforceConsistency("non-existent");
-
-			expect(response.success).toBe(false);
-			expect(response.status).toBe("error");
-			expect(response.message).toContain("not found");
+		it("should throw for non-existent session", async () => {
+			await expect(
+				consistencyService.enforceConsistency("non-existent"),
+			).rejects.toThrow();
 		});
 
 		it("should enforce with specific constraint ID", async () => {

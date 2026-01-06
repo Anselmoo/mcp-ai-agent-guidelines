@@ -1,4 +1,8 @@
 // Session Management Service - Handles design session lifecycle operations
+import {
+	sessionNotFoundError,
+	validationError,
+} from "../../shared/error-factory.js";
 import { ErrorReporter } from "../../shared/errors.js";
 import { type ADRGenerationResult, adrGenerator } from "../adr-generator.js";
 import { constraintManager } from "../constraint-manager.js";
@@ -41,11 +45,9 @@ class SessionManagementServiceImpl {
 			try {
 				await constraintManager.loadConstraintsFromConfig(constraintConfig);
 			} catch (error) {
-				return ErrorReporter.createFullErrorResponse(error, {
+				throw validationError("Invalid constraint configuration", {
 					sessionId,
-					status: "error",
-					recommendations: ["Check constraint configuration format"],
-					artifacts: [],
+					originalError: error instanceof Error ? error.message : String(error),
 				});
 			}
 		}
@@ -71,14 +73,9 @@ class SessionManagementServiceImpl {
 					customPhaseSequence: methodologySelection.selected.phases,
 				};
 			} catch (error) {
-				return ErrorReporter.createFullErrorResponse(error, {
+				throw validationError("Methodology selection failed", {
 					sessionId,
-					status: "error",
-					recommendations: [
-						"Check methodology signals format",
-						"Verify methodology configuration",
-					],
-					artifacts: [],
+					reason: error instanceof Error ? error.message : String(error),
 				});
 			}
 		}
@@ -92,14 +89,10 @@ class SessionManagementServiceImpl {
 		});
 
 		if (!workflowResult.success) {
-			return {
-				success: false,
+			throw validationError(workflowResult.message, {
 				sessionId,
-				status: "failed",
-				message: workflowResult.message,
 				recommendations: workflowResult.recommendations,
-				artifacts: [],
-			};
+			});
 		}
 
 		// Generate ADR for methodology decision after workflow is started
@@ -200,14 +193,7 @@ class SessionManagementServiceImpl {
 	): Promise<SessionManagementResponse> {
 		const sessionState = designPhaseWorkflow.getSession(sessionId);
 		if (!sessionState) {
-			return {
-				success: false,
-				sessionId,
-				status: "not-found",
-				message: `Session ${sessionId} not found`,
-				recommendations: ["Start a new session"],
-				artifacts: [],
-			};
+			throw sessionNotFoundError(sessionId);
 		}
 
 		const workflowResult = await designPhaseWorkflow.executeWorkflow({

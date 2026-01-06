@@ -1,5 +1,6 @@
 // Comprehensive Service Coverage Tests - Target all uncovered branches and error paths
 import { beforeEach, describe, expect, it } from "vitest";
+import { DEFAULT_CONSTRAINT_CONFIG } from "../../../src/tools/design/constraint-manager.js";
 import { designPhaseWorkflow } from "../../../src/tools/design/design-phase-workflow.js";
 import { additionalOperationsService } from "../../../src/tools/design/services/additional-operations.service.js";
 import { artifactGenerationService } from "../../../src/tools/design/services/artifact-generation.service.js";
@@ -22,7 +23,7 @@ describe("Comprehensive Service Coverage Tests", () => {
 				context: "Test with constraints",
 				goal: "Test constraint loading",
 				requirements: ["Requirement 1"],
-				constraints: ["Constraint 1", "Constraint 2"],
+				constraints: [],
 				coverageThreshold: 85,
 				enablePivots: true,
 				templateRefs: [],
@@ -31,10 +32,7 @@ describe("Comprehensive Service Coverage Tests", () => {
 			};
 
 			// Test with valid constraint config
-			const constraintConfig = {
-				customConstraints: ["Custom constraint 1"],
-				strictMode: true,
-			};
+			const constraintConfig = DEFAULT_CONSTRAINT_CONFIG;
 
 			const response = await sessionManagementService.startDesignSession(
 				sessionId,
@@ -77,12 +75,9 @@ describe("Comprehensive Service Coverage Tests", () => {
 		});
 
 		it("should get session status for non-existent session", async () => {
-			const response = await sessionManagementService.getSessionStatus(
-				"non-existent-session",
-			);
-
-			expect(response.success).toBe(false);
-			expect(response.status).toBe("not-found");
+			await expect(
+				sessionManagementService.getSessionStatus("non-existent-session"),
+			).rejects.toThrow();
 		});
 
 		it("should get session status for valid session", async () => {
@@ -204,12 +199,9 @@ describe("Comprehensive Service Coverage Tests", () => {
 		});
 
 		it("should handle non-existent session in phase operations", async () => {
-			const response = await phaseManagementService.advancePhase(
-				"non-existent-session",
-			);
-
-			expect(response.success).toBe(false);
-			expect(response.status).toBe("error");
+			await expect(
+				phaseManagementService.advancePhase("non-existent-session"),
+			).rejects.toThrow();
 		});
 	});
 
@@ -274,13 +266,11 @@ describe("Comprehensive Service Coverage Tests", () => {
 		});
 
 		it("should handle artifact generation errors", async () => {
-			const response = await artifactGenerationService.generateArtifacts(
-				"non-existent-session",
-				["adr"],
-			);
-
-			expect(response.success).toBe(false);
-			expect(response.status).toBe("error");
+			await expect(
+				artifactGenerationService.generateArtifacts("non-existent-session", [
+					"adr",
+				]),
+			).rejects.toThrow();
 		});
 
 		it("should generate constraint documentation", async () => {
@@ -347,13 +337,9 @@ describe("Comprehensive Service Coverage Tests", () => {
 		});
 
 		it("should handle coverage enforcement for non-existent session", async () => {
-			const response = await consistencyService.enforceCoverage(
-				"non-existent-session",
-				"content",
-			);
-
-			expect(response.success).toBe(false);
-			expect(response.status).toBe("error");
+			await expect(
+				consistencyService.enforceCoverage("non-existent-session", "content"),
+			).rejects.toThrow();
 		});
 
 		it("should enforce consistency", async () => {

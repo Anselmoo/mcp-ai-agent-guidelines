@@ -129,16 +129,13 @@ describe("Design Assistant - Constraint Consistency Enforcement Integration", ()
 	});
 
 	it("should handle missing session gracefully", async () => {
-		const response = await designAssistant.processRequest({
-			action: "enforce-consistency",
-			sessionId: "non-existent-session",
-			content: "Testing error handling for missing session",
-		});
-
-		expect(response.success).toBe(false);
-		expect(response.status).toBe("error");
-		expect(response.message).toContain("not found");
-		expect(response.recommendations).toContain("Start a new session");
+		await expect(
+			designAssistant.processRequest({
+				action: "enforce-consistency",
+				sessionId: "non-existent-session",
+				content: "Testing error handling for missing session",
+			}),
+		).rejects.toThrow();
 	});
 
 	it("should work with multiple sessions for cross-session consistency", async () => {
