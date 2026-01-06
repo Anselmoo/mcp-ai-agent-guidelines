@@ -23,6 +23,11 @@ export { constraintConsistencyEnforcer } from "./constraint-consistency-enforcer
 export { constraintManager } from "./constraint-manager.js";
 export { coverageEnforcer } from "./coverage-enforcer.js";
 export { crossSessionConsistencyEnforcer } from "./cross-session-consistency-enforcer.js";
+export {
+	DesignAssistantErrorCode,
+	designErrorFactory,
+	handleToolError,
+} from "./design-assistant.errors.js";
 export type { DesignAssistantRequest } from "./design-assistant.js";
 export { designAssistant } from "./design-assistant.js";
 export { designPhaseWorkflow } from "./design-phase-workflow.js";

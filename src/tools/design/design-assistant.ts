@@ -8,6 +8,11 @@ import {
 } from "./constraint-manager.js";
 import { coverageEnforcer } from "./coverage-enforcer.js";
 import { crossSessionConsistencyEnforcer } from "./cross-session-consistency-enforcer.js";
+import {
+	DesignAssistantErrorCode,
+	designErrorFactory,
+	handleToolError,
+} from "./design-assistant.errors.js";
 import { methodologySelector } from "./methodology-selector.js";
 import { pivotModule } from "./pivot-module.js";
 import {
@@ -103,6 +108,7 @@ export interface DesignAssistantResponse {
 	message: string;
 	recommendations: string[];
 	artifacts: Artifact[];
+	errorCode?: DesignAssistantErrorCode | string;
 	validationResults?: unknown;
 	pivotDecision?: unknown;
 	strategicPivotPrompt?: StrategicPivotPromptResult;
@@ -196,9 +202,7 @@ class DesignAssistantImpl {
 			switch (action) {
 				case "start-session":
 					if (!request.config) {
-						throw new Error(
-							"Configuration is required for start-session action",
-						);
+						throw designErrorFactory.missingConfiguration(action, sessionId);
 					}
 					return sessionManagementService.startDesignSession(
 						sessionId,
@@ -213,9 +217,7 @@ class DesignAssistantImpl {
 					);
 				case "validate-phase":
 					if (!request.phaseId || !request.content) {
-						throw new Error(
-							"Phase ID and content are required for validate-phase action",
-						);
+						throw designErrorFactory.missingValidationInputs(sessionId);
 					}
 					return phaseManagementService.validatePhase(
 						sessionId,
@@ -224,7 +226,7 @@ class DesignAssistantImpl {
 					);
 				case "evaluate-pivot":
 					if (!request.content) {
-						throw new Error("Content is required for evaluate-pivot action");
+						throw designErrorFactory.missingContent(action, sessionId);
 					}
 					return additionalOperationsService.evaluatePivot(
 						sessionId,
@@ -232,9 +234,7 @@ class DesignAssistantImpl {
 					);
 				case "generate-strategic-pivot-prompt":
 					if (!request.content) {
-						throw new Error(
-							"Content is required for generate-strategic-pivot-prompt action",
-						);
+						throw designErrorFactory.missingContent(action, sessionId);
 					}
 					return additionalOperationsService.generateStrategicPivotPrompt(
 						sessionId,
@@ -250,7 +250,7 @@ class DesignAssistantImpl {
 					);
 				case "enforce-coverage":
 					if (!request.content) {
-						throw new Error("Content is required for enforce-coverage action");
+						throw designErrorFactory.missingContent(action, sessionId);
 					}
 					return consistencyService.enforceCoverage(sessionId, request.content);
 				case "enforce-consistency":
@@ -264,19 +264,14 @@ class DesignAssistantImpl {
 					return sessionManagementService.getSessionStatus(sessionId);
 				case "load-constraints":
 					if (!request.constraintConfig) {
-						throw new Error(
-							"Constraint configuration is required for load-constraints action",
-						);
+						throw designErrorFactory.missingConstraintConfiguration(sessionId);
 					}
 					return additionalOperationsService.loadConstraints(
 						request.constraintConfig,
 					);
 				case "select-methodology":
 					if (!request.methodologySignals) {
-						throw new ConfigurationError(
-							"Methodology signals are required for select-methodology action",
-							{ sessionId, action },
-						);
+						throw designErrorFactory.missingMethodologySignals(sessionId);
 					}
 					return additionalOperationsService.selectMethodology(
 						sessionId,
@@ -292,28 +287,19 @@ class DesignAssistantImpl {
 					);
 				case "generate-context-aware-guidance":
 					if (!request.content) {
-						throw new Error(
-							"Content is required for generate-context-aware-guidance action",
-						);
+						throw designErrorFactory.missingContent(action, sessionId);
 					}
 					return this.generateContextAwareGuidance(sessionId, request.content);
 				default:
-					throw new ConfigurationError(`Unknown action: ${action}`, {
-						action,
-						sessionId,
-					});
+					throw designErrorFactory.unknownAction(action, sessionId);
 			}
 		} catch (error) {
-			// Use the same error response format as services
-			return {
-				success: false,
+			return handleToolError(error, {
 				sessionId,
-				status: "error",
-				message:
-					error instanceof Error ? error.message : "Unknown error occurred",
+				action,
 				recommendations: ["Check request parameters and try again"],
 				artifacts: [],
-			};
+			});
 		}
 	}
 
@@ -361,15 +347,14 @@ class DesignAssistantImpl {
 				},
 			};
 		} catch (error) {
-			return {
-				success: false,
+			return handleToolError(error, {
 				sessionId,
-				status: "error",
-				message:
-					error instanceof Error ? error.message : "Unknown error occurred",
+				action: "generate-context-aware-guidance",
 				recommendations: ["Check the code context and try again"],
 				artifacts: [],
-			};
+				errorCode: DesignAssistantErrorCode.GuidanceGenerationFailed,
+				defaultMessage: "Failed to generate context-aware guidance",
+			});
 		}
 	}
 

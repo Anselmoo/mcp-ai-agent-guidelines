@@ -1,9 +1,14 @@
 // Consistency Service - Handles consistency enforcement operations
-import { ErrorReporter } from "../../shared/errors.js";
+
 import { constraintConsistencyEnforcer } from "../constraint-consistency-enforcer.js";
 import { constraintManager } from "../constraint-manager.js";
 import { coverageEnforcer } from "../coverage-enforcer.js";
 import { crossSessionConsistencyEnforcer } from "../cross-session-consistency-enforcer.js";
+import {
+	DesignAssistantErrorCode,
+	designErrorFactory,
+	handleToolError,
+} from "../design-assistant.errors.js";
 import { designPhaseWorkflow } from "../design-phase-workflow.js";
 import type {
 	Artifact,
@@ -20,6 +25,7 @@ export interface ConsistencyServiceResponse {
 	message: string;
 	recommendations: string[];
 	artifacts: Artifact[];
+	errorCode?: DesignAssistantErrorCode | string;
 	coverageReport?: unknown;
 	consistencyEnforcement?: ConsistencyEnforcementResult;
 	data?: Record<string, unknown>;
@@ -32,14 +38,13 @@ class ConsistencyServiceImpl {
 	): Promise<ConsistencyServiceResponse> {
 		const sessionState = designPhaseWorkflow.getSession(sessionId);
 		if (!sessionState) {
-			return {
-				success: false,
+			return handleToolError(designErrorFactory.sessionNotFound(sessionId), {
 				sessionId,
+				action: "enforce-coverage",
 				status: "error",
-				message: `Session ${sessionId} not found`,
 				recommendations: ["Start a new session"],
 				artifacts: [],
-			};
+			});
 		}
 
 		const coverageResult = await coverageEnforcer.enforceCoverage({
@@ -72,14 +77,13 @@ class ConsistencyServiceImpl {
 	): Promise<ConsistencyServiceResponse> {
 		const sessionState = designPhaseWorkflow.getSession(sessionId);
 		if (!sessionState) {
-			return {
-				success: false,
+			return handleToolError(designErrorFactory.sessionNotFound(sessionId), {
 				sessionId,
+				action: "enforce-consistency",
 				status: "error",
-				message: `Session ${sessionId} not found`,
 				recommendations: ["Start a new session"],
 				artifacts: [],
-			};
+			});
 		}
 
 		const consistencyResult =
@@ -167,11 +171,14 @@ class ConsistencyServiceImpl {
 				},
 			};
 		} catch (error) {
-			return ErrorReporter.createFullErrorResponse(error, {
+			return handleToolError(error, {
 				sessionId,
+				action: "enforce-cross-session-consistency",
 				status: "consistency-check-failed",
 				recommendations: ["Check session state and try again"],
 				artifacts: [],
+				errorCode: DesignAssistantErrorCode.ConsistencyCheckFailed,
+				defaultMessage: "Consistency check failed",
 			});
 		}
 	}
@@ -237,11 +244,14 @@ class ConsistencyServiceImpl {
 				},
 			};
 		} catch (error) {
-			return ErrorReporter.createFullErrorResponse(error, {
+			return handleToolError(error, {
 				sessionId,
+				action: "generate-enforcement-prompts",
 				status: "prompt-generation-failed",
 				recommendations: ["Check session state and try again"],
 				artifacts: [],
+				errorCode: DesignAssistantErrorCode.PromptGenerationFailed,
+				defaultMessage: "Failed to generate enforcement prompts",
 			});
 		}
 	}

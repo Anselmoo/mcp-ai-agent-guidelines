@@ -3,6 +3,11 @@ import { ErrorReporter } from "../../shared/errors.js";
 import { type ADRGenerationResult, adrGenerator } from "../adr-generator.js";
 import { constraintManager } from "../constraint-manager.js";
 import { coverageEnforcer } from "../coverage-enforcer.js";
+import {
+	DesignAssistantErrorCode,
+	designErrorFactory,
+	handleToolError,
+} from "../design-assistant.errors.js";
 import { designPhaseWorkflow } from "../design-phase-workflow.js";
 import { methodologySelector } from "../methodology-selector.js";
 import type {
@@ -26,6 +31,7 @@ export interface SessionManagementResponse {
 	message: string;
 	recommendations: string[];
 	artifacts: Artifact[];
+	errorCode?: DesignAssistantErrorCode | string;
 	coverageReport?: unknown;
 	data?: Record<string, unknown>;
 }
@@ -41,11 +47,14 @@ class SessionManagementServiceImpl {
 			try {
 				await constraintManager.loadConstraintsFromConfig(constraintConfig);
 			} catch (error) {
-				return ErrorReporter.createFullErrorResponse(error, {
+				return handleToolError(error, {
 					sessionId,
+					action: "load-constraints",
 					status: "error",
 					recommendations: ["Check constraint configuration format"],
 					artifacts: [],
+					errorCode: DesignAssistantErrorCode.ConstraintLoadFailed,
+					defaultMessage: "Failed to load constraint configuration",
 				});
 			}
 		}
@@ -71,14 +80,17 @@ class SessionManagementServiceImpl {
 					customPhaseSequence: methodologySelection.selected.phases,
 				};
 			} catch (error) {
-				return ErrorReporter.createFullErrorResponse(error, {
+				return handleToolError(error, {
 					sessionId,
+					action: "select-methodology",
 					status: "error",
 					recommendations: [
 						"Check methodology signals format",
 						"Verify methodology configuration",
 					],
 					artifacts: [],
+					errorCode: DesignAssistantErrorCode.MethodologySelectionFailed,
+					defaultMessage: "Methodology selection failed",
 				});
 			}
 		}
@@ -200,14 +212,13 @@ class SessionManagementServiceImpl {
 	): Promise<SessionManagementResponse> {
 		const sessionState = designPhaseWorkflow.getSession(sessionId);
 		if (!sessionState) {
-			return {
-				success: false,
+			return handleToolError(designErrorFactory.sessionNotFound(sessionId), {
 				sessionId,
+				action: "get-status",
 				status: "not-found",
-				message: `Session ${sessionId} not found`,
 				recommendations: ["Start a new session"],
 				artifacts: [],
-			};
+			});
 		}
 
 		const workflowResult = await designPhaseWorkflow.executeWorkflow({

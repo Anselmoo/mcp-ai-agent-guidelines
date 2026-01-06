@@ -1,8 +1,13 @@
 // Artifact Generation Service - Handles artifact generation operations
-import { ErrorReporter } from "../../shared/errors.js";
+
 import { adrGenerator } from "../adr-generator.js";
 import { constraintManager } from "../constraint-manager.js";
 import { crossSessionConsistencyEnforcer } from "../cross-session-consistency-enforcer.js";
+import {
+	DesignAssistantErrorCode,
+	designErrorFactory,
+	handleToolError,
+} from "../design-assistant.errors.js";
 import { designPhaseWorkflow } from "../design-phase-workflow.js";
 import { roadmapGenerator } from "../roadmap-generator.js";
 import { specGenerator } from "../spec-generator.js";
@@ -16,6 +21,7 @@ export interface ArtifactGenerationResponse {
 	message: string;
 	recommendations: string[];
 	artifacts: Artifact[];
+	errorCode?: DesignAssistantErrorCode | string;
 	data?: Record<string, unknown>;
 }
 
@@ -26,14 +32,13 @@ class ArtifactGenerationServiceImpl {
 	): Promise<ArtifactGenerationResponse> {
 		const sessionState = designPhaseWorkflow.getSession(sessionId);
 		if (!sessionState) {
-			return {
-				success: false,
+			return handleToolError(designErrorFactory.sessionNotFound(sessionId), {
 				sessionId,
+				action: "generate-artifacts",
 				status: "error",
-				message: `Session ${sessionId} not found`,
 				recommendations: ["Start a new session"],
 				artifacts: [],
-			};
+			});
 		}
 
 		const artifacts: Artifact[] = [];
@@ -87,15 +92,15 @@ class ArtifactGenerationServiceImpl {
 				artifacts,
 			};
 		} catch (error) {
-			return {
-				...ErrorReporter.createFullErrorResponse(error, {
-					sessionId,
-					status: "generation-failed",
-					recommendations: ["Check session state and try again"],
-					artifacts,
-				}),
-				artifacts, // Keep the partial artifacts
-			};
+			return handleToolError(error, {
+				sessionId,
+				action: "generate-artifacts",
+				status: "generation-failed",
+				recommendations: ["Check session state and try again"],
+				artifacts,
+				errorCode: DesignAssistantErrorCode.ArtifactGenerationFailed,
+				defaultMessage: "Artifact generation failed",
+			});
 		}
 	}
 
@@ -189,11 +194,14 @@ class ArtifactGenerationServiceImpl {
 				},
 			};
 		} catch (error) {
-			return ErrorReporter.createFullErrorResponse(error, {
+			return handleToolError(error, {
 				sessionId,
+				action: "generate-constraint-documentation",
 				status: "documentation-generation-failed",
 				recommendations: ["Check session state and try again"],
 				artifacts: [],
+				errorCode: DesignAssistantErrorCode.ConstraintDocumentationFailed,
+				defaultMessage: "Failed to generate constraint documentation",
 			});
 		}
 	}

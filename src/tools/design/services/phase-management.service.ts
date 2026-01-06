@@ -1,6 +1,12 @@
 // Phase Management Service - Handles design phase workflow operations
+
 import { confirmationModule } from "../confirmation-module.js";
 import { coverageEnforcer } from "../coverage-enforcer.js";
+import {
+	type DesignAssistantErrorCode,
+	designErrorFactory,
+	handleToolError,
+} from "../design-assistant.errors.js";
 import { designPhaseWorkflow } from "../design-phase-workflow.js";
 import { pivotModule } from "../pivot-module.js";
 import type {
@@ -19,6 +25,7 @@ export interface PhaseManagementResponse {
 	message: string;
 	recommendations: string[];
 	artifacts: Artifact[];
+	errorCode?: DesignAssistantErrorCode | string;
 	validationResults?: unknown;
 	pivotDecision?: unknown;
 	coverageReport?: unknown;
@@ -32,14 +39,13 @@ class PhaseManagementServiceImpl {
 	): Promise<PhaseManagementResponse> {
 		const sessionState = designPhaseWorkflow.getSession(sessionId);
 		if (!sessionState) {
-			return {
-				success: false,
+			return handleToolError(designErrorFactory.sessionNotFound(sessionId), {
 				sessionId,
+				action: "advance-phase",
 				status: "error",
-				message: `Session ${sessionId} not found`,
 				recommendations: ["Start a new session"],
 				artifacts: [],
-			};
+			});
 		}
 
 		// Validate current phase if content is provided
@@ -110,14 +116,13 @@ class PhaseManagementServiceImpl {
 	): Promise<PhaseManagementResponse> {
 		const sessionState = designPhaseWorkflow.getSession(sessionId);
 		if (!sessionState) {
-			return {
-				success: false,
+			return handleToolError(designErrorFactory.sessionNotFound(sessionId), {
 				sessionId,
+				action: "validate-phase",
 				status: "error",
-				message: `Session ${sessionId} not found`,
 				recommendations: ["Start a new session"],
 				artifacts: [],
-			};
+			});
 		}
 
 		// Perform comprehensive validation
