@@ -1,5 +1,10 @@
 import { applyTechniques } from "../../tools/prompt/technique-applicator.js";
-import { buildProviderTipsSection } from "../../tools/shared/prompt-sections.js";
+import {
+	buildProviderTipsSection,
+	type Provider,
+	type Style,
+	type Technique,
+} from "../../tools/shared/prompt-sections.js";
 
 export interface PromptSection {
 	title: string;
@@ -23,11 +28,11 @@ export interface HierarchicalPromptConfig {
 	issues?: string[];
 	outputFormat?: string;
 	audience?: string;
-	techniques?: string[];
+	techniques?: Technique[];
 	includeTechniqueHints?: boolean;
 	autoSelectTechniques?: boolean;
-	provider?: string;
-	style?: "markdown" | "xml";
+	provider?: Provider;
+	style?: Style;
 }
 
 function toNumberedList(items: string[]): string {

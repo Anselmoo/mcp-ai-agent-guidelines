@@ -146,8 +146,9 @@ describe("hierarchical-prompt-builder comprehensive coverage", () => {
 		expect(content).toContain("Enterprise software development");
 		expect(content).toContain("Mixed technical and business stakeholders");
 		expect(content).toContain("Multi-section technical document");
-		// Check for actionable sections based on techniques
-		expect(content).toContain("Document Handling"); // RAG section
+		// Check for actionable sections - all techniques are now in Approach section
+		expect(content).toContain("# Approach");
+		expect(content).toContain("Retrieve Relevant Information"); // RAG content
 		expect(content).toContain("Step-by-Step Workflow"); // Prompt chaining section
 
 		// Check all requirements are included
@@ -200,10 +201,13 @@ describe("hierarchical-prompt-builder comprehensive coverage", () => {
 		});
 
 		const content = result.content[0].text;
-		// Verify actionable instruction sections are generated for various techniques
-		expect(content).toContain("Approach"); // chain-of-thought
-		expect(content).toContain("Examples"); // few-shot
-		expect(content).toContain("Knowledge Gathering"); // generate-knowledge
+		// Verify actionable instruction sections - all techniques generate content
+		expect(content).toContain("# Approach"); // Main approach section
+		expect(content).toContain("Think through this problem step-by-step"); // chain-of-thought
+		expect(content).toContain("# Examples"); // few-shot section
+		expect(content).toContain(
+			"Before solving the task, gather and document relevant knowledge",
+		); // generate-knowledge
 		expect(content).toContain("Explore Alternative Approaches"); // tree-of-thoughts
 	});
 

@@ -48,8 +48,8 @@ describe("hierarchical-prompt-builder actionable instructions", () => {
 
 		const text = result.content[0].text;
 
-		// Should include examples section
-		expect(text).toContain("# Examples");
+		// Should include approach section (renamed from examples in domain refactor)
+		expect(text).toContain("# Approach");
 		expect(text).toContain(
 			"Here are examples of how to approach similar tasks",
 		);
@@ -69,8 +69,8 @@ describe("hierarchical-prompt-builder actionable instructions", () => {
 
 		const text = result.content[0].text;
 
-		// Should detect analysis task and generate relevant example
-		expect(text).toContain("# Examples");
+		// Should detect analysis task and generate relevant example (using Approach section)
+		expect(text).toContain("# Approach");
 		expect(text).toContain("Analysis");
 	});
 
@@ -84,8 +84,8 @@ describe("hierarchical-prompt-builder actionable instructions", () => {
 
 		const text = result.content[0].text;
 
-		// Should include document handling section
-		expect(text).toContain("# Document Handling");
+		// Should include approach section with document handling instructions
+		expect(text).toContain("# Approach");
 		expect(text).toContain(
 			"When working with documents or external knowledge sources",
 		);
@@ -112,8 +112,8 @@ describe("hierarchical-prompt-builder actionable instructions", () => {
 
 		const text = result.content[0].text;
 
-		// Should include workflow section
-		expect(text).toContain("# Step-by-Step Workflow");
+		// Should include approach section with workflow
+		expect(text).toContain("# Approach");
 		expect(text).toContain("Break this task into sequential steps");
 
 		// Should reference actual context and goal
@@ -136,8 +136,8 @@ describe("hierarchical-prompt-builder actionable instructions", () => {
 
 		const text = result.content[0].text;
 
-		// Should include alternatives exploration section
-		expect(text).toContain("# Explore Alternative Approaches");
+		// Should include approach section with alternatives exploration
+		expect(text).toContain("# Approach");
 		expect(text).toContain("Generate Alternatives");
 		expect(text).toContain("Evaluate Each Path");
 		expect(text).toContain("Select Best Path");
@@ -156,8 +156,8 @@ describe("hierarchical-prompt-builder actionable instructions", () => {
 
 		const text = result.content[0].text;
 
-		// Should include knowledge gathering section
-		expect(text).toContain("# Knowledge Gathering");
+		// Should include approach section with knowledge gathering
+		expect(text).toContain("# Approach");
 		expect(text).toContain(
 			"Before solving the task, gather and document relevant knowledge",
 		);
@@ -184,10 +184,11 @@ describe("hierarchical-prompt-builder actionable instructions", () => {
 
 		const text = result.content[0].text;
 
-		// Should include all technique-specific sections
-		expect(text).toContain("# Approach"); // chain-of-thought
-		expect(text).toContain("# Examples"); // few-shot
-		expect(text).toContain("# Step-by-Step Workflow"); // prompt-chaining
+		// Should include approach section with combined technique guidance
+		expect(text).toContain("# Approach");
+		expect(text).toContain("Think through this problem step-by-step"); // chain-of-thought
+		expect(text).toContain("examples of how to approach"); // few-shot
+		expect(text).toContain("Break this task into sequential steps"); // prompt-chaining
 
 		// All should reference the actual context and requirements
 		expect(text).toContain("Monolithic application");
@@ -220,25 +221,24 @@ describe("hierarchical-prompt-builder actionable instructions", () => {
 
 		const text = result.content[0].text;
 
-		// Should detect documentation task and generate relevant example
-		expect(text).toContain("# Examples");
+		// Should detect documentation task and generate relevant example in Approach section
+		expect(text).toContain("# Approach");
 		expect(text).toContain("Documentation");
 		expect(text).toContain("API endpoints");
 	});
 
 	it("should handle prompt-chaining without requirements", async () => {
 		const result = await hierarchicalPromptBuilder({
-			context: "Web application",
-			goal: "Implement new feature",
-			// No requirements provided
+			context: "Feature implementation needed",
+			goal: "Add payment processing",
 			techniques: ["prompt-chaining"],
 			includeTechniqueHints: true,
 		});
 
 		const text = result.content[0].text;
 
-		// Should include workflow section even without requirements
-		expect(text).toContain("# Step-by-Step Workflow");
+		// Should include approach section with workflow even without requirements
+		expect(text).toContain("# Approach");
 		expect(text).toContain("Execute the planned changes");
 	});
 });
