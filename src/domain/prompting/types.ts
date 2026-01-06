@@ -1,36 +1,26 @@
-/**
- * Represents a logical section of a generated prompt with a consistent role and hierarchy level.
- */
-
 export interface PromptSection {
-	/** Human-readable section label describing the content. */
-	name: string;
-	/** The prompt text for this section. */
-	content: string;
-	/** Hierarchical depth used to order or group sections. */
-	level: number;
+	title: string;
+	body: string;
+	/** Optional depth indicator for hierarchical ordering. */
+	level?: number;
 }
-
-/**
- * Metadata describing how a prompt was constructed and its expected complexity.
- */
 
 export interface PromptMetadata {
-	/** Prompting technique or pattern used (e.g., chain-of-thought). */
-	technique: string;
-	/** Qualitative complexity rating influencing downstream cost. */
-	complexity: "low" | "medium" | "high";
+	/** Numeric complexity score (0-100). */
+	complexity: number;
 	/** Estimated token count for the assembled prompt. */
-	estimatedTokens: number;
+	tokenEstimate: number;
+	/** Total sections included. */
+	sections: number;
+	/** Techniques applied (normalized). */
+	techniques: string[];
+	/** Requirement count used to derive complexity. */
+	requirementsCount: number;
+	/** Issue count used to derive complexity. */
+	issuesCount: number;
 }
 
-/**
- * Output shape returned by prompt builders combining ordered sections with metadata.
- */
-
 export interface PromptResult {
-	/** Ordered sections that compose the final prompt. */
 	sections: PromptSection[];
-	/** Metadata describing prompt construction attributes. */
 	metadata: PromptMetadata;
 }

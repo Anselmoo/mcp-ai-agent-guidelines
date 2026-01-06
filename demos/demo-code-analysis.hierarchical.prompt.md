@@ -11,6 +11,13 @@ description: 'Produce a step-by-step refactor plan and a checklist'
 - Source tool: mcp_ai-agent-guid_hierarchical-prompt-builder
 - Input file: /home/runner/work/mcp-ai-agent-guidelines/mcp-ai-agent-guidelines/demos/demo-code-analysis.py
 - Suggested filename: produce-a-step-by-step-refactor-plan-and-a-checklist.prompt.md
+### Prompt Metrics
+- Complexity score: 40
+- Token estimate: 223
+- Sections: 7
+- Techniques: none
+- Requirements: 3
+- Issues: 0
 
 # Context
 Refactor a small Python script for clarity and safety
@@ -32,7 +39,6 @@ Produce a step-by-step refactor plan and a checklist
 Senior engineer
 
 # Model-Specific Tips
-
 - Prefer Markdown with clear headings and sections
 - Place instructions at the beginning (and optionally re-assert at the end) in long contexts
 - Use explicit step numbering for CoT where helpful
@@ -40,15 +46,17 @@ Senior engineer
 - Preferred Style: MARKDOWN
 
 ```md
-# Instructions
+Instructions
 ...your task...
 
-# Context
+Context
 ...data...
 
-# Output Format
+Output Format
 JSON fields ...
 ```
+
+
 
 # Instructions
 Follow the structure above. If you detect additional issues in the codebase, explicitly add them under Problem Indicators, propose minimal diffs, and flag risky changes. Treat tools/models as recommendations to validate against current provider documentation.
