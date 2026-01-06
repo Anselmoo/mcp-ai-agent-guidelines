@@ -19,9 +19,21 @@ tools:
   - serena/get_symbols_overview
   - serena/search_for_pattern
   - sequentialthinking/*
+  - context7/*
   - fetch/*
-  - agent
-
+handoffs:
+  - label: "Fix Issues"
+    agent: MCP-Tool-Builder
+    prompt: "Fix review issues. Problems: {{problems}}. Refactor code."
+  - label: "Add Tests"
+    agent: TDD-Workflow
+    prompt: "Add tests for coverage gaps. Uncovered: {{uncovered}}. Target 90%."
+  - label: "Security Issues"
+    agent: Security-Auditor
+    prompt: "Deep security review. Concerns: {{concerns}}. OWASP analysis."
+  - label: "Performance Issues"
+    agent: Performance-Optimizer
+    prompt: "Performance review. Bottlenecks: {{bottlenecks}}. Optimize."
 ---
 
 # Code Reviewer Agent

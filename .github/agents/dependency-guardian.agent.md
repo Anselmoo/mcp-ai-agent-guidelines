@@ -17,8 +17,19 @@ tools:
   - sequentialthinking/*
   - fetch/*
   - context7/*
-  - agent
-
+handoffs:
+  - label: "Security Assessment"
+    agent: Security-Auditor
+    prompt: "Audit vulnerable dependency. CVE: {{cve}}. Impact analysis."
+  - label: "Apply Update"
+    agent: MCP-Tool-Builder
+    prompt: "Update dependency. Package: {{package}}. Handle breaking changes."
+  - label: "Test Update"
+    agent: TDD-Workflow
+    prompt: "Test dependency update. Package: {{package}}. Verify no regression."
+  - label: "Update Docs"
+    agent: Documentation-Generator
+    prompt: "Document dependency change. Update: {{update}}. Migration guide."
 ---
 
 # Dependency Guardian Agent

@@ -10,13 +10,25 @@ tools:
   - search
   - todo
   - web
+  - runSubagent
   - serena/search_for_pattern
   - serena/find_symbol
   - sequentialthinking/*
   - fetch/*
   - context7/*
-  - agent
-
+handoffs:
+  - label: "Debug Build"
+    agent: Debugging-Assistant
+    prompt: "Debug build failure. Error: {{error}}. Root cause analysis."
+  - label: "Fix Tests"
+    agent: TDD-Workflow
+    prompt: "Fix failing tests. Failures: {{failures}}. Repair tests."
+  - label: "Fix Code"
+    agent: MCP-Tool-Builder
+    prompt: "Fix code causing CI failure. Issue: {{issue}}. Apply fix."
+  - label: "Performance Fix"
+    agent: Performance-Optimizer
+    prompt: "CI timeout/performance. Metrics: {{metrics}}. Optimize."
 ---
 
 # CI Fixer Agent

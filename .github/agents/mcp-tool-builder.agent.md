@@ -10,11 +10,29 @@ tools:
   - search
   - todo
   - web
+  - runTests
+  - runSubagent
   - ai-agent-guidelines/*
   - serena/*
   - fetch/*
   - context7/*
   - sequentialthinking/*
+handoffs:
+  - label: "Write Tests"
+    agent: TDD-Workflow
+    prompt: "Write tests for implementation. Code: {{code}}. Target 90% coverage."
+  - label: "Code Review"
+    agent: Code-Reviewer
+    prompt: "Review code quality. Files: {{files}}. Use clean-code-scorer metrics."
+  - label: "Security Audit"
+    agent: Security-Auditor
+    prompt: "Security review. Code: {{code}}. Check OWASP compliance."
+  - label: "Update Docs"
+    agent: Documentation-Generator
+    prompt: "Update documentation. Features: {{features}}. Update JSDoc and README."
+  - label: "Architecture Review"
+    agent: Architecture-Advisor
+    prompt: "Review architecture. Design: {{design}}. Validate patterns and ADRs."
 ---
 
 # MCP Tool Builder Agent

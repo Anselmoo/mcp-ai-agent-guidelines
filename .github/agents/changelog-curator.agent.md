@@ -15,8 +15,16 @@ tools:
   - serena/get_symbols_overview
   - sequentialthinking/*
   - fetch/*
-  - agent
-
+handoffs:
+  - label: "Verify Changes"
+    agent: Code-Reviewer
+    prompt: "Verify changelog accuracy. Changes: {{changes}}. Match actual code."
+  - label: "Document Feature"
+    agent: Documentation-Generator
+    prompt: "Detailed feature docs. Feature: {{feature}}. Expand changelog entry."
+  - label: "Security Entry"
+    agent: Security-Auditor
+    prompt: "Security changelog entry. Fix: {{fix}}. CVE details."
 ---
 
 # Changelog Curator Agent

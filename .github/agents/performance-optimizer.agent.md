@@ -10,6 +10,7 @@ tools:
   - search
   - todo
   - web
+  - runSubagent
   - ai-agent-guidelines/semantic-code-analyzer
   - ai-agent-guidelines/clean-code-scorer
   - ai-agent-guidelines/memory-context-optimizer
@@ -17,8 +18,19 @@ tools:
   - sequentialthinking/*
   - fetch/*
   - context7/*
-  - agent
-
+handoffs:
+  - label: "Implement Optimization"
+    agent: MCP-Tool-Builder
+    prompt: "Implement optimization. Bottleneck: {{bottleneck}}. Apply fix."
+  - label: "Test Performance"
+    agent: TDD-Workflow
+    prompt: "Performance tests. Baseline: {{baseline}}. Benchmark."
+  - label: "Review Changes"
+    agent: Code-Reviewer
+    prompt: "Review optimization. Changes: {{changes}}. Validate quality."
+  - label: "Document Performance"
+    agent: Documentation-Generator
+    prompt: "Document optimization. Improvement: {{improvement}}. Update docs."
 ---
 
 # Performance Optimizer Agent

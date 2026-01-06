@@ -2,21 +2,20 @@
 name: TDD-Workflow
 description: Test-Driven Development agent following Red-Green-Refactor cycle
 tools:
-  - shell
-  - read
-  - edit
-  - execute
-  - memory
-  - search
-  - todo
-  - web
-  - ai-agent-guidelines/clean-code-scorer
-  - ai-agent-guidelines/iterative-coverage-enhancer
-  - serena/*
-  - sequentialthinking/*
-  - context7/*
-  - fetch/*
-  - agent
+  ['execute', 'read', 'edit', 'search', 'web', 'agent', 'ai-agent-guidelines/clean-code-scorer', 'ai-agent-guidelines/iterative-coverage-enhancer', 'context7/*', 'sequentialthinking/*', 'serena/*', 'memory', 'todo']
+handoffs:
+  - label: "Implement Feature"
+    agent: MCP-Tool-Builder
+    prompt: "Implement to pass tests. Tests: {{tests}}. Follow TDD green phase."
+  - label: "Code Review"
+    agent: Code-Reviewer
+    prompt: "Review test coverage. Files: {{files}}. Verify quality metrics."
+  - label: "Refactor Code"
+    agent: MCP-Tool-Builder
+    prompt: "Refactor for clean code. Code: {{code}}. TDD refactor phase."
+  - label: "Debug Test"
+    agent: Debugging-Assistant
+    prompt: "Debug failing test. Error: {{error}}. Root cause analysis."
 
 ---
 

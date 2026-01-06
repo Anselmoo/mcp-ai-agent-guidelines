@@ -10,14 +10,26 @@ tools:
   - search
   - todo
   - web
+  - runSubagent
   - ai-agent-guidelines/debugging-assistant-prompt-builder
   - ai-agent-guidelines/semantic-code-analyzer
   - serena/*
   - sequentialthinking/*
   - fetch/*
   - context7/*
-  - agent
-
+handoffs:
+  - label: "Fix Bug"
+    agent: MCP-Tool-Builder
+    prompt: "Fix identified bug. Root cause: {{rootCause}}. Apply fix."
+  - label: "Add Regression Test"
+    agent: TDD-Workflow
+    prompt: "Write regression test. Bug: {{bug}}. Prevent recurrence."
+  - label: "Fix CI Issue"
+    agent: CI-Fixer
+    prompt: "CI-related bug. Error: {{error}}. Fix workflow."
+  - label: "Performance Bug"
+    agent: Performance-Optimizer
+    prompt: "Performance issue. Symptoms: {{symptoms}}. Optimize."
 ---
 
 # Debugging Assistant Agent
