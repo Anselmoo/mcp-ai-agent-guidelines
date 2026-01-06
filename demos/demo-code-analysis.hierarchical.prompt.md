@@ -9,7 +9,7 @@ description: 'Produce a step-by-step refactor plan and a checklist'
 ### Metadata
 - Updated: 2026-01-06
 - Source tool: mcp_ai-agent-guid_hierarchical-prompt-builder
-- Input file: /home/runner/work/mcp-ai-agent-guidelines/mcp-ai-agent-guidelines/demos/demo-code-analysis.py
+- Input file: /Users/hahn/LocalDocuments/GitHub_Forks/mcp-ai-agent-guidelines/demos/demo-code-analysis.py
 - Suggested filename: produce-a-step-by-step-refactor-plan-and-a-checklist.prompt.md
 ### Prompt Metrics
 - Complexity score: 40

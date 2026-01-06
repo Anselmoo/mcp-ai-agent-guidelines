@@ -1,18 +1,17 @@
 import { z } from "zod";
 import {
 	buildHierarchicalPrompt,
-	type PromptSection,
 	type PromptMetadata,
+	type PromptSection,
 } from "../../domain/prompting/hierarchical-builder.js";
 import { DEFAULT_MODEL, DEFAULT_MODEL_SLUG } from "../config/model-config.js";
 import { emitDeprecationWarning } from "../shared/deprecation.js";
 import {
+	buildProviderTipsSection,
 	ProviderEnum,
 	StyleEnum,
 	TechniqueEnum,
 } from "../shared/prompt-sections.js";
-import { applyTechniques } from "./technique-applicator.js";
-import { buildProviderTipsSection } from "../shared/prompt-sections.js";
 import {
 	applyExportFormat,
 	buildFrontmatterWithPolicy as buildFrontmatter,
@@ -21,6 +20,7 @@ import {
 	slugify,
 } from "../shared/prompt-utils.js";
 import { ExportFormatEnum } from "../shared/types/export-format.types.js";
+import { applyTechniques } from "./technique-applicator.js";
 
 // Strict mode enum for YAML frontmatter
 const ModeEnum = z.enum(["agent", "tool", "workflow"]);
