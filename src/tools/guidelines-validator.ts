@@ -3,8 +3,8 @@ import {
 	CATEGORY_CONFIG,
 	type CategoryConfig,
 } from "./config/guidelines-config.js";
-import { buildFurtherReadingSection } from "./shared/prompt-utils.js";
 import { handleToolError } from "./shared/error-handler.js";
+import { buildFurtherReadingSection } from "./shared/prompt-utils.js";
 
 const GuidelinesValidationSchema = z.object({
 	practiceDescription: z.string(),
@@ -126,6 +126,52 @@ ${validation.bestPractices.map((practice, index) => `${index + 1}. 📋 ${practi
 	} catch (error) {
 		return handleToolError(error);
 	}
+}
+
+function validateAgainstGuidelines(
+	input: GuidelinesValidationInput,
+): ValidationResult {
+	const { practiceDescription, category } = input;
+	const config: CategoryConfig | undefined = CATEGORY_CONFIG[category];
+	if (!config) {
+		return {
+			compliance: "poor",
+			score: 0,
+			strengths: [],
+			issues: ["Unknown category"],
+			recommendations: ["Use a supported category"],
+			bestPractices: [],
+		};
+	}
+	const text = practiceDescription.toLowerCase();
+	let score = config.base;
+	const strengths: string[] = [];
+	const issues: string[] = [];
+	const recommendations: string[] = [];
+	for (const criterion of config.criteria) {
+		const hit = criterion.keywords.some((k) => text.includes(k));
+		if (hit) {
+			score += criterion.weight;
+			strengths.push(criterion.strength);
+		} else if (!criterion.optional) {
+			issues.push(criterion.issue);
+			recommendations.push(criterion.recommendation);
+		}
+	}
+	score = Math.min(100, score);
+	let compliance: ValidationResult["compliance"];
+	if (score >= 80) compliance = "excellent";
+	else if (score >= 65) compliance = "good";
+	else if (score >= 45) compliance = "fair";
+	else compliance = "poor";
+	return {
+		compliance,
+		score,
+		strengths,
+		issues,
+		recommendations,
+		bestPractices: config.bestPractices,
+	};
 }
 
 function buildCategoryReferences(

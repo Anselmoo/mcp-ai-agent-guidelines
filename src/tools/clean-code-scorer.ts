@@ -1,10 +1,10 @@
 import { z } from "zod";
 import { calculateCleanCodeScore as calculateDomainCleanCodeScore } from "../domain/analysis/index.js";
+import { handleToolError } from "./shared/error-handler.js";
 import {
 	buildFurtherReadingSection,
 	buildOptionalSectionsMap,
 } from "./shared/prompt-utils.js";
-import { handleToolError } from "./shared/error-handler.js";
 
 const CleanCodeScorerSchema = z.object({
 	projectPath: z
@@ -122,7 +122,8 @@ export async function cleanCodeScorer(args: unknown) {
 						{
 							title: "Test Coverage Best Practices",
 							url: "https://martinfowler.com/bliki/TestCoverage.html",
-							description: "Martin Fowler on meaningful test coverage strategies",
+							description:
+								"Martin Fowler on meaningful test coverage strategies",
 						},
 						{
 							title: "TypeScript Do's and Don'ts",
@@ -182,14 +183,14 @@ ${scoreResult.recommendations.map((rec, index) => `${index + 1}. ${rec}`).join("
 ${scoreResult.nextSteps.map((step, index) => `${index + 1}. ${step}`).join("\n")}
 
 ### 📊 Score Distribution
-```
+\`\`\`
 Code Hygiene:   ${generateMiniBar(scoreResult.categories.codeHygiene.score, scoreResult.categories.codeHygiene.weight)}
 Test Coverage:  ${generateMiniBar(scoreResult.categories.testCoverage.score, scoreResult.categories.testCoverage.weight)}
 TypeScript:     ${generateMiniBar(scoreResult.categories.typeScript.score, scoreResult.categories.typeScript.weight)}
 Linting:        ${generateMiniBar(scoreResult.categories.linting.score, scoreResult.categories.linting.weight)}
 Documentation:  ${generateMiniBar(scoreResult.categories.documentation.score, scoreResult.categories.documentation.weight)}
 Security:       ${generateMiniBar(scoreResult.categories.security.score, scoreResult.categories.security.weight)}
-```
+\`\`\`
 
 ${references ? `\n${references}\n` : ""}
 ### ⚠️ Disclaimer

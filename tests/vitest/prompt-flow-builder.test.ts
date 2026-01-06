@@ -46,36 +46,36 @@ describe("prompt-flow-builder", () => {
 	});
 
 	it("validates node references in edges", async () => {
-		await expect(
-			promptFlowBuilder({
-				flowName: "Invalid Flow",
-				nodes: [
-					{
-						id: "node1",
-						type: "prompt",
-						name: "Node 1",
-						config: {},
-					},
-				],
-				edges: [{ from: "node1", to: "nonexistent" }],
-			}),
-		).rejects.toThrow(/non-existent node/);
+		const result = (await promptFlowBuilder({
+			flowName: "Invalid Flow",
+			nodes: [
+				{
+					id: "node1",
+					type: "prompt",
+					name: "Node 1",
+					config: {},
+				},
+			],
+			edges: [{ from: "node1", to: "nonexistent" }],
+		})) as { isError?: boolean; content: { text: string }[] };
+		expect(result.isError).toBe(true);
+		expect(result.content[0].text).toMatch(/non-existent node/i);
 	});
 
 	it("validates required config for node types", async () => {
-		await expect(
-			promptFlowBuilder({
-				flowName: "Invalid Condition Flow",
-				nodes: [
-					{
-						id: "cond",
-						type: "condition",
-						name: "Condition",
-						config: {}, // missing expression
-					},
-				],
-			}),
-		).rejects.toThrow(/must have an expression/);
+		const result = (await promptFlowBuilder({
+			flowName: "Invalid Condition Flow",
+			nodes: [
+				{
+					id: "cond",
+					type: "condition",
+					name: "Condition",
+					config: {}, // missing expression
+				},
+			],
+		})) as { isError?: boolean; content: { text: string }[] };
+		expect(result.isError).toBe(true);
+		expect(result.content[0].text).toMatch(/expression/i);
 	});
 
 	it("supports different node types with appropriate shapes", async () => {
@@ -279,20 +279,20 @@ describe("prompt-flow-builder", () => {
 		});
 		expect(res2.content[0].text).toMatch(/Loop/);
 
-		// Should reject loop without either
-		await expect(
-			promptFlowBuilder({
-				flowName: "Invalid Loop",
-				nodes: [
-					{
-						id: "loop3",
-						type: "loop",
-						name: "Loop",
-						config: {},
-					},
-				],
-			}),
-		).rejects.toThrow(/must have either condition or iterations/);
+		// Should return error for loop without either
+		const result = (await promptFlowBuilder({
+			flowName: "Invalid Loop",
+			nodes: [
+				{
+					id: "loop3",
+					type: "loop",
+					name: "Loop",
+					config: {},
+				},
+			],
+		})) as { isError?: boolean; content: { text: string }[] };
+		expect(result.isError).toBe(true);
+		expect(result.content[0].text).toMatch(/condition.*iterations/i);
 	});
 
 	it("excludes metadata when includeMetadata is false", async () => {
@@ -430,53 +430,57 @@ describe("prompt-flow-builder", () => {
 	});
 
 	it("validates entry point exists", async () => {
-		await expect(
-			promptFlowBuilder({
-				flowName: "Bad Entry Flow",
-				entryPoint: "nonexistent",
-				nodes: [
-					{
-						id: "n1",
-						type: "prompt",
-						name: "Node",
-						config: { prompt: "test" },
-					},
-				],
-			}),
-		).rejects.toThrow(/Entry point references non-existent node/);
+		const result = (await promptFlowBuilder({
+			flowName: "Bad Entry Flow",
+			entryPoint: "nonexistent",
+			nodes: [
+				{
+					id: "n1",
+					type: "prompt",
+					name: "Node",
+					config: { prompt: "test" },
+				},
+			],
+		})) as { isError?: boolean; content: { text: string }[] };
+		expect(result.isError).toBe(true);
+		expect(result.content[0].text).toMatch(
+			/Entry point references non-existent node/i,
+		);
 	});
 
 	it("validates from edge reference exists", async () => {
-		await expect(
-			promptFlowBuilder({
-				flowName: "Bad From Edge",
-				nodes: [
-					{
-						id: "n1",
-						type: "prompt",
-						name: "Node",
-						config: { prompt: "test" },
-					},
-				],
-				edges: [{ from: "nonexistent", to: "n1" }],
-			}),
-		).rejects.toThrow(/Edge references non-existent node: nonexistent/);
+		const result = (await promptFlowBuilder({
+			flowName: "Bad From Edge",
+			nodes: [
+				{
+					id: "n1",
+					type: "prompt",
+					name: "Node",
+					config: { prompt: "test" },
+				},
+			],
+			edges: [{ from: "nonexistent", to: "n1" }],
+		})) as { isError?: boolean; content: { text: string }[] };
+		expect(result.isError).toBe(true);
+		expect(result.content[0].text).toMatch(
+			/Edge references non-existent node/i,
+		);
 	});
 
 	it("validates prompt node has prompt config", async () => {
-		await expect(
-			promptFlowBuilder({
-				flowName: "No Prompt Config",
-				nodes: [
-					{
-						id: "p1",
-						type: "prompt",
-						name: "Prompt",
-						config: {},
-					},
-				],
-			}),
-		).rejects.toThrow(/must have a prompt in config/);
+		const result = (await promptFlowBuilder({
+			flowName: "No Prompt Config",
+			nodes: [
+				{
+					id: "p1",
+					type: "prompt",
+					name: "Prompt",
+					config: {},
+				},
+			],
+		})) as { isError?: boolean; content: { text: string }[] };
+		expect(result.isError).toBe(true);
+		expect(result.content[0].text).toMatch(/prompt/i);
 	});
 
 	it("handles edge with only condition (no label)", async () => {

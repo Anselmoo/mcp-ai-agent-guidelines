@@ -193,19 +193,17 @@ describe("spark-prompt-builder edge cases", () => {
 	});
 
 	it("validates required fields", async () => {
-		await expect(
-			sparkPromptBuilder({
-				title: "",
-				summary: "Valid summary",
-			} as any),
-		).rejects.toThrow();
+		const emptyTitleResult = (await sparkPromptBuilder({
+			title: "",
+			summary: "Valid summary",
+		} as any)) as { isError?: boolean; content: { text: string }[] };
+		expect(emptyTitleResult.isError).toBe(true);
 
-		await expect(
-			sparkPromptBuilder({
-				title: "Valid Title",
-				summary: "",
-			} as any),
-		).rejects.toThrow();
+		const emptySummaryResult = (await sparkPromptBuilder({
+			title: "Valid Title",
+			summary: "",
+		} as any)) as { isError?: boolean; content: { text: string }[] };
+		expect(emptySummaryResult.isError).toBe(true);
 	});
 
 	it("handles empty optional arrays gracefully", async () => {

@@ -1,5 +1,8 @@
 import { z } from "zod";
+import type { SecurityAnalysisResult } from "../../domain/prompting/security-builder.js";
+import { buildSecurityAnalysis } from "../../domain/prompting/security-builder.js";
 import { DEFAULT_MODEL, DEFAULT_MODEL_SLUG } from "../config/model-config.js";
+import { handleToolError } from "../shared/error-handler.js";
 import type { Technique } from "../shared/prompt-sections.js";
 import {
 	buildPitfallsSection as buildSharedPitfalls,
@@ -16,7 +19,6 @@ import {
 	buildOptionalSectionsMap,
 	slugify,
 } from "../shared/prompt-utils.js";
-import { handleToolError } from "../shared/error-handler.js";
 import { applyTechniques } from "./technique-applicator.js";
 
 const SecurityHardeningSchema = z.object({
@@ -938,6 +940,19 @@ export async function securityHardeningPromptBuilder(args: unknown) {
 		})();
 		const input = SecurityHardeningSchema.parse(normalized);
 
+		const analysis = buildSecurityAnalysis({
+			codeContext: input.codeContext,
+			securityFocus: input.securityFocus,
+			analysisScope: input.analysisScope,
+			language: input.language,
+			framework: input.framework,
+			complianceFrameworks: input.complianceStandards,
+			threatModel: input.securityFocus === "threat-modeling",
+			riskTolerance: input.riskTolerance,
+			includeMitigations: input.includeMitigations,
+			includeTestCases: input.includeTestCases,
+		});
+
 		// Build optional sections using the shared utility (returns object with named keys)
 		const { frontmatter, metadata, references, disclaimer } =
 			buildOptionalSectionsMap(input, {
@@ -965,7 +980,7 @@ export async function securityHardeningPromptBuilder(args: unknown) {
 				},
 			});
 
-		const prompt = buildSecurityHardeningPrompt(input);
+		const prompt = buildSecurityHardeningPrompt(input, analysis);
 
 		return {
 			content: [
@@ -980,7 +995,10 @@ export async function securityHardeningPromptBuilder(args: unknown) {
 	}
 }
 
-function buildSecurityHardeningPrompt(input: SecurityHardeningInput): string {
+function buildSecurityHardeningPrompt(
+	input: SecurityHardeningInput,
+	analysis: SecurityAnalysisResult,
+): string {
 	let prompt = "";
 
 	// Header and Context
@@ -1042,6 +1060,49 @@ function buildSecurityHardeningPrompt(input: SecurityHardeningInput): string {
 		input.complianceStandards,
 		input.codeContext,
 	);
+
+	if (analysis.checks.length > 0) {
+		prompt += `## Core Security Checks (includes OWASP Top 10)\n`;
+		for (const check of analysis.checks) {
+			prompt += `- [${check.id}] ${check.title}: ${check.description}\n`;
+		}
+		prompt += "\n";
+	}
+
+	if (analysis.recommendations.length > 0 && input.includeMitigations) {
+		prompt += `## Recommendations\n`;
+		for (const recommendation of analysis.recommendations) {
+			prompt += `- ${recommendation.title}: ${recommendation.description}\n`;
+		}
+		prompt += "\n";
+	}
+
+	if (analysis.threatModel) {
+		prompt += `## Threat Model\n`;
+		prompt += `${analysis.threatModel.summary}\n\n`;
+		prompt += `**Attack Vectors:**\n`;
+		for (const vector of analysis.threatModel.attackVectors) {
+			prompt += `- ${vector}\n`;
+		}
+		prompt += `\n**Mitigations:**\n`;
+		for (const mitigation of analysis.threatModel.mitigations) {
+			prompt += `- ${mitigation}\n`;
+		}
+		prompt += "\n";
+	}
+
+	if (analysis.complianceMatrix?.length) {
+		prompt += `## Compliance Controls\n`;
+		for (const item of analysis.complianceMatrix) {
+			const controlLine = item.controls.join("; ");
+			prompt += `- ${item.framework}: ${controlLine}`;
+			if (item.notes) {
+				prompt += ` (${item.notes})`;
+			}
+			prompt += "\n";
+		}
+		prompt += "\n";
+	}
 
 	// Analysis Framework
 	prompt += `## Security Analysis Framework\n\n`;

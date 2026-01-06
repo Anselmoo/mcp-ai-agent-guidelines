@@ -15,7 +15,7 @@ describe("sprint-timeline-calculator", () => {
 		const text = res.content[0].text;
 		expect(text).toMatch(/Sprint Timeline Calculation/);
 		expect(text).toMatch(/Sprint Summary/);
-		expect(text).toMatch(/Gantt \(Mermaid\)/);
-		expect(text).toMatch(/```mermaid\ngantt/);
+		expect(text).toMatch(/Gantt Chart.*Sprint Timeline/);
+		expect(text).toMatch(/section Sprint/);
 	});
 });

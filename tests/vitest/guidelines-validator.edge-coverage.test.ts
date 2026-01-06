@@ -137,13 +137,13 @@ describe("Guidelines Validator - Additional Coverage", () => {
 	});
 
 	it("should handle unknown category gracefully", async () => {
-		// Test with invalid input - should throw zod validation error
-		await expect(async () => {
-			await guidelinesValidator({
-				practiceDescription: "Some practice description",
-				category: "unknown-category" as any,
-			});
-		}).rejects.toThrow();
+		// Test with invalid input - should return error response
+		const result = await guidelinesValidator({
+			practiceDescription: "Some practice description",
+			category: "unknown-category" as any,
+		});
+		expect((result as { isError?: boolean }).isError).toBe(true);
+		expect(result.content[0].text).toContain("validation");
 	});
 
 	it("should detect multiple specific guideline violations", async () => {
@@ -179,8 +179,8 @@ describe("Guidelines Validator - Additional Coverage", () => {
 
 		const text = result.content[0].text;
 		expect(text).toContain("📚 Best Practices");
-		expect(text).toContain("Hierarchical Prompting");
-		// Note: These specific items may not always be present depending on the category
+		// Architecture category has modular/scalable best practices
+		expect(text).toContain("modular");
 		expect(text.length).toBeGreaterThan(800); // Should have substantial content
 	});
 });
