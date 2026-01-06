@@ -12,6 +12,7 @@ import {
 	generatePythonExample,
 	generateTypeScriptExample,
 } from "./config/model-examples.js";
+import { handleToolError } from "./shared/error-handler.js";
 
 const ModelCompatibilitySchema = z.object({
 	taskDescription: z.string(),
@@ -31,32 +32,33 @@ type ModelCompatibilityInput = z.infer<typeof ModelCompatibilitySchema>;
 interface ModelRecommendation extends ScoredModel {}
 
 export async function modelCompatibilityChecker(args: unknown) {
-	const input = ModelCompatibilitySchema.parse(args);
+	try {
+		const input = ModelCompatibilitySchema.parse(args);
 
-	const analysis = analyzeModelCompatibility(input);
+		const analysis = analyzeModelCompatibility(input);
 
-	const codeExamples = input.includeCodeExamples
-		? buildCodeExamples(input.language)
-		: undefined;
-	const fileLinks = input.linkFiles ? buildFileLinks() : undefined;
+		const codeExamples = input.includeCodeExamples
+			? buildCodeExamples(input.language)
+			: undefined;
+		const fileLinks = input.linkFiles ? buildFileLinks() : undefined;
 
-	const metadata = input.includeMetadata
-		? [
-				"### Metadata",
-				`- Updated: ${new Date().toISOString().slice(0, 10)}`,
-				"- Source tool: mcp_ai-agent-guid_model-compatibility-checker",
-				input.inputFile ? `- Input file: ${input.inputFile}` : undefined,
-				"",
-			]
-				.filter(Boolean)
-				.join("\n")
-		: "";
+		const metadata = input.includeMetadata
+			? [
+					"### Metadata",
+					`- Updated: ${new Date().toISOString().slice(0, 10)}`,
+					"- Source tool: mcp_ai-agent-guid_model-compatibility-checker",
+					input.inputFile ? `- Input file: ${input.inputFile}` : undefined,
+					"",
+				]
+					.filter(Boolean)
+					.join("\n")
+			: "";
 
-	return {
-		content: [
-			{
-				type: "text",
-				text: `## 🤖 AI Model Compatibility Analysis (Qualitative)
+		return {
+			content: [
+				{
+					type: "text",
+					text: `## 🤖 AI Model Compatibility Analysis (Qualitative)
 
 ${metadata}
 
@@ -115,8 +117,12 @@ Heuristic fit against requirement keywords; qualitative only. Validate with quic
 - Config-driven list (context windows, tiers, capabilities) periodically refreshed
 - Capability weights & budget adjustments may evolve
 
-${codeExamples ? `### Code Examples\n${codeExamples}\n` : ""}
-${fileLinks ? `### Configuration & Files\n${fileLinks}\n` : ""}
+${codeExamples ? `### Code Examples
+${codeExamples}
+` : ""}
+${fileLinks ? `### Configuration & Files
+${fileLinks}
+` : ""}
 ${
 	input.includeReferences
 		? `### References
@@ -131,9 +137,12 @@ ${
 - This tool provides qualitative recommendations and links to official docs.
 - Capabilities evolve; verify with provider docs and test in your environment before adoption.
 `,
-			},
-		],
-	};
+				},
+			],
+		};
+	} catch (error) {
+		return handleToolError(error);
+	}
 }
 
 function analyzeModelCompatibility(input: ModelCompatibilityInput): {

@@ -4,6 +4,7 @@ import {
 	type CategoryConfig,
 } from "./config/guidelines-config.js";
 import { buildFurtherReadingSection } from "./shared/prompt-utils.js";
+import { handleToolError } from "./shared/error-handler.js";
 
 const GuidelinesValidationSchema = z.object({
 	practiceDescription: z.string(),
@@ -32,49 +33,50 @@ interface ValidationResult {
 }
 
 export async function guidelinesValidator(args: unknown) {
-	// Accept alias 'description' for practiceDescription for broader compatibility
-	const pre = ((): unknown => {
-		if (args && typeof args === "object" && args !== null) {
-			const obj = args as Record<string, unknown>;
-			if (
-				obj.practiceDescription === undefined &&
-				typeof obj.description === "string"
-			) {
-				return { ...obj, practiceDescription: obj.description };
+	try {
+		// Accept alias 'description' for practiceDescription for broader compatibility
+		const pre = ((): unknown => {
+			if (args && typeof args === "object" && args !== null) {
+				const obj = args as Record<string, unknown>;
+				if (
+					obj.practiceDescription === undefined &&
+					typeof obj.description === "string"
+				) {
+					return { ...obj, practiceDescription: obj.description };
+				}
 			}
-		}
-		return args;
-	})();
-	const input = GuidelinesValidationSchema.parse(pre);
+			return args;
+		})();
+		const input = GuidelinesValidationSchema.parse(pre);
 
-	const validation = validateAgainstGuidelines(input);
-	const references = input.includeReferences
-		? buildFurtherReadingSection(
-				buildCategoryReferences(input.category, true) as Array<{
-					title: string;
-					url: string;
-					description: string;
-				}>,
-			)
-		: undefined;
-	const metadata = input.includeMetadata
-		? [
-				"### Metadata",
-				`- Updated: ${new Date().toISOString().slice(0, 10)}`,
-				"- Source tool: mcp_ai-agent-guid_guidelines-validator",
-				input.inputFile ? `- Input file: ${input.inputFile}` : undefined,
-				`- Category: ${input.category}`,
-				"",
-			]
-				.filter(Boolean)
-				.join("\n")
-		: "";
+		const validation = validateAgainstGuidelines(input);
+		const references = input.includeReferences
+			? buildFurtherReadingSection(
+					buildCategoryReferences(input.category, true) as Array<{
+						title: string;
+						url: string;
+						description: string;
+					}>,
+				)
+			: undefined;
+		const metadata = input.includeMetadata
+			? [
+					"### Metadata",
+					`- Updated: ${new Date().toISOString().slice(0, 10)}`,
+					"- Source tool: mcp_ai-agent-guid_guidelines-validator",
+					input.inputFile ? `- Input file: ${input.inputFile}` : undefined,
+					`- Category: ${input.category}`,
+					"",
+				]
+					.filter(Boolean)
+					.join("\n")
+			: "";
 
-	return {
-		content: [
-			{
-				type: "text",
-				text: `## ✅ AI Agent Development Guidelines Validation
+		return {
+			content: [
+				{
+					type: "text",
+					text: `## ✅ AI Agent Development Guidelines Validation
 
 ${metadata}
 
@@ -117,73 +119,13 @@ ${validation.recommendations.map((rec, index) => `${index + 1}. 🔧 ${rec}`).jo
 
 ### 📚 Best Practices for ${input.category.charAt(0).toUpperCase() + input.category.slice(1)}
 ${validation.bestPractices.map((practice, index) => `${index + 1}. 📋 ${practice}`).join("\n")}
-
-### 🔗 Guidelines Reference
-For detailed information on AI agent development best practices, refer to:
-- **Hierarchical Prompting**: Structure prompts in layers of increasing specificity
-- **Code Hygiene**: Maintain clean, well-documented, and regularly refactored code
-- **Memory Optimization**: Implement efficient context management and caching
-- **Visualization**: Use Mermaid diagrams for clear system documentation
-- **Sprint Planning**: Apply data-driven timeline estimation and risk assessment
-- **Model Selection**: Choose appropriate models based on task requirements and constraints
-
-### ♻️ Continuous Improvement
-- Regular validation against updated guidelines
-- Peer review of development practices
-- Monitoring of industry best practices evolution
-- Iterative refinement based on project outcomes
-${references ? `\n${references}\n` : ""}
-\n### ⚠️ Disclaimer\n- These are recommendations, not guarantees. Validate with your context and current provider documentation.
 `,
-			},
-		],
-	};
-}
-
-function validateAgainstGuidelines(
-	input: GuidelinesValidationInput,
-): ValidationResult {
-	const { practiceDescription, category } = input;
-	const config: CategoryConfig | undefined = CATEGORY_CONFIG[category];
-	if (!config) {
-		return {
-			compliance: "poor",
-			score: 0,
-			strengths: [],
-			issues: ["Unknown category"],
-			recommendations: ["Use a supported category"],
-			bestPractices: [],
+				},
+			],
 		};
+	} catch (error) {
+		return handleToolError(error);
 	}
-	const text = practiceDescription.toLowerCase();
-	let score = config.base;
-	const strengths: string[] = [];
-	const issues: string[] = [];
-	const recommendations: string[] = [];
-	for (const criterion of config.criteria) {
-		const hit = criterion.keywords.some((k) => text.includes(k));
-		if (hit) {
-			score += criterion.weight;
-			strengths.push(criterion.strength);
-		} else if (!criterion.optional) {
-			issues.push(criterion.issue);
-			recommendations.push(criterion.recommendation);
-		}
-	}
-	score = Math.min(100, score);
-	let compliance: ValidationResult["compliance"];
-	if (score >= 80) compliance = "excellent";
-	else if (score >= 65) compliance = "good";
-	else if (score >= 45) compliance = "fair";
-	else compliance = "poor";
-	return {
-		compliance,
-		score,
-		strengths,
-		issues,
-		recommendations,
-		bestPractices: config.bestPractices,
-	};
 }
 
 function buildCategoryReferences(

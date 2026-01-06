@@ -20,6 +20,7 @@ import {
 	buildFurtherReadingSection,
 	buildMetadataSection,
 } from "./shared/prompt-utils.js";
+import { handleToolError } from "./shared/error-handler.js";
 
 const SemanticCodeAnalyzerSchema = z.object({
 	codeContent: z
@@ -58,29 +59,30 @@ const SemanticCodeAnalyzerSchema = z.object({
 });
 
 export async function semanticCodeAnalyzer(args: unknown) {
-	const input = SemanticCodeAnalyzerSchema.parse(args);
+	try {
+		const input = SemanticCodeAnalyzerSchema.parse(args);
 
-	const language = input.language || detectLanguage(input.codeContent);
-	const analysis = analyzeCode(
-		input.codeContent,
-		language,
-		input.analysisType as AnalysisType,
-	);
+		const language = input.language || detectLanguage(input.codeContent);
+		const analysis = analyzeCode(
+			input.codeContent,
+			language,
+			input.analysisType as AnalysisType,
+		);
 
-	const metadata = input.includeMetadata
-		? buildMetadataSection({
-				sourceTool: "mcp_ai-agent-guid_semantic-code-analyzer",
-				inputFile: input.inputFile,
-			})
-		: "";
+		const metadata = input.includeMetadata
+			? buildMetadataSection({
+					sourceTool: "mcp_ai-agent-guid_semantic-code-analyzer",
+					inputFile: input.inputFile,
+				})
+			: "";
 
-	const references = input.includeReferences ? buildSemanticReferences() : "";
+		const references = input.includeReferences ? buildSemanticReferences() : "";
 
-	return {
-		content: [
-			{
-				type: "text",
-				text: `## 🔍 Semantic Code Analysis
+		return {
+			content: [
+				{
+					type: "text",
+					text: `## 🔍 Semantic Code Analysis
 
 ${metadata}
 
@@ -103,9 +105,12 @@ ${generateInsights(analysis, language)}
 ${generateRecommendations(analysis, language)}
 ${references}
 `,
-			},
-		],
-	};
+				},
+			],
+		};
+	} catch (error) {
+		return handleToolError(error);
+	}
 }
 
 function buildSemanticReferences(): string {
