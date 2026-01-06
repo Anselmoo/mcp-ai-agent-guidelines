@@ -14,6 +14,7 @@ import {
 	buildMetadataSection,
 	slugify,
 } from "../shared/prompt-utils.js";
+import { handleToolError } from "../shared/error-handler.js";
 
 const SparkPromptSchema = z.object({
 	// Header
@@ -175,37 +176,41 @@ function buildSparkFrontmatter(input: SparkPromptInput): string {
 }
 
 export async function sparkPromptBuilder(args: unknown) {
-	const input = SparkPromptSchema.parse(args);
+	try {
+		const input = SparkPromptSchema.parse(args);
 
-	const enforce = input.forcePromptMdStyle ?? true;
-	const effectiveIncludeFrontmatter = enforce ? true : input.includeFrontmatter;
-	const effectiveIncludeMetadata = enforce ? true : input.includeMetadata;
+		const enforce = input.forcePromptMdStyle ?? true;
+		const effectiveIncludeFrontmatter = enforce ? true : input.includeFrontmatter;
+		const effectiveIncludeMetadata = enforce ? true : input.includeMetadata;
 
-	const prompt = buildSparkPrompt(input);
-	const frontmatter = effectiveIncludeFrontmatter
-		? `${buildSparkFrontmatter(input)}\n`
-		: "";
-	const disclaimer = input.includeDisclaimer ? buildSharedDisclaimer() : "";
-	const references = input.includeReferences
-		? buildDesignReferencesSection()
-		: "";
-	const filenameHint = `${slugify(input.title || input.summary || "prompt")}.prompt.md`;
-	const metadata = effectiveIncludeMetadata
-		? buildMetadataSection({
-				sourceTool: "mcp_ai-agent-guid_spark-prompt-builder",
-				inputFile: input.inputFile,
-				filenameHint,
-			})
-		: "";
+		const prompt = buildSparkPrompt(input);
+		const frontmatter = effectiveIncludeFrontmatter
+			? `${buildSparkFrontmatter(input)}\n`
+			: "";
+		const disclaimer = input.includeDisclaimer ? buildSharedDisclaimer() : "";
+		const references = input.includeReferences
+			? buildDesignReferencesSection()
+			: "";
+		const filenameHint = `${slugify(input.title || input.summary || "prompt")}.prompt.md`;
+		const metadata = effectiveIncludeMetadata
+			? buildMetadataSection({
+					sourceTool: "mcp_ai-agent-guid_spark-prompt-builder",
+					inputFile: input.inputFile,
+					filenameHint,
+				})
+			: "";
 
-	return {
-		content: [
-			{
-				type: "text",
-				text: `${frontmatter}## ⚡ Spark Prompt Template\n\n${metadata}\n${prompt}\n\n${input.includeTechniqueHints ? `${buildTechniqueHintsSection({ techniques: input.techniques, autoSelectTechniques: input.autoSelectTechniques })}\n\n` : ""}${buildProviderTipsSection(input.provider, input.style)}\n${references ? `${references}\n` : ""}${disclaimer}`,
-			},
-		],
-	};
+		return {
+			content: [
+				{
+					type: "text",
+					text: `${frontmatter}## ⚡ Spark Prompt Template\n\n${metadata}\n${prompt}\n\n${input.includeTechniqueHints ? `${buildTechniqueHintsSection({ techniques: input.techniques, autoSelectTechniques: input.autoSelectTechniques })}\n\n` : ""}${buildProviderTipsSection(input.provider, input.style)}\n${references ? `${references}\n` : ""}${disclaimer}`,
+				},
+			],
+		};
+	} catch (error) {
+		return handleToolError(error);
+	}
 }
 
 function buildSparkPrompt(input: SparkPromptInput): string {

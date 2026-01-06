@@ -6,6 +6,7 @@ import {
 	buildMetadataSection,
 	slugify,
 } from "../shared/prompt-utils.js";
+import { handleToolError } from "../shared/error-handler.js";
 
 const DocumentationGeneratorPromptSchema = z.object({
 	contentType: z
@@ -144,41 +145,45 @@ function buildDocumentationGeneratorFrontmatter(
 }
 
 export async function documentationGeneratorPromptBuilder(args: unknown) {
-	const input = DocumentationGeneratorPromptSchema.parse(args);
+	try {
+		const input = DocumentationGeneratorPromptSchema.parse(args);
 
-	const enforce = input.forcePromptMdStyle ?? true;
-	const effectiveIncludeFrontmatter = enforce ? true : input.includeFrontmatter;
-	const effectiveIncludeMetadata = enforce ? true : input.includeMetadata;
+		const enforce = input.forcePromptMdStyle ?? true;
+		const effectiveIncludeFrontmatter = enforce ? true : input.includeFrontmatter;
+		const effectiveIncludeMetadata = enforce ? true : input.includeMetadata;
 
-	const prompt = buildDocumentationGeneratorPrompt(input);
-	const frontmatter = effectiveIncludeFrontmatter
-		? `${buildDocumentationGeneratorFrontmatter(input)}\n`
-		: "";
-	const references = input.includeReferences
-		? buildFurtherReadingSection([
+		const prompt = buildDocumentationGeneratorPrompt(input);
+		const frontmatter = effectiveIncludeFrontmatter
+			? `${buildDocumentationGeneratorFrontmatter(input)}\n`
+			: "";
+		const references = input.includeReferences
+			? buildFurtherReadingSection([
+					{
+						title: "Write the Docs Guide",
+						url: "https://www.writethedocs.org/guide/",
+						description:
+							"Community-driven best practices for creating software documentation",
+					},
+				])
+			: "";
+		const filenameHint = `${slugify(`documentation-${input.contentType}`)}.prompt.md`;
+		const metadata = effectiveIncludeMetadata
+			? buildMetadataSection({
+					sourceTool: "mcp_ai-agent-guid_documentation-generator-prompt-builder",
+					inputFile: input.inputFile,
+					filenameHint,
+				})
+			: "";
+
+		return {
+			content: [
 				{
-					title: "Write the Docs Guide",
-					url: "https://www.writethedocs.org/guide/",
-					description:
-						"Community-driven best practices for creating software documentation",
+					type: "text",
+					text: `${frontmatter}## 📚 Documentation Generator Prompt\n\n${metadata}\n${prompt}\n\n${references ? `${references}\n` : ""}`,
 				},
-			])
-		: "";
-	const filenameHint = `${slugify(`documentation-${input.contentType}`)}.prompt.md`;
-	const metadata = effectiveIncludeMetadata
-		? buildMetadataSection({
-				sourceTool: "mcp_ai-agent-guid_documentation-generator-prompt-builder",
-				inputFile: input.inputFile,
-				filenameHint,
-			})
-		: "";
-
-	return {
-		content: [
-			{
-				type: "text",
-				text: `${frontmatter}## 📚 Documentation Generator Prompt\n\n${metadata}\n${prompt}\n\n${references ? `${references}\n` : ""}`,
-			},
-		],
-	};
+			],
+		};
+	} catch (error) {
+		return handleToolError(error);
+	}
 }

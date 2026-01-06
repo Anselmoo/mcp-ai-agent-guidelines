@@ -16,6 +16,7 @@ import {
 	buildOptionalSectionsMap,
 	slugify,
 } from "../shared/prompt-utils.js";
+import { handleToolError } from "../shared/error-handler.js";
 import { applyTechniques } from "./technique-applicator.js";
 
 const SecurityHardeningSchema = z.object({
@@ -925,54 +926,58 @@ function generateComplianceGuidance(
 }
 
 export async function securityHardeningPromptBuilder(args: unknown) {
-	const normalized = ((): unknown => {
-		if (args && typeof args === "object") {
-			const obj = args as Record<string, unknown>;
-			if (!("codeContext" in obj) && typeof obj.codeContent === "string") {
-				return { ...obj, codeContext: obj.codeContent };
+	try {
+		const normalized = ((): unknown => {
+			if (args && typeof args === "object") {
+				const obj = args as Record<string, unknown>;
+				if (!("codeContext" in obj) && typeof obj.codeContent === "string") {
+					return { ...obj, codeContext: obj.codeContent };
+				}
 			}
-		}
-		return args;
-	})();
-	const input = SecurityHardeningSchema.parse(normalized);
+			return args;
+		})();
+		const input = SecurityHardeningSchema.parse(normalized);
 
-	// Build optional sections using the shared utility (returns object with named keys)
-	const { frontmatter, metadata, references, disclaimer } =
-		buildOptionalSectionsMap(input, {
-			frontmatter: {
-				key: "includeFrontmatter",
-				builder: (cfg) => `${buildSecurityHardeningFrontmatter(cfg)}\n`,
-			},
-			metadata: {
-				key: "includeMetadata",
-				builder: (cfg) =>
-					`${buildMetadataSection({
-						sourceTool: "mcp_ai-agent-guid_security-hardening-prompt-builder",
-						inputFile: cfg.inputFile,
-						filenameHint: `security-hardening-${slugify(cfg.securityFocus)}-prompt.prompt.md`,
-					})}\n`,
-			},
-			references: {
-				key: "includeReferences",
-				builder: () => `${buildSecurityReferencesSection()}\n`,
-			},
-			disclaimer: {
-				key: "includeDisclaimer",
-				builder: () =>
-					`\n## Disclaimer\n- Security recommendations are based on common best practices and may need customization for your specific environment\n- Always validate security measures with penetration testing and security audits\n- Compliance requirements may vary by jurisdiction and industry\n- Keep security tools and dependencies up to date\n`,
-			},
-		});
+		// Build optional sections using the shared utility (returns object with named keys)
+		const { frontmatter, metadata, references, disclaimer } =
+			buildOptionalSectionsMap(input, {
+				frontmatter: {
+					key: "includeFrontmatter",
+					builder: (cfg) => `${buildSecurityHardeningFrontmatter(cfg)}\n`,
+				},
+				metadata: {
+					key: "includeMetadata",
+					builder: (cfg) =>
+						`${buildMetadataSection({
+							sourceTool: "mcp_ai-agent-guid_security-hardening-prompt-builder",
+							inputFile: cfg.inputFile,
+							filenameHint: `security-hardening-${slugify(cfg.securityFocus)}-prompt.prompt.md`,
+						})}\n`,
+				},
+				references: {
+					key: "includeReferences",
+					builder: () => `${buildSecurityReferencesSection()}\n`,
+				},
+				disclaimer: {
+					key: "includeDisclaimer",
+					builder: () =>
+						`\n## Disclaimer\n- Security recommendations are based on common best practices and may need customization for your specific environment\n- Always validate security measures with penetration testing and security audits\n- Compliance requirements may vary by jurisdiction and industry\n- Keep security tools and dependencies up to date\n`,
+				},
+			});
 
-	const prompt = buildSecurityHardeningPrompt(input);
+		const prompt = buildSecurityHardeningPrompt(input);
 
-	return {
-		content: [
-			{
-				type: "text",
-				text: `${frontmatter}## 🛡️ Security Hardening Prompt Template\n\n${metadata}\n${prompt}\n\n${references}${disclaimer}`,
-			},
-		],
-	};
+		return {
+			content: [
+				{
+					type: "text",
+					text: `${frontmatter}## 🛡️ Security Hardening Prompt Template\n\n${metadata}\n${prompt}\n\n${references}${disclaimer}`,
+				},
+			],
+		};
+	} catch (error) {
+		return handleToolError(error);
+	}
 }
 
 function buildSecurityHardeningPrompt(input: SecurityHardeningInput): string {

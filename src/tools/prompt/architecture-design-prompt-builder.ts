@@ -6,6 +6,7 @@ import {
 	buildMetadataSection,
 	slugify,
 } from "../shared/prompt-utils.js";
+import { handleToolError } from "../shared/error-handler.js";
 
 const ArchitectureDesignPromptSchema = z.object({
 	systemRequirements: z
@@ -135,41 +136,45 @@ function buildArchitectureDesignFrontmatter(
 }
 
 export async function architectureDesignPromptBuilder(args: unknown) {
-	const input = ArchitectureDesignPromptSchema.parse(args);
+	try {
+		const input = ArchitectureDesignPromptSchema.parse(args);
 
-	const enforce = input.forcePromptMdStyle ?? true;
-	const effectiveIncludeFrontmatter = enforce ? true : input.includeFrontmatter;
-	const effectiveIncludeMetadata = enforce ? true : input.includeMetadata;
+		const enforce = input.forcePromptMdStyle ?? true;
+		const effectiveIncludeFrontmatter = enforce ? true : input.includeFrontmatter;
+		const effectiveIncludeMetadata = enforce ? true : input.includeMetadata;
 
-	const prompt = buildArchitectureDesignPrompt(input);
-	const frontmatter = effectiveIncludeFrontmatter
-		? `${buildArchitectureDesignFrontmatter(input)}\n`
-		: "";
-	const references = input.includeReferences
-		? buildFurtherReadingSection([
+		const prompt = buildArchitectureDesignPrompt(input);
+		const frontmatter = effectiveIncludeFrontmatter
+			? `${buildArchitectureDesignFrontmatter(input)}\n`
+			: "";
+		const references = input.includeReferences
+			? buildFurtherReadingSection([
+					{
+						title: "Software Architecture Guide",
+						url: "https://martinfowler.com/architecture/",
+						description:
+							"Martin Fowler's comprehensive guide to software architecture patterns and principles",
+					},
+				])
+			: "";
+		const filenameHint = `${slugify(`architecture-design-${input.scale}`)}.prompt.md`;
+		const metadata = effectiveIncludeMetadata
+			? buildMetadataSection({
+					sourceTool: "mcp_ai-agent-guid_architecture-design-prompt-builder",
+					inputFile: input.inputFile,
+					filenameHint,
+				})
+			: "";
+
+		return {
+			content: [
 				{
-					title: "Software Architecture Guide",
-					url: "https://martinfowler.com/architecture/",
-					description:
-						"Martin Fowler's comprehensive guide to software architecture patterns and principles",
+					type: "text",
+					text: `${frontmatter}## 🏗️ Architecture Design Prompt\n\n${metadata}\n${prompt}\n\n${references ? `${references}\n` : ""}`,
 				},
-			])
-		: "";
-	const filenameHint = `${slugify(`architecture-design-${input.scale}`)}.prompt.md`;
-	const metadata = effectiveIncludeMetadata
-		? buildMetadataSection({
-				sourceTool: "mcp_ai-agent-guid_architecture-design-prompt-builder",
-				inputFile: input.inputFile,
-				filenameHint,
-			})
-		: "";
-
-	return {
-		content: [
-			{
-				type: "text",
-				text: `${frontmatter}## 🏗️ Architecture Design Prompt\n\n${metadata}\n${prompt}\n\n${references ? `${references}\n` : ""}`,
-			},
-		],
-	};
+			],
+		};
+	} catch (error) {
+		return handleToolError(error);
+	}
 }

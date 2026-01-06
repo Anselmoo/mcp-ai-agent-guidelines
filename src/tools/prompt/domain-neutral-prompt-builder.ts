@@ -16,6 +16,7 @@ import {
 	buildOptionalSectionsMap,
 	slugify,
 } from "../shared/prompt-utils.js";
+import { handleToolError } from "../shared/error-handler.js";
 
 const DomainNeutralSchema = z.object({
 	// Header
@@ -165,73 +166,77 @@ function buildFrontmatterForDomainNeutral(input: DomainNeutralInput): string {
 }
 
 export async function domainNeutralPromptBuilder(args: unknown) {
-	const input = DomainNeutralSchema.parse(args);
+	try {
+		const input = DomainNeutralSchema.parse(args);
 
-	const enforce = input.forcePromptMdStyle ?? true;
-	const effectiveIncludeFrontmatter = enforce ? true : input.includeFrontmatter;
-	const effectiveIncludeMetadata = enforce ? true : input.includeMetadata;
+		const enforce = input.forcePromptMdStyle ?? true;
+		const effectiveIncludeFrontmatter = enforce ? true : input.includeFrontmatter;
+		const effectiveIncludeMetadata = enforce ? true : input.includeMetadata;
 
-	const prompt = buildDomainNeutralPrompt(input);
-	const filenameHint = `${slugify(input.title || input.summary || "prompt")}.prompt.md`;
+		const prompt = buildDomainNeutralPrompt(input);
+		const filenameHint = `${slugify(input.title || input.summary || "prompt")}.prompt.md`;
 
-	// Build optional sections using the shared utility
-	// Note: effectiveIncludeFrontmatter and effectiveIncludeMetadata override the input values
-	const configWithOverrides = {
-		...input,
-		includeFrontmatter: effectiveIncludeFrontmatter,
-		includeMetadata: effectiveIncludeMetadata,
-	};
+		// Build optional sections using the shared utility
+		// Note: effectiveIncludeFrontmatter and effectiveIncludeMetadata override the input values
+		const configWithOverrides = {
+			...input,
+			includeFrontmatter: effectiveIncludeFrontmatter,
+			includeMetadata: effectiveIncludeMetadata,
+		};
 
-	const {
-		frontmatter,
-		metadata,
-		disclaimer,
-		references,
-		techniqueHints,
-		pitfalls,
-	} = buildOptionalSectionsMap(configWithOverrides, {
-		frontmatter: {
-			key: "includeFrontmatter",
-			builder: (cfg) => `${buildFrontmatterForDomainNeutral(cfg)}\n`,
-		},
-		metadata: {
-			key: "includeMetadata",
-			builder: () =>
-				buildMetadataSection({
-					sourceTool: "mcp_ai-agent-guid_domain-neutral-prompt-builder",
-					inputFile: input.inputFile,
-					filenameHint,
-				}),
-		},
-		disclaimer: {
-			key: "includeDisclaimer",
-			builder: () => buildSharedDisclaimer(),
-		},
-		references: {
-			key: "includeReferences",
-			builder: () => buildProjectReferencesSection(),
-		},
-		techniqueHints: {
-			key: "includeTechniqueHints",
-			builder: (cfg) =>
-				`${buildTechniqueHintsSection({ techniques: cfg.techniques, autoSelectTechniques: cfg.autoSelectTechniques })}\n\n`,
-		},
-		pitfalls: {
-			key: "includePitfalls",
-			builder: () => buildPitfallsSection(),
-		},
-	});
-
-	const providerTips = buildProviderTipsSection(input.provider, input.style);
-
-	return {
-		content: [
-			{
-				type: "text",
-				text: `${frontmatter}## 🧩 Domain-Neutral Prompt Template\n\n${metadata}\n${prompt}\n\n${techniqueHints}${providerTips}\n${pitfalls}${references ? `${references}\n` : ""}${disclaimer}`,
+		const {
+			frontmatter,
+			metadata,
+			disclaimer,
+			references,
+			techniqueHints,
+			pitfalls,
+		} = buildOptionalSectionsMap(configWithOverrides, {
+			frontmatter: {
+				key: "includeFrontmatter",
+				builder: (cfg) => `${buildFrontmatterForDomainNeutral(cfg)}\n`,
 			},
-		],
-	};
+			metadata: {
+				key: "includeMetadata",
+				builder: () =>
+					buildMetadataSection({
+						sourceTool: "mcp_ai-agent-guid_domain-neutral-prompt-builder",
+						inputFile: input.inputFile,
+						filenameHint,
+					}),
+			},
+			disclaimer: {
+				key: "includeDisclaimer",
+				builder: () => buildSharedDisclaimer(),
+			},
+			references: {
+				key: "includeReferences",
+				builder: () => buildProjectReferencesSection(),
+			},
+			techniqueHints: {
+				key: "includeTechniqueHints",
+				builder: (cfg) =>
+					`${buildTechniqueHintsSection({ techniques: cfg.techniques, autoSelectTechniques: cfg.autoSelectTechniques })}\n\n`,
+			},
+			pitfalls: {
+				key: "includePitfalls",
+				builder: () => buildPitfallsSection(),
+			},
+		});
+
+		const providerTips = buildProviderTipsSection(input.provider, input.style);
+
+		return {
+			content: [
+				{
+					type: "text",
+					text: `${frontmatter}## 🧩 Domain-Neutral Prompt Template\n\n${metadata}\n${prompt}\n\n${techniqueHints}${providerTips}\n${pitfalls}${references ? `${references}\n` : ""}${disclaimer}`,
+				},
+			],
+		};
+	} catch (error) {
+		return handleToolError(error);
+	}
 }
 
 function buildDomainNeutralPrompt(input: DomainNeutralInput): string {

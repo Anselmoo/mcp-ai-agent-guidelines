@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { emitDeprecationWarning } from "../shared/deprecation.js";
 import { buildFurtherReadingSection } from "../shared/prompt-utils.js";
+import { handleToolError } from "../shared/error-handler.js";
 import {
 	HIERARCHY_LEVEL_DEFINITIONS,
 	type PromptingHierarchyLevel,
@@ -189,162 +190,167 @@ function selectHierarchyLevel(
 }
 
 export async function hierarchyLevelSelector(args: unknown) {
-	emitDeprecationWarning({
-		tool: "hierarchy-level-selector",
-		replacement: "prompt-hierarchy",
-		deprecatedIn: "v0.14.0",
-		removedIn: "v0.15.0",
-	});
+	try {
+		emitDeprecationWarning({
+			tool: "hierarchy-level-selector",
+			replacement: "prompt-hierarchy",
+			deprecatedIn: "v0.14.0",
+			removedIn: "v0.15.0",
+		});
 
-	const input = HierarchyLevelSelectorSchema.parse(args);
+		const input = HierarchyLevelSelectorSchema.parse(args);
 
-	const recommendations = selectHierarchyLevel(input);
-	const topRecommendation = recommendations[0];
-	const topLevelDef = HIERARCHY_LEVEL_DEFINITIONS.find(
-		(d) => d.level === topRecommendation.level,
-	);
-
-	let output = `# Hierarchy Level Recommendation\n\n`;
-
-	// Task Analysis
-	output += `## 📋 Task Analysis\n\n`;
-	output += `**Task**: ${input.taskDescription}\n\n`;
-	output += `**Agent Capability**: ${input.agentCapability}\n`;
-	output += `**Task Complexity**: ${input.taskComplexity}\n`;
-	output += `**Autonomy Preference**: ${input.autonomyPreference}\n\n`;
-
-	// Top Recommendation
-	output += `## 🎯 Recommended Level: ${topLevelDef?.name}\n\n`;
-	output += `${topLevelDef?.description}\n\n`;
-	output += `**Why This Level?**\n${topRecommendation.rationale}\n\n`;
-
-	// Level Characteristics
-	output += `### Characteristics\n`;
-	for (const char of topLevelDef?.characteristics || []) {
-		output += `- ${char}\n`;
-	}
-	output += `\n`;
-
-	// Use Cases
-	output += `### Ideal For\n`;
-	for (const useCase of topLevelDef?.useCases || []) {
-		output += `- ${useCase}\n`;
-	}
-	output += `\n`;
-
-	// Examples
-	if (input.includeExamples && topLevelDef?.examples) {
-		output += `### Example Prompts at This Level\n\n`;
-		for (const example of topLevelDef.examples) {
-			output += `> ${example}\n\n`;
-		}
-	}
-
-	// All Recommendations
-	output += `## 📊 All Level Scores\n\n`;
-	output += `| Rank | Level | Score | Assessment |\n`;
-	output += `|------|-------|-------|------------|\n`;
-
-	recommendations.forEach((rec, idx) => {
-		const levelDef = HIERARCHY_LEVEL_DEFINITIONS.find(
-			(d) => d.level === rec.level,
+		const recommendations = selectHierarchyLevel(input);
+		const topRecommendation = recommendations[0];
+		const topLevelDef = HIERARCHY_LEVEL_DEFINITIONS.find(
+			(d) => d.level === topRecommendation.level,
 		);
-		const emoji = idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : "▫️";
-		output += `| ${emoji} ${idx + 1} | ${levelDef?.name} | ${rec.score} | ${getScoreAssessment(rec.score)} |\n`;
-	});
-	output += `\n`;
 
-	// Guidance on Using the Level
-	output += `## 💡 How to Use ${topLevelDef?.name}\n\n`;
+		let output = `# Hierarchy Level Recommendation\n\n`;
 
-	switch (topRecommendation.level) {
-		case "independent":
-			output += `- Provide high-level objectives and constraints\n`;
-			output += `- Trust the agent to determine the approach\n`;
-			output += `- Focus on outcomes rather than methods\n`;
-			output += `- Allow for creative problem-solving\n`;
-			break;
-		case "indirect":
-			output += `- Offer contextual hints and clues\n`;
-			output += `- Reference related resources or patterns\n`;
-			output += `- Encourage exploration within boundaries\n`;
-			output += `- Provide guidance without prescribing exact steps\n`;
-			break;
-		case "direct":
-			output += `- State clear, specific goals\n`;
-			output += `- Define requirements and constraints\n`;
-			output += `- Let the agent determine implementation details\n`;
-			output += `- Include expected outcomes\n`;
-			break;
-		case "modeling":
-			output += `- Provide concrete examples of desired outcomes\n`;
-			output += `- Show patterns to follow\n`;
-			output += `- Include code snippets or templates\n`;
-			output += `- Demonstrate the approach with 2-3 examples\n`;
-			break;
-		case "scaffolding":
-			output += `- Break down the task into clear steps\n`;
-			output += `- Provide structured guidance for each phase\n`;
-			output += `- Include checkpoints and validation criteria\n`;
-			output += `- Offer support while maintaining some autonomy\n`;
-			break;
-		case "full-physical":
-			output += `- Specify every detail explicitly\n`;
-			output += `- Leave no room for interpretation\n`;
-			output += `- Provide exact code, paths, and values\n`;
-			output += `- Include verification steps\n`;
-			break;
-	}
-	output += `\n`;
+		// Task Analysis
+		output += `## 📋 Task Analysis\n\n`;
+		output += `**Task**: ${input.taskDescription}\n\n`;
+		output += `**Agent Capability**: ${input.agentCapability}\n`;
+		output += `**Task Complexity**: ${input.taskComplexity}\n`;
+		output += `**Autonomy Preference**: ${input.autonomyPreference}\n\n`;
 
-	// Alternative Considerations
-	const alternatives = recommendations.slice(1, 3);
-	if (alternatives.length > 0) {
-		output += `## 🔄 Alternative Considerations\n\n`;
-		for (const alt of alternatives) {
-			const altDef = HIERARCHY_LEVEL_DEFINITIONS.find(
-				(d) => d.level === alt.level,
-			);
-			output += `### ${altDef?.name} (Score: ${alt.score})\n`;
-			output += `${altDef?.description}\n\n`;
+		// Top Recommendation
+		output += `## 🎯 Recommended Level: ${topLevelDef?.name}\n\n`;
+		output += `${topLevelDef?.description}\n\n`;
+		output += `**Why This Level?**\n${topRecommendation.rationale}\n\n`;
+
+		// Level Characteristics
+		output += `### Characteristics\n`;
+		for (const char of topLevelDef?.characteristics || []) {
+			output += `- ${char}\n`;
 		}
+		output += `\n`;
+
+		// Use Cases
+		output += `### Ideal For\n`;
+		for (const useCase of topLevelDef?.useCases || []) {
+			output += `- ${useCase}\n`;
+		}
+		output += `\n`;
+
+		// Examples
+		if (input.includeExamples && topLevelDef?.examples) {
+			output += `### Example Prompts at This Level\n\n`;
+			for (const example of topLevelDef.examples) {
+				output += `> ${example}\n\n`;
+			}
+		}
+
+		// All Recommendations
+		output += `## 📊 All Level Scores\n\n`;
+		output += `| Rank | Level | Score | Assessment |\n`;
+		output += `|------|-------|-------|------------|\n`;
+
+		recommendations.forEach((rec, idx) => {
+			const levelDef = HIERARCHY_LEVEL_DEFINITIONS.find(
+				(d) => d.level === rec.level,
+			);
+			const emoji = idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : "▫️";
+			output += `| ${emoji} ${idx + 1} | ${levelDef?.name} | ${rec.score} | ${getScoreAssessment(rec.score)} |\n`;
+		});
+		output += `\n`;
+
+		// Guidance on Using the Level
+		output += `## 💡 How to Use ${topLevelDef?.name}\n\n`;
+
+		switch (topRecommendation.level) {
+			case "independent":
+				output += `- Provide high-level objectives and constraints\n`;
+				output += `- Trust the agent to determine the approach\n`;
+				output += `- Focus on outcomes rather than methods\n`;
+				output += `- Allow for creative problem-solving\n`;
+				break;
+			case "indirect":
+				output += `- Offer contextual hints and clues\n`;
+				output += `- Reference related resources or patterns\n`;
+				output += `- Encourage exploration within boundaries\n`;
+				output += `- Provide guidance without prescribing exact steps\n`;
+				break;
+			case "direct":
+				output += `- State clear, specific goals\n`;
+				output += `- Define requirements and constraints\n`;
+				output += `- Let the agent determine implementation details\n`;
+				output += `- Include expected outcomes\n`;
+				break;
+			case "modeling":
+				output += `- Provide concrete examples of desired outcomes\n`;
+				output += `- Show patterns to follow\n`;
+				output += `- Include code snippets or templates\n`;
+				output += `- Demonstrate the approach with 2-3 examples\n`;
+				break;
+			case "scaffolding":
+				output += `- Break down the task into clear steps\n`;
+				output += `- Provide structured guidance for each phase\n`;
+				output += `- Include checkpoints and validation criteria\n`;
+				output += `- Offer support while maintaining some autonomy\n`;
+				break;
+			case "full-physical":
+				output += `- Specify every detail explicitly\n`;
+				output += `- Leave no room for interpretation\n`;
+				output += `- Provide exact code, paths, and values\n`;
+				output += `- Include verification steps\n`;
+				break;
+		}
+		output += `\n`;
+
+		// Alternative Considerations
+		const alternatives = recommendations.slice(1, 3);
+		if (alternatives.length > 0) {
+			output += `## 🔄 Alternative Considerations\n\n`;
+			for (const alt of alternatives) {
+				const altDef = HIERARCHY_LEVEL_DEFINITIONS.find(
+					(d) => d.level === alt.level,
+				);
+				output += `### ${altDef?.name} (Score: ${alt.score})\n`;
+				output += `${altDef?.description}\n\n`;
+			}
+		}
+
+		// References
+		if (input.includeReferences) {
+			const references = buildFurtherReadingSection([
+				{
+					title: "Prompting Hierarchy Techniques",
+					url: "https://www.aiforeducation.io/ai-resources/prompting-techniques-for-specialized-llms",
+					description:
+						"Techniques for specialized LLM prompting and task adaptation",
+				},
+				{
+					title: "Hierarchical Prompting Framework",
+					url: "https://relevanceai.com/prompt-engineering/master-hierarchical-prompting-for-better-ai-interactions",
+					description: "Framework for structuring AI interactions hierarchically",
+				},
+				{
+					title: "Task-Based Prompt Design",
+					url: "https://www.promptopti.com/best-3-prompting-hierarchy-tiers-for-ai-interaction/",
+					description: "Three-tier approach to hierarchical prompt optimization",
+				},
+			]);
+			output += `\n${references}\n`;
+		}
+
+		output += `\n## ⚠️ Note\n`;
+		output += `This recommendation is based on the provided parameters. Adjust the hierarchy level based on actual agent performance and task outcomes. Consider starting at a higher support level and reducing as the agent demonstrates capability.\n`;
+
+		return {
+			content: [
+				{
+					type: "text" as const,
+					text: output,
+				},
+			],
+		};
+	} catch (error) {
+		return handleToolError(error);
 	}
-
-	// References
-	if (input.includeReferences) {
-		const references = buildFurtherReadingSection([
-			{
-				title: "Prompting Hierarchy Techniques",
-				url: "https://www.aiforeducation.io/ai-resources/prompting-techniques-for-specialized-llms",
-				description:
-					"Techniques for specialized LLM prompting and task adaptation",
-			},
-			{
-				title: "Hierarchical Prompting Framework",
-				url: "https://relevanceai.com/prompt-engineering/master-hierarchical-prompting-for-better-ai-interactions",
-				description: "Framework for structuring AI interactions hierarchically",
-			},
-			{
-				title: "Task-Based Prompt Design",
-				url: "https://www.promptopti.com/best-3-prompting-hierarchy-tiers-for-ai-interaction/",
-				description: "Three-tier approach to hierarchical prompt optimization",
-			},
-		]);
-		output += `\n${references}\n`;
-	}
-
-	output += `\n## ⚠️ Note\n`;
-	output += `This recommendation is based on the provided parameters. Adjust the hierarchy level based on actual agent performance and task outcomes. Consider starting at a higher support level and reducing as the agent demonstrates capability.\n`;
-
-	return {
-		content: [
-			{
-				type: "text" as const,
-				text: output,
-			},
-		],
-	};
 }
+
 
 function getScoreAssessment(score: number): string {
 	if (score >= 60) return "Highly Recommended ✅";

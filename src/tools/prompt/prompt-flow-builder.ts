@@ -1,11 +1,13 @@
 import { z } from "zod";
 import { emitDeprecationWarning } from "../shared/deprecation.js";
 import { logger } from "../shared/logger.js";
+import { handleToolError } from "../shared/error-handler.js";
 import {
 	buildFurtherReadingSection,
 	buildMetadataSection,
 	slugify,
 } from "../shared/prompt-utils.js";
+import { missingRequiredError, validationError } from "../shared/error-factory.js";
 
 /**
  * Schema for a flow node - represents a single step/operation in the prompt flow.
@@ -93,49 +95,53 @@ type FlowEdge = z.infer<typeof FlowEdgeSchema>;
  * @returns Formatted flow specification with visualization and execution guide
  */
 export async function promptFlowBuilder(args: unknown) {
-	emitDeprecationWarning({
-		tool: "prompt-flow-builder",
-		replacement: "prompt-hierarchy",
-		deprecatedIn: "v0.14.0",
-		removedIn: "v0.15.0",
-	});
+	try {
+		emitDeprecationWarning({
+			tool: "prompt-flow-builder",
+			replacement: "prompt-hierarchy",
+			deprecatedIn: "v0.14.0",
+			removedIn: "v0.15.0",
+		});
 
-	const input = PromptFlowSchema.parse(args);
+		const input = PromptFlowSchema.parse(args);
 
-	// Validate flow structure (edges, reachability, node configs)
-	validateFlow(input);
+		// Validate flow structure (edges, reachability, node configs)
+		validateFlow(input);
 
-	// Build comprehensive flow specification
-	const flowSpec = buildFlowSpecification(input);
+		// Build comprehensive flow specification
+		const flowSpec = buildFlowSpecification(input);
 
-	// Generate Mermaid visualization (unless markdown-only format)
-	const visualization =
-		input.outputFormat !== "markdown" ? buildFlowDiagram(input) : "";
+		// Generate Mermaid visualization (unless markdown-only format)
+		const visualization =
+			input.outputFormat !== "markdown" ? buildFlowDiagram(input) : "";
 
-	// Include execution guide with best practices
-	const executionGuide = input.includeExecutionGuide
-		? buildExecutionGuide(input)
-		: "";
+		// Include execution guide with best practices
+		const executionGuide = input.includeExecutionGuide
+			? buildExecutionGuide(input)
+			: "";
 
-	// Add metadata for traceability
-	const metadata = input.includeMetadata
-		? buildMetadataSection({
-				sourceTool: "mcp_ai-agent-guid_prompt-flow-builder",
-				filenameHint: `${slugify(input.flowName)}.flow.md`,
-			})
-		: "";
+		// Add metadata for traceability
+		const metadata = input.includeMetadata
+			? buildMetadataSection({
+					sourceTool: "mcp_ai-agent-guid_prompt-flow-builder",
+					filenameHint: `${slugify(input.flowName)}.flow.md`,
+				})
+			: "";
 
-	// Include references to flow-based programming resources
-	const references = input.includeReferences ? buildFlowReferences() : "";
+		// Include references to flow-based programming resources
+		const references = input.includeReferences ? buildFlowReferences() : "";
 
-	return {
-		content: [
-			{
-				type: "text",
-				text: `# 🌊 Prompt Flow: ${input.flowName}\n\n${metadata}${input.description ? `## Description\n${input.description}\n\n` : ""}${flowSpec}\n\n${visualization}${executionGuide}${references}`,
-			},
-		],
-	};
+		return {
+			content: [
+				{
+					type: "text",
+					text: `# 🌊 Prompt Flow: ${input.flowName}\n\n${metadata}${input.description ? `## Description\n${input.description}\n\n` : ""}${flowSpec}\n\n${visualization}${executionGuide}${references}`,
+				},
+			],
+		};
+	} catch (error) {
+		return handleToolError(error);
+	}
 }
 
 /**
@@ -156,17 +162,24 @@ function validateFlow(input: PromptFlowInput): void {
 	// Validate edges reference existing nodes (critical for execution)
 	for (const edge of input.edges) {
 		if (!nodeIds.has(edge.from)) {
-			throw new Error(`Edge references non-existent node: ${edge.from}`);
+			throw validationError(`Edge references non-existent node: ${edge.from}`, {
+				edge,
+				missingNode: edge.from,
+			});
 		}
 		if (!nodeIds.has(edge.to)) {
-			throw new Error(`Edge references non-existent node: ${edge.to}`);
+			throw validationError(`Edge references non-existent node: ${edge.to}`, {
+				edge,
+				missingNode: edge.to,
+			});
 		}
 	}
 
 	// Validate entry point if specified
 	if (input.entryPoint && !nodeIds.has(input.entryPoint)) {
-		throw new Error(
+		throw validationError(
 			`Entry point references non-existent node: ${input.entryPoint}`,
+			{ entryPoint: input.entryPoint },
 		);
 	}
 
@@ -205,23 +218,26 @@ function validateNodeConfig(node: FlowNode): void {
 	switch (node.type) {
 		case "condition":
 			if (!node.config?.expression) {
-				throw new Error(
-					`Condition node "${node.id}" must have an expression in config`,
-				);
+				throw missingRequiredError("expression", {
+					nodeId: node.id,
+					nodeType: node.type,
+				});
 			}
 			break;
 		case "loop":
 			if (!node.config?.condition && !node.config?.iterations) {
-				throw new Error(
-					`Loop node "${node.id}" must have either condition or iterations in config`,
-				);
+				throw missingRequiredError("condition or iterations", {
+					nodeId: node.id,
+					nodeType: node.type,
+				});
 			}
 			break;
 		case "prompt":
 			if (!node.config?.prompt) {
-				throw new Error(
-					`Prompt node "${node.id}" must have a prompt in config`,
-				);
+				throw missingRequiredError("prompt", {
+					nodeId: node.id,
+					nodeType: node.type,
+				});
 			}
 			break;
 		default:

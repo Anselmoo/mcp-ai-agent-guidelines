@@ -20,6 +20,7 @@ import {
 	slugify,
 } from "../shared/prompt-utils.js";
 import { ExportFormatEnum } from "../shared/types/export-format.types.js";
+import { handleToolError } from "../shared/error-handler.js";
 import { applyTechniques } from "./technique-applicator.js";
 
 // Strict mode enum for YAML frontmatter
@@ -83,89 +84,93 @@ function buildHierarchicalFrontmatter(input: HierarchicalPromptInput): string {
 }
 
 export async function hierarchicalPromptBuilder(args: unknown) {
-	emitDeprecationWarning({
-		tool: "hierarchical-prompt-builder",
-		replacement: "prompt-hierarchy",
-		deprecatedIn: "v0.14.0",
-		removedIn: "v0.15.0",
-	});
+	try {
+		emitDeprecationWarning({
+			tool: "hierarchical-prompt-builder",
+			replacement: "prompt-hierarchy",
+			deprecatedIn: "v0.14.0",
+			removedIn: "v0.15.0",
+		});
 
-	const input = HierarchicalPromptSchema.parse(args);
+		const input = HierarchicalPromptSchema.parse(args);
 
-	// If enforcing *.prompt.md style, ensure frontmatter + metadata are on
-	const enforce = input.forcePromptMdStyle ?? true;
-	const effectiveIncludeFrontmatter = enforce ? true : input.includeFrontmatter;
-	const effectiveIncludeMetadata = enforce ? true : input.includeMetadata;
+		// If enforcing *.prompt.md style, ensure frontmatter + metadata are on
+		const enforce = input.forcePromptMdStyle ?? true;
+		const effectiveIncludeFrontmatter = enforce ? true : input.includeFrontmatter;
+		const effectiveIncludeMetadata = enforce ? true : input.includeMetadata;
 
-	const normalizedOutputFormat = input.outputFormat
-		? normalizeOutputFormat(input.outputFormat)
-		: undefined;
-	const techniqueContent =
-		input.includeTechniqueHints !== false
-			? applyTechniques({
-					context: {
-						context: input.context,
-						goal: input.goal,
-						requirements: input.requirements,
-						outputFormat: normalizedOutputFormat,
-						audience: input.audience,
-						issues: input.issues,
-					},
-					techniques: input.techniques,
-					autoSelectTechniques: input.autoSelectTechniques,
-				})
+		const normalizedOutputFormat = input.outputFormat
+			? normalizeOutputFormat(input.outputFormat)
 			: undefined;
-	const providerTipsContent = buildProviderTipsSection(
-		input.provider,
-		input.style,
-	);
-	const promptResult = buildHierarchicalPrompt({
-		...input,
-		outputFormat: normalizedOutputFormat,
-		techniqueContent,
-		techniqueTitle: "Approach",
-		providerTipsContent,
-		providerTipsTitle: "Model-Specific Tips",
-	});
-	const prompt = formatHierarchicalPrompt(promptResult.sections);
-	const frontmatter = effectiveIncludeFrontmatter
-		? `${buildHierarchicalFrontmatter(input)}\n`
-		: "";
-	const disclaimer = input.includeDisclaimer ? buildDisclaimer() : "";
-	const references = input.includeReferences ? buildGeneralReferences() : "";
-	const filenameHint = `${slugify(input.goal || input.description || "prompt")}.prompt.md`;
-	const metadata = effectiveIncludeMetadata
-		? buildMetadataSection({
-				sourceTool: "mcp_ai-agent-guid_hierarchical-prompt-builder",
-				inputFile: input.inputFile,
-				filenameHint,
-			})
-		: "";
-	const domainMetadata = effectiveIncludeMetadata
-		? buildDomainMetadataSection(promptResult.metadata)
-		: "";
+		const techniqueContent =
+			input.includeTechniqueHints !== false
+				? applyTechniques({
+						context: {
+							context: input.context,
+							goal: input.goal,
+							requirements: input.requirements,
+							outputFormat: normalizedOutputFormat,
+							audience: input.audience,
+							issues: input.issues,
+						},
+						techniques: input.techniques,
+						autoSelectTechniques: input.autoSelectTechniques,
+					})
+				: undefined;
+		const providerTipsContent = buildProviderTipsSection(
+			input.provider,
+			input.style,
+		);
+		const promptResult = buildHierarchicalPrompt({
+			...input,
+			outputFormat: normalizedOutputFormat,
+			techniqueContent,
+			techniqueTitle: "Approach",
+			providerTipsContent,
+			providerTipsTitle: "Model-Specific Tips",
+		});
+		const prompt = formatHierarchicalPrompt(promptResult.sections);
+		const frontmatter = effectiveIncludeFrontmatter
+			? `${buildHierarchicalFrontmatter(input)}\n`
+			: "";
+		const disclaimer = input.includeDisclaimer ? buildDisclaimer() : "";
+		const references = input.includeReferences ? buildGeneralReferences() : "";
+		const filenameHint = `${slugify(input.goal || input.description || "prompt")}.prompt.md`;
+		const metadata = effectiveIncludeMetadata
+			? buildMetadataSection({
+					sourceTool: "mcp_ai-agent-guid_hierarchical-prompt-builder",
+					inputFile: input.inputFile,
+					filenameHint,
+				})
+			: "";
+		const domainMetadata = effectiveIncludeMetadata
+			? buildDomainMetadataSection(promptResult.metadata)
+			: "";
 
-	// Build the full content
-	const fullContent = `${frontmatter}## 🧭 Hierarchical Prompt Structure\n\n${metadata}${domainMetadata}${prompt}\n\n${input.includeExplanation ? `## Explanation\nThis prompt follows hierarchical structuring principles (context → goal → requirements → format → audience) to reduce ambiguity and align responses with constraints.\n\n` : ""}${references ? `${references}\n` : ""}${disclaimer}`;
+		// Build the full content
+		const fullContent = `${frontmatter}## 🧭 Hierarchical Prompt Structure\n\n${metadata}${domainMetadata}${prompt}\n\n${input.includeExplanation ? `## Explanation\nThis prompt follows hierarchical structuring principles (context → goal → requirements → format → audience) to reduce ambiguity and align responses with constraints.\n\n` : ""}${references ? `${references}\n` : ""}${disclaimer}`;
 
-	// Apply export format if specified
-	const formattedContent = applyExportFormat(fullContent, {
-		exportFormat: input.exportFormat,
-		includeHeaders: input.includeHeaders,
-		includeFrontmatter: effectiveIncludeFrontmatter,
-		documentTitle: input.documentTitle || input.goal || "Hierarchical Prompt",
-		documentAuthor: input.documentAuthor,
-		documentDate: input.documentDate,
-	});
+		// Apply export format if specified
+		const formattedContent = applyExportFormat(fullContent, {
+			exportFormat: input.exportFormat,
+			includeHeaders: input.includeHeaders,
+			includeFrontmatter: effectiveIncludeFrontmatter,
+			documentTitle: input.documentTitle || input.goal || "Hierarchical Prompt",
+			documentAuthor: input.documentAuthor,
+			documentDate: input.documentDate,
+		});
 
-	return {
-		content: [
-			{
-				type: "text",
-				text: formattedContent,
-			},
-		],
-	};
+		return {
+			content: [
+				{
+					type: "text",
+					text: formattedContent,
+				},
+			],
+		};
+	} catch (error) {
+		return handleToolError(error);
+	}
 }
 
 function formatHierarchicalPrompt(sections: PromptSection[]): string {
