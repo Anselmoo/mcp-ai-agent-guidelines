@@ -58,18 +58,11 @@ describe("SessionManagementService error scenarios", () => {
 			"loadConstraintsFromConfig",
 		).mockRejectedValueOnce(constraintError);
 
-		const response = await sessionManagementService.startDesignSession(
-			sessionId,
-			config,
-			{ custom: true },
-		);
-
-		expect(response.success).toBe(false);
-		expect(response.status).toBe("error");
-		expect(response.message).toBe("Constraint configuration invalid");
-		expect(response.recommendations).toContain(
-			"Check constraint configuration format",
-		);
+		await expect(
+			sessionManagementService.startDesignSession(sessionId, config, {
+				custom: true,
+			}),
+		).rejects.toThrow("Invalid constraint configuration");
 	});
 
 	it("propagates workflow execution failure responses", async () => {
@@ -86,15 +79,9 @@ describe("SessionManagementService error scenarios", () => {
 			message: "Workflow execution failed",
 		});
 
-		const response = await sessionManagementService.startDesignSession(
-			sessionId,
-			config,
-		);
-
-		expect(response.success).toBe(false);
-		expect(response.status).toBe("failed");
-		expect(response.message).toBe("Workflow execution failed");
-		expect(response.recommendations).toEqual(["Verify workflow configuration"]);
+		await expect(
+			sessionManagementService.startDesignSession(sessionId, config),
+		).rejects.toThrow("Workflow execution failed");
 	});
 
 	it("logs warning and continues when ADR generation fails", async () => {

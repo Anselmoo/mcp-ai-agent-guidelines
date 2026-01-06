@@ -5,6 +5,7 @@ import type {
 	DesignAssistantRequest,
 	DesignSessionConfig,
 } from "../../src/tools/design/types.ts";
+import { ErrorCode } from "../../src/tools/shared/error-codes.js";
 
 describe("Design Assistant Strategic Pivot Integration", () => {
 	beforeEach(async () => {
@@ -169,10 +170,17 @@ describe("Design Assistant Strategic Pivot Integration", () => {
 		};
 
 		const pivotResponse = await designAssistant.processRequest(pivotRequest);
-
-		expect(pivotResponse.success).toBe(false);
-		expect(pivotResponse.status).toBe("error");
-		expect(pivotResponse.message).toContain("Content is required");
+		const errorResponse = pivotResponse as {
+			isError?: boolean;
+			content?: Array<{ text: string }>;
+		};
+		expect(errorResponse.isError).toBe(true);
+		const error = JSON.parse(errorResponse.content?.[0]?.text ?? "{}") as {
+			code?: ErrorCode;
+			context?: Record<string, unknown>;
+		};
+		expect(error.code).toBe(ErrorCode.MISSING_REQUIRED_FIELD);
+		expect(error.context?.fieldName).toBe("content");
 	});
 
 	it("should provide appropriate recommendations based on pivot decision", async () => {

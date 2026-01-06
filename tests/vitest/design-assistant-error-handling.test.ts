@@ -1,9 +1,9 @@
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import type { DesignAssistantRequest } from "../../src/tools/design/index.js";
 import { designAssistant } from "../../src/tools/design/index.js";
+import * as designServices from "../../src/tools/design/services/index.js";
 import { ErrorCode } from "../../src/tools/shared/error-codes.js";
 import { validationError } from "../../src/tools/shared/error-factory.js";
-import * as designServices from "../../src/tools/design/services/index.js";
 
 const parseMcpError = (response: unknown) => {
 	const errorResponse = response as {
@@ -65,34 +65,58 @@ describe("Design Assistant error resilience", () => {
 	});
 
 	it("returns session-not-found error for status queries", async () => {
-		const response = await designAssistant.processRequest({
-			action: "get-status",
-			sessionId: "missing-session-status",
-		});
+		let thrownError: unknown;
+		try {
+			await designAssistant.processRequest({
+				action: "get-status",
+				sessionId: "missing-session-status",
+			});
+		} catch (error) {
+			thrownError = error;
+		}
 
-		const error = parseMcpError(response);
+		const error = thrownError as {
+			code?: ErrorCode;
+			context?: Record<string, unknown>;
+		};
 		expect(error.code).toBe(ErrorCode.SESSION_NOT_FOUND);
 		expect(error.context?.sessionId).toBe("missing-session-status");
 	});
 
 	it("returns session-not-found error for artifact generation", async () => {
-		const response = await designAssistant.processRequest({
-			action: "generate-artifacts",
-			sessionId: "missing-session-artifacts",
-		});
+		let thrownError: unknown;
+		try {
+			await designAssistant.processRequest({
+				action: "generate-artifacts",
+				sessionId: "missing-session-artifacts",
+			});
+		} catch (error) {
+			thrownError = error;
+		}
 
-		const error = parseMcpError(response);
+		const error = thrownError as {
+			code?: ErrorCode;
+			context?: Record<string, unknown>;
+		};
 		expect(error.code).toBe(ErrorCode.SESSION_NOT_FOUND);
 		expect(error.context?.sessionId).toBe("missing-session-artifacts");
 	});
 
 	it("returns session-not-found error for consistency enforcement without session", async () => {
-		const response = await designAssistant.processRequest({
-			action: "enforce-consistency",
-			sessionId: "missing-consistency-session",
-		});
+		let thrownError: unknown;
+		try {
+			await designAssistant.processRequest({
+				action: "enforce-consistency",
+				sessionId: "missing-consistency-session",
+			});
+		} catch (error) {
+			thrownError = error;
+		}
 
-		const error = parseMcpError(response);
+		const error = thrownError as {
+			code?: ErrorCode;
+			context?: Record<string, unknown>;
+		};
 		expect(error.code).toBe(ErrorCode.SESSION_NOT_FOUND);
 		expect(error.context?.sessionId).toBe("missing-consistency-session");
 	});

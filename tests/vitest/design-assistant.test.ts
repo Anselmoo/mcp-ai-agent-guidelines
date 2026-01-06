@@ -239,14 +239,12 @@ describe("Design Assistant Framework", () => {
 	});
 
 	it("should handle errors gracefully", async () => {
-		const response = await designAssistant.processRequest({
-			action: "get-status",
-			sessionId: "non-existent-session",
-		});
-
-		expect(response.success).toBe(false);
-		expect(response.status).toBe("not-found");
-		expect(response.message).toContain("not found");
+		await expect(
+			designAssistant.processRequest({
+				action: "get-status",
+				sessionId: "non-existent-session",
+			}),
+		).rejects.toThrow();
 	});
 });
 

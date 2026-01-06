@@ -114,15 +114,10 @@ describe("ArtifactGenerationService", () => {
 			expect(response.recommendations).toBeInstanceOf(Array);
 		});
 
-		it("should return error for non-existent session", async () => {
-			const response = await artifactGenerationService.generateArtifacts(
-				"non-existent",
-				["adr"],
-			);
-
-			expect(response.success).toBe(false);
-			expect(response.status).toBe("error");
-			expect(response.message).toContain("not found");
+		it("should throw for non-existent session", async () => {
+			await expect(
+				artifactGenerationService.generateArtifacts("non-existent", ["adr"]),
+			).rejects.toThrow();
 		});
 
 		it("should handle generation errors gracefully", async () => {

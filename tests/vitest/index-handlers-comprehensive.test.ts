@@ -289,6 +289,22 @@ describe("index.ts - Tool Handler Coverage", () => {
 	describe("Design and Planning Tool Handlers", () => {
 		it("design-assistant handler", async () => {
 			await designAssistant.initialize();
+			await designAssistant.processRequest({
+				action: "start-session",
+				sessionId: "test-session",
+				config: {
+					sessionId: "test-session",
+					context: "Comprehensive handler coverage",
+					goal: "Validate design-assistant handler",
+					requirements: ["handler coverage"],
+					constraints: [],
+					coverageThreshold: 85,
+					enablePivots: true,
+					templateRefs: [],
+					outputFormats: ["markdown"],
+					metadata: {},
+				},
+			});
 			const result = await designAssistant.processRequest({
 				action: "get-status",
 				sessionId: "test-session",
@@ -384,7 +400,13 @@ describe("index.ts - Tool Handler Coverage", () => {
 				action: "invalid-action" as any,
 				sessionId: "test",
 			});
-			expect(result.success).toBe(false);
+			const errorResponse = result as {
+				isError?: boolean;
+				content?: Array<{ text: string }>;
+			};
+			expect(errorResponse.isError).toBe(true);
+			const payload = JSON.parse(errorResponse.content?.[0]?.text ?? "{}");
+			expect(payload.code).toBeDefined();
 		});
 	});
 
@@ -400,7 +422,7 @@ describe("index.ts - Tool Handler Coverage", () => {
 					goal: "Test",
 					requirements: [],
 				});
-			} catch (error) {
+			} catch (_error) {
 				// Validation error expected for empty requirements
 			}
 		});
@@ -412,7 +434,7 @@ describe("index.ts - Tool Handler Coverage", () => {
 					sprintLength: 14,
 					teamSize: 5,
 				});
-			} catch (error) {
+			} catch (_error) {
 				// Empty tasks might trigger validation
 			}
 		});
@@ -701,7 +723,7 @@ describe("index.ts - Tool Handler Coverage", () => {
 					codeContent: "",
 					language: "javascript",
 				});
-			} catch (error) {
+			} catch (_error) {
 				// Might throw or handle gracefully
 			}
 		});

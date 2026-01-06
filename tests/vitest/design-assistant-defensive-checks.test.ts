@@ -95,15 +95,11 @@ describe("Design Assistant - Defensive Array Checks", () => {
 	});
 
 	it("should handle empty or malformed data gracefully", async () => {
-		// Test with minimal session
-		const response = await designAssistant.processRequest({
-			action: "get-status",
-			sessionId: "non-existent-session",
-		});
-
-		// Should return error but not crash
-		expect(response.success).toBe(false);
-		expect(response.status).toBe("not-found");
-		expect(Array.isArray(response.recommendations)).toBe(true);
+		await expect(
+			designAssistant.processRequest({
+				action: "get-status",
+				sessionId: "non-existent-session",
+			}),
+		).rejects.toThrow("Session not found");
 	});
 });
