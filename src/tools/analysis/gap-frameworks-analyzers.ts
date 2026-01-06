@@ -4,6 +4,7 @@ import {
 	buildMetadataSection,
 	slugify,
 } from "../shared/prompt-utils.js";
+import { handleToolError } from "../shared/error-handler.js";
 
 // Supported gap analysis framework types
 const SUPPORTED_GAP_FRAMEWORKS = [
@@ -52,62 +53,66 @@ const GapFrameworkSchema = z.object({
 });
 
 export async function gapFrameworksAnalyzers(args: unknown) {
-	const input = GapFrameworkSchema.parse(args);
+	try {
+		const input = GapFrameworkSchema.parse(args);
 
-	const sections: string[] = [];
+		const sections: string[] = [];
 
-	// Overview
-	sections.push(`# Gap Analysis Framework`);
-	sections.push(`Context: ${input.context}`);
-	sections.push(`Current State: ${input.currentState}`);
-	sections.push(`Desired State: ${input.desiredState}`);
+		// Overview
+		sections.push(`# Gap Analysis Framework`);
+		sections.push(`Context: ${input.context}`);
+		sections.push(`Current State: ${input.currentState}`);
+		sections.push(`Desired State: ${input.desiredState}`);
 
-	if (input.objectives?.length)
-		sections.push(`Objectives:\n- ${input.objectives.join("\n- ")}`);
-	if (input.timeframe) sections.push(`Timeframe: ${input.timeframe}`);
-	if (input.stakeholders?.length)
-		sections.push(`Stakeholders:\n- ${input.stakeholders.join("\n- ")}`);
-	if (input.constraints?.length)
-		sections.push(`Constraints:\n- ${input.constraints.join("\n- ")}`);
-	sections.push("");
+		if (input.objectives?.length)
+			sections.push(`Objectives:\n- ${input.objectives.join("\n- ")}`);
+		if (input.timeframe) sections.push(`Timeframe: ${input.timeframe}`);
+		if (input.stakeholders?.length)
+			sections.push(`Stakeholders:\n- ${input.stakeholders.join("\n- ")}`);
+		if (input.constraints?.length)
+			sections.push(`Constraints:\n- ${input.constraints.join("\n- ")}`);
+		sections.push("");
 
-	// Add each requested gap analysis framework
-	for (const framework of input.frameworks) {
-		const analysisSection = renderGapFramework(framework);
-		sections.push(analysisSection);
+		// Add each requested gap analysis framework
+		for (const framework of input.frameworks) {
+			const analysisSection = renderGapFramework(framework);
+			sections.push(analysisSection);
+		}
+
+		// Action plan summary
+		if (input.includeActionPlan) {
+			sections.push(renderActionPlan());
+		}
+
+		// Metadata and references
+		const filenameHint = `${slugify(`gap-analysis-${input.frameworks.join("-")}`)}.md`;
+		const metadata = input.includeMetadata
+			? buildMetadataSection({
+					sourceTool: "mcp_ai-agent-guid_gap-frameworks-analyzers",
+					inputFile: input.inputFile,
+					filenameHint,
+				})
+			: "";
+
+		const refs = input.includeReferences
+			? buildFurtherReadingSection(REFERENCE_LINKS)
+			: "";
+
+		const body = [metadata, sections.join("\n\n"), refs]
+			.filter(Boolean)
+			.join("\n\n");
+
+		return {
+			content: [
+				{
+					type: "text",
+					text: body,
+				},
+			],
+		};
+	} catch (error) {
+		return handleToolError(error);
 	}
-
-	// Action plan summary
-	if (input.includeActionPlan) {
-		sections.push(renderActionPlan());
-	}
-
-	// Metadata and references
-	const filenameHint = `${slugify(`gap-analysis-${input.frameworks.join("-")}`)}.md`;
-	const metadata = input.includeMetadata
-		? buildMetadataSection({
-				sourceTool: "mcp_ai-agent-guid_gap-frameworks-analyzers",
-				inputFile: input.inputFile,
-				filenameHint,
-			})
-		: "";
-
-	const refs = input.includeReferences
-		? buildFurtherReadingSection(REFERENCE_LINKS)
-		: "";
-
-	const body = [metadata, sections.join("\n\n"), refs]
-		.filter(Boolean)
-		.join("\n\n");
-
-	return {
-		content: [
-			{
-				type: "text",
-				text: body,
-			},
-		],
-	};
 }
 
 function renderGapFramework(framework: GapFrameworkId): string {

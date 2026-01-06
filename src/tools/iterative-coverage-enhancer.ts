@@ -4,6 +4,7 @@
 
 import { z } from "zod";
 import { buildFurtherReadingSection } from "./shared/prompt-utils.js";
+import { handleToolError } from "./shared/error-handler.js";
 
 const IterativeCoverageEnhancerSchema = z.object({
 	// Analysis Configuration
@@ -179,87 +180,91 @@ interface IterationPlan {
 }
 
 export async function iterativeCoverageEnhancer(args: unknown) {
-	const input = IterativeCoverageEnhancerSchema.parse(args);
+	try {
+		const input = IterativeCoverageEnhancerSchema.parse(args);
 
-	// Simulate coverage analysis (in real implementation, this would analyze actual code)
-	const analysis = await performCoverageAnalysis(input);
+		// Simulate coverage analysis (in real implementation, this would analyze actual code)
+		const analysis = await performCoverageAnalysis(input);
 
-	const sections = [
-		generateExecutiveSummary(analysis),
-		...(input.analyzeCoverageGaps
-			? [generateCoverageGapsSection(analysis.coverageGaps)]
-			: []),
-		...(input.detectDeadCode
-			? [generateDeadCodeSection(analysis.deadCode)]
-			: []),
-		...(input.generateTestSuggestions
-			? [generateTestSuggestionsSection(analysis.coverageGaps)]
-			: []),
-		...(input.adaptThresholds
-			? [
-					generateThresholdRecommendationsSection(
-						analysis.thresholdRecommendations,
-					),
-				]
-			: []),
-		generateIterationPlanSection(analysis.iterationPlan),
-		...(input.generateCIActions ? [generateCIActionsSection()] : []),
-	];
+		const sections = [
+			generateExecutiveSummary(analysis),
+			...(input.analyzeCoverageGaps
+				? [generateCoverageGapsSection(analysis.coverageGaps)]
+				: []),
+			...(input.detectDeadCode
+				? [generateDeadCodeSection(analysis.deadCode)]
+				: []),
+			...(input.generateTestSuggestions
+				? [generateTestSuggestionsSection(analysis.coverageGaps)]
+				: []),
+			...(input.adaptThresholds
+				? [
+						generateThresholdRecommendationsSection(
+							analysis.thresholdRecommendations,
+						),
+					]
+				: []),
+			generateIterationPlanSection(analysis.iterationPlan),
+			...(input.generateCIActions ? [generateCIActionsSection()] : []),
+		];
 
-	const references = input.includeReferences
-		? buildFurtherReadingSection([
-				{
-					title: "Test Coverage Best Practices",
-					url: "https://martinfowler.com/bliki/TestCoverage.html",
-					description:
-						"Martin Fowler on meaningful coverage-driven development",
-				},
-				{
-					title: "Dead Code Elimination",
-					url: "https://refactoring.guru/smells/dead-code",
-					description: "Techniques for identifying and removing unused code",
-				},
-				{
-					title: "Test-Driven Development Guide",
-					url: "https://testdriven.io/",
-					description: "Comprehensive resource for TDD practices and patterns",
-				},
-				{
-					title: "Benefits of Testing Code",
-					url: "https://abseil.io/resources/swe-book/html/ch11.html#benefits_of_testing_code",
-					description:
-						"Google's perspective on the value of comprehensive testing",
-				},
-				{
-					title: "Engineering System Success Playbook",
-					url: "https://resources.github.com/engineering-system-success-playbook/",
-					description:
-						"GitHub's guide to building effective engineering systems",
-				},
-				{
-					title: "Automated Testing Strategies",
-					url: "https://testing.googleblog.com/",
-					description: "Google Testing Blog with advanced testing techniques",
-				},
-				{
-					title: "Code Coverage Analysis in CI",
-					url: "https://docs.github.com/en/actions/automating-builds-and-tests/about-continuous-integration",
-					description: "GitHub's documentation on coverage in CI/CD pipelines",
-				},
-			])
-		: "";
+		const references = input.includeReferences
+			? buildFurtherReadingSection([
+					{
+						title: "Test Coverage Best Practices",
+						url: "https://martinfowler.com/bliki/TestCoverage.html",
+						description:
+							"Martin Fowler on meaningful coverage-driven development",
+					},
+					{
+						title: "Dead Code Elimination",
+						url: "https://refactoring.guru/smells/dead-code",
+						description: "Techniques for identifying and removing unused code",
+					},
+					{
+						title: "Test-Driven Development Guide",
+						url: "https://testdriven.io/",
+						description: "Comprehensive resource for TDD practices and patterns",
+					},
+					{
+						title: "Benefits of Testing Code",
+						url: "https://abseil.io/resources/swe-book/html/ch11.html#benefits_of_testing_code",
+						description:
+							"Google's perspective on the value of comprehensive testing",
+					},
+					{
+						title: "Engineering System Success Playbook",
+						url: "https://resources.github.com/engineering-system-success-playbook/",
+						description:
+							"GitHub's guide to building effective engineering systems",
+					},
+					{
+						title: "Automated Testing Strategies",
+						url: "https://testing.googleblog.com/",
+						description: "Google Testing Blog with advanced testing techniques",
+					},
+					{
+						title: "Code Coverage Analysis in CI",
+						url: "https://docs.github.com/en/actions/automating-builds-and-tests/about-continuous-integration",
+						description: "GitHub's documentation on coverage in CI/CD pipelines",
+					},
+				])
+			: "";
 
-	const content =
-		sections.join("\n\n") + (references ? `\n\n${references}` : "");
+		const content =
+			sections.join("\n\n") + (references ? `\n\n${references}` : "");
 
-	return {
-		content: [
-			{
-				type: "text",
-				text: content,
-			},
-		],
-	};
+		return {
+			content: [
+				{
+					type: "text",
+					text: content,
+				},
+			],
+		};
+	} catch (error) {
+		return handleToolError(error);
+	}
 }
 
 async function performCoverageAnalysis(

@@ -4,6 +4,7 @@ import {
 	buildFurtherReadingSection,
 	buildOptionalSectionsMap,
 } from "./shared/prompt-utils.js";
+import { handleToolError } from "./shared/error-handler.js";
 
 const CleanCodeScorerSchema = z.object({
 	projectPath: z
@@ -96,58 +97,59 @@ interface CleanCodeScore {
 }
 
 export async function cleanCodeScorer(args: unknown) {
-	const input = CleanCodeScorerSchema.parse(args);
+	try {
+		const input = CleanCodeScorerSchema.parse(args);
 
-	const scoreResult = calculateCleanCodeScore(input);
+		const scoreResult = calculateCleanCodeScore(input);
 
-	// Build optional sections using the shared utility
-	const { references, metadata } = buildOptionalSectionsMap(input, {
-		references: {
-			key: "includeReferences",
-			builder: () =>
-				buildFurtherReadingSection([
-					{
-						title: "Clean Code Principles",
-						url: "https://www.freecodecamp.org/news/clean-coding-for-beginners/",
-						description:
-							"Beginner-friendly guide to writing clean, maintainable code",
-					},
-					{
-						title: "SonarQube Metric Definitions",
-						url: "https://docs.sonarqube.org/latest/user-guide/metric-definitions/",
-						description: "Comprehensive definitions of code quality metrics",
-					},
-					{
-						title: "Test Coverage Best Practices",
-						url: "https://martinfowler.com/bliki/TestCoverage.html",
-						description: "Martin Fowler on meaningful test coverage strategies",
-					},
-					{
-						title: "TypeScript Do's and Don'ts",
-						url: "https://www.typescriptlang.org/docs/handbook/declaration-files/do-s-and-don-ts.html",
-						description: "Official TypeScript best practices and style guide",
-					},
-				]),
-		},
-		metadata: {
-			key: "includeMetadata",
-			builder: (cfg) =>
-				[
-					"### Metadata",
-					`- Updated: ${new Date().toISOString().slice(0, 10)}`,
-					"- Source tool: mcp_ai-agent-guid_clean-code-scorer",
-					cfg.inputFile ? `- Input file: ${cfg.inputFile}` : undefined,
-				]
-					.filter(Boolean)
-					.join("\n"),
-		},
-	});
+		// Build optional sections using the shared utility
+		const { references, metadata } = buildOptionalSectionsMap(input, {
+			references: {
+				key: "includeReferences",
+				builder: () =>
+					buildFurtherReadingSection([
+						{
+							title: "Clean Code Principles",
+							url: "https://www.freecodecamp.org/news/clean-coding-for-beginners/",
+							description:
+								"Beginner-friendly guide to writing clean, maintainable code",
+						},
+						{
+							title: "SonarQube Metric Definitions",
+							url: "https://docs.sonarqube.org/latest/user-guide/metric-definitions/",
+							description: "Comprehensive definitions of code quality metrics",
+						},
+						{
+							title: "Test Coverage Best Practices",
+							url: "https://martinfowler.com/bliki/TestCoverage.html",
+							description: "Martin Fowler on meaningful test coverage strategies",
+						},
+						{
+							title: "TypeScript Do's and Don'ts",
+							url: "https://www.typescriptlang.org/docs/handbook/declaration-files/do-s-and-don-ts.html",
+							description: "Official TypeScript best practices and style guide",
+						},
+					]),
+			},
+			metadata: {
+				key: "includeMetadata",
+				builder: (cfg) =>
+					[
+						"### Metadata",
+						`- Updated: ${new Date().toISOString().slice(0, 10)}`,
+						"- Source tool: mcp_ai-agent-guid_clean-code-scorer",
+						cfg.inputFile ? `- Input file: ${cfg.inputFile}` : undefined,
+					]
+						.filter(Boolean)
+						.join("\n"),
+			},
+		});
 
-	return {
-		content: [
-			{
-				type: "text" as const,
-				text: `## 🏆 Clean Code Score Report
+		return {
+			content: [
+				{
+					type: "text" as const,
+					text: `## 🏆 Clean Code Score Report
 
 ${metadata ? `${metadata}\n` : ""}
 ### 📊 Overall Score
@@ -180,14 +182,14 @@ ${scoreResult.recommendations.map((rec, index) => `${index + 1}. ${rec}`).join("
 ${scoreResult.nextSteps.map((step, index) => `${index + 1}. ${step}`).join("\n")}
 
 ### 📊 Score Distribution
-\`\`\`
+```
 Code Hygiene:   ${generateMiniBar(scoreResult.categories.codeHygiene.score, scoreResult.categories.codeHygiene.weight)}
 Test Coverage:  ${generateMiniBar(scoreResult.categories.testCoverage.score, scoreResult.categories.testCoverage.weight)}
 TypeScript:     ${generateMiniBar(scoreResult.categories.typeScript.score, scoreResult.categories.typeScript.weight)}
 Linting:        ${generateMiniBar(scoreResult.categories.linting.score, scoreResult.categories.linting.weight)}
 Documentation:  ${generateMiniBar(scoreResult.categories.documentation.score, scoreResult.categories.documentation.weight)}
 Security:       ${generateMiniBar(scoreResult.categories.security.score, scoreResult.categories.security.weight)}
-\`\`\`
+```
 
 ${references ? `\n${references}\n` : ""}
 ### ⚠️ Disclaimer
@@ -195,9 +197,12 @@ ${references ? `\n${references}\n` : ""}
 - Achieving 100/100 requires excellence across all categories
 - Regular monitoring and improvement is recommended
 `,
-			},
-		],
-	};
+				},
+			],
+		};
+	} catch (error) {
+		return handleToolError(error);
+	}
 }
 
 function calculateCleanCodeScore(input: CleanCodeScorerInput): CleanCodeScore {
