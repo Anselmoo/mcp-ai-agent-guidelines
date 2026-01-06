@@ -1,24 +1,5 @@
-import { applyTechniques } from "../../tools/prompt/technique-applicator.js";
-import {
-	buildProviderTipsSection,
-	type Provider,
-	type Style,
-	type Technique,
-} from "../../tools/shared/prompt-sections.js";
-
-export interface PromptSection {
-	title: string;
-	body: string;
-}
-
-export interface PromptMetadata {
-	complexity: number;
-	tokenEstimate: number;
-	sections: number;
-	techniques: string[];
-	requirementsCount: number;
-	issuesCount: number;
-}
+import type { PromptMetadata, PromptResult, PromptSection } from "./types.js";
+export type { PromptMetadata, PromptResult, PromptSection } from "./types.js";
 
 export interface HierarchicalPromptConfig {
 	goal: string;
@@ -28,27 +9,33 @@ export interface HierarchicalPromptConfig {
 	issues?: string[];
 	outputFormat?: string;
 	audience?: string;
-	techniques?: Technique[];
+	techniques?: string[];
 	includeTechniqueHints?: boolean;
 	autoSelectTechniques?: boolean;
-	provider?: Provider;
-	style?: Style;
+	techniqueContent?: string;
+	techniqueTitle?: string;
+	providerTipsContent?: string;
+	providerTipsTitle?: string;
 }
 
 function toNumberedList(items: string[]): string {
 	return items.map((item, index) => `${index + 1}. ${item}`).join("\n");
 }
 
-function stripHeading(text: string, heading?: string): string {
+/**
+ * Removes a leading markdown heading (first line starting with '#') and an
+ * optional prefix from the remaining text. Intended to normalize reused content
+ * that may already include headings.
+ */
+function stripHeadingPrefix(text: string, prefix?: string): string {
 	if (!text.trim()) return "";
-	const normalized = text.trimStart();
-	const lines = normalized.split("\n");
+	const lines = text.trimStart().split("\n");
 	if (lines[0].startsWith("#")) {
 		lines.shift();
 	}
-	const body = lines.join("\n").trim();
-	if (heading && body.startsWith(heading)) {
-		return body.slice(heading.length).trimStart();
+	const body = lines.join("\n").trimStart();
+	if (prefix && body.startsWith(prefix)) {
+		return body.slice(prefix.length).trimStart();
 	}
 	return body;
 }
@@ -126,43 +113,31 @@ export function buildHierarchicalPrompt(
 		});
 	}
 
-	if (config.includeTechniqueHints !== false) {
-		const techniqueContent = applyTechniques({
-			context: {
-				context: config.context,
-				goal: config.goal,
-				requirements: config.requirements,
-				outputFormat: config.outputFormat,
-				audience: config.audience,
-				issues: config.issues,
-			},
-			techniques: config.techniques,
-			autoSelectTechniques: config.autoSelectTechniques,
-		});
-
-		const normalizedTechniqueContent = stripHeading(
-			techniqueContent,
-			"Approach",
+	if (config.includeTechniqueHints !== false && config.techniqueContent) {
+		const normalizedTechniqueContent = stripHeadingPrefix(
+			config.techniqueContent,
+			config.techniqueTitle ?? "Approach",
 		);
 
 		if (normalizedTechniqueContent) {
 			sections.push({
-				title: "Approach",
+				title: config.techniqueTitle ?? "Approach",
 				body: normalizedTechniqueContent,
 			});
 		}
 	}
 
-	const providerTipsRaw = buildProviderTipsSection(
-		config.provider,
-		config.style,
-	);
-	const providerTipsBody = stripHeading(providerTipsRaw, "Model-Specific Tips");
-	if (providerTipsBody) {
-		sections.push({
-			title: "Model-Specific Tips",
-			body: providerTipsBody,
-		});
+	if (config.providerTipsContent) {
+		const providerTipsBody = stripHeadingPrefix(
+			config.providerTipsContent,
+			config.providerTipsTitle ?? "Model-Specific Tips",
+		);
+		if (providerTipsBody) {
+			sections.push({
+				title: config.providerTipsTitle ?? "Model-Specific Tips",
+				body: providerTipsBody,
+			});
+		}
 	}
 
 	const instructions =

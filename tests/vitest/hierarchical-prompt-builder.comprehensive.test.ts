@@ -148,8 +148,17 @@ describe("hierarchical-prompt-builder comprehensive coverage", () => {
 		expect(content).toContain("Multi-section technical document");
 		// Check for actionable sections - all techniques are now in Approach section
 		expect(content).toContain("# Approach");
-		expect(content).toContain("Retrieve Relevant Information"); // RAG content
-		expect(content).toContain("Step-by-Step Workflow"); // Prompt chaining section
+		const approachSection = (() => {
+			const start = content.indexOf("# Approach");
+			if (start === -1) return "";
+			const remainder = content.slice(start + "# Approach".length);
+			const nextHeading = remainder.indexOf("\n# ");
+			return nextHeading === -1
+				? remainder
+				: remainder.slice(0, nextHeading);
+		})();
+		expect(approachSection).toContain("Retrieve Relevant Information"); // RAG content
+		expect(approachSection).toContain("Step-by-Step Workflow"); // Prompt chaining section
 
 		// Check all requirements are included
 		expect(content).toContain("Technical accuracy");

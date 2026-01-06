@@ -48,7 +48,7 @@ describe("hierarchical-prompt-builder actionable instructions", () => {
 
 		const text = result.content[0].text;
 
-		// Should include approach section (renamed from examples in domain refactor)
+		// Should include unified Approach section (technique guidance consolidated from previous examples/technique sections in domain refactor)
 		expect(text).toContain("# Approach");
 		expect(text).toContain(
 			"Here are examples of how to approach similar tasks",

@@ -2,6 +2,7 @@ import { z } from "zod";
 import {
 	buildHierarchicalPrompt,
 	type PromptSection,
+	type PromptMetadata,
 } from "../../domain/prompting/hierarchical-builder.js";
 import { DEFAULT_MODEL, DEFAULT_MODEL_SLUG } from "../config/model-config.js";
 import { emitDeprecationWarning } from "../shared/deprecation.js";
@@ -10,6 +11,8 @@ import {
 	StyleEnum,
 	TechniqueEnum,
 } from "../shared/prompt-sections.js";
+import { applyTechniques } from "./technique-applicator.js";
+import { buildProviderTipsSection } from "../shared/prompt-sections.js";
 import {
 	applyExportFormat,
 	buildFrontmatterWithPolicy as buildFrontmatter,
@@ -97,9 +100,32 @@ export async function hierarchicalPromptBuilder(args: unknown) {
 	const normalizedOutputFormat = input.outputFormat
 		? normalizeOutputFormat(input.outputFormat)
 		: undefined;
+	const techniqueContent =
+		input.includeTechniqueHints !== false
+			? applyTechniques({
+					context: {
+						context: input.context,
+						goal: input.goal,
+						requirements: input.requirements,
+						outputFormat: normalizedOutputFormat,
+						audience: input.audience,
+						issues: input.issues,
+					},
+					techniques: input.techniques,
+					autoSelectTechniques: input.autoSelectTechniques,
+				})
+			: undefined;
+	const providerTipsContent = buildProviderTipsSection(
+		input.provider,
+		input.style,
+	);
 	const promptResult = buildHierarchicalPrompt({
 		...input,
 		outputFormat: normalizedOutputFormat,
+		techniqueContent,
+		techniqueTitle: "Approach",
+		providerTipsContent,
+		providerTipsTitle: "Model-Specific Tips",
 	});
 	const prompt = formatHierarchicalPrompt(promptResult.sections);
 	const frontmatter = effectiveIncludeFrontmatter
@@ -115,9 +141,12 @@ export async function hierarchicalPromptBuilder(args: unknown) {
 				filenameHint,
 			})
 		: "";
+	const domainMetadata = effectiveIncludeMetadata
+		? buildDomainMetadataSection(promptResult.metadata)
+		: "";
 
 	// Build the full content
-	const fullContent = `${frontmatter}## 🧭 Hierarchical Prompt Structure\n\n${metadata}\n${prompt}\n\n${input.includeExplanation ? `## Explanation\nThis prompt follows hierarchical structuring principles (context → goal → requirements → format → audience) to reduce ambiguity and align responses with constraints.\n\n` : ""}${references ? `${references}\n` : ""}${disclaimer}`;
+	const fullContent = `${frontmatter}## 🧭 Hierarchical Prompt Structure\n\n${metadata}${domainMetadata}${prompt}\n\n${input.includeExplanation ? `## Explanation\nThis prompt follows hierarchical structuring principles (context → goal → requirements → format → audience) to reduce ambiguity and align responses with constraints.\n\n` : ""}${references ? `${references}\n` : ""}${disclaimer}`;
 
 	// Apply export format if specified
 	const formattedContent = applyExportFormat(fullContent, {
@@ -145,6 +174,20 @@ function formatHierarchicalPrompt(sections: PromptSection[]): string {
 		prompt += `# ${section.title}\n${section.body}\n\n`;
 	}
 	return prompt.trimEnd();
+}
+
+function buildDomainMetadataSection(meta: PromptMetadata): string {
+	const techniques =
+		meta.techniques.length > 0 ? meta.techniques.join(", ") : "none";
+	return `### Prompt Metrics
+- Complexity score: ${meta.complexity}
+- Token estimate: ${meta.tokenEstimate}
+- Sections: ${meta.sections}
+- Techniques: ${techniques}
+- Requirements: ${meta.requirementsCount}
+- Issues: ${meta.issuesCount}
+
+`;
 }
 
 /**

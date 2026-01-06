@@ -1,11 +1,9 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
 	buildHierarchicalPrompt,
 	calculateComplexity,
 	estimateTokens,
 } from "../../../../src/domain/prompting/hierarchical-builder.js";
-import * as techniqueModule from "../../../../src/tools/prompt/technique-applicator.js";
-import * as sharedSections from "../../../../src/tools/shared/prompt-sections.js";
 
 describe("domain/prompting/hierarchical-builder", () => {
 	it("builds ordered sections with metadata", () => {
@@ -18,7 +16,8 @@ describe("domain/prompting/hierarchical-builder", () => {
 			outputFormat: "1. Steps, 2. Risks",
 			audience: "Backend engineers",
 			techniques: ["chain-of-thought"],
-			provider: "gpt-4.1",
+			techniqueContent: "# Approach\nStep 1\nStep 2\n",
+			providerTipsContent: "# Model-Specific Tips\nUse markdown\n",
 		});
 
 		expect(result.sections.map((section) => section.title)).toEqual([
@@ -45,7 +44,12 @@ describe("domain/prompting/hierarchical-builder", () => {
 		expect(instructions?.body).toContain("Follow the structure above");
 
 		expect(result.metadata.complexity).toBeGreaterThanOrEqual(20);
-		expect(result.metadata.tokenEstimate).toBe(estimateTokens(result.sections));
+		const totalChars = result.sections.reduce(
+			(sum, section) => sum + section.title.length + section.body.length,
+			0,
+		);
+		const expectedEstimate = Math.max(50, Math.ceil(totalChars / 4));
+		expect(result.metadata.tokenEstimate).toBe(expectedEstimate);
 	});
 
 	it("omits technique hints when disabled", () => {
@@ -54,6 +58,7 @@ describe("domain/prompting/hierarchical-builder", () => {
 			goal: "Optimize throughput",
 			includeTechniqueHints: false,
 			techniques: ["chain-of-thought"],
+			techniqueContent: "# Approach\ncontent",
 		});
 
 		expect(
@@ -75,35 +80,28 @@ describe("domain/prompting/hierarchical-builder", () => {
 	});
 
 	it("removes duplicated heading from technique content", () => {
-		const spy = vi
-			.spyOn(techniqueModule, "applyTechniques")
-			.mockReturnValueOnce("# Approach\nApproach\nDetails\nMore\n");
 		const result = buildHierarchicalPrompt({
 			context: "ctx",
 			goal: "goal",
 			techniques: ["chain-of-thought"],
+			techniqueContent: "# Approach\nApproach\nDetails\nMore\n",
 		});
 		const approach = result.sections.find((s) => s.title === "Approach");
 		expect(approach).toBeDefined();
 		expect(approach?.body).toContain("Details");
 		expect(approach?.body).not.toContain("Approach");
-		spy.mockRestore();
 	});
 
 	it("removes duplicated heading from provider tips", () => {
-		const spy = vi
-			.spyOn(sharedSections, "buildProviderTipsSection")
-			.mockReturnValueOnce(
-				"# Model-Specific Tips\nModel-Specific Tips\n- Prefer Markdown\n",
-			);
 		const result = buildHierarchicalPrompt({
 			context: "ctx",
 			goal: "goal",
+			providerTipsContent:
+				"# Model-Specific Tips\nModel-Specific Tips\n- Prefer Markdown\n",
 		});
 		const tips = result.sections.find((s) => s.title === "Model-Specific Tips");
 		expect(tips).toBeDefined();
 		expect(tips?.body).toContain("- Prefer Markdown");
 		expect(tips?.body).not.toContain("Model-Specific Tips");
-		spy.mockRestore();
 	});
 });
