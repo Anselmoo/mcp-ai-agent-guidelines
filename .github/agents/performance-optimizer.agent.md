@@ -2,7 +2,7 @@
 name: Performance-Optimizer
 description: Performance analysis and bundle optimization
 tools:
-  - shell
+  - execute
   - read
   - edit
   - execute
@@ -10,7 +10,7 @@ tools:
   - search
   - todo
   - web
-  - runSubagent
+  - agent
   - ai-agent-guidelines/semantic-code-analyzer
   - ai-agent-guidelines/clean-code-scorer
   - ai-agent-guidelines/memory-context-optimizer

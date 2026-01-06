@@ -2,7 +2,7 @@
 name: Speckit-Orchestrator
 description: Orchestrates multi-agent workflows using Spec-Kit methodology (spec.md → plan.md → tasks.md → progress.md)
 tools:
-  - shell
+  - execute
   - read
   - edit
   - execute
@@ -10,7 +10,7 @@ tools:
   - search
   - todo
   - web
-  - runSubagent
+  - agent
   - ai-agent-guidelines/*
   - serena/*
   - sequentialthinking/*

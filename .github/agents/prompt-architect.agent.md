@@ -2,7 +2,7 @@
 name: Prompt-Architect
 description: Prompt engineering and optimization using project MCP tools
 tools:
-  - shell
+  - execute
   - read
   - edit
   - execute
@@ -10,7 +10,7 @@ tools:
   - search
   - todo
   - web
-  - runSubagent
+  - agent
   - ai-agent-guidelines/hierarchical-prompt-builder
   - ai-agent-guidelines/prompt-flow-builder
   - ai-agent-guidelines/prompt-chaining-builder

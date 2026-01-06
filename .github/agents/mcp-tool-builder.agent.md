@@ -2,7 +2,7 @@
 name: MCP-Tool-Builder
 description: Primary agent for creating and enhancing MCP tools following project patterns
 tools:
-  - shell
+  - execute
   - read
   - edit
   - execute
@@ -10,8 +10,8 @@ tools:
   - search
   - todo
   - web
-  - runTests
-  - runSubagent
+  - execute/runTests
+  - agent
   - ai-agent-guidelines/*
   - serena/*
   - fetch/*

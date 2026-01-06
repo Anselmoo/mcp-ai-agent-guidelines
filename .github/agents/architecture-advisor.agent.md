@@ -2,7 +2,7 @@
 name: Architecture-Advisor
 description: Design pattern recommendations and ADR generation using project patterns
 tools:
-  - shell
+  - execute
   - read
   - edit
   - execute
@@ -10,7 +10,7 @@ tools:
   - search
   - todo
   - web
-  - runSubagent
+  - agent
   - ai-agent-guidelines/design-assistant
   - ai-agent-guidelines/architecture-design-prompt-builder
   - ai-agent-guidelines/mermaid-diagram-generator

@@ -3,20 +3,20 @@
 ### Metadata
 - Updated: 2026-01-06
 - Source tool: mcp_ai-agent-guid_guidelines-validator
-- Input file: /Users/hahn/LocalDocuments/GitHub_Forks/mcp-ai-agent-guidelines/demos/demo-code-analysis.py
+- Input file: /home/runner/work/mcp-ai-agent-guidelines/mcp-ai-agent-guidelines/demos/demo-code-analysis.py
 - Category: workflow
 
 ### 📋 Practice Analysis
-| Field | Value |
-|---|---|
-| Category | workflow |
+| Field       | Value                                                        |
+| ----------- | ------------------------------------------------------------ |
+| Category    | workflow                                                     |
 | Description | We use hierarchical prompts, prompt caching, and diagramming |
 
 ### 📊 Compliance Assessment
-| Metric | Value |
-|---|---|
-| Overall Score | 30/100 |
-| Compliance Level | POOR |
+| Metric           | Value  |
+| ---------------- | ------ |
+| Overall Score    | 30/100 |
+| Compliance Level | POOR   |
 
 🔴 **Poor compliance** - Significant improvements needed
 

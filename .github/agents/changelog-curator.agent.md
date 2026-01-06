@@ -2,7 +2,7 @@
 name: Changelog-Curator
 description: Maintain CHANGELOG.md in Keep a Changelog format
 tools:
-  - shell
+  - execute
   - read
   - edit
   - execute
@@ -10,7 +10,7 @@ tools:
   - search
   - todo
   - web
-  - runSubagent
+  - agent
   - serena/search_for_pattern
   - serena/get_symbols_overview
   - sequentialthinking/*

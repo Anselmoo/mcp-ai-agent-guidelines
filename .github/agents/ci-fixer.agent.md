@@ -2,7 +2,7 @@
 name: CI-Fixer
 description: Debug and repair CI/CD workflows
 tools:
-  - shell
+  - execute
   - read
   - edit
   - execute

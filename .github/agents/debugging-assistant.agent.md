@@ -2,7 +2,7 @@
 name: Debugging-Assistant
 description: Root cause analysis and troubleshooting using project patterns
 tools:
-  - shell
+  - execute
   - read
   - edit
   - execute
@@ -10,7 +10,7 @@ tools:
   - search
   - todo
   - web
-  - runSubagent
+  - agent
   - ai-agent-guidelines/debugging-assistant-prompt-builder
   - ai-agent-guidelines/semantic-code-analyzer
   - serena/*
