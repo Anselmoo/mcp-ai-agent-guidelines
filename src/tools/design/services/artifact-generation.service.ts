@@ -1,5 +1,8 @@
 // Artifact Generation Service - Handles artifact generation operations
-import { ErrorReporter } from "../../shared/errors.js";
+import {
+	sessionNotFoundError,
+	validationError,
+} from "../../shared/error-factory.js";
 import { adrGenerator } from "../adr-generator.js";
 import { constraintManager } from "../constraint-manager.js";
 import { crossSessionConsistencyEnforcer } from "../cross-session-consistency-enforcer.js";
@@ -26,14 +29,7 @@ class ArtifactGenerationServiceImpl {
 	): Promise<ArtifactGenerationResponse> {
 		const sessionState = designPhaseWorkflow.getSession(sessionId);
 		if (!sessionState) {
-			return {
-				success: false,
-				sessionId,
-				status: "error",
-				message: `Session ${sessionId} not found`,
-				recommendations: ["Start a new session"],
-				artifacts: [],
-			};
+			throw sessionNotFoundError(sessionId);
 		}
 
 		const artifacts: Artifact[] = [];
@@ -87,15 +83,11 @@ class ArtifactGenerationServiceImpl {
 				artifacts,
 			};
 		} catch (error) {
-			return {
-				...ErrorReporter.createFullErrorResponse(error, {
-					sessionId,
-					status: "generation-failed",
-					recommendations: ["Check session state and try again"],
-					artifacts,
-				}),
-				artifacts, // Keep the partial artifacts
-			};
+			throw validationError("Artifact generation failed", {
+				sessionId,
+				artifactsGenerated: artifacts.length,
+				reason: error instanceof Error ? error.message : String(error),
+			});
 		}
 	}
 
@@ -189,11 +181,9 @@ class ArtifactGenerationServiceImpl {
 				},
 			};
 		} catch (error) {
-			return ErrorReporter.createFullErrorResponse(error, {
+			throw validationError("Constraint documentation generation failed", {
 				sessionId,
-				status: "documentation-generation-failed",
-				recommendations: ["Check session state and try again"],
-				artifacts: [],
+				reason: error instanceof Error ? error.message : String(error),
 			});
 		}
 	}

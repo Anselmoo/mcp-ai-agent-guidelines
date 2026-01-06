@@ -1,5 +1,8 @@
 // Consistency Service - Handles consistency enforcement operations
-import { ErrorReporter } from "../../shared/errors.js";
+import {
+	sessionNotFoundError,
+	validationError,
+} from "../../shared/error-factory.js";
 import { constraintConsistencyEnforcer } from "../constraint-consistency-enforcer.js";
 import { constraintManager } from "../constraint-manager.js";
 import { coverageEnforcer } from "../coverage-enforcer.js";
@@ -32,14 +35,7 @@ class ConsistencyServiceImpl {
 	): Promise<ConsistencyServiceResponse> {
 		const sessionState = designPhaseWorkflow.getSession(sessionId);
 		if (!sessionState) {
-			return {
-				success: false,
-				sessionId,
-				status: "error",
-				message: `Session ${sessionId} not found`,
-				recommendations: ["Start a new session"],
-				artifacts: [],
-			};
+			throw sessionNotFoundError(sessionId);
 		}
 
 		const coverageResult = await coverageEnforcer.enforceCoverage({
@@ -49,15 +45,24 @@ class ConsistencyServiceImpl {
 			generateReport: true,
 		});
 
+		if (!coverageResult.passed) {
+			throw validationError(
+				`Coverage enforcement failed (${coverageResult.coverage.overall.toFixed(1)}%)`,
+				{
+					sessionId,
+					currentPhase: sessionState.currentPhase,
+					coverage: coverageResult.coverage,
+				},
+			);
+		}
+
 		return {
-			success: coverageResult.passed,
+			success: true,
 			sessionId,
 			currentPhase: sessionState.currentPhase,
 			coverage: coverageResult.coverage.overall,
-			status: coverageResult.passed ? "coverage-passed" : "coverage-failed",
-			message: coverageResult.passed
-				? `Coverage enforcement passed (${coverageResult.coverage.overall.toFixed(1)}%)`
-				: `Coverage enforcement failed (${coverageResult.coverage.overall.toFixed(1)}%)`,
+			status: "coverage-passed",
+			message: `Coverage enforcement passed (${coverageResult.coverage.overall.toFixed(1)}%)`,
 			recommendations: coverageResult.recommendations,
 			artifacts: [],
 			coverageReport: coverageResult,
@@ -72,14 +77,7 @@ class ConsistencyServiceImpl {
 	): Promise<ConsistencyServiceResponse> {
 		const sessionState = designPhaseWorkflow.getSession(sessionId);
 		if (!sessionState) {
-			return {
-				success: false,
-				sessionId,
-				status: "error",
-				message: `Session ${sessionId} not found`,
-				recommendations: ["Start a new session"],
-				artifacts: [],
-			};
+			throw sessionNotFoundError(sessionId);
 		}
 
 		const consistencyResult =
@@ -93,17 +91,25 @@ class ConsistencyServiceImpl {
 				strictMode: false,
 			});
 
+		if (!consistencyResult.success) {
+			throw validationError(
+				`Constraint consistency violations detected (${consistencyResult.consistencyScore}% consistency)`,
+				{
+					sessionId,
+					constraintId,
+					phaseId: phaseId || sessionState.currentPhase,
+					recommendations: consistencyResult.recommendations,
+				},
+			);
+		}
+
 		return {
-			success: consistencyResult.success,
+			success: true,
 			sessionId,
 			currentPhase: sessionState.currentPhase,
 			coverage: consistencyResult.consistencyScore,
-			status: consistencyResult.success
-				? "consistency-enforced"
-				: "consistency-violations",
-			message: consistencyResult.success
-				? `Cross-session constraint consistency enforced (${consistencyResult.consistencyScore}% consistency)`
-				: `Constraint consistency violations detected (${consistencyResult.consistencyScore}% consistency)`,
+			status: "consistency-enforced",
+			message: `Cross-session constraint consistency enforced (${consistencyResult.consistencyScore}% consistency)`,
 			recommendations: consistencyResult.recommendations,
 			artifacts: consistencyResult.generatedArtifacts,
 			consistencyEnforcement: consistencyResult,
@@ -167,11 +173,9 @@ class ConsistencyServiceImpl {
 				},
 			};
 		} catch (error) {
-			return ErrorReporter.createFullErrorResponse(error, {
+			throw validationError("Cross-session consistency enforcement failed", {
 				sessionId,
-				status: "consistency-check-failed",
-				recommendations: ["Check session state and try again"],
-				artifacts: [],
+				reason: error instanceof Error ? error.message : String(error),
 			});
 		}
 	}
@@ -237,11 +241,9 @@ class ConsistencyServiceImpl {
 				},
 			};
 		} catch (error) {
-			return ErrorReporter.createFullErrorResponse(error, {
+			throw validationError("Enforcement prompt generation failed", {
 				sessionId,
-				status: "prompt-generation-failed",
-				recommendations: ["Check session state and try again"],
-				artifacts: [],
+				reason: error instanceof Error ? error.message : String(error),
 			});
 		}
 	}
