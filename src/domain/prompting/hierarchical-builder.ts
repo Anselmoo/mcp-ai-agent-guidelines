@@ -1,4 +1,5 @@
 import type { PromptMetadata, PromptResult, PromptSection } from "./types.js";
+
 export type { PromptMetadata, PromptResult, PromptSection } from "./types.js";
 
 export interface HierarchicalPromptConfig {
@@ -23,21 +24,25 @@ function toNumberedList(items: string[]): string {
 }
 
 /**
- * Removes a leading markdown heading (first line starting with '#') and an
- * optional prefix from the remaining text. Intended to normalize reused content
- * that may already include headings.
+ * Normalizes markdown by removing the first heading and stripping heading
+ * markers from remaining lines. Optionally removes a leading prefix from the
+ * resulting text. Intended to flatten reused content that may include nested
+ * headings.
  */
 function stripHeadingPrefix(text: string, prefix?: string): string {
 	if (!text.trim()) return "";
 	const lines = text.trimStart().split("\n");
-	if (lines[0].startsWith("#")) {
-		lines.shift();
+	if (lines[0].startsWith("#")) lines.shift();
+
+	const flattened = lines
+		.map((line) => line.replace(/^#+\s*/, "").trimEnd())
+		.join("\n")
+		.trimStart();
+
+	if (prefix && flattened.startsWith(prefix)) {
+		return flattened.slice(prefix.length).trimStart();
 	}
-	const body = lines.join("\n").trimStart();
-	if (prefix && body.startsWith(prefix)) {
-		return body.slice(prefix.length).trimStart();
-	}
-	return body;
+	return flattened;
 }
 
 export function calculateComplexity(config: HierarchicalPromptConfig): number {
@@ -157,9 +162,4 @@ export function buildHierarchicalPrompt(
 		sections,
 		metadata,
 	};
-}
-
-export interface PromptResult {
-	sections: PromptSection[];
-	metadata: PromptMetadata;
 }
