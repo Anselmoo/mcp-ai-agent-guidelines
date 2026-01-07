@@ -2,21 +2,7 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { designAssistant } from "../../src/tools/design/index.ts";
 import { ErrorCode } from "../../src/tools/shared/error-codes.js";
-
-const parseMcpError = (response: unknown) => {
-	const errorResponse = response as {
-		isError?: boolean;
-		content?: Array<{ text: string }>;
-	};
-
-	expect(errorResponse?.isError).toBe(true);
-	const payload = JSON.parse(errorResponse?.content?.[0]?.text ?? "{}");
-	return payload as {
-		code: number;
-		message: string;
-		context?: Record<string, unknown>;
-	};
-};
+import { parseMcpError } from "./test-helpers.js";
 
 describe("Design Assistant Framework", () => {
 	beforeAll(async () => {

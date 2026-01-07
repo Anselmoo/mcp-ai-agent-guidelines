@@ -264,6 +264,19 @@ export class ErrorReporter {
 		context?: Record<string, unknown>,
 		defaultMessage?: string,
 	): StandardError {
+		// Special case: McpToolError needs conversion since code is numeric
+		if (error instanceof McpToolError) {
+			// Create a SessionError with the McpToolError's message and code info
+			const sessionError = new SessionError(error.message, {
+				...error.context,
+				...context,
+				mcpErrorCode: error.code,
+				retryable: error.isRetryable(),
+			});
+			sessionError.stack = error.stack;
+			return sessionError;
+		}
+
 		// If already a StandardError, preserve its type and merge context
 		if (isStandardError(error)) {
 			// If it already has all the context we need, return as-is
