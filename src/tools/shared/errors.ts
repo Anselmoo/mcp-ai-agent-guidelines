@@ -78,89 +78,109 @@ export class McpToolError extends Error {
 }
 
 /**
- * Base class for all operational errors in the application
+ * Session error for session-related issues
  */
-export class OperationError extends Error {
+export class SessionError extends Error {
 	public readonly code: string;
 	public readonly context?: Record<string, unknown>;
 	public readonly timestamp: Date;
 
-	constructor(
-		message: string,
-		code: string,
-		context?: Record<string, unknown>,
-	) {
+	constructor(message: string, context?: Record<string, unknown>) {
 		super(message);
-		this.name = "OperationError";
-		this.code = code;
+		this.name = "SessionError";
+		this.code = "SESSION_ERROR";
 		this.context = context;
 		this.timestamp = new Date();
 
-		// Maintains proper stack trace for where our error was thrown (only available on V8)
 		if (Error.captureStackTrace) {
-			Error.captureStackTrace(this, OperationError);
+			Error.captureStackTrace(this, SessionError);
 		}
-	}
-}
-
-/**
- * Validation error for input validation failures
- */
-export class ValidationError extends OperationError {
-	constructor(message: string, context?: Record<string, unknown>) {
-		super(message, "VALIDATION_ERROR", context);
-		this.name = "ValidationError";
-	}
-}
-
-/**
- * Configuration error for invalid or missing configuration
- */
-export class ConfigurationError extends OperationError {
-	constructor(message: string, context?: Record<string, unknown>) {
-		super(message, "CONFIGURATION_ERROR", context);
-		this.name = "ConfigurationError";
-	}
-}
-
-/**
- * Session error for session-related issues
- */
-export class SessionError extends OperationError {
-	constructor(message: string, context?: Record<string, unknown>) {
-		super(message, "SESSION_ERROR", context);
-		this.name = "SessionError";
 	}
 }
 
 /**
  * Phase error for design phase workflow issues
  */
-export class PhaseError extends OperationError {
+export class PhaseError extends Error {
+	public readonly code: string;
+	public readonly context?: Record<string, unknown>;
+	public readonly timestamp: Date;
+
 	constructor(message: string, context?: Record<string, unknown>) {
-		super(message, "PHASE_ERROR", context);
+		super(message);
 		this.name = "PhaseError";
+		this.code = "PHASE_ERROR";
+		this.context = context;
+		this.timestamp = new Date();
+
+		if (Error.captureStackTrace) {
+			Error.captureStackTrace(this, PhaseError);
+		}
 	}
 }
 
 /**
  * Generation error for artifact generation failures
  */
-export class GenerationError extends OperationError {
+export class GenerationError extends Error {
+	public readonly code: string;
+	public readonly context?: Record<string, unknown>;
+	public readonly timestamp: Date;
+
 	constructor(message: string, context?: Record<string, unknown>) {
-		super(message, "GENERATION_ERROR", context);
+		super(message);
 		this.name = "GenerationError";
+		this.code = "GENERATION_ERROR";
+		this.context = context;
+		this.timestamp = new Date();
+
+		if (Error.captureStackTrace) {
+			Error.captureStackTrace(this, GenerationError);
+		}
 	}
 }
 
 /**
  * Consistency error for consistency enforcement failures
  */
-export class ConsistencyError extends OperationError {
+export class ConsistencyError extends Error {
+	public readonly code: string;
+	public readonly context?: Record<string, unknown>;
+	public readonly timestamp: Date;
+
 	constructor(message: string, context?: Record<string, unknown>) {
-		super(message, "CONSISTENCY_ERROR", context);
+		super(message);
 		this.name = "ConsistencyError";
+		this.code = "CONSISTENCY_ERROR";
+		this.context = context;
+		this.timestamp = new Date();
+
+		if (Error.captureStackTrace) {
+			Error.captureStackTrace(this, ConsistencyError);
+		}
 	}
+}
+
+/**
+ * Type representing errors with standard structure
+ */
+export interface StandardError extends Error {
+	code: string;
+	context?: Record<string, unknown>;
+	timestamp: Date;
+}
+
+/**
+ * Type guard to check if an error has standard error properties
+ */
+function isStandardError(error: unknown): error is StandardError {
+	return (
+		error instanceof Error &&
+		"code" in error &&
+		typeof (error as { code: unknown }).code === "string" &&
+		"timestamp" in error &&
+		(error as { timestamp: unknown }).timestamp instanceof Date
+	);
 }
 
 /**
@@ -178,26 +198,26 @@ export class ErrorReporter {
 			rethrow?: boolean;
 			defaultMessage?: string;
 		},
-	): OperationError {
-		const operationError = ErrorReporter.toOperationError(
+	): StandardError {
+		const standardError = ErrorReporter.toStandardError(
 			error,
 			context,
 			options?.defaultMessage,
 		);
 
 		// Log the error
-		logger.error(operationError.message, {
-			code: operationError.code,
-			context: operationError.context,
-			stack: operationError.stack,
+		logger.error(standardError.message, {
+			code: standardError.code,
+			context: standardError.context,
+			stack: standardError.stack,
 		});
 
 		// Optionally rethrow
 		if (options?.rethrow) {
-			throw operationError;
+			throw standardError;
 		}
 
-		return operationError;
+		return standardError;
 	}
 
 	/**
@@ -216,41 +236,56 @@ export class ErrorReporter {
 	}
 
 	/**
-	 * Convert any error to an OperationError
+	 * Convert any error to a StandardError
 	 */
-	private static toOperationError(
+	private static toStandardError(
 		error: Error | unknown,
 		context?: Record<string, unknown>,
 		defaultMessage?: string,
-	): OperationError {
-		// If already an OperationError, merge context and return
-		if (error instanceof OperationError) {
-			return new OperationError(error.message, error.code, {
+	): StandardError {
+		// If already a StandardError, merge context and return
+		if (isStandardError(error)) {
+			// Return a new error with merged context
+			const newError = new SessionError(error.message, {
 				...error.context,
 				...context,
-			});
+			}) as StandardError;
+			newError.stack = error.stack;
+			return newError;
 		}
 
 		// If a regular Error, convert it
 		if (error instanceof Error) {
-			const opError = new OperationError(
+			const standardError = new SessionError(
 				error.message,
-				"UNKNOWN_ERROR",
 				context,
-			);
-			opError.stack = error.stack;
-			return opError;
+			) as StandardError;
+			// Override code to UNKNOWN_ERROR
+			Object.defineProperty(standardError, "code", {
+				value: "UNKNOWN_ERROR",
+				writable: false,
+				enumerable: true,
+				configurable: true,
+			});
+			standardError.stack = error.stack;
+			return standardError;
 		}
 
 		// Unknown error type
-		return new OperationError(
+		const unknownError = new SessionError(
 			defaultMessage || "An unknown error occurred",
-			"UNKNOWN_ERROR",
 			{
 				...context,
 				originalError: String(error),
 			},
-		);
+		) as StandardError;
+		Object.defineProperty(unknownError, "code", {
+			value: "UNKNOWN_ERROR",
+			writable: false,
+			enumerable: true,
+			configurable: true,
+		});
+		return unknownError;
 	}
 
 	/**
@@ -284,15 +319,15 @@ export class ErrorReporter {
 			context?: Record<string, unknown>;
 		};
 	} {
-		const operationError = ErrorReporter.toOperationError(error, context);
+		const standardError = ErrorReporter.toStandardError(error, context);
 
 		return {
 			success: false,
 			error: {
-				message: operationError.message,
-				code: operationError.code,
-				timestamp: operationError.timestamp.toISOString(),
-				...(operationError.context && { context: operationError.context }),
+				message: standardError.message,
+				code: standardError.code,
+				timestamp: standardError.timestamp.toISOString(),
+				...(standardError.context && { context: standardError.context }),
 			},
 		};
 	}
@@ -316,13 +351,13 @@ export class ErrorReporter {
 		recommendations: string[];
 		artifacts: T[];
 	} {
-		const operationError = ErrorReporter.toOperationError(error);
+		const standardError = ErrorReporter.toStandardError(error);
 
 		return {
 			success: false,
 			sessionId: baseResponse.sessionId,
 			status: baseResponse.status || "error",
-			message: operationError.message,
+			message: standardError.message,
 			recommendations: baseResponse.recommendations || [
 				"Check request parameters and try again",
 			],

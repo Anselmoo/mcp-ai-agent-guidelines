@@ -5,11 +5,8 @@
 // src/domain/design/phase-workflow.ts. This layer adds MCP-specific concerns like
 // methodology profiles, confirmation modules, and artifact generation.
 import { z } from "zod";
-import {
-	ConfigurationError,
-	PhaseError,
-	SessionError,
-} from "../shared/errors.js";
+import { ErrorCode } from "../shared/error-codes.js";
+import { McpToolError, PhaseError, SessionError } from "../shared/errors.js";
 import { confirmationModule } from "./confirmation-module.js";
 import { constraintManager } from "./constraint-manager.js";
 import { pivotModule } from "./pivot-module.js";
@@ -73,7 +70,8 @@ class DesignPhaseWorkflowImpl {
 		switch (action) {
 			case "start":
 				if (!request.config) {
-					throw new ConfigurationError(
+					throw new McpToolError(
+						ErrorCode.CONFIG_INVALID,
 						"Configuration is required for start action",
 						{ sessionId, action },
 					);
@@ -87,7 +85,8 @@ class DesignPhaseWorkflowImpl {
 				return this.advancePhase(sessionId, request.phaseId, request.content);
 			case "complete":
 				if (!request.phaseId || !request.content) {
-					throw new ConfigurationError(
+					throw new McpToolError(
+						ErrorCode.MISSING_REQUIRED_FIELD,
 						"Phase ID and content are required for complete action",
 						{ sessionId, action },
 					);
@@ -98,10 +97,14 @@ class DesignPhaseWorkflowImpl {
 			case "status":
 				return this.getSessionStatus(sessionId);
 			default:
-				throw new ConfigurationError(`Unknown workflow action: ${action}`, {
-					action,
-					sessionId,
-				});
+				throw new McpToolError(
+					ErrorCode.CONFIG_INVALID,
+					`Unknown workflow action: ${action}`,
+					{
+						action,
+						sessionId,
+					},
+				);
 		}
 	}
 
