@@ -5,90 +5,83 @@ import {
 	hierarchicalPromptBuilder,
 } from "../../../src/tools/prompt/hierarchical-prompt-builder";
 
+type ErrorResponse = { isError?: boolean; content: { text: string }[] };
+
 describe("hierarchical-schema.validation - Schema Validation and Canonicalization", () => {
 	describe("Required fields validation", () => {
-		it("should reject when context is missing", async () => {
-			await expect(
-				hierarchicalPromptBuilder({
-					goal: "Build a feature",
-					requirements: ["requirement 1"],
-				}),
-			).rejects.toThrow();
+		it("should return error when context is missing", async () => {
+			const result = (await hierarchicalPromptBuilder({
+				goal: "Build a feature",
+				requirements: ["requirement 1"],
+			})) as ErrorResponse;
+			expect(result.isError).toBe(true);
 		});
 
-		it("should reject when goal is missing", async () => {
-			await expect(
-				hierarchicalPromptBuilder({
-					context: "Microservices architecture",
-					requirements: ["requirement 1"],
-				}),
-			).rejects.toThrow();
+		it("should return error when goal is missing", async () => {
+			const result = (await hierarchicalPromptBuilder({
+				context: "Microservices architecture",
+				requirements: ["requirement 1"],
+			})) as ErrorResponse;
+			expect(result.isError).toBe(true);
 		});
 
-		it("should reject when both context and goal are missing", async () => {
-			await expect(
-				hierarchicalPromptBuilder({
-					requirements: ["requirement 1"],
-				}),
-			).rejects.toThrow();
+		it("should return error when both context and goal are missing", async () => {
+			const result = (await hierarchicalPromptBuilder({
+				requirements: ["requirement 1"],
+			})) as ErrorResponse;
+			expect(result.isError).toBe(true);
 		});
 	});
 
 	describe("Type validation - Wrong types should be rejected", () => {
-		it("should reject when context is a number", async () => {
-			await expect(
-				hierarchicalPromptBuilder({
-					context: 123,
-					goal: "Build a feature",
-				}),
-			).rejects.toThrow();
+		it("should return error when context is a number", async () => {
+			const result = (await hierarchicalPromptBuilder({
+				context: 123,
+				goal: "Build a feature",
+			})) as ErrorResponse;
+			expect(result.isError).toBe(true);
 		});
 
-		it("should reject when goal is a number", async () => {
-			await expect(
-				hierarchicalPromptBuilder({
-					context: "Microservices architecture",
-					goal: 456,
-				}),
-			).rejects.toThrow();
+		it("should return error when goal is a number", async () => {
+			const result = (await hierarchicalPromptBuilder({
+				context: "Microservices architecture",
+				goal: 456,
+			})) as ErrorResponse;
+			expect(result.isError).toBe(true);
 		});
 
-		it("should reject when context is an object", async () => {
-			await expect(
-				hierarchicalPromptBuilder({
-					context: { text: "some context" },
-					goal: "Build a feature",
-				}),
-			).rejects.toThrow();
+		it("should return error when context is an object", async () => {
+			const result = (await hierarchicalPromptBuilder({
+				context: { text: "some context" },
+				goal: "Build a feature",
+			})) as ErrorResponse;
+			expect(result.isError).toBe(true);
 		});
 
-		it("should reject when goal is an array", async () => {
-			await expect(
-				hierarchicalPromptBuilder({
-					context: "Microservices architecture",
-					goal: ["goal1", "goal2"],
-				}),
-			).rejects.toThrow();
+		it("should return error when goal is an array", async () => {
+			const result = (await hierarchicalPromptBuilder({
+				context: "Microservices architecture",
+				goal: ["goal1", "goal2"],
+			})) as ErrorResponse;
+			expect(result.isError).toBe(true);
 		});
 
-		it("should reject when requirements is not an array", async () => {
-			await expect(
-				hierarchicalPromptBuilder({
-					context: "Microservices architecture",
-					goal: "Build a feature",
-					requirements: "single requirement",
-				}),
-			).rejects.toThrow();
+		it("should return error when requirements is not an array", async () => {
+			const result = (await hierarchicalPromptBuilder({
+				context: "Microservices architecture",
+				goal: "Build a feature",
+				requirements: "single requirement",
+			})) as ErrorResponse;
+			expect(result.isError).toBe(true);
 		});
 
-		it("should reject when requirements contains non-strings", async () => {
-			await expect(
-				hierarchicalPromptBuilder({
-					context: "Microservices architecture",
-					goal: "Build a feature",
-					requirements: ["req1", 123, "req3"],
-				}),
-			).rejects.toThrow();
+		it("should return error when requirements contains non-strings", async () => {
+			const result = (await hierarchicalPromptBuilder({
+				context: "Microservices architecture",
+				goal: "Build a feature",
+				requirements: ["req1", 123, "req3"],
+			})) as ErrorResponse;
+			expect(result.isError).toBe(true);
 		});
 	});
 
@@ -116,24 +109,22 @@ describe("hierarchical-schema.validation - Schema Validation and Canonicalizatio
 			expect(result.content[0].text).toContain("Examples"); // few-shot
 		});
 
-		it("should reject invalid technique values", async () => {
-			await expect(
-				hierarchicalPromptBuilder({
-					context: "Microservices architecture",
-					goal: "Build a feature",
-					techniques: ["invalid-technique"],
-				}),
-			).rejects.toThrow();
+		it("should return error for invalid technique values", async () => {
+			const result = (await hierarchicalPromptBuilder({
+				context: "Microservices architecture",
+				goal: "Build a feature",
+				techniques: ["invalid-technique"],
+			})) as ErrorResponse;
+			expect(result.isError).toBe(true);
 		});
 
-		it("should reject invalid technique in coerced string", async () => {
-			await expect(
-				hierarchicalPromptBuilder({
-					context: "Microservices architecture",
-					goal: "Build a feature",
-					techniques: "not-a-valid-technique",
-				}),
-			).rejects.toThrow();
+		it("should return error for invalid technique in coerced string", async () => {
+			const result = (await hierarchicalPromptBuilder({
+				context: "Microservices architecture",
+				goal: "Build a feature",
+				techniques: "not-a-valid-technique",
+			})) as ErrorResponse;
+			expect(result.isError).toBe(true);
 		});
 
 		it("should handle empty array of techniques", async () => {
@@ -165,14 +156,13 @@ describe("hierarchical-schema.validation - Schema Validation and Canonicalizatio
 			expect(result.content[0].type).toBe("text");
 		});
 
-		it("should reject invalid provider values", async () => {
-			await expect(
-				hierarchicalPromptBuilder({
-					context: "Microservices architecture",
-					goal: "Build a feature",
-					provider: "invalid-provider",
-				}),
-			).rejects.toThrow();
+		it("should return error for invalid provider values", async () => {
+			const result = (await hierarchicalPromptBuilder({
+				context: "Microservices architecture",
+				goal: "Build a feature",
+				provider: "invalid-provider",
+			})) as ErrorResponse;
+			expect(result.isError).toBe(true);
 		});
 
 		it("should use default provider when not specified", async () => {
@@ -213,14 +203,13 @@ describe("hierarchical-schema.validation - Schema Validation and Canonicalizatio
 			expect(result.content[0].type).toBe("text");
 		});
 
-		it("should reject invalid mode values", async () => {
-			await expect(
-				hierarchicalPromptBuilder({
-					context: "Microservices architecture",
-					goal: "Build a feature",
-					mode: "invalid-mode",
-				}),
-			).rejects.toThrow();
+		it("should return error for invalid mode values", async () => {
+			const result = (await hierarchicalPromptBuilder({
+				context: "Microservices architecture",
+				goal: "Build a feature",
+				mode: "invalid-mode",
+			})) as ErrorResponse;
+			expect(result.isError).toBe(true);
 		});
 
 		it("should use default mode when not specified", async () => {
@@ -252,14 +241,13 @@ describe("hierarchical-schema.validation - Schema Validation and Canonicalizatio
 			expect(result.content[0].type).toBe("text");
 		});
 
-		it("should reject invalid style values", async () => {
-			await expect(
-				hierarchicalPromptBuilder({
-					context: "Microservices architecture",
-					goal: "Build a feature",
-					style: "invalid-style",
-				}),
-			).rejects.toThrow();
+		it("should return error for invalid style values", async () => {
+			const result = (await hierarchicalPromptBuilder({
+				context: "Microservices architecture",
+				goal: "Build a feature",
+				style: "invalid-style",
+			})) as ErrorResponse;
+			expect(result.isError).toBe(true);
 		});
 	});
 
@@ -360,23 +348,23 @@ describe("hierarchical-schema.validation - Schema Validation and Canonicalizatio
 
 	describe("Boolean field validation", () => {
 		it("should reject non-boolean values for includeFrontmatter", async () => {
-			await expect(
-				hierarchicalPromptBuilder({
-					context: "Microservices architecture",
-					goal: "Build a feature",
-					includeFrontmatter: "yes",
-				}),
-			).rejects.toThrow();
+			const result = await hierarchicalPromptBuilder({
+				context: "Microservices architecture",
+				goal: "Build a feature",
+				includeFrontmatter: "yes",
+			});
+			expect((result as { isError?: boolean }).isError).toBe(true);
+			expect(result.content[0].text).toContain("validation");
 		});
 
 		it("should reject non-boolean values for includeDisclaimer", async () => {
-			await expect(
-				hierarchicalPromptBuilder({
-					context: "Microservices architecture",
-					goal: "Build a feature",
-					includeDisclaimer: 1,
-				}),
-			).rejects.toThrow();
+			const result = await hierarchicalPromptBuilder({
+				context: "Microservices architecture",
+				goal: "Build a feature",
+				includeDisclaimer: 1,
+			});
+			expect((result as { isError?: boolean }).isError).toBe(true);
+			expect(result.content[0].text).toContain("validation");
 		});
 
 		it("should accept boolean true/false for all boolean fields", async () => {
@@ -481,23 +469,23 @@ describe("hierarchical-schema.validation - Schema Validation and Canonicalizatio
 		});
 
 		it("should reject tools as non-array", async () => {
-			await expect(
-				hierarchicalPromptBuilder({
-					context: "Microservices architecture",
-					goal: "Build a feature",
-					tools: "single-tool",
-				}),
-			).rejects.toThrow();
+			const result = await hierarchicalPromptBuilder({
+				context: "Microservices architecture",
+				goal: "Build a feature",
+				tools: "single-tool",
+			});
+			expect((result as { isError?: boolean }).isError).toBe(true);
+			expect(result.content[0].text).toContain("validation");
 		});
 
 		it("should reject tools array with non-string elements", async () => {
-			await expect(
-				hierarchicalPromptBuilder({
-					context: "Microservices architecture",
-					goal: "Build a feature",
-					tools: ["tool1", 123, "tool3"],
-				}),
-			).rejects.toThrow();
+			const result = await hierarchicalPromptBuilder({
+				context: "Microservices architecture",
+				goal: "Build a feature",
+				tools: ["tool1", 123, "tool3"],
+			});
+			expect((result as { isError?: boolean }).isError).toBe(true);
+			expect(result.content[0].text).toContain("validation");
 		});
 
 		it("should accept issues as array of strings", async () => {
@@ -511,13 +499,13 @@ describe("hierarchical-schema.validation - Schema Validation and Canonicalizatio
 		});
 
 		it("should reject issues as non-array", async () => {
-			await expect(
-				hierarchicalPromptBuilder({
-					context: "Microservices architecture",
-					goal: "Build a feature",
-					issues: "single-issue",
-				}),
-			).rejects.toThrow();
+			const result = await hierarchicalPromptBuilder({
+				context: "Microservices architecture",
+				goal: "Build a feature",
+				issues: "single-issue",
+			});
+			expect((result as { isError?: boolean }).isError).toBe(true);
+			expect(result.content[0].text).toContain("validation");
 		});
 	});
 });

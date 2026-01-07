@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { handleToolError } from "../shared/error-handler.js";
 import {
 	buildFurtherReadingSection,
 	buildMetadataSection,
@@ -70,60 +71,64 @@ const StrategyFrameworkSchema = z.object({
 });
 
 export async function strategyFrameworksBuilder(args: unknown) {
-	const input = StrategyFrameworkSchema.parse(args);
+	try {
+		const input = StrategyFrameworkSchema.parse(args);
 
-	const sections: string[] = [];
+		const sections: string[] = [];
 
-	// Overview
-	sections.push(`# Strategy Toolkit Overview`);
-	sections.push(`Context: ${input.context}`);
-	if (input.objectives?.length)
-		sections.push(`Objectives:\n- ${input.objectives.join("\n- ")}`);
-	if (input.stakeholders?.length)
-		sections.push(`Stakeholders:\n- ${input.stakeholders.join("\n- ")}`);
-	if (input.constraints?.length)
-		sections.push(`Constraints:\n- ${input.constraints.join("\n- ")}`);
-	if (input.market) sections.push(`Market scope: ${input.market}`);
-	sections.push("");
+		// Overview
+		sections.push(`# Strategy Toolkit Overview`);
+		sections.push(`Context: ${input.context}`);
+		if (input.objectives?.length)
+			sections.push(`Objectives:\n- ${input.objectives.join("\n- ")}`);
+		if (input.stakeholders?.length)
+			sections.push(`Stakeholders:\n- ${input.stakeholders.join("\n- ")}`);
+		if (input.constraints?.length)
+			sections.push(`Constraints:\n- ${input.constraints.join("\n- ")}`);
+		if (input.market) sections.push(`Market scope: ${input.market}`);
+		sections.push("");
 
-	// Add each requested framework section
-	for (const fw of input.frameworks) {
-		const txt = renderFramework(fw);
-		sections.push(txt);
-		if (input.includeDiagrams) {
-			const diag = renderDiagram(fw, input.points);
-			if (diag) sections.push(diag);
+		// Add each requested framework section
+		for (const fw of input.frameworks) {
+			const txt = renderFramework(fw);
+			sections.push(txt);
+			if (input.includeDiagrams) {
+				const diag = renderDiagram(fw, input.points);
+				if (diag) sections.push(diag);
+			}
 		}
+
+		// Metadata and references
+		const filenameHint = `${slugify(
+			`strategy-${input.frameworks.join("-")}`,
+		)}.md`;
+		const metadata = input.includeMetadata
+			? buildMetadataSection({
+					sourceTool: "mcp_ai-agent-guid_strategy-frameworks-builder",
+					inputFile: input.inputFile,
+					filenameHint,
+				})
+			: "";
+
+		const refs = input.includeReferences
+			? buildFurtherReadingSection(REFERENCE_LINKS)
+			: "";
+
+		const body = [metadata, sections.join("\n\n"), refs]
+			.filter(Boolean)
+			.join("\n\n");
+
+		return {
+			content: [
+				{
+					type: "text",
+					text: body,
+				},
+			],
+		};
+	} catch (error) {
+		return handleToolError(error);
 	}
-
-	// Metadata and references
-	const filenameHint = `${slugify(
-		`strategy-${input.frameworks.join("-")}`,
-	)}.md`;
-	const metadata = input.includeMetadata
-		? buildMetadataSection({
-				sourceTool: "mcp_ai-agent-guid_strategy-frameworks-builder",
-				inputFile: input.inputFile,
-				filenameHint,
-			})
-		: "";
-
-	const refs = input.includeReferences
-		? buildFurtherReadingSection(REFERENCE_LINKS)
-		: "";
-
-	const body = [metadata, sections.join("\n\n"), refs]
-		.filter(Boolean)
-		.join("\n\n");
-
-	return {
-		content: [
-			{
-				type: "text",
-				text: body,
-			},
-		],
-	};
 }
 
 function renderFramework(fw: FrameworkId): string {

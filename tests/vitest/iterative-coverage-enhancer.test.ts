@@ -209,16 +209,15 @@ describe("Iterative Coverage Enhancer", () => {
 		expect(validResult).toBeDefined();
 
 		// Invalid coverage values should be handled by Zod validation
-		await expect(
-			iterativeCoverageEnhancer({
-				currentCoverage: {
-					statements: 150, // Invalid: > 100
-					functions: -10, // Invalid: < 0
-					lines: 50,
-					branches: 60,
-				},
-			}),
-		).rejects.toThrow();
+		const invalidResult = (await iterativeCoverageEnhancer({
+			currentCoverage: {
+				statements: 150, // Invalid: > 100
+				functions: -10, // Invalid: < 0
+				lines: 50,
+				branches: 60,
+			},
+		})) as { isError?: boolean; content: { text: string }[] };
+		expect(invalidResult.isError).toBe(true);
 	});
 
 	it("should handle different programming languages and frameworks", async () => {

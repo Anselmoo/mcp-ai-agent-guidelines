@@ -63,23 +63,23 @@ describe("prompt-chaining-builder", () => {
 		expect(text).toMatch(/\*\*format\*\*: JSON/);
 	});
 
-	it("validates dependencies and throws on invalid dependency", async () => {
-		await expect(
-			promptChainingBuilder({
-				chainName: "Invalid Chain",
-				steps: [
-					{
-						name: "Step 1",
-						prompt: "First step",
-					},
-					{
-						name: "Step 2",
-						prompt: "Second step",
-						dependencies: ["nonexistent"],
-					},
-				],
-			}),
-		).rejects.toThrow(/invalid dependency/);
+	it("validates dependencies and returns error on invalid dependency", async () => {
+		const result = (await promptChainingBuilder({
+			chainName: "Invalid Chain",
+			steps: [
+				{
+					name: "Step 1",
+					prompt: "First step",
+				},
+				{
+					name: "Step 2",
+					prompt: "Second step",
+					dependencies: ["nonexistent"],
+				},
+			],
+		})) as { isError?: boolean; content: { text: string }[] };
+		expect(result.isError).toBe(true);
+		expect(result.content[0].text).toMatch(/invalid dependency/i);
 	});
 
 	it("supports error handling strategies", async () => {

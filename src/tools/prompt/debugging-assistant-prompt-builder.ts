@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { DEFAULT_MODEL } from "../config/model-config.js";
+import { handleToolError } from "../shared/error-handler.js";
 import {
 	buildFrontmatterWithPolicy as buildFrontmatter,
 	buildFurtherReadingSection,
@@ -385,41 +386,47 @@ function buildDebuggingAssistantFrontmatter(
 }
 
 export async function debuggingAssistantPromptBuilder(args: unknown) {
-	const input = DebuggingAssistantPromptSchema.parse(args);
+	try {
+		const input = DebuggingAssistantPromptSchema.parse(args);
 
-	const enforce = input.forcePromptMdStyle ?? true;
-	const effectiveIncludeFrontmatter = enforce ? true : input.includeFrontmatter;
-	const effectiveIncludeMetadata = enforce ? true : input.includeMetadata;
+		const enforce = input.forcePromptMdStyle ?? true;
+		const effectiveIncludeFrontmatter = enforce
+			? true
+			: input.includeFrontmatter;
+		const effectiveIncludeMetadata = enforce ? true : input.includeMetadata;
 
-	const prompt = buildDebuggingAssistantPrompt(input);
-	const frontmatter = effectiveIncludeFrontmatter
-		? `${buildDebuggingAssistantFrontmatter(input)}\n`
-		: "";
-	const references = input.includeReferences
-		? buildFurtherReadingSection([
+		const prompt = buildDebuggingAssistantPrompt(input);
+		const frontmatter = effectiveIncludeFrontmatter
+			? `${buildDebuggingAssistantFrontmatter(input)}\n`
+			: "";
+		const references = input.includeReferences
+			? buildFurtherReadingSection([
+					{
+						title: "A Debugging Manifesto",
+						url: "https://jvns.ca/blog/2022/12/08/a-debugging-manifesto/",
+						description:
+							"Julia Evans' systematic approach to debugging complex problems",
+					},
+				])
+			: "";
+		const filenameHint = `${slugify("debugging-assistant")}.prompt.md`;
+		const metadata = effectiveIncludeMetadata
+			? buildMetadataSection({
+					sourceTool: "mcp_ai-agent-guid_debugging-assistant-prompt-builder",
+					inputFile: input.inputFile,
+					filenameHint,
+				})
+			: "";
+
+		return {
+			content: [
 				{
-					title: "A Debugging Manifesto",
-					url: "https://jvns.ca/blog/2022/12/08/a-debugging-manifesto/",
-					description:
-						"Julia Evans' systematic approach to debugging complex problems",
+					type: "text",
+					text: `${frontmatter}## 🐛 Debugging Assistant Prompt\n\n${metadata}\n${prompt}\n\n${references ? `${references}\n` : ""}`,
 				},
-			])
-		: "";
-	const filenameHint = `${slugify("debugging-assistant")}.prompt.md`;
-	const metadata = effectiveIncludeMetadata
-		? buildMetadataSection({
-				sourceTool: "mcp_ai-agent-guid_debugging-assistant-prompt-builder",
-				inputFile: input.inputFile,
-				filenameHint,
-			})
-		: "";
-
-	return {
-		content: [
-			{
-				type: "text",
-				text: `${frontmatter}## 🐛 Debugging Assistant Prompt\n\n${metadata}\n${prompt}\n\n${references ? `${references}\n` : ""}`,
-			},
-		],
-	};
+			],
+		};
+	} catch (error) {
+		return handleToolError(error);
+	}
 }

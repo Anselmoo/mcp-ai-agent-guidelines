@@ -12,6 +12,7 @@ on:
       - main
       - development
       - 'auto-regenerate-demos-*'
+      - 'copilot/**'
 
 env:
   NODE_VERSION: "22"

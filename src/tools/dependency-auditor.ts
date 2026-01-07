@@ -8,6 +8,7 @@ import {
 	type PackageFileType,
 	type ReferenceLink,
 } from "./dependency-auditor/index.js";
+import { handleToolError } from "./shared/error-handler.js";
 import {
 	buildFurtherReadingSection,
 	buildOptionalSectionsMap,
@@ -121,95 +122,103 @@ const DependencyAuditorSchema = z.object({
 type DependencyAuditorInput = z.infer<typeof DependencyAuditorSchema>;
 
 export async function dependencyAuditor(args: unknown) {
-	const input = DependencyAuditorSchema.parse(args);
+	try {
+		const input = DependencyAuditorSchema.parse(args);
 
-	// Get content from either new or legacy parameter
-	const content = input.dependencyContent || input.packageJsonContent;
+		// Get content from either new or legacy parameter
+		const content = input.dependencyContent || input.packageJsonContent;
 
-	if (!content) {
-		return {
-			content: [
-				{
-					type: "text",
-					text: `## ❌ Error\n\nNo dependency content provided. Please provide either 'dependencyContent' or 'packageJsonContent'.`,
-				},
-			],
-		};
-	}
+		if (!content) {
+			return {
+				content: [
+					{
+						type: "text",
+						text: `## ❌ Error\n\nNo dependency content provided. Please provide either 'dependencyContent' or 'packageJsonContent'.`,
+					},
+				],
+			};
+		}
 
-	// Determine file type and get appropriate parser
-	const fileType = input.fileType;
-	let parser = null;
+		// Determine file type and get appropriate parser
+		const fileType = input.fileType;
+		let parser = null;
 
-	if (fileType && fileType !== "auto") {
-		parser = getParserForFileType(fileType as PackageFileType);
-	}
+		if (fileType && fileType !== "auto") {
+			parser = getParserForFileType(fileType as PackageFileType);
+		}
 
-	if (!parser) {
-		parser = detectParser(content);
-	}
+		if (!parser) {
+			parser = detectParser(content);
+		}
 
-	if (!parser) {
-		// Fall back to legacy package.json handling for backward compatibility
-		return handleLegacyPackageJson(content, input);
-	}
+		if (!parser) {
+			// Fall back to legacy package.json handling for backward compatibility
+			return handleLegacyPackageJson(content, input);
+		}
 
-	// Parse and analyze using the new multi-language system
-	const parseResult = parser.parse(content);
+		// Parse and analyze using the new multi-language system
+		const parseResult = parser.parse(content);
 
-	if (parseResult.errors && parseResult.errors.length > 0) {
-		return {
-			content: [
-				{
-					type: "text",
-					text: `## ❌ Error\n\n${parseResult.errors.join("\n")}`,
-				},
-			],
-		};
-	}
+		if (parseResult.errors && parseResult.errors.length > 0) {
+			return {
+				content: [
+					{
+						type: "text",
+						text: `## ❌ Error\n\n${parseResult.errors.join("\n")}`,
+					},
+				],
+			};
+		}
 
-	const analysisResult = parser.analyze(parseResult, {
-		checkOutdated: input.checkOutdated,
-		checkDeprecated: input.checkDeprecated,
-		checkVulnerabilities: input.checkVulnerabilities,
-		suggestAlternatives: input.suggestAlternatives,
-		analyzeBundleSize: input.analyzeBundleSize,
-	});
+		const analysisResult = parser.analyze(parseResult, {
+			checkOutdated: input.checkOutdated,
+			checkDeprecated: input.checkDeprecated,
+			checkVulnerabilities: input.checkVulnerabilities,
+			suggestAlternatives: input.suggestAlternatives,
+			analyzeBundleSize: input.analyzeBundleSize,
+		});
 
-	// Build optional sections using the shared utility
-	const { references, metadata } = buildOptionalSectionsMap(input, {
-		references: {
-			key: "includeReferences",
-			builder: () =>
-				buildFurtherReadingSection(
-					getEcosystemReferences(analysisResult.ecosystem),
-				),
-		},
-		metadata: {
-			key: "includeMetadata",
-			builder: (cfg) =>
-				[
-					"### Metadata",
-					`- Updated: ${new Date().toISOString().slice(0, 10)}`,
-					"- Source tool: mcp_ai-agent-guid_dependency-auditor",
-					`- Ecosystem: ${analysisResult.ecosystem}`,
-					`- File type: ${analysisResult.fileType}`,
-					cfg.inputFile ? `- Input file: ${cfg.inputFile}` : undefined,
-					"",
-				]
-					.filter(Boolean)
-					.join("\n"),
-		},
-	});
-
-	return {
-		content: [
-			{
-				type: "text",
-				text: generateMultiLanguageReport(analysisResult, metadata, references),
+		// Build optional sections using the shared utility
+		const { references, metadata } = buildOptionalSectionsMap(input, {
+			references: {
+				key: "includeReferences",
+				builder: () =>
+					buildFurtherReadingSection(
+						getEcosystemReferences(analysisResult.ecosystem),
+					),
 			},
-		],
-	};
+			metadata: {
+				key: "includeMetadata",
+				builder: (cfg) =>
+					[
+						"### Metadata",
+						`- Updated: ${new Date().toISOString().slice(0, 10)}`,
+						"- Source tool: mcp_ai-agent-guid_dependency-auditor",
+						`- Ecosystem: ${analysisResult.ecosystem}`,
+						`- File type: ${analysisResult.fileType}`,
+						cfg.inputFile ? `- Input file: ${cfg.inputFile}` : undefined,
+						"",
+					]
+						.filter(Boolean)
+						.join("\n"),
+			},
+		});
+
+		return {
+			content: [
+				{
+					type: "text",
+					text: generateMultiLanguageReport(
+						analysisResult,
+						metadata,
+						references,
+					),
+				},
+			],
+		};
+	} catch (error) {
+		return handleToolError(error);
+	}
 }
 
 /**
