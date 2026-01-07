@@ -56,30 +56,22 @@ describe("Design Assistant - Context-Aware Guidance", () => {
 	});
 
 	it("should handle missing content parameter", async () => {
-		let errorPayload:
-			| { code?: ErrorCode; context?: Record<string, unknown> }
-			| undefined;
-		try {
-			const response = await designAssistant.processRequest({
-				action: "generate-context-aware-guidance",
-				sessionId: "test-session-004",
-			});
-			const parsed = response as {
-				isError?: boolean;
-				content?: Array<{ text: string }>;
-			};
-			if (parsed.isError) {
-				errorPayload = JSON.parse(parsed.content?.[0]?.text ?? "{}");
-			}
-		} catch (error) {
-			errorPayload = error as {
-				code?: ErrorCode;
-				context?: Record<string, unknown>;
-			};
-		}
+		const response = await designAssistant.processRequest({
+			action: "generate-context-aware-guidance",
+			sessionId: "test-session-004",
+		});
 
-		expect(errorPayload?.code).toBe(ErrorCode.MISSING_REQUIRED_FIELD);
-		expect(errorPayload?.context?.fieldName).toBe("content");
+		const parsed = response as {
+			isError?: boolean;
+			content?: Array<{ text: string }>;
+		};
+		if (parsed.isError) {
+			const errorPayload = JSON.parse(parsed.content?.[0]?.text ?? "{}");
+			expect(errorPayload.code).toBe(ErrorCode.MISSING_REQUIRED_FIELD);
+			expect(errorPayload.context?.fieldName).toBe("content");
+		} else {
+			throw new Error("Expected error response");
+		}
 	});
 
 	it("should include recommendations about detected language and framework", async () => {
