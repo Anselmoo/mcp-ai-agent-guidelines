@@ -202,13 +202,13 @@ class DesignAssistantImpl {
 					if (!request.config) {
 						throw missingRequiredError("config", { action, sessionId });
 					}
-					return sessionManagementService.startDesignSession(
+					return await sessionManagementService.startDesignSession(
 						sessionId,
 						request.config,
 						request.constraintConfig,
 					);
 				case "advance-phase":
-					return phaseManagementService.advancePhase(
+					return await phaseManagementService.advancePhase(
 						sessionId,
 						request.content,
 						request.phaseId,
@@ -220,7 +220,7 @@ class DesignAssistantImpl {
 							sessionId,
 						});
 					}
-					return phaseManagementService.validatePhase(
+					return await phaseManagementService.validatePhase(
 						sessionId,
 						request.phaseId,
 						request.content,
@@ -229,7 +229,7 @@ class DesignAssistantImpl {
 					if (!request.content) {
 						throw missingRequiredError("content", { action, sessionId });
 					}
-					return additionalOperationsService.evaluatePivot(
+					return await additionalOperationsService.evaluatePivot(
 						sessionId,
 						request.content,
 					);
@@ -237,7 +237,7 @@ class DesignAssistantImpl {
 					if (!request.content) {
 						throw missingRequiredError("content", { action, sessionId });
 					}
-					return additionalOperationsService.generateStrategicPivotPrompt(
+					return await additionalOperationsService.generateStrategicPivotPrompt(
 						sessionId,
 						request.content,
 						request.includeTemplates,
@@ -245,7 +245,7 @@ class DesignAssistantImpl {
 						request.customInstructions,
 					);
 				case "generate-artifacts":
-					return artifactGenerationService.generateArtifacts(
+					return await artifactGenerationService.generateArtifacts(
 						sessionId,
 						request.artifactTypes || ["adr", "specification", "roadmap"],
 					);
@@ -253,16 +253,19 @@ class DesignAssistantImpl {
 					if (!request.content) {
 						throw missingRequiredError("content", { action, sessionId });
 					}
-					return consistencyService.enforceCoverage(sessionId, request.content);
+					return await consistencyService.enforceCoverage(
+						sessionId,
+						request.content,
+					);
 				case "enforce-consistency":
-					return consistencyService.enforceConsistency(
+					return await consistencyService.enforceConsistency(
 						sessionId,
 						request.constraintId,
 						request.phaseId,
 						request.content,
 					);
 				case "get-status":
-					return sessionManagementService.getSessionStatus(sessionId);
+					return await sessionManagementService.getSessionStatus(sessionId);
 				case "load-constraints":
 					if (!request.constraintConfig) {
 						throw missingRequiredError("constraintConfig", {
@@ -270,7 +273,7 @@ class DesignAssistantImpl {
 							sessionId,
 						});
 					}
-					return additionalOperationsService.loadConstraints(
+					return await additionalOperationsService.loadConstraints(
 						request.constraintConfig,
 					);
 				case "select-methodology":
@@ -280,16 +283,18 @@ class DesignAssistantImpl {
 							action,
 						});
 					}
-					return additionalOperationsService.selectMethodology(
+					return await additionalOperationsService.selectMethodology(
 						sessionId,
 						request.methodologySignals,
 					);
 				case "enforce-cross-session-consistency":
-					return consistencyService.enforceCrossSessionConsistency(sessionId);
+					return await consistencyService.enforceCrossSessionConsistency(
+						sessionId,
+					);
 				case "generate-enforcement-prompts":
-					return consistencyService.generateEnforcementPrompts(sessionId);
+					return await consistencyService.generateEnforcementPrompts(sessionId);
 				case "generate-constraint-documentation":
-					return artifactGenerationService.generateConstraintDocumentation(
+					return await artifactGenerationService.generateConstraintDocumentation(
 						sessionId,
 					);
 				case "generate-context-aware-guidance":

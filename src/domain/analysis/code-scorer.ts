@@ -7,12 +7,13 @@ export interface CoverageMetrics {
 	lines?: number;
 }
 
-export interface HygieneMetrics {
+/**
+ * Input parameters for code analysis and scoring.
+ * Contains code content, language information, and optional coverage metrics.
+ */
+export interface CodeAnalysisInput {
 	codeContent?: string;
 	language?: string;
-}
-
-export interface CodeScorerInput extends HygieneMetrics {
 	coverageMetrics?: CoverageMetrics;
 	weights?: Partial<ScoreWeights>;
 }
@@ -24,6 +25,23 @@ const defaultWeights: ScoreWeights = {
 	security: 0.25,
 };
 
+/**
+ * Helper function to detect hardcoded credentials in code.
+ * @param codeContent - The code to analyze
+ * @returns True if potential hardcoded credentials are found
+ */
+function hasHardcodedCredentials(codeContent: string): boolean {
+	return /(apiKey|api_key|password|secret|token|auth|credential)\s*=\s*['"][^'"]+['"]/i.test(
+		codeContent,
+	);
+}
+
+/**
+ * Calculates hygiene score based on code quality patterns.
+ * @param codeContent - The code to analyze
+ * @param language - Programming language of the code
+ * @returns Score breakdown with issues found
+ */
 export function calculateHygieneScore(
 	codeContent?: string,
 	language?: string,
@@ -49,11 +67,7 @@ export function calculateHygieneScore(
 		issues.push("Debug statements found");
 	}
 
-	if (
-		/(apiKey|api_key|password|secret|token)\s*=\s*['"][^'"]+['"]/i.test(
-			codeContent,
-		)
-	) {
+	if (hasHardcodedCredentials(codeContent)) {
 		score -= 20;
 		issues.push("Potential hardcoded credentials detected");
 	}
@@ -80,6 +94,11 @@ export function calculateHygieneScore(
 	return { score: Math.max(0, score), issues };
 }
 
+/**
+ * Calculates test coverage score based on provided metrics.
+ * @param coverageMetrics - Test coverage metrics (statements, branches, functions, lines)
+ * @returns Score breakdown with coverage issues
+ */
 export function calculateCoverageScore(
 	coverageMetrics?: CoverageMetrics,
 ): ScoreBreakdown["coverage"] {
@@ -109,6 +128,11 @@ export function calculateCoverageScore(
 	return { score: Math.max(0, Math.min(100, avgCoverage)), issues };
 }
 
+/**
+ * Calculates documentation score based on comments and documentation presence.
+ * @param codeContent - The code to analyze
+ * @returns Score breakdown with documentation issues
+ */
 export function calculateDocumentationScore(
 	codeContent?: string,
 ): ScoreBreakdown["documentation"] {
@@ -143,6 +167,11 @@ export function calculateDocumentationScore(
 	return { score: normalizedScore, issues };
 }
 
+/**
+ * Calculates security score based on common security vulnerabilities.
+ * @param codeContent - The code to analyze
+ * @returns Score breakdown with security issues
+ */
 export function calculateSecurityScore(
 	codeContent?: string,
 ): ScoreBreakdown["security"] {
@@ -168,11 +197,7 @@ export function calculateSecurityScore(
 		issues.push("Potential XSS vulnerability with innerHTML");
 	}
 
-	if (
-		/(secret|password|api_key|apiKey|token|auth|credential)\s*=\s*['"][^'"]+['"]/i.test(
-			codeContent,
-		)
-	) {
+	if (hasHardcodedCredentials(codeContent)) {
 		score -= 25;
 		issues.push("Hardcoded secrets or credentials found");
 	}
@@ -180,6 +205,12 @@ export function calculateSecurityScore(
 	return { score: Math.max(0, score), issues };
 }
 
+/**
+ * Calculates weighted average score from breakdown components.
+ * @param breakdown - Individual score components
+ * @param weights - Custom weights for score components (optional)
+ * @returns Weighted average score (0-100)
+ */
 export function weightedAverage(
 	breakdown: ScoreBreakdown,
 	weights: Partial<ScoreWeights> = {},
@@ -204,6 +235,11 @@ export function weightedAverage(
 	return weightedSum / totalWeight;
 }
 
+/**
+ * Generates improvement recommendations based on score breakdown.
+ * @param breakdown - Individual score components
+ * @returns Array of actionable recommendations
+ */
 export function generateRecommendations(breakdown: ScoreBreakdown): string[] {
 	const recommendations: string[] = [];
 
@@ -240,7 +276,14 @@ export function generateRecommendations(breakdown: ScoreBreakdown): string[] {
 	return recommendations;
 }
 
-export function calculateCleanCodeScore(input: CodeScorerInput): ScoringResult {
+/**
+ * Calculates comprehensive clean code score with detailed breakdown.
+ * @param input - Code analysis input with content, language, and coverage metrics
+ * @returns Complete scoring result with overall score, breakdown, and recommendations
+ */
+export function calculateCleanCodeScore(
+	input: CodeAnalysisInput,
+): ScoringResult {
 	const hygiene = calculateHygieneScore(input.codeContent, input.language);
 	const coverage = calculateCoverageScore(input.coverageMetrics);
 	const documentation = calculateDocumentationScore(input.codeContent);

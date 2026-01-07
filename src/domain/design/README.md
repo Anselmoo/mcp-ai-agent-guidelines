@@ -67,7 +67,7 @@ Shared domain types:
 
 All domain functions follow strict principles:
 
-1. **Pure Functions**: No side effects, deterministic
+1. **Isolated State Management**: Stateful operations are isolated to the domain layer
 2. **No Framework Dependencies**: No MCP SDK, Express, etc.
 3. **Explicit Types**: Full TypeScript strict mode
 4. **Error Handling**: Clear error messages with context
@@ -129,16 +129,19 @@ if (result.valid) {
 
 ## Tool Layer Integration
 
-The tool layer (`src/tools/design/design-phase-workflow.ts`) now imports domain functions:
+The tool layer (`src/tools/design/design-phase-workflow.ts`) is currently a self-contained orchestration layer that does not yet import domain functions.
+
+**Planned Integration**: Future refactoring will migrate logic to use domain functions:
 
 ```typescript
+// Planned future integration:
 import {
   getNextPhase as domainGetNextPhase,
   canTransition as domainCanTransition,
 } from '../../domain/design/index.js';
 ```
 
-This demonstrates the pattern while maintaining backward compatibility. Future refactoring can migrate more logic to the domain layer.
+This demonstrates the target pattern for maintaining backward compatibility while extracting pure domain logic.
 
 ## Testing
 

@@ -1,6 +1,8 @@
 // Regression test for design-assistant defensive array checks
 import { beforeAll, describe, expect, it } from "vitest";
 import { designAssistant } from "../../src/tools/design/index.ts";
+import { ErrorCode } from "../../src/tools/shared/error-codes.js";
+import { parseMcpError } from "./test-helpers.js";
 
 describe("Design Assistant - Defensive Array Checks", () => {
 	beforeAll(async () => {
@@ -95,11 +97,13 @@ describe("Design Assistant - Defensive Array Checks", () => {
 	});
 
 	it("should handle empty or malformed data gracefully", async () => {
-		await expect(
-			designAssistant.processRequest({
-				action: "get-status",
-				sessionId: "non-existent-session",
-			}),
-		).rejects.toThrow("Session not found");
+		const response = await designAssistant.processRequest({
+			action: "get-status",
+			sessionId: "non-existent-session",
+		});
+
+		const error = parseMcpError(response);
+		expect(error.code).toBe(ErrorCode.SESSION_NOT_FOUND);
+		expect(error.message).toContain("Session not found");
 	});
 });

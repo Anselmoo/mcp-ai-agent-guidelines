@@ -1,7 +1,6 @@
 export type {
-	CodeScorerInput,
+	CodeAnalysisInput,
 	CoverageMetrics,
-	HygieneMetrics,
 } from "./code-scorer.js";
 export {
 	calculateCleanCodeScore,
