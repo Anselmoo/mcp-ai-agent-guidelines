@@ -117,12 +117,20 @@ Heuristic fit against requirement keywords; qualitative only. Validate with quic
 - Config-driven list (context windows, tiers, capabilities) periodically refreshed
 - Capability weights & budget adjustments may evolve
 
-${codeExamples ? `### Code Examples
+${
+	codeExamples
+		? `### Code Examples
 ${codeExamples}
-` : ""}
-${fileLinks ? `### Configuration & Files
+`
+		: ""
+}
+${
+	fileLinks
+		? `### Configuration & Files
 ${fileLinks}
-` : ""}
+`
+		: ""
+}
 ${
 	input.includeReferences
 		? `### References

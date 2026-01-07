@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { DEFAULT_MODEL, DEFAULT_MODEL_SLUG } from "../config/model-config.js";
+import { handleToolError } from "../shared/error-handler.js";
 import {
 	buildDesignReferencesSection,
 	buildProviderTipsSection,
@@ -14,7 +15,6 @@ import {
 	buildMetadataSection,
 	slugify,
 } from "../shared/prompt-utils.js";
-import { handleToolError } from "../shared/error-handler.js";
 
 const SparkPromptSchema = z.object({
 	// Header
@@ -180,7 +180,9 @@ export async function sparkPromptBuilder(args: unknown) {
 		const input = SparkPromptSchema.parse(args);
 
 		const enforce = input.forcePromptMdStyle ?? true;
-		const effectiveIncludeFrontmatter = enforce ? true : input.includeFrontmatter;
+		const effectiveIncludeFrontmatter = enforce
+			? true
+			: input.includeFrontmatter;
 		const effectiveIncludeMetadata = enforce ? true : input.includeMetadata;
 
 		const prompt = buildSparkPrompt(input);

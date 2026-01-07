@@ -8,11 +8,11 @@ import {
 	type PackageFileType,
 	type ReferenceLink,
 } from "./dependency-auditor/index.js";
+import { handleToolError } from "./shared/error-handler.js";
 import {
 	buildFurtherReadingSection,
 	buildOptionalSectionsMap,
 } from "./shared/prompt-utils.js";
-import { handleToolError } from "./shared/error-handler.js";
 
 /**
  * Legacy types for backward compatibility with package.json-only analysis
@@ -208,7 +208,11 @@ export async function dependencyAuditor(args: unknown) {
 			content: [
 				{
 					type: "text",
-					text: generateMultiLanguageReport(analysisResult, metadata, references),
+					text: generateMultiLanguageReport(
+						analysisResult,
+						metadata,
+						references,
+					),
 				},
 			],
 		};

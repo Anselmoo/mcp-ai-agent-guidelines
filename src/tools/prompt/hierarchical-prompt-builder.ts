@@ -6,6 +6,7 @@ import {
 } from "../../domain/prompting/hierarchical-builder.js";
 import { DEFAULT_MODEL, DEFAULT_MODEL_SLUG } from "../config/model-config.js";
 import { emitDeprecationWarning } from "../shared/deprecation.js";
+import { handleToolError } from "../shared/error-handler.js";
 import {
 	buildProviderTipsSection,
 	ProviderEnum,
@@ -20,7 +21,6 @@ import {
 	slugify,
 } from "../shared/prompt-utils.js";
 import { ExportFormatEnum } from "../shared/types/export-format.types.js";
-import { handleToolError } from "../shared/error-handler.js";
 import { applyTechniques } from "./technique-applicator.js";
 
 // Strict mode enum for YAML frontmatter
@@ -96,7 +96,9 @@ export async function hierarchicalPromptBuilder(args: unknown) {
 
 		// If enforcing *.prompt.md style, ensure frontmatter + metadata are on
 		const enforce = input.forcePromptMdStyle ?? true;
-		const effectiveIncludeFrontmatter = enforce ? true : input.includeFrontmatter;
+		const effectiveIncludeFrontmatter = enforce
+			? true
+			: input.includeFrontmatter;
 		const effectiveIncludeMetadata = enforce ? true : input.includeMetadata;
 
 		const normalizedOutputFormat = input.outputFormat

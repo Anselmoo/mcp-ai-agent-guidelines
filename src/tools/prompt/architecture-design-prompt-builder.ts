@@ -1,12 +1,12 @@
 import { z } from "zod";
 import { DEFAULT_MODEL } from "../config/model-config.js";
+import { handleToolError } from "../shared/error-handler.js";
 import {
 	buildFrontmatterWithPolicy as buildFrontmatter,
 	buildFurtherReadingSection,
 	buildMetadataSection,
 	slugify,
 } from "../shared/prompt-utils.js";
-import { handleToolError } from "../shared/error-handler.js";
 
 const ArchitectureDesignPromptSchema = z.object({
 	systemRequirements: z
@@ -140,7 +140,9 @@ export async function architectureDesignPromptBuilder(args: unknown) {
 		const input = ArchitectureDesignPromptSchema.parse(args);
 
 		const enforce = input.forcePromptMdStyle ?? true;
-		const effectiveIncludeFrontmatter = enforce ? true : input.includeFrontmatter;
+		const effectiveIncludeFrontmatter = enforce
+			? true
+			: input.includeFrontmatter;
 		const effectiveIncludeMetadata = enforce ? true : input.includeMetadata;
 
 		const prompt = buildArchitectureDesignPrompt(input);

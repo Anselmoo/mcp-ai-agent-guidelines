@@ -3,8 +3,8 @@
 // while identifying and suggesting removal of dead code
 
 import { z } from "zod";
-import { buildFurtherReadingSection } from "./shared/prompt-utils.js";
 import { handleToolError } from "./shared/error-handler.js";
+import { buildFurtherReadingSection } from "./shared/prompt-utils.js";
 
 const IterativeCoverageEnhancerSchema = z.object({
 	// Analysis Configuration
@@ -224,7 +224,8 @@ export async function iterativeCoverageEnhancer(args: unknown) {
 					{
 						title: "Test-Driven Development Guide",
 						url: "https://testdriven.io/",
-						description: "Comprehensive resource for TDD practices and patterns",
+						description:
+							"Comprehensive resource for TDD practices and patterns",
 					},
 					{
 						title: "Benefits of Testing Code",
@@ -246,7 +247,8 @@ export async function iterativeCoverageEnhancer(args: unknown) {
 					{
 						title: "Code Coverage Analysis in CI",
 						url: "https://docs.github.com/en/actions/automating-builds-and-tests/about-continuous-integration",
-						description: "GitHub's documentation on coverage in CI/CD pipelines",
+						description:
+							"GitHub's documentation on coverage in CI/CD pipelines",
 					},
 				])
 			: "";

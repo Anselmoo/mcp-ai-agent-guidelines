@@ -1,17 +1,17 @@
 ## 🧹 Code Hygiene Analysis Report
 
 ### Metadata
-- Updated: 2026-01-06
+- Updated: 2026-01-07
 - Source tool: mcp_ai-agent-guid_code-hygiene-analyzer
 - Input file: /home/runner/work/mcp-ai-agent-guidelines/mcp-ai-agent-guidelines/demos/demo-code-analysis.py
 
 ### 📋 Summary
-| Key             | Value  |
-| --------------- | ------ |
-| Language        | python |
-| Framework       | none   |
-| Issues Found    | 3      |
-| Recommendations | 3      |
+| Key | Value |
+|---|---|
+| Language | python |
+| Framework | none |
+| Issues Found | 3 |
+| Recommendations | 3 |
 
 ### ❗ Issues Detected
 1. **Code Complexity**: Deep nesting detected (8 levels) - consider refactoring
@@ -19,11 +19,11 @@
 3. **Dead Code**: Found 28 lines of commented code - consider removing
 
 ### 🗂️ Issues Table
-| Type            | Description                                             |
-| --------------- | ------------------------------------------------------- |
+| Type | Description |
+|---|---|
 | Code Complexity | Deep nesting detected (8 levels) - consider refactoring |
-| Technical Debt  | Found TODO or FIXME comments indicating incomplete work |
-| Dead Code       | Found 28 lines of commented code - consider removing    |
+| Technical Debt | Found TODO or FIXME comments indicating incomplete work |
+| Dead Code | Found 28 lines of commented code - consider removing |
 
 
 ### ✅ Recommendations

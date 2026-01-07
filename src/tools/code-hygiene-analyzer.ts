@@ -1,9 +1,9 @@
 import { z } from "zod";
+import { handleToolError } from "./shared/error-handler.js";
 import {
 	buildFurtherReadingSection,
 	buildOptionalSectionsMap,
 } from "./shared/prompt-utils.js";
-import { handleToolError } from "./shared/error-handler.js";
 
 const CodeHygieneSchema = z.object({
 	codeContent: z
