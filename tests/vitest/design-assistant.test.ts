@@ -1,6 +1,22 @@
 // Design Assistant Tests
 import { beforeAll, describe, expect, it } from "vitest";
 import { designAssistant } from "../../src/tools/design/index.ts";
+import { ErrorCode } from "../../src/tools/shared/error-codes.js";
+
+const parseMcpError = (response: unknown) => {
+	const errorResponse = response as {
+		isError?: boolean;
+		content?: Array<{ text: string }>;
+	};
+
+	expect(errorResponse?.isError).toBe(true);
+	const payload = JSON.parse(errorResponse?.content?.[0]?.text ?? "{}");
+	return payload as {
+		code: number;
+		message: string;
+		context?: Record<string, unknown>;
+	};
+};
 
 describe("Design Assistant Framework", () => {
 	beforeAll(async () => {
@@ -239,12 +255,13 @@ describe("Design Assistant Framework", () => {
 	});
 
 	it("should handle errors gracefully", async () => {
-		await expect(
-			designAssistant.processRequest({
-				action: "get-status",
-				sessionId: "non-existent-session",
-			}),
-		).rejects.toThrow();
+		const response = await designAssistant.processRequest({
+			action: "get-status",
+			sessionId: "non-existent-session",
+		});
+
+		const error = parseMcpError(response);
+		expect(error.code).toBe(ErrorCode.SESSION_NOT_FOUND);
 	});
 });
 

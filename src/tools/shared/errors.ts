@@ -162,6 +162,27 @@ export class ConsistencyError extends Error {
 }
 
 /**
+ * Unknown error for unrecognized error types
+ */
+export class UnknownError extends Error {
+	public readonly code: string;
+	public readonly context?: Record<string, unknown>;
+	public readonly timestamp: Date;
+
+	constructor(message: string, context?: Record<string, unknown>) {
+		super(message);
+		this.name = "UnknownError";
+		this.code = "UNKNOWN_ERROR";
+		this.context = context;
+		this.timestamp = new Date();
+
+		if (Error.captureStackTrace) {
+			Error.captureStackTrace(this, UnknownError);
+		}
+	}
+}
+
+/**
  * Type representing errors with standard structure
  */
 export interface StandardError extends Error {
@@ -243,49 +264,40 @@ export class ErrorReporter {
 		context?: Record<string, unknown>,
 		defaultMessage?: string,
 	): StandardError {
-		// If already a StandardError, merge context and return
+		// If already a StandardError, preserve its type and merge context
 		if (isStandardError(error)) {
-			// Return a new error with merged context
-			const newError = new SessionError(error.message, {
+			// If it already has all the context we need, return as-is
+			if (!context || Object.keys(context).length === 0) {
+				return error;
+			}
+			// Create a new error of the same type with merged context
+			const ErrorConstructor = error.constructor as new (
+				message: string,
+				ctx?: Record<string, unknown>,
+			) => StandardError;
+			const newError = new ErrorConstructor(error.message, {
 				...error.context,
 				...context,
-			}) as StandardError;
+			});
 			newError.stack = error.stack;
 			return newError;
 		}
 
-		// If a regular Error, convert it
+		// If a regular Error, convert it with UNKNOWN_ERROR code
 		if (error instanceof Error) {
-			const standardError = new SessionError(
-				error.message,
-				context,
-			) as StandardError;
-			// Override code to UNKNOWN_ERROR
-			Object.defineProperty(standardError, "code", {
-				value: "UNKNOWN_ERROR",
-				writable: false,
-				enumerable: true,
-				configurable: true,
+			const unknownError = new UnknownError(error.message, {
+				...context,
+				originalError: error.name,
 			});
-			standardError.stack = error.stack;
-			return standardError;
+			unknownError.stack = error.stack;
+			return unknownError;
 		}
 
 		// Unknown error type
-		const unknownError = new SessionError(
-			defaultMessage || "An unknown error occurred",
-			{
-				...context,
-				originalError: String(error),
-			},
-		) as StandardError;
-		Object.defineProperty(unknownError, "code", {
-			value: "UNKNOWN_ERROR",
-			writable: false,
-			enumerable: true,
-			configurable: true,
+		return new UnknownError(defaultMessage || "An unknown error occurred", {
+			...context,
+			originalError: String(error),
 		});
-		return unknownError;
 	}
 
 	/**

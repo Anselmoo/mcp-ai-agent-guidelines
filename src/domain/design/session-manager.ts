@@ -1,8 +1,8 @@
 /**
  * Session Manager - Pure domain logic for design session lifecycle
  *
- * This module provides pure functions for managing design session state.
- * All functions are side-effect free and framework-independent.
+ * This module provides functions for managing design session state.
+ * All functions are framework-independent and isolated to the domain layer.
  */
 
 import type {

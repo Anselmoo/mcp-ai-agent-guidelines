@@ -65,58 +65,34 @@ describe("Design Assistant error resilience", () => {
 	});
 
 	it("returns session-not-found error for status queries", async () => {
-		let thrownError: unknown;
-		try {
-			await designAssistant.processRequest({
-				action: "get-status",
-				sessionId: "missing-session-status",
-			});
-		} catch (error) {
-			thrownError = error;
-		}
+		const response = await designAssistant.processRequest({
+			action: "get-status",
+			sessionId: "missing-session-status",
+		});
 
-		const error = thrownError as {
-			code?: ErrorCode;
-			context?: Record<string, unknown>;
-		};
+		const error = parseMcpError(response);
 		expect(error.code).toBe(ErrorCode.SESSION_NOT_FOUND);
 		expect(error.context?.sessionId).toBe("missing-session-status");
 	});
 
 	it("returns session-not-found error for artifact generation", async () => {
-		let thrownError: unknown;
-		try {
-			await designAssistant.processRequest({
-				action: "generate-artifacts",
-				sessionId: "missing-session-artifacts",
-			});
-		} catch (error) {
-			thrownError = error;
-		}
+		const response = await designAssistant.processRequest({
+			action: "generate-artifacts",
+			sessionId: "missing-session-artifacts",
+		});
 
-		const error = thrownError as {
-			code?: ErrorCode;
-			context?: Record<string, unknown>;
-		};
+		const error = parseMcpError(response);
 		expect(error.code).toBe(ErrorCode.SESSION_NOT_FOUND);
 		expect(error.context?.sessionId).toBe("missing-session-artifacts");
 	});
 
 	it("returns session-not-found error for consistency enforcement without session", async () => {
-		let thrownError: unknown;
-		try {
-			await designAssistant.processRequest({
-				action: "enforce-consistency",
-				sessionId: "missing-consistency-session",
-			});
-		} catch (error) {
-			thrownError = error;
-		}
+		const response = await designAssistant.processRequest({
+			action: "enforce-consistency",
+			sessionId: "missing-consistency-session",
+		});
 
-		const error = thrownError as {
-			code?: ErrorCode;
-			context?: Record<string, unknown>;
-		};
+		const error = parseMcpError(response);
 		expect(error.code).toBe(ErrorCode.SESSION_NOT_FOUND);
 		expect(error.context?.sessionId).toBe("missing-consistency-session");
 	});

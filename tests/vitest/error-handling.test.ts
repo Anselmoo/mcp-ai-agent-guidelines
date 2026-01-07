@@ -99,7 +99,10 @@ describe("ErrorReporter", () => {
 			expect(reported).toBeInstanceOf(Error);
 			expect(reported.message).toBe("Regular error");
 			expect(reported.code).toBe("UNKNOWN_ERROR");
-			expect(reported.context).toEqual({ extra: "context" });
+			expect(reported.context).toEqual({
+				extra: "context",
+				originalError: "Error",
+			});
 
 			errorSpy.mockRestore();
 		});
@@ -233,7 +236,7 @@ describe("ErrorReporter", () => {
 					message: "Something went wrong",
 					code: "UNKNOWN_ERROR",
 					timestamp: expect.any(String),
-					context: { operation: "test" },
+					context: { operation: "test", originalError: "Error" },
 				},
 			});
 		});

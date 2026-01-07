@@ -1,6 +1,22 @@
 // Design Assistant Constraint Consistency Enforcement Integration Test
 import { beforeEach, describe, expect, it } from "vitest";
 import { designAssistant } from "../../src/tools/design/index.ts";
+import { ErrorCode } from "../../src/tools/shared/error-codes.js";
+
+const parseMcpError = (response: unknown) => {
+	const errorResponse = response as {
+		isError?: boolean;
+		content?: Array<{ text: string }>;
+	};
+
+	expect(errorResponse?.isError).toBe(true);
+	const payload = JSON.parse(errorResponse?.content?.[0]?.text ?? "{}");
+	return payload as {
+		code: number;
+		message: string;
+		context?: Record<string, unknown>;
+	};
+};
 
 describe("Design Assistant - Constraint Consistency Enforcement Integration", () => {
 	beforeEach(async () => {
@@ -129,13 +145,15 @@ describe("Design Assistant - Constraint Consistency Enforcement Integration", ()
 	});
 
 	it("should handle missing session gracefully", async () => {
-		await expect(
-			designAssistant.processRequest({
-				action: "enforce-consistency",
-				sessionId: "non-existent-session",
-				content: "Testing error handling for missing session",
-			}),
-		).rejects.toThrow();
+		const response = await designAssistant.processRequest({
+			action: "enforce-consistency",
+			sessionId: "non-existent-session",
+			content: "Testing error handling for missing session",
+		});
+
+		const error = parseMcpError(response);
+		expect(error.code).toBe(ErrorCode.SESSION_NOT_FOUND);
+		expect(error.context?.sessionId).toBe("non-existent-session");
 	});
 
 	it("should work with multiple sessions for cross-session consistency", async () => {
