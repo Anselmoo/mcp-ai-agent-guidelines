@@ -1,10 +1,10 @@
 import { z } from "zod";
+import { handleToolError } from "../shared/error-handler.js";
 import {
 	buildFurtherReadingSection,
 	buildMetadataSection,
 	slugify,
 } from "../shared/prompt-utils.js";
-import { handleToolError } from "../shared/error-handler.js";
 
 // Aliases for compliance (avoid using trademarks explicitly in variable/API names)
 const ALIASES = {

@@ -1,12 +1,12 @@
 import { z } from "zod";
 import { DEFAULT_MODEL } from "../config/model-config.js";
+import { handleToolError } from "../shared/error-handler.js";
 import {
 	buildFrontmatterWithPolicy as buildFrontmatter,
 	buildFurtherReadingSection,
 	buildMetadataSection,
 	slugify,
 } from "../shared/prompt-utils.js";
-import { handleToolError } from "../shared/error-handler.js";
 
 const DebuggingAssistantPromptSchema = z.object({
 	errorDescription: z.string().describe("Description of the error or issue"),
@@ -390,7 +390,9 @@ export async function debuggingAssistantPromptBuilder(args: unknown) {
 		const input = DebuggingAssistantPromptSchema.parse(args);
 
 		const enforce = input.forcePromptMdStyle ?? true;
-		const effectiveIncludeFrontmatter = enforce ? true : input.includeFrontmatter;
+		const effectiveIncludeFrontmatter = enforce
+			? true
+			: input.includeFrontmatter;
 		const effectiveIncludeMetadata = enforce ? true : input.includeMetadata;
 
 		const prompt = buildDebuggingAssistantPrompt(input);

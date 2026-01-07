@@ -1,12 +1,12 @@
 import { z } from "zod";
 import { DEFAULT_MODEL } from "../config/model-config.js";
+import { handleToolError } from "../shared/error-handler.js";
 import {
 	buildFrontmatterWithPolicy as buildFrontmatter,
 	buildFurtherReadingSection,
 	buildMetadataSection,
 	slugify,
 } from "../shared/prompt-utils.js";
-import { handleToolError } from "../shared/error-handler.js";
 
 const CodeAnalysisPromptSchema = z.object({
 	codebase: z.string().describe("The codebase or code snippet to analyze"),
@@ -305,7 +305,9 @@ export async function codeAnalysisPromptBuilder(args: unknown) {
 		const input = CodeAnalysisPromptSchema.parse(args);
 
 		const enforce = input.forcePromptMdStyle ?? true;
-		const effectiveIncludeFrontmatter = enforce ? true : input.includeFrontmatter;
+		const effectiveIncludeFrontmatter = enforce
+			? true
+			: input.includeFrontmatter;
 		const effectiveIncludeMetadata = enforce ? true : input.includeMetadata;
 
 		const prompt = buildCodeAnalysisPrompt(input);

@@ -16,11 +16,11 @@ import {
 	generateInsights,
 	generateRecommendations,
 } from "./semantic-analyzer/index.js";
+import { handleToolError } from "./shared/error-handler.js";
 import {
 	buildFurtherReadingSection,
 	buildMetadataSection,
 } from "./shared/prompt-utils.js";
-import { handleToolError } from "./shared/error-handler.js";
 
 const SemanticCodeAnalyzerSchema = z.object({
 	codeContent: z

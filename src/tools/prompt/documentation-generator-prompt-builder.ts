@@ -1,12 +1,12 @@
 import { z } from "zod";
 import { DEFAULT_MODEL } from "../config/model-config.js";
+import { handleToolError } from "../shared/error-handler.js";
 import {
 	buildFrontmatterWithPolicy as buildFrontmatter,
 	buildFurtherReadingSection,
 	buildMetadataSection,
 	slugify,
 } from "../shared/prompt-utils.js";
-import { handleToolError } from "../shared/error-handler.js";
 
 const DocumentationGeneratorPromptSchema = z.object({
 	contentType: z
@@ -149,7 +149,9 @@ export async function documentationGeneratorPromptBuilder(args: unknown) {
 		const input = DocumentationGeneratorPromptSchema.parse(args);
 
 		const enforce = input.forcePromptMdStyle ?? true;
-		const effectiveIncludeFrontmatter = enforce ? true : input.includeFrontmatter;
+		const effectiveIncludeFrontmatter = enforce
+			? true
+			: input.includeFrontmatter;
 		const effectiveIncludeMetadata = enforce ? true : input.includeMetadata;
 
 		const prompt = buildDocumentationGeneratorPrompt(input);
@@ -169,7 +171,8 @@ export async function documentationGeneratorPromptBuilder(args: unknown) {
 		const filenameHint = `${slugify(`documentation-${input.contentType}`)}.prompt.md`;
 		const metadata = effectiveIncludeMetadata
 			? buildMetadataSection({
-					sourceTool: "mcp_ai-agent-guid_documentation-generator-prompt-builder",
+					sourceTool:
+						"mcp_ai-agent-guid_documentation-generator-prompt-builder",
 					inputFile: input.inputFile,
 					filenameHint,
 				})

@@ -456,7 +456,8 @@ export async function promptingHierarchyEvaluator(args: unknown) {
 				{
 					title: "Hierarchical Prompting for Better AI Interactions",
 					url: "https://relevanceai.com/prompt-engineering/master-hierarchical-prompting-for-better-ai-interactions",
-					description: "Comprehensive guide to hierarchical prompting techniques",
+					description:
+						"Comprehensive guide to hierarchical prompting techniques",
 				},
 				{
 					title: "Hierarchical Prompting Taxonomy (HPT)",

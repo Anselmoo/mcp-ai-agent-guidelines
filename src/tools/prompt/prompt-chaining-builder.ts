@@ -1,12 +1,12 @@
 import { z } from "zod";
 import { emitDeprecationWarning } from "../shared/deprecation.js";
+import { validationError } from "../shared/error-factory.js";
 import { handleToolError } from "../shared/error-handler.js";
 import {
 	buildFurtherReadingSection,
 	buildMetadataSection,
 	slugify,
 } from "../shared/prompt-utils.js";
-import { validationError } from "../shared/error-factory.js";
 
 /**
  * Schema for a single step in a prompt chain.

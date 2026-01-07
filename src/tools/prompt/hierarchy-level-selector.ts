@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { emitDeprecationWarning } from "../shared/deprecation.js";
-import { buildFurtherReadingSection } from "../shared/prompt-utils.js";
 import { handleToolError } from "../shared/error-handler.js";
+import { buildFurtherReadingSection } from "../shared/prompt-utils.js";
 import {
 	HIERARCHY_LEVEL_DEFINITIONS,
 	type PromptingHierarchyLevel,
@@ -251,7 +251,8 @@ export async function hierarchyLevelSelector(args: unknown) {
 			const levelDef = HIERARCHY_LEVEL_DEFINITIONS.find(
 				(d) => d.level === rec.level,
 			);
-			const emoji = idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : "▫️";
+			const emoji =
+				idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : "▫️";
 			output += `| ${emoji} ${idx + 1} | ${levelDef?.name} | ${rec.score} | ${getScoreAssessment(rec.score)} |\n`;
 		});
 		output += `\n`;
@@ -324,12 +325,14 @@ export async function hierarchyLevelSelector(args: unknown) {
 				{
 					title: "Hierarchical Prompting Framework",
 					url: "https://relevanceai.com/prompt-engineering/master-hierarchical-prompting-for-better-ai-interactions",
-					description: "Framework for structuring AI interactions hierarchically",
+					description:
+						"Framework for structuring AI interactions hierarchically",
 				},
 				{
 					title: "Task-Based Prompt Design",
 					url: "https://www.promptopti.com/best-3-prompting-hierarchy-tiers-for-ai-interaction/",
-					description: "Three-tier approach to hierarchical prompt optimization",
+					description:
+						"Three-tier approach to hierarchical prompt optimization",
 				},
 			]);
 			output += `\n${references}\n`;
@@ -350,7 +353,6 @@ export async function hierarchyLevelSelector(args: unknown) {
 		return handleToolError(error);
 	}
 }
-
 
 function getScoreAssessment(score: number): string {
 	if (score >= 60) return "Highly Recommended ✅";
