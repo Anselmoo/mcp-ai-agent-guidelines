@@ -161,7 +161,7 @@ describe("Domain Layer Integration", () => {
 		});
 
 		it("session tracks phase transitions correctly", () => {
-			const session = createSession("test-456", {
+			createSession("test-456", {
 				goal: "Build authentication",
 			});
 
