@@ -1,79 +1,33 @@
 import { describe, expect, it, vi } from "vitest";
 import {
-	ConfigurationError,
 	ConsistencyError,
 	ErrorReporter,
 	GenerationError,
-	OperationError,
 	PhaseError,
 	SessionError,
-	ValidationError,
 } from "../../src/tools/shared/errors";
 import { logger } from "../../src/tools/shared/logger";
 
 describe("Error Handling - Typed Errors", () => {
-	describe("OperationError", () => {
-		it("should create an operation error with code and context", () => {
-			const error = new OperationError("Test error", "TEST_ERROR", {
-				key: "value",
-			});
-
-			expect(error).toBeInstanceOf(Error);
-			expect(error).toBeInstanceOf(OperationError);
-			expect(error.name).toBe("OperationError");
-			expect(error.message).toBe("Test error");
-			expect(error.code).toBe("TEST_ERROR");
-			expect(error.context).toEqual({ key: "value" });
-			expect(error.timestamp).toBeInstanceOf(Date);
-			expect(error.stack).toBeDefined();
-		});
-
-		it("should work without context", () => {
-			const error = new OperationError("Test error", "TEST_ERROR");
-
-			expect(error.context).toBeUndefined();
-		});
-	});
-
-	describe("ValidationError", () => {
-		it("should create a validation error with correct code", () => {
-			const error = new ValidationError("Invalid input", {
-				field: "email",
-				reason: "invalid format",
-			});
-
-			expect(error).toBeInstanceOf(OperationError);
-			expect(error.name).toBe("ValidationError");
-			expect(error.code).toBe("VALIDATION_ERROR");
-			expect(error.message).toBe("Invalid input");
-			expect(error.context).toEqual({
-				field: "email",
-				reason: "invalid format",
-			});
-		});
-	});
-
-	describe("ConfigurationError", () => {
-		it("should create a configuration error", () => {
-			const error = new ConfigurationError("Missing config", {
-				configKey: "apiUrl",
-			});
-
-			expect(error).toBeInstanceOf(OperationError);
-			expect(error.name).toBe("ConfigurationError");
-			expect(error.code).toBe("CONFIGURATION_ERROR");
-		});
-	});
-
 	describe("SessionError", () => {
 		it("should create a session error", () => {
 			const error = new SessionError("Session not found", {
 				sessionId: "123",
 			});
 
-			expect(error).toBeInstanceOf(OperationError);
+			expect(error).toBeInstanceOf(Error);
 			expect(error.name).toBe("SessionError");
 			expect(error.code).toBe("SESSION_ERROR");
+			expect(error.message).toBe("Session not found");
+			expect(error.context).toEqual({ sessionId: "123" });
+			expect(error.timestamp).toBeInstanceOf(Date);
+			expect(error.stack).toBeDefined();
+		});
+
+		it("should work without context", () => {
+			const error = new SessionError("Test error");
+
+			expect(error.context).toBeUndefined();
 		});
 	});
 
@@ -81,7 +35,7 @@ describe("Error Handling - Typed Errors", () => {
 		it("should create a phase error", () => {
 			const error = new PhaseError("Invalid phase", { phaseId: "init" });
 
-			expect(error).toBeInstanceOf(OperationError);
+			expect(error).toBeInstanceOf(Error);
 			expect(error.name).toBe("PhaseError");
 			expect(error.code).toBe("PHASE_ERROR");
 		});
@@ -93,7 +47,7 @@ describe("Error Handling - Typed Errors", () => {
 				artifactType: "spec",
 			});
 
-			expect(error).toBeInstanceOf(OperationError);
+			expect(error).toBeInstanceOf(Error);
 			expect(error.name).toBe("GenerationError");
 			expect(error.code).toBe("GENERATION_ERROR");
 		});
@@ -105,7 +59,7 @@ describe("Error Handling - Typed Errors", () => {
 				constraint: "uniqueness",
 			});
 
-			expect(error).toBeInstanceOf(OperationError);
+			expect(error).toBeInstanceOf(Error);
 			expect(error.name).toBe("ConsistencyError");
 			expect(error.code).toBe("CONSISTENCY_ERROR");
 		});
@@ -114,21 +68,21 @@ describe("Error Handling - Typed Errors", () => {
 
 describe("ErrorReporter", () => {
 	describe("report", () => {
-		it("should report and log an OperationError", () => {
+		it("should report and log a StandardError", () => {
 			const errorSpy = vi.spyOn(logger, "error").mockImplementation(() => {});
 
-			const error = new ValidationError("Test validation error", {
+			const error = new SessionError("Test session error", {
 				field: "test",
 			});
 			const reported = ErrorReporter.report(error);
 
-			expect(reported).toBeInstanceOf(OperationError);
-			expect(reported.message).toBe("Test validation error");
-			expect(reported.code).toBe("VALIDATION_ERROR");
+			expect(reported).toBeInstanceOf(Error);
+			expect(reported.message).toBe("Test session error");
+			expect(reported.code).toBe("SESSION_ERROR");
 			expect(errorSpy).toHaveBeenCalledWith(
-				"Test validation error",
+				"Test session error",
 				expect.objectContaining({
-					code: "VALIDATION_ERROR",
+					code: "SESSION_ERROR",
 					context: { field: "test" },
 				}),
 			);
@@ -136,13 +90,13 @@ describe("ErrorReporter", () => {
 			errorSpy.mockRestore();
 		});
 
-		it("should convert regular Error to OperationError", () => {
+		it("should convert regular Error to StandardError", () => {
 			const errorSpy = vi.spyOn(logger, "error").mockImplementation(() => {});
 
 			const error = new Error("Regular error");
 			const reported = ErrorReporter.report(error, { extra: "context" });
 
-			expect(reported).toBeInstanceOf(OperationError);
+			expect(reported).toBeInstanceOf(Error);
 			expect(reported.message).toBe("Regular error");
 			expect(reported.code).toBe("UNKNOWN_ERROR");
 			expect(reported.context).toEqual({ extra: "context" });
@@ -155,7 +109,7 @@ describe("ErrorReporter", () => {
 
 			const reported = ErrorReporter.report("string error", { key: "value" });
 
-			expect(reported).toBeInstanceOf(OperationError);
+			expect(reported).toBeInstanceOf(Error);
 			expect(reported.message).toBe("An unknown error occurred");
 			expect(reported.code).toBe("UNKNOWN_ERROR");
 			expect(reported.context).toMatchObject({
@@ -185,15 +139,15 @@ describe("ErrorReporter", () => {
 
 			expect(() => {
 				ErrorReporter.report(error, undefined, { rethrow: true });
-			}).toThrow(OperationError);
+			}).toThrow(Error);
 
 			errorSpy.mockRestore();
 		});
 
-		it("should merge context for OperationError", () => {
+		it("should merge context for StandardError", () => {
 			const errorSpy = vi.spyOn(logger, "error").mockImplementation(() => {});
 
-			const error = new OperationError("Test", "TEST", { original: "context" });
+			const error = new SessionError("Test", { original: "context" });
 			const reported = ErrorReporter.report(error, { additional: "context" });
 
 			expect(reported.context).toEqual({
@@ -252,15 +206,15 @@ describe("ErrorReporter", () => {
 	});
 
 	describe("createErrorResponse", () => {
-		it("should create error response for OperationError", () => {
-			const error = new ValidationError("Invalid data", { field: "email" });
+		it("should create error response for StandardError", () => {
+			const error = new SessionError("Invalid data", { field: "email" });
 			const response = ErrorReporter.createErrorResponse(error);
 
 			expect(response).toEqual({
 				success: false,
 				error: {
 					message: "Invalid data",
-					code: "VALIDATION_ERROR",
+					code: "SESSION_ERROR",
 					timestamp: expect.any(String),
 					context: { field: "email" },
 				},
@@ -299,7 +253,7 @@ describe("ErrorReporter", () => {
 		});
 
 		it("should handle errors without context", () => {
-			const error = new OperationError("Test", "TEST");
+			const error = new SessionError("Test");
 			const response = ErrorReporter.createErrorResponse(error);
 
 			// Context will be undefined or empty object - both are acceptable
