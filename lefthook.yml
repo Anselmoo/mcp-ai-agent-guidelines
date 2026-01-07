@@ -236,7 +236,7 @@ pre-push:
   commands:
     # ----------------------------- 🔒 Security Warnings ---------------------------- #
     dependency-audit:
-      tags: [security, audit, warning]
+      tags: [security, audit]
       run: |
         echo "🔒 Checking for dependency vulnerabilities..."
         if ! npm audit --omit=dev --audit-level=moderate; then
