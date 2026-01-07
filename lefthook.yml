@@ -230,42 +230,41 @@ pre-commit:
       fail_text: "🧪 Tests failed - fix before committing to avoid expensive CI failures!"
 
 # Pre-push hooks - run before push to remote
-# TEMPORARILY DISABLED: These hooks are blocking pushes with false positives
-# See issue #XXX for re-enabling plan
+# NOTE: These are WARNING-ONLY hooks. CI is the final quality gate.
+# See issue #832 for optimization roadmap
 pre-push:
   commands:
-    # TEMPORARILY DISABLED: Blocking pushes due to @modelcontextprotocol/sdk vulnerability
-    # This should be handled in CI, not as a push blocker
-    # dependency-audit:
-    #   tags: [security, audit]
-    #   run: npm audit --omit=dev --audit-level=moderate
-    #   fail_text: "🔒 Dependency vulnerabilities detected - push aborted. Run 'npm audit' for details."
+    # ----------------------------- 🔒 Security Warnings ---------------------------- #
+    dependency-audit:
+      tags: [security, audit, warning]
+      run: |
+        echo "🔒 Checking for dependency vulnerabilities..."
+        if ! npm audit --omit=dev --audit-level=moderate; then
+          echo ""
+          echo "⚠️  WARNING: Dependency vulnerabilities detected"
+          echo "   Run 'npm audit' for details"
+          echo "   Run 'npm audit fix' to auto-fix when possible"
+          echo ""
+          echo "   Note: This is a warning only. CI will enforce security checks."
+        fi
+        exit 0  # Always succeed (warning only)
+      fail_text: "⚠️  Dependency vulnerabilities detected (warning only)"
 
-    # TEMPORARILY DISABLED: Too aggressive - CI will catch test failures
-    # Reduces developer friction and agent rerun costs from hook failures
+    # DISABLED: Redundant with pre-commit quick-test-check
+    # Pre-commit already runs tests on staged files, no need to run full suite
+    # See issue #832 for pre-commit/pre-push duplication analysis
     # test-all:
     #   tags: [test, critical]
-    #   run: |
-    #     echo "🧪 Running full test suite before push..."
-    #     echo "   (Prevents expensive CI failures and agent reruns)"
-    #     npm run test:all || {
-    #       echo ""
-    #       echo "❌ FULL TEST SUITE FAILED!"
-    #       echo "   This would fail in CI and cause:"
-    #       echo "   - Expensive CI reruns"
-    #       echo "   - Agent rerun costs (\$0.10+ per run)"
-    #       echo "   - PR delays"
-    #       echo ""
-    #       echo "   Fix all test failures before pushing."
-    #       exit 1
-    #     }
-    #   fail_text: "🧪 Tests failed - push aborted (prevents expensive CI failures)"
+    #   run: npm run test:all
+    #   fail_text: "🧪 Tests failed"
 
-    # TEMPORARILY DISABLED: Redundant with CI quality gates
+    # DISABLED: Redundant with pre-commit typescript-check
+    # Pre-commit already runs type-checking on staged files
+    # See issue #832 for pre-commit/pre-push duplication analysis
     # quality-check:
     #   tags: [quality]
     #   run: npm run quality
-    #   fail_text: "⚡ Quality checks failed - push aborted"
+    #   fail_text: "⚡ Quality checks failed"
 
 # Output settings
 output:
