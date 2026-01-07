@@ -10,9 +10,10 @@ on:
       - main
       - development
       - 'auto-regenerate-demos-*'
+      - 'copilot/**'
     tags: ['v*.*.*']
   pull_request:
-    branches: [main, development]
+    branches: [main, development, 'copilot/**']
     types: [opened, synchronize, reopened]
 
 env:
