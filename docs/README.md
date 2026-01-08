@@ -7,12 +7,13 @@
 **Comprehensive Documentation Hub** • All MCP AI Agent Guidelines Resources
 
 <details>
-<summary><strong>� Quick Navigation</strong></summary>
+<summary><strong>📑 Quick Navigation</strong></summary>
 
 - [🏠 Main README](../README.md)
 - [💡 AI Interaction Tips](./tips/ai-interaction-tips.md)
 - [🛠️ Tools Reference](./tips/tools-reference.md)
-- [🏗️ Architecture](./tips/bridge-connectors.md)
+- [🏗️ Architecture Overview](./architecture.md)
+- [📋 Output Strategies](./output-strategies.md)
 - [📖 References](./tips/references.md)
 
 </details>
@@ -23,6 +24,8 @@
 - **[Tools Reference](./tips/tools-reference.md)** - Complete reference for all 27 MCP tools ⭐
 - **[Tool Documentation](./tools/README.md)** - Individual tool documentation pages
 - **[AI Interaction Tips](./tips/README.md)** - Best practices for effective AI collaboration ⭐ **NEW**
+- **[Architecture Overview](./architecture.md)** - System design and layer architecture ⭐ **NEW**
+- **[Output Strategies Guide](./output-strategies.md)** - 7 output approaches and 6 cross-cutting capabilities ⭐ **NEW**
 - **[Contributing Guidelines](../CONTRIBUTING.md)** - How to contribute to the project
 - **[Disclaimer](../DISCLAIMER.md)** - Important information about external references
 
@@ -57,6 +60,8 @@
 
 #### Architecture & Design
 
+- **[Architecture Overview](./architecture.md)** - System design and layer architecture ⭐ **NEW**
+- **[Output Strategies](./output-strategies.md)** - 7 output approaches and cross-cutting capabilities ⭐ **NEW**
 - **[Architecture Decision Records (ADRs)](./adr/)** - Architectural decisions and their rationale ⭐
 - **[Bridge Connectors](./tips/bridge-connectors.md)** - External system integration patterns
 - **[Design Module Status](./tips/design-module-status.md)** - Design workflow orchestrator status
