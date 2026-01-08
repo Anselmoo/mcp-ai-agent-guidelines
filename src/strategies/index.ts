@@ -17,6 +17,7 @@ export {
 	DiagramCapabilityHandler,
 	WorkflowCapabilityHandler,
 } from "./cross-cutting/index.js";
+export { EnterpriseStrategy } from "./enterprise-strategy.js";
 export * from "./output-strategy.js";
 export { RFCStrategy } from "./rfc-strategy.js";
 export { SDDStrategy } from "./sdd-strategy.js";
