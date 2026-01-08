@@ -157,7 +157,7 @@ describe("CrossCuttingManager", () => {
 
 			const mockHandler: CapabilityHandler = {
 				capability: CrossCuttingCapability.DIAGRAM,
-				generate: (context: CapabilityContext) => ({
+				generate: (_context: CapabilityContext) => ({
 					type: CrossCuttingCapability.DIAGRAM,
 					name: "diagram.mmd",
 					content: "graph TD\nA-->B",
