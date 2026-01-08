@@ -30,9 +30,31 @@ describe("PolyglotGateway", () => {
 
 		it("should have all 7 strategies registered", () => {
 			const gateway = new PolyglotGateway();
-			// Test by checking getSupportedApproaches for a domain type that all support
-			const approaches = gateway.getSupportedApproaches("PromptResult");
-			expect(approaches.length).toBeGreaterThan(0);
+			// Verify all 7 OutputApproach enum values are supported for at least one domain type
+			const allApproaches = [
+				OutputApproach.CHAT,
+				OutputApproach.RFC,
+				OutputApproach.ADR,
+				OutputApproach.SDD,
+				OutputApproach.SPECKIT,
+				OutputApproach.TOGAF,
+				OutputApproach.ENTERPRISE,
+			];
+
+			for (const approach of allApproaches) {
+				// Each approach should support at least one domain type
+				const supportsPrompt = gateway
+					.getSupportedApproaches("PromptResult")
+					.includes(approach);
+				const supportsSession = gateway
+					.getSupportedApproaches("SessionState")
+					.includes(approach);
+				const supportsScoring = gateway
+					.getSupportedApproaches("ScoringResult")
+					.includes(approach);
+
+				expect(supportsPrompt || supportsSession || supportsScoring).toBe(true);
+			}
 		});
 	});
 
@@ -231,6 +253,78 @@ describe("PolyglotGateway", () => {
 				expect(artifacts.primary.name).toBe("spec.md");
 				expect(artifacts.secondary).toBeDefined();
 				expect(artifacts.secondary?.length).toBeGreaterThan(0);
+			});
+		});
+
+		describe("with SPECKIT approach", () => {
+			it("should render SessionState with SPECKIT approach", () => {
+				const gateway = new PolyglotGateway();
+				// SessionState compatible with SPECKIT strategy type guards
+				const sessionState = {
+					id: "test-session",
+					phase: "discovery",
+					context: { goal: "Test goal" },
+					history: [],
+				};
+
+				const request: GatewayRequest = {
+					domainResult: sessionState,
+					domainType: "SessionState",
+					approach: OutputApproach.SPECKIT,
+				};
+
+				const artifacts = gateway.render(request);
+
+				expect(artifacts.primary).toBeDefined();
+				expect(artifacts.primary.name).toBe("feature/README.md");
+			});
+		});
+
+		describe("with TOGAF approach", () => {
+			it("should render SessionState with TOGAF approach", () => {
+				const gateway = new PolyglotGateway();
+				// SessionState compatible with TOGAF strategy type guards
+				const sessionState = {
+					id: "test-session",
+					phase: "architecture-vision",
+					context: { goal: "Enterprise architecture" },
+					history: [],
+				};
+
+				const request: GatewayRequest = {
+					domainResult: sessionState,
+					domainType: "SessionState",
+					approach: OutputApproach.TOGAF,
+				};
+
+				const artifacts = gateway.render(request);
+
+				expect(artifacts.primary).toBeDefined();
+				expect(artifacts.primary.name).toBe("architecture-vision.md");
+			});
+		});
+
+		describe("with ENTERPRISE approach", () => {
+			it("should render SessionState with ENTERPRISE approach", () => {
+				const gateway = new PolyglotGateway();
+				// SessionState compatible with ENTERPRISE strategy type guards
+				const sessionState = {
+					id: "test-session",
+					phase: "planning",
+					context: { goal: "Enterprise documentation" },
+					history: [],
+				};
+
+				const request: GatewayRequest = {
+					domainResult: sessionState,
+					domainType: "SessionState",
+					approach: OutputApproach.ENTERPRISE,
+				};
+
+				const artifacts = gateway.render(request);
+
+				expect(artifacts.primary).toBeDefined();
+				expect(artifacts.primary.name).toBe("executive-summary.md");
 			});
 		});
 

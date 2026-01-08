@@ -77,14 +77,16 @@ export class PolyglotGateway {
 	 * - SPECKIT: GitHub Spec Kit format
 	 */
 	constructor() {
-		this.strategies = new Map();
-		this.strategies.set(OutputApproach.CHAT, new ChatStrategy());
-		this.strategies.set(OutputApproach.RFC, new RFCStrategy());
-		this.strategies.set(OutputApproach.ADR, new ADRStrategy());
-		this.strategies.set(OutputApproach.SDD, new SDDStrategy());
-		this.strategies.set(OutputApproach.SPECKIT, new SpecKitStrategy());
-		this.strategies.set(OutputApproach.TOGAF, new TOGAFStrategy());
-		this.strategies.set(OutputApproach.ENTERPRISE, new EnterpriseStrategy());
+		// biome-ignore lint/suspicious/noExplicitAny: Strategies handle different domain types
+		this.strategies = new Map<OutputApproach, OutputStrategy<any>>([
+			[OutputApproach.CHAT, new ChatStrategy()],
+			[OutputApproach.RFC, new RFCStrategy()],
+			[OutputApproach.ADR, new ADRStrategy()],
+			[OutputApproach.SDD, new SDDStrategy()],
+			[OutputApproach.SPECKIT, new SpecKitStrategy()],
+			[OutputApproach.TOGAF, new TOGAFStrategy()],
+			[OutputApproach.ENTERPRISE, new EnterpriseStrategy()],
+		]);
 	}
 
 	/**
