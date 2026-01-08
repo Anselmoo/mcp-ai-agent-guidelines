@@ -8,6 +8,12 @@
 
 export { ADRStrategy } from "./adr-strategy.js";
 export { ChatStrategy } from "./chat-strategy.js";
+// Cross-cutting capabilities
+export {
+	type CapabilityContext,
+	type CapabilityHandler,
+	DiagramCapabilityHandler,
+} from "./cross-cutting/index.js";
 export { EnterpriseStrategy } from "./enterprise-strategy.js";
 export * from "./output-strategy.js";
 export { RFCStrategy } from "./rfc-strategy.js";
