@@ -125,4 +125,39 @@ export class CrossCuttingManager {
 	getRegisteredCapabilities(): CrossCuttingCapability[] {
 		return Array.from(this.capabilities.keys());
 	}
+
+	/**
+	 * Get capabilities that support a specific domain type.
+	 *
+	 * Filters registered handlers to find those that support
+	 * the given domain type identifier.
+	 *
+	 * @param domainType - Domain type identifier (e.g., "SessionState", "PromptResult")
+	 * @returns Array of capabilities supported for this domain type
+	 */
+	getSupportedCapabilities(domainType: string): CrossCuttingCapability[] {
+		return Array.from(this.capabilities.values())
+			.filter((handler) => handler.supports(domainType))
+			.map((handler) => handler.capability);
+	}
 }
+
+/**
+ * Singleton instance of CrossCuttingManager.
+ *
+ * Provides a shared instance for registering and using cross-cutting capabilities
+ * across the application. Use this instance for consistent handler registration
+ * and artifact generation.
+ *
+ * @example
+ * ```typescript
+ * import { crossCuttingManager, CrossCuttingCapability } from './cross-cutting/index.js';
+ *
+ * const artifacts = crossCuttingManager.generateArtifacts(
+ *   domainResult,
+ *   [CrossCuttingCapability.WORKFLOW],
+ *   metadata
+ * );
+ * ```
+ */
+export const crossCuttingManager = new CrossCuttingManager();

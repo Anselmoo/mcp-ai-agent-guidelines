@@ -157,7 +157,7 @@ describe("CrossCuttingManager", () => {
 
 			const mockHandler: CapabilityHandler = {
 				capability: CrossCuttingCapability.DIAGRAM,
-				generate: (context: CapabilityContext) => ({
+				generate: (_context: CapabilityContext) => ({
 					type: CrossCuttingCapability.DIAGRAM,
 					name: "diagram.mmd",
 					content: "graph TD\nA-->B",
@@ -378,6 +378,117 @@ describe("CrossCuttingManager", () => {
 			);
 
 			expect(artifacts).toHaveLength(1);
+		});
+	});
+
+	describe("getSupportedCapabilities()", () => {
+		it("should return capabilities that support the domain type", () => {
+			const manager = new CrossCuttingManager();
+
+			const capabilities = manager.getSupportedCapabilities("PromptResult");
+
+			expect(Array.isArray(capabilities)).toBe(true);
+			expect(capabilities).toContain(CrossCuttingCapability.WORKFLOW);
+		});
+
+		it("should return empty array for unsupported domain type", () => {
+			const manager = new CrossCuttingManager();
+
+			const capabilities = manager.getSupportedCapabilities("UnsupportedType");
+
+			expect(capabilities).toEqual([]);
+		});
+
+		it("should include newly registered capabilities that support the domain type", () => {
+			const manager = new CrossCuttingManager();
+
+			const mockHandler: CapabilityHandler = {
+				capability: CrossCuttingCapability.DIAGRAM,
+				generate: () => ({
+					type: CrossCuttingCapability.DIAGRAM,
+					name: "diagram.mmd",
+					content: "graph TD\nA-->B",
+				}),
+				supports: (domainType: string) => domainType === "TestResult",
+			};
+
+			manager.registerHandler(CrossCuttingCapability.DIAGRAM, mockHandler);
+
+			const capabilities = manager.getSupportedCapabilities("TestResult");
+
+			expect(capabilities).toContain(CrossCuttingCapability.DIAGRAM);
+		});
+
+		it("should exclude capabilities that don't support the domain type", () => {
+			const manager = new CrossCuttingManager();
+
+			const mockHandler: CapabilityHandler = {
+				capability: CrossCuttingCapability.CONFIG,
+				generate: () => null,
+				supports: (domainType: string) => domainType === "SpecificType",
+			};
+
+			manager.registerHandler(CrossCuttingCapability.CONFIG, mockHandler);
+
+			const capabilities = manager.getSupportedCapabilities("OtherType");
+
+			expect(capabilities).not.toContain(CrossCuttingCapability.CONFIG);
+		});
+
+		it("should return multiple capabilities for supported domain type", () => {
+			const manager = new CrossCuttingManager();
+
+			// Add another handler that supports the same domain type
+			const mockHandler: CapabilityHandler = {
+				capability: CrossCuttingCapability.SHELL_SCRIPT,
+				generate: () => ({
+					type: CrossCuttingCapability.SHELL_SCRIPT,
+					name: "script.sh",
+					content: "#!/bin/bash\necho 'test'",
+				}),
+				supports: (domainType: string) => domainType === "PromptResult",
+			};
+
+			manager.registerHandler(CrossCuttingCapability.SHELL_SCRIPT, mockHandler);
+
+			const capabilities = manager.getSupportedCapabilities("PromptResult");
+
+			expect(capabilities.length).toBeGreaterThanOrEqual(2);
+			expect(capabilities).toContain(CrossCuttingCapability.WORKFLOW);
+			expect(capabilities).toContain(CrossCuttingCapability.SHELL_SCRIPT);
+		});
+	});
+
+	describe("singleton export", () => {
+		it("should export a singleton instance", async () => {
+			const { crossCuttingManager } = await import(
+				"../../../../src/strategies/cross-cutting/index.js"
+			);
+
+			expect(crossCuttingManager).toBeInstanceOf(CrossCuttingManager);
+		});
+
+		it("should have default handlers registered in singleton", async () => {
+			const { crossCuttingManager } = await import(
+				"../../../../src/strategies/cross-cutting/index.js"
+			);
+
+			expect(
+				crossCuttingManager.hasCapability(CrossCuttingCapability.WORKFLOW),
+			).toBe(true);
+		});
+
+		it("should be usable directly from singleton", async () => {
+			const { crossCuttingManager } = await import(
+				"../../../../src/strategies/cross-cutting/index.js"
+			);
+
+			const artifacts = crossCuttingManager.generateArtifacts({}, [
+				CrossCuttingCapability.WORKFLOW,
+			]);
+
+			expect(artifacts).toHaveLength(1);
+			expect(artifacts[0].type).toBe(CrossCuttingCapability.WORKFLOW);
 		});
 	});
 });
