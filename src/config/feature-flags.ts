@@ -54,8 +54,10 @@ export interface FeatureFlags {
 
 /**
  * Default feature flags - all disabled for backward compatibility.
+ *
+ * @internal
  */
-const defaultFlags: FeatureFlags = {
+const _defaultFlags: FeatureFlags = {
 	usePolyglotGateway: false,
 	enableSpecKitOutput: false,
 	enableEnterpriseOutput: false,

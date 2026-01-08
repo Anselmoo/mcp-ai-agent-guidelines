@@ -487,7 +487,7 @@ class DesignAssistantImpl {
 					});
 
 					return formatGatewayResponse(sessionId, artifacts);
-				} catch (gatewayError) {
+				} catch (_gatewayError) {
 					// Fallback to legacy behavior on gateway error
 					return domainResult;
 				}
