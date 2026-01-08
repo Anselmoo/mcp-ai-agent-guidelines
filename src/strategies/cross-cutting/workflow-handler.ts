@@ -23,6 +23,41 @@ type WorkflowType = "ci" | "deploy" | "test" | "release";
  * Detects workflow type from domain results and generates appropriate
  * workflow configurations for CI/CD automation.
  *
+ * Workflow type detection follows a well-defined priority so callers can
+ * intentionally influence which workflow is generated:
+ *
+ * 1. {@link metadata}.workflowType – If present and one of `"ci"`, `"deploy"`,
+ *    `"test"`, or `"release"`, it is used directly.
+ * 2. Deployment fields – If the domain result contains deployment-related
+ *    hints (for example keys like `deploy`, `deployment`, or `environment`),
+ *    `"deploy"` is selected.
+ * 3. Release fields – If the domain result contains release-related hints
+ *    (for example `release`, `version`, or `tag`), `"release"` is selected.
+ * 4. Test fields – If the domain result is dominated by testing concerns
+ *    (for example `tests`, `coverage`, or `testing`), `"test"` is selected.
+ * 5. Fallback – If none of the above apply, `"ci"` is used as a safe
+ *    default workflow type.
+ *
+ * This means that you can explicitly steer workflow generation by setting
+ * `metadata.workflowType`:
+ *
+ * @example
+ * ```ts
+ * const handler = new WorkflowCapabilityHandler();
+ * const artifact = handler.generate({
+ *   domainResult,
+ *   metadata: {
+ *     workflowType: "deploy", // forces deployment workflow
+ *     nodeVersion: "22",
+ *   },
+ * });
+ * // artifact.name => ".github/workflows/deploy.yml"
+ * ```
+ *
+ * If `metadata.workflowType` is provided but not one of the supported
+ * workflow types, it is ignored and the handler falls back to inspecting
+ * the domain result and finally to the `"ci"` default.
+ *
  * @implements {CapabilityHandler}
  */
 export class WorkflowCapabilityHandler implements CapabilityHandler {
@@ -163,8 +198,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: ${nodeVersion}
           cache: npm
@@ -184,12 +219,14 @@ jobs:
 	private generateDeployWorkflow(metadata?: Record<string, unknown>): string {
 		const environment = metadata?.environment ?? "production";
 		const nodeVersion = metadata?.nodeVersion ?? "22";
+		const branchesRaw = metadata?.branches ?? ["main"];
+		const branches = Array.isArray(branchesRaw) ? branchesRaw : ["main"];
 
 		return `name: Deploy
 
 on:
   push:
-    branches: [main]
+    branches: [${branches.map((b: unknown) => String(b)).join(", ")}]
   workflow_dispatch:
 
 jobs:
@@ -197,15 +234,15 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${environment}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: ${nodeVersion}
           cache: npm
       - run: npm ci
       - run: npm run build
       - name: Deploy
-        run: npm run deploy
+        run: echo "Add your deployment command here (npm run deploy or custom script)"
         env:
           DEPLOY_TOKEN: \${{ secrets.DEPLOY_TOKEN }}
 `;
@@ -221,21 +258,25 @@ jobs:
 	private generateTestWorkflow(metadata?: Record<string, unknown>): string {
 		const nodeVersion = metadata?.nodeVersion ?? "22";
 		const coverageThreshold = metadata?.coverageThreshold ?? "90";
+		const branchesRaw = metadata?.branches ?? ["main", "develop"];
+		const branches = Array.isArray(branchesRaw)
+			? branchesRaw
+			: ["main", "develop"];
 
 		return `name: Test
 
 on:
   push:
-    branches: [main, develop]
+    branches: [${branches.map((b: unknown) => String(b)).join(", ")}]
   pull_request:
-    branches: [main, develop]
+    branches: [${branches.map((b: unknown) => String(b)).join(", ")}]
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: ${nodeVersion}
           cache: npm
@@ -273,8 +314,8 @@ jobs:
       contents: write
       packages: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: ${nodeVersion}
           cache: npm
@@ -287,14 +328,12 @@ jobs:
         env:
           NODE_AUTH_TOKEN: \${{ secrets.NPM_TOKEN }}
       - name: Create GitHub Release
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: \${{ github.ref }}
-          release_name: Release \${{ github.ref }}
-          draft: false
-          prerelease: false
+          name: Release \${{ github.ref }}
 `;
 	}
 }

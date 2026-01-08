@@ -15,11 +15,6 @@ describe("WorkflowCapabilityHandler", () => {
 			const handler = new WorkflowCapabilityHandler();
 			expect(handler.capability).toBe(CrossCuttingCapability.WORKFLOW);
 		});
-
-		it("should have readonly capability property", () => {
-			const handler = new WorkflowCapabilityHandler();
-			expect(handler.capability).toBe(CrossCuttingCapability.WORKFLOW);
-		});
 	});
 
 	describe("supports() method", () => {
@@ -64,8 +59,8 @@ describe("WorkflowCapabilityHandler", () => {
 			expect(artifact?.content).toContain("pull_request:");
 			expect(artifact?.content).toContain("branches: [main]");
 			expect(artifact?.content).toContain("runs-on: ubuntu-latest");
-			expect(artifact?.content).toContain("actions/checkout@v4");
-			expect(artifact?.content).toContain("actions/setup-node@v4");
+			expect(artifact?.content).toContain("actions/checkout@v6");
+			expect(artifact?.content).toContain("actions/setup-node@v6");
 			expect(artifact?.content).toContain("node-version: 22");
 			expect(artifact?.content).toContain("npm ci");
 			expect(artifact?.content).toContain("npm run quality");
@@ -111,7 +106,7 @@ describe("WorkflowCapabilityHandler", () => {
 			expect(artifact?.content).toContain("workflow_dispatch:");
 			expect(artifact?.content).toContain("environment: production");
 			expect(artifact?.content).toContain("npm run build");
-			expect(artifact?.content).toContain("npm run deploy");
+			expect(artifact?.content).toContain("Add your deployment command here");
 			expect(artifact?.content).toContain("DEPLOY_TOKEN");
 		});
 
@@ -246,7 +241,7 @@ describe("WorkflowCapabilityHandler", () => {
 			expect(artifact?.content).toContain("packages: write");
 			expect(artifact?.content).toContain("npm publish");
 			expect(artifact?.content).toContain("NPM_TOKEN");
-			expect(artifact?.content).toContain("actions/create-release@v1");
+			expect(artifact?.content).toContain("softprops/action-gh-release@v2");
 		});
 
 		it("should detect release from metadata workflowType", () => {
