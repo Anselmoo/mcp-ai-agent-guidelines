@@ -269,6 +269,49 @@ Supporting tools for workflow optimization.
 
 ---
 
+## Output Strategies
+
+MCP AI Agent Guidelines supports **7 output strategies** for different documentation needs, allowing you to format the same analysis in multiple ways. Additionally, **6 cross-cutting capabilities** can be added to any output format for automation and visualization.
+
+### Available Output Approaches
+
+| Strategy | Best For | Documentation |
+|----------|----------|---------------|
+| **Chat** (Default) | Quick responses, interactive sessions | Simple markdown for LLM chat |
+| **RFC** | Feature proposals, team alignment | Request for Comments format |
+| **ADR** | Architectural decisions, design rationale | Architecture Decision Records |
+| **SDD** | Agile workflows, sprint planning | Spec-Driven Development (spec.md, plan.md, tasks.md) |
+| **SpecKit** | Complex projects, GitHub workflows | Premium `.specify/` directory structure |
+| **TOGAF** | Enterprise architecture, governance | TOGAF ADM deliverables |
+| **Enterprise** | Executive presentations, compliance | Traditional docs (TDD, HLD, LLD) |
+
+### Cross-Cutting Capabilities
+
+Add these to **any** output strategy:
+
+- **workflow** - CI/CD pipeline definitions (GitHub Actions, GitLab CI)
+- **diagram** - Visual documentation (Mermaid, PlantUML)
+- **shell-script** - Automation scripts (Bash, PowerShell)
+- **config** - Configuration files (JSON, YAML)
+- **issues** - GitHub issue templates
+- **pr-template** - Pull request templates
+
+### Usage Example
+
+```typescript
+// Generate SpecKit with workflows and diagrams
+const result = await server.callTool('design-assistant', {
+  action: 'generate-artifacts',
+  sessionId: 'my-session',
+  outputFormat: 'speckit',
+  crossCutting: ['workflow', 'diagram', 'config'],
+});
+```
+
+**📖 [Complete Output Strategies Guide](./docs/output-strategies.md)** - Detailed documentation with examples for all 7 strategies
+
+---
+
 ## VS Code Integration (One-Click)
 
 Use buttons below to add this MCP server to VS Code (User Settings → mcp.servers):

@@ -14,10 +14,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
+**Phase 2 Documentation Updates (P2-028):**
+- New `docs/output-strategies.md` - Comprehensive guide to 7 output approaches and 6 cross-cutting capabilities
+  - Detailed documentation for Chat, RFC, ADR, SDD, SpecKit, TOGAF, and Enterprise strategies
+  - Usage examples for workflow, diagram, shell-script, config, issues, and pr-template capabilities
+  - Selection guide and migration instructions
+- Added Output Strategies section to `README.md` with quick reference table
+- Documentation for Phase 2 domain extraction and output strategy layer implementation
+
+**Public API Documentation:**
 - New `docs/public-api.md` documenting the public API surface, including stable exports, singletons, and test utilities
 - New `src/tools/test-utils/` directory for test-only utilities
 - `src/tools/test-utils/mermaid.ts` - Re-export of `__setMermaidModuleProvider` for test usage
 - `src/tools/test-utils/index.ts` - Barrel export for test utilities
+
+**Phase 2 Implementation (Complete):**
+- Domain layer extraction to `src/domain/` (analysis, design, prompting)
+- Output Strategy Pattern with 7 strategies in `src/strategies/`
+- Cross-cutting capabilities manager for additive functionality
+- ErrorCode enum for standardized error handling
 
 ### Changed
 - **BREAKING**: Removed individual `IMPLEMENTATION_STATUS` re-exports from `src/tools/design/index.ts`
