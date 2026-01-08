@@ -76,7 +76,7 @@ export class RFCStrategy
 		options?: Partial<RenderOptions>,
 	): OutputArtifacts {
 		const title = this.extractTitle(result);
-		const content = `# RFC: ${title}
+		const baseContent = `# RFC: ${title}
 
 ## Summary
 
@@ -110,19 +110,12 @@ ${this.extractAlternatives(result)}
 
 ## Conclusion
 
-${this.extractConclusion(result)}
-
----
-*RFC generated: ${new Date().toISOString()}*
-`;
+${this.extractConclusion(result)}`;
 
 		return {
 			primary: {
 				name: "RFC.md",
-				content:
-					options?.includeMetadata === false
-						? this.stripMetadata(content)
-						: content,
+				content: this.formatRFCContent(baseContent, options),
 				format: "markdown",
 			},
 		};
@@ -141,7 +134,7 @@ ${this.extractConclusion(result)}
 		options?: Partial<RenderOptions>,
 	): OutputArtifacts {
 		const title = this.extractSessionTitle(result);
-		const content = `# RFC: ${title}
+		const baseContent = `# RFC: ${title}
 
 ## Summary
 
@@ -179,19 +172,12 @@ ${this.extractSessionAlternatives(result)}
 
 ## Conclusion
 
-${this.extractSessionConclusion(result)}
-
----
-*RFC generated: ${new Date().toISOString()}*
-`;
+${this.extractSessionConclusion(result)}`;
 
 		return {
 			primary: {
 				name: "RFC.md",
-				content:
-					options?.includeMetadata === false
-						? this.stripMetadata(content)
-						: content,
+				content: this.formatRFCContent(baseContent, options),
 				format: "markdown",
 			},
 		};
@@ -262,10 +248,8 @@ ${this.extractSessionConclusion(result)}
 		if (proposalSection?.body) {
 			return proposalSection.body;
 		}
-		// Combine all sections if no specific proposal section
-		return result.sections
-			.map((s) => `### ${s.title}\n\n${s.body}`)
-			.join("\n\n");
+		// Use a concise default when no specific proposal section is found
+		return "To be defined";
 	}
 
 	/**
@@ -276,12 +260,10 @@ ${this.extractSessionConclusion(result)}
 	 * @private
 	 */
 	private extractPros(result: PromptResult): string {
-		const prosSection = result.sections.find(
-			(s) =>
-				s.title.toLowerCase().includes("pro") ||
-				s.title.toLowerCase().includes("benefit") ||
-				s.title.toLowerCase().includes("advantage"),
-		);
+		const prosSection = result.sections.find((s) => {
+			const title = s.title.toLowerCase();
+			return /\b(pros?|benefits?|advantages?)\b/.test(title);
+		});
 		if (prosSection?.body) {
 			// Convert to bullet list if not already
 			const lines = prosSection.body.split("\n").filter((l) => l.trim());
@@ -298,13 +280,15 @@ ${this.extractSessionConclusion(result)}
 	 * @private
 	 */
 	private extractCons(result: PromptResult): string {
-		const consSection = result.sections.find(
-			(s) =>
-				s.title.toLowerCase().includes("con") ||
-				s.title.toLowerCase().includes("drawback") ||
-				s.title.toLowerCase().includes("disadvantage") ||
-				s.title.toLowerCase().includes("risk"),
-		);
+		const consSection = result.sections.find((s) => {
+			const title = s.title.toLowerCase();
+			return (
+				/\bcons?\b/.test(title) ||
+				title.includes("drawback") ||
+				title.includes("disadvantage") ||
+				title.includes("risk")
+			);
+		});
 		if (consSection?.body) {
 			// Convert to bullet list if not already
 			const lines = consSection.body.split("\n").filter((l) => l.trim());
@@ -343,7 +327,6 @@ ${this.extractSessionConclusion(result)}
 		const conclusionSection = result.sections.find(
 			(s) =>
 				s.title.toLowerCase().includes("conclusion") ||
-				s.title.toLowerCase().includes("summary") ||
 				s.title.toLowerCase().includes("recommendation"),
 		);
 		if (conclusionSection?.body) {
@@ -500,14 +483,22 @@ ${this.extractSessionConclusion(result)}
 	}
 
 	/**
-	 * Strip metadata footer from content.
+	 * Format RFC content with optional metadata footer.
 	 *
-	 * @param content - The content to strip
-	 * @returns Content without metadata footer
+	 * @param baseContent - The base RFC content without metadata
+	 * @param options - Optional rendering options
+	 * @returns Formatted content with or without metadata footer
 	 * @private
 	 */
-	private stripMetadata(content: string): string {
-		return content.replace(/\n---\n\*RFC generated:.*\*\n?$/, "");
+	private formatRFCContent(
+		baseContent: string,
+		options?: Partial<RenderOptions>,
+	): string {
+		// Only include metadata if explicitly requested (aligning with ChatStrategy)
+		if (options?.includeMetadata === true) {
+			return `${baseContent}\n\n---\n*RFC generated: ${new Date().toISOString()}*`;
+		}
+		return baseContent;
 	}
 
 	/**
@@ -539,7 +530,8 @@ ${this.extractSessionConclusion(result)}
 			result !== null &&
 			"id" in result &&
 			"phase" in result &&
-			"context" in result
+			"context" in result &&
+			"history" in result
 		);
 	}
 }

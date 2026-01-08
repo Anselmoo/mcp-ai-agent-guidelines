@@ -306,7 +306,7 @@ describe("RFCStrategy", () => {
 			);
 		});
 
-		it("should combine all sections as proposal when no specific section", () => {
+		it("should use default when no specific proposal section", () => {
 			const strategy = new RFCStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -333,10 +333,7 @@ describe("RFCStrategy", () => {
 
 			const artifacts = strategy.render(result);
 
-			expect(artifacts.primary.content).toContain("### Section 1");
-			expect(artifacts.primary.content).toContain("Content 1");
-			expect(artifacts.primary.content).toContain("### Section 2");
-			expect(artifacts.primary.content).toContain("Content 2");
+			expect(artifacts.primary.content).toContain("To be defined");
 		});
 
 		it("should extract pros from benefits section", () => {
@@ -600,7 +597,7 @@ describe("RFCStrategy", () => {
 			expect(artifacts.primary.content).toContain("Pending team discussion");
 		});
 
-		it("should include metadata footer by default", () => {
+		it("should include metadata footer when includeMetadata is true", () => {
 			const strategy = new RFCStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -620,7 +617,7 @@ describe("RFCStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const artifacts = strategy.render(result, { includeMetadata: true });
 
 			expect(artifacts.primary.content).toContain("---");
 			expect(artifacts.primary.content).toContain("*RFC generated:");
@@ -650,6 +647,31 @@ describe("RFCStrategy", () => {
 
 			expect(artifacts.primary.content).not.toContain("*RFC generated:");
 		});
+
+		it("should not include metadata by default", () => {
+			const strategy = new RFCStrategy();
+			const result: PromptResult = {
+				sections: [
+					{
+						title: "Title",
+						body: "Content",
+						level: 1,
+					},
+				],
+				metadata: {
+					complexity: 50,
+					tokenEstimate: 150,
+					sections: 1,
+					techniques: ["zero-shot"],
+					requirementsCount: 0,
+					issuesCount: 0,
+				},
+			};
+
+			const artifacts = strategy.render(result);
+
+			expect(artifacts.primary.content).not.toContain("*RFC generated:");
+		});
 	});
 
 	describe("render() - SessionState", () => {
@@ -663,6 +685,7 @@ describe("RFCStrategy", () => {
 					summary: "Design an API gateway for microservices",
 				},
 				status: "active",
+				history: [],
 			};
 
 			const artifacts = strategy.render(result);
@@ -681,9 +704,11 @@ describe("RFCStrategy", () => {
 				id: "session-123",
 				phase: "planning",
 				context: {},
+				history: [],
 				config: {
 					sessionId: "session-123",
 					context: {},
+					history: [],
 					goal: "Implement OAuth 2.0",
 				},
 			};
@@ -701,6 +726,7 @@ describe("RFCStrategy", () => {
 				context: {
 					title: "Database Migration",
 				},
+				history: [],
 			};
 
 			const artifacts = strategy.render(result);
@@ -714,6 +740,7 @@ describe("RFCStrategy", () => {
 				id: "session-123",
 				phase: "discovery",
 				context: {},
+				history: [],
 			};
 
 			const artifacts = strategy.render(result);
@@ -729,6 +756,7 @@ describe("RFCStrategy", () => {
 				context: {
 					summary: "Comprehensive API gateway design",
 				},
+				history: [],
 			};
 
 			const artifacts = strategy.render(result);
@@ -744,6 +772,7 @@ describe("RFCStrategy", () => {
 				id: "session-123",
 				phase: "architecture",
 				context: {},
+				history: [],
 			};
 
 			const artifacts = strategy.render(result);
@@ -761,6 +790,7 @@ describe("RFCStrategy", () => {
 				context: {
 					scope: "Authentication and authorization services",
 				},
+				history: [],
 			};
 
 			const artifacts = strategy.render(result);
@@ -776,6 +806,7 @@ describe("RFCStrategy", () => {
 				id: "session-123",
 				phase: "specification",
 				context: {},
+				history: [],
 			};
 
 			const artifacts = strategy.render(result);
@@ -791,6 +822,7 @@ describe("RFCStrategy", () => {
 				context: {
 					proposal: "Implement microservices architecture",
 				},
+				history: [],
 			};
 
 			const artifacts = strategy.render(result);
@@ -808,6 +840,7 @@ describe("RFCStrategy", () => {
 				context: {
 					pros: ["Improved scalability", "Better maintainability"],
 				},
+				history: [],
 			};
 
 			const artifacts = strategy.render(result);
@@ -824,6 +857,7 @@ describe("RFCStrategy", () => {
 				context: {
 					cons: ["Increased complexity", "Higher costs"],
 				},
+				history: [],
 			};
 
 			const artifacts = strategy.render(result);
@@ -840,6 +874,7 @@ describe("RFCStrategy", () => {
 				context: {
 					alternatives: "Option A: Monolith\nOption B: Microservices",
 				},
+				history: [],
 			};
 
 			const artifacts = strategy.render(result);
@@ -856,6 +891,7 @@ describe("RFCStrategy", () => {
 				context: {
 					alternatives: ["Monolith", "Microservices", "Hybrid"],
 				},
+				history: [],
 			};
 
 			const artifacts = strategy.render(result);
@@ -873,6 +909,7 @@ describe("RFCStrategy", () => {
 				context: {
 					conclusion: "Proceed with microservices",
 				},
+				history: [],
 			};
 
 			const artifacts = strategy.render(result);
@@ -887,6 +924,7 @@ describe("RFCStrategy", () => {
 				phase: "implementation",
 				context: {},
 				status: "completed",
+				history: [],
 			};
 
 			const artifacts = strategy.render(result);
@@ -902,6 +940,7 @@ describe("RFCStrategy", () => {
 				id: "session-123",
 				phase: "planning",
 				context: {},
+				history: [],
 				phases: {
 					discovery: { completed: true },
 					requirements: { items: ["Auth", "API"] },
@@ -921,6 +960,7 @@ describe("RFCStrategy", () => {
 				phase: "planning",
 				context: {},
 				status: "active",
+				history: [],
 			};
 
 			const artifacts = strategy.render(result);
@@ -934,6 +974,7 @@ describe("RFCStrategy", () => {
 				id: "session-123",
 				phase: "planning",
 				context: {},
+				history: [],
 			};
 
 			const artifacts = strategy.render(result);
@@ -1110,7 +1151,7 @@ describe("RFCStrategy", () => {
 			const artifacts = strategy.render(result);
 
 			expect(artifacts).toBeDefined();
-			expect(artifacts.primary.content).toContain("*RFC generated:");
+			expect(artifacts.primary.content).not.toContain("*RFC generated:");
 		});
 	});
 });
