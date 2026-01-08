@@ -1,4 +1,3 @@
-	
 /**
  * Cross-Cutting Capability Types
  *
@@ -29,14 +28,14 @@ export interface CapabilityContext {
 	 */
 	domainResult: unknown;
 
-     /** The domain type identifier (e.g., "PromptResult", "SessionState") */
-     domainType?: string;
+	/** The domain type identifier (e.g., "PromptResult", "SessionState") */
+	domainType?: string;
 
 	/**
 	 * Primary output document content (e.g., RFC, ADR, spec.md)
 	 * Used to extract context for supplementary artifacts
 	 */
-	primaryDocument: string;
+	primaryDocument?: string;
 
 	/**
 	 * Optional metadata about the domain result
@@ -76,4 +75,3 @@ export interface CapabilityHandler {
 	 */
 	supports(domainType: string): boolean;
 }
-	

@@ -52,6 +52,7 @@ export class CrossCuttingManager {
 	 * @param requestedCapabilities - List of capabilities to generate
 	 * @param metadata - Optional metadata for context-aware generation
 	 * @param domainType - The domain type identifier
+	 * @param primaryDocument - Optional primary document content to inform handlers
 	 * @returns Array of generated cross-cutting artifacts
 	 */
 	generateArtifacts(
@@ -59,6 +60,7 @@ export class CrossCuttingManager {
 		requestedCapabilities: CrossCuttingCapability[],
 		metadata?: Record<string, unknown>,
 		domainType?: string,
+		primaryDocument?: string,
 	): CrossCuttingArtifact[] {
 		const artifacts: CrossCuttingArtifact[] = [];
 
@@ -77,6 +79,7 @@ export class CrossCuttingManager {
 				domainResult,
 				metadata,
 				domainType,
+				primaryDocument,
 			};
 
 			const artifact = handler.generate(context);
