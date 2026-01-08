@@ -13,7 +13,8 @@ export {
 	type CapabilityContext,
 	type CapabilityHandler,
 	CrossCuttingManager,
-    DiagramCapabilityHandler,
+	crossCuttingManager,
+	DiagramCapabilityHandler,
 	WorkflowCapabilityHandler,
 } from "./cross-cutting/index.js";
 export * from "./output-strategy.js";
