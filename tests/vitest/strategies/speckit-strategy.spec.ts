@@ -140,6 +140,8 @@ describe("SpecKitStrategy", () => {
 			expect(spec?.content).toContain(
 				"# Specification: Payment Gateway Integration",
 			);
+			expect(spec?.content).toContain("## Overview");
+			expect(spec?.content).toContain("## Objectives");
 			expect(spec?.content).toContain("## Requirements");
 			expect(spec?.content).toContain("### Functional Requirements");
 			expect(spec?.content).toContain("1. Support credit cards");
@@ -803,6 +805,461 @@ describe("SpecKitStrategy", () => {
 			expect(artifacts).toBeDefined();
 			expect(artifacts.primary).toBeDefined();
 			expect(artifacts.secondary).toHaveLength(5);
+		});
+	});
+
+	describe("data extraction - context paths", () => {
+		it("should extract objectives from context.objectives", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "specification",
+				context: {
+					objectives: ["Improve performance", "Reduce costs", "Enhance UX"],
+				},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const spec = artifacts.secondary?.[0];
+
+			expect(spec?.content).toContain("## Objectives");
+			expect(spec?.content).toContain("1. Improve performance");
+			expect(spec?.content).toContain("2. Reduce costs");
+			expect(spec?.content).toContain("3. Enhance UX");
+		});
+
+		it("should extract requirements from context.requirements", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "specification",
+				context: {
+					requirements: ["Support mobile devices", "Enable offline mode"],
+				},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const spec = artifacts.secondary?.[0];
+
+			expect(spec?.content).toContain("### Functional Requirements");
+			expect(spec?.content).toContain("1. Support mobile devices");
+			expect(spec?.content).toContain("2. Enable offline mode");
+		});
+
+		it("should extract constraints from context.constraints", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "specification",
+				context: {
+					constraints: ["Budget limit: $50k", "Timeline: 3 months"],
+				},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const spec = artifacts.secondary?.[0];
+
+			expect(spec?.content).toContain("## Constraints");
+			expect(spec?.content).toContain("- Budget limit: $50k");
+			expect(spec?.content).toContain("- Timeline: 3 months");
+		});
+
+		it("should extract acceptance criteria from successCriteria", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "specification",
+				context: {
+					successCriteria: ["User satisfaction > 90%", "Page load < 2s"],
+				},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const spec = artifacts.secondary?.[0];
+
+			expect(spec?.content).toContain("## Acceptance Criteria");
+			expect(spec?.content).toContain("- [ ] User satisfaction > 90%");
+			expect(spec?.content).toContain("- [ ] Page load < 2s");
+		});
+
+		it("should generate timeline from phases when no explicit timeline", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "planning",
+				context: {},
+				phases: {
+					discovery: "Complete",
+					planning: "In progress",
+					implementation: "Not started",
+				},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const plan = artifacts.secondary?.[1];
+
+			expect(plan?.content).toContain("## Timeline");
+			expect(plan?.content).toContain("Estimated 3 phases");
+		});
+	});
+
+	describe("branch coverage - ternary and conditional paths", () => {
+		it("should handle phase data as object with status", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "planning",
+				context: {},
+				phases: {
+					discovery: { status: "Complete", notes: "All requirements gathered" },
+					planning: { status: "In Progress" },
+				},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const plan = artifacts.secondary?.[1];
+
+			expect(plan?.content).toContain("**Status**: Complete");
+			expect(plan?.content).toContain("**Status**: In Progress");
+		});
+
+		it("should handle risks as objects with mitigation", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "planning",
+				context: {
+					risks: [
+						{ name: "API downtime", mitigation: "Implement retry logic" },
+						{ name: "Security breach", mitigation: "Add 2FA" },
+					],
+				},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const plan = artifacts.secondary?.[1];
+
+			expect(plan?.content).toContain("**Risk**: API downtime");
+			expect(plan?.content).toContain("**Mitigation**: Implement retry logic");
+			expect(plan?.content).toContain("**Risk**: Security breach");
+			expect(plan?.content).toContain("**Mitigation**: Add 2FA");
+		});
+
+		it("should handle tasks without id field", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "implementation",
+				context: {
+					tasks: [
+						{
+							title: "Setup database",
+							dependencies: [],
+						},
+						{
+							title: "Create API",
+							dependencies: ["Setup database"],
+						},
+					],
+				},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const tasks = artifacts.secondary?.[2];
+
+			expect(tasks?.content).toContain(
+				"**Create API** depends on: Setup database",
+			);
+		});
+
+		it("should handle milestones without date", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "planning",
+				context: {
+					milestones: [
+						{
+							name: "Alpha Release",
+						},
+					],
+				},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const roadmap = artifacts.secondary?.[4];
+
+			expect(roadmap?.content).toContain("**Target Date**: TBD");
+		});
+
+		it("should handle milestones without deliverables", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "planning",
+				context: {
+					milestones: [
+						{
+							name: "Beta Launch",
+							date: "2026-06-01",
+						},
+					],
+				},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const roadmap = artifacts.secondary?.[4];
+
+			expect(roadmap?.content).toContain("### Milestone 1: Beta Launch");
+			expect(roadmap?.content).toContain("**Target Date**: 2026-06-01");
+		});
+
+		it("should handle ADR consequences with all three types", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "architecture",
+				config: {
+					sessionId: "test-session",
+					context: {},
+					goal: "Microservices Migration",
+				},
+				context: {
+					adrConsequences: {
+						positive: ["Better scalability", "Independent deployment"],
+						negative: ["Increased complexity", "More infrastructure"],
+						neutral: ["Need new monitoring tools"],
+					},
+				},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const adr = artifacts.secondary?.[3];
+
+			expect(adr?.content).toContain("### Positive");
+			expect(adr?.content).toContain("- Better scalability");
+			expect(adr?.content).toContain("- Independent deployment");
+			expect(adr?.content).toContain("### Negative");
+			expect(adr?.content).toContain("- Increased complexity");
+			expect(adr?.content).toContain("- More infrastructure");
+			expect(adr?.content).toContain("### Neutral");
+			expect(adr?.content).toContain("- Need new monitoring tools");
+		});
+
+		it("should handle phase data as non-string fallback", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "planning",
+				context: {},
+				phases: {
+					discovery: { completed: true },
+					planning: 42, // Non-string, non-object with status
+				},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const plan = artifacts.secondary?.[1];
+
+			expect(plan?.content).toContain("In progress");
+			expect(plan?.content).toContain("**Status**: Pending");
+		});
+
+		it("should handle risks with missing mitigation", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "planning",
+				context: {
+					risks: [{ name: "Vendor lock-in" }],
+				},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const plan = artifacts.secondary?.[1];
+
+			expect(plan?.content).toContain("**Risk**: Vendor lock-in");
+			expect(plan?.content).toContain("**Mitigation**: To be defined");
+		});
+
+		it("should handle tasks with no dependencies", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "implementation",
+				context: {
+					tasks: [
+						{
+							title: "Design mockups",
+							dependencies: [],
+						},
+						{
+							title: "Write documentation",
+						},
+					],
+				},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const tasks = artifacts.secondary?.[2];
+
+			expect(tasks?.content).toContain("## Task Dependencies");
+			expect(tasks?.content).toContain(
+				"No explicit task dependencies defined yet",
+			);
+		});
+
+		it("should handle ADR consequences object without arrays", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "architecture",
+				config: {
+					sessionId: "test-session",
+					context: {},
+					goal: "Architecture Decision",
+				},
+				context: {
+					adrConsequences: {},
+				},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const adr = artifacts.secondary?.[3];
+
+			expect(adr?.content).toContain("### Positive");
+			expect(adr?.content).toContain("- To be documented");
+			expect(adr?.content).toContain("### Negative");
+			expect(adr?.content).toContain("### Neutral");
+		});
+
+		it("should handle ADR consequences with only positive array", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "architecture",
+				config: {
+					sessionId: "test-session",
+					context: {},
+					goal: "Architecture Decision",
+				},
+				context: {
+					adrConsequences: {
+						positive: ["Improved performance"],
+					},
+				},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const adr = artifacts.secondary?.[3];
+
+			expect(adr?.content).toContain("### Positive");
+			expect(adr?.content).toContain("- Improved performance");
+			expect(adr?.content).toContain("### Negative");
+			expect(adr?.content).toContain("- To be documented");
+		});
+	});
+
+	describe("edge cases and fallbacks", () => {
+		it("should handle empty arrays for objectives", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "specification",
+				context: {
+					objectives: [],
+				},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const spec = artifacts.secondary?.[0];
+
+			expect(spec?.content).toContain("## Objectives");
+			expect(spec?.content).toContain("To be defined");
+		});
+
+		it("should handle empty arrays for requirements in context", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "specification",
+				context: {
+					requirements: [],
+				},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const spec = artifacts.secondary?.[0];
+
+			expect(spec?.content).toContain("To be defined");
+		});
+
+		it("should handle empty arrays for constraints in context", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "specification",
+				context: {
+					constraints: [],
+				},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const spec = artifacts.secondary?.[0];
+
+			expect(spec?.content).toContain("None specified");
+		});
+
+		it("should handle empty arrays for successCriteria", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "specification",
+				context: {
+					successCriteria: [],
+				},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const spec = artifacts.secondary?.[0];
+
+			expect(spec?.content).toContain("To be defined");
+		});
+
+		it("should handle phases object with no timeline", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "planning",
+				context: {},
+				phases: {},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const plan = artifacts.secondary?.[1];
+
+			expect(plan?.content).toContain("Estimated 0 phases");
 		});
 	});
 });
