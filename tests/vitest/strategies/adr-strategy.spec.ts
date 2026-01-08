@@ -495,7 +495,7 @@ describe("ADRStrategy", () => {
 			const slugPart =
 				artifacts.primary.name.match(/ADR-\d{4}-(.*?)\.md$/)?.[1];
 			expect(slugPart).toBeDefined();
-			expect(slugPart!.length).toBeLessThanOrEqual(50);
+			expect(slugPart?.length).toBeLessThanOrEqual(50);
 		});
 
 		it("should handle titles with consecutive spaces", () => {
