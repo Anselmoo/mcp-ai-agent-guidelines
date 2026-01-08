@@ -1,8 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import {
 	type Mode,
-	type ModeState,
-	type ModeTransition,
 	modeManager,
 } from "../../../src/tools/shared/mode-manager.js";
 
