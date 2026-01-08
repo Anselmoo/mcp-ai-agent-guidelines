@@ -6,5 +6,6 @@
  * @module strategies
  */
 
+export { ADRStrategy } from "./adr-strategy.js";
 export { ChatStrategy } from "./chat-strategy.js";
 export * from "./output-strategy.js";
