@@ -12,4 +12,5 @@ export { EnterpriseStrategy } from "./enterprise-strategy.js";
 export * from "./output-strategy.js";
 export { RFCStrategy } from "./rfc-strategy.js";
 export { SDDStrategy } from "./sdd-strategy.js";
+export { SpecKitStrategy } from "./speckit-strategy.js";
 export { TOGAFStrategy } from "./togaf-strategy.js";
