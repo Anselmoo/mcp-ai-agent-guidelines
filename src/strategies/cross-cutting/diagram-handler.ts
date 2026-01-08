@@ -169,46 +169,59 @@ export class DiagramCapabilityHandler implements CapabilityHandler {
 	/**
 	 * Generate a flowchart diagram.
 	 *
-	 * @param _description - Flowchart description (currently unused, reserved for future enhancement)
+	 * @param description - Flowchart description
 	 * @returns Mermaid flowchart syntax
 	 */
-	private generateFlowchart(_description: string): string {
+	private generateFlowchart(description: string): string {
+		// Use description in start node for context
+		const startLabel =
+			description.length > 30
+				? `${description.substring(0, 30)}...`
+				: description;
+
 		return `flowchart TD
-    A[Start] --> B{Decision}
-    B -->|Yes| C[Action 1]
-    B -->|No| D[Action 2]
-    C --> E[End]
-    D --> E
-`;
+A[${startLabel}] --> B{Decision}
+B -->|Yes| C[Action 1]
+B -->|No| D[Action 2]
+C --> E[End]
+D --> E`;
 	}
 
 	/**
 	 * Generate a sequence diagram.
 	 *
-	 * @param _description - Sequence description (currently unused, reserved for future enhancement)
+	 * @param description - Sequence description
 	 * @returns Mermaid sequence syntax
 	 */
-	private generateSequence(_description: string): string {
+	private generateSequence(description: string): string {
+		// Use description in request for context
+		const requestLabel =
+			description.length > 40
+				? `${description.substring(0, 40)}...`
+				: description;
+
 		return `sequenceDiagram
-    participant U as User
-    participant S as System
-    U->>S: Request
-    S-->>U: Response
-`;
+participant U as User
+participant S as System
+U->>S: ${requestLabel}
+S-->>U: Response`;
 	}
 
 	/**
 	 * Generate a class diagram.
 	 *
-	 * @param _description - Class diagram description (currently unused, reserved for future enhancement)
+	 * @param description - Class diagram description
 	 * @returns Mermaid class diagram syntax
 	 */
-	private generateClassDiagram(_description: string): string {
+	private generateClassDiagram(description: string): string {
+		// Use description as class name (sanitized)
+		const className =
+			description.replace(/[^a-zA-Z0-9]/g, "").substring(0, 20) || "Component";
+
 		return `classDiagram
-    class Component {
-        +method()
-    }
-`;
+class ${className} {
++method()
+}`;
 	}
 
 	/**

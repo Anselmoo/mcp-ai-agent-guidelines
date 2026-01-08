@@ -279,21 +279,38 @@ describe("DiagramCapabilityHandler", () => {
 		describe("diagram content validation", () => {
 			it("should generate valid mermaid flowchart syntax", () => {
 				const context: CapabilityContext = {
-					domainResult: { description: "test" },
+					domainResult: { description: "test workflow" },
 					primaryDocument: "# Test",
 				};
 
 				const artifact = handler.generate(context);
 
 				expect(artifact?.content).toContain("flowchart TD");
-				expect(artifact?.content).toMatch(/A\[Start\]/);
+				expect(artifact?.content).toMatch(/A\[test workflow\]/);
 				expect(artifact?.content).toMatch(/B\{Decision\}/);
 				expect(artifact?.content).toContain("-->");
 			});
 
+			it("should truncate long descriptions in flowchart", () => {
+				const context: CapabilityContext = {
+					domainResult: {
+						description:
+							"a very long description that exceeds thirty characters",
+					},
+					primaryDocument: "# Test",
+				};
+
+				const artifact = handler.generate(context);
+
+				expect(artifact?.content).toContain("flowchart TD");
+				expect(artifact?.content).toMatch(
+					/A\[a very long description that e\.\.\.\]/,
+				);
+			});
+
 			it("should generate valid mermaid sequence syntax", () => {
 				const context: CapabilityContext = {
-					domainResult: { steps: ["a"], description: "test" },
+					domainResult: { steps: ["a"], description: "API request" },
 					primaryDocument: "# Test",
 				};
 
@@ -301,12 +318,59 @@ describe("DiagramCapabilityHandler", () => {
 
 				expect(artifact?.content).toContain("sequenceDiagram");
 				expect(artifact?.content).toContain("participant");
+				expect(artifact?.content).toContain("U->>S: API request");
 				expect(artifact?.content).toMatch(/->>|-->>/);
+			});
+
+			it("should truncate long descriptions in sequence diagram", () => {
+				const context: CapabilityContext = {
+					domainResult: {
+						steps: ["a"],
+						description:
+							"a very long API request description that exceeds forty characters limit",
+					},
+					primaryDocument: "# Test",
+				};
+
+				const artifact = handler.generate(context);
+
+				expect(artifact?.content).toContain("sequenceDiagram");
+				expect(artifact?.content).toContain(
+					"U->>S: a very long API request description that...",
+				);
 			});
 
 			it("should generate valid mermaid class diagram syntax", () => {
 				const context: CapabilityContext = {
-					domainResult: { components: ["A"], description: "test" },
+					domainResult: { components: ["A"], description: "MyComponent" },
+					primaryDocument: "# Test",
+				};
+
+				const artifact = handler.generate(context);
+
+				expect(artifact?.content).toContain("classDiagram");
+				expect(artifact?.content).toContain("class MyComponent");
+				expect(artifact?.content).toMatch(/\+method\(\)/);
+			});
+
+			it("should sanitize class names from description", () => {
+				const context: CapabilityContext = {
+					domainResult: {
+						components: ["A"],
+						description: "My-Complex_Component#123",
+					},
+					primaryDocument: "# Test",
+				};
+
+				const artifact = handler.generate(context);
+
+				expect(artifact?.content).toContain("classDiagram");
+				expect(artifact?.content).toContain("class MyComplexComponent");
+			});
+
+			it("should fallback to Component for empty sanitized class name", () => {
+				const context: CapabilityContext = {
+					domainResult: { components: ["A"], description: "###---" },
 					primaryDocument: "# Test",
 				};
 
@@ -314,7 +378,6 @@ describe("DiagramCapabilityHandler", () => {
 
 				expect(artifact?.content).toContain("classDiagram");
 				expect(artifact?.content).toContain("class Component");
-				expect(artifact?.content).toMatch(/\+method\(\)/);
 			});
 		});
 	});
