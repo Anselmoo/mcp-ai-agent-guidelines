@@ -43,15 +43,17 @@ describe("EnterpriseStrategy", () => {
 			const result: SessionState = {
 				id: "session-enterprise-001",
 				phase: "implementation",
-				status: "in-progress",
+				status: "active",
 				context: {},
 				config: {
+					sessionId: "session-enterprise-001",
+					context: {},
 					goal: "Digital Transformation Initiative",
 				},
 				phases: {
 					planning: { status: "completed", duration: "2 months" },
-					execution: { status: "in-progress", duration: "6 months" },
-					rollout: { status: "planned", duration: "3 months" },
+					implementation: { status: "active", duration: "6 months" },
+					architecture: { status: "planned", duration: "3 months" },
 				},
 				history: [],
 			};
@@ -215,10 +217,12 @@ describe("EnterpriseStrategy", () => {
 			const strategy = new EnterpriseStrategy();
 			const result: SessionState = {
 				id: "session-overview",
-				phase: "execution",
+				phase: "implementation",
 				status: "completed",
 				context: {},
 				config: {
+					sessionId: "session-overview",
+					context: {},
 					goal: "Modernize Legacy Infrastructure",
 				},
 				history: [],
@@ -233,7 +237,7 @@ describe("EnterpriseStrategy", () => {
 				"**Current Status:** completed",
 			);
 			expect(artifacts.primary.content).toContain(
-				"**Current Phase:** execution",
+				"**Current Phase:** implementation",
 			);
 		});
 
@@ -244,10 +248,10 @@ describe("EnterpriseStrategy", () => {
 				phase: "planning",
 				context: {},
 				phases: {
-					"Discovery & Assessment": { duration: "1 month" },
-					"Design & Planning": { duration: "2 months" },
-					Implementation: { duration: "6 months" },
-					"Deployment & Rollout": { duration: "2 months" },
+					discovery: { duration: "1 month" },
+					requirements: { duration: "2 months" },
+					implementation: { duration: "6 months" },
+					architecture: { duration: "2 months" },
 				},
 				history: [],
 			};
@@ -255,18 +259,12 @@ describe("EnterpriseStrategy", () => {
 			const artifacts = strategy.render(result);
 
 			const boardPresentation = artifacts.secondary?.[0];
+			expect(boardPresentation?.content).toContain("**Phase 1:** discovery");
+			expect(boardPresentation?.content).toContain("**Phase 2:** requirements");
 			expect(boardPresentation?.content).toContain(
-				"**Phase 1:** Discovery & Assessment",
+				"**Phase 3:** implementation",
 			);
-			expect(boardPresentation?.content).toContain(
-				"**Phase 2:** Design & Planning",
-			);
-			expect(boardPresentation?.content).toContain(
-				"**Phase 3:** Implementation",
-			);
-			expect(boardPresentation?.content).toContain(
-				"**Phase 4:** Deployment & Rollout",
-			);
+			expect(boardPresentation?.content).toContain("**Phase 4:** architecture");
 		});
 
 		it("should include phase breakdown in implementation roadmap", () => {
@@ -276,11 +274,11 @@ describe("EnterpriseStrategy", () => {
 				phase: "planning",
 				context: {},
 				phases: {
-					"Phase 1": {
+					requirements: {
 						activities: ["Requirements", "Design"],
 						deliverables: ["Spec", "Architecture"],
 					},
-					"Phase 2": {
+					implementation: {
 						activities: ["Development", "Testing"],
 						deliverables: ["MVP", "Test Reports"],
 					},
@@ -292,20 +290,20 @@ describe("EnterpriseStrategy", () => {
 
 			const roadmap = artifacts.secondary?.[2];
 			expect(roadmap?.content).toContain("## Phase Breakdown");
-			expect(roadmap?.content).toContain("### Phase 1: Phase 1");
-			expect(roadmap?.content).toContain("### Phase 2: Phase 2");
+			expect(roadmap?.content).toContain("### Phase 1: requirements");
+			expect(roadmap?.content).toContain("### Phase 2: implementation");
 		});
 
 		it("should include proposed architecture from phases", () => {
 			const strategy = new EnterpriseStrategy();
 			const result: SessionState = {
 				id: "session-architecture",
-				phase: "design",
+				phase: "architecture",
 				context: {},
 				phases: {
-					"API Layer": { components: ["REST API", "GraphQL"] },
-					"Data Layer": { components: ["PostgreSQL", "Redis"] },
-					Frontend: { components: ["React", "TypeScript"] },
+					architecture: { components: ["REST API", "GraphQL"] },
+					implementation: { components: ["PostgreSQL", "Redis"] },
+					specification: { components: ["React", "TypeScript"] },
 				},
 				history: [],
 			};
@@ -316,9 +314,9 @@ describe("EnterpriseStrategy", () => {
 			expect(detailedAnalysis?.content).toContain(
 				"### 2.2 Proposed Architecture",
 			);
-			expect(detailedAnalysis?.content).toContain("**API Layer:**");
-			expect(detailedAnalysis?.content).toContain("**Data Layer:**");
-			expect(detailedAnalysis?.content).toContain("**Frontend:**");
+			expect(detailedAnalysis?.content).toContain("**architecture:**");
+			expect(detailedAnalysis?.content).toContain("**implementation:**");
+			expect(detailedAnalysis?.content).toContain("**specification:**");
 		});
 
 		it("should handle empty phases gracefully", () => {
@@ -721,9 +719,9 @@ describe("EnterpriseStrategy", () => {
 				phase: "planning",
 				context: {},
 				phases: {
-					Phase1: {},
-					Phase2: {},
-					Phase3: {},
+					discovery: {},
+					requirements: {},
+					planning: {},
 				},
 				history: [],
 			};

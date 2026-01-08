@@ -43,7 +43,7 @@ describe("TOGAFStrategy", () => {
 			const result: SessionState = {
 				id: "session-togaf-001",
 				phase: "architecture",
-				status: "in-progress",
+				status: "active",
 				context: {
 					businessGoals: [
 						"Improve system scalability",
@@ -54,12 +54,22 @@ describe("TOGAFStrategy", () => {
 					risks: ["Technical complexity", "Resource constraints"],
 				},
 				config: {
+					sessionId: "session-togaf-001",
+					context: {
+						businessGoals: [
+							"Improve system scalability",
+							"Reduce operational costs",
+						],
+						principles: ["Cloud-first", "API-driven"],
+						stakeholders: ["CTO", "VP Engineering", "Product Team"],
+						risks: ["Technical complexity", "Resource constraints"],
+					},
 					goal: "Implement Cloud-Native Architecture",
 					requirements: ["Microservices", "Containerization", "CI/CD"],
 				},
 				phases: {
 					discovery: { status: "completed" },
-					architecture: { status: "in-progress" },
+					architecture: { status: "active" },
 					implementation: { status: "planned" },
 				},
 				artifacts: {
@@ -253,19 +263,19 @@ describe("TOGAFStrategy", () => {
 				phase: "architecture",
 				context: {},
 				phases: {
-					"Phase 1": {
+					discovery: {
 						activities: ["Design", "Prototype"],
 						duration: "3 months",
 					},
-					"Phase 2": { activities: ["Build", "Test"], duration: "6 months" },
+					requirements: { activities: ["Build", "Test"], duration: "6 months" },
 				},
 				history: [],
 			};
 
 			const artifacts = strategy.render(result);
 
-			expect(artifacts.primary.content).toContain("### Phase 1");
-			expect(artifacts.primary.content).toContain("### Phase 2");
+			expect(artifacts.primary.content).toContain("### discovery");
+			expect(artifacts.primary.content).toContain("### requirements");
 		});
 
 		it("should include current phase and status in executive summary", () => {
@@ -276,6 +286,8 @@ describe("TOGAFStrategy", () => {
 				status: "completed",
 				context: {},
 				config: {
+					sessionId: "session-status",
+					context: {},
 					goal: "Deploy Cloud Infrastructure",
 				},
 				history: [],
@@ -338,10 +350,10 @@ describe("TOGAFStrategy", () => {
 				phase: "architecture",
 				context: {},
 				phases: {
-					Discovery: "Assess current state",
-					Design: "Create target architecture",
-					Build: "Implement solution",
-					Deploy: "Roll out to production",
+					discovery: "Assess current state",
+					requirements: "Create target architecture",
+					implementation: "Implement solution",
+					planning: "Roll out to production",
 				},
 				history: [],
 			};
@@ -350,10 +362,10 @@ describe("TOGAFStrategy", () => {
 
 			const migrationPlan = artifacts.secondary?.[4];
 			expect(migrationPlan?.content).toContain("## Implementation Roadmap");
-			expect(migrationPlan?.content).toContain("### Phase 1: Discovery");
-			expect(migrationPlan?.content).toContain("### Phase 2: Design");
-			expect(migrationPlan?.content).toContain("### Phase 3: Build");
-			expect(migrationPlan?.content).toContain("### Phase 4: Deploy");
+			expect(migrationPlan?.content).toContain("### Phase 1: discovery");
+			expect(migrationPlan?.content).toContain("### Phase 2: requirements");
+			expect(migrationPlan?.content).toContain("### Phase 3: implementation");
+			expect(migrationPlan?.content).toContain("### Phase 4: planning");
 		});
 	});
 
