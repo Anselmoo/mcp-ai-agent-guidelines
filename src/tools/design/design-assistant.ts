@@ -11,6 +11,7 @@ import {
 	validationError,
 } from "../shared/error-factory.js";
 import { handleToolError } from "../shared/error-handler.js";
+import { logger } from "../shared/logger.js";
 import { confirmationModule } from "./confirmation-module.js";
 import {
 	constraintManager,
@@ -173,6 +174,7 @@ function mapOutputFormat(format: string | undefined): OutputApproach {
 
 /**
  * Map crossCutting strings to CrossCuttingCapability enum.
+ * Validates all capabilities and throws error if any are unknown.
  */
 function mapCrossCutting(
 	capabilities: string[] | undefined,
@@ -188,23 +190,77 @@ function mapCrossCutting(
 		"pr-template": CrossCuttingCapability.PR_TEMPLATE,
 	};
 
-	return capabilities
-		.map((cap) => mapping[cap.toLowerCase()])
-		.filter((cap) => cap !== undefined);
+	const resolved: CrossCuttingCapability[] = [];
+	const unknownCapabilities: string[] = [];
+
+	for (const rawCap of capabilities) {
+		const key = rawCap.toLowerCase();
+		const mapped = mapping[key];
+
+		if (mapped === undefined) {
+			unknownCapabilities.push(rawCap);
+		} else {
+			resolved.push(mapped);
+		}
+	}
+
+	if (unknownCapabilities.length > 0) {
+		throw validationError(
+			`Unknown crossCutting capabilities: ${unknownCapabilities.join(", ")}`,
+			{ unknownCapabilities, validCapabilities: Object.keys(mapping) },
+		);
+	}
+
+	return resolved;
 }
 
 /**
+ * Zod schema for validating gateway artifacts structure.
+ */
+const GatewayArtifactsSchema = z.object({
+	primary: z.object({
+		name: z.string(),
+		content: z.string(),
+		format: z.enum(["markdown", "json", "yaml"]),
+	}),
+	secondary: z
+		.array(
+			z.object({
+				name: z.string(),
+				content: z.string(),
+				format: z.enum(["markdown", "json", "yaml"]),
+			}),
+		)
+		.optional(),
+	crossCutting: z
+		.array(
+			z.object({
+				type: z.string(),
+				name: z.string(),
+				content: z.string(),
+			}),
+		)
+		.optional(),
+});
+
+/**
  * Format gateway artifacts as DesignAssistantResponse.
+ * Validates artifacts structure before formatting.
  */
 function formatGatewayResponse(
 	sessionId: string,
 	artifacts: unknown,
 ): DesignAssistantResponse {
-	const artifactsData = artifacts as {
-		primary: { name: string; content: string; format: string };
-		secondary?: { name: string; content: string; format: string }[];
-		crossCutting?: { type: string; name: string; content: string }[];
-	};
+	const parseResult = GatewayArtifactsSchema.safeParse(artifacts);
+
+	if (!parseResult.success) {
+		throw validationError("Invalid gateway artifacts structure", {
+			sessionId,
+			issues: parseResult.error.issues,
+		});
+	}
+
+	const artifactsData = parseResult.data;
 
 	const formattedArtifacts: Artifact[] = [
 		{
@@ -212,7 +268,7 @@ function formatGatewayResponse(
 			name: artifactsData.primary.name,
 			type: "specification" as const,
 			content: artifactsData.primary.content,
-			format: artifactsData.primary.format as "markdown" | "json" | "yaml",
+			format: artifactsData.primary.format,
 			timestamp: new Date().toISOString(),
 			metadata: { source: "polyglot-gateway" },
 		},
@@ -225,7 +281,7 @@ function formatGatewayResponse(
 				name: sec.name,
 				type: "specification" as const,
 				content: sec.content,
-				format: sec.format as "markdown" | "json" | "yaml",
+				format: sec.format,
 				timestamp: new Date().toISOString(),
 				metadata: { source: "polyglot-gateway" },
 			})),
@@ -481,14 +537,23 @@ class DesignAssistantImpl {
 				try {
 					const artifacts = polyglotGateway.render({
 						domainResult,
-						domainType: "SessionState",
+						domainType: "DesignAssistantResponse",
 						approach: mapOutputFormat(request.outputFormat),
 						crossCutting: mapCrossCutting(request.crossCutting),
 					});
 
 					return formatGatewayResponse(sessionId, artifacts);
-				} catch (_gatewayError) {
-					// Fallback to legacy behavior on gateway error
+				} catch (gatewayError) {
+					// Log the error and fallback to legacy behavior
+					logger.warn("Gateway rendering failed, falling back to legacy", {
+						sessionId,
+						action,
+						outputFormat: request.outputFormat,
+						error:
+							gatewayError instanceof Error
+								? gatewayError.message
+								: String(gatewayError),
+					});
 					return domainResult;
 				}
 			}

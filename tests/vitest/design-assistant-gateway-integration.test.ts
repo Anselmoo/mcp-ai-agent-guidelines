@@ -112,12 +112,19 @@ describe("Design Assistant - Gateway Integration", () => {
 			});
 
 			// Gateway will attempt to render but fall back gracefully
-			// since SessionState rendering is not fully implemented yet
+			// since DesignAssistantResponse rendering is not fully implemented yet
 			expect(result).toHaveProperty("success");
 			expect(result).toHaveProperty("sessionId", sessionId);
 
-			// Currently falls back to legacy (SessionState not yet renderable)
-			// When gateway SessionState support is added, this will have gatewayEnabled: true
+			// Verify fallback occurred - should NOT have gateway-specific metadata
+			if ("data" in result && result.data) {
+				expect(result.data).not.toHaveProperty("gatewayEnabled");
+			}
+
+			// Verify status is from legacy path, not gateway
+			if ("status" in result) {
+				expect(result.status).not.toBe("gateway-rendered");
+			}
 		});
 
 		it("should fallback to legacy when outputFormat is not specified", async () => {

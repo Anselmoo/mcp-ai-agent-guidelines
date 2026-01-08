@@ -213,20 +213,14 @@ describe("Feature Flags", () => {
 	});
 
 	describe("type safety", () => {
-		it("should have correct TypeScript types", () => {
+		it("should return FeatureFlags interface with all boolean properties", () => {
 			const flags: FeatureFlags = getFeatureFlags();
 
-			// Type assertions to verify structure
-			const _usePolyglot: boolean = flags.usePolyglotGateway;
-			const _specKit: boolean = flags.enableSpecKitOutput;
-			const _enterprise: boolean = flags.enableEnterpriseOutput;
-			const _crossCutting: boolean = flags.enableCrossCuttingCapabilities;
-
-			// Suppress unused variable warnings
-			expect(_usePolyglot).toBeDefined();
-			expect(_specKit).toBeDefined();
-			expect(_enterprise).toBeDefined();
-			expect(_crossCutting).toBeDefined();
+			// Verify all properties exist and are booleans
+			expect(typeof flags.usePolyglotGateway).toBe("boolean");
+			expect(typeof flags.enableSpecKitOutput).toBe("boolean");
+			expect(typeof flags.enableEnterpriseOutput).toBe("boolean");
+			expect(typeof flags.enableCrossCuttingCapabilities).toBe("boolean");
 		});
 	});
 });
