@@ -10,9 +10,9 @@ import { ADRStrategy } from "../../../src/strategies/adr-strategy.js";
 import { OutputApproach } from "../../../src/strategies/output-strategy.js";
 
 /**
- * SessionState interface for testing (matches minimal interface in adr-strategy.ts)
+ * ADRSessionState interface for testing (matches ADR-specific interface in adr-strategy.ts)
  */
-interface SessionState {
+interface ADRSessionState {
 	id: string;
 	phase?: string;
 	context?: Record<string, unknown>;
@@ -379,7 +379,7 @@ describe("ADRStrategy", () => {
 			};
 
 			expect(() =>
-				strategy.render(invalidResult as SessionState | PromptResult),
+				strategy.render(invalidResult as ADRSessionState | PromptResult),
 			).toThrow("Unsupported domain result type for ADRStrategy");
 		});
 
@@ -387,7 +387,7 @@ describe("ADRStrategy", () => {
 			const strategy = new ADRStrategy();
 
 			expect(() =>
-				strategy.render(null as unknown as SessionState | PromptResult),
+				strategy.render(null as unknown as ADRSessionState | PromptResult),
 			).toThrow("Unsupported domain result type for ADRStrategy");
 		});
 
@@ -395,7 +395,7 @@ describe("ADRStrategy", () => {
 			const strategy = new ADRStrategy();
 
 			expect(() =>
-				strategy.render(undefined as unknown as SessionState | PromptResult),
+				strategy.render(undefined as unknown as ADRSessionState | PromptResult),
 			).toThrow("Unsupported domain result type for ADRStrategy");
 		});
 	});
