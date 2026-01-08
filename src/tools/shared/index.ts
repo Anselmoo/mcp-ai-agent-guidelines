@@ -21,6 +21,7 @@ export * from "./errors.js";
 export * from "./execution-controller.js";
 export * from "./export-utils.js";
 export * from "./logger.js";
+export * from "./mode-manager.js";
 export * from "./prompt-sections.js";
 export * from "./prompt-utils.js";
 export * from "./tool-invoker.js";
