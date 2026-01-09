@@ -149,7 +149,7 @@ export class ProjectScanner {
 		const tsconfigJson = await this.parseTsconfig(projectPath);
 
 		// Detect project type and frameworks
-		const type = this.detectProjectType(configFiles, packageJson);
+		const type = this.detectProjectType(configFiles);
 		const frameworks = this.detectFrameworks(packageJson, configFiles);
 
 		// Find entry points
@@ -217,7 +217,8 @@ export class ProjectScanner {
 		};
 
 		// Stop if max depth reached
-		if (depth >= (options.maxDepth ?? this.defaultOptions.maxDepth!)) {
+		const maxDepth = options.maxDepth ?? this.defaultOptions.maxDepth ?? 5;
+		if (depth >= maxDepth) {
 			return node;
 		}
 
@@ -351,12 +352,9 @@ export class ProjectScanner {
 	}
 
 	/**
-	 * Detect project type based on config files and package.json
+	 * Detect project type based on config files
 	 */
-	private detectProjectType(
-		configFiles: ConfigFile[],
-		packageJson: Record<string, unknown> | null,
-	): ProjectType {
+	private detectProjectType(configFiles: ConfigFile[]): ProjectType {
 		const fileNames = configFiles.map((f) => f.name);
 
 		// Check for polyglot FIRST (multiple language indicators)

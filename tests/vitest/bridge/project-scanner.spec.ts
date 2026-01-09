@@ -323,7 +323,7 @@ describe("ProjectScanner", () => {
 				{ name: "tsconfig.json", path: "/project/tsconfig.json", type: "json" },
 			];
 
-			const result = (scanner as never).detectProjectType(configFiles, null);
+			const result = (scanner as never).detectProjectType(configFiles);
 
 			expect(result).toBe("typescript");
 		});
@@ -333,7 +333,7 @@ describe("ProjectScanner", () => {
 				{ name: "package.json", path: "/project/package.json", type: "json" },
 			];
 
-			const result = (scanner as never).detectProjectType(configFiles, null);
+			const result = (scanner as never).detectProjectType(configFiles);
 
 			expect(result).toBe("javascript");
 		});
@@ -347,7 +347,7 @@ describe("ProjectScanner", () => {
 				},
 			];
 
-			const result = (scanner as never).detectProjectType(configFiles, null);
+			const result = (scanner as never).detectProjectType(configFiles);
 
 			expect(result).toBe("python");
 		});
@@ -357,7 +357,7 @@ describe("ProjectScanner", () => {
 				{ name: "Cargo.toml", path: "/project/Cargo.toml", type: "toml" },
 			];
 
-			const result = (scanner as never).detectProjectType(configFiles, null);
+			const result = (scanner as never).detectProjectType(configFiles);
 
 			expect(result).toBe("rust");
 		});
@@ -367,7 +367,7 @@ describe("ProjectScanner", () => {
 				{ name: "go.mod", path: "/project/go.mod", type: "other" },
 			];
 
-			const result = (scanner as never).detectProjectType(configFiles, null);
+			const result = (scanner as never).detectProjectType(configFiles);
 
 			expect(result).toBe("go");
 		});
@@ -377,7 +377,7 @@ describe("ProjectScanner", () => {
 				{ name: "pom.xml", path: "/project/pom.xml", type: "xml" },
 			];
 
-			const result = (scanner as never).detectProjectType(configFiles, null);
+			const result = (scanner as never).detectProjectType(configFiles);
 
 			expect(result).toBe("java");
 		});
@@ -392,7 +392,7 @@ describe("ProjectScanner", () => {
 				},
 			];
 
-			const result = (scanner as never).detectProjectType(configFiles, null);
+			const result = (scanner as never).detectProjectType(configFiles);
 
 			expect(result).toBe("polyglot");
 		});
@@ -400,7 +400,7 @@ describe("ProjectScanner", () => {
 		it("should return unknown for unrecognized project", () => {
 			const configFiles: ConfigFile[] = [];
 
-			const result = (scanner as never).detectProjectType(configFiles, null);
+			const result = (scanner as never).detectProjectType(configFiles);
 
 			expect(result).toBe("unknown");
 		});
