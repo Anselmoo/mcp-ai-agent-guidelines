@@ -18,6 +18,7 @@
  * - MCP_ENABLE_SPECKIT=true
  * - MCP_ENABLE_ENTERPRISE=true
  * - MCP_ENABLE_CROSS_CUTTING=true
+ * - MCP_ENABLE_MODE_FILTERING=true
  *
  * @interface FeatureFlags
  */
@@ -50,6 +51,14 @@ export interface FeatureFlags {
 	 * @default false
 	 */
 	enableCrossCuttingCapabilities: boolean;
+
+	/**
+	 * Enable mode-aware tool filtering in list_tools handler.
+	 * When true, only tools relevant to the current mode are returned.
+	 *
+	 * @default false
+	 */
+	enableModeAwareToolFiltering: boolean;
 }
 
 /**
@@ -62,6 +71,7 @@ const _defaultFlags: FeatureFlags = {
 	enableSpecKitOutput: false,
 	enableEnterpriseOutput: false,
 	enableCrossCuttingCapabilities: false,
+	enableModeAwareToolFiltering: false,
 };
 
 /**
@@ -73,6 +83,7 @@ const _defaultFlags: FeatureFlags = {
  * - MCP_ENABLE_SPECKIT=true
  * - MCP_ENABLE_ENTERPRISE=true
  * - MCP_ENABLE_CROSS_CUTTING=true
+ * - MCP_ENABLE_MODE_FILTERING=true
  *
  * @returns {FeatureFlags} Current feature flag configuration
  *
@@ -93,6 +104,8 @@ export function getFeatureFlags(): FeatureFlags {
 		enableEnterpriseOutput: process.env.MCP_ENABLE_ENTERPRISE === "true",
 		enableCrossCuttingCapabilities:
 			process.env.MCP_ENABLE_CROSS_CUTTING === "true",
+		enableModeAwareToolFiltering:
+			process.env.MCP_ENABLE_MODE_FILTERING === "true",
 	};
 }
 
@@ -116,7 +129,8 @@ export function hasAnyFlagsEnabled(): boolean {
 		flags.usePolyglotGateway ||
 		flags.enableSpecKitOutput ||
 		flags.enableEnterpriseOutput ||
-		flags.enableCrossCuttingCapabilities
+		flags.enableCrossCuttingCapabilities ||
+		flags.enableModeAwareToolFiltering
 	);
 }
 
@@ -141,5 +155,6 @@ export function getFeatureFlagSummary(): Record<string, boolean> {
 		enableSpecKitOutput: flags.enableSpecKitOutput,
 		enableEnterpriseOutput: flags.enableEnterpriseOutput,
 		enableCrossCuttingCapabilities: flags.enableCrossCuttingCapabilities,
+		enableModeAwareToolFiltering: flags.enableModeAwareToolFiltering,
 	};
 }
