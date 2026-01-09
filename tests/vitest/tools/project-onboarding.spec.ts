@@ -1,184 +1,67 @@
 import { describe, expect, it } from "vitest";
 import {
-	buildMemoriesSection,
-	detectBuildSystem,
-	detectLanguages,
-	detectTestFramework,
-	generateProjectMemories,
+	buildOnboardingReferences,
 	projectOnboarding,
-	renderOnboardingMarkdown,
 } from "../../../src/tools/project-onboarding.js";
 
-describe("projectOnboarding helpers and branches", () => {
-	type LocalProjectProfile = {
-		name: string;
-		type: string;
-		structure: {
-			directories: string[];
-			keyFiles: string[];
-			frameworks: string[];
-			languages: string[];
-		};
-		buildSystem?: string;
-		testFramework?: string;
-		dependencies: string[];
-		entryPoints: string[];
-	};
-	it("detectLanguages identifies multiple languages from key files", () => {
-		const langs = detectLanguages([
-			"package.json",
-			"requirements.txt",
-			"Cargo.toml",
-			"go.mod",
-			"Gemfile",
-			"pom.xml",
-		]);
-		expect(langs).toContain("TypeScript/JavaScript");
-		expect(langs).toContain("Python");
-		expect(langs).toContain("Rust");
-		expect(langs).toContain("Go");
-		expect(langs).toContain("Ruby");
-		expect(langs).toContain("Java");
+describe("projectOnboarding refactored with ProjectScanner", () => {
+	it("buildOnboardingReferences returns expected reference links", () => {
+		const refs = buildOnboardingReferences();
+		expect(refs).toContain("Atlassian Onboarding Guide");
+		expect(refs).toContain("VS Code Navigation");
+		expect(refs).toContain("Meta AI Research");
 	});
 
-	it("detectBuildSystem and test framework return expected values", () => {
-		expect(detectBuildSystem(["package.json"])).toBe("npm/yarn");
-		expect(detectBuildSystem(["Cargo.toml"])).toBe("cargo");
-		expect(detectTestFramework(["package.json"])).toContain("Jest/Vitest");
-		expect(detectTestFramework(["requirements.txt"])).toContain("pytest");
-	});
+	it("projectOnboarding includes metadata when requested", async () => {
+		// Create a temporary directory for testing
+		const tempDir = "/tmp/test-project-metadata";
+		await import("node:fs/promises").then((fs) =>
+			fs.mkdir(tempDir, { recursive: true }),
+		);
 
-	it("generateProjectMemories includes development workflow when build/test systems present and omits when absent", () => {
-		type LocalProjectProfile = {
-			name: string;
-			type: string;
-			structure: {
-				directories: string[];
-				keyFiles: string[];
-				frameworks: string[];
-				languages: string[];
-			};
-			buildSystem?: string;
-			testFramework?: string;
-			dependencies: string[];
-			entryPoints: string[];
-		};
-
-		const profileWith: LocalProjectProfile = {
-			name: "X",
-			type: "application",
-			structure: {
-				directories: ["src"],
-				keyFiles: ["package.json"],
-				frameworks: ["Node.js"],
-				languages: ["TypeScript"],
-			},
-			buildSystem: "npm/yarn",
-			testFramework: "Vitest",
-			dependencies: ["depA"],
-			entryPoints: ["src/index.ts"],
-		};
-		const memsWith = generateProjectMemories(profileWith);
-		expect(
-			memsWith.some(
-				(m: { title: string }) => m.title === "Development Workflow",
-			),
-		).toBe(true);
-		expect(
-			memsWith.some((m: { title: string }) => m.title === "Dependencies"),
-		).toBe(true);
-
-		const profileWithout: LocalProjectProfile = {
-			...profileWith,
-			buildSystem: undefined,
-			testFramework: undefined,
-			dependencies: [],
-		};
-		const memsWithout = generateProjectMemories(profileWithout);
-		// When no build/test system and no dependencies, still returns Architecture and Conventions memories but not Development Workflow or Dependencies
-		expect(
-			memsWithout.some(
-				(m: { title: string }) => m.title === "Development Workflow",
-			),
-		).toBe(false);
-		expect(
-			memsWithout.some((m: { title: string }) => m.title === "Dependencies"),
-		).toBe(false);
-	});
-
-	it("buildMemoriesSection groups memories and returns expected formatted string", () => {
-		const mems: {
-			title: string;
-			category: "architecture" | "dependencies" | "workflow" | "conventions";
-			content: string;
-		}[] = [
-			{ title: "A1", category: "architecture", content: "c" },
-			{ title: "D1", category: "dependencies", content: "c" },
-		];
-		const s = buildMemoriesSection(mems);
-		expect(s).toContain("Architecture");
-		expect(s).toContain("Dependencies");
-		expect(s).toContain("A1");
-		expect(s).toContain("D1");
-	});
-
-	it("projectOnboarding respects includeMemories/includeMetadata/includeReferences flags", async () => {
-		const resWith = await projectOnboarding({
-			projectPath: "/tmp/proj",
-			includeMemories: true,
+		const result = await projectOnboarding({
+			projectPath: tempDir,
 			includeMetadata: true,
+		});
+
+		expect(result.content[0].text).toContain("Metadata");
+	});
+
+	it("projectOnboarding includes references when requested", async () => {
+		const tempDir = "/tmp/test-project-refs";
+		await import("node:fs/promises").then((fs) =>
+			fs.mkdir(tempDir, { recursive: true }),
+		);
+
+		const result = await projectOnboarding({
+			projectPath: tempDir,
 			includeReferences: true,
 		});
-		expect(resWith.content[0].text).toContain("Project Memories Generated");
-		expect(resWith.content[0].text).toContain("Atlassian Onboarding Guide");
 
-		const resWithout = await projectOnboarding({
-			projectPath: "/tmp/proj",
-			includeMemories: false,
-			includeMetadata: false,
-			includeReferences: false,
-		});
-		expect(resWithout.content[0].text).toContain("Project memories (disabled)");
+		expect(result.content[0].text).toContain("Further Reading");
+		expect(result.content[0].text).toContain("Atlassian");
 	});
 
-	it("renderOnboardingMarkdown handles empty fields and toggles correctly", () => {
-		const emptyProfile = {
-			name: "Empty",
-			type: "other",
-			structure: {
-				directories: [],
-				keyFiles: [],
-				frameworks: [],
-				languages: [],
-			},
-			buildSystem: undefined,
-			testFramework: undefined,
-			dependencies: [],
-			entryPoints: [],
-		};
+	it("projectOnboarding handles minimal project correctly", async () => {
+		const tempDir = "/tmp/test-minimal-project";
+		await import("node:fs/promises").then((fs) =>
+			fs.mkdir(tempDir, { recursive: true }),
+		);
 
-		const md = renderOnboardingMarkdown(emptyProfile as LocalProjectProfile, {
-			includeMemories: false,
-			includeMetadata: false,
-			includeReferences: false,
+		const result = await projectOnboarding({
+			projectPath: tempDir,
 		});
 
-		expect(md).toContain("Languages | Unknown");
-		expect(md).toContain("Frameworks | None detected");
-		expect(md).toContain("- No clear entry points identified");
-		expect(md).toContain("No dependencies detected");
-		expect(md).toContain("Check build commands");
-		expect(md).not.toContain("using");
+		expect(result.content[0].text).toContain("Project Onboarding:");
+		expect(result.content[0].text).toContain("Type");
+		expect(result.content[0].text).toContain("Root");
+	});
 
-		const mdWithMem = renderOnboardingMarkdown(
-			{ ...emptyProfile, entryPoints: ["main.py"] } as LocalProjectProfile,
-			{
-				includeMemories: true,
-				includeMetadata: false,
-				includeReferences: false,
-				memories: [{ title: "M1", category: "architecture", content: "c" }],
-			},
-		);
-		expect(mdWithMem).toContain("- [x] Project memories generated");
+	it("projectOnboarding throws error for non-existent path", async () => {
+		await expect(
+			projectOnboarding({
+				projectPath: "/non-existent-path-12345",
+			}),
+		).rejects.toThrow();
 	});
 });

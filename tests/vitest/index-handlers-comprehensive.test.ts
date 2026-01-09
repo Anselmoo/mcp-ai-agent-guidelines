@@ -331,9 +331,14 @@ describe("index.ts - Tool Handler Coverage", () => {
 		});
 
 		it("project-onboarding handler", async () => {
+			// Create a temporary directory for testing
+			const tempDir = "/tmp/test-project-onboarding-handler";
+			await import("node:fs/promises").then((fs) =>
+				fs.mkdir(tempDir, { recursive: true }),
+			);
+
 			const result = await projectOnboarding({
-				action: "analyze-structure",
-				projectPath: "/test/path",
+				projectPath: tempDir,
 			});
 			expect(result.content).toBeDefined();
 		});
