@@ -675,7 +675,6 @@ describe("ProjectScanner", () => {
 			const result = await (scanner as never).findEntryPoints(
 				null,
 				null,
-				[],
 				"/project",
 			);
 
@@ -690,7 +689,6 @@ describe("ProjectScanner", () => {
 			const result = await (scanner as never).findEntryPoints(
 				null,
 				null,
-				[],
 				"/project",
 			);
 

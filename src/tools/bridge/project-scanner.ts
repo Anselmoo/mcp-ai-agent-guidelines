@@ -156,7 +156,6 @@ export class ProjectScanner {
 		const entryPoints = await this.findEntryPoints(
 			packageJson,
 			tsconfigJson,
-			configFiles,
 			projectPath,
 		);
 
@@ -585,7 +584,6 @@ export class ProjectScanner {
 	private async findEntryPoints(
 		packageJson: Record<string, unknown> | null,
 		tsconfigJson: Record<string, unknown> | null,
-		configFiles: ConfigFile[],
 		projectPath: string,
 	): Promise<string[]> {
 		const entryPoints: string[] = [];
