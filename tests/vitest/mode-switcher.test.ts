@@ -2,10 +2,16 @@
  * Test suite for Mode Switcher
  */
 
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { modeSwitcher } from "../../src/tools/mode-switcher.js";
+import { modeManager } from "../../src/tools/shared/mode-manager.js";
 
 describe("Mode Switcher", () => {
+	// Reset mode manager before each test to ensure clean state
+	beforeEach(() => {
+		modeManager.reset();
+	});
+
 	describe("Mode Switching", () => {
 		it("should switch to planning mode", async () => {
 			const result = await modeSwitcher({
@@ -15,7 +21,7 @@ describe("Mode Switcher", () => {
 
 			const text = result.content[0].text;
 
-			expect(text).toContain("Mode Switch: Planning Mode");
+			expect(text).toContain("Mode Switched Successfully");
 			expect(text).toContain("Focus on analysis, design");
 			expect(text).toContain("Enabled Tools");
 			expect(text).toContain("hierarchical-prompt-builder");
@@ -23,8 +29,13 @@ describe("Mode Switcher", () => {
 		});
 
 		it("should switch to editing mode", async () => {
+			// First set to planning mode
+			await modeSwitcher({
+				targetMode: "planning",
+			});
+
+			// Then switch to editing
 			const result = await modeSwitcher({
-				currentMode: "planning",
 				targetMode: "editing",
 				reason: "Implementation phase started",
 			});
@@ -229,22 +240,32 @@ describe("Mode Switcher", () => {
 
 	describe("Mode Transitions", () => {
 		it("should show transition from current to target mode", async () => {
+			// First set to analysis mode
+			await modeSwitcher({
+				targetMode: "analysis",
+			});
+
+			// Then switch to refactoring
 			const result = await modeSwitcher({
-				currentMode: "analysis",
 				targetMode: "refactoring",
 			});
 
 			const text = result.content[0].text;
 
-			expect(text).toContain("From");
+			expect(text).toContain("Previous Mode");
 			expect(text).toContain("Analysis Mode");
-			expect(text).toContain("To");
+			expect(text).toContain("Current Mode");
 			expect(text).toContain("Refactoring Mode");
 		});
 
 		it("should include reason when provided", async () => {
+			// First set to planning mode
+			await modeSwitcher({
+				targetMode: "planning",
+			});
+
+			// Then switch to editing with reason
 			const result = await modeSwitcher({
-				currentMode: "planning",
 				targetMode: "editing",
 				reason: "Plan is complete",
 			});
