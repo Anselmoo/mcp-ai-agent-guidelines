@@ -75,7 +75,6 @@ import { semanticCodeAnalyzer } from "./tools/semantic-code-analyzer.js";
 // Import annotation presets
 import {
 	ANALYSIS_TOOL_ANNOTATIONS,
-	FILESYSTEM_TOOL_ANNOTATIONS,
 	GENERATION_TOOL_ANNOTATIONS,
 	SESSION_TOOL_ANNOTATIONS,
 } from "./tools/shared/annotation-presets.js";
@@ -2041,8 +2040,11 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 				required: ["projectPath"],
 			},
 			annotations: {
-				...FILESYSTEM_TOOL_ANNOTATIONS,
 				title: "Project Onboarding Scanner",
+				readOnlyHint: true, // Only reads files, doesn't modify
+				idempotentHint: true, // Same input = same output
+				destructiveHint: false, // No data loss
+				openWorldHint: true, // Accesses file system
 			},
 		},
 		{
@@ -2113,8 +2115,11 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 				required: ["targetMode"],
 			},
 			annotations: {
-				...SESSION_TOOL_ANNOTATIONS,
 				title: "Agent Mode Switcher",
+				readOnlyHint: false, // Actually changes state now
+				idempotentHint: false, // Different modes affect behavior
+				destructiveHint: false, // No data loss
+				openWorldHint: false, // No external resources
 			},
 		},
 		{
