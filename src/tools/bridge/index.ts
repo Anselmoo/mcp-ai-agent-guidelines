@@ -8,6 +8,7 @@
  * The bridge layer allows:
  * - Semantic analysis to enhance prompts and strategies
  * - Project onboarding to provide context to all tools
+ * - Project scanning to extract real project structure
  * - Cross-tool data sharing and enhancement
  *
  * ## Usage
@@ -33,6 +34,15 @@
  * // Generate contextual prompts for any task
  * const taskPrompt = generateContextualPrompt(context, "Refactor authentication module");
  * ```
+ *
+ * ### Project Scanner
+ * ```typescript
+ * import { projectScanner } from './bridge';
+ *
+ * // Scan a project directory
+ * const structure = await projectScanner.scan('/path/to/project');
+ * console.log(structure.name, structure.type, structure.frameworks);
+ * ```
  */
 
 // Project Onboarding Bridge
@@ -44,6 +54,18 @@ export {
 	generateProjectSpecificHygieneRules,
 	generateStrategyWithProjectContext,
 } from "./project-onboarding-bridge.js";
+// Project Scanner
+export {
+	type ConfigFile,
+	type Dependency,
+	type DirectoryNode,
+	type Framework,
+	ProjectScanner,
+	type ProjectStructure,
+	type ProjectType,
+	projectScanner,
+	type ScanOptions,
+} from "./project-scanner.js";
 // Semantic Analyzer Bridge
 export {
 	enhancePromptWithSemantics,
