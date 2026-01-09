@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { type Mode, modeManager } from "./shared/mode-manager.js";
+import { modeManager } from "./shared/mode-manager.js";
 import {
 	buildFurtherReadingSection,
 	buildMetadataSection,
