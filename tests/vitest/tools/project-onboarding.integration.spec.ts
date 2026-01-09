@@ -148,4 +148,49 @@ describe("project-onboarding integration tests", () => {
 			await fs.rm(tempDir, { recursive: true, force: true });
 		}
 	});
+
+	it("should format npm scripts for Node.js projects", async () => {
+		const result = await projectOnboarding({
+			projectPath: process.cwd(),
+			focusAreas: ["scripts"],
+		});
+
+		const text = result.content[0].text;
+
+		// Should use "npm run" for Node.js projects
+		expect(text).toContain("npm run");
+		expect(text).toContain("Available Scripts");
+	});
+
+	it("should handle non-Node.js project scripts appropriately", async () => {
+		const fs = await import("node:fs/promises");
+		const path = await import("node:path");
+		const tempDir = path.join(
+			process.cwd(),
+			".tmp-test",
+			"test-python-project",
+		);
+
+		try {
+			await fs.mkdir(tempDir, { recursive: true });
+
+			// Create a fake Python project (non-Node.js)
+			// ProjectScanner will detect it as non-Node if there's no package.json
+			await fs.writeFile(path.join(tempDir, "setup.py"), "# Python setup");
+
+			const result = await projectOnboarding({
+				projectPath: tempDir,
+				focusAreas: ["scripts"],
+			});
+
+			const text = result.content[0].text;
+
+			// Since it's not a Node.js project, scripts should show raw commands
+			// (though this project won't have scripts in package.json)
+			expect(text).toContain("Project Onboarding:");
+		} finally {
+			// Cleanup
+			await fs.rm(tempDir, { recursive: true, force: true });
+		}
+	});
 });

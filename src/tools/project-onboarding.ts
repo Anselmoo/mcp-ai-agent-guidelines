@@ -65,6 +65,35 @@ function formatDirectoryTree(
 }
 
 /**
+ * Format script invocation based on project type
+ * For Node.js/JavaScript projects with package.json, use "npm run <script>"
+ * For other projects, show the raw command
+ */
+function formatScriptInvocation(
+	project: ProjectStructure,
+	scriptName: string,
+	scriptCommand: string,
+): string {
+	const projectType =
+		typeof project.type === "string" ? project.type.toLowerCase() : "";
+
+	// Check if scripts are from package.json (Node.js/JavaScript ecosystem)
+	// Project types: "javascript", "typescript", "node", etc.
+	const isNodeEcosystem =
+		projectType.includes("node") ||
+		projectType.includes("javascript") ||
+		projectType.includes("typescript") ||
+		projectType.includes("npm");
+
+	if (isNodeEcosystem) {
+		return `npm run ${scriptName}`;
+	}
+
+	// For non-Node projects, show the raw command
+	return scriptCommand;
+}
+
+/**
  * Generate onboarding documentation from project structure
  */
 function generateOnboardingDoc(
@@ -161,7 +190,8 @@ function generateOnboardingDoc(
 	if (shouldShowScripts && Object.keys(project.scripts).length > 0) {
 		sections.push("\n## Available Scripts\n");
 		for (const [name, cmd] of Object.entries(project.scripts)) {
-			sections.push(`- \`npm run ${name}\`: ${cmd}`);
+			const invocation = formatScriptInvocation(project, name, cmd);
+			sections.push(`- \`${invocation}\`: ${cmd}`);
 		}
 	}
 

@@ -89,4 +89,42 @@ describe("projectOnboarding refactored with ProjectScanner", () => {
 			}),
 		).rejects.toThrow();
 	});
+
+	it("projectOnboarding formats scripts with npm run for Node.js projects", async () => {
+		const fs = await import("node:fs/promises");
+		const path = await import("node:path");
+		const tempDir = path.join(
+			process.cwd(),
+			".tmp-test",
+			"test-nodejs-scripts",
+		);
+		tempDirs.push(tempDir);
+
+		await fs.mkdir(tempDir, { recursive: true });
+
+		// Create a package.json to make it a Node.js project
+		const packageJson = {
+			name: "test-project",
+			version: "1.0.0",
+			scripts: {
+				build: "tsc",
+				test: "vitest",
+			},
+		};
+		await fs.writeFile(
+			path.join(tempDir, "package.json"),
+			JSON.stringify(packageJson, null, 2),
+		);
+
+		const result = await projectOnboarding({
+			projectPath: tempDir,
+			focusAreas: ["scripts"],
+		});
+
+		const text = result.content[0].text;
+
+		// Should use "npm run" prefix for Node.js projects
+		expect(text).toContain("npm run build");
+		expect(text).toContain("npm run test");
+	});
 });
