@@ -4,8 +4,7 @@ import { projectOnboarding } from "../../../src/tools/project-onboarding.js";
 describe("project-onboarding integration tests", () => {
 	it("should scan and document the actual repository", async () => {
 		const result = await projectOnboarding({
-			projectPath:
-				"/home/runner/work/mcp-ai-agent-guidelines/mcp-ai-agent-guidelines",
+			projectPath: process.cwd(),
 		});
 
 		expect(result).toHaveProperty("content");
@@ -30,8 +29,7 @@ describe("project-onboarding integration tests", () => {
 
 	it("should include frameworks when detected", async () => {
 		const result = await projectOnboarding({
-			projectPath:
-				"/home/runner/work/mcp-ai-agent-guidelines/mcp-ai-agent-guidelines",
+			projectPath: process.cwd(),
 			focusAreas: ["frameworks"],
 		});
 
@@ -43,8 +41,7 @@ describe("project-onboarding integration tests", () => {
 
 	it("should include dependencies when requested", async () => {
 		const result = await projectOnboarding({
-			projectPath:
-				"/home/runner/work/mcp-ai-agent-guidelines/mcp-ai-agent-guidelines",
+			projectPath: process.cwd(),
 			focusAreas: ["dependencies"],
 		});
 
@@ -60,8 +57,7 @@ describe("project-onboarding integration tests", () => {
 
 	it("should include scripts when requested", async () => {
 		const result = await projectOnboarding({
-			projectPath:
-				"/home/runner/work/mcp-ai-agent-guidelines/mcp-ai-agent-guidelines",
+			projectPath: process.cwd(),
 			focusAreas: ["scripts"],
 		});
 
@@ -73,8 +69,7 @@ describe("project-onboarding integration tests", () => {
 
 	it("should include detailed directory structure when requested", async () => {
 		const result = await projectOnboarding({
-			projectPath:
-				"/home/runner/work/mcp-ai-agent-guidelines/mcp-ai-agent-guidelines",
+			projectPath: process.cwd(),
 			includeDetailedStructure: true,
 		});
 
@@ -86,8 +81,7 @@ describe("project-onboarding integration tests", () => {
 
 	it("should include metadata when requested", async () => {
 		const result = await projectOnboarding({
-			projectPath:
-				"/home/runner/work/mcp-ai-agent-guidelines/mcp-ai-agent-guidelines",
+			projectPath: process.cwd(),
 			includeMetadata: true,
 		});
 
@@ -98,8 +92,7 @@ describe("project-onboarding integration tests", () => {
 
 	it("should include references when requested", async () => {
 		const result = await projectOnboarding({
-			projectPath:
-				"/home/runner/work/mcp-ai-agent-guidelines/mcp-ai-agent-guidelines",
+			projectPath: process.cwd(),
 			includeReferences: true,
 		});
 
@@ -111,8 +104,7 @@ describe("project-onboarding integration tests", () => {
 
 	it("should handle multiple focus areas", async () => {
 		const result = await projectOnboarding({
-			projectPath:
-				"/home/runner/work/mcp-ai-agent-guidelines/mcp-ai-agent-guidelines",
+			projectPath: process.cwd(),
 			focusAreas: ["dependencies", "scripts", "frameworks"],
 		});
 
@@ -132,18 +124,28 @@ describe("project-onboarding integration tests", () => {
 
 	it("should handle minimal project without package.json", async () => {
 		// Create a temporary directory for testing
-		const tempDir = "/tmp/minimal-project-test";
-		await import("node:fs/promises").then((fs) =>
-			fs.mkdir(tempDir, { recursive: true }),
+		const fs = await import("node:fs/promises");
+		const path = await import("node:path");
+		const tempDir = path.join(
+			process.cwd(),
+			".tmp-test",
+			"minimal-project-test",
 		);
 
-		const result = await projectOnboarding({
-			projectPath: tempDir,
-		});
+		await fs.mkdir(tempDir, { recursive: true });
 
-		const text = result.content[0].text;
+		try {
+			const result = await projectOnboarding({
+				projectPath: tempDir,
+			});
 
-		expect(text).toContain("Project Onboarding:");
-		expect(text).toContain("Type");
+			const text = result.content[0].text;
+
+			expect(text).toContain("Project Onboarding:");
+			expect(text).toContain("Type");
+		} finally {
+			// Cleanup
+			await fs.rm(tempDir, { recursive: true, force: true });
+		}
 	});
 });

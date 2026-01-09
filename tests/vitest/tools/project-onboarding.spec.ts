@@ -1,10 +1,21 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import {
 	buildOnboardingReferences,
 	projectOnboarding,
 } from "../../../src/tools/project-onboarding.js";
 
 describe("projectOnboarding refactored with ProjectScanner", () => {
+	const tempDirs: string[] = [];
+
+	afterEach(async () => {
+		// Cleanup all temporary directories created during tests
+		const fs = await import("node:fs/promises");
+		for (const dir of tempDirs) {
+			await fs.rm(dir, { recursive: true, force: true });
+		}
+		tempDirs.length = 0;
+	});
+
 	it("buildOnboardingReferences returns expected reference links", () => {
 		const refs = buildOnboardingReferences();
 		expect(refs).toContain("Atlassian Onboarding Guide");
@@ -14,10 +25,16 @@ describe("projectOnboarding refactored with ProjectScanner", () => {
 
 	it("projectOnboarding includes metadata when requested", async () => {
 		// Create a temporary directory for testing
-		const tempDir = "/tmp/test-project-metadata";
-		await import("node:fs/promises").then((fs) =>
-			fs.mkdir(tempDir, { recursive: true }),
+		const fs = await import("node:fs/promises");
+		const path = await import("node:path");
+		const tempDir = path.join(
+			process.cwd(),
+			".tmp-test",
+			"test-project-metadata",
 		);
+		tempDirs.push(tempDir);
+
+		await fs.mkdir(tempDir, { recursive: true });
 
 		const result = await projectOnboarding({
 			projectPath: tempDir,
@@ -28,10 +45,12 @@ describe("projectOnboarding refactored with ProjectScanner", () => {
 	});
 
 	it("projectOnboarding includes references when requested", async () => {
-		const tempDir = "/tmp/test-project-refs";
-		await import("node:fs/promises").then((fs) =>
-			fs.mkdir(tempDir, { recursive: true }),
-		);
+		const fs = await import("node:fs/promises");
+		const path = await import("node:path");
+		const tempDir = path.join(process.cwd(), ".tmp-test", "test-project-refs");
+		tempDirs.push(tempDir);
+
+		await fs.mkdir(tempDir, { recursive: true });
 
 		const result = await projectOnboarding({
 			projectPath: tempDir,
@@ -43,10 +62,16 @@ describe("projectOnboarding refactored with ProjectScanner", () => {
 	});
 
 	it("projectOnboarding handles minimal project correctly", async () => {
-		const tempDir = "/tmp/test-minimal-project";
-		await import("node:fs/promises").then((fs) =>
-			fs.mkdir(tempDir, { recursive: true }),
+		const fs = await import("node:fs/promises");
+		const path = await import("node:path");
+		const tempDir = path.join(
+			process.cwd(),
+			".tmp-test",
+			"test-minimal-project",
 		);
+		tempDirs.push(tempDir);
+
+		await fs.mkdir(tempDir, { recursive: true });
 
 		const result = await projectOnboarding({
 			projectPath: tempDir,

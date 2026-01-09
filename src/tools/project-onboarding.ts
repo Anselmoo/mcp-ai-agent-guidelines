@@ -87,7 +87,7 @@ function generateOnboardingDoc(
 	if (options.includeMetadata) {
 		sections.push(
 			`\n${buildMetadataSection({
-				sourceTool: "mcp_ai-agent-guid_project-onboarding",
+				sourceTool: "mcp_ai-agent-guidelines_project-onboarding",
 			})}`,
 		);
 	}

@@ -240,8 +240,7 @@ describe("MCP Server Handlers - Comprehensive Coverage", () => {
 				{
 					name: "project-onboarding",
 					args: {
-						projectPath:
-							"/home/runner/work/mcp-ai-agent-guidelines/mcp-ai-agent-guidelines",
+						projectPath: process.cwd(),
 					},
 				},
 				{

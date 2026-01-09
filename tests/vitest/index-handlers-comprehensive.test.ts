@@ -332,15 +332,25 @@ describe("index.ts - Tool Handler Coverage", () => {
 
 		it("project-onboarding handler", async () => {
 			// Create a temporary directory for testing
-			const tempDir = "/tmp/test-project-onboarding-handler";
-			await import("node:fs/promises").then((fs) =>
-				fs.mkdir(tempDir, { recursive: true }),
+			const fs = await import("node:fs/promises");
+			const path = await import("node:path");
+			const tempDir = path.join(
+				process.cwd(),
+				".tmp-test",
+				"test-project-onboarding-handler",
 			);
 
-			const result = await projectOnboarding({
-				projectPath: tempDir,
-			});
-			expect(result.content).toBeDefined();
+			await fs.mkdir(tempDir, { recursive: true });
+
+			try {
+				const result = await projectOnboarding({
+					projectPath: tempDir,
+				});
+				expect(result.content).toBeDefined();
+			} finally {
+				// Cleanup
+				await fs.rm(tempDir, { recursive: true, force: true });
+			}
 		});
 	});
 
