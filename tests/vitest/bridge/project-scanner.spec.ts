@@ -1,5 +1,4 @@
 import { promises as fs } from "node:fs";
-import * as path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
 	type ConfigFile,
@@ -46,7 +45,7 @@ describe("ProjectScanner", () => {
 			} as never);
 
 			// Access private method for testing via type assertion
-			await (scanner as never)["validatePath"]("/valid/path");
+			await (scanner as never).validatePath("/valid/path");
 
 			expect(fs.stat).toHaveBeenCalledWith("/valid/path");
 		});
@@ -57,11 +56,11 @@ describe("ProjectScanner", () => {
 			} as never);
 
 			await expect(
-				(scanner as never)["validatePath"]("/file.txt"),
+				(scanner as never).validatePath("/file.txt"),
 			).rejects.toThrow(McpToolError);
 
 			try {
-				await (scanner as never)["validatePath"]("/file.txt");
+				await (scanner as never).validatePath("/file.txt");
 			} catch (error) {
 				expect(error).toBeInstanceOf(McpToolError);
 				expect((error as McpToolError).code).toBe(ErrorCode.VALIDATION_FAILED);
@@ -72,11 +71,11 @@ describe("ProjectScanner", () => {
 			vi.mocked(fs.stat).mockRejectedValue(new Error("ENOENT"));
 
 			await expect(
-				(scanner as never)["validatePath"]("/nonexistent"),
+				(scanner as never).validatePath("/nonexistent"),
 			).rejects.toThrow(McpToolError);
 
 			try {
-				await (scanner as never)["validatePath"]("/nonexistent");
+				await (scanner as never).validatePath("/nonexistent");
 			} catch (error) {
 				expect(error).toBeInstanceOf(McpToolError);
 				expect((error as McpToolError).code).toBe(ErrorCode.FILE_NOT_FOUND);
@@ -91,7 +90,7 @@ describe("ProjectScanner", () => {
 				{ name: "index.ts", isDirectory: () => false, isFile: () => true },
 			] as never);
 
-			const result = await (scanner as never)["scanDirectory"](
+			const result = await (scanner as never).scanDirectory(
 				"/project",
 				0,
 				{ maxDepth: 5, includeNodeModules: false, includeDotFiles: false },
@@ -110,7 +109,7 @@ describe("ProjectScanner", () => {
 				{ name: "nested", isDirectory: () => true, isFile: () => false },
 			] as never);
 
-			const result = await (scanner as never)["scanDirectory"](
+			const result = await (scanner as never).scanDirectory(
 				"/project",
 				5,
 				{ maxDepth: 5, includeNodeModules: false, includeDotFiles: false },
@@ -126,7 +125,7 @@ describe("ProjectScanner", () => {
 				{ name: "src", isDirectory: () => true, isFile: () => false },
 			] as never);
 
-			const result = await (scanner as never)["scanDirectory"](
+			const result = await (scanner as never).scanDirectory(
 				"/project",
 				0,
 				{ maxDepth: 5, includeNodeModules: false, includeDotFiles: false },
@@ -143,7 +142,7 @@ describe("ProjectScanner", () => {
 				{ name: "src", isDirectory: () => true, isFile: () => false },
 			] as never);
 
-			const result = await (scanner as never)["scanDirectory"](
+			const result = await (scanner as never).scanDirectory(
 				"/project",
 				0,
 				{ maxDepth: 5, includeNodeModules: true, includeDotFiles: false },
@@ -159,7 +158,7 @@ describe("ProjectScanner", () => {
 				{ name: "src", isDirectory: () => true, isFile: () => false },
 			] as never);
 
-			const result = await (scanner as never)["scanDirectory"](
+			const result = await (scanner as never).scanDirectory(
 				"/project",
 				0,
 				{ maxDepth: 5, includeNodeModules: false, includeDotFiles: false },
@@ -176,7 +175,7 @@ describe("ProjectScanner", () => {
 				{ name: "src", isDirectory: () => true, isFile: () => false },
 			] as never);
 
-			const result = await (scanner as never)["scanDirectory"](
+			const result = await (scanner as never).scanDirectory(
 				"/project",
 				0,
 				{ maxDepth: 5, includeNodeModules: false, includeDotFiles: true },
@@ -189,7 +188,7 @@ describe("ProjectScanner", () => {
 		it("should handle readdir errors gracefully", async () => {
 			vi.mocked(fs.readdir).mockRejectedValue(new Error("Permission denied"));
 
-			const result = await (scanner as never)["scanDirectory"](
+			const result = await (scanner as never).scanDirectory(
 				"/project",
 				0,
 				{ maxDepth: 5, includeNodeModules: false, includeDotFiles: false },
@@ -213,7 +212,7 @@ describe("ProjectScanner", () => {
 				throw new Error("ENOENT");
 			});
 
-			const result = await (scanner as never)["findConfigFiles"]("/project");
+			const result = await (scanner as never).findConfigFiles("/project");
 
 			expect(result).toEqual(
 				expect.arrayContaining([
@@ -226,7 +225,7 @@ describe("ProjectScanner", () => {
 		it("should return empty array if no config files exist", async () => {
 			vi.mocked(fs.access).mockRejectedValue(new Error("ENOENT"));
 
-			const result = await (scanner as never)["findConfigFiles"]("/project");
+			const result = await (scanner as never).findConfigFiles("/project");
 
 			expect(result).toEqual([]);
 		});
@@ -242,7 +241,7 @@ describe("ProjectScanner", () => {
 
 			vi.mocked(fs.readFile).mockResolvedValue(packageContent);
 
-			const result = await (scanner as never)["parsePackageJson"]("/project");
+			const result = await (scanner as never).parsePackageJson("/project");
 
 			expect(result).toEqual({
 				name: "test-project",
@@ -254,7 +253,7 @@ describe("ProjectScanner", () => {
 		it("should return null for non-existent package.json", async () => {
 			vi.mocked(fs.readFile).mockRejectedValue(new Error("ENOENT"));
 
-			const result = await (scanner as never)["parsePackageJson"]("/project");
+			const result = await (scanner as never).parsePackageJson("/project");
 
 			expect(result).toBeNull();
 		});
@@ -262,7 +261,7 @@ describe("ProjectScanner", () => {
 		it("should return null for invalid JSON", async () => {
 			vi.mocked(fs.readFile).mockResolvedValue("invalid json");
 
-			const result = await (scanner as never)["parsePackageJson"]("/project");
+			const result = await (scanner as never).parsePackageJson("/project");
 
 			expect(result).toBeNull();
 		});
@@ -279,7 +278,7 @@ describe("ProjectScanner", () => {
 
 			vi.mocked(fs.readFile).mockResolvedValue(tsconfigContent);
 
-			const result = await (scanner as never)["parseTsconfig"]("/project");
+			const result = await (scanner as never).parseTsconfig("/project");
 
 			expect(result).toEqual({
 				compilerOptions: {
@@ -300,7 +299,7 @@ describe("ProjectScanner", () => {
 
 			vi.mocked(fs.readFile).mockResolvedValue(tsconfigContent);
 
-			const result = await (scanner as never)["parseTsconfig"]("/project");
+			const result = await (scanner as never).parseTsconfig("/project");
 
 			expect(result).toEqual({
 				compilerOptions: {
@@ -312,7 +311,7 @@ describe("ProjectScanner", () => {
 		it("should return null for non-existent tsconfig.json", async () => {
 			vi.mocked(fs.readFile).mockRejectedValue(new Error("ENOENT"));
 
-			const result = await (scanner as never)["parseTsconfig"]("/project");
+			const result = await (scanner as never).parseTsconfig("/project");
 
 			expect(result).toBeNull();
 		});
@@ -324,7 +323,7 @@ describe("ProjectScanner", () => {
 				{ name: "tsconfig.json", path: "/project/tsconfig.json", type: "json" },
 			];
 
-			const result = (scanner as never)["detectProjectType"](configFiles, null);
+			const result = (scanner as never).detectProjectType(configFiles, null);
 
 			expect(result).toBe("typescript");
 		});
@@ -334,7 +333,7 @@ describe("ProjectScanner", () => {
 				{ name: "package.json", path: "/project/package.json", type: "json" },
 			];
 
-			const result = (scanner as never)["detectProjectType"](configFiles, null);
+			const result = (scanner as never).detectProjectType(configFiles, null);
 
 			expect(result).toBe("javascript");
 		});
@@ -348,7 +347,7 @@ describe("ProjectScanner", () => {
 				},
 			];
 
-			const result = (scanner as never)["detectProjectType"](configFiles, null);
+			const result = (scanner as never).detectProjectType(configFiles, null);
 
 			expect(result).toBe("python");
 		});
@@ -358,7 +357,7 @@ describe("ProjectScanner", () => {
 				{ name: "Cargo.toml", path: "/project/Cargo.toml", type: "toml" },
 			];
 
-			const result = (scanner as never)["detectProjectType"](configFiles, null);
+			const result = (scanner as never).detectProjectType(configFiles, null);
 
 			expect(result).toBe("rust");
 		});
@@ -368,7 +367,7 @@ describe("ProjectScanner", () => {
 				{ name: "go.mod", path: "/project/go.mod", type: "other" },
 			];
 
-			const result = (scanner as never)["detectProjectType"](configFiles, null);
+			const result = (scanner as never).detectProjectType(configFiles, null);
 
 			expect(result).toBe("go");
 		});
@@ -378,7 +377,7 @@ describe("ProjectScanner", () => {
 				{ name: "pom.xml", path: "/project/pom.xml", type: "xml" },
 			];
 
-			const result = (scanner as never)["detectProjectType"](configFiles, null);
+			const result = (scanner as never).detectProjectType(configFiles, null);
 
 			expect(result).toBe("java");
 		});
@@ -393,7 +392,7 @@ describe("ProjectScanner", () => {
 				},
 			];
 
-			const result = (scanner as never)["detectProjectType"](configFiles, null);
+			const result = (scanner as never).detectProjectType(configFiles, null);
 
 			expect(result).toBe("polyglot");
 		});
@@ -401,7 +400,7 @@ describe("ProjectScanner", () => {
 		it("should return unknown for unrecognized project", () => {
 			const configFiles: ConfigFile[] = [];
 
-			const result = (scanner as never)["detectProjectType"](configFiles, null);
+			const result = (scanner as never).detectProjectType(configFiles, null);
 
 			expect(result).toBe("unknown");
 		});
@@ -413,7 +412,7 @@ describe("ProjectScanner", () => {
 				dependencies: { react: "^18.0.0" },
 			};
 
-			const result = (scanner as never)["detectFrameworks"](packageJson, []);
+			const result = (scanner as never).detectFrameworks(packageJson, []);
 
 			expect(result).toEqual(
 				expect.arrayContaining([
@@ -427,7 +426,7 @@ describe("ProjectScanner", () => {
 				dependencies: { next: "^14.0.0", react: "^18.0.0" },
 			};
 
-			const result: Framework[] = (scanner as never)["detectFrameworks"](
+			const result: Framework[] = (scanner as never).detectFrameworks(
 				packageJson,
 				[],
 			);
@@ -445,7 +444,7 @@ describe("ProjectScanner", () => {
 				dependencies: { vue: "^3.0.0" },
 			};
 
-			const result = (scanner as never)["detectFrameworks"](packageJson, []);
+			const result = (scanner as never).detectFrameworks(packageJson, []);
 
 			expect(result).toEqual(
 				expect.arrayContaining([
@@ -459,7 +458,7 @@ describe("ProjectScanner", () => {
 				dependencies: { "@angular/core": "^17.0.0" },
 			};
 
-			const result = (scanner as never)["detectFrameworks"](packageJson, []);
+			const result = (scanner as never).detectFrameworks(packageJson, []);
 
 			expect(result).toEqual(
 				expect.arrayContaining([
@@ -473,7 +472,7 @@ describe("ProjectScanner", () => {
 				dependencies: { express: "^4.18.0" },
 			};
 
-			const result = (scanner as never)["detectFrameworks"](packageJson, []);
+			const result = (scanner as never).detectFrameworks(packageJson, []);
 
 			expect(result).toEqual(
 				expect.arrayContaining([
@@ -487,7 +486,7 @@ describe("ProjectScanner", () => {
 				devDependencies: { vite: "^5.0.0" },
 			};
 
-			const result = (scanner as never)["detectFrameworks"](packageJson, []);
+			const result = (scanner as never).detectFrameworks(packageJson, []);
 
 			expect(result).toEqual(
 				expect.arrayContaining([
@@ -506,7 +505,7 @@ describe("ProjectScanner", () => {
 				},
 			];
 
-			const result = (scanner as never)["detectFrameworks"](
+			const result = (scanner as never).detectFrameworks(
 				packageJson,
 				configFiles,
 			);
@@ -530,7 +529,7 @@ describe("ProjectScanner", () => {
 				},
 			];
 
-			const result = (scanner as never)["detectFrameworks"](
+			const result = (scanner as never).detectFrameworks(
 				packageJson,
 				configFiles,
 			);
@@ -543,7 +542,7 @@ describe("ProjectScanner", () => {
 		});
 
 		it("should return empty array for null package.json", () => {
-			const result = (scanner as never)["detectFrameworks"](null, []);
+			const result = (scanner as never).detectFrameworks(null, []);
 
 			expect(result).toEqual([]);
 		});
@@ -558,10 +557,7 @@ describe("ProjectScanner", () => {
 				},
 			};
 
-			const result = (scanner as never)["extractDependencies"](
-				packageJson,
-				false,
-			);
+			const result = (scanner as never).extractDependencies(packageJson, false);
 
 			expect(result).toHaveLength(2);
 			expect(result).toEqual(
@@ -580,10 +576,7 @@ describe("ProjectScanner", () => {
 				},
 			};
 
-			const result = (scanner as never)["extractDependencies"](
-				packageJson,
-				true,
-			);
+			const result = (scanner as never).extractDependencies(packageJson, true);
 
 			expect(result).toHaveLength(2);
 			expect(result).toEqual(
@@ -595,7 +588,7 @@ describe("ProjectScanner", () => {
 		});
 
 		it("should return empty array for null package.json", () => {
-			const result = (scanner as never)["extractDependencies"](null, false);
+			const result = (scanner as never).extractDependencies(null, false);
 
 			expect(result).toEqual([]);
 		});
@@ -603,10 +596,7 @@ describe("ProjectScanner", () => {
 		it("should return empty array if dependencies field is missing", () => {
 			const packageJson = { name: "test" };
 
-			const result = (scanner as never)["extractDependencies"](
-				packageJson,
-				false,
-			);
+			const result = (scanner as never).extractDependencies(packageJson, false);
 
 			expect(result).toEqual([]);
 		});
@@ -616,7 +606,7 @@ describe("ProjectScanner", () => {
 		it("should find entry point from package.json main field", () => {
 			const packageJson = { main: "dist/index.js" };
 
-			const result = (scanner as never)["findEntryPoints"](
+			const result = (scanner as never).findEntryPoints(
 				packageJson,
 				null,
 				[],
@@ -629,7 +619,7 @@ describe("ProjectScanner", () => {
 		it("should find entry point from package.json module field", () => {
 			const packageJson = { module: "dist/index.mjs" };
 
-			const result = (scanner as never)["findEntryPoints"](
+			const result = (scanner as never).findEntryPoints(
 				packageJson,
 				null,
 				[],
@@ -642,7 +632,7 @@ describe("ProjectScanner", () => {
 		it("should find entry point from package.json bin field (string)", () => {
 			const packageJson = { bin: "./cli.js" };
 
-			const result = (scanner as never)["findEntryPoints"](
+			const result = (scanner as never).findEntryPoints(
 				packageJson,
 				null,
 				[],
@@ -660,7 +650,7 @@ describe("ProjectScanner", () => {
 				},
 			};
 
-			const result = (scanner as never)["findEntryPoints"](
+			const result = (scanner as never).findEntryPoints(
 				packageJson,
 				null,
 				[],
@@ -672,7 +662,7 @@ describe("ProjectScanner", () => {
 		});
 
 		it("should use common patterns if no specific entry points found", () => {
-			const result = (scanner as never)["findEntryPoints"](
+			const result = (scanner as never).findEntryPoints(
 				null,
 				null,
 				[],
