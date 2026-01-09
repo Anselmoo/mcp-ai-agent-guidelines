@@ -9,6 +9,7 @@ import { promises as fs } from "node:fs";
 import * as path from "node:path";
 import { ErrorCode } from "../shared/error-codes.js";
 import { McpToolError } from "../shared/errors.js";
+import { logger } from "../shared/logger.js";
 
 /**
  * Project type classification
@@ -152,7 +153,7 @@ export class ProjectScanner {
 		const frameworks = this.detectFrameworks(packageJson, configFiles);
 
 		// Find entry points
-		const entryPoints = this.findEntryPoints(
+		const entryPoints = await this.findEntryPoints(
 			packageJson,
 			tsconfigJson,
 			configFiles,
@@ -254,6 +255,11 @@ export class ProjectScanner {
 		} catch (error) {
 			// Log error but don't fail the scan
 			// This allows scanning to continue even if some directories are inaccessible
+			logger.debug("Directory scan error", {
+				path: dirPath,
+				depth,
+				error: error instanceof Error ? error.message : String(error),
+			});
 		}
 
 		return node;
@@ -554,13 +560,13 @@ export class ProjectScanner {
 	 */
 	private extractDependencies(
 		packageJson: Record<string, unknown> | null,
-		devOnly: boolean,
+		isDevDependency: boolean,
 	): Dependency[] {
 		if (!packageJson) {
 			return [];
 		}
 
-		const deps = devOnly
+		const deps = isDevDependency
 			? (packageJson.devDependencies as Record<string, string> | undefined)
 			: (packageJson.dependencies as Record<string, string> | undefined);
 
@@ -571,19 +577,19 @@ export class ProjectScanner {
 		return Object.entries(deps).map(([name, version]) => ({
 			name,
 			version,
-			isDevDependency: devOnly,
+			isDevDependency,
 		}));
 	}
 
 	/**
 	 * Find entry points based on package.json, tsconfig.json, and common patterns
 	 */
-	private findEntryPoints(
+	private async findEntryPoints(
 		packageJson: Record<string, unknown> | null,
 		tsconfigJson: Record<string, unknown> | null,
 		configFiles: ConfigFile[],
 		projectPath: string,
-	): string[] {
+	): Promise<string[]> {
 		const entryPoints: string[] = [];
 
 		// Check package.json main field
@@ -638,12 +644,11 @@ export class ProjectScanner {
 				"main.js",
 			];
 
-			// Only add patterns that actually exist
+			// Check which patterns actually exist
 			for (const pattern of commonPatterns) {
 				const fullPath = path.join(projectPath, pattern);
 				try {
-					// Synchronously check if file exists (we're already in async context)
-					// This is a simplified check - in production might use fs.access
+					await fs.access(fullPath);
 					entryPoints.push(pattern);
 					break; // Only add the first match
 				} catch {

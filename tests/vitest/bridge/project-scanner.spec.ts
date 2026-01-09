@@ -603,10 +603,10 @@ describe("ProjectScanner", () => {
 	});
 
 	describe("findEntryPoints", () => {
-		it("should find entry point from package.json main field", () => {
+		it("should find entry point from package.json main field", async () => {
 			const packageJson = { main: "dist/index.js" };
 
-			const result = (scanner as never).findEntryPoints(
+			const result = await (scanner as never).findEntryPoints(
 				packageJson,
 				null,
 				[],
@@ -616,10 +616,10 @@ describe("ProjectScanner", () => {
 			expect(result).toContain("dist/index.js");
 		});
 
-		it("should find entry point from package.json module field", () => {
+		it("should find entry point from package.json module field", async () => {
 			const packageJson = { module: "dist/index.mjs" };
 
-			const result = (scanner as never).findEntryPoints(
+			const result = await (scanner as never).findEntryPoints(
 				packageJson,
 				null,
 				[],
@@ -629,10 +629,10 @@ describe("ProjectScanner", () => {
 			expect(result).toContain("dist/index.mjs");
 		});
 
-		it("should find entry point from package.json bin field (string)", () => {
+		it("should find entry point from package.json bin field (string)", async () => {
 			const packageJson = { bin: "./cli.js" };
 
-			const result = (scanner as never).findEntryPoints(
+			const result = await (scanner as never).findEntryPoints(
 				packageJson,
 				null,
 				[],
@@ -642,7 +642,7 @@ describe("ProjectScanner", () => {
 			expect(result).toContain("./cli.js");
 		});
 
-		it("should find entry points from package.json bin field (object)", () => {
+		it("should find entry points from package.json bin field (object)", async () => {
 			const packageJson = {
 				bin: {
 					cli: "./bin/cli.js",
@@ -650,7 +650,7 @@ describe("ProjectScanner", () => {
 				},
 			};
 
-			const result = (scanner as never).findEntryPoints(
+			const result = await (scanner as never).findEntryPoints(
 				packageJson,
 				null,
 				[],
@@ -661,16 +661,40 @@ describe("ProjectScanner", () => {
 			expect(result).toContain("./bin/server.js");
 		});
 
-		it("should use common patterns if no specific entry points found", () => {
-			const result = (scanner as never).findEntryPoints(
+		it("should use common patterns if no specific entry points found", async () => {
+			// Mock fs.access to simulate file existence check
+			vi.mocked(fs.access).mockImplementation(async (filePath) => {
+				const pathStr = String(filePath);
+				// Only src/index.ts exists
+				if (pathStr.includes("src/index.ts")) {
+					return;
+				}
+				throw new Error("ENOENT");
+			});
+
+			const result = await (scanner as never).findEntryPoints(
 				null,
 				null,
 				[],
 				"/project",
 			);
 
-			expect(result.length).toBeGreaterThan(0);
-			expect(result[0]).toMatch(/\.(ts|js)$/);
+			expect(result).toContain("src/index.ts");
+			expect(result.length).toBe(1);
+		});
+
+		it("should return empty array if no entry points exist", async () => {
+			// Mock fs.access to reject all files
+			vi.mocked(fs.access).mockRejectedValue(new Error("ENOENT"));
+
+			const result = await (scanner as never).findEntryPoints(
+				null,
+				null,
+				[],
+				"/project",
+			);
+
+			expect(result).toEqual([]);
 		});
 	});
 
