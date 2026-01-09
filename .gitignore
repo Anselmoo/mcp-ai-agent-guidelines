@@ -412,4 +412,5 @@ tests/vitest/tmp/
 
 # Temporary test files
 tests/vitest/tmp/
+.tmp-test/
 

@@ -240,7 +240,7 @@ describe("MCP Server Handlers - Comprehensive Coverage", () => {
 				{
 					name: "project-onboarding",
 					args: {
-						projectPath: "/test/project",
+						projectPath: process.cwd(),
 					},
 				},
 				{
