@@ -22,6 +22,7 @@ describe("Feature Flags", () => {
 		delete process.env.MCP_ENABLE_SPECKIT;
 		delete process.env.MCP_ENABLE_ENTERPRISE;
 		delete process.env.MCP_ENABLE_CROSS_CUTTING;
+		delete process.env.MCP_ENABLE_MODE_FILTERING;
 	});
 
 	afterEach(() => {
@@ -37,6 +38,7 @@ describe("Feature Flags", () => {
 			expect(flags.enableSpecKitOutput).toBe(false);
 			expect(flags.enableEnterpriseOutput).toBe(false);
 			expect(flags.enableCrossCuttingCapabilities).toBe(false);
+			expect(flags.enableModeAwareToolFiltering).toBe(false);
 		});
 
 		it("should enable usePolyglotGateway when env var is true", () => {
@@ -48,6 +50,7 @@ describe("Feature Flags", () => {
 			expect(flags.enableSpecKitOutput).toBe(false);
 			expect(flags.enableEnterpriseOutput).toBe(false);
 			expect(flags.enableCrossCuttingCapabilities).toBe(false);
+			expect(flags.enableModeAwareToolFiltering).toBe(false);
 		});
 
 		it("should enable enableSpecKitOutput when env var is true", () => {
@@ -59,6 +62,7 @@ describe("Feature Flags", () => {
 			expect(flags.enableSpecKitOutput).toBe(true);
 			expect(flags.enableEnterpriseOutput).toBe(false);
 			expect(flags.enableCrossCuttingCapabilities).toBe(false);
+			expect(flags.enableModeAwareToolFiltering).toBe(false);
 		});
 
 		it("should enable enableEnterpriseOutput when env var is true", () => {
@@ -70,6 +74,7 @@ describe("Feature Flags", () => {
 			expect(flags.enableSpecKitOutput).toBe(false);
 			expect(flags.enableEnterpriseOutput).toBe(true);
 			expect(flags.enableCrossCuttingCapabilities).toBe(false);
+			expect(flags.enableModeAwareToolFiltering).toBe(false);
 		});
 
 		it("should enable enableCrossCuttingCapabilities when env var is true", () => {
@@ -81,6 +86,19 @@ describe("Feature Flags", () => {
 			expect(flags.enableSpecKitOutput).toBe(false);
 			expect(flags.enableEnterpriseOutput).toBe(false);
 			expect(flags.enableCrossCuttingCapabilities).toBe(true);
+			expect(flags.enableModeAwareToolFiltering).toBe(false);
+		});
+
+		it("should enable enableModeAwareToolFiltering when env var is true", () => {
+			process.env.MCP_ENABLE_MODE_FILTERING = "true";
+
+			const flags = getFeatureFlags();
+
+			expect(flags.usePolyglotGateway).toBe(false);
+			expect(flags.enableSpecKitOutput).toBe(false);
+			expect(flags.enableEnterpriseOutput).toBe(false);
+			expect(flags.enableCrossCuttingCapabilities).toBe(false);
+			expect(flags.enableModeAwareToolFiltering).toBe(true);
 		});
 
 		it("should enable multiple flags when multiple env vars are true", () => {
@@ -101,6 +119,7 @@ describe("Feature Flags", () => {
 			process.env.MCP_ENABLE_SPECKIT = "1";
 			process.env.MCP_ENABLE_ENTERPRISE = "yes";
 			process.env.MCP_ENABLE_CROSS_CUTTING = "True";
+			process.env.MCP_ENABLE_MODE_FILTERING = "TRUE";
 
 			const flags = getFeatureFlags();
 
@@ -109,6 +128,7 @@ describe("Feature Flags", () => {
 			expect(flags.enableSpecKitOutput).toBe(false);
 			expect(flags.enableEnterpriseOutput).toBe(false);
 			expect(flags.enableCrossCuttingCapabilities).toBe(false);
+			expect(flags.enableModeAwareToolFiltering).toBe(false);
 		});
 
 		it("should enable all flags when all env vars are true", () => {
@@ -116,6 +136,7 @@ describe("Feature Flags", () => {
 			process.env.MCP_ENABLE_SPECKIT = "true";
 			process.env.MCP_ENABLE_ENTERPRISE = "true";
 			process.env.MCP_ENABLE_CROSS_CUTTING = "true";
+			process.env.MCP_ENABLE_MODE_FILTERING = "true";
 
 			const flags = getFeatureFlags();
 
@@ -123,6 +144,7 @@ describe("Feature Flags", () => {
 			expect(flags.enableSpecKitOutput).toBe(true);
 			expect(flags.enableEnterpriseOutput).toBe(true);
 			expect(flags.enableCrossCuttingCapabilities).toBe(true);
+			expect(flags.enableModeAwareToolFiltering).toBe(true);
 		});
 	});
 
@@ -151,6 +173,11 @@ describe("Feature Flags", () => {
 			expect(hasAnyFlagsEnabled()).toBe(true);
 		});
 
+		it("should return true when enableModeAwareToolFiltering is enabled", () => {
+			process.env.MCP_ENABLE_MODE_FILTERING = "true";
+			expect(hasAnyFlagsEnabled()).toBe(true);
+		});
+
 		it("should return true when any combination of flags is enabled", () => {
 			process.env.MCP_USE_POLYGLOT_GATEWAY = "true";
 			process.env.MCP_ENABLE_ENTERPRISE = "true";
@@ -167,6 +194,7 @@ describe("Feature Flags", () => {
 				enableSpecKitOutput: false,
 				enableEnterpriseOutput: false,
 				enableCrossCuttingCapabilities: false,
+				enableModeAwareToolFiltering: false,
 			});
 		});
 
@@ -181,6 +209,7 @@ describe("Feature Flags", () => {
 				enableSpecKitOutput: true,
 				enableEnterpriseOutput: false,
 				enableCrossCuttingCapabilities: false,
+				enableModeAwareToolFiltering: false,
 			});
 		});
 
@@ -189,6 +218,7 @@ describe("Feature Flags", () => {
 			process.env.MCP_ENABLE_SPECKIT = "true";
 			process.env.MCP_ENABLE_ENTERPRISE = "true";
 			process.env.MCP_ENABLE_CROSS_CUTTING = "true";
+			process.env.MCP_ENABLE_MODE_FILTERING = "true";
 
 			const summary = getFeatureFlagSummary();
 
@@ -197,6 +227,7 @@ describe("Feature Flags", () => {
 				enableSpecKitOutput: true,
 				enableEnterpriseOutput: true,
 				enableCrossCuttingCapabilities: true,
+				enableModeAwareToolFiltering: true,
 			});
 		});
 
@@ -208,6 +239,7 @@ describe("Feature Flags", () => {
 				"enableSpecKitOutput",
 				"enableEnterpriseOutput",
 				"enableCrossCuttingCapabilities",
+				"enableModeAwareToolFiltering",
 			]);
 		});
 	});
@@ -221,6 +253,7 @@ describe("Feature Flags", () => {
 			expect(typeof flags.enableSpecKitOutput).toBe("boolean");
 			expect(typeof flags.enableEnterpriseOutput).toBe("boolean");
 			expect(typeof flags.enableCrossCuttingCapabilities).toBe("boolean");
+			expect(typeof flags.enableModeAwareToolFiltering).toBe("boolean");
 		});
 	});
 });
