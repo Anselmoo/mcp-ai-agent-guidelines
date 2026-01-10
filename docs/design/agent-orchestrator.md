@@ -69,13 +69,29 @@ An **Agent** is a tool wrapped with metadata for orchestration. Each agent repre
 
 **Example:**
 ```typescript
+import { z } from 'zod';
+
 const cleanCodeScorerAgent: AgentDefinition = {
   id: 'clean-code-scorer',
   name: 'Clean Code Scorer',
   description: 'Calculates comprehensive code quality score (0-100)',
   capabilities: ['code-analysis', 'quality-scoring', 'metrics'],
   inputSchema: CleanCodeScorerSchema,
-  outputSchema: ScoreResultSchema,
+  outputSchema: z.object({
+    overallScore: z.number(),
+    scoreDescription: z.string(),
+    categories: z.object({
+      codeHygiene: z.object({ score: z.number(), weight: z.number(), issues: z.array(z.string()) }),
+      testCoverage: z.object({ score: z.number(), weight: z.number(), issues: z.array(z.string()) }),
+      typeScript: z.object({ score: z.number(), weight: z.number(), issues: z.array(z.string()) }),
+      linting: z.object({ score: z.number(), weight: z.number(), issues: z.array(z.string()) }),
+      documentation: z.object({ score: z.number(), weight: z.number(), issues: z.array(z.string()) }),
+      security: z.object({ score: z.number(), weight: z.number(), issues: z.array(z.string()) }),
+    }),
+    recommendations: z.array(z.string()),
+    nextSteps: z.array(z.string()),
+    achievements: z.array(z.string()),
+  }),
 };
 ```
 
@@ -279,8 +295,8 @@ Registers a new agent with the orchestrator.
 - `agent: AgentDefinition` — Agent definition with ID, capabilities, and schemas
 
 **Throws:**
-- `McpToolError(VALIDATION_ERROR)` — If agent ID is duplicate
-- `McpToolError(VALIDATION_ERROR)` — If agent definition is invalid
+- `McpToolError(VALIDATION_FAILED)` — If agent ID is duplicate
+- `McpToolError(VALIDATION_FAILED)` — If agent definition is invalid
 
 **Example:**
 ```typescript
@@ -290,7 +306,7 @@ registry.registerAgent({
   description: 'Calculates code quality score',
   capabilities: ['code-analysis', 'quality-scoring'],
   inputSchema: CleanCodeScorerSchema,
-  outputSchema: ScoreResultSchema,
+  outputSchema: z.object({ overallScore: z.number() }),
 });
 ```
 
@@ -350,9 +366,9 @@ Executes a single handoff from one agent to another.
 - `Promise<HandoffResult>` — Result with success status, output, and metadata
 
 **Throws:**
-- `McpToolError(VALIDATION_ERROR)` — If target agent doesn't exist
-- `McpToolError(VALIDATION_ERROR)` — If input doesn't match agent schema
-- `McpToolError(OPERATION_ERROR)` — If agent execution fails
+- `McpToolError(VALIDATION_FAILED)` — If target agent doesn't exist
+- `McpToolError(VALIDATION_FAILED)` — If input doesn't match agent schema
+- `McpToolError` — If agent execution fails
 
 **Example:**
 ```typescript
@@ -378,7 +394,7 @@ Executes a complete multi-agent workflow.
 - `Promise<WorkflowResult>` — Aggregated results from all steps
 
 **Throws:**
-- `McpToolError(OPERATION_ERROR)` — If any step fails (based on error policy)
+- `McpToolError` — If any step fails (based on error policy)
 
 **Example:**
 ```typescript
@@ -469,22 +485,31 @@ export async function handleAgentOrchestrator(args: unknown): Promise<string> {
   switch (input.action) {
     case 'handoff':
       const result = await orchestrator.executeHandoff(input.request);
-      return formatHandoffResult(result);
+      return JSON.stringify({
+        action: 'handoff',
+        result,
+      });
 
     case 'workflow':
       const workflowResult = await orchestrator.executeWorkflow(
         input.workflow,
         input.input
       );
-      return formatWorkflowResult(workflowResult);
+      return JSON.stringify({
+        action: 'workflow',
+        result: workflowResult,
+      });
 
     case 'list-agents':
       const agents = orchestrator.listAgents();
-      return formatAgentList(agents);
+      return JSON.stringify({
+        action: 'list-agents',
+        agents,
+      });
 
     default:
       throw new McpToolError(
-        ErrorCode.VALIDATION_ERROR,
+        ErrorCode.VALIDATION_FAILED,
         `Unknown action: ${input.action}`
       );
   }
