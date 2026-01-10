@@ -14,6 +14,7 @@ export enum ErrorCode {
 	INVALID_FORMAT = 1002,
 	SCHEMA_VIOLATION = 1003,
 	OUT_OF_RANGE = 1004,
+	INVALID_PARAMETER = 1005,
 
 	// 2xxx: Domain Errors
 	DOMAIN_ERROR = 2000,
@@ -32,6 +33,7 @@ export enum ErrorCode {
 	FILE_READ_ERROR = 4001,
 	FILE_WRITE_ERROR = 4002,
 	NETWORK_ERROR = 4003,
+	RESOURCE_NOT_FOUND = 4004,
 
 	// 5xxx: Configuration Errors
 	CONFIG_NOT_FOUND = 5000,
@@ -54,6 +56,7 @@ export const ERROR_MESSAGES: Record<ErrorCode, string> = {
 	[ErrorCode.INVALID_FORMAT]: "Invalid format",
 	[ErrorCode.SCHEMA_VIOLATION]: "Schema violation",
 	[ErrorCode.OUT_OF_RANGE]: "Value is out of range",
+	[ErrorCode.INVALID_PARAMETER]: "Invalid parameter",
 
 	// 2xxx: Domain Errors
 	[ErrorCode.DOMAIN_ERROR]: "Domain error",
@@ -72,6 +75,7 @@ export const ERROR_MESSAGES: Record<ErrorCode, string> = {
 	[ErrorCode.FILE_READ_ERROR]: "File read error",
 	[ErrorCode.FILE_WRITE_ERROR]: "File write error",
 	[ErrorCode.NETWORK_ERROR]: "Network error",
+	[ErrorCode.RESOURCE_NOT_FOUND]: "Resource not found",
 
 	// 5xxx: Configuration Errors
 	[ErrorCode.CONFIG_NOT_FOUND]: "Configuration not found",

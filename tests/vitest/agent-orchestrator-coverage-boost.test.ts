@@ -5,13 +5,23 @@
  * - Line 233-238: error tracing
  * - Line 249: error handling branches
  * - Line 279-329: workflow template parameters
+ *
+ * NOTE: These tests are for the OLD agent-orchestrator implementation with mode="template"/mode="custom" API.
+ * This API is being replaced by the new action-based API (see P3-014).
+ * Tests for the new API are in agent-orchestrator.integration.spec.ts
  */
 import { beforeEach, describe, expect, it } from "vitest";
 import { z } from "zod";
-import { agentOrchestrator } from "../../src/tools/agent-orchestrator.js";
 import { toolRegistry } from "../../src/tools/shared/tool-registry.js";
 
-describe("AgentOrchestrator Coverage Boost", () => {
+// Local stub for the deprecated agentOrchestrator API used only in skipped tests.
+// This avoids importing a removed export from agent-orchestrator.ts.
+// If these tests are ever unskipped, they should be updated to use the new API.
+const agentOrchestrator = async (..._args: unknown[]) => {
+	throw new Error("Deprecated agentOrchestrator API is no longer available.");
+};
+
+describe.skip("AgentOrchestrator Coverage Boost - OLD API (template/custom mode)", () => {
 	let toolSuffix: string;
 
 	beforeEach(() => {
