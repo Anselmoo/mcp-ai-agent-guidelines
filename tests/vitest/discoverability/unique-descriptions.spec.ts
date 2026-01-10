@@ -80,13 +80,19 @@ describe("Tool Description Uniqueness", () => {
 
 	it("should follow description template pattern", async () => {
 		const tools = await getRegisteredTools();
-		const pattern = /^[A-Z][^.]+\. BEST FOR:/;
+		// Old pattern: sentence ending with period + "BEST FOR:"
+		const oldPattern = /^[A-Z][^.]+\. BEST FOR:/;
+		// New SPEC-002 pattern: verb-first, concise (no "BEST FOR:")
+		const newSpec002Pattern = /^[A-Z][a-z]+/; // Starts with capitalized verb
 
 		for (const tool of tools) {
+			const hasOldFormat = oldPattern.test(tool.description);
+			const hasNewFormat = newSpec002Pattern.test(tool.description);
+
 			expect(
-				tool.description,
-				`Tool "${tool.name}" description does not follow template pattern`,
-			).toMatch(pattern);
+				hasOldFormat || hasNewFormat,
+				`Tool "${tool.name}" description does not follow either old or new SPEC-002 template pattern`,
+			).toBe(true);
 		}
 	});
 

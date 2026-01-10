@@ -8,7 +8,7 @@
  */
 
 import * as path from "node:path";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { agentOrchestrator } from "../../../src/agents/orchestrator.js";
 import { agentRegistry } from "../../../src/agents/registry.js";
 import type { AgentDefinition } from "../../../src/agents/types.js";

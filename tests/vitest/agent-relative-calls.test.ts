@@ -423,20 +423,33 @@ describe("Agent-Relative Calls Support", () => {
 				expect(match, `Tool ${tool} should be found in index.ts`).toBeTruthy();
 				if (match) {
 					const description = match[1];
-					// Accept either old or new format
+					// Accept either old format (with "Use this MCP" or "BEST FOR:")
+					// or new SPEC-002 format (verb-first with actual capability)
 					const hasOldFormat = description.includes("Use this MCP");
 					const hasNewFormat = description.includes("BEST FOR:");
+					const hasSpec002Format = /^[A-Z][a-z]+/.test(description); // Starts with verb (capitalized)
 					expect(
-						hasOldFormat || hasNewFormat,
-						`${tool} should have either "Use this MCP" or "BEST FOR:" pattern`,
+						hasOldFormat || hasNewFormat || hasSpec002Format,
+						`${tool} should have either old format or new SPEC-002 format (verb-first)`,
 					).toBeTruthy();
 
-					const hasExample = description.includes("Example:");
-					const hasOutputs = description.includes("OUTPUTS:");
-					expect(
-						hasExample || hasOutputs,
-						`${tool} should have either Example or OUTPUTS`,
-					).toBeTruthy();
+					// For SPEC-002 format, descriptions should be concise and under 200 chars
+					if (hasSpec002Format && !hasOldFormat && !hasNewFormat) {
+						expect(
+							description.length <= 200,
+							`${tool} SPEC-002 description should be under 200 characters`,
+						).toBeTruthy();
+					}
+
+					// Old format check for backwards compatibility
+					if (hasOldFormat || hasNewFormat) {
+						const hasExample = description.includes("Example:");
+						const hasOutputs = description.includes("OUTPUTS:");
+						expect(
+							hasExample || hasOutputs,
+							`${tool} should have either Example or OUTPUTS`,
+						).toBeTruthy();
+					}
 				}
 			}
 		});

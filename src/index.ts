@@ -2005,7 +2005,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 		{
 			name: "project-onboarding",
 			description:
-				"Execute comprehensive project onboarding including structure analysis, dependency detection, technology stack identification, and documentation generation. BEST FOR: new developer onboarding, project documentation, codebase exploration. OUTPUTS: Onboarding documentation with setup instructions.",
+				"Scan a project directory to generate onboarding docs from config files and structure, detecting common frameworks (React, Vue, Express) and listing dependencies.",
 			inputSchema: {
 				type: "object",
 				properties: {
@@ -2053,7 +2053,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 		{
 			name: "mode-switcher",
 			description:
-				"Switch between specialized agent modes (planning, editing, analysis, debugging, refactoring, documentation) with mode-appropriate tool sets and prompting strategies. BEST FOR: workflow transitions, context switching, mode-based optimization. OUTPUTS: Mode configuration with tailored toolsets.",
+				"Switch the agent operating mode. Changes persist across tool calls and affect tool recommendations. Modes: planning, editing, analysis, debugging, refactoring, documentation, interactive, one-shot.",
 			inputSchema: {
 				type: "object",
 				properties: {
@@ -2128,7 +2128,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 		{
 			name: "agent-orchestrator",
 			description:
-				"Orchestrate agent handoffs and multi-step workflows using the agent orchestration infrastructure. BEST FOR: delegating tasks between agents, executing predefined workflows, discovering available agents. OUTPUTS: Handoff results, workflow execution summaries, agent/workflow listings.",
+				"Orchestrate multi-agent workflows: list agents, list workflows, run handoffs, or execute multi-step workflows.",
 			inputSchema: {
 				type: "object",
 				properties: {
