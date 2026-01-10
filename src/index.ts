@@ -2005,7 +2005,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 		{
 			name: "project-onboarding",
 			description:
-				"Execute comprehensive project onboarding including structure analysis, dependency detection, technology stack identification, and documentation generation. BEST FOR: new developer onboarding, project documentation, codebase exploration. OUTPUTS: Onboarding documentation with setup instructions.",
+				"Scan a project directory and generate onboarding documentation. Analyzes package.json, tsconfig.json, and directory structure. Detects frameworks (React, Vue, Express) and lists real dependencies.",
 			inputSchema: {
 				type: "object",
 				properties: {
@@ -2053,7 +2053,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 		{
 			name: "mode-switcher",
 			description:
-				"Switch between specialized agent modes (planning, editing, analysis, debugging, refactoring, documentation) with mode-appropriate tool sets and prompting strategies. BEST FOR: workflow transitions, context switching, mode-based optimization. OUTPUTS: Mode configuration with tailored toolsets.",
+				"Switch the agent operating mode. Changes persist across tool calls and affect tool recommendations. Modes: planning, editing, analysis, debugging, refactoring, documentation, interactive, one-shot.",
 			inputSchema: {
 				type: "object",
 				properties: {
@@ -2128,7 +2128,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 		{
 			name: "agent-orchestrator",
 			description:
-				"Orchestrate agent handoffs and multi-step workflows using the agent orchestration infrastructure. BEST FOR: delegating tasks between agents, executing predefined workflows, discovering available agents. OUTPUTS: Handoff results, workflow execution summaries, agent/workflow listings.",
+				"Orchestrate multi-agent workflows. Actions: list-agents (show available agents), list-workflows (show predefined workflows), handoff (execute single agent), workflow (execute multi-step workflow).",
 			inputSchema: {
 				type: "object",
 				properties: {
