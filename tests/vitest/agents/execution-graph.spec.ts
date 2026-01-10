@@ -407,8 +407,6 @@ describe("ExecutionGraph", () => {
 		});
 
 		it("should handle rapid successive handoffs", () => {
-			const startTime = Date.now();
-
 			for (let i = 0; i < 10; i++) {
 				graph.recordHandoff({
 					targetAgent: `agent-${i}`,
