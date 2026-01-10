@@ -12,19 +12,15 @@ import {
 	registerDefaultAgents,
 	securityAgent,
 } from "../../../src/agents/definitions/index.js";
-import { AgentRegistry, agentRegistry } from "../../../src/agents/index.js";
+import { agentRegistry } from "../../../src/agents/index.js";
 
 describe("Default Agent Definitions", () => {
-	let registry: AgentRegistry;
-
 	beforeEach(() => {
-		registry = new AgentRegistry();
 		// Clear global registry before each test
 		agentRegistry.clear();
 	});
 
 	afterEach(() => {
-		registry.clear();
 		agentRegistry.clear();
 	});
 

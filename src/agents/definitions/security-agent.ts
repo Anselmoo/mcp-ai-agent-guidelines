@@ -49,6 +49,18 @@ export const securityAgent: AgentDefinition = {
 				type: "array",
 				items: {
 					type: "string",
+					enum: [
+						"input-validation",
+						"authentication",
+						"authorization",
+						"data-encryption",
+						"session-management",
+						"error-handling",
+						"logging-monitoring",
+						"dependency-security",
+						"configuration-security",
+						"api-security",
+					],
 				},
 			},
 			language: { type: "string" },
