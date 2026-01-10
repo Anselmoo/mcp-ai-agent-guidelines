@@ -7,7 +7,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
 	type AgentDefinition,
-	AgentOrchestrator,
 	agentOrchestrator,
 	agentRegistry,
 	codeReviewChainWorkflow,
