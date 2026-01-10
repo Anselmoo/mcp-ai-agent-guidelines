@@ -1,7 +1,12 @@
+/**
+ * OLD agent-orchestrator branch tests for template/custom mode API
+ * This API is being replaced by the new action-based API (see P3-014).
+ * Tests for the new API are in agent-orchestrator.integration.spec.ts
+ */
 import { describe, expect, it } from "vitest";
 import { agentOrchestrator } from "../../src/tools/agent-orchestrator.js";
 
-describe("agent-orchestrator - missing parameter branches", () => {
+describe.skip("agent-orchestrator - missing parameter branches - OLD API", () => {
 	it("returns error response and triggers trace end when template missing and includeTrace=true", async () => {
 		const result = await agentOrchestrator({
 			mode: "template",

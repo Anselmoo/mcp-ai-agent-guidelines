@@ -5,13 +5,17 @@
  * - Line 233-238: error tracing
  * - Line 249: error handling branches
  * - Line 279-329: workflow template parameters
+ *
+ * NOTE: These tests are for the OLD agent-orchestrator implementation with mode="template"/mode="custom" API.
+ * This API is being replaced by the new action-based API (see P3-014).
+ * Tests for the new API are in agent-orchestrator.integration.spec.ts
  */
 import { beforeEach, describe, expect, it } from "vitest";
 import { z } from "zod";
 import { agentOrchestrator } from "../../src/tools/agent-orchestrator.js";
 import { toolRegistry } from "../../src/tools/shared/tool-registry.js";
 
-describe("AgentOrchestrator Coverage Boost", () => {
+describe.skip("AgentOrchestrator Coverage Boost - OLD API (template/custom mode)", () => {
 	let toolSuffix: string;
 
 	beforeEach(() => {

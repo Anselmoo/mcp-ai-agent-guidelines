@@ -38,6 +38,7 @@ import {
 	promptChainingBuilderSchema,
 	promptFlowBuilderSchema,
 } from "./schemas/flow-tool-schemas.js";
+import { agentOrchestratorTool } from "./tools/agent-orchestrator.js";
 import { gapFrameworksAnalyzers } from "./tools/analysis/gap-frameworks-analyzers.js";
 import { strategyFrameworksBuilder } from "./tools/analysis/strategy-frameworks-builder.js";
 import { cleanCodeScorer } from "./tools/clean-code-scorer.js";
@@ -2125,6 +2126,58 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			},
 		},
 		{
+			name: "agent-orchestrator",
+			description:
+				"Orchestrate agent handoffs and multi-step workflows using the agent orchestration infrastructure. BEST FOR: delegating tasks between agents, executing predefined workflows, discovering available agents. OUTPUTS: Handoff results, workflow execution summaries, agent/workflow listings.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					action: {
+						type: "string",
+						enum: ["handoff", "workflow", "list-agents", "list-workflows"],
+						description: "The action to perform",
+						examples: ["handoff", "list-agents", "workflow"],
+					},
+					targetAgent: {
+						type: "string",
+						description:
+							"Target agent for handoff (required for 'handoff' action)",
+						examples: ["code-scorer", "security-agent", "design-agent"],
+					},
+					context: {
+						type: "object",
+						description: "Context data to pass to target agent",
+					},
+					reason: {
+						type: "string",
+						description: "Reason for the handoff",
+						examples: [
+							"Delegating code quality analysis",
+							"Security review needed",
+						],
+					},
+					workflowName: {
+						type: "string",
+						description:
+							"Name of the workflow to execute (required for 'workflow' action)",
+						examples: ["code-review-chain", "design-to-spec"],
+					},
+					workflowInput: {
+						type: "object",
+						description: "Input data for the workflow",
+					},
+				},
+				required: ["action"],
+			},
+			annotations: {
+				title: "Agent Orchestrator",
+				readOnlyHint: false, // Executes agents
+				idempotentHint: false, // Execution may have side effects
+				destructiveHint: false, // No data loss
+				openWorldHint: true, // May invoke external tools
+			},
+		},
+		{
 			name: "prompting-hierarchy-evaluator",
 			description:
 				"Evaluate prompt quality with hierarchical taxonomy and numeric scoring based on clarity, specificity, completeness, and cognitive complexity. BEST FOR: prompt quality assessment, effectiveness measurement, prompt optimization. OUTPUTS: Detailed scores with improvement recommendations.",
@@ -2508,6 +2561,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 				return projectOnboarding(args);
 			case "mode-switcher":
 				return modeSwitcher(args);
+			case "agent-orchestrator":
+				return agentOrchestratorTool(
+					args as unknown as import("./tools/agent-orchestrator.js").AgentOrchestratorRequest,
+				);
 			case "prompting-hierarchy-evaluator":
 				return promptingHierarchyEvaluator(args);
 			case "prompt-hierarchy":
