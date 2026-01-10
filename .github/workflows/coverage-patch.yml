@@ -51,7 +51,7 @@ jobs:
         run: ls -la artifacts || true
 
       - name: Upload coverage-patch artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: coverage-patch
           path: artifacts/coverage-patch.json
