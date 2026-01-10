@@ -121,6 +121,11 @@ describe("Fixed Tools Integration", () => {
 			agentRegistry.registerAgent(securityAnalyzer);
 		});
 
+		afterEach(() => {
+			agentRegistry.clear();
+			vi.clearAllMocks();
+		});
+
 		it("lists available agents", async () => {
 			const result = await agentOrchestratorTool({
 				action: "list-agents",
