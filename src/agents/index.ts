@@ -4,6 +4,14 @@
  * @module agents
  */
 
+// Export execution graph and singleton
+export {
+	ExecutionGraph,
+	type ExecutionGraphOptions,
+	executionGraph,
+	type HandoffRecord,
+} from "./execution-graph.js";
+
 // Export orchestrator and singleton
 export {
 	AgentOrchestrator,
