@@ -37,7 +37,7 @@ describe("A2A Coverage Boost", () => {
 	describe("async-patterns comprehensive coverage", () => {
 		it("should cover mapReduceTools with failures (line 49)", async () => {
 			const failingTool = uniqueToolName("map-fail");
-			let calls = 0;
+			let _calls = 0;
 
 			toolRegistry.register(
 				{
@@ -47,7 +47,7 @@ describe("A2A Coverage Boost", () => {
 					canInvoke: [failingTool], // Allow self-invocation
 				},
 				async (args) => {
-					calls++;
+					_calls++;
 					const { shouldFail } = args as { shouldFail: boolean };
 					if (shouldFail) {
 						return { success: false, error: "Failed" };
@@ -1108,7 +1108,7 @@ describe("A2A Coverage Boost", () => {
 					inputSchema: z.object({ key: z.string() }),
 					canInvoke: [dedupTool],
 				},
-				async (args) => {
+				async (_args) => {
 					callCount++;
 					return { success: true, data: `result-${callCount}` };
 				},
