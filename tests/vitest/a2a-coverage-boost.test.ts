@@ -5,7 +5,7 @@
  * Uses simpler test patterns that avoid permission/context issues.
  */
 
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { z } from "zod";
 import { agentOrchestrator } from "../../src/tools/agent-orchestrator.js";
 import {
