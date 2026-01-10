@@ -5,8 +5,15 @@
  */
 import { beforeEach, describe, expect, it } from "vitest";
 import { z } from "zod";
-import { agentOrchestrator } from "../../src/tools/agent-orchestrator.js";
 import { toolRegistry } from "../../src/tools/shared/tool-registry.js";
+
+// Local stub for the deprecated agentOrchestrator API.
+// These tests are skipped, so this function should never be executed.
+const agentOrchestrator = async (_options: unknown): Promise<unknown> => {
+	throw new Error(
+		"agentOrchestrator (OLD API) is no longer available. Use the new action-based API tests instead.",
+	);
+};
 
 describe.skip("Agent Orchestrator - OLD API (template/custom mode)", () => {
 	let toolSuffix: string;

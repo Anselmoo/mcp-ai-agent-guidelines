@@ -3,6 +3,7 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { ZodError } from "zod";
 import { agentOrchestrator } from "../../../src/agents/orchestrator.js";
 import { agentRegistry } from "../../../src/agents/registry.js";
 import type { AgentDefinition } from "../../../src/agents/types.js";
@@ -84,13 +85,14 @@ describe("Agent Orchestrator Tool - Integration", () => {
 	});
 
 	describe("handoff action", () => {
-		it("should throw error when targetAgent is missing", async () => {
+		it("should throw ZodError when targetAgent is missing", async () => {
+			// Zod validation throws ZodError for missing required fields
 			await expect(
 				agentOrchestratorTool({
 					action: "handoff",
 					context: { data: "test" },
 				}),
-			).rejects.toThrow(McpToolError);
+			).rejects.toThrow(ZodError);
 
 			try {
 				await agentOrchestratorTool({
@@ -98,10 +100,9 @@ describe("Agent Orchestrator Tool - Integration", () => {
 					context: { data: "test" },
 				});
 			} catch (error) {
-				expect(error).toBeInstanceOf(McpToolError);
-				expect((error as McpToolError).code).toBe(
-					ErrorCode.MISSING_REQUIRED_FIELD,
-				);
+				expect(error).toBeInstanceOf(ZodError);
+				expect((error as ZodError).issues[0].path).toContain("targetAgent");
+				expect((error as ZodError).issues[0].message).toContain("Required");
 			}
 		});
 
@@ -155,13 +156,14 @@ describe("Agent Orchestrator Tool - Integration", () => {
 	});
 
 	describe("workflow action", () => {
-		it("should throw error when workflowName is missing", async () => {
+		it("should throw ZodError when workflowName is missing", async () => {
+			// Zod validation throws ZodError for missing required fields
 			await expect(
 				agentOrchestratorTool({
 					action: "workflow",
 					workflowInput: { data: "test" },
 				}),
-			).rejects.toThrow(McpToolError);
+			).rejects.toThrow(ZodError);
 
 			try {
 				await agentOrchestratorTool({
@@ -169,10 +171,9 @@ describe("Agent Orchestrator Tool - Integration", () => {
 					workflowInput: { data: "test" },
 				});
 			} catch (error) {
-				expect(error).toBeInstanceOf(McpToolError);
-				expect((error as McpToolError).code).toBe(
-					ErrorCode.MISSING_REQUIRED_FIELD,
-				);
+				expect(error).toBeInstanceOf(ZodError);
+				expect((error as ZodError).issues[0].path).toContain("workflowName");
+				expect((error as ZodError).issues[0].message).toContain("Required");
 			}
 		});
 
@@ -231,21 +232,23 @@ describe("Agent Orchestrator Tool - Integration", () => {
 	});
 
 	describe("error handling", () => {
-		it("should throw error for unknown action", async () => {
+		it("should throw ZodError for unknown action", async () => {
+			// Zod discriminated union validation throws ZodError for invalid action
 			await expect(
 				agentOrchestratorTool({
 					action: "unknown-action" as AgentOrchestratorAction,
 				}),
-			).rejects.toThrow(McpToolError);
+			).rejects.toThrow(ZodError);
 
 			try {
 				await agentOrchestratorTool({
 					action: "unknown-action" as AgentOrchestratorAction,
 				});
 			} catch (error) {
-				expect(error).toBeInstanceOf(McpToolError);
-				expect((error as McpToolError).code).toBe(ErrorCode.INVALID_PARAMETER);
-				expect((error as McpToolError).message).toContain("Unknown action");
+				expect(error).toBeInstanceOf(ZodError);
+				expect((error as ZodError).issues[0].code).toBe(
+					"invalid_union_discriminator",
+				);
 			}
 		});
 	});

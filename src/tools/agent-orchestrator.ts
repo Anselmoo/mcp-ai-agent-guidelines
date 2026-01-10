@@ -11,6 +11,7 @@
  * - Error handling with typed error codes
  */
 
+import { z } from "zod";
 import { agentOrchestrator } from "../agents/orchestrator.js";
 import { agentRegistry } from "../agents/registry.js";
 import { getWorkflow, listWorkflows } from "../agents/workflows/index.js";
@@ -19,45 +20,93 @@ import { McpToolError } from "./shared/errors.js";
 import { createMcpResponse } from "./shared/response-utils.js";
 
 /**
+ * Zod schema for agent orchestrator action types
+ */
+const AgentOrchestratorActionSchema = z.enum([
+	"handoff",
+	"workflow",
+	"list-agents",
+	"list-workflows",
+]);
+
+/**
+ * Zod schema for agent orchestrator request
+ * Uses discriminated union based on action type for proper validation
+ */
+const AgentOrchestratorSchema = z.discriminatedUnion("action", [
+	// list-agents action - no additional parameters required
+	z.object({
+		action: z.literal("list-agents"),
+	}),
+	// list-workflows action - no additional parameters required
+	z.object({
+		action: z.literal("list-workflows"),
+	}),
+	// handoff action - requires targetAgent, optional context and reason
+	z.object({
+		action: z.literal("handoff"),
+		targetAgent: z
+			.string()
+			.min(1, "targetAgent must be a non-empty string")
+			.describe(
+				"Name of the target agent to hand off to. Example: 'code-reviewer'",
+			),
+		context: z
+			.unknown()
+			.optional()
+			.describe(
+				"Context data to pass to the target agent. Can be any JSON-serializable value. Example: { files: ['src/foo.ts'], task: 'review changes' }",
+			),
+		reason: z
+			.string()
+			.optional()
+			.describe(
+				"Reason for the handoff. Example: 'Quality check required before merge'",
+			),
+	}),
+	// workflow action - requires workflowName, optional workflowInput
+	z.object({
+		action: z.literal("workflow"),
+		workflowName: z
+			.string()
+			.min(1, "workflowName must be a non-empty string")
+			.describe(
+				"Name of the workflow to execute. Example: 'code-review-pipeline'",
+			),
+		workflowInput: z
+			.unknown()
+			.optional()
+			.describe(
+				"Input data for the workflow. Can be any JSON-serializable value. Example: { projectPath: '.', branch: 'main' }",
+			),
+	}),
+]);
+
+/**
  * Supported actions for the agent orchestrator tool
  */
-export type AgentOrchestratorAction =
-	| "handoff"
-	| "workflow"
-	| "list-agents"
-	| "list-workflows";
+export type AgentOrchestratorAction = z.infer<
+	typeof AgentOrchestratorActionSchema
+>;
 
 /**
  * Request schema for the agent orchestrator tool
  */
-export interface AgentOrchestratorRequest {
-	/** The action to perform */
-	action: AgentOrchestratorAction;
-
-	// For handoff action
-	/** Target agent for handoff (required for 'handoff' action) */
-	targetAgent?: string;
-	/** Context data to pass to target agent */
-	context?: unknown;
-	/** Reason for the handoff */
-	reason?: string;
-
-	// For workflow action
-	/** Name of the workflow to execute (required for 'workflow' action) */
-	workflowName?: string;
-	/** Input data for the workflow */
-	workflowInput?: unknown;
-}
+export type AgentOrchestratorRequest = z.infer<typeof AgentOrchestratorSchema>;
 
 /**
  * Agent Orchestrator Tool
  *
  * Coordinates agent handoffs and workflow execution using the orchestration infrastructure.
  *
- * @param request - The orchestrator request with action and parameters
+ * @param args - The orchestrator request with action and parameters (validated against schema)
  * @returns MCP-formatted response
+ * @throws {McpToolError} If validation fails or action is invalid
  */
-export async function agentOrchestratorTool(request: AgentOrchestratorRequest) {
+export async function agentOrchestratorTool(args: unknown) {
+	// Validate input with Zod schema
+	const request = AgentOrchestratorSchema.parse(args);
+
 	switch (request.action) {
 		case "list-agents":
 			return handleListAgents();
@@ -72,9 +121,10 @@ export async function agentOrchestratorTool(request: AgentOrchestratorRequest) {
 			return handleWorkflow(request);
 
 		default:
+			// This should never happen due to discriminated union, but TypeScript requires it
 			throw new McpToolError(
 				ErrorCode.INVALID_PARAMETER,
-				`Unknown action: ${request.action}`,
+				`Unknown action: ${(request as { action: string }).action}`,
 				{
 					validActions: [
 						"handoff",
@@ -141,17 +191,13 @@ ${wf?.description ?? "No description"}
 /**
  * Handles the handoff action
  *
- * @param request - The orchestrator request
+ * @param request - The orchestrator request for handoff action
  * @returns MCP response with handoff result
  */
-async function handleHandoff(request: AgentOrchestratorRequest) {
-	if (!request.targetAgent) {
-		throw new McpToolError(
-			ErrorCode.MISSING_REQUIRED_FIELD,
-			"targetAgent is required for handoff action",
-		);
-	}
-
+async function handleHandoff(
+	request: Extract<AgentOrchestratorRequest, { action: "handoff" }>,
+) {
+	// targetAgent is guaranteed to be present due to Zod validation
 	const result = await agentOrchestrator.executeHandoff({
 		targetAgent: request.targetAgent,
 		context: request.context,
@@ -181,17 +227,13 @@ ${JSON.stringify(result.output, null, 2)}
 /**
  * Handles the workflow action
  *
- * @param request - The orchestrator request
+ * @param request - The orchestrator request for workflow action
  * @returns MCP response with workflow execution result
  */
-async function handleWorkflow(request: AgentOrchestratorRequest) {
-	if (!request.workflowName) {
-		throw new McpToolError(
-			ErrorCode.MISSING_REQUIRED_FIELD,
-			"workflowName is required for workflow action",
-		);
-	}
-
+async function handleWorkflow(
+	request: Extract<AgentOrchestratorRequest, { action: "workflow" }>,
+) {
+	// workflowName is guaranteed to be present due to Zod validation
 	const workflow = getWorkflow(request.workflowName);
 	if (!workflow) {
 		throw new McpToolError(

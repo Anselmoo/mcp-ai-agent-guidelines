@@ -5,9 +5,9 @@
  * Uses simpler test patterns that avoid permission/context issues.
  */
 
+import crypto from "node:crypto";
 import { beforeEach, describe, expect, it } from "vitest";
 import { z } from "zod";
-import { agentOrchestrator } from "../../src/tools/agent-orchestrator.js";
 import {
 	type A2AContext,
 	createA2AContext,
@@ -1120,7 +1120,7 @@ describe("A2A Coverage Boost", () => {
 			context.executionLog.push({
 				timestamp: new Date(),
 				toolName: dedupTool,
-				inputHash: require("node:crypto")
+				inputHash: crypto
 					.createHash("sha256")
 					.update(inputHash)
 					.digest("hex")
