@@ -2005,7 +2005,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 		{
 			name: "project-onboarding",
 			description:
-				"Scan a project directory and generate onboarding documentation. Analyzes package.json, tsconfig.json, and directory structure. Detects frameworks (React, Vue, Express) and lists real dependencies.",
+				"Scan a project directory to generate onboarding docs from config files and structure, detecting common frameworks (React, Vue, Express) and listing dependencies.",
 			inputSchema: {
 				type: "object",
 				properties: {
@@ -2128,7 +2128,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 		{
 			name: "agent-orchestrator",
 			description:
-				"Orchestrate multi-agent workflows. Actions: list-agents (show available agents), list-workflows (show predefined workflows), handoff (execute single agent), workflow (execute multi-step workflow).",
+				"Orchestrate multi-agent workflows: list agents, list workflows, run handoffs, or execute multi-step workflows.",
 			inputSchema: {
 				type: "object",
 				properties: {
