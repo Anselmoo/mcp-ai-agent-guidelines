@@ -15,6 +15,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+**Phase 3 Documentation Updates (P3-018):**
+- Updated `docs/tools/mode-switcher.md` with accurate API reference and usage examples
+  - Complete parameter documentation from source code
+  - Detailed descriptions of all 8 available modes (planning, editing, analysis, debugging, refactoring, documentation, interactive, one-shot)
+  - Mode profile reference with focus areas, strategies, and best practices for each mode
+  - State persistence and transition history documentation
+- Updated `docs/tools/project-onboarding.md` with accurate API reference and usage examples
+  - Complete parameter documentation including `focusAreas` options
+  - Supported project types (TypeScript, JavaScript, Python, Go, Rust, Ruby)
+  - Output structure with framework detection, dependencies, and scripts
+  - Focus areas reference (dependencies, scripts, frameworks, structure)
+- New `docs/tools/agent-orchestrator.md` - Comprehensive documentation for multi-agent workflow orchestration
+  - Four actions documented: `list-agents`, `list-workflows`, `handoff`, `workflow`
+  - Complete workflow reference for `code-review-chain` and `design-to-spec`
+  - Real-world examples for code review pipeline, design sessions, and agent handoffs
+  - Workflow composition patterns with Mermaid diagrams
+
 **Phase 2 Documentation Updates (P2-028):**
 - New `docs/output-strategies.md` - Comprehensive guide to 7 output approaches and 6 cross-cutting capabilities
   - Detailed documentation for Chat, RFC, ADR, SDD, SpecKit, TOGAF, and Enterprise strategies
