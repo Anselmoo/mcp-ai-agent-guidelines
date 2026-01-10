@@ -25,6 +25,8 @@ import {
 	ListToolsRequestSchema,
 	ReadResourceRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
+// Import agent definitions
+import { registerDefaultAgents } from "./agents/definitions/index.js";
 // Import feature flags
 import { getFeatureFlags } from "./config/feature-flags.js";
 // Import prompts
@@ -2566,6 +2568,9 @@ server.setRequestHandler(GetPromptRequestSchema, async (request) => {
 
 // Start the server
 async function main() {
+	// Register default agents on startup
+	registerDefaultAgents();
+
 	const transport = new StdioServerTransport();
 	await server.connect(transport);
 	console.error("MCP AI Agent Guide Server running on stdio");
