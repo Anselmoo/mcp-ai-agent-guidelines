@@ -4,6 +4,8 @@
  * @module agents/orchestrator
  */
 
+import { ErrorCode } from "../tools/shared/error-codes.js";
+import { McpToolError } from "../tools/shared/errors.js";
 import { agentRegistry } from "./registry.js";
 import type { HandoffRequest, HandoffResult } from "./types.js";
 
@@ -55,7 +57,7 @@ export interface WorkflowResult {
 /**
  * Result of executing a single step in a workflow.
  */
-interface StepResult {
+export interface StepResult {
 	/** Name of the agent that executed this step */
 	agent: string;
 
@@ -114,7 +116,11 @@ export class AgentOrchestrator {
 
 		try {
 			if (!this.toolExecutor) {
-				throw new Error("Tool executor not configured");
+				throw new McpToolError(
+					ErrorCode.CONFIG_INVALID,
+					"Tool executor not configured",
+					{ targetAgent: request.targetAgent },
+				);
 			}
 
 			// Execute the backing tool
@@ -130,7 +136,12 @@ export class AgentOrchestrator {
 				success: false,
 				output: null,
 				executionTime: Date.now() - startTime,
-				error: error instanceof Error ? error.message : "Unknown error",
+				error:
+					error instanceof McpToolError
+						? error.message
+						: error instanceof Error
+							? error.message
+							: "Unknown error",
 			};
 		}
 	}
@@ -219,14 +230,18 @@ export class AgentOrchestrator {
 	 * @returns The value at the path, or undefined if not found
 	 */
 	private getValueByPath(obj: unknown, path: string): unknown {
-		return path.split(".").reduce(
-			(acc, key) =>
-				acc && typeof acc === "object"
-					? // biome-ignore lint/suspicious/noExplicitAny: Dynamic object traversal requires any
-						(acc as any)[key]
-					: undefined,
-			obj,
-		);
+		return path.split(".").reduce<unknown>((acc, key) => {
+			if (acc === null || typeof acc !== "object") {
+				return undefined;
+			}
+
+			const record = acc as Record<string, unknown>;
+			if (!(key in record)) {
+				return undefined;
+			}
+
+			return record[key];
+		}, obj);
 	}
 }
 

@@ -8,6 +8,7 @@
 export {
 	AgentOrchestrator,
 	agentOrchestrator,
+	type StepResult,
 	type Workflow,
 	type WorkflowResult,
 	type WorkflowStep,
