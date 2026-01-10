@@ -6,6 +6,7 @@
 
 import { ErrorCode } from "../tools/shared/error-codes.js";
 import { McpToolError } from "../tools/shared/errors.js";
+import { executionGraph } from "./execution-graph.js";
 import { agentRegistry } from "./registry.js";
 import type { HandoffRequest, HandoffResult } from "./types.js";
 
@@ -106,11 +107,23 @@ export class AgentOrchestrator {
 		// Get target agent
 		const agent = agentRegistry.getAgent(request.targetAgent);
 		if (!agent) {
+			const executionTime = Date.now() - startTime;
+			const error = `Agent not found: ${request.targetAgent}`;
+
+			// Record failed handoff
+			executionGraph.recordHandoff({
+				sourceAgent: request.sourceAgent,
+				targetAgent: request.targetAgent,
+				executionTime,
+				success: false,
+				error,
+			});
+
 			return {
 				success: false,
 				output: null,
-				executionTime: Date.now() - startTime,
-				error: `Agent not found: ${request.targetAgent}`,
+				executionTime,
+				error,
 			};
 		}
 
@@ -125,23 +138,44 @@ export class AgentOrchestrator {
 
 			// Execute the backing tool
 			const output = await this.toolExecutor(agent.toolName, request.context);
+			const executionTime = Date.now() - startTime;
+
+			// Record successful handoff
+			executionGraph.recordHandoff({
+				sourceAgent: request.sourceAgent,
+				targetAgent: request.targetAgent,
+				executionTime,
+				success: true,
+			});
 
 			return {
 				success: true,
 				output,
-				executionTime: Date.now() - startTime,
+				executionTime,
 			};
 		} catch (error) {
+			const executionTime = Date.now() - startTime;
+			const errorMessage =
+				error instanceof McpToolError
+					? error.message
+					: error instanceof Error
+						? error.message
+						: "Unknown error";
+
+			// Record failed handoff
+			executionGraph.recordHandoff({
+				sourceAgent: request.sourceAgent,
+				targetAgent: request.targetAgent,
+				executionTime,
+				success: false,
+				error: errorMessage,
+			});
+
 			return {
 				success: false,
 				output: null,
-				executionTime: Date.now() - startTime,
-				error:
-					error instanceof McpToolError
-						? error.message
-						: error instanceof Error
-							? error.message
-							: "Unknown error",
+				executionTime,
+				error: errorMessage,
 			};
 		}
 	}
@@ -163,13 +197,15 @@ export class AgentOrchestrator {
 
 		let currentInput = input;
 
-		for (const step of workflow.steps) {
+		for (let i = 0; i < workflow.steps.length; i++) {
+			const step = workflow.steps[i];
 			// Map input from previous outputs if specified
 			const stepInput = step.inputMapping
 				? this.mapInput(outputs, step.inputMapping)
 				: currentInput;
 
 			const result = await this.executeHandoff({
+				sourceAgent: i > 0 ? workflow.steps[i - 1].agent : undefined,
 				targetAgent: step.agent,
 				context: stepInput,
 			});
