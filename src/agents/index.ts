@@ -23,3 +23,12 @@ export type {
 	HandoffRequest,
 	HandoffResult,
 } from "./types.js";
+
+// Export workflows
+export {
+	codeReviewChainWorkflow,
+	designToSpecWorkflow,
+	getWorkflow,
+	listWorkflows,
+	workflows,
+} from "./workflows/index.js";
