@@ -78,6 +78,10 @@ describe("Workflow Integration Tests", () => {
 			const workflow = getWorkflow("code-review-chain");
 			expect(workflow).toBeDefined();
 
+			if (!workflow) {
+				throw new Error("Workflow not found");
+			}
+
 			mockToolExecutor
 				.mockResolvedValueOnce({ overallScore: 90 })
 				.mockResolvedValueOnce({ findings: [] })
@@ -94,7 +98,7 @@ describe("Workflow Integration Tests", () => {
 				},
 			};
 
-			const result = await agentOrchestrator.executeWorkflow(workflow!, input);
+			const result = await agentOrchestrator.executeWorkflow(workflow, input);
 
 			expect(result.success).toBe(true);
 			expect(result.steps).toHaveLength(3);
@@ -169,6 +173,10 @@ describe("Workflow Integration Tests", () => {
 
 			const workflow = getWorkflow("code-review-chain");
 
+			if (!workflow) {
+				throw new Error("Workflow not found");
+			}
+
 			const input = {
 				projectPath: "/project",
 				codeContext: "Module",
@@ -180,7 +188,7 @@ describe("Workflow Integration Tests", () => {
 				},
 			};
 
-			const result = await agentOrchestrator.executeWorkflow(workflow!, input);
+			const result = await agentOrchestrator.executeWorkflow(workflow, input);
 
 			expect(result.success).toBe(true);
 			expect(mockToolExecutor).toHaveBeenCalled();
