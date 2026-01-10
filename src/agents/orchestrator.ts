@@ -197,17 +197,15 @@ export class AgentOrchestrator {
 
 		let currentInput = input;
 
-		for (const step of workflow.steps) {
+		for (let i = 0; i < workflow.steps.length; i++) {
+			const step = workflow.steps[i];
 			// Map input from previous outputs if specified
 			const stepInput = step.inputMapping
 				? this.mapInput(outputs, step.inputMapping)
 				: currentInput;
 
 			const result = await this.executeHandoff({
-				sourceAgent:
-					workflow.steps.indexOf(step) > 0
-						? workflow.steps[workflow.steps.indexOf(step) - 1].agent
-						: undefined,
+				sourceAgent: i > 0 ? workflow.steps[i - 1].agent : undefined,
 				targetAgent: step.agent,
 				context: stepInput,
 			});
