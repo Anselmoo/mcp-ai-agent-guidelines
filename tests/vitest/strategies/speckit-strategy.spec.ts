@@ -1651,4 +1651,437 @@ describe("SpecKitStrategy", () => {
 			expect(spec?.content).toContain("### DP1: Test Design Principle");
 		});
 	});
+
+	describe("task derivation methods", () => {
+		it("should derive tasks from functional requirements", () => {
+			const strategy = new SpecKitStrategy();
+			// Access private method through reflection for testing
+			const deriveTasksFromSpec = (
+				strategy as unknown as {
+					deriveTasksFromSpec: (spec: {
+						functionalRequirements: Array<{
+							id: string;
+							description: string;
+							priority: "high" | "medium" | "low";
+						}>;
+						acceptanceCriteria: Array<{
+							id: string;
+							description: string;
+							verificationMethod: "automated" | "manual" | "review";
+						}>;
+					}) => Array<{
+						id: string;
+						title: string;
+						description: string;
+						priority: string;
+						estimate: string;
+						acceptanceCriteria: string[];
+						dependencies?: string[];
+					}>;
+				}
+			).deriveTasksFromSpec;
+
+			const spec = {
+				functionalRequirements: [
+					{
+						id: "REQ-001",
+						description: "Implement simple user authentication",
+						priority: "high" as const,
+					},
+					{
+						id: "REQ-002",
+						description: "Create complex data visualization dashboard",
+						priority: "medium" as const,
+					},
+				],
+				acceptanceCriteria: [
+					{
+						id: "AC-001",
+						description: "User can log in successfully",
+						verificationMethod: "automated" as const,
+					},
+					{
+						id: "AC-002",
+						description: "Dashboard displays data correctly",
+						verificationMethod: "manual" as const,
+					},
+				],
+			};
+
+			const tasks = deriveTasksFromSpec.call(strategy, spec);
+
+			// Should create 2 implementation tasks + 2 verification tasks + 2 AC tasks = 6 total
+			expect(tasks).toHaveLength(6);
+
+			// Check first implementation task
+			expect(tasks[0].id).toBe("T001");
+			expect(tasks[0].title).toContain(
+				"Implement: Implement simple user authentication",
+			);
+			expect(tasks[0].description).toContain("REQ-001");
+			expect(tasks[0].priority).toBe("high");
+			expect(tasks[0].estimate).toBe("2h"); // "simple" keyword
+			expect(tasks[0].acceptanceCriteria).toContain(
+				"Requirement REQ-001 is satisfied",
+			);
+
+			// Check first verification task
+			expect(tasks[1].id).toBe("T002");
+			expect(tasks[1].title).toContain("Verify:");
+			expect(tasks[1].priority).toBe("high");
+			expect(tasks[1].estimate).toBe("2h");
+			expect(tasks[1].dependencies).toEqual(["T001"]);
+
+			// Check second implementation task
+			expect(tasks[2].id).toBe("T003");
+			expect(tasks[2].title).toContain("Implement:");
+			expect(tasks[2].estimate).toBe("8h"); // "complex" keyword
+
+			// Check acceptance criterion tasks
+			expect(tasks[4].id).toBe("T005");
+			expect(tasks[4].title).toContain("Validate:");
+			expect(tasks[4].estimate).toBe("1h"); // automated verification
+			expect(tasks[4].acceptanceCriteria).toContain(
+				"User can log in successfully is verified",
+			);
+
+			expect(tasks[5].estimate).toBe("2h"); // manual verification
+		});
+
+		it("should derive implementation task from requirement", () => {
+			const strategy = new SpecKitStrategy();
+			const deriveTaskFromRequirement = (
+				strategy as unknown as {
+					deriveTaskFromRequirement: (
+						req: {
+							id: string;
+							description: string;
+							priority: "high" | "medium" | "low";
+						},
+						id: number,
+					) => {
+						id: string;
+						title: string;
+						description: string;
+						priority: string;
+						estimate: string;
+						acceptanceCriteria: string[];
+					};
+				}
+			).deriveTaskFromRequirement;
+
+			const req = {
+				id: "REQ-001",
+				description: "Add user registration with email verification",
+				priority: "high" as const,
+			};
+
+			const task = deriveTaskFromRequirement.call(strategy, req, 1);
+
+			expect(task.id).toBe("T001");
+			expect(task.title).toBe(
+				"Implement: Add user registration with email verification",
+			);
+			expect(task.description).toContain(
+				"Implement functionality to satisfy requirement REQ-001",
+			);
+			expect(task.description).toContain(
+				"Add user registration with email verification",
+			);
+			expect(task.priority).toBe("high");
+			expect(task.estimate).toBe("3h"); // default estimate
+			expect(task.acceptanceCriteria).toHaveLength(3);
+			expect(task.acceptanceCriteria).toContain(
+				"Requirement REQ-001 is satisfied",
+			);
+			expect(task.acceptanceCriteria).toContain("Unit tests pass");
+			expect(task.acceptanceCriteria).toContain("Code review approved");
+		});
+
+		it("should derive verification task from requirement", () => {
+			const strategy = new SpecKitStrategy();
+			const deriveVerificationTask = (
+				strategy as unknown as {
+					deriveVerificationTask: (
+						req: {
+							id: string;
+							description: string;
+							priority: "high" | "medium" | "low";
+						},
+						id: number,
+					) => {
+						id: string;
+						title: string;
+						description: string;
+						priority: string;
+						estimate: string;
+						acceptanceCriteria: string[];
+						dependencies?: string[];
+					};
+				}
+			).deriveVerificationTask;
+
+			const req = {
+				id: "REQ-002",
+				description: "Implement payment processing",
+				priority: "high" as const,
+			};
+
+			const task = deriveVerificationTask.call(strategy, req, 5);
+
+			expect(task.id).toBe("T005");
+			expect(task.title).toContain("Verify: Implement payment processing");
+			expect(task.description).toContain(
+				"Write tests to verify requirement REQ-002",
+			);
+			expect(task.priority).toBe("high");
+			expect(task.estimate).toBe("2h");
+			expect(task.acceptanceCriteria).toHaveLength(3);
+			expect(task.acceptanceCriteria).toContain("Tests cover happy path");
+			expect(task.acceptanceCriteria).toContain("Tests cover edge cases");
+			expect(task.acceptanceCriteria).toContain("Tests cover error conditions");
+			expect(task.dependencies).toEqual(["T004"]);
+		});
+
+		it("should derive validation task from acceptance criterion", () => {
+			const strategy = new SpecKitStrategy();
+			const deriveTaskFromAcceptanceCriterion = (
+				strategy as unknown as {
+					deriveTaskFromAcceptanceCriterion: (
+						ac: {
+							id: string;
+							description: string;
+							verificationMethod: "automated" | "manual" | "review";
+						},
+						id: number,
+					) => {
+						id: string;
+						title: string;
+						description: string;
+						priority: string;
+						estimate: string;
+						acceptanceCriteria: string[];
+					};
+				}
+			).deriveTaskFromAcceptanceCriterion;
+
+			const ac = {
+				id: "AC-001",
+				description: "All pages load in under 2 seconds",
+				verificationMethod: "automated" as const,
+			};
+
+			const task = deriveTaskFromAcceptanceCriterion.call(strategy, ac, 10);
+
+			expect(task.id).toBe("T010");
+			expect(task.title).toContain(
+				"Validate: All pages load in under 2 seconds",
+			);
+			expect(task.description).toContain(
+				"Verify acceptance criterion AC-001 is met",
+			);
+			expect(task.priority).toBe("high");
+			expect(task.estimate).toBe("1h"); // automated verification
+			expect(task.acceptanceCriteria).toHaveLength(2);
+			expect(task.acceptanceCriteria).toContain(
+				"All pages load in under 2 seconds is verified",
+			);
+			expect(task.acceptanceCriteria).toContain(
+				"Verification method: automated",
+			);
+		});
+
+		it("should estimate 2h for simple descriptions", () => {
+			const strategy = new SpecKitStrategy();
+			const estimateFromDescription = (
+				strategy as unknown as {
+					estimateFromDescription: (description: string) => string;
+				}
+			).estimateFromDescription;
+
+			expect(estimateFromDescription.call(strategy, "Simple user login")).toBe(
+				"2h",
+			);
+			expect(
+				estimateFromDescription.call(strategy, "Basic form validation"),
+			).toBe("2h");
+		});
+
+		it("should estimate 8h for complex descriptions", () => {
+			const strategy = new SpecKitStrategy();
+			const estimateFromDescription = (
+				strategy as unknown as {
+					estimateFromDescription: (description: string) => string;
+				}
+			).estimateFromDescription;
+
+			expect(
+				estimateFromDescription.call(strategy, "Complex data migration"),
+			).toBe("8h");
+			expect(
+				estimateFromDescription.call(strategy, "Comprehensive security audit"),
+			).toBe("8h");
+		});
+
+		it("should estimate 4h for integration or refactor", () => {
+			const strategy = new SpecKitStrategy();
+			const estimateFromDescription = (
+				strategy as unknown as {
+					estimateFromDescription: (description: string) => string;
+				}
+			).estimateFromDescription;
+
+			expect(
+				estimateFromDescription.call(
+					strategy,
+					"Integration with third-party API",
+				),
+			).toBe("4h");
+			expect(
+				estimateFromDescription.call(
+					strategy,
+					"Refactor authentication module",
+				),
+			).toBe("4h");
+		});
+
+		it("should estimate 3h by default", () => {
+			const strategy = new SpecKitStrategy();
+			const estimateFromDescription = (
+				strategy as unknown as {
+					estimateFromDescription: (description: string) => string;
+				}
+			).estimateFromDescription;
+
+			expect(estimateFromDescription.call(strategy, "Add new feature")).toBe(
+				"3h",
+			);
+			expect(
+				estimateFromDescription.call(strategy, "Update documentation"),
+			).toBe("3h");
+		});
+
+		it("should extract title from description", () => {
+			const strategy = new SpecKitStrategy();
+			const extractTaskTitle = (
+				strategy as unknown as {
+					extractTaskTitle: (description: string) => string;
+				}
+			).extractTaskTitle;
+
+			const shortDesc = "Implement user authentication";
+			expect(extractTaskTitle.call(strategy, shortDesc)).toBe(
+				"Implement user authentication",
+			);
+
+			const longDesc =
+				"This is a very long description that exceeds fifty characters and should be truncated appropriately";
+			const result = extractTaskTitle.call(strategy, longDesc);
+			expect(result.length).toBeLessThanOrEqual(53); // 50 + "..."
+			expect(result).toContain("...");
+
+			const multiSentence = "First sentence here. Second sentence follows.";
+			expect(extractTaskTitle.call(strategy, multiSentence)).toBe(
+				"First sentence here",
+			);
+		});
+
+		it("should handle manual verification method with 2h estimate", () => {
+			const strategy = new SpecKitStrategy();
+			const deriveTaskFromAcceptanceCriterion = (
+				strategy as unknown as {
+					deriveTaskFromAcceptanceCriterion: (
+						ac: {
+							id: string;
+							description: string;
+							verificationMethod: "automated" | "manual" | "review";
+						},
+						id: number,
+					) => {
+						id: string;
+						title: string;
+						description: string;
+						priority: string;
+						estimate: string;
+						acceptanceCriteria: string[];
+					};
+				}
+			).deriveTaskFromAcceptanceCriterion;
+
+			const ac = {
+				id: "AC-002",
+				description: "UI is accessible to screen readers",
+				verificationMethod: "manual" as const,
+			};
+
+			const task = deriveTaskFromAcceptanceCriterion.call(strategy, ac, 15);
+
+			expect(task.estimate).toBe("2h");
+		});
+
+		it("should handle review verification method with 2h estimate", () => {
+			const strategy = new SpecKitStrategy();
+			const deriveTaskFromAcceptanceCriterion = (
+				strategy as unknown as {
+					deriveTaskFromAcceptanceCriterion: (
+						ac: {
+							id: string;
+							description: string;
+							verificationMethod: "automated" | "manual" | "review";
+						},
+						id: number,
+					) => {
+						id: string;
+						title: string;
+						description: string;
+						priority: string;
+						estimate: string;
+						acceptanceCriteria: string[];
+					};
+				}
+			).deriveTaskFromAcceptanceCriterion;
+
+			const ac = {
+				id: "AC-003",
+				description: "Code follows style guide",
+				verificationMethod: "review" as const,
+			};
+
+			const task = deriveTaskFromAcceptanceCriterion.call(strategy, ac, 20);
+
+			expect(task.estimate).toBe("2h");
+		});
+
+		it("should pad task IDs with leading zeros", () => {
+			const strategy = new SpecKitStrategy();
+			const deriveTaskFromRequirement = (
+				strategy as unknown as {
+					deriveTaskFromRequirement: (
+						req: {
+							id: string;
+							description: string;
+							priority: "high" | "medium" | "low";
+						},
+						id: number,
+					) => {
+						id: string;
+					};
+				}
+			).deriveTaskFromRequirement;
+
+			const req = {
+				id: "REQ-001",
+				description: "Test requirement",
+				priority: "high" as const,
+			};
+
+			expect(deriveTaskFromRequirement.call(strategy, req, 1).id).toBe("T001");
+			expect(deriveTaskFromRequirement.call(strategy, req, 9).id).toBe("T009");
+			expect(deriveTaskFromRequirement.call(strategy, req, 10).id).toBe("T010");
+			expect(deriveTaskFromRequirement.call(strategy, req, 99).id).toBe("T099");
+			expect(deriveTaskFromRequirement.call(strategy, req, 100).id).toBe(
+				"T100",
+			);
+		});
+	});
 });
