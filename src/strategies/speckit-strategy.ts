@@ -1275,9 +1275,23 @@ ${plan.timeline.map((t) => `| ${t.phase} | Week ${t.startWeek} | Week ${t.endWee
 	 *
 	 * @param spec - The parsed specification
 	 * @returns Array of derived tasks with IDs, estimates, and dependencies
+	 * @throws {Error} If spec structure is invalid
 	 * @private
 	 */
 	private deriveTasksFromSpec(spec: ParsedSpec): DerivedTask[] {
+		// Validate spec structure
+		if (!spec || typeof spec !== "object") {
+			throw new Error("Invalid spec: spec must be an object");
+		}
+
+		if (!Array.isArray(spec.functionalRequirements)) {
+			throw new Error("Invalid spec: functionalRequirements must be an array");
+		}
+
+		if (!Array.isArray(spec.acceptanceCriteria)) {
+			throw new Error("Invalid spec: acceptanceCriteria must be an array");
+		}
+
 		const tasks: DerivedTask[] = [];
 		let taskCounter = 1;
 
@@ -1403,12 +1417,14 @@ ${plan.timeline.map((t) => `| ${t.phase} | Week ${t.startWeek} | Week ${t.endWee
 		if (lowercased.includes("simple") || lowercased.includes("basic")) {
 			return "2h";
 		}
+
 		if (
 			lowercased.includes("complex") ||
 			lowercased.includes("comprehensive")
 		) {
 			return "8h";
 		}
+
 		if (lowercased.includes("integration") || lowercased.includes("refactor")) {
 			return "4h";
 		}
@@ -1420,17 +1436,71 @@ ${plan.timeline.map((t) => `| ${t.phase} | Week ${t.startWeek} | Week ${t.endWee
 	 * Extract a concise title from a description.
 	 *
 	 * Takes the first sentence or truncates to 50 characters,
-	 * suitable for task titles.
+	 * suitable for task titles. Strips common action verbs
+	 * (Implement, Create, Add, Build, etc.) to avoid redundancy
+	 * when used with prefixes like "Implement:" or "Verify:".
 	 *
 	 * @param description - Full description text
-	 * @returns Truncated title
+	 * @returns Truncated title without action verb prefix
 	 * @private
 	 */
 	private extractTaskTitle(description: string): string {
-		// Extract first sentence or first N words as title
-		const firstSentence = description.split(".")[0];
-		return (
-			firstSentence.slice(0, 50) + (firstSentence.length > 50 ? "..." : "")
-		);
+		const trimmed = description.trim();
+
+		if (!trimmed) {
+			return "Untitled task";
+		}
+
+		// Extract first sentence (or similar segment) as title
+		const firstSegment = trimmed.split(/[.!?]/)[0]?.trim() ?? "";
+
+		if (!firstSegment) {
+			return "Untitled task";
+		}
+
+		// Strip common action verbs to avoid redundancy like "Implement: Implement..."
+		const actionVerbs = [
+			"implement",
+			"create",
+			"add",
+			"build",
+			"develop",
+			"write",
+			"update",
+			"modify",
+			"refactor",
+			"fix",
+			"remove",
+			"delete",
+		];
+
+		let cleanedSegment = firstSegment;
+		for (const verb of actionVerbs) {
+			// Match verb at start of string (case insensitive) followed by space
+			const pattern = new RegExp(`^${verb}\\s+`, "i");
+			if (pattern.test(cleanedSegment)) {
+				cleanedSegment = cleanedSegment.replace(pattern, "");
+				break; // Only strip the first matching verb
+			}
+		}
+
+		// Ensure first character is lowercase unless it's an acronym
+		if (
+			cleanedSegment.length > 0 &&
+			cleanedSegment[0] === cleanedSegment[0].toUpperCase()
+		) {
+			// Check if it's likely an acronym (next char is also uppercase)
+			if (
+				cleanedSegment.length === 1 ||
+				cleanedSegment[1] !== cleanedSegment[1].toUpperCase()
+			) {
+				cleanedSegment =
+					cleanedSegment[0].toLowerCase() + cleanedSegment.slice(1);
+			}
+		}
+
+		return cleanedSegment.length > 50
+			? `${cleanedSegment.slice(0, 50)}...`
+			: cleanedSegment;
 	}
 }

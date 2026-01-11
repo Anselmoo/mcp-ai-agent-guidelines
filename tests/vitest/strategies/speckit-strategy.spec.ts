@@ -1715,9 +1715,7 @@ describe("SpecKitStrategy", () => {
 
 			// Check first implementation task
 			expect(tasks[0].id).toBe("T001");
-			expect(tasks[0].title).toContain(
-				"Implement: Implement simple user authentication",
-			);
+			expect(tasks[0].title).toContain("Implement: simple user authentication");
 			expect(tasks[0].description).toContain("REQ-001");
 			expect(tasks[0].priority).toBe("high");
 			expect(tasks[0].estimate).toBe("2h"); // "simple" keyword
@@ -1780,7 +1778,7 @@ describe("SpecKitStrategy", () => {
 
 			expect(task.id).toBe("T001");
 			expect(task.title).toBe(
-				"Implement: Add user registration with email verification",
+				"Implement: user registration with email verification",
 			);
 			expect(task.description).toContain(
 				"Implement functionality to satisfy requirement REQ-001",
@@ -1830,7 +1828,7 @@ describe("SpecKitStrategy", () => {
 			const task = deriveVerificationTask.call(strategy, req, 5);
 
 			expect(task.id).toBe("T005");
-			expect(task.title).toContain("Verify: Implement payment processing");
+			expect(task.title).toContain("Verify: payment processing");
 			expect(task.description).toContain(
 				"Write tests to verify requirement REQ-002",
 			);
@@ -1875,7 +1873,7 @@ describe("SpecKitStrategy", () => {
 
 			expect(task.id).toBe("T010");
 			expect(task.title).toContain(
-				"Validate: All pages load in under 2 seconds",
+				"Validate: all pages load in under 2 seconds",
 			);
 			expect(task.description).toContain(
 				"Verify acceptance criterion AC-001 is met",
@@ -1971,7 +1969,7 @@ describe("SpecKitStrategy", () => {
 
 			const shortDesc = "Implement user authentication";
 			expect(extractTaskTitle.call(strategy, shortDesc)).toBe(
-				"Implement user authentication",
+				"user authentication",
 			);
 
 			const longDesc =
@@ -1982,7 +1980,7 @@ describe("SpecKitStrategy", () => {
 
 			const multiSentence = "First sentence here. Second sentence follows.";
 			expect(extractTaskTitle.call(strategy, multiSentence)).toBe(
-				"First sentence here",
+				"first sentence here",
 			);
 		});
 
@@ -2082,6 +2080,150 @@ describe("SpecKitStrategy", () => {
 			expect(deriveTaskFromRequirement.call(strategy, req, 100).id).toBe(
 				"T100",
 			);
+		});
+
+		it("should handle empty description in extractTaskTitle", () => {
+			const strategy = new SpecKitStrategy();
+			const extractTaskTitle = (
+				strategy as unknown as {
+					extractTaskTitle: (description: string) => string;
+				}
+			).extractTaskTitle;
+
+			expect(extractTaskTitle.call(strategy, "")).toBe("Untitled task");
+			expect(extractTaskTitle.call(strategy, "   ")).toBe("Untitled task");
+			expect(extractTaskTitle.call(strategy, "\n\t  ")).toBe("Untitled task");
+		});
+
+		it("should handle description with only punctuation", () => {
+			const strategy = new SpecKitStrategy();
+			const extractTaskTitle = (
+				strategy as unknown as {
+					extractTaskTitle: (description: string) => string;
+				}
+			).extractTaskTitle;
+
+			expect(extractTaskTitle.call(strategy, "...")).toBe("Untitled task");
+			expect(extractTaskTitle.call(strategy, "!!!")).toBe("Untitled task");
+		});
+
+		it("should strip various action verbs from titles", () => {
+			const strategy = new SpecKitStrategy();
+			const extractTaskTitle = (
+				strategy as unknown as {
+					extractTaskTitle: (description: string) => string;
+				}
+			).extractTaskTitle;
+
+			expect(extractTaskTitle.call(strategy, "Create user profile")).toBe(
+				"user profile",
+			);
+			expect(extractTaskTitle.call(strategy, "Add authentication")).toBe(
+				"authentication",
+			);
+			expect(extractTaskTitle.call(strategy, "Build API endpoint")).toBe(
+				"API endpoint",
+			);
+			expect(extractTaskTitle.call(strategy, "Update database schema")).toBe(
+				"database schema",
+			);
+			expect(extractTaskTitle.call(strategy, "Fix critical bug")).toBe(
+				"critical bug",
+			);
+			expect(extractTaskTitle.call(strategy, "Remove legacy code")).toBe(
+				"legacy code",
+			);
+		});
+
+		it("should preserve acronyms in titles", () => {
+			const strategy = new SpecKitStrategy();
+			const extractTaskTitle = (
+				strategy as unknown as {
+					extractTaskTitle: (description: string) => string;
+				}
+			).extractTaskTitle;
+
+			expect(extractTaskTitle.call(strategy, "API authentication")).toBe(
+				"API authentication",
+			);
+			expect(extractTaskTitle.call(strategy, "Create REST API")).toBe(
+				"REST API",
+			);
+		});
+
+		it("should throw error for invalid spec structure", () => {
+			const strategy = new SpecKitStrategy();
+			const deriveTasksFromSpec = (
+				strategy as unknown as {
+					deriveTasksFromSpec: (spec: unknown) => unknown;
+				}
+			).deriveTasksFromSpec;
+
+			expect(() => deriveTasksFromSpec.call(strategy, null)).toThrow(
+				"Invalid spec: spec must be an object",
+			);
+
+			expect(() => deriveTasksFromSpec.call(strategy, undefined)).toThrow(
+				"Invalid spec: spec must be an object",
+			);
+
+			expect(() => deriveTasksFromSpec.call(strategy, "not an object")).toThrow(
+				"Invalid spec: spec must be an object",
+			);
+		});
+
+		it("should throw error for missing functionalRequirements array", () => {
+			const strategy = new SpecKitStrategy();
+			const deriveTasksFromSpec = (
+				strategy as unknown as {
+					deriveTasksFromSpec: (spec: unknown) => unknown;
+				}
+			).deriveTasksFromSpec;
+
+			const invalidSpec = {
+				acceptanceCriteria: [],
+			};
+
+			expect(() => deriveTasksFromSpec.call(strategy, invalidSpec)).toThrow(
+				"Invalid spec: functionalRequirements must be an array",
+			);
+		});
+
+		it("should throw error for missing acceptanceCriteria array", () => {
+			const strategy = new SpecKitStrategy();
+			const deriveTasksFromSpec = (
+				strategy as unknown as {
+					deriveTasksFromSpec: (spec: unknown) => unknown;
+				}
+			).deriveTasksFromSpec;
+
+			const invalidSpec = {
+				functionalRequirements: [],
+			};
+
+			expect(() => deriveTasksFromSpec.call(strategy, invalidSpec)).toThrow(
+				"Invalid spec: acceptanceCriteria must be an array",
+			);
+		});
+
+		it("should handle empty functionalRequirements and acceptanceCriteria", () => {
+			const strategy = new SpecKitStrategy();
+			const deriveTasksFromSpec = (
+				strategy as unknown as {
+					deriveTasksFromSpec: (spec: {
+						functionalRequirements: unknown[];
+						acceptanceCriteria: unknown[];
+					}) => unknown[];
+				}
+			).deriveTasksFromSpec;
+
+			const emptySpec = {
+				functionalRequirements: [],
+				acceptanceCriteria: [],
+			};
+
+			const tasks = deriveTasksFromSpec.call(strategy, emptySpec);
+			expect(tasks).toEqual([]);
 		});
 	});
 });
