@@ -83,6 +83,7 @@ import {
 } from "./tools/shared/annotation-presets.js";
 // Import mode manager
 import { modeManager } from "./tools/shared/mode-manager.js";
+import { specKitGenerator } from "./tools/speckit-generator.js";
 import { sprintTimelineCalculator } from "./tools/sprint-timeline-calculator.js";
 
 const server = new Server(
@@ -1878,6 +1879,94 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			},
 		},
 		{
+			name: "speckit-generator",
+			description:
+				"Generate GitHub Spec-Kit artifacts (all documents: README.md, spec.md, plan.md, tasks.md, progress.md, adr.md, roadmap.md) from requirements. Optionally validate against CONSTITUTION.md. BEST FOR: feature specs, project planning.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					title: {
+						type: "string",
+						description: "Specification title",
+						examples: [
+							"User Authentication System",
+							"Payment Processing Module",
+							"Real-time Analytics Dashboard",
+						],
+					},
+					overview: {
+						type: "string",
+						description: "High-level overview of the feature/project",
+						examples: [
+							"Implement OAuth2 authentication flow with JWT tokens",
+							"Build secure payment processing with Stripe integration",
+							"Create real-time WebSocket-based analytics dashboard",
+						],
+					},
+					objectives: {
+						type: "array",
+						items: {
+							type: "object",
+							properties: {
+								description: { type: "string" },
+								priority: {
+									type: "string",
+									enum: ["high", "medium", "low"],
+								},
+							},
+							required: ["description"],
+						},
+						description: "Strategic objectives for the project",
+					},
+					requirements: {
+						type: "array",
+						items: {
+							type: "object",
+							properties: {
+								description: { type: "string" },
+								type: {
+									type: "string",
+									enum: ["functional", "non-functional"],
+								},
+								priority: {
+									type: "string",
+									enum: ["high", "medium", "low"],
+								},
+							},
+							required: ["description"],
+						},
+						description: "Functional and non-functional requirements",
+					},
+					acceptanceCriteria: {
+						type: "array",
+						items: { type: "string" },
+						description: "Acceptance criteria for completion (optional)",
+					},
+					outOfScope: {
+						type: "array",
+						items: { type: "string" },
+						description: "Explicitly out-of-scope items (optional)",
+					},
+					constitutionPath: {
+						type: "string",
+						description: "Path to CONSTITUTION.md file (optional)",
+						examples: ["./CONSTITUTION.md", "./docs/CONSTITUTION.md"],
+					},
+					validateAgainstConstitution: {
+						type: "boolean",
+						description:
+							"Whether to validate against constitution before rendering (optional)",
+					},
+				},
+				required: ["title", "overview", "objectives", "requirements"],
+			},
+			annotations: {
+				...GENERATION_TOOL_ANNOTATIONS,
+				openWorldHint: true, // May read constitution file
+				title: "Spec-Kit Generator",
+			},
+		},
+		{
 			name: "model-compatibility-checker",
 			description:
 				"Recommend optimal AI models for tasks by comparing Claude, GPT-4, Gemini, and other models based on capabilities, context length, budget, and task-specific requirements. BEST FOR: model selection, cost optimization, capability matching. OUTPUTS: Ranked recommendations with rationale.",
@@ -2551,6 +2640,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 				return memoryContextOptimizer(args);
 			case "sprint-timeline-calculator":
 				return sprintTimelineCalculator(args);
+			case "speckit-generator":
+				return specKitGenerator(
+					args as unknown as Parameters<typeof specKitGenerator>[0],
+				);
 			case "model-compatibility-checker":
 				return modelCompatibilityChecker(args);
 			case "guidelines-validator":
