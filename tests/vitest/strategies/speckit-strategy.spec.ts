@@ -214,7 +214,7 @@ describe("SpecKitStrategy", () => {
 				"| RISK-001 | Network latency | medium | Implement caching layer |",
 			);
 			expect(plan?.content).toContain(
-				"| RISK-002 | Third-party API changes | medium |",
+				"| RISK-002 | Third-party API changes | medium | To be defined |",
 			);
 		});
 

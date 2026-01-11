@@ -1018,14 +1018,15 @@ ${plan.timeline.map((t) => `| ${t.phase} | Week ${t.startWeek} | Week ${t.endWee
 	 * @private
 	 */
 	private extractPlan(result: SessionState): Plan {
+		const phases = this.derivePhases(result);
 		return {
 			approach:
 				(result.context?.approach as string) ??
 				"Iterative implementation following Spec-Kit methodology",
-			phases: this.derivePhases(result),
+			phases,
 			dependencies: this.deriveDependencies(result),
 			risks: this.deriveRisks(result),
-			timeline: this.deriveTimeline(result),
+			timeline: this.deriveTimeline(phases),
 		};
 	}
 
@@ -1214,17 +1215,16 @@ ${plan.timeline.map((t) => `| ${t.phase} | Week ${t.startWeek} | Week ${t.endWee
 	}
 
 	/**
-	 * Derive timeline from SessionState phases.
+	 * Derive timeline from Phase array.
 	 *
 	 * Generates a timeline by assigning week numbers to each phase
 	 * based on their sequence and estimated durations.
 	 *
-	 * @param result - The session state
+	 * @param phases - Array of Phase objects
 	 * @returns Array of TimelineEntry objects
 	 * @private
 	 */
-	private deriveTimeline(result: SessionState): TimelineEntry[] {
-		const phases = this.derivePhases(result);
+	private deriveTimeline(phases: Phase[]): TimelineEntry[] {
 		let currentWeek = 1;
 
 		return phases.map((phase) => {
