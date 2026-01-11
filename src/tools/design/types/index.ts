@@ -77,5 +77,6 @@ export type {
 	DesignPhase,
 	DesignSessionConfig,
 	DesignSessionState,
+	GatewaySessionState,
 	SessionEvent,
 } from "./session.types.js";
