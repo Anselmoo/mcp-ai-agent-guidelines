@@ -1262,4 +1262,389 @@ describe("SpecKitStrategy", () => {
 			expect(plan?.content).toContain("Estimated 0 phases");
 		});
 	});
+
+	describe("constitutional constraints support", () => {
+		it("should include constitutional constraints when provided", () => {
+			const strategy = new SpecKitStrategy();
+			const constitution = {
+				principles: [
+					{
+						id: "PRIN-001",
+						title: "Pure Functions First",
+						description: "Prefer pure functions for business logic",
+						type: "principle" as const,
+					},
+				],
+				constraints: [
+					{
+						id: "CONS-001",
+						title: "No Side Effects",
+						description: "Domain functions must not have side effects",
+						severity: "must" as const,
+						type: "constraint" as const,
+					},
+				],
+				architectureRules: [],
+				designPrinciples: [],
+			};
+
+			const result: SessionState = {
+				id: "test-session",
+				phase: "specification",
+				config: {
+					sessionId: "test-session",
+					context: {},
+					goal: "Feature Implementation",
+				},
+				context: {
+					constraintReferences: [
+						{
+							constitutionId: "PRIN-001",
+							type: "principle" as const,
+							notes: "Apply to all domain functions",
+						},
+						{
+							constitutionId: "CONS-001",
+							type: "constraint" as const,
+						},
+					],
+				},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result, {
+				includeConstitutionalConstraints: true,
+				constitution,
+			});
+
+			const spec = artifacts.secondary?.[0];
+
+			expect(spec?.content).toContain("## Constitutional Constraints");
+			expect(spec?.content).toContain("### PRIN-001: Pure Functions First");
+			expect(spec?.content).toContain(
+				"Prefer pure functions for business logic",
+			);
+			expect(spec?.content).toContain(
+				"**Notes**: Apply to all domain functions",
+			);
+			expect(spec?.content).toContain("### CONS-001: No Side Effects");
+			expect(spec?.content).toContain(
+				"Domain functions must not have side effects",
+			);
+		});
+
+		it("should not include constitutional constraints when flag is false", () => {
+			const strategy = new SpecKitStrategy();
+			const constitution = {
+				principles: [
+					{
+						id: "PRIN-001",
+						title: "Pure Functions First",
+						description: "Prefer pure functions for business logic",
+						type: "principle" as const,
+					},
+				],
+				constraints: [],
+				architectureRules: [],
+				designPrinciples: [],
+			};
+
+			const result: SessionState = {
+				id: "test-session",
+				phase: "specification",
+				context: {
+					constraintReferences: [
+						{
+							constitutionId: "PRIN-001",
+							type: "principle" as const,
+						},
+					],
+				},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result, {
+				includeConstitutionalConstraints: false,
+				constitution,
+			});
+
+			const spec = artifacts.secondary?.[0];
+
+			expect(spec?.content).not.toContain("## Constitutional Constraints");
+		});
+
+		it("should not include constitutional constraints when no constitution provided", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "specification",
+				context: {
+					constraintReferences: [
+						{
+							constitutionId: "PRIN-001",
+							type: "principle" as const,
+						},
+					],
+				},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result, {
+				includeConstitutionalConstraints: true,
+			});
+
+			const spec = artifacts.secondary?.[0];
+
+			expect(spec?.content).not.toContain("## Constitutional Constraints");
+		});
+
+		it("should handle constraint references without notes", () => {
+			const strategy = new SpecKitStrategy();
+			const constitution = {
+				principles: [],
+				constraints: [
+					{
+						id: "CONS-001",
+						title: "Test Constraint",
+						description: "Test description",
+						type: "constraint" as const,
+					},
+				],
+				architectureRules: [],
+				designPrinciples: [],
+			};
+
+			const result: SessionState = {
+				id: "test-session",
+				phase: "specification",
+				context: {
+					constraintReferences: [
+						{
+							constitutionId: "CONS-001",
+							type: "constraint" as const,
+						},
+					],
+				},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result, {
+				includeConstitutionalConstraints: true,
+				constitution,
+			});
+
+			const spec = artifacts.secondary?.[0];
+
+			expect(spec?.content).toContain("### CONS-001: Test Constraint");
+			expect(spec?.content).not.toContain("**Notes**:");
+		});
+
+		it("should handle unknown constitution IDs gracefully", () => {
+			const strategy = new SpecKitStrategy();
+			const constitution = {
+				principles: [],
+				constraints: [],
+				architectureRules: [],
+				designPrinciples: [],
+			};
+
+			const result: SessionState = {
+				id: "test-session",
+				phase: "specification",
+				context: {
+					constraintReferences: [
+						{
+							constitutionId: "UNKNOWN-001",
+							type: "principle" as const,
+						},
+					],
+				},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result, {
+				includeConstitutionalConstraints: true,
+				constitution,
+			});
+
+			const spec = artifacts.secondary?.[0];
+
+			expect(spec?.content).toContain("### UNKNOWN-001: Unknown");
+		});
+
+		it("should handle empty constraint references", () => {
+			const strategy = new SpecKitStrategy();
+			const constitution = {
+				principles: [],
+				constraints: [],
+				architectureRules: [],
+				designPrinciples: [],
+			};
+
+			const result: SessionState = {
+				id: "test-session",
+				phase: "specification",
+				context: {
+					constraintReferences: [],
+				},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result, {
+				includeConstitutionalConstraints: true,
+				constitution,
+			});
+
+			const spec = artifacts.secondary?.[0];
+
+			expect(spec?.content).not.toContain("## Constitutional Constraints");
+		});
+
+		it("should find architecture rules in constitution", () => {
+			const strategy = new SpecKitStrategy();
+			const constitution = {
+				principles: [],
+				constraints: [],
+				architectureRules: [
+					{
+						id: "AR1",
+						title: "Layered Architecture",
+						description: "Use clear separation between layers",
+						type: "architecture-rule" as const,
+					},
+				],
+				designPrinciples: [],
+			};
+
+			const result: SessionState = {
+				id: "test-session",
+				phase: "specification",
+				context: {
+					constraintReferences: [
+						{
+							constitutionId: "AR1",
+							type: "architecture-rule" as const,
+							notes: "Apply to all modules",
+						},
+					],
+				},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result, {
+				includeConstitutionalConstraints: true,
+				constitution,
+			});
+
+			const spec = artifacts.secondary?.[0];
+
+			expect(spec?.content).toContain("### AR1: Layered Architecture");
+			expect(spec?.content).toContain("Use clear separation between layers");
+		});
+
+		it("should find design principles in constitution", () => {
+			const strategy = new SpecKitStrategy();
+			const constitution = {
+				principles: [],
+				constraints: [],
+				architectureRules: [],
+				designPrinciples: [
+					{
+						id: "DP1",
+						title: "Composition over Inheritance",
+						description: "Prefer composition patterns",
+						type: "design-principle" as const,
+					},
+				],
+			};
+
+			const result: SessionState = {
+				id: "test-session",
+				phase: "specification",
+				context: {
+					constraintReferences: [
+						{
+							constitutionId: "DP1",
+							type: "design-principle" as const,
+						},
+					],
+				},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result, {
+				includeConstitutionalConstraints: true,
+				constitution,
+			});
+
+			const spec = artifacts.secondary?.[0];
+
+			expect(spec?.content).toContain("### DP1: Composition over Inheritance");
+			expect(spec?.content).toContain("Prefer composition patterns");
+		});
+
+		it("should handle multiple constraint types in one spec", () => {
+			const strategy = new SpecKitStrategy();
+			const constitution = {
+				principles: [
+					{
+						id: "PRIN-001",
+						title: "Test Principle",
+						description: "Test principle description",
+						type: "principle" as const,
+					},
+				],
+				constraints: [
+					{
+						id: "CONS-001",
+						title: "Test Constraint",
+						description: "Test constraint description",
+						type: "constraint" as const,
+					},
+				],
+				architectureRules: [
+					{
+						id: "AR1",
+						title: "Test Architecture Rule",
+						description: "Test architecture rule description",
+						type: "architecture-rule" as const,
+					},
+				],
+				designPrinciples: [
+					{
+						id: "DP1",
+						title: "Test Design Principle",
+						description: "Test design principle description",
+						type: "design-principle" as const,
+					},
+				],
+			};
+
+			const result: SessionState = {
+				id: "test-session",
+				phase: "specification",
+				context: {
+					constraintReferences: [
+						{ constitutionId: "PRIN-001", type: "principle" as const },
+						{ constitutionId: "CONS-001", type: "constraint" as const },
+						{ constitutionId: "AR1", type: "architecture-rule" as const },
+						{ constitutionId: "DP1", type: "design-principle" as const },
+					],
+				},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result, {
+				includeConstitutionalConstraints: true,
+				constitution,
+			});
+
+			const spec = artifacts.secondary?.[0];
+
+			expect(spec?.content).toContain("### PRIN-001: Test Principle");
+			expect(spec?.content).toContain("### CONS-001: Test Constraint");
+			expect(spec?.content).toContain("### AR1: Test Architecture Rule");
+			expect(spec?.content).toContain("### DP1: Test Design Principle");
+		});
+	});
 });

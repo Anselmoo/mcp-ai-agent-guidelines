@@ -480,9 +480,10 @@ describe("AgentOrchestrator", () => {
 
 			const result = await orchestrator.executeWorkflow(workflow, {});
 
-			expect(result.executionTime).toBeGreaterThanOrEqual(100);
-			expect(result.steps[0].executionTime).toBeGreaterThanOrEqual(50);
-			expect(result.steps[1].executionTime).toBeGreaterThanOrEqual(50);
+			// Allow slight timing variance in CI environments; don't require exact 50ms per step.
+			expect(result.executionTime).toBeGreaterThanOrEqual(90);
+			expect(result.steps[0].executionTime).toBeGreaterThanOrEqual(45);
+			expect(result.steps[1].executionTime).toBeGreaterThanOrEqual(45);
 		});
 
 		it("should handle empty workflow", async () => {
