@@ -63,7 +63,7 @@ describe("SpecKitStrategy Gateway Integration", () => {
 			expect(artifacts.primary).toBeDefined();
 			expect(artifacts.primary.name).toMatch(/README\.md$/);
 			expect(artifacts.primary.content).toContain("Spec Kit:");
-			// SpecKitStrategy uses context.overview for overview, not goal
+			// SpecKitStrategy prefers context.overview for the overview (falling back to goal when overview is missing)
 			expect(artifacts.primary.content).toContain("functionality Y");
 			expect(artifacts.primary.format).toBe("markdown");
 
