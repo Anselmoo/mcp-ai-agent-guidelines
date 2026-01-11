@@ -1,13 +1,12 @@
 /**
  * Spec-Kit Types
  *
- * TypeScript interfaces for GitHub Spec-Kit artifacts.
- * Enables type-safe generation and validation of spec.md, plan.md,
- * tasks.md, progress.md, and constitution.md documents.
+ * Unified TypeScript interfaces for Spec-Kit artifacts and the
+ * CONSTITUTION.md parser. This file merges definitions added in both
+ * branches so the codebase retains both sets of improvements.
  *
  * @module strategies/speckit/types
  * @see {@link https://github.com/Anselmoo/mcp-ai-agent-guidelines/blob/development/plan-v0.13.x/specs/SPEC-005-speckit-integration.md SPEC-005}
- * @see {@link https://github.com/Anselmoo/mcp-ai-agent-guidelines/blob/development/plan-v0.13.x/tasks/TASKS-phase-4-speckit-integration.md TASKS Phase 4} P4-003
  */
 
 // ============================================================================
@@ -15,12 +14,110 @@
 // ============================================================================
 
 /**
- * Project constitution defining guiding principles, constraints, and rules.
+ * Metadata about the constitution document
+ */
+export interface ConstitutionMetadata {
+	/** Document title */
+	title?: string;
+
+	/** Semantic version of the constitution */
+	version?: string;
+
+	/** Date the constitution was adopted */
+	adopted?: string;
+
+	/** ISO-8601 timestamp of last update */
+	lastUpdated?: string;
+
+	/** Version or scope this applies to */
+	appliesTo?: string;
+
+	/** File path where this was parsed from */
+	sourcePath?: string;
+}
+
+/**
+ * A fundamental principle guiding project decisions.
  *
- * Represents the foundational document that establishes architectural
- * standards, design principles, and non-negotiable constraints for a project.
+ * Principles are high-level tenets that inform decision-making.
+ */
+export interface Principle {
+	/** Unique identifier for the principle (e.g. PRIN-001 or numeric index) */
+	id: string;
+
+	/** Short, descriptive title */
+	title: string;
+
+	/** Detailed explanation of the principle */
+	description: string;
+
+	/** Type discriminator */
+	type: "principle";
+}
+
+/**
+ * A constraint limiting implementation choices.
  *
- * @interface Constitution
+ * Constraints are enforceable rules with RFC2119 severity when applicable.
+ */
+export interface Constraint {
+	/** Unique identifier for the constraint (e.g. CONS-001) */
+	id: string;
+
+	/** Short, descriptive title */
+	title: string;
+
+	/** Detailed explanation of the constraint */
+	description: string;
+
+	/**
+	 * RFC 2119 severity level where applicable
+	 * - must: Absolute requirement
+	 * - should: Strong recommendation
+	 * - may: Optional suggestion
+	 */
+	severity?: "must" | "should" | "may";
+
+	/** Type discriminator */
+	type: "constraint";
+}
+
+/**
+ * An architecture-level rule or pattern.
+ */
+export interface ArchitectureRule {
+	/** Unique identifier for the rule (e.g. AR1) */
+	id: string;
+
+	/** Short, descriptive title */
+	title: string;
+
+	/** Detailed explanation of the rule */
+	description: string;
+
+	/** Type discriminator */
+	type: "architecture-rule";
+}
+
+/**
+ * A design-level principle or guideline.
+ */
+export interface DesignPrinciple {
+	/** Unique identifier for the principle */
+	id: string;
+
+	/** Short, descriptive title */
+	title: string;
+
+	/** Detailed explanation of the principle */
+	description: string;
+
+	/** Type discriminator */
+	type: "design-principle";
+}
+
+/**
+ * Complete parsed CONSTITUTION.md document
  */
 export interface Constitution {
 	/** Core principles guiding the project */
@@ -39,166 +136,12 @@ export interface Constitution {
 	metadata?: ConstitutionMetadata;
 }
 
-/**
- * A fundamental principle guiding project decisions.
- *
- * Principles are high-level tenets that inform decision-making
- * without being strictly enforceable (unlike constraints).
- *
- * @interface Principle
- * @example
- * ```typescript
- * {
- *   id: "PRIN-001",
- *   title: "Security First",
- *   description: "Security considerations take precedence in all design decisions",
- *   type: "principle"
- * }
- * ```
- */
-export interface Principle {
-	/** Unique identifier for the principle */
-	id: string;
-
-	/** Short, descriptive title */
-	title: string;
-
-	/** Detailed explanation of the principle */
-	description: string;
-
-	/** Type discriminator */
-	type: "principle";
-}
-
-/**
- * A constraint limiting implementation choices.
- *
- * Constraints are enforceable rules with varying severity levels.
- * They restrict what can be done within the project.
- *
- * @interface Constraint
- * @example
- * ```typescript
- * {
- *   id: "CONS-001",
- *   title: "Node.js 22+ Required",
- *   description: "Project must support Node.js version 22 or higher",
- *   severity: "must",
- *   type: "constraint"
- * }
- * ```
- */
-export interface Constraint {
-	/** Unique identifier for the constraint */
-	id: string;
-
-	/** Short, descriptive title */
-	title: string;
-
-	/** Detailed explanation of the constraint */
-	description: string;
-
-	/**
-	 * RFC 2119 severity level
-	 * - must: Absolute requirement
-	 * - should: Strong recommendation
-	 * - may: Optional suggestion
-	 */
-	severity: "must" | "should" | "may";
-
-	/** Type discriminator */
-	type: "constraint";
-}
-
-/**
- * An architecture-level rule or pattern.
- *
- * Architecture rules define structural decisions and patterns
- * that apply across the entire system or major subsystems.
- *
- * @interface ArchitectureRule
- * @example
- * ```typescript
- * {
- *   id: "ARCH-001",
- *   title: "Domain-Driven Design",
- *   description: "Use DDD patterns for core business logic separation",
- *   type: "architecture-rule"
- * }
- * ```
- */
-export interface ArchitectureRule {
-	/** Unique identifier for the rule */
-	id: string;
-
-	/** Short, descriptive title */
-	title: string;
-
-	/** Detailed explanation of the rule */
-	description: string;
-
-	/** Type discriminator */
-	type: "architecture-rule";
-}
-
-/**
- * A design-level principle or guideline.
- *
- * Design principles are more tactical than architectural rules,
- * focusing on code-level patterns and practices.
- *
- * @interface DesignPrinciple
- * @example
- * ```typescript
- * {
- *   id: "DESIGN-001",
- *   title: "SOLID Principles",
- *   description: "Follow SOLID principles in all object-oriented code",
- *   type: "design-principle"
- * }
- * ```
- */
-export interface DesignPrinciple {
-	/** Unique identifier for the principle */
-	id: string;
-
-	/** Short, descriptive title */
-	title: string;
-
-	/** Detailed explanation of the principle */
-	description: string;
-
-	/** Type discriminator */
-	type: "design-principle";
-}
-
-/**
- * Metadata about a constitution document.
- *
- * @interface ConstitutionMetadata
- */
-export interface ConstitutionMetadata {
-	/** Human-readable title of the constitution */
-	title?: string;
-
-	/** Semantic version of the constitution */
-	version?: string;
-
-	/** ISO-8601 timestamp of last update */
-	lastUpdated?: string;
-}
-
 // ============================================================================
-// Spec Types
+// Spec Types (kept from earlier additions)
 // ============================================================================
 
 /**
  * Parsed specification document.
- *
- * Represents a complete project specification with objectives,
- * requirements, constraints, and acceptance criteria.
- *
- * @interface ParsedSpec
  */
 export interface ParsedSpec {
 	/** Specification title */
@@ -226,87 +169,108 @@ export interface ParsedSpec {
 	outOfScope: string[];
 }
 
-/**
- * A strategic objective.
- *
- * Objectives describe high-level goals that the project aims to achieve.
- * They are broader than requirements and guide requirement prioritization.
- *
- * @interface Objective
- * @example
- * ```typescript
- * {
- *   id: "OBJ-001",
- *   description: "Reduce page load time by 50%",
- *   priority: "high"
- * }
- * ```
- */
 export interface Objective {
-	/** Unique identifier for the objective */
 	id: string;
-
-	/** Description of the objective */
 	description: string;
-
-	/** Priority level for achieving this objective */
 	priority: "high" | "medium" | "low";
 }
 
-/**
- * A functional or non-functional requirement.
- *
- * Requirements are specific, measurable needs that the project must fulfill.
- * They can derive into concrete implementation tasks.
- *
- * @interface Requirement
- * @example
- * ```typescript
- * {
- *   id: "REQ-001",
- *   description: "Support OAuth 2.0 authentication",
- *   priority: "high",
- *   derivedTasks: [{ id: "TASK-001", ... }]
- * }
- * ```
- */
 export interface Requirement {
-	/** Unique identifier for the requirement */
 	id: string;
-
-	/** Description of the requirement */
 	description: string;
-
-	/** Priority level for implementing this requirement */
 	priority: "high" | "medium" | "low";
-
-	/** Optional tasks derived from this requirement */
 	derivedTasks?: DerivedTask[];
 }
 
-/**
- * Reference to a constitution item.
- *
- * Links a spec to relevant principles, constraints, or rules
- * defined in the project constitution.
- *
- * @interface ConstraintReference
- * @example
- * ```typescript
- * {
- *   constitutionId: "CONS-001",
- *   type: "constraint",
- *   notes: "Impacts Node.js version selection"
- * }
- * ```
- */
 export interface ConstraintReference {
-	/** ID of the referenced constitution item */
 	constitutionId: string;
-
-	/** Type of constitution item being referenced */
 	type: "principle" | "constraint" | "architecture-rule" | "design-principle";
+	notes?: string;
+}
 
+export interface AcceptanceCriterion {
+	id: string;
+	description: string;
+	verificationMethod: "automated" | "manual" | "review";
+}
+
+export interface Plan {
+	approach: string;
+	phases: Phase[];
+	dependencies: Dependency[];
+	risks: Risk[];
+	timeline: TimelineEntry[];
+}
+
+export interface Phase {
+	id: string;
+	name: string;
+	description: string;
+	deliverables: string[];
+	duration: string;
+}
+
+export interface Dependency {
+	id: string;
+	description: string;
+	owner?: string;
+}
+
+export interface Risk {
+	id: string;
+	description: string;
+	severity: "high" | "medium" | "low";
+	mitigation: string;
+}
+
+export interface TimelineEntry {
+	phase: string;
+	startWeek: number;
+	endWeek: number;
+}
+
+export interface DerivedTask {
+	id: string;
+	title: string;
+	description: string;
+	priority: "high" | "medium" | "low";
+	estimate: string;
+	phase?: string;
+	acceptanceCriteria: string[];
+	dependencies?: string[];
+}
+
+export interface Progress {
+	status: "on-track" | "at-risk" | "blocked" | "completed";
+	completionPercentage: number;
+	tasksCompleted: number;
+	totalTasks: number;
+	recentUpdates: ProgressUpdate[];
+	blockers: Blocker[];
+	nextSteps: string[];
+	lastUpdated: Date;
+}
+
+export interface ProgressUpdate {
+	date: Date;
+	description: string;
+	tasksCompleted: string[];
+}
+
+export interface Blocker {
+	id: string;
+	description: string;
+	severity: "critical" | "major" | "minor";
+	owner?: string;
+}
+
+export interface SpecKitArtifacts {
+	spec: ParsedSpec;
+	plan: Plan;
+	tasks: DerivedTask[];
+	progress: Progress;
+	constitution?: Constitution;
+}
 	/** Optional notes on how this constraint applies */
 	notes?: string;
 }

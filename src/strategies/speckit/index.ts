@@ -1,33 +1,12 @@
 /**
- * Spec-Kit Module - Barrel Exports
+ * Spec-Kit integration module
  *
- * Re-exports all Spec-Kit types and utilities.
+ * Re-exports the Constitution parser and the Spec-Kit type definitions so
+ * other parts of the toolkit can import a single entry point.
  *
  * @module strategies/speckit
  * @see {@link https://github.com/Anselmoo/mcp-ai-agent-guidelines/blob/development/plan-v0.13.x/specs/SPEC-005-speckit-integration.md SPEC-005}
  */
 
-// Export all types
-export type {
-	AcceptanceCriterion,
-	ArchitectureRule,
-	Blocker,
-	Constitution,
-	ConstitutionMetadata,
-	Constraint,
-	ConstraintReference,
-	Dependency,
-	DerivedTask,
-	DesignPrinciple,
-	Objective,
-	ParsedSpec,
-	Phase,
-	Plan,
-	Principle,
-	Progress,
-	ProgressUpdate,
-	Requirement,
-	Risk,
-	SpecKitArtifacts,
-	TimelineEntry,
-} from "./types.js";
+export * from "./constitution-parser.js";
+export * from "./types.js";
