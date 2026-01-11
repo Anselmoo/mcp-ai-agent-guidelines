@@ -1868,9 +1868,17 @@ ${
 			completed: "✅",
 		};
 
+		// Format status consistently: uppercase with spaces instead of hyphens
+		const formattedStatus = progress.status.toUpperCase().replace(/-/g, " ");
+
+		// Cap completion percentage at 100 to prevent progress bar overflow
+		const cappedPercentage = Math.min(progress.completionPercentage, 100);
+		const filledBlocks = Math.floor(cappedPercentage / 5);
+		const emptyBlocks = 20 - filledBlocks;
+
 		const content = `# Progress
 
-## Status: ${statusEmoji[progress.status]} ${progress.status.toUpperCase()}
+## Status: ${statusEmoji[progress.status]} ${formattedStatus}
 
 **Last Updated**: ${progress.lastUpdated.toISOString().split("T")[0]}
 
@@ -1878,14 +1886,14 @@ ${
 
 | Metric | Value |
 |--------|-------|
-| Completion | ${progress.completionPercentage}% |
+| Completion | ${cappedPercentage}% |
 | Tasks Completed | ${progress.tasksCompleted}/${progress.totalTasks} |
-| Status | ${progress.status} |
+| Status | ${formattedStatus} |
 
 ## Progress Bar
 
 \`\`\`
-[${"█".repeat(Math.floor(progress.completionPercentage / 5))}${"░".repeat(20 - Math.floor(progress.completionPercentage / 5))}] ${progress.completionPercentage}%
+[${"█".repeat(filledBlocks)}${"░".repeat(emptyBlocks)}] ${cappedPercentage}%
 \`\`\`
 
 ## Recent Updates
@@ -1897,7 +1905,7 @@ ${progress.recentUpdates
 ${u.description}
 
 **Tasks Completed**:
-${u.tasksCompleted.map((t) => `- ${t}`).join("\n")}
+${u.tasksCompleted.length > 0 ? u.tasksCompleted.map((t) => `- ${t}`).join("\n") : "- None"}
 `,
 	)
 	.join("\n")}
