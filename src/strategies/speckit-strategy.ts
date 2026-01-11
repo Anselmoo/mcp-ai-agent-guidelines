@@ -214,9 +214,11 @@ ${nonFunctionalReqs}
 
 ## Constraints
 
-${constraints}
-
-${options?.includeConstitutionalConstraints && options.constitution ? this.renderConstraints(constraintRefs, options.constitution) : ""}
+${constraints}${
+	options?.includeConstitutionalConstraints && options.constitution
+		? `\n\n${this.renderConstraints(constraintRefs, options.constitution)}`
+		: ""
+}
 
 ## Acceptance Criteria
 
@@ -1069,17 +1071,19 @@ Verify all acceptance criteria are met.
 	): string {
 		if (constraints.length === 0) return "";
 
+		const renderedConstraints = constraints
+			.map((c) => {
+				const item = this.findConstitutionItem(c.constitutionId, constitution);
+				const notes = c.notes ? `\n**Notes**: ${c.notes}` : "";
+
+				return `### ${c.constitutionId}: ${item?.title ?? "Unknown"}
+${item?.description ?? ""}${notes}`;
+			})
+			.join("\n\n");
+
 		return `## Constitutional Constraints
 
-${constraints
-	.map((c) => {
-		const item = this.findConstitutionItem(c.constitutionId, constitution);
-		return `### ${c.constitutionId}: ${item?.title ?? "Unknown"}
-${item?.description ?? ""}
-${c.notes ? `\n**Notes**: ${c.notes}` : ""}
-`;
-	})
-	.join("\n")}`;
+${renderedConstraints}`;
 	}
 
 	/**
