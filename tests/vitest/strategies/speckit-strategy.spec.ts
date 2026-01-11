@@ -2450,5 +2450,112 @@ describe("SpecKitStrategy", () => {
 			expect(tasks?.content).toContain("#### T002:");
 			expect(tasks?.content).toContain("- **Dependencies**: T001");
 		});
+
+		it("should fallback to simple task list when extractSpec throws error", () => {
+			const strategy = new SpecKitStrategy();
+
+			// Mock extractSpec to throw an error
+			const originalExtractSpec = (strategy as any).extractSpec;
+			(strategy as any).extractSpec = () => {
+				throw new Error("Extraction failed");
+			};
+
+			const result: SessionState = {
+				id: "test-session",
+				phase: "planning",
+				config: {
+					sessionId: "test-session",
+					context: {},
+					goal: "Test Feature",
+					requirements: ["Feature 1"],
+				},
+				context: {},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const tasks = artifacts.secondary?.[2];
+
+			// Should fall back to basic task list
+			expect(tasks?.content).toContain("# Tasks:");
+			expect(tasks?.content).toContain("## Task List");
+			expect(tasks?.content).toContain("[ ] Implement: Feature 1");
+
+			// Restore original method
+			(strategy as any).extractSpec = originalExtractSpec;
+		});
+
+		it("should log error in non-production when extractSpec fails", () => {
+			const strategy = new SpecKitStrategy();
+
+			// Save original NODE_ENV and console.error
+			const originalNodeEnv = process.env.NODE_ENV;
+			const originalConsoleError = console.error;
+
+			// Mock console.error to capture calls
+			let errorLogged = false;
+			console.error = (...args: any[]) => {
+				if (args[0]?.includes("SpecKitStrategy.generateTasks")) {
+					errorLogged = true;
+				}
+			};
+
+			// Set NODE_ENV to development (non-production)
+			process.env.NODE_ENV = "development";
+
+			// Mock extractSpec to throw an error
+			const originalExtractSpec = (strategy as any).extractSpec;
+			(strategy as any).extractSpec = () => {
+				throw new Error("Extraction failed");
+			};
+
+			const result: SessionState = {
+				id: "test-session",
+				phase: "planning",
+				config: {
+					sessionId: "test-session",
+					context: {},
+					goal: "Test Feature",
+					requirements: ["Feature 1"],
+				},
+				context: {},
+				history: [],
+			};
+
+			strategy.render(result);
+
+			// Should have logged error in development
+			expect(errorLogged).toBe(true);
+
+			// Restore original values
+			(strategy as any).extractSpec = originalExtractSpec;
+			process.env.NODE_ENV = originalNodeEnv;
+			console.error = originalConsoleError;
+		});
+
+		it("should use legacy fallback task list when no requirements in config", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "planning",
+				config: {
+					sessionId: "test-session",
+					context: {},
+					goal: "Test Feature",
+					// No requirements property
+				},
+				context: {},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const tasks = artifacts.secondary?.[2];
+
+			// Should use the generic fallback
+			expect(tasks?.content).toContain("1. [ ] Define detailed requirements");
+			expect(tasks?.content).toContain("2. [ ] Create implementation plan");
+			expect(tasks?.content).toContain("3. [ ] Execute development");
+			expect(tasks?.content).toContain("4. [ ] Test and validate");
+		});
 	});
 });
