@@ -294,10 +294,7 @@ export interface Principle {
   /** Numeric ID (1, 2, 3, 4, 5) */
   id: string;
   
-  /** Principle title */
-  name: string;
-  
-  /** Full description/title with "Tool Discoverability First" etc. */
+  /** Principle title (e.g., "Tool Discoverability First") */
   title: string;
   
   /** Rationale blockquote if present */
@@ -462,11 +459,17 @@ function parseConstitution(markdown: string): Constitution {
 ### 6.2 Section Splitting Strategy
 
 ```typescript
+interface Section {
+  header: string;
+  content: string;
+}
+
 function splitBySections(markdown: string): Section[] {
   const sections: Section[] = [];
   const h2Pattern = /^## (.+)$/gm;
   
   let lastIndex = 0;
+  let lastHeaderText = '';
   let match;
   
   while ((match = h2Pattern.exec(markdown)) !== null) {
@@ -521,7 +524,6 @@ function parsePrinciples(sectionContent: string): Principle[] {
     
     principles.push({
       id: current.id,
-      name: current.title,
       title: current.title,
       rationale: extractRationale(content),
       implications: extractImplications(content),
@@ -579,6 +581,25 @@ CONSTITUTION.md may evolve over time:
 ### 8.1 Parser Validation
 
 ```typescript
+export interface ParseError {
+  /** Error message */
+  message: string;
+  
+  /** Location in the document where error occurred */
+  location?: string;
+  
+  /** Error code for categorization */
+  code?: string;
+}
+
+export interface ParseWarning {
+  /** Warning message */
+  message: string;
+  
+  /** Section or item that triggered the warning */
+  context?: string;
+}
+
 export interface ParseValidation {
   /** Whether parsing succeeded */
   success: boolean;
@@ -864,7 +885,6 @@ const sampleOutput: Constitution = {
   principles: [
     {
       id: "1",
-      name: "Tool Discoverability First",
       title: "Tool Discoverability First",
       rationale: "If LLMs can't discover and correctly select tools, the entire system fails.",
       implications: [
