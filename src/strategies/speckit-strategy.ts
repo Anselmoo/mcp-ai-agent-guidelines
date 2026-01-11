@@ -27,15 +27,19 @@ import type {
 } from "./output-strategy.js";
 import { OutputApproach } from "./output-strategy.js";
 import type {
+	AcceptanceCriterion,
 	ArchitectureRule,
 	Constitution,
 	Constraint,
 	ConstraintReference,
 	Dependency,
+	DerivedTask,
 	DesignPrinciple,
+	ParsedSpec,
 	Phase,
 	Plan,
 	Principle,
+	Requirement,
 	Risk,
 	TimelineEntry,
 } from "./speckit/types.js";
@@ -1261,5 +1265,242 @@ ${plan.timeline.map((t) => `| ${t.phase} | Week ${t.startWeek} | Week ${t.endWee
 			"context" in result &&
 			"history" in result
 		);
+	}
+
+	/**
+	 * Derive actionable tasks from a parsed specification.
+	 *
+	 * Transforms requirements and acceptance criteria into concrete,
+	 * estimable tasks with verification tasks for each requirement.
+	 *
+	 * @param spec - The parsed specification
+	 * @returns Array of derived tasks with IDs, estimates, and dependencies
+	 * @throws {Error} If spec structure is invalid
+	 * @private
+	 */
+	private deriveTasksFromSpec(spec: ParsedSpec): DerivedTask[] {
+		// Validate spec structure
+		if (!spec || typeof spec !== "object") {
+			throw new Error("Invalid spec: spec must be an object");
+		}
+
+		if (!Array.isArray(spec.functionalRequirements)) {
+			throw new Error("Invalid spec: functionalRequirements must be an array");
+		}
+
+		if (!Array.isArray(spec.acceptanceCriteria)) {
+			throw new Error("Invalid spec: acceptanceCriteria must be an array");
+		}
+
+		const tasks: DerivedTask[] = [];
+		let taskCounter = 1;
+
+		// Derive tasks from functional requirements
+		for (const req of spec.functionalRequirements) {
+			const task = this.deriveTaskFromRequirement(req, taskCounter++);
+			tasks.push(task);
+
+			// Add verification task for each requirement
+			const verifyTask = this.deriveVerificationTask(req, taskCounter++);
+			tasks.push(verifyTask);
+		}
+
+		// Derive tasks from acceptance criteria
+		for (const ac of spec.acceptanceCriteria) {
+			const task = this.deriveTaskFromAcceptanceCriterion(ac, taskCounter++);
+			tasks.push(task);
+		}
+
+		return tasks;
+	}
+
+	/**
+	 * Derive an implementation task from a requirement.
+	 *
+	 * Converts a requirement into an actionable task with estimate
+	 * based on complexity keywords in the description.
+	 *
+	 * @param req - The requirement to derive a task from
+	 * @param id - Numeric task ID
+	 * @returns Implementation task
+	 * @private
+	 */
+	private deriveTaskFromRequirement(req: Requirement, id: number): DerivedTask {
+		// Estimate based on complexity keywords
+		const estimate = this.estimateFromDescription(req.description);
+
+		return {
+			id: `T${String(id).padStart(3, "0")}`,
+			title: `Implement: ${this.extractTaskTitle(req.description)}`,
+			description: `Implement functionality to satisfy requirement ${req.id}.\n\n**Requirement**: ${req.description}`,
+			priority: req.priority,
+			estimate,
+			acceptanceCriteria: [
+				`Requirement ${req.id} is satisfied`,
+				"Unit tests pass",
+				"Code review approved",
+			],
+		};
+	}
+
+	/**
+	 * Derive a verification task for a requirement.
+	 *
+	 * Creates a testing/verification task that depends on the
+	 * implementation task for the same requirement.
+	 *
+	 * @param req - The requirement to verify
+	 * @param id - Numeric task ID
+	 * @returns Verification task with dependency
+	 * @private
+	 */
+	private deriveVerificationTask(req: Requirement, id: number): DerivedTask {
+		return {
+			id: `T${String(id).padStart(3, "0")}`,
+			title: `Verify: ${this.extractTaskTitle(req.description)}`,
+			description: `Write tests to verify requirement ${req.id} is correctly implemented.`,
+			priority: req.priority,
+			estimate: "2h",
+			acceptanceCriteria: [
+				"Tests cover happy path",
+				"Tests cover edge cases",
+				"Tests cover error conditions",
+			],
+			dependencies: [`T${String(id - 1).padStart(3, "0")}`],
+		};
+	}
+
+	/**
+	 * Derive a validation task from an acceptance criterion.
+	 *
+	 * Creates a task to validate that an acceptance criterion is met,
+	 * with estimate based on verification method (automated vs manual).
+	 *
+	 * @param ac - The acceptance criterion to validate
+	 * @param id - Numeric task ID
+	 * @returns Validation task
+	 * @private
+	 */
+	private deriveTaskFromAcceptanceCriterion(
+		ac: AcceptanceCriterion,
+		id: number,
+	): DerivedTask {
+		return {
+			id: `T${String(id).padStart(3, "0")}`,
+			title: `Validate: ${this.extractTaskTitle(ac.description)}`,
+			description: `Verify acceptance criterion ${ac.id} is met.`,
+			priority: "high",
+			estimate: ac.verificationMethod === "automated" ? "1h" : "2h",
+			acceptanceCriteria: [
+				`${ac.description} is verified`,
+				`Verification method: ${ac.verificationMethod}`,
+			],
+		};
+	}
+
+	/**
+	 * Estimate task duration from description complexity.
+	 *
+	 * Uses keyword analysis to estimate work duration:
+	 * - "simple" or "basic" → 2h
+	 * - "complex" or "comprehensive" → 8h
+	 * - "integration" or "refactor" → 4h
+	 * - default → 3h
+	 *
+	 * @param description - Task or requirement description
+	 * @returns Estimated duration string
+	 * @private
+	 */
+	private estimateFromDescription(description: string): string {
+		const lowercased = description.toLowerCase();
+
+		if (lowercased.includes("simple") || lowercased.includes("basic")) {
+			return "2h";
+		}
+
+		if (
+			lowercased.includes("complex") ||
+			lowercased.includes("comprehensive")
+		) {
+			return "8h";
+		}
+
+		if (lowercased.includes("integration") || lowercased.includes("refactor")) {
+			return "4h";
+		}
+
+		return "3h"; // Default estimate
+	}
+
+	/**
+	 * Extract a concise title from a description.
+	 *
+	 * Takes the first sentence or truncates to 50 characters,
+	 * suitable for task titles. Strips common action verbs
+	 * (Implement, Create, Add, Build, etc.) to avoid redundancy
+	 * when used with prefixes like "Implement:" or "Verify:".
+	 *
+	 * @param description - Full description text
+	 * @returns Truncated title without action verb prefix
+	 * @private
+	 */
+	private extractTaskTitle(description: string): string {
+		const trimmed = description.trim();
+
+		if (!trimmed) {
+			return "Untitled task";
+		}
+
+		// Extract first sentence (or similar segment) as title
+		const firstSegment = trimmed.split(/[.!?]/)[0]?.trim() ?? "";
+
+		if (!firstSegment) {
+			return "Untitled task";
+		}
+
+		// Strip common action verbs to avoid redundancy like "Implement: Implement..."
+		const actionVerbs = [
+			"implement",
+			"create",
+			"add",
+			"build",
+			"develop",
+			"write",
+			"update",
+			"modify",
+			"refactor",
+			"fix",
+			"remove",
+			"delete",
+		];
+
+		let cleanedSegment = firstSegment;
+		for (const verb of actionVerbs) {
+			// Match verb at start of string (case insensitive) followed by space
+			const pattern = new RegExp(`^${verb}\\s+`, "i");
+			if (pattern.test(cleanedSegment)) {
+				cleanedSegment = cleanedSegment.replace(pattern, "");
+				break; // Only strip the first matching verb
+			}
+		}
+
+		// Ensure first character is lowercase unless it's an acronym
+		if (
+			cleanedSegment.length > 0 &&
+			cleanedSegment[0] === cleanedSegment[0].toUpperCase()
+		) {
+			// Check if it's likely an acronym (next char is also uppercase)
+			if (
+				cleanedSegment.length === 1 ||
+				cleanedSegment[1] !== cleanedSegment[1].toUpperCase()
+			) {
+				cleanedSegment =
+					cleanedSegment[0].toLowerCase() + cleanedSegment.slice(1);
+			}
+		}
+
+		return cleanedSegment.length > 50
+			? `${cleanedSegment.slice(0, 50)}...`
+			: cleanedSegment;
 	}
 }
