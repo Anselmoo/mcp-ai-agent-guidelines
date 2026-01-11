@@ -65,12 +65,12 @@ describe("Tool registration", () => {
 		 * - Analysis tools: clean-code-scorer, code-hygiene-analyzer, semantic-code-analyzer, etc.
 		 * - Design tools: design-assistant, etc.
 		 * - Agent tools: agent-orchestrator (added in P3-014)
-		 * - Other tools: dependency-auditor, guidelines-validator, etc.
+		 * - Other tools: dependency-auditor, guidelines-validator, speckit-generator (added in P4-010), etc.
 		 *
 		 * Note: prompt-hierarchy (unified) is implemented but not yet registered.
 		 * If this test fails after adding/removing tools, update the count below.
 		 */
-		const EXPECTED_TOOL_COUNT = 33; // Updated for agent-orchestrator tool (P3-014)
+		const EXPECTED_TOOL_COUNT = 34; // Updated for speckit-generator tool (P4-010)
 		expect(
 			tools.length,
 			`Expected ${EXPECTED_TOOL_COUNT} tools, got ${tools.length}. Update EXPECTED_TOOL_COUNT if tools were intentionally added/removed.`,
