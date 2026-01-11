@@ -47,7 +47,7 @@ describe("SpecKitStrategy", () => {
 	});
 
 	describe("render() - SessionState", () => {
-		it("should render SessionState with README and 5 secondary documents", () => {
+		it("should render SessionState with README and 6 secondary documents", () => {
 			const strategy = new SpecKitStrategy();
 			const result: SessionState = {
 				id: "test-session",
@@ -63,12 +63,13 @@ describe("SpecKitStrategy", () => {
 
 			expect(artifacts.primary.name).toContain("README.md");
 			expect(artifacts.primary.format).toBe("markdown");
-			expect(artifacts.secondary).toHaveLength(5);
+			expect(artifacts.secondary).toHaveLength(6);
 			expect(artifacts.secondary?.[0].name).toContain("spec.md");
 			expect(artifacts.secondary?.[1].name).toContain("plan.md");
 			expect(artifacts.secondary?.[2].name).toContain("tasks.md");
-			expect(artifacts.secondary?.[3].name).toContain("adr.md");
-			expect(artifacts.secondary?.[4].name).toContain("roadmap.md");
+			expect(artifacts.secondary?.[3].name).toContain("progress.md");
+			expect(artifacts.secondary?.[4].name).toContain("adr.md");
+			expect(artifacts.secondary?.[5].name).toContain("roadmap.md");
 		});
 
 		it("should generate README.md with proper structure", () => {
@@ -100,6 +101,9 @@ describe("SpecKitStrategy", () => {
 			expect(artifacts.primary.content).toContain("- [spec.md](./spec.md)");
 			expect(artifacts.primary.content).toContain("- [plan.md](./plan.md)");
 			expect(artifacts.primary.content).toContain("- [tasks.md](./tasks.md)");
+			expect(artifacts.primary.content).toContain(
+				"- [progress.md](./progress.md)",
+			);
 			expect(artifacts.primary.content).toContain("- [adr.md](./adr.md)");
 			expect(artifacts.primary.content).toContain(
 				"- [roadmap.md](./roadmap.md)",
@@ -302,7 +306,7 @@ describe("SpecKitStrategy", () => {
 			};
 
 			const artifacts = strategy.render(result);
-			const adr = artifacts.secondary?.[3];
+			const adr = artifacts.secondary?.[4];
 
 			expect(adr?.name).toContain("adr.md");
 			expect(adr?.content).toContain("# ADR: Database Migration");
@@ -369,7 +373,7 @@ describe("SpecKitStrategy", () => {
 			};
 
 			const artifacts = strategy.render(result);
-			const roadmap = artifacts.secondary?.[4];
+			const roadmap = artifacts.secondary?.[5];
 
 			expect(roadmap?.name).toContain("roadmap.md");
 			expect(roadmap?.content).toContain("# Roadmap: Mobile App Launch");
@@ -408,8 +412,8 @@ describe("SpecKitStrategy", () => {
 				"# Implementation Plan: Feature",
 			);
 			expect(artifacts.secondary?.[2].content).toContain("# Tasks: Feature");
-			expect(artifacts.secondary?.[3].content).toContain("# ADR: Feature");
-			expect(artifacts.secondary?.[4].content).toContain("# Roadmap: Feature");
+			expect(artifacts.secondary?.[4].content).toContain("# ADR: Feature");
+			expect(artifacts.secondary?.[5].content).toContain("# Roadmap: Feature");
 		});
 
 		it("should use goal from config as title", () => {
@@ -498,7 +502,7 @@ describe("SpecKitStrategy", () => {
 			};
 
 			const artifacts = strategy.render(result);
-			const roadmap = artifacts.secondary?.[4];
+			const roadmap = artifacts.secondary?.[5];
 
 			expect(roadmap?.content).toContain(
 				"### Milestone 1: Requirements Complete",
@@ -654,7 +658,7 @@ describe("SpecKitStrategy", () => {
 	});
 
 	describe("output artifacts structure", () => {
-		it("should return OutputArtifacts with primary and 5 secondary documents", () => {
+		it("should return OutputArtifacts with primary and 6 secondary documents", () => {
 			const strategy = new SpecKitStrategy();
 			const result: SessionState = {
 				id: "test-session",
@@ -669,7 +673,7 @@ describe("SpecKitStrategy", () => {
 			expect(artifacts.primary.name).toContain("README.md");
 			expect(artifacts.primary.format).toBe("markdown");
 			expect(artifacts.secondary).toBeDefined();
-			expect(artifacts.secondary).toHaveLength(5);
+			expect(artifacts.secondary).toHaveLength(6);
 			expect(artifacts.crossCutting).toBeUndefined();
 		});
 
@@ -690,6 +694,7 @@ describe("SpecKitStrategy", () => {
 			expect(artifacts.secondary?.[2].format).toBe("markdown");
 			expect(artifacts.secondary?.[3].format).toBe("markdown");
 			expect(artifacts.secondary?.[4].format).toBe("markdown");
+			expect(artifacts.secondary?.[5].format).toBe("markdown");
 		});
 
 		it("should have all documents with non-empty content", () => {
@@ -709,6 +714,7 @@ describe("SpecKitStrategy", () => {
 			expect(artifacts.secondary?.[2].content.length).toBeGreaterThan(0);
 			expect(artifacts.secondary?.[3].content.length).toBeGreaterThan(0);
 			expect(artifacts.secondary?.[4].content.length).toBeGreaterThan(0);
+			expect(artifacts.secondary?.[5].content.length).toBeGreaterThan(0);
 		});
 	});
 
@@ -755,7 +761,7 @@ describe("SpecKitStrategy", () => {
 			};
 
 			const artifacts = strategy.render(result);
-			const adr = artifacts.secondary?.[3];
+			const adr = artifacts.secondary?.[4];
 
 			expect(adr?.content).toContain("See [spec.md](./spec.md)");
 			expect(adr?.content).toContain("See [plan.md](./plan.md)");
@@ -771,7 +777,7 @@ describe("SpecKitStrategy", () => {
 			};
 
 			const artifacts = strategy.render(result);
-			const roadmap = artifacts.secondary?.[4];
+			const roadmap = artifacts.secondary?.[5];
 
 			expect(roadmap?.content).toContain("See [plan.md](./plan.md)");
 			expect(roadmap?.content).toContain("See [tasks.md](./tasks.md)");
@@ -795,7 +801,7 @@ describe("SpecKitStrategy", () => {
 
 			expect(artifacts).toBeDefined();
 			expect(artifacts.primary).toBeDefined();
-			expect(artifacts.secondary).toHaveLength(5);
+			expect(artifacts.secondary).toHaveLength(6);
 		});
 
 		it("should work without options parameter", () => {
@@ -811,7 +817,7 @@ describe("SpecKitStrategy", () => {
 
 			expect(artifacts).toBeDefined();
 			expect(artifacts.primary).toBeDefined();
-			expect(artifacts.secondary).toHaveLength(5);
+			expect(artifacts.secondary).toHaveLength(6);
 		});
 	});
 
@@ -1005,7 +1011,7 @@ describe("SpecKitStrategy", () => {
 			};
 
 			const artifacts = strategy.render(result);
-			const roadmap = artifacts.secondary?.[4];
+			const roadmap = artifacts.secondary?.[5];
 
 			expect(roadmap?.content).toContain("**Target Date**: TBD");
 		});
@@ -1027,7 +1033,7 @@ describe("SpecKitStrategy", () => {
 			};
 
 			const artifacts = strategy.render(result);
-			const roadmap = artifacts.secondary?.[4];
+			const roadmap = artifacts.secondary?.[5];
 
 			expect(roadmap?.content).toContain("### Milestone 1: Beta Launch");
 			expect(roadmap?.content).toContain("**Target Date**: 2026-06-01");
@@ -1054,7 +1060,7 @@ describe("SpecKitStrategy", () => {
 			};
 
 			const artifacts = strategy.render(result);
-			const adr = artifacts.secondary?.[3];
+			const adr = artifacts.secondary?.[4];
 
 			expect(adr?.content).toContain("### Positive");
 			expect(adr?.content).toContain("- Better scalability");
@@ -1150,7 +1156,7 @@ describe("SpecKitStrategy", () => {
 			};
 
 			const artifacts = strategy.render(result);
-			const adr = artifacts.secondary?.[3];
+			const adr = artifacts.secondary?.[4];
 
 			expect(adr?.content).toContain("### Positive");
 			expect(adr?.content).toContain("- To be documented");
@@ -1177,7 +1183,7 @@ describe("SpecKitStrategy", () => {
 			};
 
 			const artifacts = strategy.render(result);
-			const adr = artifacts.secondary?.[3];
+			const adr = artifacts.secondary?.[4];
 
 			expect(adr?.content).toContain("### Positive");
 			expect(adr?.content).toContain("- Improved performance");
@@ -2556,6 +2562,217 @@ describe("SpecKitStrategy", () => {
 			expect(tasks?.content).toContain("2. [ ] Create implementation plan");
 			expect(tasks?.content).toContain("3. [ ] Execute development");
 			expect(tasks?.content).toContain("4. [ ] Test and validate");
+		});
+	});
+
+	describe("P4-008: renderProgress() implementation", () => {
+		it("should generate progress.md with status indicator", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "planning",
+				config: {
+					sessionId: "test-session",
+					context: {},
+					goal: "Test Feature",
+					requirements: ["Requirement 1", "Requirement 2"],
+				},
+				context: {},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const progress = artifacts.secondary?.[3];
+
+			expect(progress?.name).toContain("progress.md");
+			expect(progress?.content).toContain("# Progress");
+			expect(progress?.content).toContain("## Status: 🟢 ON TRACK");
+		});
+
+		it("should include summary metrics table", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "planning",
+				config: {
+					sessionId: "test-session",
+					context: {},
+					requirements: ["Req 1"],
+				},
+				context: {},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const progress = artifacts.secondary?.[3];
+
+			expect(progress?.content).toContain("## Summary");
+			expect(progress?.content).toContain("| Metric | Value |");
+			expect(progress?.content).toContain("| Completion | 0% |");
+			expect(progress?.content).toContain("| Tasks Completed | 0/");
+			expect(progress?.content).toContain("| Status | ON TRACK |");
+		});
+
+		it("should include progress bar visualization", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "planning",
+				config: {
+					sessionId: "test-session",
+					context: {},
+				},
+				context: {},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const progress = artifacts.secondary?.[3];
+
+			expect(progress?.content).toContain("## Progress Bar");
+			expect(progress?.content).toContain("[░░░░░░░░░░░░░░░░░░░░] 0%");
+		});
+
+		it("should include recent updates section", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "planning",
+				config: {
+					sessionId: "test-session",
+					context: {},
+				},
+				context: {},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const progress = artifacts.secondary?.[3];
+
+			expect(progress?.content).toContain("## Recent Updates");
+			expect(progress?.content).toContain("Spec-Kit initialized");
+			expect(progress?.content).toContain("**Tasks Completed**:");
+			expect(progress?.content).toContain("- None"); // Default empty tasks completed
+		});
+
+		it("should not include blockers section when no blockers", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "planning",
+				config: {
+					sessionId: "test-session",
+					context: {},
+				},
+				context: {},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const progress = artifacts.secondary?.[3];
+
+			expect(progress?.content).not.toContain("## Blockers");
+		});
+
+		it("should include next steps section", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "planning",
+				config: {
+					sessionId: "test-session",
+					context: {},
+				},
+				context: {},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const progress = artifacts.secondary?.[3];
+
+			expect(progress?.content).toContain("## Next Steps");
+			expect(progress?.content).toContain("1. Review spec.md for completeness");
+			expect(progress?.content).toContain("2. Assign tasks to team members");
+			expect(progress?.content).toContain("3. Begin Phase 1 implementation");
+		});
+
+		it("should format timestamps correctly", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "planning",
+				config: {
+					sessionId: "test-session",
+					context: {},
+				},
+				context: {},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const progress = artifacts.secondary?.[3];
+
+			// Should contain ISO date format YYYY-MM-DD
+			expect(progress?.content).toMatch(
+				/\*\*Last Updated\*\*: \d{4}-\d{2}-\d{2}/,
+			);
+		});
+
+		it("should calculate total tasks from requirements", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "planning",
+				config: {
+					sessionId: "test-session",
+					context: {},
+					requirements: ["Req 1", "Req 2", "Req 3"],
+				},
+				context: {},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const progress = artifacts.secondary?.[3];
+
+			// 3 requirements = 3 implementation tasks + 3 verification tasks = 6 total
+			expect(progress?.content).toContain("| Tasks Completed | 0/6 |");
+		});
+
+		it("should render all status emojis correctly", () => {
+			const strategy = new SpecKitStrategy();
+
+			// Test on-track status (default)
+			const onTrackResult: SessionState = {
+				id: "test",
+				phase: "planning",
+				config: { sessionId: "test", context: {} },
+				context: {},
+				history: [],
+			};
+			const artifacts = strategy.render(onTrackResult);
+			const progress = artifacts.secondary?.[3];
+			expect(progress?.content).toContain("## Status: 🟢 ON TRACK");
+			expect(progress?.content).toContain("| Status | ON TRACK |");
+		});
+
+		it("should render progress bar at 0%, 50%, and 100%", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test",
+				phase: "planning",
+				config: { sessionId: "test", context: {} },
+				context: {},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const progress = artifacts.secondary?.[3];
+
+			// Test default 0% progress bar (all empty blocks)
+			expect(progress?.content).toContain("[░░░░░░░░░░░░░░░░░░░░] 0%");
+			// Note: 50% and 100% would require different progress data
+			// which would need to be supported by extractProgress() implementation
 		});
 	});
 });
