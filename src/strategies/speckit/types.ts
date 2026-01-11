@@ -1,0 +1,664 @@
+/**
+ * Spec-Kit Types
+ *
+ * TypeScript interfaces for GitHub Spec-Kit artifacts.
+ * Enables type-safe generation and validation of spec.md, plan.md,
+ * tasks.md, progress.md, and constitution.md documents.
+ *
+ * @module strategies/speckit/types
+ * @see {@link https://github.com/Anselmoo/mcp-ai-agent-guidelines/blob/development/plan-v0.13.x/specs/SPEC-005-speckit-integration.md SPEC-005}
+ * @see {@link https://github.com/Anselmoo/mcp-ai-agent-guidelines/blob/development/plan-v0.13.x/tasks/TASKS-phase-4-speckit-integration.md TASKS Phase 4} P4-003
+ */
+
+// ============================================================================
+// Constitution Types
+// ============================================================================
+
+/**
+ * Project constitution defining guiding principles, constraints, and rules.
+ *
+ * Represents the foundational document that establishes architectural
+ * standards, design principles, and non-negotiable constraints for a project.
+ *
+ * @interface Constitution
+ */
+export interface Constitution {
+	/** Core principles guiding the project */
+	principles: Principle[];
+
+	/** Hard and soft constraints on implementation */
+	constraints: Constraint[];
+
+	/** Architecture-level rules and patterns */
+	architectureRules: ArchitectureRule[];
+
+	/** Design-level principles and guidelines */
+	designPrinciples: DesignPrinciple[];
+
+	/** Optional metadata about the constitution */
+	metadata?: ConstitutionMetadata;
+}
+
+/**
+ * A fundamental principle guiding project decisions.
+ *
+ * Principles are high-level tenets that inform decision-making
+ * without being strictly enforceable (unlike constraints).
+ *
+ * @interface Principle
+ * @example
+ * ```typescript
+ * {
+ *   id: "PRIN-001",
+ *   title: "Security First",
+ *   description: "Security considerations take precedence in all design decisions",
+ *   type: "principle"
+ * }
+ * ```
+ */
+export interface Principle {
+	/** Unique identifier for the principle */
+	id: string;
+
+	/** Short, descriptive title */
+	title: string;
+
+	/** Detailed explanation of the principle */
+	description: string;
+
+	/** Type discriminator */
+	type: "principle";
+}
+
+/**
+ * A constraint limiting implementation choices.
+ *
+ * Constraints are enforceable rules with varying severity levels.
+ * They restrict what can be done within the project.
+ *
+ * @interface Constraint
+ * @example
+ * ```typescript
+ * {
+ *   id: "CONS-001",
+ *   title: "Node.js 22+ Required",
+ *   description: "Project must support Node.js version 22 or higher",
+ *   severity: "must",
+ *   type: "constraint"
+ * }
+ * ```
+ */
+export interface Constraint {
+	/** Unique identifier for the constraint */
+	id: string;
+
+	/** Short, descriptive title */
+	title: string;
+
+	/** Detailed explanation of the constraint */
+	description: string;
+
+	/**
+	 * RFC 2119 severity level
+	 * - must: Absolute requirement
+	 * - should: Strong recommendation
+	 * - may: Optional suggestion
+	 */
+	severity: "must" | "should" | "may";
+
+	/** Type discriminator */
+	type: "constraint";
+}
+
+/**
+ * An architecture-level rule or pattern.
+ *
+ * Architecture rules define structural decisions and patterns
+ * that apply across the entire system or major subsystems.
+ *
+ * @interface ArchitectureRule
+ * @example
+ * ```typescript
+ * {
+ *   id: "ARCH-001",
+ *   title: "Domain-Driven Design",
+ *   description: "Use DDD patterns for core business logic separation",
+ *   type: "architecture-rule"
+ * }
+ * ```
+ */
+export interface ArchitectureRule {
+	/** Unique identifier for the rule */
+	id: string;
+
+	/** Short, descriptive title */
+	title: string;
+
+	/** Detailed explanation of the rule */
+	description: string;
+
+	/** Type discriminator */
+	type: "architecture-rule";
+}
+
+/**
+ * A design-level principle or guideline.
+ *
+ * Design principles are more tactical than architectural rules,
+ * focusing on code-level patterns and practices.
+ *
+ * @interface DesignPrinciple
+ * @example
+ * ```typescript
+ * {
+ *   id: "DESIGN-001",
+ *   title: "SOLID Principles",
+ *   description: "Follow SOLID principles in all object-oriented code",
+ *   type: "design-principle"
+ * }
+ * ```
+ */
+export interface DesignPrinciple {
+	/** Unique identifier for the principle */
+	id: string;
+
+	/** Short, descriptive title */
+	title: string;
+
+	/** Detailed explanation of the principle */
+	description: string;
+
+	/** Type discriminator */
+	type: "design-principle";
+}
+
+/**
+ * Metadata about a constitution document.
+ *
+ * @interface ConstitutionMetadata
+ */
+export interface ConstitutionMetadata {
+	/** Human-readable title of the constitution */
+	title?: string;
+
+	/** Semantic version of the constitution */
+	version?: string;
+
+	/** ISO-8601 timestamp of last update */
+	lastUpdated?: string;
+}
+
+// ============================================================================
+// Spec Types
+// ============================================================================
+
+/**
+ * Parsed specification document.
+ *
+ * Represents a complete project specification with objectives,
+ * requirements, constraints, and acceptance criteria.
+ *
+ * @interface ParsedSpec
+ */
+export interface ParsedSpec {
+	/** Specification title */
+	title: string;
+
+	/** High-level overview of the project */
+	overview: string;
+
+	/** Strategic objectives */
+	objectives: Objective[];
+
+	/** Functional requirements */
+	functionalRequirements: Requirement[];
+
+	/** Non-functional requirements (performance, security, etc.) */
+	nonFunctionalRequirements: Requirement[];
+
+	/** References to constitution constraints */
+	constraints: ConstraintReference[];
+
+	/** Acceptance criteria for completion */
+	acceptanceCriteria: AcceptanceCriterion[];
+
+	/** Explicitly out-of-scope items */
+	outOfScope: string[];
+}
+
+/**
+ * A strategic objective.
+ *
+ * Objectives describe high-level goals that the project aims to achieve.
+ * They are broader than requirements and guide requirement prioritization.
+ *
+ * @interface Objective
+ * @example
+ * ```typescript
+ * {
+ *   id: "OBJ-001",
+ *   description: "Reduce page load time by 50%",
+ *   priority: "high"
+ * }
+ * ```
+ */
+export interface Objective {
+	/** Unique identifier for the objective */
+	id: string;
+
+	/** Description of the objective */
+	description: string;
+
+	/** Priority level for achieving this objective */
+	priority: "high" | "medium" | "low";
+}
+
+/**
+ * A functional or non-functional requirement.
+ *
+ * Requirements are specific, measurable needs that the project must fulfill.
+ * They can derive into concrete implementation tasks.
+ *
+ * @interface Requirement
+ * @example
+ * ```typescript
+ * {
+ *   id: "REQ-001",
+ *   description: "Support OAuth 2.0 authentication",
+ *   priority: "high",
+ *   derivedTasks: [{ id: "TASK-001", ... }]
+ * }
+ * ```
+ */
+export interface Requirement {
+	/** Unique identifier for the requirement */
+	id: string;
+
+	/** Description of the requirement */
+	description: string;
+
+	/** Priority level for implementing this requirement */
+	priority: "high" | "medium" | "low";
+
+	/** Optional tasks derived from this requirement */
+	derivedTasks?: DerivedTask[];
+}
+
+/**
+ * Reference to a constitution item.
+ *
+ * Links a spec to relevant principles, constraints, or rules
+ * defined in the project constitution.
+ *
+ * @interface ConstraintReference
+ * @example
+ * ```typescript
+ * {
+ *   constitutionId: "CONS-001",
+ *   type: "constraint",
+ *   notes: "Impacts Node.js version selection"
+ * }
+ * ```
+ */
+export interface ConstraintReference {
+	/** ID of the referenced constitution item */
+	constitutionId: string;
+
+	/** Type of constitution item being referenced */
+	type: "principle" | "constraint" | "architecture-rule" | "design-principle";
+
+	/** Optional notes on how this constraint applies */
+	notes?: string;
+}
+
+/**
+ * Acceptance criterion for requirement verification.
+ *
+ * Defines how to verify that a requirement has been properly implemented.
+ *
+ * @interface AcceptanceCriterion
+ * @example
+ * ```typescript
+ * {
+ *   id: "AC-001",
+ *   description: "User can authenticate with Google OAuth",
+ *   verificationMethod: "automated"
+ * }
+ * ```
+ */
+export interface AcceptanceCriterion {
+	/** Unique identifier for the criterion */
+	id: string;
+
+	/** Description of what must be verified */
+	description: string;
+
+	/** Method for verifying this criterion */
+	verificationMethod: "automated" | "manual" | "review";
+}
+
+// ============================================================================
+// Plan Types
+// ============================================================================
+
+/**
+ * Implementation plan.
+ *
+ * Describes the overall approach, phases, dependencies, risks,
+ * and timeline for executing the project.
+ *
+ * @interface Plan
+ */
+export interface Plan {
+	/** High-level approach description */
+	approach: string;
+
+	/** Implementation phases */
+	phases: Phase[];
+
+	/** External and internal dependencies */
+	dependencies: Dependency[];
+
+	/** Identified risks and mitigation strategies */
+	risks: Risk[];
+
+	/** Timeline with phase scheduling */
+	timeline: TimelineEntry[];
+}
+
+/**
+ * A project phase.
+ *
+ * Phases group related work with clear deliverables and durations.
+ *
+ * @interface Phase
+ * @example
+ * ```typescript
+ * {
+ *   id: "PHASE-001",
+ *   name: "Foundation",
+ *   description: "Establish core architecture",
+ *   deliverables: ["Architecture diagram", "Core interfaces"],
+ *   duration: "2 weeks"
+ * }
+ * ```
+ */
+export interface Phase {
+	/** Unique identifier for the phase */
+	id: string;
+
+	/** Phase name */
+	name: string;
+
+	/** Description of phase objectives */
+	description: string;
+
+	/** Expected deliverables */
+	deliverables: string[];
+
+	/** Estimated duration */
+	duration: string;
+}
+
+/**
+ * A project dependency.
+ *
+ * Dependencies are prerequisites or blockers that must be addressed.
+ *
+ * @interface Dependency
+ * @example
+ * ```typescript
+ * {
+ *   id: "DEP-001",
+ *   description: "OAuth provider API access",
+ *   owner: "security-team"
+ * }
+ * ```
+ */
+export interface Dependency {
+	/** Unique identifier for the dependency */
+	id: string;
+
+	/** Description of the dependency */
+	description: string;
+
+	/** Optional owner responsible for resolving */
+	owner?: string;
+}
+
+/**
+ * A project risk.
+ *
+ * Risks are potential issues with mitigation strategies.
+ *
+ * @interface Risk
+ * @example
+ * ```typescript
+ * {
+ *   id: "RISK-001",
+ *   description: "Third-party API rate limits",
+ *   severity: "medium",
+ *   mitigation: "Implement request caching and retry logic"
+ * }
+ * ```
+ */
+export interface Risk {
+	/** Unique identifier for the risk */
+	id: string;
+
+	/** Description of the risk */
+	description: string;
+
+	/** Risk severity level */
+	severity: "high" | "medium" | "low";
+
+	/** Mitigation strategy */
+	mitigation: string;
+}
+
+/**
+ * Timeline entry mapping phases to schedule.
+ *
+ * @interface TimelineEntry
+ * @example
+ * ```typescript
+ * {
+ *   phase: "PHASE-001",
+ *   startWeek: 1,
+ *   endWeek: 2
+ * }
+ * ```
+ */
+export interface TimelineEntry {
+	/** Phase identifier */
+	phase: string;
+
+	/** Starting week number */
+	startWeek: number;
+
+	/** Ending week number */
+	endWeek: number;
+}
+
+// ============================================================================
+// Task Types
+// ============================================================================
+
+/**
+ * A derived implementation task.
+ *
+ * Tasks are concrete work items derived from requirements.
+ * They represent actionable units of work.
+ *
+ * @interface DerivedTask
+ * @example
+ * ```typescript
+ * {
+ *   id: "TASK-001",
+ *   title: "Implement OAuth login flow",
+ *   description: "Create OAuth 2.0 authentication with Google provider",
+ *   priority: "high",
+ *   estimate: "3 days",
+ *   phase: "PHASE-001",
+ *   acceptanceCriteria: ["User can log in", "Token is securely stored"],
+ *   dependencies: ["TASK-002"]
+ * }
+ * ```
+ */
+export interface DerivedTask {
+	/** Unique identifier for the task */
+	id: string;
+
+	/** Task title */
+	title: string;
+
+	/** Detailed task description */
+	description: string;
+
+	/** Priority level */
+	priority: "high" | "medium" | "low";
+
+	/** Time estimate */
+	estimate: string;
+
+	/** Optional phase assignment */
+	phase?: string;
+
+	/** Task acceptance criteria */
+	acceptanceCriteria: string[];
+
+	/** Optional task dependencies */
+	dependencies?: string[];
+}
+
+// ============================================================================
+// Progress Types
+// ============================================================================
+
+/**
+ * Project progress tracking.
+ *
+ * Tracks completion status, recent updates, blockers, and next steps.
+ *
+ * @interface Progress
+ */
+export interface Progress {
+	/** Overall status */
+	status: "on-track" | "at-risk" | "blocked" | "completed";
+
+	/** Percentage complete (0-100) */
+	completionPercentage: number;
+
+	/** Number of completed tasks */
+	tasksCompleted: number;
+
+	/** Total number of tasks */
+	totalTasks: number;
+
+	/** Recent progress updates */
+	recentUpdates: ProgressUpdate[];
+
+	/** Active blockers */
+	blockers: Blocker[];
+
+	/** Planned next steps */
+	nextSteps: string[];
+
+	/** Last update timestamp */
+	lastUpdated: Date;
+}
+
+/**
+ * A progress update entry.
+ *
+ * Records a specific progress event with completed tasks.
+ *
+ * @interface ProgressUpdate
+ * @example
+ * ```typescript
+ * {
+ *   date: new Date("2024-01-15"),
+ *   description: "Completed OAuth integration",
+ *   tasksCompleted: ["TASK-001", "TASK-002"]
+ * }
+ * ```
+ */
+export interface ProgressUpdate {
+	/** Update date */
+	date: Date;
+
+	/** Update description */
+	description: string;
+
+	/** Task IDs completed in this update */
+	tasksCompleted: string[];
+}
+
+/**
+ * A project blocker.
+ *
+ * Blockers are issues preventing progress that need resolution.
+ *
+ * @interface Blocker
+ * @example
+ * ```typescript
+ * {
+ *   id: "BLOCK-001",
+ *   description: "API credentials pending approval",
+ *   severity: "critical",
+ *   owner: "platform-team"
+ * }
+ * ```
+ */
+export interface Blocker {
+	/** Unique identifier for the blocker */
+	id: string;
+
+	/** Description of the blocker */
+	description: string;
+
+	/** Blocker severity */
+	severity: "critical" | "major" | "minor";
+
+	/** Optional owner responsible for resolution */
+	owner?: string;
+}
+
+// ============================================================================
+// Aggregate Type
+// ============================================================================
+
+/**
+ * Complete Spec-Kit artifacts collection.
+ *
+ * Aggregates all Spec-Kit documents into a single type-safe structure.
+ * Used for generating the complete .specify/ directory.
+ *
+ * @interface SpecKitArtifacts
+ * @example
+ * ```typescript
+ * const artifacts: SpecKitArtifacts = {
+ *   spec: { title: "...", ... },
+ *   plan: { approach: "...", ... },
+ *   tasks: [...],
+ *   progress: { status: "on-track", ... },
+ *   constitution: { principles: [...], ... }
+ * };
+ * ```
+ */
+export interface SpecKitArtifacts {
+	/** Parsed specification */
+	spec: ParsedSpec;
+
+	/** Implementation plan */
+	plan: Plan;
+
+	/** Derived tasks */
+	tasks: DerivedTask[];
+
+	/** Progress tracking */
+	progress: Progress;
+
+	/** Optional project constitution */
+	constitution?: Constitution;
+}
