@@ -4,14 +4,7 @@
  * @module strategies/speckit/constitution-parser
  */
 
-import type {
-	ArchitectureRule,
-	Constitution,
-	ConstitutionMetadata,
-	Constraint,
-	DesignPrinciple,
-	Principle,
-} from "./types.js";
+import type { Constitution, ConstitutionMetadata } from "./types.js";
 
 // Pattern for numbered principles: ### 1. Title
 const PRINCIPLE_PATTERN = /^### (\d+)\.\s+(.+)$/gm;
@@ -25,6 +18,19 @@ const ARCH_RULE_PATTERN = /^### (AR\d+):\s+(.+)$/gm;
 // Pattern for design principles: ### DP1: Title
 const DESIGN_PRINCIPLE_PATTERN = /^### (DP\d+):\s+(.+)$/gm;
 
+// Pattern to find next heading boundary (level 2 or 3)
+const NEXT_HEADING_PATTERN = /^##(?:#)?\s+/gm;
+
+/**
+ * Generic type for extracted items with id, title, description, and type
+ */
+type ExtractedItem<T extends string> = {
+	id: string;
+	title: string;
+	description: string;
+	type: T;
+};
+
 /**
  * Parse a CONSTITUTION.md document into structured data
  *
@@ -33,132 +39,75 @@ const DESIGN_PRINCIPLE_PATTERN = /^### (DP\d+):\s+(.+)$/gm;
  */
 export function parseConstitution(content: string): Constitution {
 	return {
-		principles: extractPrinciples(content),
-		constraints: extractConstraints(content),
-		architectureRules: extractArchitectureRules(content),
-		designPrinciples: extractDesignPrinciples(content),
+		principles: extractItems(content, PRINCIPLE_PATTERN, "principle"),
+		constraints: extractItems(content, CONSTRAINT_PATTERN, "constraint"),
+		architectureRules: extractItems(
+			content,
+			ARCH_RULE_PATTERN,
+			"architecture-rule",
+		),
+		designPrinciples: extractItems(
+			content,
+			DESIGN_PRINCIPLE_PATTERN,
+			"design-principle",
+		),
 		metadata: extractMetadata(content),
 	};
 }
 
 /**
- * Extract foundational principles (numbered 1-5)
+ * Generic extraction function for any item type
  *
  * @param content - The markdown content
- * @returns Array of principles
+ * @param pattern - The regex pattern to match items
+ * @param type - The type identifier for the items
+ * @returns Array of extracted items
  */
-function extractPrinciples(content: string): Principle[] {
-	const principles: Principle[] = [];
-	const matches = Array.from(content.matchAll(PRINCIPLE_PATTERN));
+function extractItems<T extends string>(
+	content: string,
+	pattern: RegExp,
+	type: T,
+): ExtractedItem<T>[] {
+	const items: ExtractedItem<T>[] = [];
+	const matches = Array.from(content.matchAll(pattern));
 
 	for (let i = 0; i < matches.length; i++) {
 		const match = matches[i];
 		const [, id, title] = match;
 		const startIndex = match.index ?? 0;
-		const nextMatch = matches[i + 1];
-		const endIndex = nextMatch?.index ?? content.length;
+
+		// Find the end index: either the next heading or end of content
+		const endIndex = findNextHeadingIndex(content, startIndex + 1);
 
 		const description = extractSectionContent(content, startIndex, endIndex);
 
-		principles.push({
+		items.push({
 			id,
 			title,
 			description,
-			type: "principle",
+			type,
 		});
 	}
 
-	return principles;
+	return items;
 }
 
 /**
- * Extract constraints (C1-C5)
+ * Find the index of the next heading (level 2 or 3) after the given start position
  *
- * @param content - The markdown content
- * @returns Array of constraints
+ * @param content - The full markdown content
+ * @param startIndex - Position to start searching from
+ * @returns Index of next heading, or content.length if none found
  */
-function extractConstraints(content: string): Constraint[] {
-	const constraints: Constraint[] = [];
-	const matches = Array.from(content.matchAll(CONSTRAINT_PATTERN));
+function findNextHeadingIndex(content: string, startIndex: number): number {
+	// Reset the regex to start from the beginning
+	const headingPattern = new RegExp(NEXT_HEADING_PATTERN.source, "gm");
 
-	for (let i = 0; i < matches.length; i++) {
-		const match = matches[i];
-		const [, id, title] = match;
-		const startIndex = match.index ?? 0;
-		const nextMatch = matches[i + 1];
-		const endIndex = nextMatch?.index ?? content.length;
+	// Start searching from startIndex
+	headingPattern.lastIndex = startIndex;
 
-		const description = extractSectionContent(content, startIndex, endIndex);
-
-		constraints.push({
-			id,
-			title,
-			description,
-			type: "constraint",
-		});
-	}
-
-	return constraints;
-}
-
-/**
- * Extract architecture rules (AR1-AR4)
- *
- * @param content - The markdown content
- * @returns Array of architecture rules
- */
-function extractArchitectureRules(content: string): ArchitectureRule[] {
-	const rules: ArchitectureRule[] = [];
-	const matches = Array.from(content.matchAll(ARCH_RULE_PATTERN));
-
-	for (let i = 0; i < matches.length; i++) {
-		const match = matches[i];
-		const [, id, title] = match;
-		const startIndex = match.index ?? 0;
-		const nextMatch = matches[i + 1];
-		const endIndex = nextMatch?.index ?? content.length;
-
-		const description = extractSectionContent(content, startIndex, endIndex);
-
-		rules.push({
-			id,
-			title,
-			description,
-			type: "architecture-rule",
-		});
-	}
-
-	return rules;
-}
-
-/**
- * Extract design principles (DP1-DP5)
- *
- * @param content - The markdown content
- * @returns Array of design principles
- */
-function extractDesignPrinciples(content: string): DesignPrinciple[] {
-	const principles: DesignPrinciple[] = [];
-	const matches = Array.from(content.matchAll(DESIGN_PRINCIPLE_PATTERN));
-
-	for (let i = 0; i < matches.length; i++) {
-		const match = matches[i];
-		const [, id, title] = match;
-		const startIndex = match.index ?? 0;
-		const nextMatch = matches[i + 1];
-		const endIndex = nextMatch?.index ?? content.length;
-
-		const description = extractSectionContent(content, startIndex, endIndex);
-
-		principles.push({
-			id,
-			title,
-			description,
-			type: "design-principle",
-		});
-	}
-
-	return principles;
+	const nextHeading = headingPattern.exec(content);
+	return nextHeading?.index ?? content.length;
 }
 
 /**
@@ -211,9 +160,10 @@ function extractMetadata(content: string): ConstitutionMetadata | undefined {
 	const blockquoteMatch = content.match(/^>\s+(.+)$/m);
 	if (blockquoteMatch) {
 		const blockquoteText = blockquoteMatch[1];
-		// Check if it mentions version information
-		if (blockquoteText.toLowerCase().includes("v0.13")) {
-			metadata.appliesTo = "v0.13.x and all future versions";
+		// If the blockquote mentions a version, store the full text as appliesTo
+		const versionPattern = /\bv\d+(?:\.\d+)*\b/i;
+		if (versionPattern.test(blockquoteText)) {
+			metadata.appliesTo = blockquoteText.trim();
 		}
 	}
 

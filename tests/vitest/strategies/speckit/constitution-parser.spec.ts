@@ -98,8 +98,10 @@ describe("parseConstitution", () => {
 			expect(result.metadata?.title).toBe(
 				"MCP AI Agent Guidelines — Constitution",
 			);
+			// Should extract the full blockquote text containing version info
+			expect(result.metadata?.appliesTo).toContain("v0.13.x");
 			expect(result.metadata?.appliesTo).toBe(
-				"v0.13.x and all future versions",
+				"Project-wide principles, constraints, and guidelines that govern all v0.13.x decisions",
 			);
 		});
 	});
@@ -262,6 +264,49 @@ This is a test constraint.`;
 
 			// Constraints should not have trailing ---
 			expect(result.constraints[1].description).not.toMatch(/---\s*$/);
+		});
+	});
+
+	describe("section boundary verification", () => {
+		it("should not include subsequent sections in last principle", () => {
+			const result = parseConstitution(SAMPLE_CONSTITUTION);
+
+			const lastPrinciple = result.principles[result.principles.length - 1];
+			// Should not contain content from Constraints section
+			expect(lastPrinciple.description).not.toContain("Constraint");
+			expect(lastPrinciple.description).not.toContain("### C1");
+			expect(lastPrinciple.description).not.toContain("## 🚫");
+		});
+
+		it("should not include subsequent sections in last constraint", () => {
+			const result = parseConstitution(SAMPLE_CONSTITUTION);
+
+			const lastConstraint = result.constraints[result.constraints.length - 1];
+			// Should not contain content from Architecture Rules section
+			expect(lastConstraint.description).not.toContain("Architecture");
+			expect(lastConstraint.description).not.toContain("### AR1");
+			expect(lastConstraint.description).not.toContain("## 📐");
+		});
+
+		it("should not include subsequent sections in last architecture rule", () => {
+			const result = parseConstitution(SAMPLE_CONSTITUTION);
+
+			const lastRule =
+				result.architectureRules[result.architectureRules.length - 1];
+			// Should not contain content from Design Principles section
+			expect(lastRule.description).not.toContain("Design Principle");
+			expect(lastRule.description).not.toContain("### DP1");
+			expect(lastRule.description).not.toContain("## 🎨");
+		});
+
+		it("should not include subsequent sections in last design principle", () => {
+			const result = parseConstitution(SAMPLE_CONSTITUTION);
+
+			const lastPrinciple =
+				result.designPrinciples[result.designPrinciples.length - 1];
+			// Last design principle in sample ends the document, so just verify it's clean
+			expect(lastPrinciple.description).toBeDefined();
+			expect(lastPrinciple.description.length).toBeGreaterThan(0);
 		});
 	});
 });

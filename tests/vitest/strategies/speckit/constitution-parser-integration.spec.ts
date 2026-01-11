@@ -74,4 +74,45 @@ describe("parseConstitution - Integration with actual CONSTITUTION.md", () => {
 		const dp1 = result.designPrinciples.find((dp) => dp.id === "DP1");
 		expect(dp1?.description).toContain("ONE thing");
 	});
+
+	it("should respect section boundaries and not bleed content", async () => {
+		const constitutionPath = join(
+			process.cwd(),
+			"plan-v0.13.x",
+			"CONSTITUTION.md",
+		);
+		const content = await readFile(constitutionPath, "utf-8");
+
+		const result = parseConstitution(content);
+
+		// Verify last principle doesn't contain Constraints section content
+		const principle5 = result.principles.find((p) => p.id === "5");
+		expect(principle5).toBeDefined();
+		expect(principle5?.description).not.toContain("## 🚫");
+		expect(principle5?.description).not.toContain(
+			"Constraints (Non-Negotiable)",
+		);
+		expect(principle5?.description).not.toContain("### C1");
+
+		// Verify last constraint doesn't contain Architecture Rules section content
+		const c5 = result.constraints.find((c) => c.id === "C5");
+		expect(c5).toBeDefined();
+		expect(c5?.description).not.toContain("## 📐");
+		expect(c5?.description).not.toContain("Architecture Rules");
+		expect(c5?.description).not.toContain("### AR1");
+
+		// Verify last architecture rule doesn't contain Design Principles section content
+		const ar4 = result.architectureRules.find((r) => r.id === "AR4");
+		expect(ar4).toBeDefined();
+		expect(ar4?.description).not.toContain("## 🎨");
+		expect(ar4?.description).not.toContain("Design Principles");
+		expect(ar4?.description).not.toContain("### DP1");
+
+		// Verify last design principle doesn't contain Quality Gates section content
+		const dp5 = result.designPrinciples.find((dp) => dp.id === "DP5");
+		expect(dp5).toBeDefined();
+		expect(dp5?.description).not.toContain("## 📋");
+		expect(dp5?.description).not.toContain("Quality Gates");
+		expect(dp5?.description).not.toContain("### QG1");
+	});
 });
