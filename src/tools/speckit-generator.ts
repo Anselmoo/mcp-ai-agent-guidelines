@@ -105,7 +105,7 @@ export async function specKitGenerator(
 	const domainResult = {
 		id: `speckit-${Date.now()}`,
 		phase: "implementation",
-		status: "Draft",
+		status: "active",
 		config: {
 			goal: request.title,
 			requirements: request.requirements.map((r) => r.description),
@@ -123,8 +123,6 @@ export async function specKitGenerator(
 	};
 
 	// Generate artifacts via gateway
-	// Note: Using 'any' type assertion because SpecKitStrategy accepts SpecKitRenderOptions
-	// which extends RenderOptions but gateway interface requires Partial<RenderOptions>
 	const artifacts = polyglotGateway.render({
 		domainResult,
 		domainType: "SessionState",
@@ -133,8 +131,7 @@ export async function specKitGenerator(
 			constitution,
 			includeConstitutionalConstraints: !!constitution,
 			validateBeforeRender: request.validateAgainstConstitution,
-			// biome-ignore lint/suspicious/noExplicitAny: SpecKitStrategy accepts SpecKitRenderOptions extending RenderOptions
-		} as any,
+		} as Record<string, unknown>,
 	});
 
 	// Format response with all documents

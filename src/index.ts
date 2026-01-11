@@ -1881,7 +1881,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 		{
 			name: "speckit-generator",
 			description:
-				"Generate GitHub Spec-Kit artifacts (spec.md, plan.md, tasks.md, progress.md) from requirements. Optionally validate against CONSTITUTION.md. BEST FOR: feature specs, project planning. OUTPUTS: Complete Spec-Kit folder structure.",
+				"Generate GitHub Spec-Kit artifacts (all documents: README.md, spec.md, plan.md, tasks.md, progress.md, adr.md, roadmap.md) from requirements. Optionally validate against CONSTITUTION.md. BEST FOR: feature specs, project planning.",
 			inputSchema: {
 				type: "object",
 				properties: {
