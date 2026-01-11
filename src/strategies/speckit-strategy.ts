@@ -26,6 +26,33 @@ import type {
 	RenderOptions,
 } from "./output-strategy.js";
 import { OutputApproach } from "./output-strategy.js";
+import type {
+	ArchitectureRule,
+	Constitution,
+	Constraint,
+	ConstraintReference,
+	DesignPrinciple,
+	Principle,
+} from "./speckit/types.js";
+
+/**
+ * Rendering options specific to SpecKit output format.
+ *
+ * Extends the base RenderOptions with SpecKit-specific capabilities
+ * like constitutional constraints and validation.
+ *
+ * @interface SpecKitRenderOptions
+ */
+export interface SpecKitRenderOptions extends Partial<RenderOptions> {
+	/** Optional constitution to apply constraints from */
+	constitution?: Constitution;
+
+	/** Whether to include constitutional constraints in spec.md */
+	includeConstitutionalConstraints?: boolean;
+
+	/** Whether to validate spec against constitution before rendering */
+	validateBeforeRender?: boolean;
+}
 
 /**
  * SpecKitStrategy implements GitHub's Spec-Kit output format.
@@ -51,13 +78,13 @@ export class SpecKitStrategy implements OutputStrategy<SessionState> {
 	 * Render a domain result to Spec-Kit artifacts.
 	 *
 	 * @param result - The SessionState to render
-	 * @param options - Optional rendering options
+	 * @param options - Optional SpecKit rendering options
 	 * @returns Output artifacts with README.md and 5 secondary documents
 	 * @throws {Error} If result is not a SessionState
 	 */
 	render(
 		result: SessionState,
-		_options?: Partial<RenderOptions>,
+		options?: SpecKitRenderOptions,
 	): OutputArtifacts {
 		if (!this.isSessionState(result)) {
 			throw new Error("SpecKitStrategy only supports SessionState");
@@ -69,7 +96,7 @@ export class SpecKitStrategy implements OutputStrategy<SessionState> {
 		return {
 			primary: this.generateReadme(result, slug),
 			secondary: [
-				this.generateSpec(result, slug),
+				this.generateSpec(result, slug, options),
 				this.generatePlan(result, slug),
 				this.generateTasks(result, slug),
 				this.generateAdr(result, slug),
@@ -147,10 +174,15 @@ ${overview}
 	 *
 	 * @param result - The session state
 	 * @param slug - The slugified folder name
+	 * @param options - Optional SpecKit rendering options
 	 * @returns Specification document with requirements and constraints
 	 * @private
 	 */
-	private generateSpec(result: SessionState, slug: string): OutputDocument {
+	private generateSpec(
+		result: SessionState,
+		slug: string,
+		options?: SpecKitRenderOptions,
+	): OutputDocument {
 		const title = this.extractTitle(result);
 		const overview = this.extractOverview(result);
 		const functionalReqs = this.extractFunctionalRequirements(result);
@@ -158,6 +190,7 @@ ${overview}
 		const constraints = this.extractConstraints(result);
 		const acceptanceCriteria = this.extractAcceptanceCriteria(result);
 		const outOfScope = this.extractOutOfScope(result);
+		const constraintRefs = this.extractConstraintReferences(result);
 
 		const content = `# Specification: ${title}
 
@@ -182,6 +215,8 @@ ${nonFunctionalReqs}
 ## Constraints
 
 ${constraints}
+
+${options?.includeConstitutionalConstraints && options.constitution ? this.renderConstraints(constraintRefs, options.constitution) : ""}
 
 ## Acceptance Criteria
 
@@ -992,6 +1027,96 @@ Verify all acceptance criteria are met.
 		}
 
 		return "- Complete specification document\n- Working implementation\n- Comprehensive test suite\n- Documentation";
+	}
+
+	/**
+	 * Extract constraint references from SessionState.
+	 *
+	 * Looks for constraint references in the context that link to
+	 * constitutional constraints.
+	 *
+	 * @param result - The session state
+	 * @returns Array of constraint references
+	 * @private
+	 */
+	private extractConstraintReferences(
+		result: SessionState,
+	): ConstraintReference[] {
+		if (
+			result.context?.constraintReferences &&
+			Array.isArray(result.context.constraintReferences)
+		) {
+			return result.context.constraintReferences as ConstraintReference[];
+		}
+		return [];
+	}
+
+	/**
+	 * Render constitutional constraints section.
+	 *
+	 * Generates a markdown section with constitutional constraints
+	 * referenced by this specification. Each constraint is looked up
+	 * in the constitution and rendered with its full details.
+	 *
+	 * @param constraints - Array of constraint references
+	 * @param constitution - The constitution to look up constraints from
+	 * @returns Formatted constitutional constraints section
+	 * @private
+	 */
+	private renderConstraints(
+		constraints: ConstraintReference[],
+		constitution: Constitution,
+	): string {
+		if (constraints.length === 0) return "";
+
+		return `## Constitutional Constraints
+
+${constraints
+	.map((c) => {
+		const item = this.findConstitutionItem(c.constitutionId, constitution);
+		return `### ${c.constitutionId}: ${item?.title ?? "Unknown"}
+${item?.description ?? ""}
+${c.notes ? `\n**Notes**: ${c.notes}` : ""}
+`;
+	})
+	.join("\n")}`;
+	}
+
+	/**
+	 * Find a constitution item by ID.
+	 *
+	 * Searches through all constitution sections (principles, constraints,
+	 * architecture rules, design principles) to find an item with the
+	 * matching ID.
+	 *
+	 * @param id - The constitution item ID to find
+	 * @param constitution - The constitution to search
+	 * @returns The found constitution item or undefined
+	 * @private
+	 */
+	private findConstitutionItem(
+		id: string,
+		constitution: Constitution,
+	): Principle | Constraint | ArchitectureRule | DesignPrinciple | undefined {
+		// Search principles
+		const principle = constitution.principles.find((p) => p.id === id);
+		if (principle) return principle;
+
+		// Search constraints
+		const constraint = constitution.constraints.find((c) => c.id === id);
+		if (constraint) return constraint;
+
+		// Search architecture rules
+		const archRule = constitution.architectureRules.find((ar) => ar.id === id);
+		if (archRule) return archRule;
+
+		// Search design principles
+		const designPrinciple = constitution.designPrinciples.find(
+			(dp) => dp.id === id,
+		);
+		if (designPrinciple) return designPrinciple;
+
+		return undefined;
 	}
 
 	/**
