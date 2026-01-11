@@ -65,7 +65,7 @@ const _DesignAssistantRequestSchema = z.object({
 	constraintConfig: z.any().optional(),
 	methodologySignals: z.any().optional(), // MethodologySignals
 	artifactTypes: z
-		.array(z.enum(["adr", "specification", "roadmap"]))
+		.array(z.enum(["adr", "specification", "roadmap", "speckit"]))
 		.optional(),
 	includeTemplates: z.boolean().optional(),
 	includeSpace7Instructions: z.boolean().optional(),
@@ -112,7 +112,7 @@ export interface DesignAssistantRequest {
 	constraintId?: string;
 	constraintConfig?: unknown;
 	methodologySignals?: MethodologySignals;
-	artifactTypes?: ("adr" | "specification" | "roadmap")[];
+	artifactTypes?: ("adr" | "specification" | "roadmap" | "speckit")[];
 	includeTemplates?: boolean;
 	includeSpace7Instructions?: boolean;
 	customInstructions?: string[];
