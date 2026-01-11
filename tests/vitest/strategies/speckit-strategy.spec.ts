@@ -527,8 +527,14 @@ describe("SpecKitStrategy", () => {
 			const artifacts = strategy.render(result);
 			const tasks = artifacts.secondary?.[2];
 
-			expect(tasks?.content).toContain("1. [ ] Implement: Add search feature");
-			expect(tasks?.content).toContain("2. [ ] Implement: Implement filters");
+			// New enhanced format checks
+			expect(tasks?.content).toContain("# Tasks");
+			expect(tasks?.content).toContain("## Overview");
+			expect(tasks?.content).toContain("**Total Tasks**: 4"); // 2 impl + 2 verify
+			expect(tasks?.content).toContain("#### T001: Implement: search feature");
+			expect(tasks?.content).toContain("#### T003: Implement: filters");
+			expect(tasks?.content).toContain("## Dependencies Graph");
+			expect(tasks?.content).toContain("## By Priority");
 		});
 	});
 
@@ -2224,6 +2230,332 @@ describe("SpecKitStrategy", () => {
 
 			const tasks = deriveTasksFromSpec.call(strategy, emptySpec);
 			expect(tasks).toEqual([]);
+		});
+	});
+
+	describe("P4-007: renderTasks() implementation", () => {
+		it("should render tasks with overview section", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "planning",
+				config: {
+					sessionId: "test-session",
+					context: {},
+					requirements: ["Implement feature A"],
+				},
+				context: {},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const tasks = artifacts.secondary?.[2];
+
+			expect(tasks?.content).toContain("# Tasks");
+			expect(tasks?.content).toContain("## Overview");
+			expect(tasks?.content).toContain("**Total Tasks**:");
+			expect(tasks?.content).toContain("**Estimated Effort**:");
+		});
+
+		it("should group tasks by phase", () => {
+			const strategy = new SpecKitStrategy();
+			const groupTasksByPhase = (
+				strategy as unknown as {
+					groupTasksByPhase: (
+						tasks: Array<{
+							id: string;
+							phase?: string;
+						}>,
+					) => Record<string, unknown[]>;
+				}
+			).groupTasksByPhase;
+
+			const tasks = [
+				{ id: "T001", phase: "Phase 1" },
+				{ id: "T002", phase: "Phase 1" },
+				{ id: "T003", phase: "Phase 2" },
+				{ id: "T004" }, // No phase
+			];
+
+			const grouped = groupTasksByPhase.call(strategy, tasks);
+
+			expect(grouped["Phase 1"]).toHaveLength(2);
+			expect(grouped["Phase 2"]).toHaveLength(1);
+			expect(grouped.Unassigned).toHaveLength(1);
+		});
+
+		it("should generate dependency graph with Mermaid syntax", () => {
+			const strategy = new SpecKitStrategy();
+			const generateDependencyGraph = (
+				strategy as unknown as {
+					generateDependencyGraph: (
+						tasks: Array<{
+							id: string;
+							dependencies?: string[];
+						}>,
+					) => string;
+				}
+			).generateDependencyGraph;
+
+			const tasks = [
+				{ id: "T001" },
+				{ id: "T002", dependencies: ["T001"] },
+				{ id: "T003", dependencies: ["T001", "T002"] },
+			];
+
+			const graph = generateDependencyGraph.call(strategy, tasks);
+
+			expect(graph).toContain("graph TD");
+			expect(graph).toContain("T001[T001]");
+			expect(graph).toContain("T001 --> T002");
+			expect(graph).toContain("T001 --> T003");
+			expect(graph).toContain("T002 --> T003");
+		});
+
+		it("should calculate total estimate in hours and days", () => {
+			const strategy = new SpecKitStrategy();
+			const calculateTotalEstimate = (
+				strategy as unknown as {
+					calculateTotalEstimate: (
+						tasks: Array<{
+							estimate: string;
+						}>,
+					) => string;
+				}
+			).calculateTotalEstimate;
+
+			const tasks = [
+				{ estimate: "3h" },
+				{ estimate: "5h" },
+				{ estimate: "2h" },
+			];
+
+			const total = calculateTotalEstimate.call(strategy, tasks);
+
+			expect(total).toBe("10h (~2 days)");
+		});
+
+		it("should calculate days correctly for different hour totals", () => {
+			const strategy = new SpecKitStrategy();
+			const calculateTotalEstimate = (
+				strategy as unknown as {
+					calculateTotalEstimate: (
+						tasks: Array<{
+							estimate: string;
+						}>,
+					) => string;
+				}
+			).calculateTotalEstimate;
+
+			expect(calculateTotalEstimate.call(strategy, [{ estimate: "8h" }])).toBe(
+				"8h (~1 day)",
+			);
+			expect(
+				calculateTotalEstimate.call(strategy, [
+					{ estimate: "8h" },
+					{ estimate: "1h" },
+				]),
+			).toBe("9h (~2 days)");
+			expect(
+				calculateTotalEstimate.call(strategy, [
+					{ estimate: "8h" },
+					{ estimate: "8h" },
+					{ estimate: "8h" },
+				]),
+			).toBe("24h (~3 days)");
+		});
+
+		it("should render tasks with priority sections", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "planning",
+				config: {
+					sessionId: "test-session",
+					context: {},
+					requirements: ["High priority task", "Medium priority task"],
+				},
+				context: {},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const tasks = artifacts.secondary?.[2];
+
+			expect(tasks?.content).toContain("## By Priority");
+			expect(tasks?.content).toContain("### High Priority");
+			expect(tasks?.content).toContain("### Medium Priority");
+			expect(tasks?.content).toContain("### Low Priority");
+		});
+
+		it("should extract spec from SessionState with requirements", () => {
+			const strategy = new SpecKitStrategy();
+			const extractSpec = (
+				strategy as unknown as {
+					extractSpec: (result: SessionState) => {
+						title: string;
+						overview: string;
+						functionalRequirements: Array<{
+							id: string;
+							description: string;
+							priority: string;
+						}>;
+					};
+				}
+			).extractSpec;
+
+			const result: SessionState = {
+				id: "test-session",
+				phase: "planning",
+				config: {
+					sessionId: "test-session",
+					context: {},
+					goal: "Test Feature",
+					requirements: ["Requirement 1", "Requirement 2"],
+				},
+				context: {},
+				history: [],
+			};
+
+			const spec = extractSpec.call(strategy, result);
+
+			expect(spec.title).toBe("Test Feature");
+			expect(spec.functionalRequirements).toHaveLength(2);
+			expect(spec.functionalRequirements[0].id).toBe("REQ-001");
+			expect(spec.functionalRequirements[0].description).toBe("Requirement 1");
+			expect(spec.functionalRequirements[1].id).toBe("REQ-002");
+		});
+
+		it("should handle tasks with dependencies in task list", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "planning",
+				config: {
+					sessionId: "test-session",
+					context: {},
+					requirements: ["Feature A"],
+				},
+				context: {
+					acceptanceCriteria: ["Criterion 1"],
+				},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const tasks = artifacts.secondary?.[2];
+
+			// Should have implementation task T001 and verification task T002 with dependency
+			expect(tasks?.content).toContain("#### T001:");
+			expect(tasks?.content).toContain("#### T002:");
+			expect(tasks?.content).toContain("- **Dependencies**: T001");
+		});
+
+		it("should fallback to simple task list when extractSpec throws error", () => {
+			const strategy = new SpecKitStrategy();
+
+			// Mock extractSpec to throw an error
+			const originalExtractSpec = (strategy as any).extractSpec;
+			(strategy as any).extractSpec = () => {
+				throw new Error("Extraction failed");
+			};
+
+			const result: SessionState = {
+				id: "test-session",
+				phase: "planning",
+				config: {
+					sessionId: "test-session",
+					context: {},
+					goal: "Test Feature",
+					requirements: ["Feature 1"],
+				},
+				context: {},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const tasks = artifacts.secondary?.[2];
+
+			// Should fall back to basic task list
+			expect(tasks?.content).toContain("# Tasks:");
+			expect(tasks?.content).toContain("## Task List");
+			expect(tasks?.content).toContain("[ ] Implement: Feature 1");
+
+			// Restore original method
+			(strategy as any).extractSpec = originalExtractSpec;
+		});
+
+		it("should log error in non-production when extractSpec fails", () => {
+			const strategy = new SpecKitStrategy();
+
+			// Save original NODE_ENV and console.error
+			const originalNodeEnv = process.env.NODE_ENV;
+			const originalConsoleError = console.error;
+
+			// Mock console.error to capture calls
+			let errorLogged = false;
+			console.error = (...args: any[]) => {
+				if (args[0]?.includes("SpecKitStrategy.generateTasks")) {
+					errorLogged = true;
+				}
+			};
+
+			// Set NODE_ENV to development (non-production)
+			process.env.NODE_ENV = "development";
+
+			// Mock extractSpec to throw an error
+			const originalExtractSpec = (strategy as any).extractSpec;
+			(strategy as any).extractSpec = () => {
+				throw new Error("Extraction failed");
+			};
+
+			const result: SessionState = {
+				id: "test-session",
+				phase: "planning",
+				config: {
+					sessionId: "test-session",
+					context: {},
+					goal: "Test Feature",
+					requirements: ["Feature 1"],
+				},
+				context: {},
+				history: [],
+			};
+
+			strategy.render(result);
+
+			// Should have logged error in development
+			expect(errorLogged).toBe(true);
+
+			// Restore original values
+			(strategy as any).extractSpec = originalExtractSpec;
+			process.env.NODE_ENV = originalNodeEnv;
+			console.error = originalConsoleError;
+		});
+
+		it("should use legacy fallback task list when no requirements in config", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "planning",
+				config: {
+					sessionId: "test-session",
+					context: {},
+					goal: "Test Feature",
+					// No requirements property
+				},
+				context: {},
+				history: [],
+			};
+
+			const artifacts = strategy.render(result);
+			const tasks = artifacts.secondary?.[2];
+
+			// Should use the generic fallback
+			expect(tasks?.content).toContain("1. [ ] Define detailed requirements");
+			expect(tasks?.content).toContain("2. [ ] Create implementation plan");
+			expect(tasks?.content).toContain("3. [ ] Execute development");
+			expect(tasks?.content).toContain("4. [ ] Test and validate");
 		});
 	});
 });
