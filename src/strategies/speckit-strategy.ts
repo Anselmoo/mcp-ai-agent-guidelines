@@ -31,8 +31,13 @@ import type {
 	Constitution,
 	Constraint,
 	ConstraintReference,
+	Dependency,
 	DesignPrinciple,
+	Phase,
+	Plan,
 	Principle,
+	Risk,
+	TimelineEntry,
 } from "./speckit/types.js";
 
 /**
@@ -97,7 +102,7 @@ export class SpecKitStrategy implements OutputStrategy<SessionState> {
 			primary: this.generateReadme(result, slug),
 			secondary: [
 				this.generateSpec(result, slug, options),
-				this.generatePlan(result, slug),
+				this.renderPlan(result, slug),
 				this.generateTasks(result, slug),
 				this.generateAdr(result, slug),
 				this.generateRoadmap(result, slug),
@@ -235,56 +240,6 @@ ${outOfScope}
 
 		return {
 			name: `${slug}/spec.md`,
-			content,
-			format: "markdown",
-		};
-	}
-
-	/**
-	 * Generate plan.md - implementation plan document.
-	 *
-	 * @param result - The session state
-	 * @param slug - The slugified folder name
-	 * @returns Implementation plan with phases and timeline
-	 * @private
-	 */
-	private generatePlan(result: SessionState, slug: string): OutputDocument {
-		const title = this.extractTitle(result);
-		const approach = this.extractApproach(result);
-		const phases = this.extractPhasesDetailed(result);
-		const timeline = this.extractTimeline(result);
-		const dependencies = this.extractDependencies(result);
-		const risks = this.extractRisks(result);
-
-		const content = `# Implementation Plan: ${title}
-
-## Approach
-
-${approach}
-
-## Phases
-
-${phases}
-
-## Timeline
-
-${timeline}
-
-## Dependencies
-
-${dependencies}
-
-## Risks & Mitigation
-
-${risks}
-
----
-*See [tasks.md](./tasks.md) for detailed task breakdown*
-*See [roadmap.md](./roadmap.md) for milestones and deliverables*
-`;
-
-		return {
-			name: `${slug}/plan.md`,
 			content,
 			format: "markdown",
 		};
@@ -627,144 +582,6 @@ Track progress against this roadmap and update status as milestones are complete
 				.join("\n");
 		}
 		return "None specified";
-	}
-
-	/**
-	 * Extract implementation approach from SessionState.
-	 *
-	 * @param result - The session state
-	 * @returns Approach description
-	 * @private
-	 */
-	private extractApproach(result: SessionState): string {
-		if (
-			result.context?.approach &&
-			typeof result.context.approach === "string"
-		) {
-			return result.context.approach;
-		}
-		return "To be defined based on requirements analysis";
-	}
-
-	/**
-	 * Extract detailed phases from SessionState.
-	 *
-	 * @param result - The session state
-	 * @returns Formatted phases description
-	 * @private
-	 */
-	private extractPhasesDetailed(result: SessionState): string {
-		if (result.phases) {
-			const phaseEntries = Object.entries(result.phases);
-			if (phaseEntries.length > 0) {
-				return phaseEntries
-					.map(([phaseId, phaseData], i) => {
-						const description =
-							typeof phaseData === "string" ? phaseData : "In progress";
-						return `### Phase ${i + 1}: ${phaseId}
-
-${description}
-
-**Status**: ${typeof phaseData === "object" && phaseData !== null && "status" in phaseData ? phaseData.status : "Pending"}
-`;
-					})
-					.join("\n");
-			}
-		}
-
-		// Default phases if not defined
-		return `### Phase 1: Requirements Gathering
-
-Define and document all functional and non-functional requirements.
-
-**Status**: Pending
-
-### Phase 2: Design & Architecture
-
-Create architectural design and make key technical decisions.
-
-**Status**: Pending
-
-### Phase 3: Implementation
-
-Execute development according to the plan.
-
-**Status**: Pending
-
-### Phase 4: Testing & Validation
-
-Verify all acceptance criteria are met.
-
-**Status**: Pending
-`;
-	}
-
-	/**
-	 * Extract timeline from SessionState.
-	 *
-	 * @param result - The session state
-	 * @returns Formatted timeline
-	 * @private
-	 */
-	private extractTimeline(result: SessionState): string {
-		if (
-			result.context?.timeline &&
-			typeof result.context.timeline === "string"
-		) {
-			return result.context.timeline;
-		}
-
-		// Generate timeline from phases if available
-		if (result.phases) {
-			const phaseCount = Object.keys(result.phases).length;
-			return `Estimated ${phaseCount} phases, timeline to be determined based on complexity`;
-		}
-
-		return "To be estimated based on requirements and team capacity";
-	}
-
-	/**
-	 * Extract dependencies from SessionState.
-	 *
-	 * @param result - The session state
-	 * @returns Formatted dependencies
-	 * @private
-	 */
-	private extractDependencies(result: SessionState): string {
-		if (
-			result.context?.dependencies &&
-			Array.isArray(result.context.dependencies)
-		) {
-			return (result.context.dependencies as string[])
-				.map((d) => `- ${d}`)
-				.join("\n");
-		}
-		return "- None identified yet";
-	}
-
-	/**
-	 * Extract risks from SessionState.
-	 *
-	 * @param result - The session state
-	 * @returns Formatted risks with mitigation
-	 * @private
-	 */
-	private extractRisks(result: SessionState): string {
-		if (result.context?.risks && Array.isArray(result.context.risks)) {
-			return (
-				result.context.risks as Array<
-					string | { name: string; mitigation?: string }
-				>
-			)
-				.map((risk) => {
-					if (typeof risk === "string") {
-						return `- **Risk**: ${risk}\n  - **Mitigation**: To be defined`;
-					}
-					return `- **Risk**: ${risk.name}\n  - **Mitigation**: ${risk.mitigation || "To be defined"}`;
-				})
-				.join("\n");
-		}
-		return "- None identified yet";
 	}
 
 	/**
@@ -1121,6 +938,311 @@ ${renderedConstraints}`;
 		if (designPrinciple) return designPrinciple;
 
 		return undefined;
+	}
+
+	/**
+	 * Render plan.md document with structured Plan data.
+	 *
+	 * This is the enhanced method that creates a structured Plan object
+	 * and renders it into the plan.md format as specified in P4-005.
+	 *
+	 * @param result - The session state
+	 * @param slug - The slugified folder name
+	 * @returns OutputDocument for plan.md
+	 * @private
+	 */
+	private renderPlan(result: SessionState, slug: string): OutputDocument {
+		const plan = this.extractPlan(result);
+		const title = this.extractTitle(result);
+
+		const content = `# Implementation Plan: ${title}
+
+## Approach
+
+${plan.approach}
+
+## Phases
+
+${plan.phases
+	.map(
+		(p) => `### ${p.id}: ${p.name}
+
+${p.description}
+
+**Duration**: ${p.duration}
+
+**Deliverables**:
+${p.deliverables.map((d) => `- ${d}`).join("\n")}
+`,
+	)
+	.join("\n")}
+
+## Dependencies
+
+| ID | Description | Owner |
+|----|-------------|-------|
+${plan.dependencies.map((d) => `| ${d.id} | ${d.description} | ${d.owner ?? "TBD"} |`).join("\n")}
+
+## Risks
+
+| ID | Risk | Severity | Mitigation |
+|----|------|----------|------------|
+${plan.risks.map((r) => `| ${r.id} | ${r.description} | ${r.severity} | ${r.mitigation} |`).join("\n")}
+
+## Timeline
+
+| Phase | Start | End |
+|-------|-------|-----|
+${plan.timeline.map((t) => `| ${t.phase} | Week ${t.startWeek} | Week ${t.endWeek} |`).join("\n")}
+
+---
+*See [tasks.md](./tasks.md) for detailed task breakdown*
+*See [roadmap.md](./roadmap.md) for milestones and deliverables*
+`;
+
+		return {
+			name: `${slug}/plan.md`,
+			content,
+			format: "markdown",
+		};
+	}
+
+	/**
+	 * Extract structured Plan data from SessionState.
+	 *
+	 * Maps the design session data to the Plan interface,
+	 * deriving phases, dependencies, risks, and timeline.
+	 *
+	 * @param result - The session state
+	 * @returns Structured Plan object
+	 * @private
+	 */
+	private extractPlan(result: SessionState): Plan {
+		return {
+			approach:
+				(result.context?.approach as string) ??
+				"Iterative implementation following Spec-Kit methodology",
+			phases: this.derivePhases(result),
+			dependencies: this.deriveDependencies(result),
+			risks: this.deriveRisks(result),
+			timeline: this.deriveTimeline(result),
+		};
+	}
+
+	/**
+	 * Derive phases from SessionState.
+	 *
+	 * Maps design session phases to structured Phase objects
+	 * with IDs, names, descriptions, deliverables, and durations.
+	 *
+	 * @param result - The session state
+	 * @returns Array of Phase objects
+	 * @private
+	 */
+	private derivePhases(result: SessionState): Phase[] {
+		if (result.phases && Object.keys(result.phases).length > 0) {
+			return Object.entries(result.phases).map(([phaseId, phaseData], i) => {
+				const description =
+					typeof phaseData === "string"
+						? phaseData
+						: typeof phaseData === "object" &&
+								phaseData !== null &&
+								"description" in phaseData
+							? String(phaseData.description)
+							: "In progress";
+
+				// Extract deliverables if available
+				const deliverables =
+					typeof phaseData === "object" &&
+					phaseData !== null &&
+					"deliverables" in phaseData &&
+					Array.isArray(phaseData.deliverables)
+						? (phaseData.deliverables as string[])
+						: ["Complete phase objectives"];
+
+				// Extract duration if available
+				const duration =
+					typeof phaseData === "object" &&
+					phaseData !== null &&
+					"duration" in phaseData
+						? String(phaseData.duration)
+						: "TBD";
+
+				return {
+					id: `PHASE-${String(i + 1).padStart(3, "0")}`,
+					name: phaseId,
+					description,
+					deliverables,
+					duration,
+				};
+			});
+		}
+
+		// Default phases if none defined
+		return [
+			{
+				id: "PHASE-001",
+				name: "Requirements Gathering",
+				description:
+					"Define and document all functional and non-functional requirements.",
+				deliverables: ["Requirements specification", "Use cases"],
+				duration: "1 week",
+			},
+			{
+				id: "PHASE-002",
+				name: "Design & Architecture",
+				description:
+					"Create architectural design and make key technical decisions.",
+				deliverables: ["Architecture diagrams", "Technical specifications"],
+				duration: "2 weeks",
+			},
+			{
+				id: "PHASE-003",
+				name: "Implementation",
+				description: "Execute development according to the plan.",
+				deliverables: ["Working code", "Unit tests"],
+				duration: "4 weeks",
+			},
+			{
+				id: "PHASE-004",
+				name: "Testing & Validation",
+				description: "Verify all acceptance criteria are met.",
+				deliverables: ["Test reports", "Quality assurance sign-off"],
+				duration: "1 week",
+			},
+		];
+	}
+
+	/**
+	 * Derive dependencies from SessionState.
+	 *
+	 * Extracts project dependencies and formats them as Dependency objects.
+	 *
+	 * @param result - The session state
+	 * @returns Array of Dependency objects
+	 * @private
+	 */
+	private deriveDependencies(result: SessionState): Dependency[] {
+		if (
+			result.context?.dependencies &&
+			Array.isArray(result.context.dependencies)
+		) {
+			return (result.context.dependencies as Array<string | Dependency>).map(
+				(dep, i) => {
+					if (typeof dep === "string") {
+						return {
+							id: `DEP-${String(i + 1).padStart(3, "0")}`,
+							description: dep,
+							owner: undefined,
+						};
+					}
+					return {
+						id: dep.id ?? `DEP-${String(i + 1).padStart(3, "0")}`,
+						description: dep.description,
+						owner: dep.owner,
+					};
+				},
+			);
+		}
+
+		return [
+			{
+				id: "DEP-001",
+				description: "No dependencies identified",
+				owner: undefined,
+			},
+		];
+	}
+
+	/**
+	 * Derive risks from SessionState.
+	 *
+	 * Extracts project risks and formats them as Risk objects
+	 * with severity levels and mitigation strategies.
+	 *
+	 * @param result - The session state
+	 * @returns Array of Risk objects
+	 * @private
+	 */
+	private deriveRisks(result: SessionState): Risk[] {
+		if (result.context?.risks && Array.isArray(result.context.risks)) {
+			return (
+				result.context.risks as Array<
+					| string
+					| {
+							name?: string;
+							description?: string;
+							mitigation?: string;
+							severity?: string;
+					  }
+				>
+			).map((risk, i) => {
+				if (typeof risk === "string") {
+					return {
+						id: `RISK-${String(i + 1).padStart(3, "0")}`,
+						description: risk,
+						severity: "medium" as const,
+						mitigation: "To be defined",
+					};
+				}
+
+				const description = risk.description ?? risk.name ?? "Unnamed risk";
+				const severity = (
+					risk.severity?.toLowerCase() === "high" ||
+					risk.severity?.toLowerCase() === "low"
+						? risk.severity.toLowerCase()
+						: "medium"
+				) as "high" | "medium" | "low";
+
+				return {
+					id: `RISK-${String(i + 1).padStart(3, "0")}`,
+					description,
+					severity,
+					mitigation: risk.mitigation ?? "To be defined",
+				};
+			});
+		}
+
+		return [
+			{
+				id: "RISK-001",
+				description: "No significant risks identified yet",
+				severity: "low",
+				mitigation: "Continue monitoring during implementation",
+			},
+		];
+	}
+
+	/**
+	 * Derive timeline from SessionState phases.
+	 *
+	 * Generates a timeline by assigning week numbers to each phase
+	 * based on their sequence and estimated durations.
+	 *
+	 * @param result - The session state
+	 * @returns Array of TimelineEntry objects
+	 * @private
+	 */
+	private deriveTimeline(result: SessionState): TimelineEntry[] {
+		const phases = this.derivePhases(result);
+		let currentWeek = 1;
+
+		return phases.map((phase) => {
+			// Parse duration to estimate weeks (simple heuristic)
+			const durationMatch = phase.duration.match(/(\d+)\s*week/i);
+			const weekCount = durationMatch
+				? Number.parseInt(durationMatch[1], 10)
+				: 1;
+
+			const entry: TimelineEntry = {
+				phase: phase.id,
+				startWeek: currentWeek,
+				endWeek: currentWeek + weekCount - 1,
+			};
+
+			currentWeek += weekCount;
+			return entry;
+		});
 	}
 
 	/**
