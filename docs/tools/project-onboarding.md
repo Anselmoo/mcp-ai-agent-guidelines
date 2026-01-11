@@ -16,14 +16,16 @@
 
 ## Overview
 
-The `project-onboarding` structure analysis, dependencies, memory generation.
+The `project-onboarding` tool scans a real project directory and generates comprehensive onboarding documentation. It automatically detects frameworks, dependencies, build scripts, and project structure to help developers quickly understand a new codebase.
 
 ### Key Capabilities
 
-- Project structure scanning
-- Dependency detection
-- Technology stack identification
-- Memory generation for quick context
+- Automatic project type detection (TypeScript, JavaScript, Python, Go, Rust, etc.)
+- Framework identification (React, Vue, Express, Next.js, Django, etc.)
+- Dependency extraction from package managers (npm, pip, cargo, go modules)
+- Build script discovery (npm scripts, Makefile, etc.)
+- Directory structure visualization
+- Entry point detection
 
 ---
 
@@ -31,38 +33,51 @@ The `project-onboarding` structure analysis, dependencies, memory generation.
 
 ✅ **Good for:**
 
-- AI model selection based on task requirements
-- Validating practices against established guidelines
-- Context window optimization
-- Project onboarding and analysis
+- Onboarding new developers to a codebase
+- Documenting project structure and dependencies
+- Understanding an unfamiliar project quickly
+- Creating project overview documentation
+- Generating memory entries for AI agent context
 
 ❌ **Not ideal for:**
 
-- Complex business logic decisions
-- Security-critical operations
-- Production deployment automation
+- Real-time code execution analysis
+- In-depth code quality assessment (use clean-code-scorer instead)
+- Security auditing (use security-hardening-prompt-builder instead)
 
 ---
 
 ## Basic Usage
 
-### Example 1: Basic Utilities Task
+### Example 1: Quick Onboarding Scan
 
-```json
-{
-  "tool": "project-onboarding",
-  "projectPath": "your-project-path-here",
-  "projectName": "your-project-name",
-  "projectType": "your-project-type",
-  "analysisDepth": "your-analysis-depth"
-}
+```typescript
+// Basic onboarding scan of a project
+const result = await callTool('project-onboarding', {
+  projectPath: '/path/to/project',
+});
 ```
 
-**Output**: Structured utilities output with:
+### Example 2: Detailed Structure Analysis
 
-- Project structure scanning
-- Dependency detection
-- Technology stack identification
+```typescript
+// Include detailed directory tree
+const result = await callTool('project-onboarding', {
+  projectPath: '/path/to/project',
+  includeDetailedStructure: true,
+});
+```
+
+### Example 3: Focused Analysis
+
+```typescript
+// Focus on specific areas
+const result = await callTool('project-onboarding', {
+  projectPath: '/path/to/project',
+  includeDetailedStructure: true,
+  focusAreas: ['dependencies', 'scripts', 'frameworks'],
+});
+```
 
 ---
 
@@ -70,74 +85,148 @@ The `project-onboarding` structure analysis, dependencies, memory generation.
 
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
-| `projectPath` | string | ✅ Yes | - | Path to the project root directory |
-| `projectName` | string | No | - | Project or initiative name |
-| `projectType` | string | No | - | Type of project for onboarding |
-| `analysisDepth` | string | No | - | Depth of analysis: `shallow`, `standard`, or `deep` |
-| `includeMemories` | boolean | No | `false` | Generate memory entries for quick context |
+| `projectPath` | string | ✅ Yes | - | Path to the project directory to scan |
+| `includeDetailedStructure` | boolean | No | `false` | Include detailed directory tree structure in output |
+| `focusAreas` | array | No | All areas | Specific areas to focus on. Options: `dependencies`, `scripts`, `structure`, `frameworks` |
+| `includeReferences` | boolean | No | `false` | Include external reference links in output |
+| `includeMetadata` | boolean | No | `false` | Include metadata section in output |
 
 ---
 
 ## What You Get
 
-The tool returns a structured utilities output with:
+The tool returns a comprehensive project onboarding document with:
 
-1. **Project** - Project structure scanning
-2. **Dependency** - Dependency detection
-3. **Technology** - Technology stack identification
-4. **Memory** - Memory generation for quick context
+1. **Project Overview** - Name, type, and root path
+2. **Frameworks Detected** - Automatically identified frameworks with confidence levels
+3. **Entry Points** - Main files where execution starts
+4. **Dependencies** - Production and development dependencies with versions
+5. **Available Scripts** - Build, test, and development scripts
+6. **Directory Structure** - Visual tree representation (if requested)
 
 ### Output Structure
 
 ```markdown
-## Project Onboarding Output
+# Project Onboarding: [Project Name]
 
-### Summary
-[High-level summary of analysis/output]
+**Type**: [Project Type]
+**Root**: [Root Path]
 
-### Details
-[Detailed content based on your inputs]
+## Frameworks Detected
 
-### Recommendations
-[Actionable next steps]
+- **React** 18.2.0 (confidence: high)
+- **Express** 4.18.2 (confidence: high)
 
-### References (if enabled)
-[Links to external resources]
+## Entry Points
+
+- `src/index.ts`
+- `src/server.ts`
+
+## Dependencies (42)
+
+### Production Dependencies
+
+- react@18.2.0
+- express@4.18.2
+- zod@3.22.4
+...
+
+### Development Dependencies
+
+- typescript@5.3.3
+- vitest@1.0.4
+- biome@1.4.0
+...
+
+## Available Scripts
+
+- `npm run build`: tsc && npm run copy-assets
+- `npm run test`: vitest
+- `npm run dev`: tsc --watch
+...
+
+## Directory Structure (if includeDetailedStructure: true)
+
 ```
+project-root
+├── src
+│   ├── index.ts
+│   ├── tools
+│   │   ├── prompt
+│   │   └── analysis
+│   └── domain
+└── tests
+    └── vitest
+```
+```
+
+---
+
+## Supported Project Types
+
+The tool automatically detects and supports:
+
+### JavaScript/TypeScript Ecosystem
+- **Indicators**: `package.json`, `tsconfig.json`, `package-lock.json`
+- **Frameworks**: React, Vue, Angular, Svelte, Next.js, Express, Nest.js, etc.
+- **Scripts**: Extracted from `package.json` scripts section
+- **Dependencies**: npm, yarn, pnpm
+
+### Python Ecosystem
+- **Indicators**: `pyproject.toml`, `requirements.txt`, `setup.py`, `Pipfile`
+- **Frameworks**: Django, Flask, FastAPI, etc.
+- **Dependencies**: pip, poetry, pipenv
+
+### Go Ecosystem
+- **Indicators**: `go.mod`, `go.sum`
+- **Dependencies**: Go modules
+
+### Rust Ecosystem
+- **Indicators**: `Cargo.toml`, `Cargo.lock`
+- **Dependencies**: Cargo
+
+### Ruby Ecosystem
+- **Indicators**: `Gemfile`, `Gemfile.lock`
+- **Dependencies**: Bundler
+
+### Other Languages
+The tool can detect project structure even without specific package managers by analyzing file patterns and directory layout.
 
 ---
 
 ## Real-World Examples
 
-### Example 1: Common Use Case
+### Example 1: TypeScript MCP Server
 
-```json
-{
-  "tool": "project-onboarding",
-  "projectPath": "Example projectPath value for common use case",
-  "projectName": "example-value",
-  "projectType": "example-value"
-}
+```typescript
+const result = await callTool('project-onboarding', {
+  projectPath: '/workspace/mcp-server',
+  includeDetailedStructure: true,
+  focusAreas: ['dependencies', 'scripts', 'frameworks'],
+});
 ```
 
-**Generated Output Excerpt**:
+**Output Highlights**:
+- Detected: TypeScript project with MCP server
+- Frameworks: Model Context Protocol SDK
+- Entry points: `src/index.ts`
+- Scripts: 15+ npm scripts for build, test, quality checks
+- Dependencies: 20 production, 30+ dev dependencies
 
-```markdown
-## Common Use Case Results
+### Example 2: Python Django Project
 
-### Summary
-Analysis complete with actionable insights...
-
-### Key Findings
-1. [Finding 1 based on utilities analysis]
-2. [Finding 2 with specific recommendations]
-3. [Finding 3 with priority indicators]
-
-### Next Steps
-- Implement recommended changes
-- Review and validate results
-- Integrate into workflow
+```typescript
+const result = await callTool('project-onboarding', {
+  projectPath: '/workspace/django-app',
+  focusAreas: ['dependencies', 'frameworks'],
+});
 ```
+
+**Output Highlights**:
+- Detected: Python project with Django
+- Framework: Django 4.2
+- Dependencies from requirements.txt
+- Common Django scripts (migrate, runserver, etc.)
 
 ---
 
@@ -145,23 +234,52 @@ Analysis complete with actionable insights...
 
 ### 💡 Best Practices
 
-1. **Match Tool to Task** - Choose the right utility for the job
-2. **Provide Complete Context** - Utilities need information to help
-3. **Review Recommendations** - Don't blindly accept suggestions
-4. **Integrate into Workflow** - Make utilities part of your process
+1. **Start with Quick Scan** - Run without `includeDetailedStructure` first for overview
+2. **Use Focus Areas** - Narrow down to specific areas to reduce output size
+3. **Scan Project Root** - Always provide the actual project root path, not a subdirectory
+4. **Generate Documentation** - Use output to create README or onboarding docs
 
 ### 🚫 Common Mistakes
 
-- ❌ Using wrong tool → ✅ Check tool descriptions carefully
-- ❌ Incomplete input → ✅ Provide all relevant context
-- ❌ Ignoring output → ✅ Act on recommendations
-- ❌ One-off usage → ✅ Build into regular workflow
+- ❌ Scanning nested subdirectory → ✅ Scan from project root
+- ❌ Requesting full structure for large projects → ✅ Use focusAreas to limit output
+- ❌ Ignoring framework detection → ✅ Review detected frameworks for accuracy
+- ❌ Manual dependency tracking → ✅ Let the tool extract from package files
 
 ### ⚡ Pro Tips
 
-- Combine utilities for more comprehensive analysis
-- Use validation tools before committing changes
-- Cache results for frequently used configurations
+- Combine with `semantic-code-analyzer` for deeper code understanding
+- Use `focusAreas: ['scripts']` to quickly find build/test commands
+- Save output to create project documentation or README
+- Use detected frameworks to guide tool selection (e.g., React → use React-specific tools)
+- Check entry points to understand application startup flow
+
+---
+
+## Focus Areas Reference
+
+### `dependencies`
+- Lists production and development dependencies
+- Shows version information
+- Truncates long lists (shows first 20 production, 10 dev)
+- Counts total dependencies
+
+### `scripts`
+- Extracts available scripts from package.json (Node.js) or equivalent
+- Shows proper invocation command (e.g., `npm run build` for Node.js)
+- For non-Node projects, shows raw commands
+
+### `frameworks`
+- Automatically detects common frameworks
+- Reports confidence level (high, medium, low)
+- Shows framework version when available
+
+### `structure`
+- Shows entry points (main files)
+- Optionally includes detailed directory tree (with `includeDetailedStructure: true`)
+- Visual tree representation for easy navigation
+
+**Note**: If no `focusAreas` specified, all areas are included in the output.
 
 ---
 
