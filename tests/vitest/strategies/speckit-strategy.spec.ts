@@ -2348,7 +2348,7 @@ describe("SpecKitStrategy", () => {
 			).calculateTotalEstimate;
 
 			expect(calculateTotalEstimate.call(strategy, [{ estimate: "8h" }])).toBe(
-				"8h (~1 days)",
+				"8h (~1 day)",
 			);
 			expect(
 				calculateTotalEstimate.call(strategy, [

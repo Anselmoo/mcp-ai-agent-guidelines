@@ -275,8 +275,19 @@ ${outOfScope}
 			try {
 				const spec = this.extractSpec(result);
 				return this.renderTasks(result, slug, spec);
-			} catch {
-				// Fallback to simple task list generation if extraction fails
+			} catch (error) {
+				// Fallback to simple task list generation if extraction fails,
+				// but surface the underlying problem in non-production environments
+				if (
+					typeof process !== "undefined" &&
+					process.env?.NODE_ENV !== "production"
+				) {
+					// eslint-disable-next-line no-console -- Safe debug logging for unexpected errors
+					console.error(
+						"SpecKitStrategy.generateTasks: enhanced task rendering failed, falling back to basic generation.",
+						error,
+					);
+				}
 			}
 		}
 
@@ -1381,8 +1392,7 @@ ${plan.timeline.map((t) => `| ${t.phase} | Week ${t.startWeek} | Week ${t.endWee
 			nonFunctionalRequirements: nonFunctionalReqs,
 			constraints: this.extractConstraintReferences(result),
 			acceptanceCriteria,
-			outOfScope:
-				(result.context?.outOfScope as string[]) ?? ([] as unknown as string[]),
+			outOfScope: (result.context?.outOfScope as string[]) ?? [],
 		};
 	}
 
@@ -1425,7 +1435,15 @@ ${plan.timeline.map((t) => `| ${t.phase} | Week ${t.startWeek} | Week ${t.endWee
 		}
 
 		const groupedTasks = this.groupTasksByPhase(tasks);
-		const totalEstimate = this.calculateTotalEstimate(tasks);
+		const totalEstimate =
+			tasks.length > 0
+				? this.calculateTotalEstimate(tasks)
+				: "To be determined";
+
+		// Filter out empty phases to keep output clean
+		const nonEmptyPhases = Object.entries(groupedTasks).filter(
+			([, phaseTasks]) => phaseTasks.length > 0,
+		);
 
 		const content = `# Tasks
 
@@ -1436,9 +1454,11 @@ ${plan.timeline.map((t) => `| ${t.phase} | Week ${t.startWeek} | Week ${t.endWee
 
 ## Task List
 
-${Object.entries(groupedTasks)
-	.map(
-		([phase, phaseTasks]) => `### ${phase}
+${
+	nonEmptyPhases.length > 0
+		? nonEmptyPhases
+				.map(
+					([phase, phaseTasks]) => `### ${phase}
 
 ${phaseTasks
 	.map(
@@ -1457,14 +1477,16 @@ ${t.acceptanceCriteria.map((ac) => `- [ ] ${ac}`).join("\n")}
 `,
 	)
 	.join("\n")}`,
-	)
-	.join("\n")}
+				)
+				.join("\n")
+		: "No tasks defined yet.\n"
+}
 
 ## Dependencies Graph
 
 \`\`\`mermaid
 ${this.generateDependencyGraph(tasks)}
-\`\`\`
+\`\`\`${tasks.length === 0 ? "\n\n*No tasks defined*" : ""}
 
 ## By Priority
 
@@ -1560,6 +1582,9 @@ ${
 	 * Calculate total estimate from tasks.
 	 *
 	 * Sums task estimates (in hours) and converts to days.
+	 * Note: Only parses estimates in "Xh" format (e.g., "3h", "8h").
+	 * Other formats like "1d", "2 days", or "1 week" are not supported
+	 * and will be ignored in the calculation.
 	 *
 	 * @param tasks - Array of derived tasks
 	 * @returns Total estimate string (e.g., "24h (~3 days)")
@@ -1575,7 +1600,10 @@ ${
 			}
 		}
 
-		return `${totalHours}h (~${Math.ceil(totalHours / 8)} days)`;
+		const totalDays = Math.ceil(totalHours / 8);
+		const dayLabel = totalDays === 1 ? "day" : "days";
+
+		return `${totalHours}h (~${totalDays} ${dayLabel})`;
 	}
 
 	/**
