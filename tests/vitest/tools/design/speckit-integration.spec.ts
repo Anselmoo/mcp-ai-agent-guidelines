@@ -9,9 +9,11 @@ import type { DesignAssistantRequest } from "../../../../src/tools/design/design
 import { designAssistant } from "../../../../src/tools/design/design-assistant.js";
 
 describe("Spec-Kit Integration with Design-Assistant", () => {
-	const sessionId = `test-session-${Date.now()}`;
+	let sessionId: string;
 
 	beforeEach(async () => {
+		// Generate unique session ID for each test to avoid conflicts
+		sessionId = `test-session-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 		await designAssistant.initialize();
 	});
 
@@ -215,8 +217,29 @@ describe("Spec-Kit Integration with Design-Assistant", () => {
 			const artifactNames = speckitArtifacts.map((a) => a.name.toLowerCase());
 
 			// Should include expected Spec-Kit documents
-			// Note: Exact names depend on SpecKitStrategy implementation
 			expect(artifactNames.length).toBeGreaterThan(0);
+
+			// Check for presence of key Spec-Kit document types
+			// The primary artifact should be README or similar navigation document
+			const hasReadmeOrNavigation = artifactNames.some(
+				(name) =>
+					name.includes("readme") ||
+					name.includes("navigation") ||
+					name.includes("spec kit"),
+			);
+			expect(hasReadmeOrNavigation).toBe(true);
+
+			// Secondary artifacts should include spec, plan, tasks, or progress documents
+			const hasSpecKitDocuments = artifactNames.some(
+				(name) =>
+					name.includes("spec") ||
+					name.includes("plan") ||
+					name.includes("task") ||
+					name.includes("progress") ||
+					name.includes("adr") ||
+					name.includes("roadmap"),
+			);
+			expect(hasSpecKitDocuments).toBe(true);
 		});
 	});
 

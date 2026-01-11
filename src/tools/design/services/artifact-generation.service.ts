@@ -1,4 +1,3 @@
-// Artifact Generation Service - Handles artifact generation operations
 import { polyglotGateway } from "../../../gateway/polyglot-gateway.js";
 import { OutputApproach } from "../../../strategies/output-strategy.js";
 import {
@@ -11,7 +10,11 @@ import { crossSessionConsistencyEnforcer } from "../cross-session-consistency-en
 import { designPhaseWorkflow } from "../design-phase-workflow.js";
 import { roadmapGenerator } from "../roadmap-generator.js";
 import { specGenerator } from "../spec-generator.js";
-import type { Artifact, DesignSessionState } from "../types/index.js";
+import type {
+	Artifact,
+	DesignSessionState,
+	GatewaySessionState,
+} from "../types/index.js";
 
 export interface ArtifactGenerationResponse {
 	success: boolean;
@@ -73,7 +76,8 @@ class ArtifactGenerationServiceImpl {
 			}
 
 			if (artifactTypes.includes("speckit")) {
-				const speckitArtifacts = this.generateSpecKitArtifacts(sessionState);
+				const speckitArtifacts =
+					await this.generateSpecKitArtifacts(sessionState);
 				artifacts.push(...speckitArtifacts);
 				recommendations.push(
 					`Generated ${speckitArtifacts.length} Spec-Kit artifact(s)`,
@@ -208,9 +212,9 @@ class ArtifactGenerationServiceImpl {
 	 * @returns Array of Spec-Kit artifacts
 	 * @private
 	 */
-	private generateSpecKitArtifacts(
+	private async generateSpecKitArtifacts(
 		sessionState: DesignSessionState,
-	): Artifact[] {
+	): Promise<Artifact[]> {
 		// Convert DesignSessionState to SessionState for PolyglotGateway
 		const domainResult = this.convertSessionToDomainResult(sessionState);
 
@@ -224,10 +228,11 @@ class ArtifactGenerationServiceImpl {
 		// Convert gateway output documents to Artifact format
 		const artifacts: Artifact[] = [];
 		const timestamp = new Date().toISOString();
+		const baseId = `speckit-${sessionState.config.sessionId}-${Date.now()}`;
 
 		// Add primary artifact (README.md)
 		artifacts.push({
-			id: `speckit-primary-${Date.now()}`,
+			id: `${baseId}-primary`,
 			name: gatewayArtifacts.primary.name,
 			type: "speckit" as const,
 			content: gatewayArtifacts.primary.content,
@@ -242,7 +247,7 @@ class ArtifactGenerationServiceImpl {
 		if (gatewayArtifacts.secondary?.length) {
 			for (const [idx, secondary] of gatewayArtifacts.secondary.entries()) {
 				artifacts.push({
-					id: `speckit-secondary-${Date.now()}-${idx}`,
+					id: `${baseId}-secondary-${idx}`,
 					name: secondary.name,
 					type: "speckit" as const,
 					content: secondary.content,
@@ -266,31 +271,30 @@ class ArtifactGenerationServiceImpl {
 	 * @returns SessionState for gateway rendering
 	 * @private
 	 */
-	private convertSessionToDomainResult(session: DesignSessionState): {
-		id: string;
-		phase: string;
-		currentPhase?: string;
-		config: {
-			sessionId: string;
-			context: Record<string, unknown>;
-			goal?: string;
-			requirements?: unknown;
-			constraints?: unknown;
-			metadata?: Record<string, unknown>;
-		};
-		context: Record<string, unknown>;
-		phases?: Record<string, unknown>;
-		coverage?: unknown;
-		artifacts?: Record<string, unknown>;
-		status?: string;
-		history: Array<{
-			from: string;
-			to: string;
-			timestamp?: string;
-			type?: string;
-			description?: string;
-		}>;
-	} {
+	private convertSessionToDomainResult(
+		session: DesignSessionState,
+	): GatewaySessionState {
+		// Build phase history from session events
+		const phaseTransitions = session.history
+			.filter(
+				(event) =>
+					event.type === "phase-start" || event.type === "phase-complete",
+			)
+			.map((event, idx, events) => {
+				// For phase transitions, extract from/to from consecutive events or event data
+				const fromPhase =
+					idx > 0 ? events[idx - 1].phase || "unknown" : "unknown";
+				const toPhase = event.phase || "unknown";
+
+				return {
+					from: fromPhase,
+					to: toPhase,
+					timestamp: event.timestamp,
+					type: event.type,
+					description: event.description,
+				};
+			});
+
 		return {
 			id: session.config.sessionId,
 			phase: session.currentPhase || "discovery",
@@ -328,32 +332,35 @@ class ArtifactGenerationServiceImpl {
 				{} as Record<string, unknown>,
 			),
 			status: session.status,
-			history: session.history.map((event) => ({
-				from: event.phase || "unknown",
-				to: event.phase || "unknown",
-				timestamp: event.timestamp,
-				type: event.type,
-				description: event.description,
-			})),
+			history: phaseTransitions,
 		};
 	}
 
 	/**
 	 * Map gateway OutputDocument format to design assistant OutputFormat.
 	 *
-	 * Handles the conversion between gateway's format types (which include "shell")
-	 * and design assistant's OutputFormat type (which doesn't).
+	 * The gateway supports an additional "shell" format that is not part of the
+	 * design assistant's OutputFormat union. Rather than implicitly coercing
+	 * "shell" to "markdown" (which can be semantically misleading), this method
+	 * treats "shell" as an unsupported format and raises a validation error.
+	 *
+	 * Callers should ensure that the gateway is requested to produce one of the
+	 * supported formats ("markdown", "yaml", or "json") for design artifacts.
 	 *
 	 * @param format - Gateway output format
 	 * @returns Design assistant OutputFormat
+	 * @throws ValidationError if an unsupported format (e.g., "shell") is provided
 	 * @private
 	 */
 	private mapGatewayFormatToOutputFormat(
 		format: "markdown" | "yaml" | "json" | "shell",
 	): "markdown" | "yaml" | "json" {
-		// Map "shell" to "markdown" as shell scripts are often represented as markdown code blocks
+		// Explicitly reject "shell" rather than silently mapping it to "markdown"
 		if (format === "shell") {
-			return "markdown";
+			throw validationError(
+				'Gateway output format "shell" is not supported for design assistant artifacts. Please request "markdown", "yaml", or "json" instead.',
+				{ format },
+			);
 		}
 		return format;
 	}
