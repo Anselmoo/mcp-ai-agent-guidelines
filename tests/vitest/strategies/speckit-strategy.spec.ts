@@ -201,20 +201,21 @@ describe("SpecKitStrategy", () => {
 				"Microservices architecture with API gateway pattern",
 			);
 			expect(plan?.content).toContain("## Phases");
-			expect(plan?.content).toContain("### Phase 1: discovery");
-			expect(plan?.content).toContain("### Phase 2: planning");
-			expect(plan?.content).toContain("### Phase 3: implementation");
+			expect(plan?.content).toContain("### PHASE-001: discovery");
+			expect(plan?.content).toContain("### PHASE-002: planning");
+			expect(plan?.content).toContain("### PHASE-003: implementation");
 			expect(plan?.content).toContain("## Timeline");
-			expect(plan?.content).toContain("8 weeks total implementation");
+			expect(plan?.content).toContain("| Phase | Start | End |");
 			expect(plan?.content).toContain("## Dependencies");
-			expect(plan?.content).toContain("- Kubernetes cluster");
-			expect(plan?.content).toContain("- Service mesh");
-			expect(plan?.content).toContain("## Risks & Mitigation");
-			expect(plan?.content).toContain("**Risk**: Network latency");
+			expect(plan?.content).toContain("| DEP-001 | Kubernetes cluster | TBD |");
+			expect(plan?.content).toContain("| DEP-002 | Service mesh | TBD |");
+			expect(plan?.content).toContain("## Risks");
 			expect(plan?.content).toContain(
-				"**Mitigation**: Implement caching layer",
+				"| RISK-001 | Network latency | medium | Implement caching layer |",
 			);
-			expect(plan?.content).toContain("**Risk**: Third-party API changes");
+			expect(plan?.content).toContain(
+				"| RISK-002 | Third-party API changes | medium | To be defined |",
+			);
 		});
 
 		it("should generate tasks.md with task list and tracking", () => {
@@ -481,10 +482,10 @@ describe("SpecKitStrategy", () => {
 			const artifacts = strategy.render(result);
 			const plan = artifacts.secondary?.[1];
 
-			expect(plan?.content).toContain("### Phase 1: Requirements Gathering");
-			expect(plan?.content).toContain("### Phase 2: Design & Architecture");
-			expect(plan?.content).toContain("### Phase 3: Implementation");
-			expect(plan?.content).toContain("### Phase 4: Testing & Validation");
+			expect(plan?.content).toContain("### PHASE-001: Requirements Gathering");
+			expect(plan?.content).toContain("### PHASE-002: Design & Architecture");
+			expect(plan?.content).toContain("### PHASE-003: Implementation");
+			expect(plan?.content).toContain("### PHASE-004: Testing & Validation");
 		});
 
 		it("should generate default milestones when not provided", () => {
@@ -904,7 +905,7 @@ describe("SpecKitStrategy", () => {
 			const plan = artifacts.secondary?.[1];
 
 			expect(plan?.content).toContain("## Timeline");
-			expect(plan?.content).toContain("Estimated 3 phases");
+			expect(plan?.content).toContain("| Phase | Start | End |");
 		});
 	});
 
@@ -925,8 +926,8 @@ describe("SpecKitStrategy", () => {
 			const artifacts = strategy.render(result);
 			const plan = artifacts.secondary?.[1];
 
-			expect(plan?.content).toContain("**Status**: Complete");
-			expect(plan?.content).toContain("**Status**: In Progress");
+			expect(plan?.content).toContain("### PHASE-001: discovery");
+			expect(plan?.content).toContain("### PHASE-002: planning");
 		});
 
 		it("should handle risks as objects with mitigation", () => {
@@ -946,10 +947,12 @@ describe("SpecKitStrategy", () => {
 			const artifacts = strategy.render(result);
 			const plan = artifacts.secondary?.[1];
 
-			expect(plan?.content).toContain("**Risk**: API downtime");
-			expect(plan?.content).toContain("**Mitigation**: Implement retry logic");
-			expect(plan?.content).toContain("**Risk**: Security breach");
-			expect(plan?.content).toContain("**Mitigation**: Add 2FA");
+			expect(plan?.content).toContain(
+				"| RISK-001 | API downtime | medium | Implement retry logic |",
+			);
+			expect(plan?.content).toContain(
+				"| RISK-002 | Security breach | medium | Add 2FA |",
+			);
 		});
 
 		it("should handle tasks without id field", () => {
@@ -1074,7 +1077,7 @@ describe("SpecKitStrategy", () => {
 			const plan = artifacts.secondary?.[1];
 
 			expect(plan?.content).toContain("In progress");
-			expect(plan?.content).toContain("**Status**: Pending");
+			expect(plan?.content).toContain("### PHASE-001: discovery");
 		});
 
 		it("should handle risks with missing mitigation", () => {
@@ -1091,8 +1094,9 @@ describe("SpecKitStrategy", () => {
 			const artifacts = strategy.render(result);
 			const plan = artifacts.secondary?.[1];
 
-			expect(plan?.content).toContain("**Risk**: Vendor lock-in");
-			expect(plan?.content).toContain("**Mitigation**: To be defined");
+			expect(plan?.content).toContain(
+				"| RISK-001 | Vendor lock-in | medium | To be defined |",
+			);
 		});
 
 		it("should handle tasks with no dependencies", () => {
@@ -1259,7 +1263,7 @@ describe("SpecKitStrategy", () => {
 			const artifacts = strategy.render(result);
 			const plan = artifacts.secondary?.[1];
 
-			expect(plan?.content).toContain("Estimated 0 phases");
+			expect(plan?.content).toContain("| Phase | Start | End |");
 		});
 	});
 
