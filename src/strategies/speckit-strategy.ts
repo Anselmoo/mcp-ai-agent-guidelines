@@ -258,6 +258,29 @@ ${outOfScope}
 	 * @private
 	 */
 	private generateTasks(result: SessionState, slug: string): OutputDocument {
+		// Check if we can derive tasks from a spec (has requirements or acceptance criteria)
+		const hasSpecData =
+			(result.config?.requirements &&
+				Array.isArray(result.config.requirements) &&
+				result.config.requirements.length > 0) ||
+			(result.context?.requirements &&
+				Array.isArray(result.context.requirements) &&
+				(result.context.requirements as unknown[]).length > 0) ||
+			(result.context?.acceptanceCriteria &&
+				Array.isArray(result.context.acceptanceCriteria) &&
+				(result.context.acceptanceCriteria as unknown[]).length > 0);
+
+		if (hasSpecData) {
+			// Use the new enhanced renderTasks method
+			try {
+				const spec = this.extractSpec(result);
+				return this.renderTasks(result, slug, spec);
+			} catch {
+				// Fallback to simple task list generation if extraction fails
+			}
+		}
+
+		// Fallback to simple task list generation (backward compatible)
 		const title = this.extractTitle(result);
 		const tasks = this.extractTaskList(result);
 		const dependencies = this.generateTaskDependencies(result);
@@ -1265,6 +1288,294 @@ ${plan.timeline.map((t) => `| ${t.phase} | Week ${t.startWeek} | Week ${t.endWee
 			"context" in result &&
 			"history" in result
 		);
+	}
+
+	/**
+	 * Extract ParsedSpec from SessionState.
+	 *
+	 * Transforms SessionState data into a ParsedSpec structure
+	 * for task derivation.
+	 *
+	 * @param result - The session state
+	 * @returns ParsedSpec object
+	 * @private
+	 */
+	private extractSpec(result: SessionState): ParsedSpec {
+		const title = this.extractTitle(result);
+		const overview = this.extractOverview(result);
+
+		// Extract functional requirements
+		const functionalReqs: Requirement[] = [];
+		if (
+			result.config?.requirements &&
+			Array.isArray(result.config.requirements)
+		) {
+			functionalReqs.push(
+				...result.config.requirements.map((req, i) => ({
+					id: `REQ-${String(i + 1).padStart(3, "0")}`,
+					description: req,
+					priority: "high" as const,
+				})),
+			);
+		} else if (
+			result.context?.requirements &&
+			Array.isArray(result.context.requirements)
+		) {
+			functionalReqs.push(
+				...(result.context.requirements as string[]).map((req, i) => ({
+					id: `REQ-${String(i + 1).padStart(3, "0")}`,
+					description: req,
+					priority: "high" as const,
+				})),
+			);
+		}
+
+		// Extract non-functional requirements
+		const nonFunctionalReqs: Requirement[] = [];
+		if (
+			result.context?.nonFunctionalRequirements &&
+			Array.isArray(result.context.nonFunctionalRequirements)
+		) {
+			nonFunctionalReqs.push(
+				...(result.context.nonFunctionalRequirements as string[]).map(
+					(req, i) => ({
+						id: `NFR-${String(i + 1).padStart(3, "0")}`,
+						description: req,
+						priority: "medium" as const,
+					}),
+				),
+			);
+		}
+
+		// Extract acceptance criteria
+		const acceptanceCriteria: AcceptanceCriterion[] = [];
+		if (
+			result.context?.acceptanceCriteria &&
+			Array.isArray(result.context.acceptanceCriteria)
+		) {
+			acceptanceCriteria.push(
+				...(result.context.acceptanceCriteria as string[]).map((ac, i) => ({
+					id: `AC-${String(i + 1).padStart(3, "0")}`,
+					description: ac,
+					verificationMethod: "automated" as const,
+				})),
+			);
+		} else if (
+			result.context?.successCriteria &&
+			Array.isArray(result.context.successCriteria)
+		) {
+			acceptanceCriteria.push(
+				...(result.context.successCriteria as string[]).map((ac, i) => ({
+					id: `AC-${String(i + 1).padStart(3, "0")}`,
+					description: ac,
+					verificationMethod: "automated" as const,
+				})),
+			);
+		}
+
+		return {
+			title,
+			overview,
+			objectives: [],
+			functionalRequirements: functionalReqs,
+			nonFunctionalRequirements: nonFunctionalReqs,
+			constraints: this.extractConstraintReferences(result),
+			acceptanceCriteria,
+			outOfScope:
+				(result.context?.outOfScope as string[]) ?? ([] as unknown as string[]),
+		};
+	}
+
+	/**
+	 * Render tasks.md with enhanced structure.
+	 *
+	 * Creates a comprehensive tasks document with grouped tasks,
+	 * dependency graph, and priority sections.
+	 *
+	 * @param result - The session state
+	 * @param slug - The slugified folder name
+	 * @param spec - Optional parsed spec (if available)
+	 * @returns OutputDocument for tasks.md
+	 * @private
+	 */
+	private renderTasks(
+		result: SessionState,
+		slug: string,
+		spec?: ParsedSpec,
+	): OutputDocument {
+		let tasks: DerivedTask[];
+
+		if (spec) {
+			tasks = this.deriveTasksFromSpec(spec);
+		} else {
+			// Fallback: create basic tasks from context
+			tasks = [];
+			if (result.context?.tasks && Array.isArray(result.context.tasks)) {
+				tasks = (result.context.tasks as Array<{ title: string }>).map(
+					(t, i) => ({
+						id: `T${String(i + 1).padStart(3, "0")}`,
+						title: t.title,
+						description: "",
+						priority: "medium" as const,
+						estimate: "3h",
+						acceptanceCriteria: [],
+					}),
+				);
+			}
+		}
+
+		const groupedTasks = this.groupTasksByPhase(tasks);
+		const totalEstimate = this.calculateTotalEstimate(tasks);
+
+		const content = `# Tasks
+
+## Overview
+
+**Total Tasks**: ${tasks.length}
+**Estimated Effort**: ${totalEstimate}
+
+## Task List
+
+${Object.entries(groupedTasks)
+	.map(
+		([phase, phaseTasks]) => `### ${phase}
+
+${phaseTasks
+	.map(
+		(t) => `#### ${t.id}: ${t.title}
+
+- **Priority**: ${t.priority}
+- **Estimate**: ${t.estimate}
+${t.dependencies?.length ? `- **Dependencies**: ${t.dependencies.join(", ")}` : ""}
+
+${t.description}
+
+**Acceptance Criteria**:
+${t.acceptanceCriteria.map((ac) => `- [ ] ${ac}`).join("\n")}
+
+---
+`,
+	)
+	.join("\n")}`,
+	)
+	.join("\n")}
+
+## Dependencies Graph
+
+\`\`\`mermaid
+${this.generateDependencyGraph(tasks)}
+\`\`\`
+
+## By Priority
+
+### High Priority
+${
+	tasks
+		.filter((t) => t.priority === "high")
+		.map((t) => `- [ ] ${t.id}: ${t.title}`)
+		.join("\n") || "None"
+}
+
+### Medium Priority
+${
+	tasks
+		.filter((t) => t.priority === "medium")
+		.map((t) => `- [ ] ${t.id}: ${t.title}`)
+		.join("\n") || "None"
+}
+
+### Low Priority
+${
+	tasks
+		.filter((t) => t.priority === "low")
+		.map((t) => `- [ ] ${t.id}: ${t.title}`)
+		.join("\n") || "None"
+}
+
+---
+*Generated by SpecKitStrategy*
+`;
+
+		return {
+			name: `${slug}/tasks.md`,
+			content,
+			format: "markdown",
+		};
+	}
+
+	/**
+	 * Group tasks by phase.
+	 *
+	 * Organizes tasks into phase buckets, defaulting to "Unassigned"
+	 * for tasks without a phase.
+	 *
+	 * @param tasks - Array of derived tasks
+	 * @returns Tasks grouped by phase
+	 * @private
+	 */
+	private groupTasksByPhase(
+		tasks: DerivedTask[],
+	): Record<string, DerivedTask[]> {
+		const grouped: Record<string, DerivedTask[]> = {
+			"Phase 1": [],
+			"Phase 2": [],
+			Unassigned: [],
+		};
+
+		for (const task of tasks) {
+			const phase = task.phase ?? "Unassigned";
+			if (!grouped[phase]) grouped[phase] = [];
+			grouped[phase].push(task);
+		}
+
+		return grouped;
+	}
+
+	/**
+	 * Generate Mermaid dependency graph.
+	 *
+	 * Creates a Mermaid graph showing task dependencies.
+	 *
+	 * @param tasks - Array of derived tasks
+	 * @returns Mermaid graph definition
+	 * @private
+	 */
+	private generateDependencyGraph(tasks: DerivedTask[]): string {
+		const lines = ["graph TD"];
+
+		for (const task of tasks) {
+			if (task.dependencies?.length) {
+				for (const dep of task.dependencies) {
+					lines.push(`    ${dep} --> ${task.id}`);
+				}
+			} else {
+				lines.push(`    ${task.id}[${task.id}]`);
+			}
+		}
+
+		return lines.join("\n");
+	}
+
+	/**
+	 * Calculate total estimate from tasks.
+	 *
+	 * Sums task estimates (in hours) and converts to days.
+	 *
+	 * @param tasks - Array of derived tasks
+	 * @returns Total estimate string (e.g., "24h (~3 days)")
+	 * @private
+	 */
+	private calculateTotalEstimate(tasks: DerivedTask[]): string {
+		let totalHours = 0;
+
+		for (const task of tasks) {
+			const match = task.estimate.match(/(\d+)h/);
+			if (match) {
+				totalHours += Number.parseInt(match[1], 10);
+			}
+		}
+
+		return `${totalHours}h (~${Math.ceil(totalHours / 8)} days)`;
 	}
 
 	/**
