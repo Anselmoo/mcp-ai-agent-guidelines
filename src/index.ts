@@ -85,6 +85,7 @@ import {
 import { modeManager } from "./tools/shared/mode-manager.js";
 import { specKitGenerator } from "./tools/speckit-generator.js";
 import { sprintTimelineCalculator } from "./tools/sprint-timeline-calculator.js";
+import { validateSpec } from "./tools/validate-spec.js";
 
 const server = new Server(
 	{
@@ -1967,6 +1968,45 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			},
 		},
 		{
+			name: "validate-spec",
+			description:
+				"Validate spec.md content against constitutional constraints without generating artifacts. Useful for iterative spec refinement and quality assurance. BEST FOR: spec validation, quality checks, constitutional compliance. OUTPUTS: Validation report with score, errors, warnings, and recommendations.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					specContent: {
+						type: "string",
+						description: "The spec.md content to validate",
+					},
+					constitutionPath: {
+						type: "string",
+						description: "Path to CONSTITUTION.md file (optional)",
+					},
+					constitutionContent: {
+						type: "string",
+						description: "CONSTITUTION.md content directly (optional)",
+					},
+					outputFormat: {
+						type: "string",
+						enum: ["json", "markdown", "summary"],
+						description: "Output format for validation results",
+						default: "markdown",
+					},
+					includeRecommendations: {
+						type: "boolean",
+						description: "Whether to include recommendations in the output",
+						default: true,
+					},
+				},
+				required: ["specContent"],
+			},
+			annotations: {
+				...ANALYSIS_TOOL_ANNOTATIONS,
+				openWorldHint: true, // May read constitution file
+				title: "Validate Spec",
+			},
+		},
+		{
 			name: "model-compatibility-checker",
 			description:
 				"Recommend optimal AI models for tasks by comparing Claude, GPT-4, Gemini, and other models based on capabilities, context length, budget, and task-specific requirements. BEST FOR: model selection, cost optimization, capability matching. OUTPUTS: Ranked recommendations with rationale.",
@@ -2643,6 +2683,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 			case "speckit-generator":
 				return specKitGenerator(
 					args as unknown as Parameters<typeof specKitGenerator>[0],
+				);
+			case "validate-spec":
+				return validateSpec(
+					args as unknown as Parameters<typeof validateSpec>[0],
 				);
 			case "model-compatibility-checker":
 				return modelCompatibilityChecker(args);
