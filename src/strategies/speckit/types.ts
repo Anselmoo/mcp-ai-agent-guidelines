@@ -539,3 +539,76 @@ export interface SpecKitArtifacts {
 	/** Optional project constitution */
 	constitution?: Constitution;
 }
+
+// ============================================================================
+// Validation Types
+// ============================================================================
+
+/**
+ * A validation issue found during spec validation
+ */
+export interface ValidationIssue {
+	/** Severity level of the issue */
+	severity: "error" | "warning" | "info";
+
+	/** Unique code identifying the issue type */
+	code: string;
+
+	/** Human-readable message describing the issue */
+	message: string;
+
+	/** Optional reference to the violated constraint */
+	constraint?: string;
+
+	/** Optional location information */
+	location?: {
+		section?: string;
+		line?: number;
+	};
+
+	/** Optional suggestion for resolving the issue */
+	suggestion?: string;
+}
+
+/**
+ * Result of spec validation
+ */
+export interface ValidationResult {
+	/** Whether the spec is valid (no errors) */
+	valid: boolean;
+
+	/** Validation score (0-100) */
+	score: number;
+
+	/** List of validation issues found */
+	issues: ValidationIssue[];
+
+	/** Number of constraints checked */
+	checkedConstraints: number;
+
+	/** Number of constraints passed */
+	passedConstraints: number;
+}
+
+/**
+ * Specification content to be validated
+ */
+export interface SpecContent {
+	/** Specification title */
+	title?: string;
+
+	/** Overview/description of the specification */
+	overview?: string;
+
+	/** List of objectives */
+	objectives?: { description: string; priority?: string }[];
+
+	/** List of requirements */
+	requirements?: { description: string; type?: string }[];
+
+	/** Acceptance criteria */
+	acceptanceCriteria?: string[];
+
+	/** Raw markdown content */
+	rawMarkdown?: string;
+}
