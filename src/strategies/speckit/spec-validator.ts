@@ -10,79 +10,38 @@ import type {
 	Constraint,
 	DesignPrinciple,
 	Principle,
+	SpecContent,
+	ValidationIssue,
+	ValidationResult,
 } from "./types.js";
 
 /**
- * A validation issue found during spec validation
- */
-export interface ValidationIssue {
-	/** Severity level of the issue */
-	severity: "error" | "warning" | "info";
-
-	/** Unique code identifying the issue type */
-	code: string;
-
-	/** Human-readable message describing the issue */
-	message: string;
-
-	/** Optional reference to the violated constraint */
-	constraint?: string;
-
-	/** Optional location information */
-	location?: {
-		section?: string;
-		line?: number;
-	};
-
-	/** Optional suggestion for resolving the issue */
-	suggestion?: string;
-}
-
-/**
- * Result of spec validation
- */
-export interface ValidationResult {
-	/** Whether the spec is valid (no errors) */
-	valid: boolean;
-
-	/** Validation score (0-100) */
-	score: number;
-
-	/** List of validation issues found */
-	issues: ValidationIssue[];
-
-	/** Number of constraints checked */
-	checkedConstraints: number;
-
-	/** Number of constraints passed */
-	passedConstraints: number;
-}
-
-/**
- * Specification content to be validated
- */
-export interface SpecContent {
-	/** Specification title */
-	title?: string;
-
-	/** Overview/description of the specification */
-	overview?: string;
-
-	/** List of objectives */
-	objectives?: { description: string; priority?: string }[];
-
-	/** List of requirements */
-	requirements?: { description: string; type?: string }[];
-
-	/** Acceptance criteria */
-	acceptanceCriteria?: string[];
-
-	/** Raw markdown content */
-	rawMarkdown?: string;
-}
-
-/**
- * Validates specifications against constitutional constraints
+ * Validates specification documents against a design "constitution"
+ * composed of principles, constraints, architecture rules, and design principles.
+ *
+ * Typical usage is to create an instance for a given {@link Constitution} and then
+ * call {@link SpecValidator#validate} for each {@link SpecContent} you want to
+ * check for alignment and coverage.
+ *
+ * @example
+ * ```ts
+ * import { SpecValidator } from "./spec-validator.js";
+ * import type { Constitution, SpecContent } from "./types.js";
+ *
+ * const constitution: Constitution = loadConstitutionSomehow();
+ * const validator = new SpecValidator(constitution);
+ *
+ * const spec: SpecContent = {
+ *   title: "Payments Service ADR",
+ *   overview: "Describes the architecture and design decisions for the payments service.",
+ * };
+ *
+ * const result = validator.validate(spec);
+ *
+ * if (!result.valid) {
+ *   // Inspect result.issues and result.score to understand gaps and violations.
+ * }
+ * ```
  */
 export class SpecValidator {
 	constructor(private constitution: Constitution) {}
@@ -167,12 +126,14 @@ export class SpecValidator {
 		spec: SpecContent,
 		principle: Principle,
 	): ValidationIssue | null {
-		// Basic validation - check if spec has content
-		// More sophisticated checks can be added based on specific principles
+		// Reserved for future validation logic that may need to analyze content
+		// Currently placeholder checks are used; more sophisticated checks can be
+		// added based on specific principle types and requirements
 		const _content = spec.rawMarkdown || spec.overview || "";
 
 		// Example check for principle alignment
-		// This is a placeholder - actual implementation would depend on principle type
+		// TODO: Replace hardcoded ID checks with a validation rule registry
+		// that maps principle types/titles to validation functions
 		if (principle.id === "1" && !spec.title) {
 			return {
 				severity: "warning",
@@ -203,6 +164,7 @@ export class SpecValidator {
 		const severity = constraint.severity === "must" ? "error" : "warning";
 
 		// Example constraint checks
+		// TODO: Replace hardcoded ID checks with a validation rule registry
 		// TypeScript strict mode check (C1)
 		if (constraint.id === "C1" && content.toLowerCase().includes("any type")) {
 			return {
@@ -215,9 +177,11 @@ export class SpecValidator {
 		}
 
 		// ESM module system check (C2)
+		// Use regex to match actual require() function calls, not just the word "require"
+		const requirePattern = /\brequire\s*\(/;
 		if (
 			constraint.id === "C2" &&
-			content.includes("require(") &&
+			requirePattern.test(content) &&
 			!content.includes("// legacy")
 		) {
 			return {
@@ -246,10 +210,13 @@ export class SpecValidator {
 		const content = spec.rawMarkdown || spec.overview || "";
 
 		// Example architecture rule check
+		// TODO: Replace hardcoded ID checks with a validation rule registry
 		// Layer dependency check (AR1)
 		if (rule.id === "AR1") {
-			// Check for improper layer dependencies
-			if (content.includes("domain →") && content.includes("→ gateway")) {
+			// Use more precise pattern to detect invalid dependency flow
+			// Matches "domain → ... → gateway" pattern indicating wrong order
+			const invalidDependencyPattern = /domain\s*→.*→\s*gateway/i;
+			if (invalidDependencyPattern.test(content)) {
 				return {
 					severity: "error",
 					code: `${rule.id}-VIOLATION`,
@@ -307,8 +274,22 @@ export class SpecValidator {
 /**
  * Factory function to create a SpecValidator instance
  *
+ * Convenience factory for instantiating a {@link SpecValidator}.
+ * Equivalent to `new SpecValidator(constitution)`.
+ *
  * @param constitution - The constitution to validate against
  * @returns A new SpecValidator instance
+ *
+ * @example
+ * ```ts
+ * import { createSpecValidator } from "./spec-validator.js";
+ * import { parseConstitution } from "./constitution-parser.js";
+ *
+ * const constitution = parseConstitution(constitutionMarkdown);
+ * const validator = createSpecValidator(constitution);
+ *
+ * const result = validator.validate(mySpec);
+ * ```
  */
 export function createSpecValidator(constitution: Constitution): SpecValidator {
 	return new SpecValidator(constitution);
