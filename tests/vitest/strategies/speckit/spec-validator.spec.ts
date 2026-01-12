@@ -184,7 +184,7 @@ describe("SpecValidator", () => {
 			);
 			if (principleIssue) {
 				expect(principleIssue.severity).toBe("warning");
-				expect(principleIssue.constraint).toBe("1");
+				expect(principleIssue.constraint?.id).toBe("1");
 			}
 		});
 	});
@@ -203,7 +203,7 @@ describe("SpecValidator", () => {
 			const c1Issue = result.issues.find((i) => i.code === "C1-VIOLATION");
 			if (c1Issue) {
 				expect(c1Issue.severity).toBe("error");
-				expect(c1Issue.constraint).toBe("C1");
+				expect(c1Issue.constraint?.id).toBe("C1");
 				expect(c1Issue.message).toContain("any");
 			}
 		});
@@ -221,7 +221,7 @@ describe("SpecValidator", () => {
 			const c2Issue = result.issues.find((i) => i.code === "C2-VIOLATION");
 			if (c2Issue) {
 				expect(c2Issue.severity).toBe("error");
-				expect(c2Issue.constraint).toBe("C2");
+				expect(c2Issue.constraint?.id).toBe("C2");
 				expect(c2Issue.message).toContain("require");
 			}
 		});
@@ -254,7 +254,7 @@ describe("SpecValidator", () => {
 			const ar1Issue = result.issues.find((i) => i.code === "AR1-VIOLATION");
 			if (ar1Issue) {
 				expect(ar1Issue.severity).toBe("error");
-				expect(ar1Issue.constraint).toBe("AR1");
+				expect(ar1Issue.constraint?.id).toBe("AR1");
 			}
 		});
 	});
@@ -279,7 +279,7 @@ describe("SpecValidator", () => {
 			const dp1Issue = result.issues.find((i) => i.code === "DP1-VIOLATION");
 			if (dp1Issue) {
 				expect(dp1Issue.severity).toBe("info");
-				expect(dp1Issue.constraint).toBe("DP1");
+				expect(dp1Issue.constraint?.id).toBe("DP1");
 			}
 		});
 
