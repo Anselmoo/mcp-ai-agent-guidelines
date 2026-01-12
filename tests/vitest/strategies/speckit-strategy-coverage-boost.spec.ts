@@ -5,10 +5,16 @@
  * @module tests/strategies/speckit-strategy-coverage-boost
  */
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import type { SessionState } from "../../../src/domain/design/types.js";
 import type { Constitution } from "../../../src/strategies/speckit/types.js";
 import { SpecKitStrategy } from "../../../src/strategies/speckit-strategy.js";
+
+// Mock the createSpecValidator function to track calls
+const mockCreateSpecValidator = vi.fn();
+vi.mock("../../../src/strategies/speckit/spec-validator.js", () => ({
+	createSpecValidator: (...args: unknown[]) => mockCreateSpecValidator(...args),
+}));
 
 describe("SpecKitStrategy - Coverage Boost", () => {
 	const sampleConstitution: Constitution = {
@@ -63,6 +69,13 @@ describe("SpecKitStrategy - Coverage Boost", () => {
 
 	describe("constitution caching", () => {
 		it("should cache validator when constitution is provided", () => {
+			mockCreateSpecValidator.mockClear();
+			mockCreateSpecValidator.mockReturnValue({
+				validate: vi
+					.fn()
+					.mockReturnValue({ valid: true, issues: [], score: 100 }),
+			});
+
 			const strategy = new SpecKitStrategy();
 			const result: SessionState = {
 				id: "test-session",
@@ -71,20 +84,31 @@ describe("SpecKitStrategy - Coverage Boost", () => {
 				history: [],
 			};
 
-			// First render with constitution
+			// First render with constitution - should create validator
 			const artifacts1 = strategy.render(result, {
 				constitution: sampleConstitution,
 			});
 			expect(artifacts1).toBeDefined();
+			expect(mockCreateSpecValidator).toHaveBeenCalledTimes(1);
+			expect(mockCreateSpecValidator).toHaveBeenCalledWith(sampleConstitution);
 
-			// Second render with same constitution - should use cached validator
+			// Second render with same constitution - should reuse cached validator
 			const artifacts2 = strategy.render(result, {
 				constitution: sampleConstitution,
 			});
 			expect(artifacts2).toBeDefined();
+			// Still only called once - validator was cached
+			expect(mockCreateSpecValidator).toHaveBeenCalledTimes(1);
 		});
 
 		it("should create new validator when constitution changes", () => {
+			mockCreateSpecValidator.mockClear();
+			mockCreateSpecValidator.mockReturnValue({
+				validate: vi
+					.fn()
+					.mockReturnValue({ valid: true, issues: [], score: 100 }),
+			});
+
 			const strategy = new SpecKitStrategy();
 			const result: SessionState = {
 				id: "test-session",
@@ -98,15 +122,27 @@ describe("SpecKitStrategy - Coverage Boost", () => {
 				constitution: sampleConstitution,
 			});
 			expect(artifacts1).toBeDefined();
+			expect(mockCreateSpecValidator).toHaveBeenCalledTimes(1);
+			expect(mockCreateSpecValidator).toHaveBeenCalledWith(sampleConstitution);
 
-			// Second render with different constitution
+			// Second render with different constitution - should create new validator
 			const artifacts2 = strategy.render(result, {
 				constitution: anotherConstitution,
 			});
 			expect(artifacts2).toBeDefined();
+			// Called twice - new validator created for different constitution
+			expect(mockCreateSpecValidator).toHaveBeenCalledTimes(2);
+			expect(mockCreateSpecValidator).toHaveBeenCalledWith(anotherConstitution);
 		});
 
 		it("should clear validator when constitution is removed", () => {
+			mockCreateSpecValidator.mockClear();
+			mockCreateSpecValidator.mockReturnValue({
+				validate: vi
+					.fn()
+					.mockReturnValue({ valid: true, issues: [], score: 100 }),
+			});
+
 			const strategy = new SpecKitStrategy();
 			const result: SessionState = {
 				id: "test-session",
@@ -120,15 +156,28 @@ describe("SpecKitStrategy - Coverage Boost", () => {
 				constitution: sampleConstitution,
 			});
 			expect(artifacts1).toBeDefined();
+			expect(mockCreateSpecValidator).toHaveBeenCalledTimes(1);
 
-			// Second render without constitution - should clear validator
+			// Second render without constitution - should clear validator (no new call)
 			const artifacts2 = strategy.render(result);
 			expect(artifacts2).toBeDefined();
+			// Still only called once - validator was cleared, not recreated
+			expect(mockCreateSpecValidator).toHaveBeenCalledTimes(1);
 		});
 	});
 
 	describe("validation error handling", () => {
 		it("should throw error when failOnValidationErrors is true and validation fails", () => {
+			mockCreateSpecValidator.mockClear();
+			// Mock validator that returns invalid result
+			mockCreateSpecValidator.mockReturnValue({
+				validate: vi.fn().mockReturnValue({
+					valid: false,
+					issues: [{ type: "error", message: "Missing requirements" }],
+					score: 50,
+				}),
+			});
+
 			const strategy = new SpecKitStrategy();
 			const result: SessionState = {
 				id: "test-session",
@@ -143,23 +192,27 @@ describe("SpecKitStrategy - Coverage Boost", () => {
 				history: [],
 			};
 
-			// The validation should pass or fail depending on the constitution rules
-			// This test verifies the error handling path exists, even if validation passes
-			try {
+			// Should throw validation error when validation fails and failOnValidationErrors is true
+			expect(() =>
 				strategy.render(result, {
 					constitution: sampleConstitution,
 					validateBeforeRender: true,
 					failOnValidationErrors: true,
-				});
-				// If it doesn't throw, that's also valid (validation passed)
-				expect(true).toBe(true);
-			} catch (error) {
-				// If it throws, verify it's a validation error
-				expect(error).toBeDefined();
-			}
+				}),
+			).toThrow();
 		});
 
 		it("should not throw error when failOnValidationErrors is false", () => {
+			mockCreateSpecValidator.mockClear();
+			// Mock validator that returns invalid result
+			mockCreateSpecValidator.mockReturnValue({
+				validate: vi.fn().mockReturnValue({
+					valid: false,
+					issues: [{ type: "error", message: "Missing requirements" }],
+					score: 50,
+				}),
+			});
+
 			const strategy = new SpecKitStrategy();
 			const result: SessionState = {
 				id: "test-session",
@@ -171,6 +224,7 @@ describe("SpecKitStrategy - Coverage Boost", () => {
 				history: [],
 			};
 
+			// Should not throw when failOnValidationErrors is false
 			expect(() =>
 				strategy.render(result, {
 					constitution: sampleConstitution,
@@ -398,9 +452,16 @@ describe("SpecKitStrategy - Coverage Boost", () => {
 			const artifacts = strategy.render(result);
 			const tasks = artifacts.secondary?.[2];
 
-			// Tasks should not have redundant action verbs
-			// (extractTaskTitle strips them to avoid "Implement: Implement authentication")
+			// Verify task content is generated
 			expect(tasks?.content).toBeDefined();
+
+			// Verify action verbs are stripped to avoid redundancy like "Implement: Implement authentication"
+			// The extractTaskTitle method strips verbs like "Implement", "Create", "Add", "Build"
+			// So we should see titles like "Implement: authentication" not "Implement: Implement authentication"
+			expect(tasks?.content).toContain("Implement:");
+			expect(tasks?.content).not.toContain("Implement: Implement");
+			expect(tasks?.content).not.toContain("Implement: Create");
+			expect(tasks?.content).not.toContain("Implement: Add");
 		});
 
 		it("should handle acronyms in task titles", () => {
@@ -421,7 +482,14 @@ describe("SpecKitStrategy - Coverage Boost", () => {
 
 			const artifacts = strategy.render(result);
 			const tasks = artifacts.secondary?.[2];
+
+			// Verify task content is generated
 			expect(tasks?.content).toBeDefined();
+
+			// Verify acronyms like "API" and "REST" are preserved in uppercase
+			// The extractTaskTitle method preserves acronyms when the next char is also uppercase
+			expect(tasks?.content).toContain("API");
+			expect(tasks?.content).toContain("REST");
 		});
 
 		it("should truncate long task titles", () => {
@@ -444,10 +512,14 @@ describe("SpecKitStrategy - Coverage Boost", () => {
 
 			const artifacts = strategy.render(result);
 			const tasks = artifacts.secondary?.[2];
-			// Should contain ellipsis for truncated titles when rendered via enhanced tasks
+
+			// Verify task content is generated
 			expect(tasks?.content).toBeDefined();
-			// The task content should be generated (either with or without ellipsis depending on path taken)
 			expect(tasks?.content.length).toBeGreaterThan(0);
+
+			// Verify that long titles (>50 chars) are truncated with ellipsis
+			// The extractTaskTitle method truncates at 50 characters and adds "..."
+			expect(tasks?.content).toContain("...");
 		});
 	});
 
