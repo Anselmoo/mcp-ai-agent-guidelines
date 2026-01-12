@@ -545,11 +545,16 @@ export interface SpecKitArtifacts {
 // ============================================================================
 
 /**
+ * Severity level for validation issues
+ */
+export type ValidationSeverity = "error" | "warning" | "info";
+
+/**
  * A validation issue found during spec validation
  */
 export interface ValidationIssue {
 	/** Severity level of the issue */
-	severity: "error" | "warning" | "info";
+	severity: ValidationSeverity;
 
 	/** Unique code identifying the issue type */
 	code: string;
@@ -558,16 +563,25 @@ export interface ValidationIssue {
 	message: string;
 
 	/** Optional reference to the violated constraint */
-	constraint?: string;
+	constraint?: {
+		id: string;
+		type: "principle" | "constraint" | "architecture-rule" | "design-principle";
+		description?: string;
+	};
 
 	/** Optional location information */
 	location?: {
 		section?: string;
+		field?: string;
 		line?: number;
+		column?: number;
 	};
 
 	/** Optional suggestion for resolving the issue */
 	suggestion?: string;
+
+	/** Whether the issue can be automatically fixed */
+	fixable?: boolean;
 }
 
 /**
@@ -588,6 +602,52 @@ export interface ValidationResult {
 
 	/** Number of constraints passed */
 	passedConstraints: number;
+}
+
+/**
+ * Comprehensive validation report with metrics and categorization
+ */
+export interface ValidationReport {
+	/** Whether the spec is valid (no errors) */
+	valid: boolean;
+
+	/** Validation score (0-100) */
+	score: number;
+
+	/** ISO-8601 timestamp when the report was generated */
+	timestamp: string;
+
+	/** Summary metrics */
+	metrics: {
+		/** Total number of constraints checked */
+		total: number;
+		/** Number of constraints passed */
+		passed: number;
+		/** Number of errors found */
+		failed: number;
+		/** Number of warnings found */
+		warnings: number;
+		/** Number of info items found */
+		info: number;
+	};
+
+	/** Breakdown of results by constraint type */
+	byType: {
+		/** Principles validation results */
+		principles: { checked: number; passed: number };
+		/** Constraints validation results */
+		constraints: { checked: number; passed: number };
+		/** Architecture rules validation results */
+		architectureRules: { checked: number; passed: number };
+		/** Design principles validation results */
+		designPrinciples: { checked: number; passed: number };
+	};
+
+	/** List of validation issues found */
+	issues: ValidationIssue[];
+
+	/** Optional recommendations for improvement */
+	recommendations?: string[];
 }
 
 /**

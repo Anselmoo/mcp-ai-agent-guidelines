@@ -12,6 +12,7 @@ import type {
 	Principle,
 	SpecContent,
 	ValidationIssue,
+	ValidationReport,
 	ValidationResult,
 } from "./types.js";
 
@@ -139,7 +140,11 @@ export class SpecValidator {
 				severity: "warning",
 				code: `P${principle.id}-VIOLATION`,
 				message: `Principle "${principle.title}" may not be fully addressed`,
-				constraint: principle.id,
+				constraint: {
+					id: principle.id,
+					type: "principle",
+					description: principle.description,
+				},
 				suggestion: "Ensure spec has a clear title",
 			};
 		}
@@ -171,7 +176,11 @@ export class SpecValidator {
 				severity,
 				code: `${constraint.id}-VIOLATION`,
 				message: `Constraint "${constraint.title}" violated: avoid 'any' types`,
-				constraint: constraint.id,
+				constraint: {
+					id: constraint.id,
+					type: "constraint",
+					description: constraint.description,
+				},
 				suggestion: "Use explicit TypeScript types instead of 'any'",
 			};
 		}
@@ -188,7 +197,11 @@ export class SpecValidator {
 				severity,
 				code: `${constraint.id}-VIOLATION`,
 				message: `Constraint "${constraint.title}" violated: avoid CommonJS require()`,
-				constraint: constraint.id,
+				constraint: {
+					id: constraint.id,
+					type: "constraint",
+					description: constraint.description,
+				},
 				suggestion: "Use ESM imports with .js extensions",
 			};
 		}
@@ -221,7 +234,11 @@ export class SpecValidator {
 					severity: "error",
 					code: `${rule.id}-VIOLATION`,
 					message: `Architecture rule "${rule.title}" violated: invalid layer dependency`,
-					constraint: rule.id,
+					constraint: {
+						id: rule.id,
+						type: "architecture-rule",
+						description: rule.description,
+					},
 					suggestion:
 						"Follow proper layer dependencies: MCPServer → Gateway → Domain",
 				};
@@ -260,7 +277,11 @@ export class SpecValidator {
 						severity: "info",
 						code: `${principle.id}-VIOLATION`,
 						message: `Design principle "${principle.title}": spec may have too many responsibilities`,
-						constraint: principle.id,
+						constraint: {
+							id: principle.id,
+							type: "design-principle",
+							description: principle.description,
+						},
 						suggestion: "Consider splitting into focused, single-purpose specs",
 					};
 				}
@@ -268,6 +289,188 @@ export class SpecValidator {
 		}
 
 		return null; // No issue found
+	}
+
+	/**
+	 * Generate a comprehensive validation report
+	 *
+	 * @param spec - The specification content to validate
+	 * @returns Comprehensive validation report with metrics and categorization
+	 */
+	generateReport(spec: SpecContent): ValidationReport {
+		const result = this.validate(spec);
+
+		return {
+			valid: result.valid,
+			score: result.score,
+			timestamp: new Date().toISOString(),
+			metrics: {
+				total: result.checkedConstraints,
+				passed: result.passedConstraints,
+				failed: result.issues.filter((i) => i.severity === "error").length,
+				warnings: result.issues.filter((i) => i.severity === "warning").length,
+				info: result.issues.filter((i) => i.severity === "info").length,
+			},
+			byType: this.categorizeResults(result),
+			issues: result.issues,
+			recommendations: this.generateRecommendations(result),
+		};
+	}
+
+	/**
+	 * Categorize validation results by constraint type
+	 *
+	 * @param result - The validation result
+	 * @returns Breakdown of results by constraint type
+	 */
+	private categorizeResults(
+		result: ValidationResult,
+	): ValidationReport["byType"] {
+		const byType = {
+			principles: { checked: 0, passed: 0 },
+			constraints: { checked: 0, passed: 0 },
+			architectureRules: { checked: 0, passed: 0 },
+			designPrinciples: { checked: 0, passed: 0 },
+		};
+
+		// Count checks by type
+		byType.principles.checked = this.constitution.principles?.length ?? 0;
+		byType.constraints.checked = this.constitution.constraints?.length ?? 0;
+		byType.architectureRules.checked =
+			this.constitution.architectureRules?.length ?? 0;
+		byType.designPrinciples.checked =
+			this.constitution.designPrinciples?.length ?? 0;
+
+		// Count passes by analyzing issues
+		const issuesByType = {
+			principle: 0,
+			constraint: 0,
+			"architecture-rule": 0,
+			"design-principle": 0,
+		};
+
+		for (const issue of result.issues) {
+			if (issue.constraint?.type) {
+				issuesByType[issue.constraint.type]++;
+			}
+		}
+
+		byType.principles.passed =
+			byType.principles.checked - issuesByType.principle;
+		byType.constraints.passed =
+			byType.constraints.checked - issuesByType.constraint;
+		byType.architectureRules.passed =
+			byType.architectureRules.checked - issuesByType["architecture-rule"];
+		byType.designPrinciples.passed =
+			byType.designPrinciples.checked - issuesByType["design-principle"];
+
+		return byType;
+	}
+
+	/**
+	 * Generate recommendations based on validation results
+	 *
+	 * @param result - The validation result
+	 * @returns List of recommendations for improvement
+	 */
+	private generateRecommendations(
+		result: ValidationResult,
+	): string[] | undefined {
+		const recommendations: string[] = [];
+
+		// Recommend addressing errors first
+		const errorCount = result.issues.filter(
+			(i) => i.severity === "error",
+		).length;
+		if (errorCount > 0) {
+			recommendations.push(
+				`Address ${errorCount} critical error${errorCount > 1 ? "s" : ""} to improve spec validity`,
+			);
+		}
+
+		// Recommend addressing warnings
+		const warningCount = result.issues.filter(
+			(i) => i.severity === "warning",
+		).length;
+		if (warningCount > 0) {
+			recommendations.push(
+				`Review ${warningCount} warning${warningCount > 1 ? "s" : ""} to ensure best practices`,
+			);
+		}
+
+		// Score-based recommendations
+		if (result.score < 70) {
+			recommendations.push(
+				"Validation score is below 70. Consider a thorough review of all constitutional requirements",
+			);
+		} else if (result.score < 85) {
+			recommendations.push(
+				"Validation score is good but can be improved. Review remaining issues",
+			);
+		}
+
+		// Return undefined if no recommendations
+		return recommendations.length > 0 ? recommendations : undefined;
+	}
+
+	/**
+	 * Format validation report as GitHub-flavored markdown
+	 *
+	 * @param report - The validation report to format
+	 * @returns Markdown-formatted report
+	 */
+	formatReportAsMarkdown(report: ValidationReport): string {
+		const lines: string[] = [];
+
+		lines.push("# Validation Report\n");
+		lines.push(`**Generated**: ${report.timestamp}\n`);
+		lines.push(`**Status**: ${report.valid ? "✅ Valid" : "❌ Invalid"}\n`);
+		lines.push(`**Score**: ${report.score}/100\n\n`);
+
+		lines.push("## Summary\n\n");
+		lines.push("| Metric | Count |\n");
+		lines.push("|--------|-------|\n");
+		lines.push(`| Total Constraints | ${report.metrics.total} |\n`);
+		lines.push(`| Passed | ${report.metrics.passed} |\n`);
+		lines.push(`| Errors | ${report.metrics.failed} |\n`);
+		lines.push(`| Warnings | ${report.metrics.warnings} |\n`);
+		lines.push(`| Info | ${report.metrics.info} |\n\n`);
+
+		if (report.issues.length > 0) {
+			lines.push("## Issues\n\n");
+
+			for (const severity of ["error", "warning", "info"] as const) {
+				const issues = report.issues.filter((i) => i.severity === severity);
+				if (issues.length > 0) {
+					const icon = { error: "❌", warning: "⚠️", info: "ℹ️" }[severity];
+					lines.push(
+						`### ${icon} ${severity.charAt(0).toUpperCase() + severity.slice(1)}s\n\n`,
+					);
+
+					for (const issue of issues) {
+						lines.push(`- **${issue.code}**: ${issue.message}\n`);
+						if (issue.constraint) {
+							lines.push(
+								`  - Constraint: ${issue.constraint.id} (${issue.constraint.type})\n`,
+							);
+						}
+						if (issue.suggestion) {
+							lines.push(`  - Suggestion: ${issue.suggestion}\n`);
+						}
+					}
+					lines.push("\n");
+				}
+			}
+		}
+
+		if (report.recommendations && report.recommendations.length > 0) {
+			lines.push("## Recommendations\n\n");
+			for (const r of report.recommendations) {
+				lines.push(`- ${r}\n`);
+			}
+		}
+
+		return lines.join("");
 	}
 }
 
