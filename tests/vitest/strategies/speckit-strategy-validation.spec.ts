@@ -553,4 +553,120 @@ describe("SpecKitStrategy - Validation Integration", () => {
 			expect(artifacts.secondary?.[5].name).toContain("roadmap.md");
 		});
 	});
+
+	describe("validator caching", () => {
+		it("should reuse validator when same constitution is provided", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "specification",
+				context: {
+					title: "Feature",
+					overview: "Clean spec",
+				},
+				history: [],
+			};
+
+			// First render with constitution
+			const artifacts1 = strategy.render(result, {
+				constitution: sampleConstitution,
+				validateBeforeRender: true,
+			});
+
+			// Second render with same constitution
+			const artifacts2 = strategy.render(result, {
+				constitution: sampleConstitution,
+				validateBeforeRender: true,
+			});
+
+			// Both should succeed and produce validation results
+			expect(artifacts1.secondary?.[0].content).toContain(
+				"⚠️ Validation Results",
+			);
+			expect(artifacts2.secondary?.[0].content).toContain(
+				"⚠️ Validation Results",
+			);
+		});
+
+		it("should create new validator when constitution changes", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "specification",
+				context: {
+					title: "Feature",
+					overview: "Clean spec",
+				},
+				history: [],
+			};
+
+			const altConstitution: Constitution = {
+				principles: [
+					{
+						id: "2",
+						title: "Different Principle",
+						description: "Different description",
+						type: "principle",
+					},
+				],
+				constraints: [],
+				architectureRules: [],
+				designPrinciples: [],
+			};
+
+			// First render with original constitution
+			const artifacts1 = strategy.render(result, {
+				constitution: sampleConstitution,
+				validateBeforeRender: true,
+			});
+
+			// Second render with different constitution
+			const artifacts2 = strategy.render(result, {
+				constitution: altConstitution,
+				validateBeforeRender: true,
+			});
+
+			// Both should succeed and produce validation results
+			expect(artifacts1.secondary?.[0].content).toContain(
+				"⚠️ Validation Results",
+			);
+			expect(artifacts2.secondary?.[0].content).toContain(
+				"⚠️ Validation Results",
+			);
+		});
+
+		it("should validate without constitution when none provided", () => {
+			const strategy = new SpecKitStrategy();
+			const result: SessionState = {
+				id: "test-session",
+				phase: "specification",
+				context: {
+					title: "Feature",
+					overview: "Clean spec",
+				},
+				history: [],
+			};
+
+			// First render with constitution
+			const artifacts1 = strategy.render(result, {
+				constitution: sampleConstitution,
+				validateBeforeRender: true,
+			});
+
+			// Second render without constitution
+			const artifacts2 = strategy.render(result, {
+				validateBeforeRender: true,
+			});
+
+			// First should have validation results
+			expect(artifacts1.secondary?.[0].content).toContain(
+				"⚠️ Validation Results",
+			);
+
+			// Second should not have validation results (no constitution)
+			expect(artifacts2.secondary?.[0].content).not.toContain(
+				"⚠️ Validation Results",
+			);
+		});
+	});
 });

@@ -97,6 +97,9 @@ export class SpecKitStrategy implements OutputStrategy<SessionState> {
 	/** Optional validator for spec validation */
 	private validator?: SpecValidator;
 
+	/** Constitution used to create the current validator (for caching) */
+	private cachedConstitution?: Constitution;
+
 	/**
 	 * Render a domain result to Spec-Kit artifacts.
 	 *
@@ -113,9 +116,17 @@ export class SpecKitStrategy implements OutputStrategy<SessionState> {
 			throw new Error("SpecKitStrategy only supports SessionState");
 		}
 
-		// Initialize validator if constitution provided
+		// Initialize validator if constitution provided and not already cached
 		if (options?.constitution) {
-			this.validator = createSpecValidator(options.constitution);
+			// Only create a new validator if constitution has changed
+			if (this.cachedConstitution !== options.constitution) {
+				this.validator = createSpecValidator(options.constitution);
+				this.cachedConstitution = options.constitution;
+			}
+		} else {
+			// Clear validator if no constitution provided
+			this.validator = undefined;
+			this.cachedConstitution = undefined;
 		}
 
 		// Prepare spec content for validation
