@@ -62,6 +62,11 @@ describe("OutputSelector", () => {
 
 	describe("selectApproach", () => {
 		describe("Spec-Kit selection", () => {
+			// Note: These tests exercise the lower-level selectApproach() API directly
+			// with pre-assembled keyword arrays. In real usage via recommendApproach(),
+			// multi-word phrases would be split by extractKeywords() into individual words.
+			// See integration tests starting at line 330 for realistic end-to-end scenarios.
+
 			it("should select SPECKIT for constitution reference", () => {
 				const signals: ContextSignals = {
 					keywords: ["constitution"],
@@ -184,16 +189,18 @@ describe("OutputSelector", () => {
 
 		describe("case insensitivity", () => {
 			it("should match SPECKIT signals case-insensitively", () => {
+				// Keywords should be pre-normalized by extractKeywords()
 				const signals: ContextSignals = {
-					keywords: ["SPEC.MD", "PLAN.MD"],
+					keywords: ["spec.md", "plan.md"],
 				};
 
 				expect(selectApproach(signals)).toBe(OutputApproach.SPECKIT);
 			});
 
 			it("should match mixed case signals", () => {
+				// Keywords should be pre-normalized by extractKeywords()
 				const signals: ContextSignals = {
-					keywords: ["Specification", "Tasks.md"],
+					keywords: ["specification", "tasks.md"],
 				};
 
 				expect(selectApproach(signals)).toBe(OutputApproach.SPECKIT);

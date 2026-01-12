@@ -15,7 +15,7 @@ import { OutputApproach } from "../strategies/output-strategy.js";
  * @interface ContextSignals
  */
 export interface ContextSignals {
-	/** Keywords extracted from context or user input */
+	/** Keywords extracted from context or user input (expected to be normalized to lowercase) */
 	keywords: string[];
 
 	/** Optional domain type identifier (e.g., "PromptResult", "SessionState") */
@@ -176,16 +176,15 @@ function matchesSignal(signal: string, keywords: string[]): boolean {
  * @returns Recommended output approach
  */
 export function selectApproach(signals: ContextSignals): OutputApproach {
-	const normalizedKeywords = signals.keywords.map((k) => k.toLowerCase());
-
 	// Constitution reference is a strong signal for Spec-Kit
 	if (signals.hasConstitution) {
 		return OutputApproach.SPECKIT;
 	}
 
 	// Check for Spec-Kit signals - use exact match or word boundary match
+	// Note: keywords are expected to already be normalized by extractKeywords()
 	const speckitScore = SPECKIT_SIGNALS.filter((signal) => {
-		return matchesSignal(signal, normalizedKeywords);
+		return matchesSignal(signal, signals.keywords);
 	}).length;
 
 	// Require multiple signals to avoid false positives from generic keywords
@@ -219,9 +218,9 @@ export function calculateConfidence(
 			return 95;
 		}
 
-		const normalizedKeywords = signals.keywords.map((k) => k.toLowerCase());
+		// Note: keywords are expected to already be normalized by extractKeywords()
 		const speckitScore = SPECKIT_SIGNALS.filter((signal) => {
-			return matchesSignal(signal, normalizedKeywords);
+			return matchesSignal(signal, signals.keywords);
 		}).length;
 
 		if (speckitScore >= 3) {
@@ -252,9 +251,9 @@ export function generateReasoning(
 			return "Constitution or constraint document detected. Spec-Kit format provides structured specifications with constitution support.";
 		}
 
-		const normalizedKeywords = signals.keywords.map((k) => k.toLowerCase());
+		// Note: keywords are expected to already be normalized by extractKeywords()
 		const matchedSignals = SPECKIT_SIGNALS.filter((signal) => {
-			return matchesSignal(signal, normalizedKeywords);
+			return matchesSignal(signal, signals.keywords);
 		});
 
 		return `Multiple Spec-Kit signals detected (${matchedSignals.length}): ${matchedSignals.slice(0, 3).join(", ")}. Spec-Kit format recommended for spec-driven development workflow.`;
@@ -286,11 +285,7 @@ export function recommendApproach(context: string): RecommendationResult {
 	const signals: ContextSignals = { keywords };
 
 	// Detect constitution reference (case-insensitive)
-	if (
-		context.includes("CONSTITUTION") ||
-		context.includes("constitution") ||
-		context.includes("Constitution")
-	) {
+	if (context.toLowerCase().includes("constitution")) {
 		signals.hasConstitution = true;
 	}
 
