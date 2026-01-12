@@ -6,4 +6,5 @@
  * @module gateway
  */
 
+export * from "./output-selector.js";
 export * from "./polyglot-gateway.js";
