@@ -19,6 +19,7 @@
  */
 
 import type { SessionState } from "../domain/design/types.js";
+import { validationError } from "../tools/shared/error-factory.js";
 import type {
 	OutputArtifacts,
 	OutputDocument,
@@ -26,6 +27,10 @@ import type {
 	RenderOptions,
 } from "./output-strategy.js";
 import { OutputApproach } from "./output-strategy.js";
+import {
+	createSpecValidator,
+	type SpecValidator,
+} from "./speckit/spec-validator.js";
 import type {
 	AcceptanceCriterion,
 	ArchitectureRule,
@@ -42,7 +47,9 @@ import type {
 	Progress,
 	Requirement,
 	Risk,
+	SpecContent,
 	TimelineEntry,
+	ValidationResult,
 } from "./speckit/types.js";
 
 /**
@@ -62,6 +69,9 @@ export interface SpecKitRenderOptions extends Partial<RenderOptions> {
 
 	/** Whether to validate spec against constitution before rendering */
 	validateBeforeRender?: boolean;
+
+	/** Whether to fail rendering if validation produces errors */
+	failOnValidationErrors?: boolean;
 }
 
 /**
@@ -84,6 +94,9 @@ export class SpecKitStrategy implements OutputStrategy<SessionState> {
 	/** The output approach this strategy implements */
 	readonly approach = OutputApproach.SPECKIT;
 
+	/** Optional validator for spec validation */
+	private validator?: SpecValidator;
+
 	/**
 	 * Render a domain result to Spec-Kit artifacts.
 	 *
@@ -100,13 +113,35 @@ export class SpecKitStrategy implements OutputStrategy<SessionState> {
 			throw new Error("SpecKitStrategy only supports SessionState");
 		}
 
+		// Initialize validator if constitution provided
+		if (options?.constitution) {
+			this.validator = createSpecValidator(options.constitution);
+		}
+
+		// Prepare spec content for validation
+		const specContent = this.extractSpecContent(result);
+
+		// Validate before rendering if requested
+		let validationResult: ValidationResult | undefined;
+		if (options?.validateBeforeRender && this.validator) {
+			validationResult = this.validator.validate(specContent);
+
+			// Fail if errors and failOnValidationErrors is true
+			if (options.failOnValidationErrors && !validationResult.valid) {
+				throw validationError("Spec validation failed", {
+					issues: validationResult.issues,
+					score: validationResult.score,
+				});
+			}
+		}
+
 		const title = this.extractTitle(result);
 		const slug = this.slugify(title);
 
 		return {
 			primary: this.generateReadme(result, slug),
 			secondary: [
-				this.generateSpec(result, slug, options),
+				this.generateSpec(result, slug, options, validationResult),
 				this.renderPlan(result, slug),
 				this.generateTasks(result, slug),
 				this.renderProgress(result, slug),
@@ -187,6 +222,7 @@ ${overview}
 	 * @param result - The session state
 	 * @param slug - The slugified folder name
 	 * @param options - Optional SpecKit rendering options
+	 * @param validationResult - Optional validation result to include
 	 * @returns Specification document with requirements and constraints
 	 * @private
 	 */
@@ -194,6 +230,7 @@ ${overview}
 		result: SessionState,
 		slug: string,
 		options?: SpecKitRenderOptions,
+		validationResult?: ValidationResult,
 	): OutputDocument {
 		const title = this.extractTitle(result);
 		const overview = this.extractOverview(result);
@@ -238,7 +275,7 @@ ${acceptanceCriteria}
 
 ## Out of Scope
 
-${outOfScope}
+${outOfScope}${validationResult ? `\n${this.renderValidationSection(validationResult)}` : ""}
 
 ---
 *See [plan.md](./plan.md) for implementation details*
@@ -1982,5 +2019,151 @@ ${progress.nextSteps.map((step, i) => `${i + 1}. ${step}`).join("\n")}
 			],
 			lastUpdated: new Date(),
 		};
+	}
+
+	/**
+	 * Extract spec content for validation.
+	 *
+	 * Prepares SpecContent from SessionState for validation against
+	 * constitutional constraints.
+	 *
+	 * @param result - The session state
+	 * @returns SpecContent object ready for validation
+	 * @private
+	 */
+	private extractSpecContent(result: SessionState): SpecContent {
+		const title = this.extractTitle(result);
+		const overview = this.extractOverview(result);
+
+		// Extract objectives
+		const objectives: { description: string; priority?: string }[] = [];
+		if (
+			result.context?.objectives &&
+			Array.isArray(result.context.objectives)
+		) {
+			objectives.push(
+				...(result.context.objectives as string[]).map((obj) => ({
+					description: obj,
+					priority: "medium",
+				})),
+			);
+		}
+
+		// Extract requirements
+		const requirements: { description: string; type?: string }[] = [];
+		if (
+			result.config?.requirements &&
+			Array.isArray(result.config.requirements)
+		) {
+			requirements.push(
+				...result.config.requirements.map((req) => ({
+					description: req,
+					type: "functional",
+				})),
+			);
+		} else if (
+			result.context?.requirements &&
+			Array.isArray(result.context.requirements)
+		) {
+			requirements.push(
+				...(result.context.requirements as string[]).map((req) => ({
+					description: req,
+					type: "functional",
+				})),
+			);
+		}
+
+		// Add non-functional requirements
+		if (
+			result.context?.nonFunctionalRequirements &&
+			Array.isArray(result.context.nonFunctionalRequirements)
+		) {
+			requirements.push(
+				...(result.context.nonFunctionalRequirements as string[]).map(
+					(req) => ({
+						description: req,
+						type: "non-functional",
+					}),
+				),
+			);
+		}
+
+		// Extract acceptance criteria
+		const acceptanceCriteria: string[] = [];
+		if (
+			result.context?.acceptanceCriteria &&
+			Array.isArray(result.context.acceptanceCriteria)
+		) {
+			acceptanceCriteria.push(
+				...(result.context.acceptanceCriteria as string[]),
+			);
+		} else if (
+			result.context?.successCriteria &&
+			Array.isArray(result.context.successCriteria)
+		) {
+			acceptanceCriteria.push(...(result.context.successCriteria as string[]));
+		}
+
+		return {
+			title,
+			overview,
+			objectives,
+			requirements,
+			acceptanceCriteria,
+		};
+	}
+
+	/**
+	 * Render validation results section.
+	 *
+	 * Formats validation results into a markdown section showing
+	 * score, constraints checked, and any issues found.
+	 *
+	 * @param result - The validation result
+	 * @returns Formatted validation section
+	 * @private
+	 */
+	private renderValidationSection(result: ValidationResult): string {
+		const sections: string[] = [];
+
+		sections.push("\n---\n\n## ⚠️ Validation Results\n");
+		sections.push(`**Score**: ${result.score}/100\n`);
+		sections.push(`**Constraints Checked**: ${result.checkedConstraints}\n`);
+		sections.push(`**Constraints Passed**: ${result.passedConstraints}\n\n`);
+
+		if (result.issues.length > 0) {
+			sections.push("### Issues Found\n\n");
+
+			const errors = result.issues.filter((i) => i.severity === "error");
+			const warnings = result.issues.filter((i) => i.severity === "warning");
+			const infos = result.issues.filter((i) => i.severity === "info");
+
+			if (errors.length > 0) {
+				sections.push("#### ❌ Errors\n");
+				for (const e of errors) {
+					sections.push(`- **${e.code}**: ${e.message}\n`);
+					if (e.suggestion)
+						sections.push(`  - *Suggestion*: ${e.suggestion}\n`);
+				}
+			}
+
+			if (warnings.length > 0) {
+				sections.push("\n#### ⚠️ Warnings\n");
+				for (const w of warnings) {
+					sections.push(`- **${w.code}**: ${w.message}\n`);
+				}
+			}
+
+			if (infos.length > 0) {
+				sections.push("\n#### ℹ️ Info\n");
+				for (const i of infos) {
+					sections.push(`- **${i.code}**: ${i.message}\n`);
+				}
+			}
+		} else {
+			sections.push("✅ No validation issues found.\n");
+		}
+
+		return sections.join("");
 	}
 }
