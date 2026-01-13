@@ -4,12 +4,20 @@
  * @module tests/strategies/speckit/progress-tracker
  */
 
-import { beforeEach, describe, expect, it } from "vitest";
+import { promises as fs } from "node:fs";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
 	createProgressTracker,
 	ProgressTracker,
 } from "../../../../src/strategies/speckit/progress-tracker.js";
 import type { Tasks } from "../../../../src/strategies/speckit/types.js";
+
+// Mock fs module
+vi.mock("node:fs", () => ({
+	promises: {
+		readFile: vi.fn(),
+	},
+}));
 
 // Sample tasks for testing
 const SAMPLE_TASKS: Tasks = {
@@ -123,6 +131,48 @@ describe("ProgressTracker", () => {
 			tracker.loadProgress(markdown);
 			const metrics = tracker.calculateCompletion();
 			expect(metrics.completed).toBe(1); // Only TASK-002 should be parsed
+		});
+	});
+
+	describe("loadProgressFromFile", () => {
+		beforeEach(() => {
+			vi.clearAllMocks();
+		});
+
+		it("should read file and parse progress", async () => {
+			const tracker = createProgressTracker(SAMPLE_TASKS);
+			const fileContent = `
+# Progress
+
+## Tasks
+- [x] **TASK-001**: Setup database schema
+- [x] **TASK-002**: Implement user authentication
+- [ ] **TASK-003**: Create API endpoints
+`;
+
+			// Mock fs.readFile to return our test content
+			vi.mocked(fs.readFile).mockResolvedValue(fileContent);
+
+			await tracker.loadProgressFromFile("./progress.md");
+
+			// Verify file was read
+			expect(fs.readFile).toHaveBeenCalledWith("./progress.md", "utf-8");
+
+			// Verify progress was parsed correctly
+			const metrics = tracker.calculateCompletion();
+			expect(metrics.completed).toBe(2);
+			expect(metrics.remaining).toBe(1);
+		});
+
+		it("should handle file read errors", async () => {
+			const tracker = createProgressTracker(SAMPLE_TASKS);
+
+			// Mock fs.readFile to throw an error
+			vi.mocked(fs.readFile).mockRejectedValue(new Error("File not found"));
+
+			await expect(
+				tracker.loadProgressFromFile("./nonexistent.md"),
+			).rejects.toThrow("File not found");
 		});
 	});
 
