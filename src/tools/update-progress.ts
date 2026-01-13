@@ -135,5 +135,9 @@ export async function updateProgress(
 
 	return createMcpResponse({
 		content: output,
+		metadata: {
+			...metrics,
+			gitUpdatesApplied: gitUpdates.length,
+		},
 	});
 }

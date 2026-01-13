@@ -298,14 +298,125 @@ describe("updateProgress", () => {
 		});
 
 		it("should throw error for unknown task ID", async () => {
+			// Create temp tasks file
+			const tempTasksPath = join(process.cwd(), `test-tasks-${Date.now()}.md`);
+			tempFiles.push(tempTasksPath);
+
+			await fs.writeFile(tempTasksPath, sampleTasks, "utf-8");
+
 			const request: UpdateProgressRequest = {
-				progressContent: sampleProgress,
+				tasksPath: tempTasksPath,
 				completedTaskIds: ["UNKNOWN-001"],
 			};
 
 			await expect(updateProgress(request)).rejects.toThrow(
 				"Unknown task: UNKNOWN-001",
 			);
+		});
+
+		it("should handle progressContent without tasks gracefully", async () => {
+			// When progressContent is provided without tasks, it should work with empty tracker
+			const request: UpdateProgressRequest = {
+				progressContent: sampleProgress,
+				completedTaskIds: [],
+				outputFormat: "markdown",
+			};
+
+			const result = await updateProgress(request);
+
+			expect(result).toBeDefined();
+			expect(result.content[0].text).toContain("# Progress");
+		});
+	});
+
+	describe("file loading edge cases", () => {
+		it("should prioritize progressContent over progressPath", async () => {
+			// Create temp files
+			const tempTasksPath = join(process.cwd(), `test-tasks-${Date.now()}.md`);
+			const tempProgressPath = join(
+				process.cwd(),
+				`test-progress-${Date.now()}.md`,
+			);
+			tempFiles.push(tempTasksPath, tempProgressPath);
+
+			await fs.writeFile(tempTasksPath, sampleTasks, "utf-8");
+			await fs.writeFile(tempProgressPath, "# Different Progress", "utf-8");
+
+			const request: UpdateProgressRequest = {
+				tasksPath: tempTasksPath,
+				progressContent: sampleProgress, // This should be used
+				progressPath: tempProgressPath, // This should be ignored
+				completedTaskIds: ["P4-001"],
+				outputFormat: "markdown",
+			};
+
+			const result = await updateProgress(request);
+
+			expect(result).toBeDefined();
+			expect(result.content[0].text).toContain("P4-001");
+		});
+
+		it("should handle loadProgressFromFile failure", async () => {
+			const request: UpdateProgressRequest = {
+				progressPath: "/nonexistent/progress.md",
+				completedTaskIds: [],
+				outputFormat: "markdown",
+			};
+
+			const result = await updateProgress(request);
+
+			// Should not throw, just create fresh progress
+			expect(result).toBeDefined();
+		});
+	});
+
+	describe("metadata in response", () => {
+		it("should include metrics in response metadata", async () => {
+			// Create temp tasks file
+			const tempTasksPath = join(process.cwd(), `test-tasks-${Date.now()}.md`);
+			tempFiles.push(tempTasksPath);
+
+			await fs.writeFile(tempTasksPath, sampleTasks, "utf-8");
+
+			const request: UpdateProgressRequest = {
+				tasksPath: tempTasksPath,
+				completedTaskIds: ["P4-001"],
+				outputFormat: "markdown",
+			};
+
+			const result = await updateProgress(request);
+
+			expect(result.metadata).toBeDefined();
+			expect(result.metadata).toHaveProperty("total");
+			expect(result.metadata).toHaveProperty("completed");
+			expect(result.metadata).toHaveProperty("remaining");
+			expect(result.metadata).toHaveProperty("percentComplete");
+			expect(result.metadata).toHaveProperty("gitUpdatesApplied");
+			expect(result.metadata.gitUpdatesApplied).toBe(0);
+		});
+
+		it("should include gitUpdatesApplied count in metadata", async () => {
+			// Create temp tasks file
+			const tempTasksPath = join(process.cwd(), `test-tasks-${Date.now()}.md`);
+			tempFiles.push(tempTasksPath);
+
+			await fs.writeFile(tempTasksPath, sampleTasks, "utf-8");
+
+			const request: UpdateProgressRequest = {
+				tasksPath: tempTasksPath,
+				completedTaskIds: [],
+				syncFromGit: true,
+				gitOptions: {
+					since: "2026-01-01",
+				},
+				outputFormat: "markdown",
+			};
+
+			const result = await updateProgress(request);
+
+			expect(result.metadata).toHaveProperty("gitUpdatesApplied");
+			// Count may be 0 if no git commits, but key should exist
+			expect(typeof result.metadata.gitUpdatesApplied).toBe("number");
 		});
 	});
 

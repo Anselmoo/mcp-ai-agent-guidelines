@@ -7,6 +7,7 @@ import { McpToolError } from "./errors.js";
 export interface McpResponse {
 	isError?: boolean;
 	content: Array<{ type: "text"; text: string }>;
+	metadata?: Record<string, unknown>;
 }
 
 export function handleToolError(error: unknown): McpResponse {
