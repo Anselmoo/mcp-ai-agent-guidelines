@@ -4,7 +4,7 @@
  * @module tests/strategies/speckit/progress-tracker-git
  */
 
-import { execSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
 	createProgressTracker,
@@ -12,10 +12,21 @@ import {
 	type ProgressTracker,
 } from "../../../../src/strategies/speckit/progress-tracker.js";
 import type { Tasks } from "../../../../src/strategies/speckit/types.js";
+import { logger } from "../../../../src/tools/shared/logger.js";
 
 // Mock child_process module
 vi.mock("node:child_process", () => ({
-	execSync: vi.fn(),
+	execFileSync: vi.fn(),
+}));
+
+// Mock logger module
+vi.mock("../../../../src/tools/shared/logger.js", () => ({
+	logger: {
+		info: vi.fn(),
+		error: vi.fn(),
+		warn: vi.fn(),
+		debug: vi.fn(),
+	},
 }));
 
 // Sample tasks for testing
@@ -62,7 +73,6 @@ describe("ProgressTracker Git Integration", () => {
 
 		it("should parse closes pattern", () => {
 			// Access private method through any cast for testing
-			// biome-ignore lint/suspicious/noExplicitAny: Testing private method
 			// biome-ignore lint/suspicious/noExplicitAny: Testing private method
 			const refs = (tracker as any).extractTaskReferences("closes #P4-001");
 			expect(refs).toContainEqual({ taskId: "P4-001", action: "close" });
@@ -166,7 +176,7 @@ describe("ProgressTracker Git Integration", () => {
 				"def456|fixes P4-002|2026-01-13T11:00:00Z|Jane Smith",
 			].join("\n");
 
-			vi.mocked(execSync).mockReturnValue(mockOutput);
+			vi.mocked(execFileSync).mockReturnValue(mockOutput);
 
 			// biome-ignore lint/suspicious/noExplicitAny: Testing private method
 			const commits = (tracker as any).fetchCommits({});
@@ -187,51 +197,54 @@ describe("ProgressTracker Git Integration", () => {
 		});
 
 		it("should use default branch HEAD", () => {
-			vi.mocked(execSync).mockReturnValue("");
+			vi.mocked(execFileSync).mockReturnValue("");
 
 			(tracker as any).fetchCommits({});
 
-			expect(execSync).toHaveBeenCalledWith(
-				expect.stringContaining("git log HEAD"),
+			expect(execFileSync).toHaveBeenCalledWith(
+				"git",
+				expect.arrayContaining(["log", "HEAD"]),
 				expect.any(Object),
 			);
 		});
 
 		it("should use custom branch", () => {
-			vi.mocked(execSync).mockReturnValue("");
+			vi.mocked(execFileSync).mockReturnValue("");
 
 			(tracker as any).fetchCommits({ branch: "main" });
 
-			expect(execSync).toHaveBeenCalledWith(
-				expect.stringContaining("git log main"),
+			expect(execFileSync).toHaveBeenCalledWith(
+				"git",
+				expect.arrayContaining(["log", "main"]),
 				expect.any(Object),
 			);
 		});
 
 		it("should use since parameter", () => {
-			vi.mocked(execSync).mockReturnValue("");
+			vi.mocked(execFileSync).mockReturnValue("");
 
 			(tracker as any).fetchCommits({ since: "2026-01-01" });
 
-			expect(execSync).toHaveBeenCalledWith(
-				expect.stringContaining('--since="2026-01-01"'),
+			expect(execFileSync).toHaveBeenCalledWith(
+				"git",
+				expect.arrayContaining(["--since=2026-01-01"]),
 				expect.any(Object),
 			);
 		});
 
 		it("should use custom repoPath", () => {
-			vi.mocked(execSync).mockReturnValue("");
+			vi.mocked(execFileSync).mockReturnValue("");
 
 			(tracker as any).fetchCommits({ repoPath: "/custom/path" });
 
-			expect(execSync).toHaveBeenCalledWith(expect.any(String), {
+			expect(execFileSync).toHaveBeenCalledWith("git", expect.any(Array), {
 				cwd: "/custom/path",
 				encoding: "utf-8",
 			});
 		});
 
 		it("should handle empty git output", () => {
-			vi.mocked(execSync).mockReturnValue("");
+			vi.mocked(execFileSync).mockReturnValue("");
 
 			// biome-ignore lint/suspicious/noExplicitAny: Testing private method
 			const commits = (tracker as any).fetchCommits({});
@@ -240,7 +253,7 @@ describe("ProgressTracker Git Integration", () => {
 		});
 
 		it("should handle git errors gracefully", () => {
-			vi.mocked(execSync).mockImplementation(() => {
+			vi.mocked(execFileSync).mockImplementation(() => {
 				throw new Error("fatal: not a git repository");
 			});
 
@@ -257,7 +270,7 @@ describe("ProgressTracker Git Integration", () => {
 				"def456|fixes P4-002|2026-01-13T11:00:00Z|Jane Smith",
 			].join("\n");
 
-			vi.mocked(execSync).mockReturnValue(mockOutput);
+			vi.mocked(execFileSync).mockReturnValue(mockOutput);
 
 			// biome-ignore lint/suspicious/noExplicitAny: Testing private method
 			const commits = (tracker as any).fetchCommits({});
@@ -279,7 +292,7 @@ describe("ProgressTracker Git Integration", () => {
 				"def456|fixes P4-002|2026-01-13T11:00:00Z|Jane Smith",
 			].join("\n");
 
-			vi.mocked(execSync).mockReturnValue(mockOutput);
+			vi.mocked(execFileSync).mockReturnValue(mockOutput);
 
 			const updates = tracker.syncFromGit({});
 
@@ -302,7 +315,7 @@ describe("ProgressTracker Git Integration", () => {
 			const mockOutput =
 				"abc123|Working on TASK-123|2026-01-13T10:00:00Z|John Doe";
 
-			vi.mocked(execSync).mockReturnValue(mockOutput);
+			vi.mocked(execFileSync).mockReturnValue(mockOutput);
 
 			const updates = tracker.syncFromGit({});
 
@@ -317,7 +330,7 @@ describe("ProgressTracker Git Integration", () => {
 			const mockOutput =
 				"abc1234567|closes P4-001|2026-01-13T10:00:00Z|John Doe";
 
-			vi.mocked(execSync).mockReturnValue(mockOutput);
+			vi.mocked(execFileSync).mockReturnValue(mockOutput);
 
 			const updates = tracker.syncFromGit({});
 
@@ -328,7 +341,7 @@ describe("ProgressTracker Git Integration", () => {
 		it("should use commit timestamp", () => {
 			const mockOutput = "abc123|closes P4-001|2026-01-13T10:00:00Z|John Doe";
 
-			vi.mocked(execSync).mockReturnValue(mockOutput);
+			vi.mocked(execFileSync).mockReturnValue(mockOutput);
 
 			const updates = tracker.syncFromGit({});
 
@@ -339,7 +352,7 @@ describe("ProgressTracker Git Integration", () => {
 			const mockOutput =
 				"abc123|closes UNKNOWN-999|2026-01-13T10:00:00Z|John Doe";
 
-			vi.mocked(execSync).mockReturnValue(mockOutput);
+			vi.mocked(execFileSync).mockReturnValue(mockOutput);
 
 			const updates = tracker.syncFromGit({});
 
@@ -347,7 +360,7 @@ describe("ProgressTracker Git Integration", () => {
 		});
 
 		it("should handle no git gracefully", () => {
-			vi.mocked(execSync).mockImplementation(() => {
+			vi.mocked(execFileSync).mockImplementation(() => {
 				throw new Error("git not found");
 			});
 
@@ -360,7 +373,7 @@ describe("ProgressTracker Git Integration", () => {
 			const mockOutput =
 				"abc123|implements CUSTOM-001|2026-01-13T10:00:00Z|John";
 
-			vi.mocked(execSync).mockReturnValue(mockOutput);
+			vi.mocked(execFileSync).mockReturnValue(mockOutput);
 
 			// Add a custom task
 			const customTasks: Tasks = {
@@ -391,7 +404,7 @@ describe("ProgressTracker Git Integration", () => {
 				"def456|closes P4-001|2026-01-13T11:00:00Z|John",
 			].join("\n");
 
-			vi.mocked(execSync).mockReturnValue(mockOutput);
+			vi.mocked(execFileSync).mockReturnValue(mockOutput);
 
 			const updates = tracker.syncFromGit({});
 
@@ -416,107 +429,101 @@ describe("ProgressTracker Git Integration", () => {
 			vi.useRealTimers();
 		});
 
-		it("should watch and sync periodically", async () => {
+		it("should watch and sync periodically", () => {
 			const mockOutput = "abc123|closes P4-001|2026-01-13T10:00:00Z|John Doe";
-			vi.mocked(execSync).mockReturnValue(mockOutput);
+			vi.mocked(execFileSync).mockReturnValue(mockOutput);
 
-			const stopWatching = await tracker.watchAndSync({ intervalMs: 1000 });
+			const stopWatching = tracker.watchAndSync({ intervalMs: 1000 });
 
 			// Fast-forward time
 			vi.advanceTimersByTime(1000);
 
 			// Should have synced once
-			expect(execSync).toHaveBeenCalled();
+			expect(execFileSync).toHaveBeenCalled();
 
 			// Stop watching
 			stopWatching();
 
 			// Clear mock calls
-			vi.mocked(execSync).mockClear();
+			vi.mocked(execFileSync).mockClear();
 
 			// Fast-forward time again
 			vi.advanceTimersByTime(1000);
 
 			// Should not sync after stopping
-			expect(execSync).not.toHaveBeenCalled();
+			expect(execFileSync).not.toHaveBeenCalled();
 		});
 
-		it("should use default interval of 60 seconds", async () => {
-			vi.mocked(execSync).mockReturnValue("");
+		it("should use default interval of 60 seconds", () => {
+			vi.mocked(execFileSync).mockReturnValue("");
 
-			const stopWatching = await tracker.watchAndSync({});
+			const stopWatching = tracker.watchAndSync({});
 
 			// Fast-forward to just before interval
 			vi.advanceTimersByTime(59000);
-			expect(execSync).not.toHaveBeenCalled();
+			expect(execFileSync).not.toHaveBeenCalled();
 
 			// Fast-forward past interval
 			vi.advanceTimersByTime(1000);
-			expect(execSync).toHaveBeenCalled();
+			expect(execFileSync).toHaveBeenCalled();
 
 			stopWatching();
 		});
 
-		it("should update lastSync timestamp", async () => {
-			const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {});
-
+		it("should update lastSync timestamp", () => {
 			const mockOutput = "abc123|closes P4-001|2026-01-13T10:00:00Z|John Doe";
-			vi.mocked(execSync).mockReturnValue(mockOutput);
+			vi.mocked(execFileSync).mockReturnValue(mockOutput);
 
-			const stopWatching = await tracker.watchAndSync({ intervalMs: 1000 });
+			const stopWatching = tracker.watchAndSync({ intervalMs: 1000 });
 
 			// First sync
 			vi.advanceTimersByTime(1000);
 
-			// Verify since parameter is used
-			const firstCall = vi.mocked(execSync).mock.calls[0][0];
-			expect(firstCall).toContain("--since=");
+			// Verify since parameter is used in args array
+			const firstCall = vi.mocked(execFileSync).mock.calls[0][1] as string[];
+			expect(firstCall.some((arg) => arg.startsWith("--since="))).toBe(true);
 
 			// Clear and advance again
-			vi.mocked(execSync).mockClear();
-			vi.mocked(execSync).mockReturnValue("");
+			vi.mocked(execFileSync).mockClear();
+			vi.mocked(execFileSync).mockReturnValue("");
 
 			vi.advanceTimersByTime(1000);
 
 			// Second call should have updated since timestamp
-			const secondCall = vi.mocked(execSync).mock.calls[0][0];
-			expect(secondCall).toContain("--since=");
+			const secondCall = vi.mocked(execFileSync).mock.calls[0][1] as string[];
+			expect(secondCall.some((arg) => arg.startsWith("--since="))).toBe(true);
 
 			stopWatching();
-			consoleSpy.mockRestore();
 		});
 
-		it("should log progress updates", async () => {
-			const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {});
-
+		it("should log progress updates", () => {
 			const mockOutput = "abc123|closes P4-001|2026-01-13T10:00:00Z|John Doe";
-			vi.mocked(execSync).mockReturnValue(mockOutput);
+			vi.mocked(execFileSync).mockReturnValue(mockOutput);
 
-			const stopWatching = await tracker.watchAndSync({ intervalMs: 1000 });
+			const stopWatching = tracker.watchAndSync({ intervalMs: 1000 });
 
 			vi.advanceTimersByTime(1000);
 
-			expect(consoleSpy).toHaveBeenCalledWith(
-				expect.stringContaining("Progress updated: 1 tasks"),
+			expect(logger.info).toHaveBeenCalledWith(
+				"Progress updated from git commits",
+				expect.objectContaining({
+					taskCount: 1,
+				}),
 			);
 
 			stopWatching();
-			consoleSpy.mockRestore();
 		});
 
-		it("should not log when no updates", async () => {
-			const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+		it("should not log when no updates", () => {
+			vi.mocked(execFileSync).mockReturnValue("");
 
-			vi.mocked(execSync).mockReturnValue("");
-
-			const stopWatching = await tracker.watchAndSync({ intervalMs: 1000 });
+			const stopWatching = tracker.watchAndSync({ intervalMs: 1000 });
 
 			vi.advanceTimersByTime(1000);
 
-			expect(consoleSpy).not.toHaveBeenCalled();
+			expect(logger.info).not.toHaveBeenCalled();
 
 			stopWatching();
-			consoleSpy.mockRestore();
 		});
 	});
 
@@ -531,7 +538,7 @@ describe("ProgressTracker Git Integration", () => {
 				"ghi789|closes P4-001|2026-01-13T11:00:00Z|John Doe",
 			].join("\n");
 
-			vi.mocked(execSync).mockReturnValue(mockOutput);
+			vi.mocked(execFileSync).mockReturnValue(mockOutput);
 
 			// Sync from git
 			const updates = tracker.syncFromGit({ since: "2026-01-13" });

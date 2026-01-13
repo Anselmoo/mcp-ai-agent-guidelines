@@ -4,8 +4,9 @@
  * @module strategies/speckit/progress-tracker
  */
 
-import { execSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
 import { promises as fs } from "node:fs";
+import { logger } from "../../tools/shared/logger.js";
 import type { ProgressMetrics, Tasks } from "./types.js";
 
 /**
@@ -335,22 +336,49 @@ export class ProgressTracker {
 	private fetchCommits(options: GitSyncOptions): GitCommit[] {
 		const cwd = options.repoPath ?? process.cwd();
 		const branch = options.branch ?? "HEAD";
-		const since = options.since ? `--since="${options.since}"` : "";
 
 		try {
-			const output = execSync(
-				`git log ${branch} ${since} --format="%H|%s|%aI|%an" --no-merges`,
-				{ cwd, encoding: "utf-8" },
-			);
+			// Build git log arguments safely to prevent command injection
+			const args = ["log", branch, "--format=%H|%s|%aI|%an", "--no-merges"];
+
+			// Add since parameter if provided
+			if (options.since) {
+				args.push(`--since=${options.since}`);
+			}
+
+			const output = execFileSync("git", args, {
+				cwd,
+				encoding: "utf-8",
+			});
 
 			return output
 				.trim()
 				.split("\n")
 				.filter(Boolean)
 				.map((line) => {
-					const [hash, message, date, author] = line.split("|");
-					return { hash, message, date, author };
-				});
+					// Split with limit to handle pipe characters in commit messages
+					const parts = line.split("|");
+					if (parts.length < 4) {
+						// Malformed line, skip it
+						return null;
+					}
+					const [hash, message, date, author, ...rest] = parts;
+					// If message contained pipes, rejoin the extra parts
+					const fullMessage =
+						rest.length > 0
+							? [message, ...rest.slice(0, -2)].join("|")
+							: message;
+					const actualDate = rest.length > 0 ? rest[rest.length - 2] : date;
+					const actualAuthor = rest.length > 0 ? rest[rest.length - 1] : author;
+
+					return {
+						hash,
+						message: fullMessage,
+						date: actualDate,
+						author: actualAuthor,
+					};
+				})
+				.filter((commit): commit is GitCommit => commit !== null);
 		} catch (_error) {
 			// Git not available or not a repo - graceful degradation
 			return [];
@@ -404,13 +432,36 @@ export class ProgressTracker {
 		}
 
 		// Add custom pattern if provided
+		// Expected shape for customPattern matches:
+		//   - match[0]: full text starting with an action word (e.g., "closes P4-001")
+		//   - match[1]: captured task ID (e.g., "P4-001")
 		if (customPattern) {
 			const matches = message.matchAll(customPattern);
 			for (const match of matches) {
-				const action = match[0].split(/\s+/)[0].toLowerCase().replace(/s$/, "");
+				// Validate that we have a captured task ID
+				if (!match[1]) {
+					continue;
+				}
+
+				// Derive action from the first whitespace-separated token in the full match
+				const rawMatchText =
+					typeof match[0] === "string" ? match[0].trim() : "";
+				const firstToken = rawMatchText.split(/\s+/)[0] ?? "";
+				const normalizedAction = firstToken.toLowerCase().replace(/s$/, "");
+
+				// Validate that we have a plausible action word
+				if (!normalizedAction || !/^[a-z]+$/.test(normalizedAction)) {
+					// If the custom pattern doesn't start with an action word, use generic action
+					results.push({
+						taskId: match[1],
+						action: "custom",
+					});
+					continue;
+				}
+
 				results.push({
 					taskId: match[1],
-					action,
+					action: normalizedAction,
 				});
 			}
 		}
@@ -437,11 +488,11 @@ export class ProgressTracker {
 	 * task progress. Returns a cleanup function to stop watching.
 	 *
 	 * @param options - Git sync options with optional interval
-	 * @returns Promise that resolves to a cleanup function
+	 * @returns Cleanup function to stop watching
 	 *
 	 * @example
 	 * ```typescript
-	 * const stopWatching = await tracker.watchAndSync({
+	 * const stopWatching = tracker.watchAndSync({
 	 *   intervalMs: 60000, // Check every minute
 	 *   branch: "main"
 	 * });
@@ -450,9 +501,7 @@ export class ProgressTracker {
 	 * stopWatching();
 	 * ```
 	 */
-	async watchAndSync(
-		options: GitSyncOptions & { intervalMs?: number },
-	): Promise<() => void> {
+	watchAndSync(options: GitSyncOptions & { intervalMs?: number }): () => void {
 		const interval = options.intervalMs ?? 60000; // Default 1 minute
 		let lastSync = new Date().toISOString();
 
@@ -461,7 +510,10 @@ export class ProgressTracker {
 			lastSync = new Date().toISOString();
 
 			if (updates.length > 0) {
-				console.log(`Progress updated: ${updates.length} tasks`);
+				logger.info("Progress updated from git commits", {
+					taskCount: updates.length,
+					taskIds: updates.map((u) => u.taskId),
+				});
 			}
 		}, interval);
 
