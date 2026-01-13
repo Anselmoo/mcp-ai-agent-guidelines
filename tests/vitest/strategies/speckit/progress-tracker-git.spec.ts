@@ -62,36 +62,44 @@ describe("ProgressTracker Git Integration", () => {
 
 		it("should parse closes pattern", () => {
 			// Access private method through any cast for testing
+			// biome-ignore lint/suspicious/noExplicitAny: Testing private method
+			// biome-ignore lint/suspicious/noExplicitAny: Testing private method
 			const refs = (tracker as any).extractTaskReferences("closes #P4-001");
 			expect(refs).toContainEqual({ taskId: "P4-001", action: "close" });
 		});
 
 		it("should parse closes without hash", () => {
+			// biome-ignore lint/suspicious/noExplicitAny: Testing private method
 			const refs = (tracker as any).extractTaskReferences("closes P4-001");
 			expect(refs).toContainEqual({ taskId: "P4-001", action: "close" });
 		});
 
 		it("should parse fixes pattern", () => {
+			// biome-ignore lint/suspicious/noExplicitAny: Testing private method
 			const refs = (tracker as any).extractTaskReferences("fixes P4-002");
 			expect(refs).toContainEqual({ taskId: "P4-002", action: "fix" });
 		});
 
 		it("should parse resolves pattern", () => {
+			// biome-ignore lint/suspicious/noExplicitAny: Testing private method
 			const refs = (tracker as any).extractTaskReferences("resolves P4-001");
 			expect(refs).toContainEqual({ taskId: "P4-001", action: "resolve" });
 		});
 
 		it("should parse completes pattern", () => {
+			// biome-ignore lint/suspicious/noExplicitAny: Testing private method
 			const refs = (tracker as any).extractTaskReferences("completes P4-002");
 			expect(refs).toContainEqual({ taskId: "P4-002", action: "complete" });
 		});
 
 		it("should handle plural forms", () => {
+			// biome-ignore lint/suspicious/noExplicitAny: Testing private method
 			const refs = (tracker as any).extractTaskReferences("Closes P4-001");
 			expect(refs).toContainEqual({ taskId: "P4-001", action: "close" });
 		});
 
 		it("should handle multiple references", () => {
+			// biome-ignore lint/suspicious/noExplicitAny: Testing private method
 			const refs = (tracker as any).extractTaskReferences(
 				"closes P4-001, fixes P4-002",
 			);
@@ -101,6 +109,7 @@ describe("ProgressTracker Git Integration", () => {
 		});
 
 		it("should extract standalone task IDs", () => {
+			// biome-ignore lint/suspicious/noExplicitAny: Testing private method
 			const refs = (tracker as any).extractTaskReferences(
 				"Working on TASK-123 implementation",
 			);
@@ -108,6 +117,7 @@ describe("ProgressTracker Git Integration", () => {
 		});
 
 		it("should not duplicate task IDs", () => {
+			// biome-ignore lint/suspicious/noExplicitAny: Testing private method
 			const refs = (tracker as any).extractTaskReferences(
 				"closes P4-001 for P4-001",
 			);
@@ -117,6 +127,7 @@ describe("ProgressTracker Git Integration", () => {
 
 		it("should support custom pattern", () => {
 			const customPattern = /implements\s+(\S+)/gi;
+			// biome-ignore lint/suspicious/noExplicitAny: Testing private method
 			const refs = (tracker as any).extractTaskReferences(
 				"implements CUSTOM-001",
 				customPattern,
@@ -128,11 +139,13 @@ describe("ProgressTracker Git Integration", () => {
 		});
 
 		it("should handle empty message", () => {
+			// biome-ignore lint/suspicious/noExplicitAny: Testing private method
 			const refs = (tracker as any).extractTaskReferences("");
 			expect(refs).toEqual([]);
 		});
 
 		it("should handle message with no task references", () => {
+			// biome-ignore lint/suspicious/noExplicitAny: Testing private method
 			const refs = (tracker as any).extractTaskReferences(
 				"Regular commit message",
 			);
@@ -155,6 +168,7 @@ describe("ProgressTracker Git Integration", () => {
 
 			vi.mocked(execSync).mockReturnValue(mockOutput);
 
+			// biome-ignore lint/suspicious/noExplicitAny: Testing private method
 			const commits = (tracker as any).fetchCommits({});
 
 			expect(commits).toHaveLength(2);
@@ -219,6 +233,7 @@ describe("ProgressTracker Git Integration", () => {
 		it("should handle empty git output", () => {
 			vi.mocked(execSync).mockReturnValue("");
 
+			// biome-ignore lint/suspicious/noExplicitAny: Testing private method
 			const commits = (tracker as any).fetchCommits({});
 
 			expect(commits).toEqual([]);
@@ -229,6 +244,7 @@ describe("ProgressTracker Git Integration", () => {
 				throw new Error("fatal: not a git repository");
 			});
 
+			// biome-ignore lint/suspicious/noExplicitAny: Testing private method
 			const commits = (tracker as any).fetchCommits({});
 
 			expect(commits).toEqual([]);
@@ -243,6 +259,7 @@ describe("ProgressTracker Git Integration", () => {
 
 			vi.mocked(execSync).mockReturnValue(mockOutput);
 
+			// biome-ignore lint/suspicious/noExplicitAny: Testing private method
 			const commits = (tracker as any).fetchCommits({});
 
 			expect(commits).toHaveLength(2);
