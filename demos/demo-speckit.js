@@ -77,7 +77,15 @@ async function runDemo() {
 
 	const result = await specKitGenerator(requirements);
 	logger.info("Generated artifacts", {
-		artifacts: ["spec.md", "plan.md", "tasks.md", "progress.md"],
+		artifacts: [
+			"spec.md",
+			"plan.md",
+			"tasks.md",
+			"progress.md",
+			"adr.md",
+			"roadmap.md",
+			"README.md",
+		],
 	});
 
 	// Save artifacts
@@ -91,6 +99,18 @@ async function runDemo() {
 		: result.content;
 
 	const artifacts = parseArtifacts(resultText);
+
+	// Validate that required artifacts were parsed
+	const requiredArtifacts = ["spec.md", "plan.md", "tasks.md", "progress.md"];
+	const missingArtifacts = requiredArtifacts.filter((name) => !artifacts[name]);
+
+	if (missingArtifacts.length > 0) {
+		throw new Error(
+			`Failed to parse required artifacts: ${missingArtifacts.join(", ")}. ` +
+				`Available artifacts: ${Object.keys(artifacts).join(", ")}`,
+		);
+	}
+
 	for (const [name, content] of Object.entries(artifacts)) {
 		const outputPath = join(outputDir, `demo-speckit-${name}`);
 		await fs.writeFile(outputPath, content);
@@ -125,9 +145,16 @@ async function runDemo() {
 		note: "Task tracking ready - update with task completions as work progresses",
 	});
 
-	// Display a sample of the generated progress
-	const progressPreview = artifacts["progress.md"].substring(0, 300);
-	logger.info("Progress preview", { preview: progressPreview });
+	// Display a sample of the generated progress, if available
+	const progressContent = artifacts["progress.md"];
+	if (typeof progressContent === "string") {
+		const progressPreview = progressContent.substring(0, 300);
+		logger.info("Progress preview", { preview: progressPreview });
+	} else {
+		logger.warn("Progress artifact not available for preview", {
+			artifactKeys: Object.keys(artifacts),
+		});
+	}
 
 	logger.info("Demo complete! Check demos/output/ for generated files.", {
 		separator: "=".repeat(60),
