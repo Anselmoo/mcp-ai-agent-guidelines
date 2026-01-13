@@ -15,10 +15,8 @@ import { polyglotGateway } from "../../../../src/gateway/polyglot-gateway.js";
 import { OutputApproach } from "../../../../src/strategies/output-strategy.js";
 import { parseConstitution } from "../../../../src/strategies/speckit/constitution-parser.js";
 import { createProgressTracker } from "../../../../src/strategies/speckit/progress-tracker.js";
-import { createSpecValidator } from "../../../../src/strategies/speckit/spec-validator.js";
 import { SpecKitStrategy } from "../../../../src/strategies/speckit-strategy.js";
 import { specKitGenerator } from "../../../../src/tools/speckit-generator.js";
-import { updateProgress } from "../../../../src/tools/update-progress.js";
 import { validateSpec } from "../../../../src/tools/validate-spec.js";
 
 const PROJECT_ROOT = process.cwd();
@@ -100,14 +98,17 @@ describe("Spec-Kit Final Integration", () => {
 			// Primary is README.md with slug prefix
 			expect(result.primary.name).toContain("README.md");
 			expect(result.secondary).toBeDefined();
-			expect(result.secondary!.length).toBeGreaterThanOrEqual(3);
 
-			const names = result.secondary!.map((s) => s.name);
-			// Check for spec, plan, tasks, progress in the secondary files
-			expect(names.some((n) => n.includes("spec.md"))).toBe(true);
-			expect(names.some((n) => n.includes("plan.md"))).toBe(true);
-			expect(names.some((n) => n.includes("tasks.md"))).toBe(true);
-			expect(names.some((n) => n.includes("progress.md"))).toBe(true);
+			if (result.secondary) {
+				expect(result.secondary.length).toBeGreaterThanOrEqual(3);
+
+				const names = result.secondary.map((s) => s.name);
+				// Check for spec, plan, tasks, progress in the secondary files
+				expect(names.some((n) => n.includes("spec.md"))).toBe(true);
+				expect(names.some((n) => n.includes("plan.md"))).toBe(true);
+				expect(names.some((n) => n.includes("tasks.md"))).toBe(true);
+				expect(names.some((n) => n.includes("progress.md"))).toBe(true);
+			}
 		});
 	});
 
@@ -396,7 +397,7 @@ Major refactoring effort for improved discoverability.
 `;
 }
 
-function getSampleProgress(): string {
+function _getSampleProgress(): string {
 	return `# Progress
 
 ## Tasks
