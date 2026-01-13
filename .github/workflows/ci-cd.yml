@@ -8,10 +8,13 @@ on:
   push:
     branches:
       - main
+      - development
       - 'auto-regenerate-demos-*'
+      - 'copilot/**'
     tags: ['v*.*.*']
   pull_request:
-    branches: [main]
+    branches: [main, development, 'copilot/**']
+    types: [opened, synchronize, reopened]
 
 env:
   NODE_VERSION: '22'  # Default Node.js version (LTS until April 2027)

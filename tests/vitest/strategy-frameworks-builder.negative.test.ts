@@ -1,23 +1,29 @@
 import { describe, expect, it } from "vitest";
 import { strategyFrameworksBuilder } from "../../src/tools/analysis/strategy-frameworks-builder";
 
+type ErrorResponse = { isError?: boolean; content: { text: string }[] };
+
 describe("strategy-frameworks-builder (negative and toggles)", () => {
-	it("throws on missing context", async () => {
+	it("returns error on missing context", async () => {
 		// deliberately omit context
 		const invalidArgs = { frameworks: ["swot"] } as unknown;
-		await expect(strategyFrameworksBuilder(invalidArgs)).rejects.toThrow(
-			/context/i,
-		);
+		const result = (await strategyFrameworksBuilder(
+			invalidArgs,
+		)) as ErrorResponse;
+		expect(result.isError).toBe(true);
+		expect(result.content[0].text).toMatch(/context/i);
 	});
 
-	it("throws on invalid framework id", async () => {
+	it("returns error on invalid framework id", async () => {
 		const invalidArgs = {
 			frameworks: ["swot", "notAFramework"],
 			context: "Test",
 		} as unknown;
-		await expect(strategyFrameworksBuilder(invalidArgs)).rejects.toThrow(
-			/Invalid enum value|frameworks/i,
-		);
+		const result = (await strategyFrameworksBuilder(
+			invalidArgs,
+		)) as ErrorResponse;
+		expect(result.isError).toBe(true);
+		expect(result.content[0].text).toMatch(/Invalid enum value|frameworks/i);
 	});
 
 	it("includes diagrams when includeDiagrams=true", async () => {

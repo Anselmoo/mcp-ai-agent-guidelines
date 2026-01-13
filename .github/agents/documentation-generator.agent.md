@@ -2,7 +2,7 @@
 name: Documentation-Generator
 description: API documentation and README updates using project patterns
 tools:
-  - shell
+  - execute
   - read
   - edit
   - execute
@@ -10,18 +10,30 @@ tools:
   - search
   - todo
   - web
-  - runTests
-  - runSubagent
+  - execute/runTests
+  - agent
   - ai-agent-guidelines/documentation-generator-prompt-builder
   - ai-agent-guidelines/hierarchical-prompt-builder
+  - ai-agent-guidelines/spark-prompt-builder
   - serena/get_symbols_overview
   - serena/find_symbol
   - serena/search_for_pattern
   - sequentialthinking/*
   - context7/*
   - fetch/*
-  - agent
-
+handoffs:
+  - label: "Update CHANGELOG"
+    agent: Changelog-Curator
+    prompt: "Update changelog. Changes: {{changes}}. Keep a Changelog format."
+  - label: "Generate Diagrams"
+    agent: Architecture-Advisor
+    prompt: "Generate architecture diagrams. Components: {{components}}. Mermaid format."
+  - label: "Review Docs"
+    agent: Code-Reviewer
+    prompt: "Review documentation. Docs: {{docs}}. Check accuracy."
+  - label: "Create Prompts"
+    agent: Prompt-Architect
+    prompt: "Design documentation prompts. Content: {{content}}. Use hierarchical builder."
 ---
 
 # Documentation Generator Agent

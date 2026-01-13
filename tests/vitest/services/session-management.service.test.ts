@@ -1,5 +1,6 @@
 // Session Management Service Tests
 import { beforeEach, describe, expect, it } from "vitest";
+import { DEFAULT_CONSTRAINT_CONFIG } from "../../../src/tools/design/constraint-manager.js";
 import { designPhaseWorkflow } from "../../../src/tools/design/design-phase-workflow.js";
 import { sessionManagementService } from "../../../src/tools/design/services/session-management.service.js";
 
@@ -49,7 +50,7 @@ describe("SessionManagementService", () => {
 			expect(response.artifacts).toBeInstanceOf(Array);
 		});
 
-		it("should handle constraint configuration errors gracefully", async () => {
+		it("should surface constraint configuration errors", async () => {
 			const sessionId = `test-session-constraint-error-${Date.now()}`;
 			const config = {
 				sessionId,
@@ -66,19 +67,27 @@ describe("SessionManagementService", () => {
 
 			// Test with invalid constraint config
 			const invalidConstraintConfig = {
-				invalid: "config",
-				structure: true,
+				meta: {
+					version: "0.0.0",
+					updated: "2024-01-01",
+					source: "test",
+					coverage_threshold: 85,
+				},
+				phases: {},
+				constraints: {},
+				coverage_rules: {},
+				template_references: {},
+				micro_methods: {},
+				output_formats: {},
 			};
 
-			const response = await sessionManagementService.startDesignSession(
-				sessionId,
-				config,
-				invalidConstraintConfig,
-			);
-
-			// Should either succeed or return appropriate error
-			expect(response).toBeDefined();
-			expect(response.sessionId).toBe(sessionId);
+			await expect(
+				sessionManagementService.startDesignSession(
+					sessionId,
+					config,
+					invalidConstraintConfig,
+				),
+			).rejects.toThrow();
 		});
 
 		it("should handle methodology signals", async () => {
@@ -165,17 +174,7 @@ describe("SessionManagementService", () => {
 				metadata: {},
 			};
 
-			const constraintConfig = {
-				constraints: [
-					{
-						id: "security-1",
-						category: "security",
-						description: "HIPAA compliance required",
-						mandatory: true,
-						phases: ["architecture", "specification"],
-					},
-				],
-			};
+			const constraintConfig = DEFAULT_CONSTRAINT_CONFIG;
 
 			const response = await sessionManagementService.startDesignSession(
 				sessionId,
@@ -183,8 +182,7 @@ describe("SessionManagementService", () => {
 				constraintConfig,
 			);
 
-			// Should handle constraint loading (may succeed or fail based on config)
-			expect(response).toBeDefined();
+			expect(response.success).toBe(true);
 			expect(response.sessionId).toBe(sessionId);
 		});
 
@@ -291,15 +289,13 @@ describe("SessionManagementService", () => {
 
 			const invalidConstraintConfig = "invalid";
 
-			const response = await sessionManagementService.startDesignSession(
-				sessionId,
-				config,
-				invalidConstraintConfig,
-			);
-
-			// Should handle error gracefully
-			expect(response).toBeDefined();
-			expect(response.sessionId).toBe(sessionId);
+			await expect(
+				sessionManagementService.startDesignSession(
+					sessionId,
+					config,
+					invalidConstraintConfig,
+				),
+			).rejects.toThrow();
 		});
 
 		it("should detect language and framework from context", async () => {
@@ -362,14 +358,10 @@ describe("SessionManagementService", () => {
 			expect(response.data?.sessionState).toBeDefined();
 		});
 
-		it("should return error for non-existent session", async () => {
-			const response =
-				await sessionManagementService.getSessionStatus("non-existent");
-
-			expect(response.success).toBe(false);
-			expect(response.status).toBe("not-found");
-			expect(response.message).toContain("not found");
-			expect(response.recommendations).toContain("Start a new session");
+		it("should throw for non-existent session", async () => {
+			await expect(
+				sessionManagementService.getSessionStatus("non-existent"),
+			).rejects.toThrow();
 		});
 	});
 

@@ -39,13 +39,29 @@ describe("MCP Server Index Integration", () => {
 	});
 
 	it("should test design assistant functionality", async () => {
+		await designAssistant.processRequest({
+			action: "start-session",
+			sessionId: "index-test-session",
+			config: {
+				sessionId: "index-test-session",
+				context: "Index integration test",
+				goal: "Verify design assistant tool wiring",
+				requirements: ["basic status"],
+				constraints: [],
+				coverageThreshold: 80,
+				enablePivots: true,
+				templateRefs: [],
+				outputFormats: ["markdown"],
+				metadata: {},
+			},
+		});
 		const response = await designAssistant.processRequest({
 			action: "get-status",
 			sessionId: "index-test-session",
 		});
 
 		expect(response).toBeDefined();
-		expect(response.success).toBe(false); // Expected since session doesn't exist
+		expect(response.success).toBe(true);
 		expect(response.sessionId).toBe("index-test-session");
 	});
 
@@ -226,7 +242,7 @@ function testFunction() {
 				language: "javascript",
 			});
 			// Should not throw for empty code
-		} catch (error) {
+		} catch (_error) {
 			// Error handling is acceptable
 		}
 
@@ -236,7 +252,7 @@ function testFunction() {
 				maxTokens: 10,
 			});
 			// Should not throw for empty context
-		} catch (error) {
+		} catch (_error) {
 			// Error handling is acceptable
 		}
 	});

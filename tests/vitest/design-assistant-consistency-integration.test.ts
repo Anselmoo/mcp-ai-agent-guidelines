@@ -1,6 +1,8 @@
 // Design Assistant Constraint Consistency Enforcement Integration Test
 import { beforeEach, describe, expect, it } from "vitest";
 import { designAssistant } from "../../src/tools/design/index.ts";
+import { ErrorCode } from "../../src/tools/shared/error-codes.js";
+import { parseMcpError } from "./test-helpers.js";
 
 describe("Design Assistant - Constraint Consistency Enforcement Integration", () => {
 	beforeEach(async () => {
@@ -135,10 +137,9 @@ describe("Design Assistant - Constraint Consistency Enforcement Integration", ()
 			content: "Testing error handling for missing session",
 		});
 
-		expect(response.success).toBe(false);
-		expect(response.status).toBe("error");
-		expect(response.message).toContain("not found");
-		expect(response.recommendations).toContain("Start a new session");
+		const error = parseMcpError(response);
+		expect(error.code).toBe(ErrorCode.SESSION_NOT_FOUND);
+		expect(error.context?.sessionId).toBe("non-existent-session");
 	});
 
 	it("should work with multiple sessions for cross-session consistency", async () => {

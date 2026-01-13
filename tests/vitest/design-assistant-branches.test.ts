@@ -3,6 +3,22 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import type { DesignAssistantRequest } from "../../src/tools/design/design-assistant.ts";
 import { designAssistant } from "../../src/tools/design/design-assistant.ts";
+import { ErrorCode } from "../../src/tools/shared/error-codes.js";
+
+const parseError = (response: unknown) => {
+	const errorResponse = response as {
+		isError?: boolean;
+		content?: Array<{ text: string }>;
+	};
+
+	expect(errorResponse.isError).toBe(true);
+	const payload = JSON.parse(errorResponse.content?.[0]?.text ?? "{}");
+	return payload as {
+		code?: number;
+		message?: string;
+		context?: Record<string, unknown>;
+	};
+};
 
 describe("Design Assistant - Branch Coverage Tests", () => {
 	beforeAll(async () => {
@@ -41,8 +57,9 @@ describe("Design Assistant - Branch Coverage Tests", () => {
 			};
 
 			const result = await designAssistant.processRequest(request);
-			expect(result.success).toBe(false);
-			expect(result.message).toContain("Configuration is required");
+			const error = parseError(result);
+			expect(error.code).toBe(ErrorCode.MISSING_REQUIRED_FIELD);
+			expect(error.context?.fieldName).toBe("config");
 		});
 	});
 
@@ -115,8 +132,9 @@ describe("Design Assistant - Branch Coverage Tests", () => {
 			};
 
 			const result = await designAssistant.processRequest(request);
-			expect(result.success).toBe(false);
-			expect(result.message).toContain("Phase ID and content are required");
+			const error = parseError(result);
+			expect(error.code).toBe(ErrorCode.MISSING_REQUIRED_FIELD);
+			expect(error.context?.fieldName).toBe("phaseId/content");
 		});
 
 		it("should throw error when content missing for validate-phase", async () => {
@@ -127,8 +145,9 @@ describe("Design Assistant - Branch Coverage Tests", () => {
 			};
 
 			const result = await designAssistant.processRequest(request);
-			expect(result.success).toBe(false);
-			expect(result.message).toContain("Phase ID and content are required");
+			const error = parseError(result);
+			expect(error.code).toBe(ErrorCode.MISSING_REQUIRED_FIELD);
+			expect(error.context?.fieldName).toBe("phaseId/content");
 		});
 	});
 
@@ -168,8 +187,9 @@ describe("Design Assistant - Branch Coverage Tests", () => {
 			};
 
 			const result = await designAssistant.processRequest(request);
-			expect(result.success).toBe(false);
-			expect(result.message).toContain("Content is required");
+			const error = parseError(result);
+			expect(error.code).toBe(ErrorCode.MISSING_REQUIRED_FIELD);
+			expect(error.context?.fieldName).toBe("content");
 		});
 	});
 
@@ -209,8 +229,9 @@ describe("Design Assistant - Branch Coverage Tests", () => {
 			};
 
 			const result = await designAssistant.processRequest(request);
-			expect(result.success).toBe(false);
-			expect(result.message).toContain("Content is required");
+			const error = parseError(result);
+			expect(error.code).toBe(ErrorCode.MISSING_REQUIRED_FIELD);
+			expect(error.context?.fieldName).toBe("content");
 		});
 	});
 
@@ -308,8 +329,9 @@ describe("Design Assistant - Branch Coverage Tests", () => {
 			};
 
 			const result = await designAssistant.processRequest(request);
-			expect(result.success).toBe(false);
-			expect(result.message).toContain("Content is required");
+			const error = parseError(result);
+			expect(error.code).toBe(ErrorCode.MISSING_REQUIRED_FIELD);
+			expect(error.context?.fieldName).toBe("content");
 		});
 	});
 
@@ -401,8 +423,9 @@ describe("Design Assistant - Branch Coverage Tests", () => {
 			};
 
 			const result = await designAssistant.processRequest(request);
-			expect(result.success).toBe(false);
-			expect(result.message).toContain("Constraint configuration is required");
+			const error = parseError(result);
+			expect(error.code).toBe(ErrorCode.MISSING_REQUIRED_FIELD);
+			expect(error.context?.fieldName).toBe("constraintConfig");
 		});
 	});
 
@@ -449,8 +472,9 @@ describe("Design Assistant - Branch Coverage Tests", () => {
 			};
 
 			const result = await designAssistant.processRequest(request);
-			expect(result.success).toBe(false);
-			expect(result.message).toContain("Methodology signals are required");
+			const error = parseError(result);
+			expect(error.code).toBe(ErrorCode.MISSING_REQUIRED_FIELD);
+			expect(error.context?.fieldName).toBe("methodologySignals");
 		});
 	});
 
@@ -610,8 +634,9 @@ describe("Design Assistant - Branch Coverage Tests", () => {
 			};
 
 			const result = await designAssistant.processRequest(request);
-			expect(result.success).toBe(false);
-			expect(result.message).toContain("Content is required");
+			const error = parseError(result);
+			expect(error.code).toBe(ErrorCode.MISSING_REQUIRED_FIELD);
+			expect(error.context?.fieldName).toBe("content");
 		});
 	});
 
@@ -623,8 +648,9 @@ describe("Design Assistant - Branch Coverage Tests", () => {
 			} as unknown as DesignAssistantRequest;
 
 			const result = await designAssistant.processRequest(request);
-			expect(result.success).toBe(false);
-			expect(result.message).toContain("Unknown action");
+			const error = parseError(result);
+			expect(error.code).toBe(ErrorCode.VALIDATION_FAILED);
+			expect(error.context?.action).toBe("unknown-action");
 		});
 	});
 

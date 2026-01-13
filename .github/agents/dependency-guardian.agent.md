@@ -2,7 +2,7 @@
 name: Dependency-Guardian
 description: Dependency management and security vulnerability monitoring
 tools:
-  - shell
+  - execute
   - read
   - edit
   - execute
@@ -10,15 +10,26 @@ tools:
   - search
   - todo
   - web
-  - runTests
-  - runSubagent
+  - execute/runTests
+  - agent
   - ai-agent-guidelines/dependency-auditor
   - serena/search_for_pattern
   - sequentialthinking/*
   - fetch/*
   - context7/*
-  - agent
-
+handoffs:
+  - label: "Security Assessment"
+    agent: Security-Auditor
+    prompt: "Audit vulnerable dependency. CVE: {{cve}}. Impact analysis."
+  - label: "Apply Update"
+    agent: MCP-Tool-Builder
+    prompt: "Update dependency. Package: {{package}}. Handle breaking changes."
+  - label: "Test Update"
+    agent: TDD-Workflow
+    prompt: "Test dependency update. Package: {{package}}. Verify no regression."
+  - label: "Update Docs"
+    agent: Documentation-Generator
+    prompt: "Document dependency change. Update: {{update}}. Migration guide."
 ---
 
 # Dependency Guardian Agent

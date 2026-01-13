@@ -8,12 +8,35 @@
  * - Orchestration workflow errors
  */
 
-import { OperationError } from "./errors.js";
+/**
+ * Base error class for A2A operations with consistent structure
+ */
+class A2AOperationError extends Error {
+	public readonly code: string;
+	public readonly context?: Record<string, unknown>;
+	public readonly timestamp: Date;
+
+	constructor(
+		message: string,
+		code: string,
+		context?: Record<string, unknown>,
+	) {
+		super(message);
+		this.name = "A2AOperationError";
+		this.code = code;
+		this.context = context;
+		this.timestamp = new Date();
+
+		if (Error.captureStackTrace) {
+			Error.captureStackTrace(this, A2AOperationError);
+		}
+	}
+}
 
 /**
  * Error thrown when a tool invocation fails
  */
-export class ToolInvocationError extends OperationError {
+export class ToolInvocationError extends A2AOperationError {
 	public readonly toolName: string;
 
 	constructor(
@@ -33,7 +56,7 @@ export class ToolInvocationError extends OperationError {
 /**
  * Error thrown when recursion depth limit is exceeded
  */
-export class RecursionDepthError extends OperationError {
+export class RecursionDepthError extends A2AOperationError {
 	public readonly currentDepth: number;
 	public readonly maxDepth: number;
 
@@ -60,7 +83,7 @@ export class RecursionDepthError extends OperationError {
 /**
  * Error thrown when a tool execution times out
  */
-export class ToolTimeoutError extends OperationError {
+export class ToolTimeoutError extends A2AOperationError {
 	public readonly toolName: string;
 	public readonly timeoutMs: number;
 
@@ -87,7 +110,7 @@ export class ToolTimeoutError extends OperationError {
 /**
  * Error thrown when the entire chain execution times out
  */
-export class ChainTimeoutError extends OperationError {
+export class ChainTimeoutError extends A2AOperationError {
 	public readonly chainTimeoutMs: number;
 	public readonly toolsCompleted: number;
 
@@ -114,7 +137,7 @@ export class ChainTimeoutError extends OperationError {
 /**
  * Error thrown when a tool is not found in the registry
  */
-export class ToolNotFoundError extends OperationError {
+export class ToolNotFoundError extends A2AOperationError {
 	public readonly toolName: string;
 
 	constructor(toolName: string, context?: Record<string, unknown>) {
@@ -130,7 +153,7 @@ export class ToolNotFoundError extends OperationError {
 /**
  * Error thrown when a tool is not allowed to invoke another tool
  */
-export class ToolInvocationNotAllowedError extends OperationError {
+export class ToolInvocationNotAllowedError extends A2AOperationError {
 	public readonly callerTool: string;
 	public readonly targetTool: string;
 
@@ -157,7 +180,7 @@ export class ToolInvocationNotAllowedError extends OperationError {
 /**
  * Error thrown when orchestration workflow execution fails
  */
-export class OrchestrationError extends OperationError {
+export class OrchestrationError extends A2AOperationError {
 	public readonly workflowName?: string;
 
 	constructor(
@@ -173,7 +196,7 @@ export class OrchestrationError extends OperationError {
 /**
  * Error thrown when execution strategy is invalid or cannot be executed
  */
-export class ExecutionStrategyError extends OperationError {
+export class ExecutionStrategyError extends A2AOperationError {
 	public readonly strategy: string;
 
 	constructor(

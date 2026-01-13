@@ -3,48 +3,140 @@
 // while identifying and suggesting removal of dead code
 
 import { z } from "zod";
+import { handleToolError } from "./shared/error-handler.js";
 import { buildFurtherReadingSection } from "./shared/prompt-utils.js";
 
 const IterativeCoverageEnhancerSchema = z.object({
 	// Analysis Configuration
-	projectPath: z.string().optional().default("."),
-	language: z.string().default("typescript"),
-	framework: z.string().optional(),
+	projectPath: z
+		.string()
+		.optional()
+		.default(".")
+		.describe(
+			"Path to the project root directory. Examples: '.', '/src', './app'",
+		),
+	language: z
+		.string()
+		.default("typescript")
+		.describe(
+			"Primary programming language. Examples: 'typescript', 'javascript', 'python'",
+		),
+	framework: z
+		.string()
+		.optional()
+		.describe(
+			"Framework or technology stack. Examples: 'vitest', 'jest', 'pytest'",
+		),
 
 	// Coverage Analysis Options
-	analyzeCoverageGaps: z.boolean().optional().default(true),
-	detectDeadCode: z.boolean().optional().default(true),
-	generateTestSuggestions: z.boolean().optional().default(true),
-	adaptThresholds: z.boolean().optional().default(true),
+	analyzeCoverageGaps: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe("Analyze and identify coverage gaps. Example: true"),
+	detectDeadCode: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe("Detect unused code for elimination. Example: true"),
+	generateTestSuggestions: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe("Generate test suggestions for uncovered code. Example: true"),
+	adaptThresholds: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe(
+			"Recommend adaptive coverage threshold adjustments. Example: true",
+		),
 
 	// Current Coverage Data (from tools like vitest, jest, etc.)
 	currentCoverage: z
 		.object({
-			statements: z.number().min(0).max(100),
-			functions: z.number().min(0).max(100),
-			lines: z.number().min(0).max(100),
-			branches: z.number().min(0).max(100),
+			statements: z
+				.number()
+				.min(0)
+				.max(100)
+				.describe("Current statement coverage percentage. Example: 65.5"),
+			functions: z
+				.number()
+				.min(0)
+				.max(100)
+				.describe("Current function coverage percentage. Example: 70.0"),
+			lines: z
+				.number()
+				.min(0)
+				.max(100)
+				.describe("Current line coverage percentage. Example: 68.3"),
+			branches: z
+				.number()
+				.min(0)
+				.max(100)
+				.describe("Current branch coverage percentage. Example: 45.2"),
 		})
-		.optional(),
+		.optional()
+		.describe(
+			"Current coverage metrics from your test runner. Example: { statements: 65, branches: 45, functions: 70, lines: 68 }",
+		),
 
 	// Target Coverage Goals
 	targetCoverage: z
 		.object({
-			statements: z.number().min(0).max(100).optional(),
-			functions: z.number().min(0).max(100).optional(),
-			lines: z.number().min(0).max(100).optional(),
-			branches: z.number().min(0).max(100).optional(),
+			statements: z
+				.number()
+				.min(0)
+				.max(100)
+				.optional()
+				.describe("Target statement coverage percentage. Example: 80"),
+			functions: z
+				.number()
+				.min(0)
+				.max(100)
+				.optional()
+				.describe("Target function coverage percentage. Example: 85"),
+			lines: z
+				.number()
+				.min(0)
+				.max(100)
+				.optional()
+				.describe("Target line coverage percentage. Example: 80"),
+			branches: z
+				.number()
+				.min(0)
+				.max(100)
+				.optional()
+				.describe("Target branch coverage percentage. Example: 70"),
 		})
-		.optional(),
+		.optional()
+		.describe(
+			"Target coverage goals to achieve. Example: { statements: 80, branches: 70, functions: 85, lines: 80 }",
+		),
 
 	// Output Configuration
 	outputFormat: z
 		.enum(["markdown", "json", "text"])
 		.optional()
-		.default("markdown"),
-	includeReferences: z.boolean().optional().default(true),
-	includeCodeExamples: z.boolean().optional().default(true),
-	generateCIActions: z.boolean().optional().default(true),
+		.default("markdown")
+		.describe(
+			"Output format for the report. Examples: 'markdown', 'json', 'text'",
+		),
+	includeReferences: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe("Include external reference links in output. Example: true"),
+	includeCodeExamples: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe("Include code examples in suggestions. Example: true"),
+	generateCIActions: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe("Generate CI/CD integration actions. Example: true"),
 });
 
 type IterativeCoverageEnhancerInput = z.infer<
@@ -88,87 +180,93 @@ interface IterationPlan {
 }
 
 export async function iterativeCoverageEnhancer(args: unknown) {
-	const input = IterativeCoverageEnhancerSchema.parse(args);
+	try {
+		const input = IterativeCoverageEnhancerSchema.parse(args);
 
-	// Simulate coverage analysis (in real implementation, this would analyze actual code)
-	const analysis = await performCoverageAnalysis(input);
+		// Simulate coverage analysis (in real implementation, this would analyze actual code)
+		const analysis = await performCoverageAnalysis(input);
 
-	const sections = [
-		generateExecutiveSummary(analysis),
-		...(input.analyzeCoverageGaps
-			? [generateCoverageGapsSection(analysis.coverageGaps)]
-			: []),
-		...(input.detectDeadCode
-			? [generateDeadCodeSection(analysis.deadCode)]
-			: []),
-		...(input.generateTestSuggestions
-			? [generateTestSuggestionsSection(analysis.coverageGaps)]
-			: []),
-		...(input.adaptThresholds
-			? [
-					generateThresholdRecommendationsSection(
-						analysis.thresholdRecommendations,
-					),
-				]
-			: []),
-		generateIterationPlanSection(analysis.iterationPlan),
-		...(input.generateCIActions ? [generateCIActionsSection()] : []),
-	];
+		const sections = [
+			generateExecutiveSummary(analysis),
+			...(input.analyzeCoverageGaps
+				? [generateCoverageGapsSection(analysis.coverageGaps)]
+				: []),
+			...(input.detectDeadCode
+				? [generateDeadCodeSection(analysis.deadCode)]
+				: []),
+			...(input.generateTestSuggestions
+				? [generateTestSuggestionsSection(analysis.coverageGaps)]
+				: []),
+			...(input.adaptThresholds
+				? [
+						generateThresholdRecommendationsSection(
+							analysis.thresholdRecommendations,
+						),
+					]
+				: []),
+			generateIterationPlanSection(analysis.iterationPlan),
+			...(input.generateCIActions ? [generateCIActionsSection()] : []),
+		];
 
-	const references = input.includeReferences
-		? buildFurtherReadingSection([
-				{
-					title: "Test Coverage Best Practices",
-					url: "https://martinfowler.com/bliki/TestCoverage.html",
-					description:
-						"Martin Fowler on meaningful coverage-driven development",
-				},
-				{
-					title: "Dead Code Elimination",
-					url: "https://refactoring.guru/smells/dead-code",
-					description: "Techniques for identifying and removing unused code",
-				},
-				{
-					title: "Test-Driven Development Guide",
-					url: "https://testdriven.io/",
-					description: "Comprehensive resource for TDD practices and patterns",
-				},
-				{
-					title: "Benefits of Testing Code",
-					url: "https://abseil.io/resources/swe-book/html/ch11.html#benefits_of_testing_code",
-					description:
-						"Google's perspective on the value of comprehensive testing",
-				},
-				{
-					title: "Engineering System Success Playbook",
-					url: "https://resources.github.com/engineering-system-success-playbook/",
-					description:
-						"GitHub's guide to building effective engineering systems",
-				},
-				{
-					title: "Automated Testing Strategies",
-					url: "https://testing.googleblog.com/",
-					description: "Google Testing Blog with advanced testing techniques",
-				},
-				{
-					title: "Code Coverage Analysis in CI",
-					url: "https://docs.github.com/en/actions/automating-builds-and-tests/about-continuous-integration",
-					description: "GitHub's documentation on coverage in CI/CD pipelines",
-				},
-			])
-		: "";
+		const references = input.includeReferences
+			? buildFurtherReadingSection([
+					{
+						title: "Test Coverage Best Practices",
+						url: "https://martinfowler.com/bliki/TestCoverage.html",
+						description:
+							"Martin Fowler on meaningful coverage-driven development",
+					},
+					{
+						title: "Dead Code Elimination",
+						url: "https://refactoring.guru/smells/dead-code",
+						description: "Techniques for identifying and removing unused code",
+					},
+					{
+						title: "Test-Driven Development Guide",
+						url: "https://testdriven.io/",
+						description:
+							"Comprehensive resource for TDD practices and patterns",
+					},
+					{
+						title: "Benefits of Testing Code",
+						url: "https://abseil.io/resources/swe-book/html/ch11.html#benefits_of_testing_code",
+						description:
+							"Google's perspective on the value of comprehensive testing",
+					},
+					{
+						title: "Engineering System Success Playbook",
+						url: "https://resources.github.com/engineering-system-success-playbook/",
+						description:
+							"GitHub's guide to building effective engineering systems",
+					},
+					{
+						title: "Automated Testing Strategies",
+						url: "https://testing.googleblog.com/",
+						description: "Google Testing Blog with advanced testing techniques",
+					},
+					{
+						title: "Code Coverage Analysis in CI",
+						url: "https://docs.github.com/en/actions/automating-builds-and-tests/about-continuous-integration",
+						description:
+							"GitHub's documentation on coverage in CI/CD pipelines",
+					},
+				])
+			: "";
 
-	const content =
-		sections.join("\n\n") + (references ? `\n\n${references}` : "");
+		const content =
+			sections.join("\n\n") + (references ? `\n\n${references}` : "");
 
-	return {
-		content: [
-			{
-				type: "text",
-				text: content,
-			},
-		],
-	};
+		return {
+			content: [
+				{
+					type: "text",
+					text: content,
+				},
+			],
+		};
+	} catch (error) {
+		return handleToolError(error);
+	}
 }
 
 async function performCoverageAnalysis(

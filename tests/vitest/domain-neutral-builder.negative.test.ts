@@ -3,14 +3,20 @@ import { domainNeutralPromptBuilder } from "../../src/tools/prompt/domain-neutra
 
 describe("domainNeutralPromptBuilder (negative)", () => {
 	it("rejects when title is missing", async () => {
-		await expect(domainNeutralPromptBuilder({ summary: "S" })).rejects.toThrow(
-			/ZodError|Required/i,
-		);
+		const result = (await domainNeutralPromptBuilder({ summary: "S" })) as {
+			isError?: boolean;
+			content: { text: string }[];
+		};
+		expect(result.isError).toBe(true);
+		expect(result.content[0].text).toMatch(/Required|title/i);
 	});
 
 	it("rejects when summary is missing", async () => {
-		await expect(domainNeutralPromptBuilder({ title: "T" })).rejects.toThrow(
-			/ZodError|Required/i,
-		);
+		const result = (await domainNeutralPromptBuilder({ title: "T" })) as {
+			isError?: boolean;
+			content: { text: string }[];
+		};
+		expect(result.isError).toBe(true);
+		expect(result.content[0].text).toMatch(/Required|summary/i);
 	});
 });

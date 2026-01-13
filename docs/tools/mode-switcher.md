@@ -16,14 +16,15 @@
 
 ## Overview
 
-The `mode-switcher` planning, editing, analysis, debugging, refactoring, documentation.
+The `mode-switcher` tool enables switching between different agent operation modes to optimize tool recommendations and workflow strategies for your current task. Each mode configures the agent with specific tool sets, prompting strategies, and focus areas tailored to common development workflows.
 
 ### Key Capabilities
 
-- Mode switching (planning, editing, analysis, interactive, debugging)
-- Context-aware tool sets
-- Prompting strategy adjustment
-- Workflow optimization
+- Switch between 8 specialized operation modes
+- Context-aware tool recommendations for each mode
+- Automatic prompting strategy adjustment
+- Persistent mode state across tool calls within a session
+- Mode transition history tracking
 
 ---
 
@@ -31,38 +32,51 @@ The `mode-switcher` planning, editing, analysis, debugging, refactoring, documen
 
 ✅ **Good for:**
 
-- AI model selection based on task requirements
-- Validating practices against established guidelines
-- Context window optimization
-- Project onboarding and analysis
+- Optimizing agent behavior for specific task types (planning, coding, debugging)
+- Getting recommended tools for your current workflow phase
+- Setting clear expectations for agent operation style
+- Transitioning between different development activities
 
 ❌ **Not ideal for:**
 
-- Complex business logic decisions
-- Security-critical operations
-- Production deployment automation
+- Single tool invocations (no need to switch modes)
+- Tasks that require multiple modes simultaneously
+- Real-time execution control
 
 ---
 
 ## Basic Usage
 
-### Example 1: Basic Utilities Task
+### Example 1: Switch to Planning Mode
 
-```json
-{
-  "tool": "mode-switcher",
-  "targetMode": "your-target-mode-here",
-  "currentMode": "your-current-mode",
-  "context": "your-context",
-  "reason": "your-reason"
-}
+```typescript
+// Switch to planning mode for design work
+await callTool('mode-switcher', {
+  targetMode: 'planning',
+  reason: 'Starting new feature design',
+});
 ```
 
-**Output**: Structured utilities output with:
+### Example 2: Validate Current Mode
 
-- Mode switching (planning, editing, analysis, interactive, debugging)
-- Context-aware tool sets
-- Prompting strategy adjustment
+```typescript
+// Ensure current mode matches expectation (will error if mismatch)
+await callTool('mode-switcher', {
+  targetMode: 'editing',
+  currentMode: 'planning', // Validation: checks if this matches actual current mode
+});
+```
+
+### Example 3: Switch with Context
+
+```typescript
+// Switch to debugging mode with IDE context
+await callTool('mode-switcher', {
+  targetMode: 'debugging',
+  context: 'ide-assistant',
+  reason: 'Investigating test failure in authentication module',
+});
+```
 
 ---
 
@@ -70,73 +84,102 @@ The `mode-switcher` planning, editing, analysis, debugging, refactoring, documen
 
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
-| `targetMode` | enum | ✅ Yes | - | Target mode: `planning`, `editing`, `analysis`, `debugging`, `refactoring`, `documentation` |
-| `currentMode` | string | No | - | Current agent operation mode |
-| `context` | string | No | - | Broad context or domain background for the task |
-| `reason` | string | No | - | Reason for the operation |
+| `targetMode` | enum | ✅ Yes | - | Mode to switch to. Options: `planning`, `editing`, `analysis`, `interactive`, `one-shot`, `debugging`, `refactoring`, `documentation` |
+| `currentMode` | enum | No | - | Current active mode for validation. If provided and doesn't match actual mode, returns error |
+| `context` | enum | No | - | Operating context: `desktop-app`, `ide-assistant`, `agent`, `terminal`, `collaborative` |
+| `reason` | string | No | - | Human-readable reason for the mode switch |
+| `includeReferences` | boolean | No | `false` | Include external reference links in output |
+| `includeMetadata` | boolean | No | `false` | Include metadata section in output |
+
+---
+
+## Available Modes
+
+| Mode | Description | Recommended Tools |
+|------|-------------|-------------------|
+| `planning` | Design and architecture work | hierarchical-prompt-builder, domain-neutral-prompt-builder, strategy-frameworks-builder, gap-frameworks-analyzers, mermaid-diagram-generator |
+| `editing` | Code writing and modification | semantic-code-analyzer, code-hygiene-analyzer, iterative-coverage-enhancer, file-operations |
+| `analysis` | Code review and quality checks | semantic-code-analyzer, code-hygiene-analyzer, guidelines-validator, gap-frameworks-analyzers |
+| `debugging` | Troubleshooting and fixes | semantic-code-analyzer, iterative-coverage-enhancer, code-hygiene-analyzer |
+| `refactoring` | Code improvement | semantic-code-analyzer, code-hygiene-analyzer, iterative-coverage-enhancer |
+| `documentation` | Docs and comments | mermaid-diagram-generator, domain-neutral-prompt-builder, hierarchical-prompt-builder |
+| `interactive` | All tools available, conversational style | All tools enabled |
+| `one-shot` | Single comprehensive response | All tools enabled |
 
 ---
 
 ## What You Get
 
-The tool returns a structured utilities output with:
+The tool returns a detailed mode switch confirmation with:
 
-1. **Mode** - Mode switching (planning, editing, analysis, interactive, debugging)
-2. **Context-aware** - Context-aware tool sets
-3. **Prompting** - Prompting strategy adjustment
-4. **Workflow** - Workflow optimization
+1. **Mode Transition Summary** - Previous mode, new mode, timestamp, and reason
+2. **Recommended Tools** - List of tools optimized for the new mode
+3. **Mode Profile** - Description, focus areas, enabled/disabled tools
+4. **Prompting Strategy** - Guidance for how to prompt in this mode
+5. **Next Steps** - Mode-specific workflow recommendations
+6. **Context Guidance** - Additional tips based on operating context (if provided)
 
 ### Output Structure
 
 ```markdown
-## Mode Switcher Output
+# Mode Switched Successfully
 
-### Summary
-[High-level summary of analysis/output]
+**Previous Mode**: [Previous Mode Name]
+**Current Mode**: [New Mode Name]
+**Switched At**: [ISO timestamp]
+**Reason**: [Reason if provided]
 
-### Details
-[Detailed content based on your inputs]
+## Recommended Tools for [Mode] Mode
+- tool-1
+- tool-2
+...
 
-### Recommendations
-[Actionable next steps]
+## 🎯 [Mode] Overview
+[Mode description]
 
-### References (if enabled)
-[Links to external resources]
+### 🔍 Primary Focus Areas
+- Focus area 1
+- Focus area 2
+...
+
+### 🛠️ Enabled Tools
+- enabled-tool-1
+- enabled-tool-2
+...
+
+### 💡 Prompting Strategy
+[Strategy description]
+
+### ✅ Best Used For
+- Use case 1
+- Use case 2
+...
+
+### 🎬 Next Steps in [Mode]
+1. Step 1
+2. Step 2
+...
+
+[Context guidance if context parameter provided]
+
+## Notes
+Mode will persist until explicitly changed. Use `getCurrentMode` to verify.
+
+---
+**Mode Active**: [Mode Name] 🟢
 ```
 
 ---
 
-## Real-World Examples
+## State Persistence
 
-### Example 1: Common Use Case
+Mode persists across tool calls within a session. The mode manager maintains:
 
-```json
-{
-  "tool": "mode-switcher",
-  "targetMode": "Example targetMode value for common use case",
-  "currentMode": "example-value",
-  "context": "example-value"
-}
-```
+- Current active mode
+- Mode transition history with timestamps and reasons
+- Available tool recommendations per mode
 
-**Generated Output Excerpt**:
-
-```markdown
-## Common Use Case Results
-
-### Summary
-Analysis complete with actionable insights...
-
-### Key Findings
-1. [Finding 1 based on utilities analysis]
-2. [Finding 2 with specific recommendations]
-3. [Finding 3 with priority indicators]
-
-### Next Steps
-- Implement recommended changes
-- Review and validate results
-- Integrate into workflow
-```
+**Note**: Mode state is session-specific. Each new session starts in the default mode.
 
 ---
 
@@ -144,23 +187,77 @@ Analysis complete with actionable insights...
 
 ### 💡 Best Practices
 
-1. **Match Tool to Task** - Choose the right utility for the job
-2. **Provide Complete Context** - Utilities need information to help
-3. **Review Recommendations** - Don't blindly accept suggestions
-4. **Integrate into Workflow** - Make utilities part of your process
+1. **Choose the Right Mode** - Select mode based on your current task type, not just preference
+2. **Validate Transitions** - Use `currentMode` parameter to catch unexpected mode state
+3. **Provide Context** - Add `reason` to document why you're switching (helps with debugging)
+4. **Use Context Parameter** - Specify operating environment for tailored guidance
 
 ### 🚫 Common Mistakes
 
-- ❌ Using wrong tool → ✅ Check tool descriptions carefully
-- ❌ Incomplete input → ✅ Provide all relevant context
-- ❌ Ignoring output → ✅ Act on recommendations
-- ❌ One-off usage → ✅ Build into regular workflow
+- ❌ Switching modes too frequently → ✅ Stay in one mode for related tasks
+- ❌ Using interactive mode for everything → ✅ Use specialized modes for better results
+- ❌ Ignoring recommended tools → ✅ Follow mode-specific tool suggestions
+- ❌ Not validating current mode → ✅ Use currentMode parameter when mode state matters
 
 ### ⚡ Pro Tips
 
-- Combine utilities for more comprehensive analysis
-- Use validation tools before committing changes
-- Cache results for frequently used configurations
+- **Planning → Editing → Analysis** is a common workflow progression
+- Use `one-shot` mode for well-defined tasks that don't need iteration
+- Switch to `debugging` mode as soon as you encounter an error
+- `documentation` mode disables code editing to focus on docs only
+- Check transition history with `modeManager.getHistory()` to understand workflow
+
+---
+
+## Mode Profiles Reference
+
+### Planning Mode
+- **Best for**: Complex features, system design, refactoring large codebases
+- **Focus**: Understand requirements, break down tasks, create detailed plans
+- **Strategy**: Structured hierarchical prompts, plan before acting
+- **Disabled**: Code editing, file operations
+
+### Editing Mode
+- **Best for**: Implementing well-defined features, bug fixes, small refactorings
+- **Focus**: Make precise code changes, implement efficiently
+- **Strategy**: Be specific about changes, use symbol operations, verify immediately
+- **Enabled**: All code modification tools
+
+### Analysis Mode
+- **Best for**: Code review, architecture assessment, quality evaluation
+- **Focus**: Analyze structure, identify patterns, understand dependencies
+- **Strategy**: Ask targeted questions, use semantic analysis, build understanding incrementally
+- **Disabled**: File operations (read-only mode)
+
+### Debugging Mode
+- **Best for**: Bug investigation, error resolution, test failures
+- **Focus**: Reproduce issues, analyze errors, trace execution flow
+- **Strategy**: Systematic debugging, use logging, test hypotheses, verify fixes
+- **Enabled**: Semantic analyzer, coverage tools, hygiene analyzer
+
+### Refactoring Mode
+- **Best for**: Code cleanup, architecture improvement, technical debt reduction
+- **Focus**: Preserve functionality, improve quality, reduce complexity
+- **Strategy**: Small incremental changes, run tests frequently, use semantic operations
+- **Enabled**: Quality analysis and code modification tools
+
+### Documentation Mode
+- **Best for**: API docs, user guides, architecture documentation
+- **Focus**: Document code and APIs, create guides, generate diagrams
+- **Strategy**: Focus on clarity, use diagrams, provide examples
+- **Disabled**: Code editing (documentation only)
+
+### Interactive Mode
+- **Best for**: Exploratory work, learning codebase, unclear requirements
+- **Focus**: Iterate with feedback, clarify requirements, adjust approach
+- **Strategy**: Ask clarifying questions, confirm understanding, iterate
+- **All tools**: Enabled
+
+### One-Shot Mode
+- **Best for**: Well-defined tasks, report generation, batch operations
+- **Focus**: Gather context upfront, execute complete solution, minimize follow-up
+- **Strategy**: Be comprehensive, cover edge cases, provide complete solutions
+- **All tools**: Enabled
 
 ---
 

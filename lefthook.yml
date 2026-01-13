@@ -93,23 +93,178 @@ pre-commit:
       stage_fixed: true
       fail_text: "🧹 End-of-file issues fixed"
 
+    # ----------------------------- 🤖 Agent Cost Prevention ---------------------------- #
+    # These checks prevent common issues that cause costly agent reruns
+
+    esm-imports-check:
+      tags: [validate, imports, agent-cost-saver]
+      glob: "*.{ts,tsx}"
+      run: |
+        failed=0
+        for file in {staged_files}; do
+          if [ -f "$file" ]; then
+            # Check for relative imports without .js extension
+            if grep -n "from ['\"]\.\.?/" "$file" | grep -v "\.js['\"]" > /dev/null 2>&1; then
+              echo "❌ ERROR: Relative imports must end with .js extension in $file"
+              echo "   Example: import { foo } from './bar.js'"
+              grep -n "from ['\"]\.\.?/" "$file" | grep -v "\.js['\"]" | while read line; do
+                echo "   Line: $line"
+              done
+              failed=1
+            fi
+          fi
+        done
+        exit $failed
+      fail_text: "❌ Relative imports must use .js extensions (ESM requirement) - This causes agent reruns!"
+
+    typescript-any-check:
+      tags: [types, strict, agent-cost-saver]
+      glob: "*.{ts,tsx}"
+      run: |
+        failed=0
+        for file in {staged_files}; do
+          if [ -f "$file" ]; then
+            # Check for 'any' types (but allow in test files)
+            if [[ ! "$file" =~ \.spec\.ts$ ]] && [[ ! "$file" =~ \.test\.ts$ ]]; then
+              if grep -n ": any" "$file" > /dev/null 2>&1; then
+                echo "⚠️  WARNING: Avoid using 'any' types in $file"
+                echo "   Use proper TypeScript types instead"
+                grep -n ": any" "$file" | while read line; do
+                  echo "   Line: $line"
+                done
+                # Don't fail, just warn
+              fi
+            fi
+          fi
+        done
+        exit 0
+      fail_text: "⚠️  Found 'any' types - use proper TypeScript types"
+
+    test-coverage-check:
+      tags: [test, validate, agent-cost-saver]
+      glob: "src/**/*.{ts,tsx}"
+      run: |
+        missing_tests=""
+        for file in {staged_files}; do
+          # Skip index.ts files
+          if [[ "$file" == *"/index.ts" ]]; then
+            continue
+          fi
+
+          # Convert src/tools/foo.ts → tests/vitest/tools/foo.spec.ts
+          test_file=$(echo "$file" | sed 's|^src/|tests/vitest/|' | sed 's|\.ts$|.spec.ts|')
+
+          if [ ! -f "$test_file" ]; then
+            echo "⚠️  WARNING: No test file found for $file"
+            echo "   Expected: $test_file"
+            echo "   Create tests to maintain 90% coverage requirement"
+            missing_tests="$missing_tests\n  - $file → $test_file"
+          fi
+        done
+
+        if [ -n "$missing_tests" ]; then
+          echo ""
+          echo "📝 Missing test files:$missing_tests"
+          echo ""
+          echo "   Tip: Run 'npm run test:coverage:vitest' to check coverage"
+        fi
+        exit 0
+      fail_text: "⚠️  Some source files are missing tests"
+
+    console-log-check:
+      tags: [quality, agent-cost-saver]
+      glob: "src/**/*.{ts,tsx,js,jsx}"
+      run: |
+        failed=0
+        for file in {staged_files}; do
+          if [ -f "$file" ]; then
+            # Check for console.log (should use logger instead)
+            if grep -n "console\.log\|console\.error\|console\.warn" "$file" > /dev/null 2>&1; then
+              echo "⚠️  WARNING: Avoid using console.log in $file"
+              echo "   Use 'import { logger } from \"../shared/logger.js\"' instead"
+              grep -n "console\." "$file" | while read line; do
+                echo "   Line: $line"
+              done
+              # Don't fail, just warn for now
+            fi
+          fi
+        done
+        exit 0
+      fail_text: "⚠️  Found console.log - use logger instead"
+
+    # ----------------------------- 🧪 Test Validation (CRITICAL) ---------------------------- #
+    # Prevent committing code that will fail CI tests - MOST EXPENSIVE ISSUE!
+
+    quick-test-check:
+      tags: [test, validate, agent-cost-saver, critical]
+      glob: "*.{ts,tsx}"
+      run: |
+        # Only run if test files or source files are staged
+        if echo "{staged_files}" | grep -E "(src/|tests/).*\.tsx?$" > /dev/null 2>&1; then
+          echo "🧪 Running quick test validation..."
+          echo "   (This prevents expensive CI failures!)"
+
+          # Build first (required for tests to run)
+          echo "📦 Building project..."
+          npm run build --silent || {
+            echo "❌ Build failed! Fix build errors before committing."
+            exit 1
+          }
+
+          # Run only affected tests (fast check)
+          echo "🧪 Running affected tests..."
+          npm run test:vitest -- --run --bail=1 || {
+            echo ""
+            echo "❌ TESTS FAILED! This would fail in CI."
+            echo "   Fix test failures before committing to avoid:"
+            echo "   - Expensive CI reruns (\$0.10+ per failure)"
+            echo "   - Delayed merge time"
+            echo "   - Agent rerun costs"
+            echo ""
+            echo "   Run 'npm run test:vitest' to see details"
+            exit 1
+          }
+
+          echo "✅ Tests passed! Safe to commit."
+        fi
+      fail_text: "🧪 Tests failed - fix before committing to avoid expensive CI failures!"
+
 # Pre-push hooks - run before push to remote
+# NOTE: These are WARNING-ONLY hooks. CI is the final quality gate.
+# See issue #832 for optimization roadmap
 pre-push:
   commands:
+    # ----------------------------- 🔒 Security Warnings ---------------------------- #
     dependency-audit:
       tags: [security, audit]
-      run: npm audit --omit=dev --audit-level=moderate
-      fail_text: "🔒 Dependency vulnerabilities detected - push aborted. Run 'npm audit' for details."
+      run: |
+        echo "🔒 Checking for dependency vulnerabilities..."
+        if ! npm audit --omit=dev --audit-level=moderate; then
+          echo ""
+          echo "⚠️  WARNING: Dependency vulnerabilities detected"
+          echo "   Run 'npm audit' for details"
+          echo "   Run 'npm audit fix' to auto-fix when possible"
+          echo ""
+          echo "   Note: This is a warning only. CI will enforce security checks."
+        fi
+        exit 0  # Always succeed (warning only)
+      fail_text: "⚠️  Dependency vulnerabilities detected (warning only)"
 
-    test-all:
-      tags: [test]
-      run: npm run test:all
-      fail_text: "🧪 Tests failed - push aborted"
+    # DISABLED: Redundant with pre-commit quick-test-check
+    # Pre-commit already runs tests on staged files, no need to run full suite
+    # See issue #832 for pre-commit/pre-push duplication analysis
+    # test-all:
+    #   tags: [test, critical]
+    #   run: npm run test:all
+    #   fail_text: "🧪 Tests failed"
 
-    quality-check:
-      tags: [quality]
-      run: npm run quality
-      fail_text: "⚡ Quality checks failed - push aborted"
+    # DISABLED: Redundant with pre-commit typescript-check
+    # Pre-commit already runs type-checking on staged files
+    # See issue #832 for pre-commit/pre-push duplication analysis
+    # quality-check:
+    #   tags: [quality]
+    #   run: npm run quality
+    #   fail_text: "⚡ Quality checks failed"
 
 # Output settings
 output:

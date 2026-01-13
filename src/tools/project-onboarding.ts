@@ -1,25 +1,26 @@
 import { z } from "zod";
 import {
+	type DirectoryNode,
+	type ProjectStructure,
+	projectScanner,
+} from "./bridge/project-scanner.js";
+import {
 	buildFurtherReadingSection,
 	buildMetadataSection,
 } from "./shared/prompt-utils.js";
+import { createMcpResponse } from "./shared/response-utils.js";
 
 const ProjectOnboardingSchema = z.object({
 	projectPath: z.string().describe("Path to the project directory"),
-	projectName: z.string().optional().describe("Name of the project"),
-	projectType: z
-		.enum(["library", "application", "service", "tool", "other"])
-		.optional()
-		.describe("Type of project"),
-	analysisDepth: z
-		.enum(["quick", "standard", "deep"])
-		.default("standard")
-		.describe("Depth of analysis"),
-	includeMemories: z
+	includeDetailedStructure: z
 		.boolean()
 		.optional()
-		.default(true)
-		.describe("Generate project memories"),
+		.default(false)
+		.describe("Include detailed directory structure"),
+	focusAreas: z
+		.array(z.enum(["dependencies", "scripts", "structure", "frameworks"]))
+		.optional()
+		.describe("Specific areas to focus on"),
 	includeReferences: z
 		.boolean()
 		.optional()
@@ -32,407 +33,207 @@ const ProjectOnboardingSchema = z.object({
 		.describe("Include metadata section"),
 });
 
-type ProjectOnboardingInput = z.infer<typeof ProjectOnboardingSchema>;
+/**
+ * Format directory tree structure into human-readable tree format
+ */
+function formatDirectoryTree(
+	node: DirectoryNode,
+	prefix = "",
+	isLast = true,
+): string {
+	const lines: string[] = [];
+	const connector = isLast ? "└── " : "├── ";
+	const extension = isLast ? "    " : "│   ";
 
-interface ProjectProfile {
-	name: string;
-	type: string;
-	structure: {
-		directories: string[];
-		keyFiles: string[];
-		frameworks: string[];
-		languages: string[];
-	};
-	buildSystem?: string;
-	testFramework?: string;
-	dependencies: string[];
-	entryPoints: string[];
+	// Add current node
+	lines.push(prefix + connector + node.name);
+
+	// Add children if it's a directory
+	if (node.type === "directory" && node.children && node.children.length > 0) {
+		const children = node.children;
+		children.forEach((child, index) => {
+			const childIsLast = index === children.length - 1;
+			lines.push(
+				...formatDirectoryTree(child, prefix + extension, childIsLast).split(
+					"\n",
+				),
+			);
+		});
+	}
+
+	return lines.join("\n");
 }
 
-interface ProjectMemory {
-	title: string;
-	content: string;
-	category: "architecture" | "workflow" | "conventions" | "dependencies";
+/**
+ * Format script invocation based on project type
+ * For Node.js/JavaScript projects with package.json, use "npm run <script>"
+ * For other projects, show the raw command
+ */
+function formatScriptInvocation(
+	project: ProjectStructure,
+	scriptName: string,
+	scriptCommand: string,
+): string {
+	const projectType =
+		typeof project.type === "string" ? project.type.toLowerCase() : "";
+
+	// Check if scripts are from package.json (Node.js/JavaScript ecosystem)
+	// Project types: "javascript", "typescript", "node", etc.
+	const isNodeEcosystem =
+		projectType.includes("node") ||
+		projectType.includes("javascript") ||
+		projectType.includes("typescript") ||
+		projectType.includes("npm");
+
+	if (isNodeEcosystem) {
+		return `npm run ${scriptName}`;
+	}
+
+	// For non-Node projects, show the raw command
+	return scriptCommand;
 }
 
-export function renderOnboardingMarkdown(
-	profile: ProjectProfile,
+/**
+ * Generate onboarding documentation from project structure
+ */
+function generateOnboardingDoc(
+	project: ProjectStructure,
 	options: {
-		includeMemories: boolean;
-		includeMetadata: boolean;
-		includeReferences: boolean;
-		memories?: ProjectMemory[];
+		includeDetailedStructure?: boolean;
+		focusAreas?: string[];
+		includeMetadata?: boolean;
+		includeReferences?: boolean;
 	},
-) {
-	const {
-		includeMemories,
-		includeMetadata,
-		includeReferences,
-		memories = [],
-	} = options;
-	const metadata = includeMetadata
-		? buildMetadataSection({
-				sourceTool: "mcp_ai-agent-guid_project-onboarding",
-			})
-		: "";
-	const references = includeReferences ? buildOnboardingReferences() : "";
+): string {
+	const sections: string[] = [];
 
-	return `## 🚀 Project Onboarding Complete
+	// Header
+	sections.push(`# Project Onboarding: ${project.name}`);
+	sections.push(`\n**Type**: ${project.type}`);
+	sections.push(`**Root**: ${project.rootPath}`);
 
-${metadata}
+	// Metadata section
+	if (options.includeMetadata) {
+		sections.push(
+			`\n${buildMetadataSection({
+				sourceTool: "mcp_ai-agent-guidelines_project-onboarding",
+			})}`,
+		);
+	}
 
-### 📋 Project Profile
-| Attribute | Value |
-|---|---|
-| Name | ${profile.name} |
-| Type | ${profile.type} |
-| Languages | ${profile.structure.languages.join(", ") || "Unknown"} |
-| Frameworks | ${profile.structure.frameworks.join(", ") || "None detected"} |
-| Build System | ${profile.buildSystem || "Not detected"} |
-| Test Framework | ${profile.testFramework || "Not detected"} |
+	// Focus areas or show all
+	const shouldShowFrameworks =
+		!options.focusAreas || options.focusAreas.includes("frameworks");
+	const shouldShowDependencies =
+		!options.focusAreas || options.focusAreas.includes("dependencies");
+	const shouldShowScripts =
+		!options.focusAreas || options.focusAreas.includes("scripts");
+	const shouldShowStructure =
+		!options.focusAreas || options.focusAreas.includes("structure");
 
-### 🏗️ Project Structure
-**Key Directories:**
-${profile.structure.directories.map((d) => `- \`${d}\``).join("\n")}
+	// Frameworks
+	if (shouldShowFrameworks && project.frameworks.length > 0) {
+		sections.push("\n## Frameworks Detected\n");
+		for (const f of project.frameworks) {
+			sections.push(
+				`- **${f.name}** ${f.version ?? ""} (confidence: ${f.confidence})`,
+			);
+		}
+	}
 
-**Key Files:**
-${profile.structure.keyFiles.map((f) => `- \`${f}\``).join("\n")}
+	// Entry Points
+	if (shouldShowStructure) {
+		sections.push("\n## Entry Points\n");
+		if (project.entryPoints.length > 0) {
+			for (const ep of project.entryPoints) {
+				sections.push(`- \`${ep}\``);
+			}
+		} else {
+			sections.push("- No entry points detected");
+		}
+	}
 
-**Entry Points:**
-${profile.entryPoints.length > 0 ? profile.entryPoints.map((e) => `- \`${e}\``).join("\n") : "- No clear entry points identified"}
+	// Dependencies
+	if (shouldShowDependencies) {
+		const totalDeps =
+			project.dependencies.length + project.devDependencies.length;
+		sections.push(`\n## Dependencies (${totalDeps})\n`);
 
-### 📦 Dependencies
-${profile.dependencies.length > 0 ? profile.dependencies.map((d) => `- ${d}`).join("\n") : "No dependencies detected"}
+		if (project.dependencies.length > 0) {
+			sections.push("### Production Dependencies\n");
+			const displayDeps = project.dependencies.slice(0, 20);
+			for (const d of displayDeps) {
+				sections.push(`- ${d.name}@${d.version}`);
+			}
+			if (project.dependencies.length > 20) {
+				sections.push(`- ... and ${project.dependencies.length - 20} more`);
+			}
+		}
 
-${memories.length > 0 ? buildMemoriesSection(memories) : ""}
+		if (project.devDependencies.length > 0) {
+			sections.push("\n### Development Dependencies\n");
+			const displayDevDeps = project.devDependencies.slice(0, 10);
+			for (const d of displayDevDeps) {
+				sections.push(`- ${d.name}@${d.version}`);
+			}
+			if (project.devDependencies.length > 10) {
+				sections.push(`- ... and ${project.devDependencies.length - 10} more`);
+			}
+		}
 
-### 💡 Next Steps
-1. Review the project structure and memories above
-2. Familiarize yourself with entry points: ${profile.entryPoints.length > 0 ? profile.entryPoints.join(", ") : "explore main files"}
-3. Check build commands${profile.buildSystem ? ` using ${profile.buildSystem}` : ""}
-4. Run tests${profile.testFramework ? ` using ${profile.testFramework}` : ""}
-5. Start with small, well-defined tasks to build context
+		if (totalDeps === 0) {
+			sections.push("No dependencies detected");
+		}
+	}
 
-${references}
+	// Scripts
+	if (shouldShowScripts && Object.keys(project.scripts).length > 0) {
+		sections.push("\n## Available Scripts\n");
+		for (const [name, cmd] of Object.entries(project.scripts)) {
+			const invocation = formatScriptInvocation(project, name, cmd);
+			sections.push(`- \`${invocation}\`: ${cmd}`);
+		}
+	}
 
-### 🎯 Onboarding Success Criteria
-- [x] Project structure analyzed
-- [x] Key files and directories identified
-- [x] Dependencies catalogued
-${includeMemories ? "- [x] Project memories generated" : "- [ ] Project memories (disabled)"}
-- [ ] Initial exploration completed
-- [ ] First task identified
-`;
+	// Structure (if requested)
+	if (shouldShowStructure && options.includeDetailedStructure) {
+		sections.push("\n## Directory Structure\n");
+		sections.push("```");
+		sections.push(formatDirectoryTree(project.directoryStructure));
+		sections.push("```");
+	}
+
+	// References
+	if (options.includeReferences) {
+		sections.push(`\n${buildOnboardingReferences()}`);
+	}
+
+	return sections.join("\n");
 }
 
+/**
+ * Main project onboarding function
+ */
 export async function projectOnboarding(args: unknown) {
 	const input = ProjectOnboardingSchema.parse(args);
 
-	const profile = await analyzeProject(input);
-	const memories = input.includeMemories
-		? generateProjectMemories(profile)
-		: [];
+	// Scan actual project
+	const project = await projectScanner.scan(input.projectPath);
 
-	return {
-		content: [
-			{
-				type: "text",
-				text: renderOnboardingMarkdown(profile, {
-					includeMemories: input.includeMemories,
-					includeMetadata: input.includeMetadata,
-					includeReferences: input.includeReferences,
-					memories,
-				}),
-			},
-		],
-	};
-}
-
-async function analyzeProject(
-	input: ProjectOnboardingInput,
-): Promise<ProjectProfile> {
-	const profile: ProjectProfile = {
-		name: input.projectName || input.projectPath.split("/").pop() || "unknown",
-		type: input.projectType || "other",
-		structure: {
-			directories: [],
-			keyFiles: [],
-			frameworks: [],
-			languages: [],
-		},
-		dependencies: [],
-		entryPoints: [],
-	};
-
-	// Detect key directories
-	const commonDirs = [
-		"src",
-		"lib",
-		"app",
-		"tests",
-		"test",
-		"docs",
-		"scripts",
-		"config",
-		"public",
-		"dist",
-		"build",
-	];
-	profile.structure.directories = commonDirs;
-
-	// Detect key files
-	const keyFiles = [
-		"package.json",
-		"tsconfig.json",
-		"README.md",
-		"Cargo.toml",
-		"go.mod",
-		"requirements.txt",
-		"setup.py",
-		"Gemfile",
-		"pom.xml",
-		"build.gradle",
-		".gitignore",
-	];
-	profile.structure.keyFiles = keyFiles;
-
-	// Detect languages (simplified)
-	profile.structure.languages = detectLanguages(profile.structure.keyFiles);
-
-	// Detect frameworks
-	profile.structure.frameworks = detectFrameworks(profile.structure.keyFiles);
-
-	// Detect build system
-	profile.buildSystem = detectBuildSystem(profile.structure.keyFiles);
-
-	// Detect test framework
-	profile.testFramework = detectTestFramework(profile.structure.keyFiles);
-
-	// Detect dependencies
-	profile.dependencies = detectDependencies(profile.structure.keyFiles);
-
-	// Detect entry points
-	profile.entryPoints = detectEntryPoints(profile.structure);
-
-	return profile;
-}
-
-export function detectLanguages(keyFiles: string[]): string[] {
-	const languages: string[] = [];
-
-	if (
-		keyFiles.some((f) => f.includes("package.json") || f.includes("tsconfig"))
-	) {
-		languages.push("TypeScript/JavaScript");
-	}
-	if (
-		keyFiles.some(
-			(f) => f.includes("requirements.txt") || f.includes("setup.py"),
-		)
-	) {
-		languages.push("Python");
-	}
-	if (keyFiles.some((f) => f.includes("Cargo.toml"))) {
-		languages.push("Rust");
-	}
-	if (keyFiles.some((f) => f.includes("go.mod"))) {
-		languages.push("Go");
-	}
-	if (keyFiles.some((f) => f.includes("Gemfile"))) {
-		languages.push("Ruby");
-	}
-	if (
-		keyFiles.some((f) => f.includes("pom.xml") || f.includes("build.gradle"))
-	) {
-		languages.push("Java");
-	}
-
-	return languages;
-}
-
-export function detectFrameworks(keyFiles: string[]): string[] {
-	const frameworks: string[] = [];
-
-	// This is a simplified detection - in practice, would need to read file contents
-	if (keyFiles.includes("package.json")) {
-		frameworks.push("Node.js");
-	}
-
-	return frameworks;
-}
-
-export function detectBuildSystem(keyFiles: string[]): string | undefined {
-	if (keyFiles.includes("package.json")) return "npm/yarn";
-	if (keyFiles.includes("Cargo.toml")) return "cargo";
-	if (keyFiles.includes("go.mod")) return "go build";
-	if (keyFiles.includes("pom.xml")) return "maven";
-	if (keyFiles.includes("build.gradle")) return "gradle";
-	if (keyFiles.includes("Makefile")) return "make";
-	return undefined;
-}
-
-export function detectTestFramework(keyFiles: string[]): string | undefined {
-	if (keyFiles.includes("package.json"))
-		return "Jest/Vitest/Mocha (check package.json)";
-	if (keyFiles.includes("requirements.txt")) return "pytest/unittest";
-	if (keyFiles.includes("Cargo.toml")) return "cargo test";
-	if (keyFiles.includes("go.mod")) return "go test";
-	return undefined;
-}
-
-export function detectDependencies(keyFiles: string[]): string[] {
-	// Simplified - in practice would parse the dependency files
-	const deps: string[] = [];
-
-	if (keyFiles.includes("package.json")) {
-		deps.push("Check package.json for npm dependencies");
-	}
-	if (keyFiles.includes("requirements.txt")) {
-		deps.push("Check requirements.txt for Python dependencies");
-	}
-	if (keyFiles.includes("Cargo.toml")) {
-		deps.push("Check Cargo.toml for Rust crates");
-	}
-
-	return deps;
-}
-
-function detectEntryPoints(_structure: {
-	directories: string[];
-	keyFiles: string[];
-}): string[] {
-	const entryPoints: string[] = [];
-
-	// Common entry point patterns
-	const commonEntries = [
-		"src/index.ts",
-		"src/main.ts",
-		"src/app.ts",
-		"main.py",
-		"app.py",
-		"main.go",
-		"src/main.rs",
-		"index.js",
-	];
-
-	entryPoints.push(...commonEntries);
-
-	return entryPoints;
-}
-
-export function generateProjectMemories(
-	profile: ProjectProfile,
-): ProjectMemory[] {
-	const memories: ProjectMemory[] = [];
-
-	// Architecture memory
-	memories.push({
-		title: "Project Architecture",
-		category: "architecture",
-		content: `# ${profile.name} - Architecture Overview
-
-## Project Type
-${profile.type.charAt(0).toUpperCase() + profile.type.slice(1)}
-
-## Technology Stack
-- Languages: ${profile.structure.languages.join(", ")}
-- Frameworks: ${profile.structure.frameworks.join(", ") || "None"}
-- Build System: ${profile.buildSystem || "Not detected"}
-
-## Structure
-Key directories: ${profile.structure.directories.join(", ")}
-
-## Entry Points
-${profile.entryPoints.map((e) => `- ${e}`).join("\n")}
-`,
+	// Generate documentation
+	const content = generateOnboardingDoc(project, {
+		includeDetailedStructure: input.includeDetailedStructure,
+		focusAreas: input.focusAreas,
+		includeMetadata: input.includeMetadata,
+		includeReferences: input.includeReferences,
 	});
 
-	// Workflow memory
-	if (profile.buildSystem || profile.testFramework) {
-		memories.push({
-			title: "Development Workflow",
-			category: "workflow",
-			content: `# ${profile.name} - Development Workflow
-
-## Build
-${profile.buildSystem ? `Use \`${profile.buildSystem}\` for building the project` : "Build system not detected"}
-
-## Testing
-${profile.testFramework ? `Use ${profile.testFramework} for running tests` : "Test framework not detected"}
-
-## Common Commands
-${profile.buildSystem === "npm/yarn" ? `- \`npm install\` - Install dependencies\n- \`npm run build\` - Build project\n- \`npm test\` - Run tests` : ""}
-${profile.buildSystem === "cargo" ? `- \`cargo build\` - Build project\n- \`cargo test\` - Run tests\n- \`cargo run\` - Run project` : ""}
-${profile.buildSystem === "go build" ? `- \`go build\` - Build project\n- \`go test ./...\` - Run tests\n- \`go run .\` - Run project` : ""}
-`,
-		});
-	}
-
-	// Conventions memory
-	memories.push({
-		title: "Code Conventions",
-		category: "conventions",
-		content: `# ${profile.name} - Code Conventions
-
-## File Organization
-- Source code in: ${profile.structure.directories.find((d) => d === "src" || d === "lib") || "main directory"}
-- Tests in: ${profile.structure.directories.find((d) => d.includes("test")) || "test directory"}
-- Documentation in: ${profile.structure.directories.find((d) => d === "docs") || "docs directory"}
-
-## Best Practices
-- Follow the existing code style in the project
-- Write tests for new features
-- Update documentation for significant changes
-- Use meaningful commit messages
-`,
-	});
-
-	// Dependencies memory
-	if (profile.dependencies.length > 0) {
-		memories.push({
-			title: "Dependencies",
-			category: "dependencies",
-			content: `# ${profile.name} - Dependencies
-
-## Dependency Management
-${profile.dependencies.map((d) => `- ${d}`).join("\n")}
-
-## Important Notes
-- Always review dependency updates for breaking changes
-- Keep dependencies up to date for security
-- Minimize dependency count when possible
-`,
-		});
-	}
-
-	return memories;
+	return createMcpResponse({ content });
 }
 
-export function buildMemoriesSection(memories: ProjectMemory[]): string {
-	let section = "### 🧠 Project Memories Generated\n\n";
-
-	const grouped = memories.reduce(
-		(acc, mem) => {
-			if (!acc[mem.category]) acc[mem.category] = [];
-			acc[mem.category].push(mem);
-			return acc;
-		},
-		{} as Record<string, ProjectMemory[]>,
-	);
-
-	for (const [category, mems] of Object.entries(grouped)) {
-		section += `**${category.charAt(0).toUpperCase() + category.slice(1)}**:\n`;
-		mems.forEach((mem) => {
-			section += `- ${mem.title}\n`;
-		});
-		section += "\n";
-	}
-
-	section += `💾 **Memory Storage**: These memories should be stored for future reference and can be recalled when working on the project.\n\n`;
-
-	return section;
-}
-
+/**
+ * Build references section for onboarding documentation
+ */
 export function buildOnboardingReferences(): string {
 	return buildFurtherReadingSection([
 		{

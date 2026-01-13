@@ -14,10 +14,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
+**Phase 3 Documentation Updates (P3-018):**
+- Updated `docs/tools/mode-switcher.md` with accurate API reference and usage examples
+  - Complete parameter documentation from source code
+  - Detailed descriptions of all 8 available modes (planning, editing, analysis, debugging, refactoring, documentation, interactive, one-shot)
+  - Mode profile reference with focus areas, strategies, and best practices for each mode
+  - State persistence and transition history documentation
+- Updated `docs/tools/project-onboarding.md` with accurate API reference and usage examples
+  - Complete parameter documentation including `focusAreas` options
+  - Supported project types (TypeScript, JavaScript, Python, Go, Rust, Ruby)
+  - Output structure with framework detection, dependencies, and scripts
+  - Focus areas reference (dependencies, scripts, frameworks, structure)
+- New `docs/tools/agent-orchestrator.md` - Comprehensive documentation for multi-agent workflow orchestration
+  - Four actions documented: `list-agents`, `list-workflows`, `handoff`, `workflow`
+  - Complete workflow reference for `code-review-chain` and `design-to-spec`
+  - Real-world examples for code review pipeline, design sessions, and agent handoffs
+  - Workflow composition patterns with Mermaid diagrams
+
+**Phase 2 Documentation Updates (P2-028):**
+- New `docs/output-strategies.md` - Comprehensive guide to 7 output approaches and 6 cross-cutting capabilities
+  - Detailed documentation for Chat, RFC, ADR, SDD, SpecKit, TOGAF, and Enterprise strategies
+  - Usage examples for workflow, diagram, shell-script, config, issues, and pr-template capabilities
+  - Selection guide and migration instructions
+- Added Output Strategies section to `README.md` with quick reference table
+- Documentation for Phase 2 domain extraction and output strategy layer implementation
+
+**Public API Documentation:**
 - New `docs/public-api.md` documenting the public API surface, including stable exports, singletons, and test utilities
 - New `src/tools/test-utils/` directory for test-only utilities
 - `src/tools/test-utils/mermaid.ts` - Re-export of `__setMermaidModuleProvider` for test usage
 - `src/tools/test-utils/index.ts` - Barrel export for test utilities
+
+**Phase 2 Implementation (Complete):**
+- Domain layer extraction to `src/domain/` (analysis, design, prompting)
+- Output Strategy Pattern with 7 strategies in `src/strategies/`
+- Cross-cutting capabilities manager for additive functionality
+- ErrorCode enum for standardized error handling
 
 ### Changed
 - **BREAKING**: Removed individual `IMPLEMENTATION_STATUS` re-exports from `src/tools/design/index.ts`
@@ -48,6 +81,82 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Reduced maintenance burden by consolidating 14 individual status exports into single `DESIGN_MODULE_STATUSES` object (supports issue #414)
+
+
+## [0.14.0-alpha.1] - 2026-01-05
+
+### Added
+
+**Phase 1: Discoverability Improvements**
+
+- **ToolAnnotations** for all 32 tools providing metadata hints to LLMs:
+  - `title`: Human-readable tool name
+  - `readOnlyHint`: Whether tool modifies state (true/false)
+  - `idempotentHint`: Whether repeated calls with same inputs produce same outputs (true/false)
+  - `destructiveHint`: Whether tool may delete/destroy data (false for all current tools)
+  - `openWorldHint`: Whether tool accesses external systems (true only for project-onboarding)
+- **Annotation Presets** in `src/tools/shared/annotation-presets.ts`:
+  - `ANALYSIS_TOOL_ANNOTATIONS` - For read-only analysis tools
+  - `GENERATION_TOOL_ANNOTATIONS` - For content generation tools
+  - `SESSION_TOOL_ANNOTATIONS` - For session-based stateful tools
+  - `FILESYSTEM_TOOL_ANNOTATIONS` - For tools accessing external filesystem
+- **Unified Prompt Tool** - `prompt-hierarchy` consolidating 6 prompt tools into one API:
+  - Mode `build`: Create hierarchical prompts (replaces `hierarchical-prompt-builder`)
+  - Mode `evaluate`: Score prompt quality (replaces `prompting-hierarchy-evaluator`)
+  - Mode `select-level`: Recommend hierarchy level (replaces `hierarchy-level-selector`)
+  - Mode `chain`: Build sequential prompt chains (replaces `prompt-chaining-builder`)
+  - Mode `flow`: Create declarative flows (replaces `prompt-flow-builder`)
+  - Mode `quick`: Access quick developer prompts (replaces `quick-developer-prompts-builder`)
+- **Schema Examples** in all tool input schemas for improved LLM comprehension
+- **Description Uniqueness Test** (`tests/vitest/integration/phase1-discoverability.spec.ts`)
+- **Comprehensive Documentation**:
+  - `docs/tools.md` - Complete tool reference with ToolAnnotations and complexity ratings
+  - `docs/migration.md` - Migration guide from v0.13.x to v0.14.x with examples
+  - `docs/api/prompt-hierarchy.md` - Detailed API reference for unified prompt tool
+
+### Changed
+
+**Tool Descriptions Rewrite** - All 32 tool descriptions rewritten in active voice format:
+- Template: `[ACTION VERB] [WHAT IT DOES] with [KEY DIFFERENTIATOR]. BEST FOR: [use cases]. OUTPUTS: [format].`
+- Improved discoverability through standardized naming and clear use cases
+- Examples added to all schema properties for better LLM understanding
+
+**Documentation Updates**:
+- README.md tool count updated from 27 to 32 tools
+- Added deprecation notices for 6 prompt tools in README.md
+- Updated Prompt Builders section to highlight new `prompt-hierarchy` tool
+- Reorganized Utilities section to separate active from deprecated tools
+
+### Deprecated
+
+**Prompt Tools** (deprecated in v0.14.0, will be removed in v0.15.0):
+- `hierarchical-prompt-builder` → Use `prompt-hierarchy` with `mode: "build"`
+- `prompting-hierarchy-evaluator` → Use `prompt-hierarchy` with `mode: "evaluate"`
+- `hierarchy-level-selector` → Use `prompt-hierarchy` with `mode: "select-level"`
+- `prompt-chaining-builder` → Use `prompt-hierarchy` with `mode: "chain"`
+- `prompt-flow-builder` → Use `prompt-hierarchy` with `mode: "flow"`
+- `quick-developer-prompts-builder` → Use `prompt-hierarchy` with `mode: "quick"`
+
+**Deprecation Mechanism**:
+- All deprecated tools emit deprecation warnings via `emitDeprecationWarning()` helper
+- Warnings include: deprecation version, replacement tool, removal version
+- Warnings are emitted only once per session per tool to avoid log spam
+
+### Notes
+
+**Breaking Changes**: None - all deprecated tools remain fully functional with warnings
+
+**Migration Path**: See [docs/migration.md](./docs/migration.md) for detailed migration guide with before/after examples
+
+**Testing**:
+- All existing tests pass with deprecated tools
+- New integration tests validate ToolAnnotations coverage
+- Phase 1 discoverability tests ensure description uniqueness and schema examples
+
+**Related Issues**:
+- Implements Phase 1 (P1-017) from [TASKS-phase-1-discoverability.md](./plan-v0.13.x/tasks/TASKS-phase-1-discoverability.md)
+- Addresses [SPEC-002: Tool Harmonization](./plan-v0.13.x/specs/SPEC-002-tool-harmonization.md)
+
 
 
 ## [0.12.4] - 2025-12-21
@@ -158,7 +267,9 @@ For detailed history before v0.7.0, see the [Git commit history](https://github.
 
 ---
 
-[Unreleased]: https://github.com/Anselmoo/mcp-ai-agent-guidelines/compare/v0.12.1...HEAD
+[Unreleased]: https://github.com/Anselmoo/mcp-ai-agent-guidelines/compare/v0.14.0-alpha.1...HEAD
+[0.14.0-alpha.1]: https://github.com/Anselmoo/mcp-ai-agent-guidelines/compare/v0.12.4...v0.14.0-alpha.1
+[0.12.4]: https://github.com/Anselmoo/mcp-ai-agent-guidelines/compare/v0.12.1...v0.12.4
 [0.12.1]: https://github.com/Anselmoo/mcp-ai-agent-guidelines/compare/v0.8.0...v0.12.1
 [0.8.0]: https://github.com/Anselmoo/mcp-ai-agent-guidelines/compare/v0.7.0...v0.8.0
 

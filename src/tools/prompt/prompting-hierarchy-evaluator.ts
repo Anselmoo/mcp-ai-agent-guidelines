@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { emitDeprecationWarning } from "../shared/deprecation.js";
+import { handleToolError } from "../shared/error-handler.js";
 import { buildFurtherReadingSection } from "../shared/prompt-utils.js";
 import {
 	type HierarchyLevelDefinition,
@@ -383,97 +385,109 @@ function getHierarchyAdjustmentAdvice(
 }
 
 export async function promptingHierarchyEvaluator(args: unknown) {
-	const input = PromptingHierarchyEvaluatorSchema.parse(args);
+	try {
+		emitDeprecationWarning({
+			tool: "prompting-hierarchy-evaluator",
+			replacement: "prompt-hierarchy",
+			deprecatedIn: "v0.14.0",
+			removedIn: "v0.15.0",
+		});
 
-	const evaluation = evaluatePromptHierarchy(input);
-	const recommendations = input.includeRecommendations
-		? generateRecommendations(evaluation, input.targetLevel)
-		: [];
+		const input = PromptingHierarchyEvaluatorSchema.parse(args);
 
-	const levelDefinition = HIERARCHY_LEVEL_DEFINITIONS.find(
-		(d) => d.level === evaluation.hierarchyLevel,
-	);
+		const evaluation = evaluatePromptHierarchy(input);
+		const recommendations = input.includeRecommendations
+			? generateRecommendations(evaluation, input.targetLevel)
+			: [];
 
-	let output = `# Prompting Hierarchy Evaluation\n\n`;
+		const levelDefinition = HIERARCHY_LEVEL_DEFINITIONS.find(
+			(d) => d.level === evaluation.hierarchyLevel,
+		);
 
-	// Overview
-	output += `## 📊 Evaluation Summary\n\n`;
-	output += `**Overall Score**: ${evaluation.overallScore}/100\n`;
-	output += `**Predicted Effectiveness**: ${evaluation.predictedEffectiveness}/100\n`;
-	output += `**Confidence**: ${evaluation.confidence}%\n\n`;
+		let output = `# Prompting Hierarchy Evaluation\n\n`;
 
-	// Hierarchy Level
-	output += `## 🎚️ Hierarchy Level: ${levelDefinition?.name}\n\n`;
-	output += `${levelDefinition?.description}\n\n`;
-	output += `**Characteristics**:\n`;
-	for (const char of levelDefinition?.characteristics || []) {
-		output += `- ${char}\n`;
-	}
-	output += `\n**Cognitive Load**: ${levelDefinition?.cognitiveLoad}\n`;
-	output += `**Autonomy Level**: ${levelDefinition?.autonomyLevel}\n\n`;
+		// Overview
+		output += `## 📊 Evaluation Summary\n\n`;
+		output += `**Overall Score**: ${evaluation.overallScore}/100\n`;
+		output += `**Predicted Effectiveness**: ${evaluation.predictedEffectiveness}/100\n`;
+		output += `**Confidence**: ${evaluation.confidence}%\n\n`;
 
-	// Component Scores
-	output += `## 📈 Component Scores\n\n`;
-	output += `| Component | Score | Status |\n`;
-	output += `|-----------|-------|--------|\n`;
-	output += `| Clarity | ${evaluation.clarity}/100 | ${getScoreEmoji(evaluation.clarity)} |\n`;
-	output += `| Specificity | ${evaluation.specificity}/100 | ${getScoreEmoji(evaluation.specificity)} |\n`;
-	output += `| Completeness | ${evaluation.completeness}/100 | ${getScoreEmoji(evaluation.completeness)} |\n`;
-	output += `| Structure | ${evaluation.structure}/100 | ${getScoreEmoji(evaluation.structure)} |\n`;
-	output += `| Hierarchy Match | ${evaluation.hierarchyScore}/100 | ${getScoreEmoji(evaluation.hierarchyScore)} |\n`;
-	output += `| Cognitive Complexity | ${evaluation.cognitiveComplexity}/100 | ${getComplexityEmoji(evaluation.cognitiveComplexity)} |\n\n`;
-
-	// Recommendations
-	if (recommendations.length > 0) {
-		output += `## 💡 Recommendations\n\n`;
-		for (const rec of recommendations) {
-			output += `${rec}\n\n`;
+		// Hierarchy Level
+		output += `## 🎚️ Hierarchy Level: ${levelDefinition?.name}\n\n`;
+		output += `${levelDefinition?.description}\n\n`;
+		output += `**Characteristics**:\n`;
+		for (const char of levelDefinition?.characteristics || []) {
+			output += `- ${char}\n`;
 		}
+		output += `\n**Cognitive Load**: ${levelDefinition?.cognitiveLoad}\n`;
+		output += `**Autonomy Level**: ${levelDefinition?.autonomyLevel}\n\n`;
+
+		// Component Scores
+		output += `## 📈 Component Scores\n\n`;
+		output += `| Component | Score | Status |\n`;
+		output += `|-----------|-------|--------|\n`;
+		output += `| Clarity | ${evaluation.clarity}/100 | ${getScoreEmoji(evaluation.clarity)} |\n`;
+		output += `| Specificity | ${evaluation.specificity}/100 | ${getScoreEmoji(evaluation.specificity)} |\n`;
+		output += `| Completeness | ${evaluation.completeness}/100 | ${getScoreEmoji(evaluation.completeness)} |\n`;
+		output += `| Structure | ${evaluation.structure}/100 | ${getScoreEmoji(evaluation.structure)} |\n`;
+		output += `| Hierarchy Match | ${evaluation.hierarchyScore}/100 | ${getScoreEmoji(evaluation.hierarchyScore)} |\n`;
+		output += `| Cognitive Complexity | ${evaluation.cognitiveComplexity}/100 | ${getComplexityEmoji(evaluation.cognitiveComplexity)} |\n\n`;
+
+		// Recommendations
+		if (recommendations.length > 0) {
+			output += `## 💡 Recommendations\n\n`;
+			for (const rec of recommendations) {
+				output += `${rec}\n\n`;
+			}
+		}
+
+		// Hierarchy Level Reference
+		output += `## 📚 Hierarchy Level Reference\n\n`;
+		for (const level of HIERARCHY_LEVEL_DEFINITIONS) {
+			const marker = level.level === evaluation.hierarchyLevel ? "✅ " : "";
+			output += `### ${marker}${level.name}\n`;
+			output += `${level.description}\n\n`;
+			output += `**Use Cases**: ${level.useCases.join(", ")}\n\n`;
+		}
+
+		// References
+		if (input.includeReferences) {
+			const references = buildFurtherReadingSection([
+				{
+					title: "Hierarchical Prompting for Better AI Interactions",
+					url: "https://relevanceai.com/prompt-engineering/master-hierarchical-prompting-for-better-ai-interactions",
+					description:
+						"Comprehensive guide to hierarchical prompting techniques",
+				},
+				{
+					title: "Hierarchical Prompting Taxonomy (HPT)",
+					url: "https://arxiv.org/abs/2406.12644",
+					description:
+						"Academic research on systematic prompt hierarchy classification",
+				},
+				{
+					title: "Prompting Techniques for Specialized LLMs",
+					url: "https://www.aiforeducation.io/ai-resources/prompting-techniques-for-specialized-llms",
+					description: "Educational resource on advanced prompting methods",
+				},
+			]);
+			output += `\n${references}\n`;
+		}
+
+		output += `\n## ⚠️ Disclaimer\n`;
+		output += `This evaluation is based on pattern analysis and heuristics. Human review is recommended for critical applications. Scores are indicative and should be validated with actual agent performance.\n`;
+
+		return {
+			content: [
+				{
+					type: "text" as const,
+					text: output,
+				},
+			],
+		};
+	} catch (error) {
+		return handleToolError(error);
 	}
-
-	// Hierarchy Level Reference
-	output += `## 📚 Hierarchy Level Reference\n\n`;
-	for (const level of HIERARCHY_LEVEL_DEFINITIONS) {
-		const marker = level.level === evaluation.hierarchyLevel ? "✅ " : "";
-		output += `### ${marker}${level.name}\n`;
-		output += `${level.description}\n\n`;
-		output += `**Use Cases**: ${level.useCases.join(", ")}\n\n`;
-	}
-
-	// References
-	if (input.includeReferences) {
-		const references = buildFurtherReadingSection([
-			{
-				title: "Hierarchical Prompting for Better AI Interactions",
-				url: "https://relevanceai.com/prompt-engineering/master-hierarchical-prompting-for-better-ai-interactions",
-				description: "Comprehensive guide to hierarchical prompting techniques",
-			},
-			{
-				title: "Hierarchical Prompting Taxonomy (HPT)",
-				url: "https://arxiv.org/abs/2406.12644",
-				description:
-					"Academic research on systematic prompt hierarchy classification",
-			},
-			{
-				title: "Prompting Techniques for Specialized LLMs",
-				url: "https://www.aiforeducation.io/ai-resources/prompting-techniques-for-specialized-llms",
-				description: "Educational resource on advanced prompting methods",
-			},
-		]);
-		output += `\n${references}\n`;
-	}
-
-	output += `\n## ⚠️ Disclaimer\n`;
-	output += `This evaluation is based on pattern analysis and heuristics. Human review is recommended for critical applications. Scores are indicative and should be validated with actual agent performance.\n`;
-
-	return {
-		content: [
-			{
-				type: "text" as const,
-				text: output,
-			},
-		],
-	};
 }
 
 function getScoreEmoji(score: number): string {

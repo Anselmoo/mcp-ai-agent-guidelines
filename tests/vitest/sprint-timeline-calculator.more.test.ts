@@ -32,7 +32,8 @@ describe("sprint-timeline-calculator (metadata, risks, refs)", () => {
 		expect(text).toMatch(/Risk Assessment/);
 		expect(text).toMatch(/High|Medium|Low/);
 		// Gantt chart present and labels sanitized to dashes
-		expect(text).toMatch(/```mermaid[\s\S]*gantt/);
+		expect(text).toMatch(/Gantt Chart.*Sprint Timeline/);
+		expect(text).toMatch(/section Sprint/);
 		expect(text).toMatch(/A-Alpha/);
 		expect(text).toMatch(/B-Beta/);
 		// References footer

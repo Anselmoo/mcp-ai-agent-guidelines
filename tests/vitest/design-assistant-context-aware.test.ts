@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { designAssistant } from "../../src/tools/design/design-assistant.js";
+import { ErrorCode } from "../../src/tools/shared/error-codes.js";
 
 describe("Design Assistant - Context-Aware Guidance", () => {
 	it("should generate context-aware guidance for TypeScript code", async () => {
@@ -55,14 +56,22 @@ describe("Design Assistant - Context-Aware Guidance", () => {
 	});
 
 	it("should handle missing content parameter", async () => {
-		const result = await designAssistant.processRequest({
+		const response = await designAssistant.processRequest({
 			action: "generate-context-aware-guidance",
 			sessionId: "test-session-004",
 		});
 
-		expect(result.success).toBe(false);
-		expect(result.status).toBe("error");
-		expect(result.message).toContain("Content is required");
+		const parsed = response as {
+			isError?: boolean;
+			content?: Array<{ text: string }>;
+		};
+		if (parsed.isError) {
+			const errorPayload = JSON.parse(parsed.content?.[0]?.text ?? "{}");
+			expect(errorPayload.code).toBe(ErrorCode.MISSING_REQUIRED_FIELD);
+			expect(errorPayload.context?.fieldName).toBe("content");
+		} else {
+			throw new Error("Expected error response");
+		}
 	});
 
 	it("should include recommendations about detected language and framework", async () => {

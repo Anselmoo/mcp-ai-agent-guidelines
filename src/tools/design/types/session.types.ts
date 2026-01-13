@@ -55,3 +55,36 @@ export interface SessionEvent {
 	description: string;
 	data?: Record<string, unknown>;
 }
+
+/**
+ * Gateway-compatible session state format for PolyglotGateway rendering.
+ *
+ * This interface represents the SessionState format expected by the gateway layer
+ * when rendering Spec-Kit artifacts. It bridges the gap between DesignSessionState
+ * and the domain's SessionState format.
+ */
+export interface GatewaySessionState {
+	id: string;
+	phase: string;
+	currentPhase?: string;
+	config: {
+		sessionId: string;
+		context: Record<string, unknown>;
+		goal?: string;
+		requirements?: unknown;
+		constraints?: unknown;
+		metadata?: Record<string, unknown>;
+	};
+	context: Record<string, unknown>;
+	phases?: Record<string, unknown>;
+	coverage?: unknown;
+	artifacts?: Record<string, unknown>;
+	status?: string;
+	history: Array<{
+		from: string;
+		to: string;
+		timestamp?: string;
+		type?: string;
+		description?: string;
+	}>;
+}

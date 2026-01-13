@@ -1,25 +1,81 @@
 import { z } from "zod";
+import { calculateCleanCodeScore as calculateDomainCleanCodeScore } from "../domain/analysis/index.js";
+import { handleToolError } from "./shared/error-handler.js";
 import {
 	buildFurtherReadingSection,
 	buildOptionalSectionsMap,
 } from "./shared/prompt-utils.js";
 
 const CleanCodeScorerSchema = z.object({
-	projectPath: z.string().optional(),
-	codeContent: z.string().optional(),
-	language: z.string().optional(),
-	framework: z.string().optional(),
+	projectPath: z
+		.string()
+		.optional()
+		.describe("Path to the project root directory. Example: '/src' or './app'"),
+	codeContent: z
+		.string()
+		.optional()
+		.describe(
+			"Source code to analyze for quality metrics. Example: 'function add(a, b) { return a + b; }' or a full class with methods",
+		),
+	language: z
+		.string()
+		.optional()
+		.describe(
+			"Programming language (auto-detected if not specified). Examples: 'typescript', 'python', 'javascript'",
+		),
+	framework: z
+		.string()
+		.optional()
+		.describe(
+			"Framework or technology stack. Examples: 'react', 'express', 'django'",
+		),
 	coverageMetrics: z
 		.object({
-			statements: z.number().min(0).max(100).optional(),
-			branches: z.number().min(0).max(100).optional(),
-			functions: z.number().min(0).max(100).optional(),
-			lines: z.number().min(0).max(100).optional(),
+			statements: z
+				.number()
+				.min(0)
+				.max(100)
+				.optional()
+				.describe("Statement coverage percentage (0-100). Example: 85.5"),
+			branches: z
+				.number()
+				.min(0)
+				.max(100)
+				.optional()
+				.describe("Branch coverage percentage (0-100). Example: 72.3"),
+			functions: z
+				.number()
+				.min(0)
+				.max(100)
+				.optional()
+				.describe("Function coverage percentage (0-100). Example: 90.0"),
+			lines: z
+				.number()
+				.min(0)
+				.max(100)
+				.optional()
+				.describe("Line coverage percentage (0-100). Example: 88.2"),
 		})
-		.optional(),
-	includeReferences: z.boolean().optional().default(true),
-	includeMetadata: z.boolean().optional().default(true),
-	inputFile: z.string().optional(),
+		.optional()
+		.describe(
+			"Test coverage metrics from your test runner. Example: { statements: 85, branches: 70, functions: 80, lines: 85 }",
+		),
+	includeReferences: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe("Include external reference links in output. Example: true"),
+	includeMetadata: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe("Include metadata section in output. Example: true"),
+	inputFile: z
+		.string()
+		.optional()
+		.describe(
+			"Reference to input file being analyzed. Example: 'src/utils/helper.ts'",
+		),
 });
 
 type CleanCodeScorerInput = z.infer<typeof CleanCodeScorerSchema>;
@@ -41,58 +97,60 @@ interface CleanCodeScore {
 }
 
 export async function cleanCodeScorer(args: unknown) {
-	const input = CleanCodeScorerSchema.parse(args);
+	try {
+		const input = CleanCodeScorerSchema.parse(args);
 
-	const scoreResult = calculateCleanCodeScore(input);
+		const scoreResult = calculateCleanCodeScore(input);
 
-	// Build optional sections using the shared utility
-	const { references, metadata } = buildOptionalSectionsMap(input, {
-		references: {
-			key: "includeReferences",
-			builder: () =>
-				buildFurtherReadingSection([
-					{
-						title: "Clean Code Principles",
-						url: "https://www.freecodecamp.org/news/clean-coding-for-beginners/",
-						description:
-							"Beginner-friendly guide to writing clean, maintainable code",
-					},
-					{
-						title: "SonarQube Metric Definitions",
-						url: "https://docs.sonarqube.org/latest/user-guide/metric-definitions/",
-						description: "Comprehensive definitions of code quality metrics",
-					},
-					{
-						title: "Test Coverage Best Practices",
-						url: "https://martinfowler.com/bliki/TestCoverage.html",
-						description: "Martin Fowler on meaningful test coverage strategies",
-					},
-					{
-						title: "TypeScript Do's and Don'ts",
-						url: "https://www.typescriptlang.org/docs/handbook/declaration-files/do-s-and-don-ts.html",
-						description: "Official TypeScript best practices and style guide",
-					},
-				]),
-		},
-		metadata: {
-			key: "includeMetadata",
-			builder: (cfg) =>
-				[
-					"### Metadata",
-					`- Updated: ${new Date().toISOString().slice(0, 10)}`,
-					"- Source tool: mcp_ai-agent-guid_clean-code-scorer",
-					cfg.inputFile ? `- Input file: ${cfg.inputFile}` : undefined,
-				]
-					.filter(Boolean)
-					.join("\n"),
-		},
-	});
+		// Build optional sections using the shared utility
+		const { references, metadata } = buildOptionalSectionsMap(input, {
+			references: {
+				key: "includeReferences",
+				builder: () =>
+					buildFurtherReadingSection([
+						{
+							title: "Clean Code Principles",
+							url: "https://www.freecodecamp.org/news/clean-coding-for-beginners/",
+							description:
+								"Beginner-friendly guide to writing clean, maintainable code",
+						},
+						{
+							title: "SonarQube Metric Definitions",
+							url: "https://docs.sonarqube.org/latest/user-guide/metric-definitions/",
+							description: "Comprehensive definitions of code quality metrics",
+						},
+						{
+							title: "Test Coverage Best Practices",
+							url: "https://martinfowler.com/bliki/TestCoverage.html",
+							description:
+								"Martin Fowler on meaningful test coverage strategies",
+						},
+						{
+							title: "TypeScript Do's and Don'ts",
+							url: "https://www.typescriptlang.org/docs/handbook/declaration-files/do-s-and-don-ts.html",
+							description: "Official TypeScript best practices and style guide",
+						},
+					]),
+			},
+			metadata: {
+				key: "includeMetadata",
+				builder: (cfg) =>
+					[
+						"### Metadata",
+						`- Updated: ${new Date().toISOString().slice(0, 10)}`,
+						"- Source tool: mcp_ai-agent-guid_clean-code-scorer",
+						cfg.inputFile ? `- Input file: ${cfg.inputFile}` : undefined,
+					]
+						.filter(Boolean)
+						.join("\n"),
+			},
+		});
 
-	return {
-		content: [
-			{
-				type: "text" as const,
-				text: `## 🏆 Clean Code Score Report
+		return {
+			content: [
+				{
+					type: "text" as const,
+					text: `## 🏆 Clean Code Score Report
 
 ${metadata ? `${metadata}\n` : ""}
 ### 📊 Overall Score
@@ -140,150 +198,91 @@ ${references ? `\n${references}\n` : ""}
 - Achieving 100/100 requires excellence across all categories
 - Regular monitoring and improvement is recommended
 `,
-			},
-		],
-	};
+				},
+			],
+		};
+	} catch (error) {
+		return handleToolError(error);
+	}
 }
 
 function calculateCleanCodeScore(input: CleanCodeScorerInput): CleanCodeScore {
+	const domainResult = calculateDomainCleanCodeScore({
+		codeContent: input.codeContent,
+		language: input.language,
+		coverageMetrics: input.coverageMetrics,
+	});
+
 	const categories = {
-		codeHygiene: { score: 0, weight: 20, issues: [] as string[] },
-		testCoverage: { score: 0, weight: 25, issues: [] as string[] },
-		typeScript: { score: 0, weight: 20, issues: [] as string[] },
-		linting: { score: 0, weight: 15, issues: [] as string[] },
-		documentation: { score: 0, weight: 10, issues: [] as string[] },
-		security: { score: 0, weight: 10, issues: [] as string[] },
+		codeHygiene: {
+			weight: 20,
+			score: Math.round((domainResult.breakdown.hygiene.score / 100) * 20),
+			issues: domainResult.breakdown.hygiene.issues,
+		},
+		testCoverage: {
+			weight: 25,
+			score: Math.round((domainResult.breakdown.coverage.score / 100) * 25),
+			issues: domainResult.breakdown.coverage.issues,
+		},
+		typeScript: { score: 20, weight: 20, issues: [] as string[] },
+		linting: { score: 15, weight: 15, issues: [] as string[] },
+		documentation: {
+			weight: 10,
+			score: Math.round(
+				(domainResult.breakdown.documentation.score / 100) * 10,
+			),
+			issues: domainResult.breakdown.documentation.issues,
+		},
+		security: {
+			weight: 10,
+			score: Math.round((domainResult.breakdown.security.score / 100) * 10),
+			issues: domainResult.breakdown.security.issues,
+		},
 	};
 
-	const recommendations: string[] = [];
+	const recommendations = [...domainResult.recommendations];
 	const nextSteps: string[] = [];
-	const achievements: string[] = [];
+	const achievements: string[] = [
+		"TypeScript strict mode enabled and passing",
+		"Biome linting and formatting configured",
+	];
 
-	// Code Hygiene Scoring
 	if (input.codeContent) {
-		const hygieneResult = analyzeCodeHygiene(
-			input.codeContent,
-			input.language || "javascript",
-		);
-		categories.codeHygiene.score = Math.round(
-			(hygieneResult.score / 100) * categories.codeHygiene.weight,
-		);
-		categories.codeHygiene.issues = hygieneResult.issues;
-
-		if (hygieneResult.score >= 85) {
+		if (domainResult.breakdown.hygiene.score >= 85) {
 			achievements.push("Excellent code hygiene maintained");
-		} else if (hygieneResult.score < 70) {
+		} else if (domainResult.breakdown.hygiene.score < 70) {
 			recommendations.push(
 				"Improve code hygiene by addressing identified issues",
 			);
 			nextSteps.push("Run code cleanup and remove dead code");
 		}
-	} else {
-		// If no code provided, assume good hygiene
-		categories.codeHygiene.score = categories.codeHygiene.weight;
 	}
 
-	// Test Coverage Scoring
-	if (input.coverageMetrics) {
-		const coverage = input.coverageMetrics;
-		const avgCoverage =
-			((coverage.statements || 0) +
-				(coverage.branches || 0) +
-				(coverage.functions || 0) +
-				(coverage.lines || 0)) /
-			4;
-
-		categories.testCoverage.score = Math.round(
-			(avgCoverage / 100) * categories.testCoverage.weight,
+	if (domainResult.breakdown.coverage.score >= 90) {
+		achievements.push("Excellent test coverage achieved (≥90%)");
+	} else if (domainResult.breakdown.coverage.score < 70) {
+		recommendations.push(
+			"Increase test coverage to at least 80% across all metrics",
 		);
-
-		if (avgCoverage < 80) {
-			categories.testCoverage.issues.push(
-				`Average coverage ${avgCoverage.toFixed(1)}% is below 80% target`,
-			);
-		}
-		if ((coverage.statements || 0) < 80) {
-			categories.testCoverage.issues.push(
-				`Statement coverage ${coverage.statements}% is below 80%`,
-			);
-		}
-		if ((coverage.branches || 0) < 80) {
-			categories.testCoverage.issues.push(
-				`Branch coverage ${coverage.branches}% is below 80%`,
-			);
-		}
-		if ((coverage.functions || 0) < 80) {
-			categories.testCoverage.issues.push(
-				`Function coverage ${coverage.functions}% is below 80%`,
-			);
-		}
-
-		if (avgCoverage >= 90) {
-			achievements.push("Excellent test coverage achieved (≥90%)");
-		} else if (avgCoverage < 70) {
-			recommendations.push(
-				"Increase test coverage to at least 80% across all metrics",
-			);
-			nextSteps.push("Identify and test uncovered code paths");
-		}
-	} else {
-		// Default to assume 80% coverage
-		categories.testCoverage.score = Math.round(
-			0.8 * categories.testCoverage.weight,
-		);
+		nextSteps.push("Identify and test uncovered code paths");
 	}
 
-	// TypeScript Scoring (assume passing if no errors)
-	categories.typeScript.score = categories.typeScript.weight;
-	achievements.push("TypeScript strict mode enabled and passing");
-
-	// Linting Scoring (assume Biome is configured and passing)
-	categories.linting.score = categories.linting.weight;
-	achievements.push("Biome linting and formatting configured");
-
-	// Documentation Scoring
-	if (input.codeContent) {
-		const docScore = analyzeDocumentation(input.codeContent);
-		categories.documentation.score = Math.round(
-			(docScore / 100) * categories.documentation.weight,
-		);
-
-		if (docScore < 70) {
-			categories.documentation.issues.push(
-				"Insufficient code documentation and comments",
-			);
-			recommendations.push("Add comprehensive documentation and comments");
-		}
-		if (docScore >= 90) {
-			achievements.push("Well-documented codebase");
-		}
-	} else {
-		categories.documentation.score = Math.round(
-			0.8 * categories.documentation.weight,
-		);
+	if (domainResult.breakdown.documentation.score < 70) {
+		recommendations.push("Add comprehensive documentation and comments");
+		nextSteps.push("Document complex functions and public APIs");
+	} else if (domainResult.breakdown.documentation.score >= 90) {
+		achievements.push("Well-documented codebase");
 	}
 
-	// Security Scoring
-	if (input.codeContent) {
-		const securityScore = analyzeSecurityIssues(input.codeContent);
-		categories.security.score = Math.round(
-			(securityScore.score / 100) * categories.security.weight,
-		);
-		categories.security.issues = securityScore.issues;
-
-		if (securityScore.score < 80) {
-			recommendations.push("Address security vulnerabilities immediately");
-			nextSteps.push("Run security audit and fix identified issues");
-		}
-		if (securityScore.score === 100) {
-			achievements.push("No security vulnerabilities detected");
-		}
-	} else {
-		categories.security.score = categories.security.weight;
+	if (domainResult.breakdown.security.score < 80) {
+		recommendations.push("Address security vulnerabilities immediately");
+		nextSteps.push("Run security audit and fix identified issues");
+	} else if (domainResult.breakdown.security.score === 100) {
+		achievements.push("No security vulnerabilities detected");
+	} else if (input.codeContent) {
 		achievements.push("Security checks passed");
 	}
 
-	// Calculate overall score
 	const overallScore = Math.round(
 		Object.values(categories).reduce((sum, cat) => sum + cat.score, 0),
 	);
@@ -303,7 +302,6 @@ function calculateCleanCodeScore(input: CleanCodeScorerInput): CleanCodeScore {
 		scoreDescription = "❌ Poor - Significant Issues";
 	}
 
-	// Add general recommendations
 	if (overallScore < 100) {
 		if (recommendations.length === 0) {
 			recommendations.push("Continue maintaining current quality standards");
@@ -326,129 +324,10 @@ function calculateCleanCodeScore(input: CleanCodeScorerInput): CleanCodeScore {
 		overallScore,
 		scoreDescription,
 		categories,
-		recommendations,
+		recommendations: [...new Set(recommendations)],
 		nextSteps,
 		achievements,
 	};
-}
-
-function analyzeCodeHygiene(
-	code: string,
-	language: string,
-): { score: number; issues: string[] } {
-	let score = 100;
-	const issues: string[] = [];
-
-	// Check for TODOs/FIXMEs
-	if (code.includes("TODO") || code.includes("FIXME")) {
-		score -= 5;
-		issues.push("TODO or FIXME comments found");
-	}
-
-	// Check for debug statements
-	if (
-		(code.includes("console.log") || code.includes("print(")) &&
-		(language === "javascript" ||
-			language === "typescript" ||
-			language === "python")
-	) {
-		score -= 10;
-		issues.push("Debug statements found");
-	}
-
-	// Check for hardcoded credentials
-	if (
-		/(apiKey|api_key|password|secret|token)\s*=\s*['"][^'"]+['"]/i.test(code)
-	) {
-		score -= 20;
-		issues.push("Potential hardcoded credentials detected");
-	}
-
-	// Check for commented code
-	const commentedLines = (
-		code.match(/^\s*(\/\/|#)\s*(const|let|var|def|function)/gm) || []
-	).length;
-	if (commentedLines > 3) {
-		score -= 5;
-		issues.push(`${commentedLines} lines of commented code found`);
-	}
-
-	// Check for complex functions (>50 lines)
-	const functionMatches =
-		code.match(/function\s+\w+\s*\([^)]*\)\s*{[\s\S]*?}/g) || [];
-	for (const func of functionMatches) {
-		const lines = func.split("\n").length;
-		if (lines > 50) {
-			score -= 10;
-			issues.push("Complex function detected (>50 lines)");
-			break;
-		}
-	}
-
-	return { score: Math.max(0, score), issues };
-}
-
-function analyzeDocumentation(code: string): number {
-	let score = 70; // Base score
-
-	// Check for JSDoc/docstring comments
-	const docComments = (
-		code.match(/\/\*\*[\s\S]*?\*\/|'''[\s\S]*?'''|"""[\s\S]*?"""/g) || []
-	).length;
-	if (docComments > 0) {
-		score += 15;
-	}
-
-	// Check for inline comments
-	const inlineComments = (code.match(/\/\/.*|#.*/g) || []).length;
-	if (inlineComments > 5) {
-		score += 15;
-	}
-
-	// Check for README or documentation keywords
-	if (/README|CONTRIBUTING|CHANGELOG/i.test(code)) {
-		score += 10;
-	}
-
-	return Math.min(100, score);
-}
-
-function analyzeSecurityIssues(code: string): {
-	score: number;
-	issues: string[];
-} {
-	let score = 100;
-	const issues: string[] = [];
-
-	// Check for eval() or exec()
-	if (/\b(eval|exec)\s*\(/i.test(code)) {
-		score -= 30;
-		issues.push("Use of eval() or exec() detected - security risk");
-	}
-
-	// Check for SQL injection risks
-	if (/(SELECT|INSERT|UPDATE|DELETE)\s+.*\+.*/.test(code)) {
-		score -= 25;
-		issues.push("Potential SQL injection vulnerability");
-	}
-
-	// Check for XSS risks
-	if (/innerHTML\s*=|dangerouslySetInnerHTML/i.test(code)) {
-		score -= 20;
-		issues.push("Potential XSS vulnerability with innerHTML");
-	}
-
-	// Check for hardcoded secrets
-	if (
-		/(secret|password|api_key|apiKey|token|auth|credential)\s*=\s*['"][^'"]+['"]/i.test(
-			code,
-		)
-	) {
-		score -= 25;
-		issues.push("Hardcoded secrets or credentials found");
-	}
-
-	return { score: Math.max(0, score), issues };
 }
 
 function generateScoreBar(score: number): string {

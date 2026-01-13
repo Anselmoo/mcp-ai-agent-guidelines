@@ -1,6 +1,8 @@
 // Design Assistant Tests
 import { beforeAll, describe, expect, it } from "vitest";
 import { designAssistant } from "../../src/tools/design/index.ts";
+import { ErrorCode } from "../../src/tools/shared/error-codes.js";
+import { parseMcpError } from "./test-helpers.js";
 
 describe("Design Assistant Framework", () => {
 	beforeAll(async () => {
@@ -244,9 +246,8 @@ describe("Design Assistant Framework", () => {
 			sessionId: "non-existent-session",
 		});
 
-		expect(response.success).toBe(false);
-		expect(response.status).toBe("not-found");
-		expect(response.message).toContain("not found");
+		const error = parseMcpError(response);
+		expect(error.code).toBe(ErrorCode.SESSION_NOT_FOUND);
 	});
 });
 

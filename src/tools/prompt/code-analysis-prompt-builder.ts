@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { DEFAULT_MODEL } from "../config/model-config.js";
+import { handleToolError } from "../shared/error-handler.js";
 import {
 	buildFrontmatterWithPolicy as buildFrontmatter,
 	buildFurtherReadingSection,
@@ -300,41 +301,47 @@ function buildCodeAnalysisFrontmatter(input: CodeAnalysisPromptInput): string {
 }
 
 export async function codeAnalysisPromptBuilder(args: unknown) {
-	const input = CodeAnalysisPromptSchema.parse(args);
+	try {
+		const input = CodeAnalysisPromptSchema.parse(args);
 
-	const enforce = input.forcePromptMdStyle ?? true;
-	const effectiveIncludeFrontmatter = enforce ? true : input.includeFrontmatter;
-	const effectiveIncludeMetadata = enforce ? true : input.includeMetadata;
+		const enforce = input.forcePromptMdStyle ?? true;
+		const effectiveIncludeFrontmatter = enforce
+			? true
+			: input.includeFrontmatter;
+		const effectiveIncludeMetadata = enforce ? true : input.includeMetadata;
 
-	const prompt = buildCodeAnalysisPrompt(input);
-	const frontmatter = effectiveIncludeFrontmatter
-		? `${buildCodeAnalysisFrontmatter(input)}\n`
-		: "";
-	const references = input.includeReferences
-		? buildFurtherReadingSection([
+		const prompt = buildCodeAnalysisPrompt(input);
+		const frontmatter = effectiveIncludeFrontmatter
+			? `${buildCodeAnalysisFrontmatter(input)}\n`
+			: "";
+		const references = input.includeReferences
+			? buildFurtherReadingSection([
+					{
+						title: "Code Review Best Practices",
+						url: "https://google.github.io/eng-practices/review/",
+						description:
+							"Google's engineering practices guide for effective code reviews",
+					},
+				])
+			: "";
+		const filenameHint = `${slugify(`code-analysis-${input.focusArea}`)}.prompt.md`;
+		const metadata = effectiveIncludeMetadata
+			? buildMetadataSection({
+					sourceTool: "mcp_ai-agent-guid_code-analysis-prompt-builder",
+					inputFile: input.inputFile,
+					filenameHint,
+				})
+			: "";
+
+		return {
+			content: [
 				{
-					title: "Code Review Best Practices",
-					url: "https://google.github.io/eng-practices/review/",
-					description:
-						"Google's engineering practices guide for effective code reviews",
+					type: "text",
+					text: `${frontmatter}## 🔍 Code Analysis Prompt\n\n${metadata}\n${prompt}\n\n${references ? `${references}\n` : ""}`,
 				},
-			])
-		: "";
-	const filenameHint = `${slugify(`code-analysis-${input.focusArea}`)}.prompt.md`;
-	const metadata = effectiveIncludeMetadata
-		? buildMetadataSection({
-				sourceTool: "mcp_ai-agent-guid_code-analysis-prompt-builder",
-				inputFile: input.inputFile,
-				filenameHint,
-			})
-		: "";
-
-	return {
-		content: [
-			{
-				type: "text",
-				text: `${frontmatter}## 🔍 Code Analysis Prompt\n\n${metadata}\n${prompt}\n\n${references ? `${references}\n` : ""}`,
-			},
-		],
-	};
+			],
+		};
+	} catch (error) {
+		return handleToolError(error);
+	}
 }

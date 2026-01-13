@@ -1,7 +1,14 @@
 import { z } from "zod";
-import { DEFAULT_MODEL, DEFAULT_MODEL_SLUG } from "../config/model-config.js";
 import {
-	buildProviderTipsSection as buildSharedProviderTips,
+	buildHierarchicalPrompt,
+	type PromptMetadata,
+	type PromptSection,
+} from "../../domain/prompting/hierarchical-builder.js";
+import { DEFAULT_MODEL, DEFAULT_MODEL_SLUG } from "../config/model-config.js";
+import { emitDeprecationWarning } from "../shared/deprecation.js";
+import { handleToolError } from "../shared/error-handler.js";
+import {
+	buildProviderTipsSection,
 	ProviderEnum,
 	StyleEnum,
 	TechniqueEnum,
@@ -23,6 +30,7 @@ const HierarchicalPromptSchema = z.object({
 	context: z.string(),
 	goal: z.string(),
 	requirements: z.array(z.string()).optional(),
+	constraints: z.array(z.string()).optional(),
 	outputFormat: z.string().optional(),
 	audience: z.string().optional(),
 	// YAML prompt frontmatter (experimental prompt file support)
@@ -75,125 +83,118 @@ function buildHierarchicalFrontmatter(input: HierarchicalPromptInput): string {
 	});
 }
 
-/**
- * Build context-aware, actionable instructions based on selected techniques.
- * This generates specific, tailored guidance rather than generic advice.
- *
- * @deprecated This function is deprecated. Use applyTechniques from technique-applicator.ts instead.
- */
-function buildActionableInstructions(input: HierarchicalPromptInput): string {
-	return applyTechniques({
-		context: {
-			context: input.context,
-			goal: input.goal,
-			requirements: input.requirements,
-			outputFormat: input.outputFormat,
-			audience: input.audience,
-			issues: input.issues,
-		},
-		techniques: input.techniques,
-		autoSelectTechniques: input.autoSelectTechniques,
-	});
-}
-
 export async function hierarchicalPromptBuilder(args: unknown) {
-	const input = HierarchicalPromptSchema.parse(args);
+	try {
+		emitDeprecationWarning({
+			tool: "hierarchical-prompt-builder",
+			replacement: "prompt-hierarchy",
+			deprecatedIn: "v0.14.0",
+			removedIn: "v0.15.0",
+		});
 
-	// If enforcing *.prompt.md style, ensure frontmatter + metadata are on
-	const enforce = input.forcePromptMdStyle ?? true;
-	const effectiveIncludeFrontmatter = enforce ? true : input.includeFrontmatter;
-	const effectiveIncludeMetadata = enforce ? true : input.includeMetadata;
+		const input = HierarchicalPromptSchema.parse(args);
 
-	const prompt = buildHierarchicalPrompt(input);
-	const frontmatter = effectiveIncludeFrontmatter
-		? `${buildHierarchicalFrontmatter(input)}\n`
-		: "";
-	const disclaimer = input.includeDisclaimer ? buildDisclaimer() : "";
-	const references = input.includeReferences ? buildGeneralReferences() : "";
-	const filenameHint = `${slugify(input.goal || input.description || "prompt")}.prompt.md`;
-	const metadata = effectiveIncludeMetadata
-		? buildMetadataSection({
-				sourceTool: "mcp_ai-agent-guid_hierarchical-prompt-builder",
-				inputFile: input.inputFile,
-				filenameHint,
-			})
-		: "";
+		// If enforcing *.prompt.md style, ensure frontmatter + metadata are on
+		const enforce = input.forcePromptMdStyle ?? true;
+		const effectiveIncludeFrontmatter = enforce
+			? true
+			: input.includeFrontmatter;
+		const effectiveIncludeMetadata = enforce ? true : input.includeMetadata;
 
-	// Build the full content
-	const fullContent = `${frontmatter}## 🧭 Hierarchical Prompt Structure\n\n${metadata}\n${prompt}\n\n${input.includeExplanation ? `## Explanation\nThis prompt follows hierarchical structuring principles (context → goal → requirements → format → audience) to reduce ambiguity and align responses with constraints.\n\n` : ""}${references ? `${references}\n` : ""}${disclaimer}`;
+		const normalizedOutputFormat = input.outputFormat
+			? normalizeOutputFormat(input.outputFormat)
+			: undefined;
+		const techniqueContent =
+			input.includeTechniqueHints !== false
+				? applyTechniques({
+						context: {
+							context: input.context,
+							goal: input.goal,
+							requirements: input.requirements,
+							outputFormat: normalizedOutputFormat,
+							audience: input.audience,
+							issues: input.issues,
+						},
+						techniques: input.techniques,
+						autoSelectTechniques: input.autoSelectTechniques,
+					})
+				: undefined;
+		const providerTipsContent = buildProviderTipsSection(
+			input.provider,
+			input.style,
+		);
+		const promptResult = buildHierarchicalPrompt({
+			...input,
+			outputFormat: normalizedOutputFormat,
+			techniqueContent,
+			techniqueTitle: "Approach",
+			providerTipsContent,
+			providerTipsTitle: "Model-Specific Tips",
+		});
+		const prompt = formatHierarchicalPrompt(promptResult.sections);
+		const frontmatter = effectiveIncludeFrontmatter
+			? `${buildHierarchicalFrontmatter(input)}\n`
+			: "";
+		const disclaimer = input.includeDisclaimer ? buildDisclaimer() : "";
+		const references = input.includeReferences ? buildGeneralReferences() : "";
+		const filenameHint = `${slugify(input.goal || input.description || "prompt")}.prompt.md`;
+		const metadata = effectiveIncludeMetadata
+			? buildMetadataSection({
+					sourceTool: "mcp_ai-agent-guid_hierarchical-prompt-builder",
+					inputFile: input.inputFile,
+					filenameHint,
+				})
+			: "";
+		const domainMetadata = effectiveIncludeMetadata
+			? buildDomainMetadataSection(promptResult.metadata)
+			: "";
 
-	// Apply export format if specified
-	const formattedContent = applyExportFormat(fullContent, {
-		exportFormat: input.exportFormat,
-		includeHeaders: input.includeHeaders,
-		includeFrontmatter: effectiveIncludeFrontmatter,
-		documentTitle: input.documentTitle || input.goal || "Hierarchical Prompt",
-		documentAuthor: input.documentAuthor,
-		documentDate: input.documentDate,
-	});
+		// Build the full content
+		const fullContent = `${frontmatter}## 🧭 Hierarchical Prompt Structure\n\n${metadata}${domainMetadata}${prompt}\n\n${input.includeExplanation ? `## Explanation\nThis prompt follows hierarchical structuring principles (context → goal → requirements → format → audience) to reduce ambiguity and align responses with constraints.\n\n` : ""}${references ? `${references}\n` : ""}${disclaimer}`;
 
-	return {
-		content: [
-			{
-				type: "text",
-				text: formattedContent,
-			},
-		],
-	};
+		// Apply export format if specified
+		const formattedContent = applyExportFormat(fullContent, {
+			exportFormat: input.exportFormat,
+			includeHeaders: input.includeHeaders,
+			includeFrontmatter: effectiveIncludeFrontmatter,
+			documentTitle: input.documentTitle || input.goal || "Hierarchical Prompt",
+			documentAuthor: input.documentAuthor,
+			documentDate: input.documentDate,
+		});
+
+		return {
+			content: [
+				{
+					type: "text",
+					text: formattedContent,
+				},
+			],
+		};
+	} catch (error) {
+		return handleToolError(error);
+	}
 }
 
-function buildHierarchicalPrompt(input: HierarchicalPromptInput): string {
+function formatHierarchicalPrompt(sections: PromptSection[]): string {
 	let prompt = "";
-
-	// Layer 1: Context
-	prompt += `# Context\n${input.context}\n\n`;
-
-	// Layer 2: Goal
-	prompt += `# Goal\n${input.goal}\n\n`;
-
-	// Layer 3: Requirements (if provided)
-	if (input.requirements && input.requirements.length > 0) {
-		prompt += `# Requirements\n`;
-		input.requirements.forEach((req, index) => {
-			prompt += `${index + 1}. ${req}\n`;
-		});
-		prompt += "\n";
+	for (const section of sections) {
+		prompt += `# ${section.title}\n${section.body}\n\n`;
 	}
+	return prompt.trimEnd();
+}
 
-	// Layer 3b: Problem Indicators (if provided)
-	if (input.issues && input.issues.length > 0) {
-		prompt += `# Problem Indicators\n`;
-		input.issues.forEach((iss, index) => {
-			prompt += `${index + 1}. ${iss}\n`;
-		});
-		prompt += "\n";
-	}
+function buildDomainMetadataSection(meta: PromptMetadata): string {
+	const techniques =
+		meta.techniques.length > 0 ? meta.techniques.join(", ") : "none";
+	return `### Prompt Metrics
+- Complexity score: ${meta.complexity}
+- Token estimate: ${meta.tokenEstimate}
+- Sections: ${meta.sections}
+- Techniques: ${techniques}
+- Requirements: ${meta.requirementsCount}
+- Issues: ${meta.issuesCount}
 
-	// Layer 4: Output Format (if provided)
-	if (input.outputFormat) {
-		// Normalize list numbering and layout: convert "1) Item" -> "1. Item"
-		// and transform inline comma-separated enumerations into multi-line ordered lists.
-		const normalizedOutputFormat = normalizeOutputFormat(input.outputFormat);
-		prompt += `# Output Format\n${normalizedOutputFormat}\n\n`;
-	}
-
-	// Layer 5: Audience (if provided)
-	if (input.audience) {
-		prompt += `# Target Audience\n${input.audience}\n\n`;
-	}
-
-	// Optional: Context-aware actionable instructions based on techniques
-	if (input.includeTechniqueHints !== false) {
-		prompt += buildActionableInstructions(input);
-	}
-
-	// Optional: Model-specific tips based on provider/style
-	prompt += buildSharedProviderTips(input.provider, input.style);
-
-	// Final instruction
-	prompt += `# Instructions\nFollow the structure above. If you detect additional issues in the codebase, explicitly add them under Problem Indicators, propose minimal diffs, and flag risky changes. Treat tools/models as recommendations to validate against current provider documentation.`;
-
-	return prompt;
+`;
 }
 
 /**

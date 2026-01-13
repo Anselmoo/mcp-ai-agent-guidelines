@@ -1,0 +1,176 @@
+name: PR Pre-Flight Validation
+
+# Runs before agent assignment to catch common issues early
+# Prevents costly agent reruns by validating quality gates first
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+env:
+  NODE_VERSION: "22"
+
+jobs:
+  pre-flight-validation:
+    name: 🚦 Pre-Flight Quality Gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install lefthook
+        run: npm run hooks:install
+
+      - name: Install gitleaks
+        run: |
+          curl -sSL https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks-linux-amd64 -o /usr/local/bin/gitleaks
+          chmod +x /usr/local/bin/gitleaks
+
+      # Critical: Catch issues early before agent runs
+      - name: Run quality checks
+        id: quality
+        run: npm run quality
+        continue-on-error: true
+
+      - name: Run lefthook pre-commit
+        id: precommit
+        run: npx lefthook run pre-commit --verbose
+        continue-on-error: true
+
+      - name: Run tests
+        id: tests
+        run: npm run test:all
+        continue-on-error: true
+
+      - name: Generate validation summary
+        if: always()
+        run: |
+          echo "## 🚦 Pre-Flight Validation Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Quality checks
+          if [ "${{ steps.quality.outcome }}" == "success" ]; then
+            echo "✅ **Quality Checks**: Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Quality Checks**: Failed" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Pre-commit hooks
+          if [ "${{ steps.precommit.outcome }}" == "success" ]; then
+            echo "✅ **Pre-commit Hooks**: Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Pre-commit Hooks**: Failed" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Tests
+          if [ "${{ steps.tests.outcome }}" == "success" ]; then
+            echo "✅ **Tests**: Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Tests**: Failed" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ steps.quality.outcome }}" == "success" ] && [ "${{ steps.precommit.outcome }}" == "success" ] && [ "${{ steps.tests.outcome }}" == "success" ]; then
+            echo "### ✅ All checks passed - Ready for agent review" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ❌ Some checks failed - Fix issues before requesting agent review" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Why?** This prevents costly agent reruns. Please:" >> $GITHUB_STEP_SUMMARY
+            echo "1. Fix all failing checks locally" >> $GITHUB_STEP_SUMMARY
+            echo "2. Run \`npm run quality\` locally" >> $GITHUB_STEP_SUMMARY
+            echo "3. Run \`npx lefthook run pre-commit\`" >> $GITHUB_STEP_SUMMARY
+            echo "4. Run \`npm run test:all\`" >> $GITHUB_STEP_SUMMARY
+            echo "5. Push fixes and wait for this check to pass" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Comment on PR with validation results
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const qualityStatus = '${{ steps.quality.outcome }}';
+            const precommitStatus = '${{ steps.precommit.outcome }}';
+            const testsStatus = '${{ steps.tests.outcome }}';
+
+            let issues = [];
+            if (qualityStatus !== 'success') issues.push('Quality checks (type-check + lint)');
+            if (precommitStatus !== 'success') issues.push('Pre-commit hooks (security + formatting)');
+            if (testsStatus !== 'success') issues.push('Tests (unit + integration + demo)');
+
+            const body = `## ❌ Pre-Flight Validation Failed
+
+            Your PR failed pre-flight quality checks. Please fix these issues locally **before** requesting agent review.
+
+            ### Failed Checks:
+            ${issues.map(i => `- ❌ ${i}`).join('\n')}
+
+            ### Required Actions:
+            1. Run \`npm run quality\` locally and fix all errors
+            2. Run \`npx lefthook run pre-commit\` and ensure all checks pass
+            3. Run \`npm run test:all\` and ensure all tests pass
+            4. Push fixes and wait for this check to pass
+
+            **Why?** This prevents costly agent reruns ($0.10+ per rerun). Fix issues locally first!
+
+            ### Common Issues:
+            - Missing \`.js\` extensions in imports → Add \`.js\` to all relative imports
+            - TypeScript errors → Run \`npm run type-check\` and fix
+            - Linting/formatting → Run \`npm run check:fix\` to auto-fix
+            - Test failures → Run \`npm run test:vitest\` locally
+            - Security issues → Don't commit secrets/tokens
+
+            ### Resources:
+            - 📖 [Coding Guidelines](.github/copilot-instructions.md)
+            - 💰 [Cost Reduction Strategy](docs/AGENT_COST_REDUCTION.md)
+            - 🔧 [Local Setup Guide](CONTRIBUTING.md)
+
+            **Next Steps**: Fix the issues above, commit, and push. This check will automatically re-run.
+            `;
+
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+
+      - name: Set status check
+        if: always()
+        run: |
+          if [ "${{ steps.quality.outcome }}" == "success" ] && [ "${{ steps.precommit.outcome }}" == "success" ] && [ "${{ steps.tests.outcome }}" == "success" ]; then
+            echo "✅ Pre-flight validation passed - ready for agent review"
+            exit 0
+          else
+            echo "❌ Pre-flight validation failed - fix issues before agent review"
+            exit 1
+          fi
+
+  # Block agent assignment if pre-flight fails
+  agent-ready-gate:
+    name: 🤖 Agent Assignment Gate
+    needs: pre-flight-validation
+    runs-on: ubuntu-latest
+    if: success()
+    steps:
+      - name: Signal ready for agent
+        run: |
+          echo "✅ All pre-flight checks passed" >> $GITHUB_STEP_SUMMARY
+          echo "🤖 PR is ready for GitHub Copilot agent review" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**To assign agent:**" >> $GITHUB_STEP_SUMMARY
+          echo "- Add label: \`copilot:review\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Or comment: \`@copilot review\`" >> $GITHUB_STEP_SUMMARY

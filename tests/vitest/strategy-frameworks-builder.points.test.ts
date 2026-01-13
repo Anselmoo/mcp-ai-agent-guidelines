@@ -35,7 +35,7 @@ describe("strategyFrameworksBuilder - structured points", () => {
 		expect(text).toContain("Example A: [0.78, 0.9]");
 	});
 
-	it("rejects invalid points via schema (out of range)", async () => {
+	it("returns error for invalid points via schema (out of range)", async () => {
 		const args = {
 			frameworks: ["gartnerQuadrant"],
 			context: "Invalid point test",
@@ -45,6 +45,10 @@ describe("strategyFrameworksBuilder - structured points", () => {
 			},
 		};
 
-		await expect(strategyFrameworksBuilder(args as unknown)).rejects.toThrow();
+		const result = (await strategyFrameworksBuilder(args as unknown)) as {
+			isError?: boolean;
+			content: { text: string }[];
+		};
+		expect(result.isError).toBe(true);
 	});
 });

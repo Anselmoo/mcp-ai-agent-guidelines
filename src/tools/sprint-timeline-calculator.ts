@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { handleToolError } from "./shared/error-handler.js";
 import { logger } from "./shared/logger.js";
 import { buildFurtherReadingSection } from "./shared/prompt-utils.js";
 
@@ -25,16 +26,17 @@ const SprintTimelineSchema = z.object({
 type SprintTimelineInput = z.infer<typeof SprintTimelineSchema>;
 
 export async function sprintTimelineCalculator(args: unknown) {
-	const input = SprintTimelineSchema.parse(args);
+	try {
+		const input = SprintTimelineSchema.parse(args);
 
-	const calculation = calculateSprintTimeline(input);
-	const sprintLen = input.sprintLength || 14;
+		const calculation = calculateSprintTimeline(input);
+		const sprintLen = input.sprintLength || 14;
 
-	return {
-		content: [
-			{
-				type: "text",
-				text: `## 🗓️ Sprint Timeline Calculation
+		return {
+			content: [
+				{
+					type: "text",
+					text: `## 🗓️ Sprint Timeline Calculation
 
 ${input.includeMetadata ? `### Metadata\n- **Updated:** ${new Date().toISOString().slice(0, 10)}\n- **Source tool:** mcp_ai-agent-guid_sprint-timeline-calculator${input.inputFile ? `\n- **Input file:** ${input.inputFile}` : ""}\n` : ""}
 
@@ -79,32 +81,10 @@ ${calculation.risks.map((risk, index) => `${index + 1}. **${risk.level}**: ${ris
 ### Recommendations
 ${calculation.recommendations.map((rec, index) => `${index + 1}. ${rec}`).join("\n")}
 
-### Timeline Optimization Tips
-- **Prioritize high-value tasks** early in the timeline
-- **Address dependencies** before dependent tasks
-- **Plan for 80% capacity** to account for meetings, code reviews, and unexpected issues
-- **Include buffer time** for testing and bug fixes
-- **Regular velocity tracking** to adjust future estimations
-- **Consider skill distribution** when assigning tasks
-
-### Velocity Tracking Formula
-\`Velocity = Completed Story Points / Sprint Duration\`
-
-Current calculations based on:
-- Industry average: 8-10 story points per developer per sprint
-- Adjusted for team size and sprint length
-- Factoring in 20% overhead for meetings and coordination
-- Using ${input.optimizationStrategy || "greedy"} optimization strategy with dependency-aware scheduling
-
-### Gantt (Mermaid)
-\`\`\`mermaid
-gantt
-	dateFormat  YYYY-MM-DD
-	title Sprint Plan
-%% Accessibility: Title=Project Sprint Plan; Description=Gantt chart of sprints and tasks over time. %%
+### Gantt Chart (Sprint Timeline)
+\`
 ${calculation.sprints
 	.map((sprint, sIndex) => {
-		const section = `  section Sprint ${sIndex + 1}`;
 		const start = new Date();
 		start.setDate(start.getDate() + sIndex * sprintLen);
 		const sanitize = (label: string) =>
@@ -112,7 +92,7 @@ ${calculation.sprints
 
 		// Place tasks sequentially within the sprint to avoid time gaps.
 		let dayOffset = 0;
-		const lines: string[] = [section];
+		const lines: string[] = [`  section Sprint ${sIndex + 1}`];
 		let totalDur = 0;
 		sprint.tasks.forEach((t, i) => {
 			const dur = 1 + Math.max(1, Math.ceil(t.estimate / 2));
@@ -140,7 +120,7 @@ ${calculation.sprints
 		return lines.join("\n");
 	})
 	.join("\n")}
-\`\`\`
+\`
 
 ${buildFurtherReadingSection([
 	{
@@ -160,9 +140,12 @@ ${buildFurtherReadingSection([
 	},
 ])}
 `,
-			},
-		],
-	};
+				},
+			],
+		};
+	} catch (error) {
+		return handleToolError(error);
+	}
 }
 
 function calculateSprintTimeline(input: SprintTimelineInput) {

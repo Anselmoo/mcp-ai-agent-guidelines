@@ -2,7 +2,7 @@
 name: Security-Auditor
 description: OWASP compliance and security hardening checks using project patterns
 tools:
-  - shell
+  - execute
   - read
   - edit
   - execute
@@ -10,18 +10,29 @@ tools:
   - search
   - todo
   - web
-  - runTests
-  - runSubagent
+  - execute/runTests
+  - agent
   - ai-agent-guidelines/security-hardening-prompt-builder
   - ai-agent-guidelines/dependency-auditor
   - serena/search_for_pattern
   - serena/find_symbol
   - serena/get_symbols_overview
   - sequentialthinking/*
-  - fetch/*
   - context7/*
-  - agent
-
+  - fetch/*
+handoffs:
+  - label: "Fix Vulnerability"
+    agent: MCP-Tool-Builder
+    prompt: "Fix security issue. Vulnerability: {{vulnerability}}. Apply mitigation."
+  - label: "Update Dependencies"
+    agent: Dependency-Guardian
+    prompt: "Update vulnerable deps. CVEs: {{cves}}. Patch versions."
+  - label: "Security Tests"
+    agent: TDD-Workflow
+    prompt: "Write security tests. Vectors: {{vectors}}. Prevent regression."
+  - label: "Document Security"
+    agent: Documentation-Generator
+    prompt: "Document security. Mitigations: {{mitigations}}. Update security docs."
 ---
 
 # Security Auditor Agent

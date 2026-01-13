@@ -1,5 +1,8 @@
 import { z } from "zod";
+import type { SecurityAnalysisResult } from "../../domain/prompting/security-builder.js";
+import { buildSecurityAnalysis } from "../../domain/prompting/security-builder.js";
 import { DEFAULT_MODEL, DEFAULT_MODEL_SLUG } from "../config/model-config.js";
+import { handleToolError } from "../shared/error-handler.js";
 import type { Technique } from "../shared/prompt-sections.js";
 import {
 	buildPitfallsSection as buildSharedPitfalls,
@@ -925,57 +928,77 @@ function generateComplianceGuidance(
 }
 
 export async function securityHardeningPromptBuilder(args: unknown) {
-	const normalized = ((): unknown => {
-		if (args && typeof args === "object") {
-			const obj = args as Record<string, unknown>;
-			if (!("codeContext" in obj) && typeof obj.codeContent === "string") {
-				return { ...obj, codeContext: obj.codeContent };
+	try {
+		const normalized = ((): unknown => {
+			if (args && typeof args === "object") {
+				const obj = args as Record<string, unknown>;
+				if (!("codeContext" in obj) && typeof obj.codeContent === "string") {
+					return { ...obj, codeContext: obj.codeContent };
+				}
 			}
-		}
-		return args;
-	})();
-	const input = SecurityHardeningSchema.parse(normalized);
+			return args;
+		})();
+		const input = SecurityHardeningSchema.parse(normalized);
 
-	// Build optional sections using the shared utility (returns object with named keys)
-	const { frontmatter, metadata, references, disclaimer } =
-		buildOptionalSectionsMap(input, {
-			frontmatter: {
-				key: "includeFrontmatter",
-				builder: (cfg) => `${buildSecurityHardeningFrontmatter(cfg)}\n`,
-			},
-			metadata: {
-				key: "includeMetadata",
-				builder: (cfg) =>
-					`${buildMetadataSection({
-						sourceTool: "mcp_ai-agent-guid_security-hardening-prompt-builder",
-						inputFile: cfg.inputFile,
-						filenameHint: `security-hardening-${slugify(cfg.securityFocus)}-prompt.prompt.md`,
-					})}\n`,
-			},
-			references: {
-				key: "includeReferences",
-				builder: () => `${buildSecurityReferencesSection()}\n`,
-			},
-			disclaimer: {
-				key: "includeDisclaimer",
-				builder: () =>
-					`\n## Disclaimer\n- Security recommendations are based on common best practices and may need customization for your specific environment\n- Always validate security measures with penetration testing and security audits\n- Compliance requirements may vary by jurisdiction and industry\n- Keep security tools and dependencies up to date\n`,
-			},
+		const analysis = buildSecurityAnalysis({
+			codeContext: input.codeContext,
+			securityFocus: input.securityFocus,
+			analysisScope: input.analysisScope,
+			language: input.language,
+			framework: input.framework,
+			complianceFrameworks: input.complianceStandards,
+			threatModel: input.securityFocus === "threat-modeling",
+			riskTolerance: input.riskTolerance,
+			includeMitigations: input.includeMitigations,
+			includeTestCases: input.includeTestCases,
 		});
 
-	const prompt = buildSecurityHardeningPrompt(input);
+		// Build optional sections using the shared utility (returns object with named keys)
+		const { frontmatter, metadata, references, disclaimer } =
+			buildOptionalSectionsMap(input, {
+				frontmatter: {
+					key: "includeFrontmatter",
+					builder: (cfg) => `${buildSecurityHardeningFrontmatter(cfg)}\n`,
+				},
+				metadata: {
+					key: "includeMetadata",
+					builder: (cfg) =>
+						`${buildMetadataSection({
+							sourceTool: "mcp_ai-agent-guid_security-hardening-prompt-builder",
+							inputFile: cfg.inputFile,
+							filenameHint: `security-hardening-${slugify(cfg.securityFocus)}-prompt.prompt.md`,
+						})}\n`,
+				},
+				references: {
+					key: "includeReferences",
+					builder: () => `${buildSecurityReferencesSection()}\n`,
+				},
+				disclaimer: {
+					key: "includeDisclaimer",
+					builder: () =>
+						`\n## Disclaimer\n- Security recommendations are based on common best practices and may need customization for your specific environment\n- Always validate security measures with penetration testing and security audits\n- Compliance requirements may vary by jurisdiction and industry\n- Keep security tools and dependencies up to date\n`,
+				},
+			});
 
-	return {
-		content: [
-			{
-				type: "text",
-				text: `${frontmatter}## 🛡️ Security Hardening Prompt Template\n\n${metadata}\n${prompt}\n\n${references}${disclaimer}`,
-			},
-		],
-	};
+		const prompt = buildSecurityHardeningPrompt(input, analysis);
+
+		return {
+			content: [
+				{
+					type: "text",
+					text: `${frontmatter}## 🛡️ Security Hardening Prompt Template\n\n${metadata}\n${prompt}\n\n${references}${disclaimer}`,
+				},
+			],
+		};
+	} catch (error) {
+		return handleToolError(error);
+	}
 }
 
-function buildSecurityHardeningPrompt(input: SecurityHardeningInput): string {
+function buildSecurityHardeningPrompt(
+	input: SecurityHardeningInput,
+	analysis: SecurityAnalysisResult,
+): string {
 	let prompt = "";
 
 	// Header and Context
@@ -1037,6 +1060,49 @@ function buildSecurityHardeningPrompt(input: SecurityHardeningInput): string {
 		input.complianceStandards,
 		input.codeContext,
 	);
+
+	if (analysis.checks.length > 0) {
+		prompt += `## Core Security Checks (includes OWASP Top 10)\n`;
+		for (const check of analysis.checks) {
+			prompt += `- [${check.id}] ${check.title}: ${check.description}\n`;
+		}
+		prompt += "\n";
+	}
+
+	if (analysis.recommendations.length > 0 && input.includeMitigations) {
+		prompt += `## Recommendations\n`;
+		for (const recommendation of analysis.recommendations) {
+			prompt += `- ${recommendation.title}: ${recommendation.description}\n`;
+		}
+		prompt += "\n";
+	}
+
+	if (analysis.threatModel) {
+		prompt += `## Threat Model\n`;
+		prompt += `${analysis.threatModel.summary}\n\n`;
+		prompt += `**Attack Vectors:**\n`;
+		for (const vector of analysis.threatModel.attackVectors) {
+			prompt += `- ${vector}\n`;
+		}
+		prompt += `\n**Mitigations:**\n`;
+		for (const mitigation of analysis.threatModel.mitigations) {
+			prompt += `- ${mitigation}\n`;
+		}
+		prompt += "\n";
+	}
+
+	if (analysis.complianceMatrix?.length) {
+		prompt += `## Compliance Controls\n`;
+		for (const item of analysis.complianceMatrix) {
+			const controlLine = item.controls.join("; ");
+			prompt += `- ${item.framework}: ${controlLine}`;
+			if (item.notes) {
+				prompt += ` (${item.notes})`;
+			}
+			prompt += "\n";
+		}
+		prompt += "\n";
+	}
 
 	// Analysis Framework
 	prompt += `## Security Analysis Framework\n\n`;

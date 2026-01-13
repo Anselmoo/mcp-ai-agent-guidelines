@@ -8,8 +8,8 @@
  * analysis, mermaid diagram generation, memory optimization, and sprint planning.
  */
 
-// Dynamic version from package.json using createRequire for ESM compatibility
 import { createRequire } from "node:module";
+// Dynamic version from package.json using createRequire for ESM compatibility
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 
 const require = createRequire(import.meta.url);
@@ -25,6 +25,10 @@ import {
 	ListToolsRequestSchema,
 	ReadResourceRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
+// Import agent definitions
+import { registerDefaultAgents } from "./agents/definitions/index.js";
+// Import feature flags
+import { getFeatureFlags } from "./config/feature-flags.js";
 // Import prompts
 import { getPrompt, listPrompts } from "./prompts/index.js";
 // Import resources
@@ -34,6 +38,7 @@ import {
 	promptChainingBuilderSchema,
 	promptFlowBuilderSchema,
 } from "./schemas/flow-tool-schemas.js";
+import { agentOrchestratorTool } from "./tools/agent-orchestrator.js";
 import { gapFrameworksAnalyzers } from "./tools/analysis/gap-frameworks-analyzers.js";
 import { strategyFrameworksBuilder } from "./tools/analysis/strategy-frameworks-builder.js";
 import { cleanCodeScorer } from "./tools/clean-code-scorer.js";
@@ -61,6 +66,7 @@ import { enterpriseArchitectPromptBuilder } from "./tools/prompt/enterprise-arch
 // Import tool implementations
 import { hierarchicalPromptBuilder } from "./tools/prompt/hierarchical-prompt-builder.js";
 import { hierarchyLevelSelector } from "./tools/prompt/hierarchy-level-selector.js";
+import { promptHierarchy } from "./tools/prompt/index.js";
 import { l9DistinguishedEngineerPromptBuilder } from "./tools/prompt/l9-distinguished-engineer-prompt-builder.js";
 import { promptChainingBuilder } from "./tools/prompt/prompt-chaining-builder.js";
 import { promptFlowBuilder } from "./tools/prompt/prompt-flow-builder.js";
@@ -69,7 +75,18 @@ import { quickDeveloperPromptsBuilder } from "./tools/prompt/quick-developer-pro
 import { securityHardeningPromptBuilder } from "./tools/prompt/security-hardening-prompt-builder.js";
 import { sparkPromptBuilder } from "./tools/prompt/spark-prompt-builder.js";
 import { semanticCodeAnalyzer } from "./tools/semantic-code-analyzer.js";
+// Import annotation presets
+import {
+	ANALYSIS_TOOL_ANNOTATIONS,
+	GENERATION_TOOL_ANNOTATIONS,
+	SESSION_TOOL_ANNOTATIONS,
+} from "./tools/shared/annotation-presets.js";
+// Import mode manager
+import { modeManager } from "./tools/shared/mode-manager.js";
+import { specKitGenerator } from "./tools/speckit-generator.js";
 import { sprintTimelineCalculator } from "./tools/sprint-timeline-calculator.js";
+import { updateProgress } from "./tools/update-progress.js";
+import { validateSpec } from "./tools/validate-spec.js";
 
 const server = new Server(
 	{
@@ -87,1961 +104,2622 @@ const server = new Server(
 
 // Register tool handlers
 server.setRequestHandler(ListToolsRequestSchema, async () => {
-	return {
-		tools: [
-			{
-				name: "hierarchical-prompt-builder",
-				description:
-					"Build structured prompts with clear hierarchies and layers of specificity. Use this MCP to create prompts with context → goal → requirements hierarchy, supporting multiple prompting techniques (chain-of-thought, few-shot, etc.). Example: 'Use the hierarchical-prompt-builder MCP to create a code review prompt for React components focusing on performance optimization'",
-				inputSchema: {
-					type: "object",
-					properties: {
-						context: {
+	const flags = getFeatureFlags();
+	let tools = [
+		{
+			name: "hierarchical-prompt-builder",
+			description:
+				"Create AI prompts with context→goal→requirements hierarchy supporting chain-of-thought, few-shot, and zero-shot techniques. BEST FOR: code reviews, feature specifications, technical decisions, complex task breakdown. OUTPUTS: Structured markdown prompts for LLM injection.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					context: {
+						type: "string",
+						description: "The broad context or domain",
+						examples: [
+							"Microservices authentication system",
+							"E-commerce payment processing module",
+							"Real-time analytics dashboard",
+						],
+					},
+					goal: {
+						type: "string",
+						description: "The specific goal or objective",
+						examples: [
+							"Implement OAuth2 authorization flow with JWT tokens",
+							"Optimize database query performance for product search",
+							"Add real-time WebSocket updates to user dashboard",
+						],
+					},
+					requirements: {
+						type: "array",
+						items: { type: "string" },
+						description: "Detailed requirements and constraints",
+					},
+					outputFormat: {
+						type: "string",
+						description: "Desired output format",
+					},
+					audience: {
+						type: "string",
+						description: "Target audience or expertise level",
+					},
+					includeDisclaimer: {
+						type: "boolean",
+						description: "Append a third-party disclaimer section",
+					},
+					includeReferences: {
+						type: "boolean",
+						description: "Append a short references list",
+					},
+					// 2025 techniques integration
+					techniques: {
+						type: "array",
+						items: {
 							type: "string",
-							description: "The broad context or domain",
+							enum: [
+								"zero-shot",
+								"few-shot",
+								"chain-of-thought",
+								"self-consistency",
+								"in-context-learning",
+								"generate-knowledge",
+								"prompt-chaining",
+								"tree-of-thoughts",
+								"meta-prompting",
+								"rag",
+								"react",
+								"art",
+							],
 						},
-						goal: {
+						description: "Optional list of technique hints to include",
+					},
+					includeTechniqueHints: {
+						type: "boolean",
+						description: "Include a Technique Hints section",
+					},
+					includePitfalls: {
+						type: "boolean",
+						description: "Include a Pitfalls section",
+					},
+					autoSelectTechniques: {
+						type: "boolean",
+						description:
+							"Infer techniques automatically from context/goal/requirements",
+					},
+					provider: {
+						type: "string",
+						enum: PROVIDER_ENUM_VALUES,
+						description: "Model family for tailored tips",
+					},
+					style: {
+						type: "string",
+						enum: ["markdown", "xml"],
+						description: "Preferred prompt formatting style",
+					},
+				},
+				required: ["context", "goal"],
+			},
+			annotations: {
+				...GENERATION_TOOL_ANNOTATIONS,
+				title: "Hierarchical Prompt Builder",
+			},
+		},
+		{
+			name: "code-analysis-prompt-builder",
+			description:
+				"Generate targeted code review prompts focusing on security vulnerabilities, performance bottlenecks, maintainability, and quality assessment. BEST FOR: security audits, performance optimization, refactoring planning, code quality gates. OUTPUTS: Comprehensive review checklist prompts.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					codebase: {
+						type: "string",
+						description: "The codebase or code snippet to analyze",
+						examples: [
+							"src/auth/authentication.ts",
+							"function processPayment(amount, currency) { ... }",
+							"./services/user-management",
+						],
+					},
+					focusArea: {
+						type: "string",
+						enum: ["security", "performance", "maintainability", "general"],
+						description: "Specific area to focus on",
+					},
+					language: {
+						type: "string",
+						description: "Programming language of the code",
+						examples: ["typescript", "python", "java", "go"],
+					},
+					mode: { type: "string" },
+					model: { type: "string" },
+					tools: { type: "array", items: { type: "string" } },
+					includeFrontmatter: { type: "boolean" },
+					includeReferences: { type: "boolean" },
+					includeMetadata: { type: "boolean" },
+					inputFile: { type: "string" },
+					forcePromptMdStyle: { type: "boolean" },
+				},
+				required: ["codebase"],
+			},
+			annotations: {
+				...GENERATION_TOOL_ANNOTATIONS,
+				title: "Code Analysis Prompt Generator",
+			},
+		},
+		{
+			name: "architecture-design-prompt-builder",
+			description:
+				"Generate system architecture design prompts tailored to project scale with technology recommendations, scalability guidance, and architectural patterns. BEST FOR: microservices planning, system design, architecture decisions, tech stack evaluation. OUTPUTS: Architecture prompts with constraints.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					systemRequirements: {
+						type: "string",
+						description: "System requirements and constraints",
+						examples: [
+							"Handle 10,000 concurrent users with <100ms response time",
+							"Process 1M events per day with 99.9% uptime SLA",
+							"Support multi-region deployment with data sovereignty compliance",
+						],
+					},
+					scale: {
+						type: "string",
+						enum: ["small", "medium", "large"],
+						description: "Expected system scale",
+					},
+					technologyStack: {
+						type: "string",
+						description: "Preferred or required technology stack",
+						examples: [
+							"Node.js, PostgreSQL, Redis, Docker",
+							"Python FastAPI, MongoDB, RabbitMQ",
+							"Java Spring Boot, Kafka, Kubernetes",
+						],
+					},
+					mode: { type: "string" },
+					model: { type: "string" },
+					tools: { type: "array", items: { type: "string" } },
+					includeFrontmatter: { type: "boolean" },
+					includeReferences: { type: "boolean" },
+					includeMetadata: { type: "boolean" },
+					inputFile: { type: "string" },
+					forcePromptMdStyle: { type: "boolean" },
+				},
+				required: ["systemRequirements"],
+			},
+			annotations: {
+				...GENERATION_TOOL_ANNOTATIONS,
+				title: "Architecture Design Prompt Generator",
+			},
+		},
+		{
+			name: "digital-enterprise-architect-prompt-builder",
+			description:
+				"Guide enterprise architecture strategy with mentor insights, current research, and decision frameworks for digital transformation. BEST FOR: strategic IT planning, cloud migration, enterprise transformation, technology modernization. OUTPUTS: Architecture decision prompts with business alignment.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					initiativeName: {
+						type: "string",
+						description: "Name or focus of the architecture initiative",
+					},
+					problemStatement: {
+						type: "string",
+						description: "Strategic problem or opportunity being addressed",
+					},
+					businessDrivers: {
+						type: "array",
+						items: { type: "string" },
+						description: "Key business objectives and desired outcomes",
+					},
+					currentLandscape: {
+						type: "string",
+						description: "Summary of the current ecosystem or architecture",
+					},
+					targetUsers: {
+						type: "string",
+						description: "Primary stakeholders or user segments",
+					},
+					differentiators: {
+						type: "array",
+						items: { type: "string" },
+						description: "Innovation themes or competitive differentiators",
+					},
+					constraints: {
+						type: "array",
+						items: { type: "string" },
+						description: "Constraints or guardrails the solution must respect",
+					},
+					complianceObligations: {
+						type: "array",
+						items: { type: "string" },
+						description: "Regulatory or policy considerations",
+					},
+					technologyGuardrails: {
+						type: "array",
+						items: { type: "string" },
+						description: "Existing technology standards or preferred platforms",
+					},
+					innovationThemes: {
+						type: "array",
+						items: { type: "string" },
+						description: "Innovation themes to explore",
+					},
+					timeline: {
+						type: "string",
+						description: "Timeline or planning horizon",
+					},
+					researchFocus: {
+						type: "array",
+						items: { type: "string" },
+						description:
+							"Research topics to benchmark against current best practices",
+					},
+					decisionDrivers: {
+						type: "array",
+						items: { type: "string" },
+						description: "Decision drivers or evaluation criteria to emphasize",
+					},
+					knownRisks: {
+						type: "array",
+						items: { type: "string" },
+						description: "Known risks or assumptions to monitor",
+					},
+					mode: { type: "string" },
+					model: { type: "string" },
+					tools: { type: "array", items: { type: "string" } },
+					includeFrontmatter: { type: "boolean" },
+					includeReferences: { type: "boolean" },
+					includeMetadata: { type: "boolean" },
+					inputFile: { type: "string" },
+					forcePromptMdStyle: { type: "boolean" },
+				},
+				required: ["initiativeName", "problemStatement"],
+			},
+			annotations: {
+				...GENERATION_TOOL_ANNOTATIONS,
+				title: "Enterprise Architect Prompt Generator",
+			},
+		},
+		{
+			name: "debugging-assistant-prompt-builder",
+			description:
+				"Create systematic debugging prompts with hypothesis generation, error reproduction steps, and root cause analysis workflows. BEST FOR: production bug investigation, error diagnosis, system failure analysis, intermittent issue debugging. OUTPUTS: Structured debug workflow prompts.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					errorDescription: {
+						type: "string",
+						description: "Description of the error or issue",
+						examples: [
+							"Database connection pool exhausted after 1000 concurrent requests",
+							"Memory leak in Node.js worker process consuming 2GB over 24 hours",
+							"Intermittent 504 Gateway Timeout on /api/checkout endpoint",
+						],
+					},
+					context: {
+						type: "string",
+						description: "Additional context about the problem",
+						examples: [
+							"Occurs only during peak traffic hours (9am-5pm EST)",
+							"Started after deploying v2.3.0 with new caching layer",
+							"Affects 15% of users on mobile Safari browsers",
+						],
+					},
+					attemptedSolutions: {
+						type: "string",
+						description: "Solutions already attempted",
+					},
+					mode: { type: "string" },
+					model: { type: "string" },
+					tools: { type: "array", items: { type: "string" } },
+					includeFrontmatter: { type: "boolean" },
+					includeReferences: { type: "boolean" },
+					includeMetadata: { type: "boolean" },
+					inputFile: { type: "string" },
+					forcePromptMdStyle: { type: "boolean" },
+				},
+				required: ["errorDescription"],
+			},
+			annotations: {
+				...GENERATION_TOOL_ANNOTATIONS,
+				title: "Debug Assistant Prompt Generator",
+			},
+		},
+		{
+			name: "l9-distinguished-engineer-prompt-builder",
+			description:
+				"Generate Distinguished Engineer (L9) technical design prompts for complex software architecture including distributed systems, platform engineering, and high-scale infrastructure. BEST FOR: staff-level architecture, distributed systems, platform strategy. OUTPUTS: Expert-level architecture prompts.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					projectName: {
+						type: "string",
+						description: "Name of the software project or system initiative",
+						examples: [
+							"Global CDN Migration",
+							"Real-time Fraud Detection Platform",
+							"Multi-tenant SaaS Infrastructure",
+						],
+					},
+					technicalChallenge: {
+						type: "string",
+						description:
+							"Core technical problem, architectural complexity, or scale challenge",
+						examples: [
+							"Design distributed consensus system for 1000+ nodes across 5 regions",
+							"Migrate monolith to event-driven microservices with zero downtime",
+							"Build real-time ML inference pipeline processing 100k requests/sec",
+						],
+					},
+					technicalDrivers: {
+						type: "array",
+						items: { type: "string" },
+						description:
+							"Key technical objectives: performance targets, scalability goals, reliability requirements",
+					},
+					currentArchitecture: {
+						type: "string",
+						description:
+							"Existing system architecture, tech stack, and known pain points",
+					},
+					userScale: {
+						type: "string",
+						description:
+							"Scale context: users, requests/sec, data volume, geographical distribution",
+					},
+					technicalDifferentiators: {
+						type: "array",
+						items: { type: "string" },
+						description:
+							"Technical innovations, performance advantages, or unique capabilities",
+					},
+					engineeringConstraints: {
+						type: "array",
+						items: { type: "string" },
+						description:
+							"Technical constraints: latency budgets, backward compatibility, migration windows",
+					},
+					securityRequirements: {
+						type: "array",
+						items: { type: "string" },
+						description: "Security, privacy, and compliance requirements",
+					},
+					techStack: {
+						type: "array",
+						items: { type: "string" },
+						description:
+							"Current/preferred technologies, languages, frameworks, and platforms",
+					},
+					experimentationAreas: {
+						type: "array",
+						items: { type: "string" },
+						description: "Emerging technologies or patterns worth prototyping",
+					},
+					deliveryTimeline: {
+						type: "string",
+						description:
+							"Engineering timeline: sprints, milestones, or release windows",
+					},
+					benchmarkingFocus: {
+						type: "array",
+						items: { type: "string" },
+						description:
+							"Systems/companies to benchmark against or research areas requiring investigation",
+					},
+					tradeoffPriorities: {
+						type: "array",
+						items: { type: "string" },
+						description:
+							"Engineering trade-off priorities: latency vs throughput, consistency vs availability, etc.",
+					},
+					technicalRisks: {
+						type: "array",
+						items: { type: "string" },
+						description: "Known technical risks, debt, or areas of uncertainty",
+					},
+					teamContext: {
+						type: "string",
+						description:
+							"Team size, skill distribution, and organizational dependencies",
+					},
+					observabilityRequirements: {
+						type: "array",
+						items: { type: "string" },
+						description:
+							"Monitoring, logging, tracing, and debugging requirements",
+					},
+					performanceTargets: {
+						type: "array",
+						items: { type: "string" },
+						description:
+							"Specific performance SLOs/SLAs: p99 latency, throughput, availability",
+					},
+					migrationStrategy: {
+						type: "string",
+						description:
+							"Migration or rollout strategy if re-architecting existing system",
+					},
+					codeQualityStandards: {
+						type: "array",
+						items: { type: "string" },
+						description:
+							"Code quality expectations: test coverage, documentation, design patterns",
+					},
+					mode: { type: "string" },
+					model: { type: "string" },
+					tools: { type: "array", items: { type: "string" } },
+					includeFrontmatter: { type: "boolean" },
+					includeReferences: { type: "boolean" },
+					includeMetadata: { type: "boolean" },
+					inputFile: { type: "string" },
+					forcePromptMdStyle: { type: "boolean" },
+				},
+				required: ["projectName", "technicalChallenge"],
+			},
+			annotations: {
+				...GENERATION_TOOL_ANNOTATIONS,
+				title: "L9 Engineer Prompt Generator",
+			},
+		},
+		{
+			name: "documentation-generator-prompt-builder",
+			description:
+				"Create documentation generation prompts for API references, user guides, README files, and technical specifications with audience-appropriate detail. BEST FOR: API documentation, user manuals, README generation, onboarding docs, technical writing. OUTPUTS: Structured documentation template prompts.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					contentType: {
+						type: "string",
+						description:
+							"Type of documentation (API, user guide, technical spec)",
+						examples: [
+							"REST API Reference",
+							"User Onboarding Guide",
+							"Technical Architecture Specification",
+						],
+					},
+					targetAudience: {
+						type: "string",
+						description: "Intended audience for the documentation",
+						examples: [
+							"Backend developers integrating with our API",
+							"Non-technical end users",
+							"DevOps engineers setting up infrastructure",
+						],
+					},
+					existingContent: {
+						type: "string",
+						description: "Any existing content to build upon",
+					},
+					mode: { type: "string" },
+					model: { type: "string" },
+					tools: { type: "array", items: { type: "string" } },
+					includeFrontmatter: { type: "boolean" },
+					includeReferences: { type: "boolean" },
+					includeMetadata: { type: "boolean" },
+					inputFile: { type: "string" },
+					forcePromptMdStyle: { type: "boolean" },
+				},
+				required: ["contentType"],
+			},
+			annotations: {
+				...GENERATION_TOOL_ANNOTATIONS,
+				title: "Documentation Prompt Generator",
+			},
+		},
+		{
+			name: "strategy-frameworks-builder",
+			description:
+				"Build strategic analysis using SWOT, Porter's Five Forces, Value Chain, and 20+ other frameworks for comprehensive business strategy evaluation. BEST FOR: market expansion, competitive analysis, strategic planning. OUTPUTS: Framework-based analysis sections.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					frameworks: {
+						type: "array",
+						items: {
 							type: "string",
-							description: "The specific goal or objective",
+							enum: [
+								"asIsToBe",
+								"whereToPlayHowToWin",
+								"balancedScorecard",
+								"swot",
+								"objectives",
+								"portersFiveForces",
+								"mckinsey7S",
+								"marketAnalysis",
+								"strategyMap",
+								"visionToMission",
+								"stakeholderTheory",
+								"values",
+								"gapAnalysis",
+								"ansoffMatrix",
+								"pest",
+								"bcgMatrix",
+								"blueOcean",
+								"scenarioPlanning",
+								"vrio",
+								"goalBasedPlanning",
+								"gartnerQuadrant",
+							],
 						},
-						requirements: {
-							type: "array",
-							items: { type: "string" },
-							description: "Detailed requirements and constraints",
-						},
-						outputFormat: {
+						description: "Framework identifiers to include",
+						examples: [
+							["swot", "portersFiveForces"],
+							["balancedScorecard", "objectives"],
+							["vrio", "blueOcean", "ansoffMatrix"],
+						],
+					},
+					context: {
+						type: "string",
+						description: "Business context",
+						examples: [
+							"SaaS startup entering competitive CRM market",
+							"Enterprise retail chain digital transformation initiative",
+							"Healthcare provider network expansion strategy",
+						],
+					},
+					objectives: { type: "array", items: { type: "string" } },
+					market: { type: "string" },
+					stakeholders: { type: "array", items: { type: "string" } },
+					constraints: { type: "array", items: { type: "string" } },
+					includeReferences: { type: "boolean" },
+					includeMetadata: { type: "boolean" },
+					inputFile: { type: "string" },
+				},
+				required: ["frameworks", "context"],
+			},
+			annotations: {
+				...GENERATION_TOOL_ANNOTATIONS,
+				title: "Strategy Framework Builder",
+			},
+		},
+		{
+			name: "gap-frameworks-analyzers",
+			description:
+				"Analyze capability, performance, or technology gaps between current and target states to generate actionable roadmaps with prioritized recommendations. BEST FOR: digital transformation, capability assessment, migration planning. OUTPUTS: Gap analysis reports with remediation steps.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					frameworks: {
+						type: "array",
+						items: {
 							type: "string",
-							description: "Desired output format",
+							enum: [
+								"capability",
+								"performance",
+								"maturity",
+								"skills",
+								"technology",
+								"process",
+								"market",
+								"strategic",
+								"operational",
+								"cultural",
+								"security",
+								"compliance",
+							],
 						},
-						audience: {
+						description: "Gap analysis framework types to include",
+						examples: [
+							["capability", "technology"],
+							["maturity", "skills", "process"],
+							["security", "compliance"],
+						],
+					},
+					currentState: {
+						type: "string",
+						description: "Current state description",
+						examples: [
+							"Monolithic PHP application with MySQL, manual deployments",
+							"Team of 5 developers, waterfall process, 6-month release cycles",
+							"On-premise infrastructure, basic monitoring, no CI/CD",
+						],
+					},
+					desiredState: {
+						type: "string",
+						description: "Desired state description",
+						examples: [
+							"Microservices architecture with containerized deployments, auto-scaling",
+							"Agile team of 15, DevOps culture, weekly releases with feature flags",
+							"Cloud-native platform, observability stack, automated GitOps pipelines",
+						],
+					},
+					context: { type: "string", description: "Analysis context" },
+					objectives: { type: "array", items: { type: "string" } },
+					timeframe: { type: "string" },
+					stakeholders: { type: "array", items: { type: "string" } },
+					constraints: { type: "array", items: { type: "string" } },
+					includeReferences: { type: "boolean" },
+					includeMetadata: { type: "boolean" },
+					includeActionPlan: { type: "boolean" },
+					inputFile: { type: "string" },
+				},
+				required: ["frameworks", "currentState", "desiredState", "context"],
+			},
+			annotations: {
+				...ANALYSIS_TOOL_ANNOTATIONS,
+				title: "Gap Analysis Framework",
+			},
+		},
+		{
+			name: "spark-prompt-builder",
+			description:
+				"Build UI/UX product design prompts from structured inputs including color schemes, typography, spacing, component libraries, and interaction patterns. BEST FOR: design systems, developer tool interfaces, component libraries, UI style guides. OUTPUTS: Detailed design specification prompts.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					title: { type: "string", description: "Prompt title" },
+					summary: { type: "string", description: "Brief summary / outlook" },
+					experienceQualities: {
+						type: "array",
+						description: "List of UX qualities",
+						items: {
+							type: "object",
+							properties: {
+								quality: { type: "string" },
+								detail: { type: "string" },
+							},
+							required: ["quality", "detail"],
+						},
+					},
+					complexityLevel: { type: "string" },
+					complexityDescription: { type: "string" },
+					primaryFocus: { type: "string" },
+					features: {
+						type: "array",
+						items: {
+							type: "object",
+							properties: {
+								name: { type: "string" },
+								functionality: { type: "string" },
+								purpose: { type: "string" },
+								trigger: { type: "string" },
+								progression: { type: "array", items: { type: "string" } },
+								successCriteria: { type: "string" },
+							},
+							required: [
+								"name",
+								"functionality",
+								"purpose",
+								"trigger",
+								"progression",
+								"successCriteria",
+							],
+						},
+					},
+					edgeCases: {
+						type: "array",
+						items: {
+							type: "object",
+							properties: {
+								name: { type: "string" },
+								handling: { type: "string" },
+							},
+							required: ["name", "handling"],
+						},
+					},
+					designDirection: { type: "string" },
+					colorSchemeType: { type: "string" },
+					colorPurpose: { type: "string" },
+					primaryColor: { type: "string" },
+					primaryColorPurpose: { type: "string" },
+					secondaryColors: {
+						type: "array",
+						items: {
+							type: "object",
+							properties: {
+								name: { type: "string" },
+								oklch: { type: "string" },
+								usage: { type: "string" },
+							},
+							required: ["name", "oklch", "usage"],
+						},
+					},
+					accentColor: { type: "string" },
+					accentColorPurpose: { type: "string" },
+					foregroundBackgroundPairings: {
+						type: "array",
+						items: {
+							type: "object",
+							properties: {
+								container: { type: "string" },
+								containerColor: { type: "string" },
+								textColor: { type: "string" },
+								ratio: { type: "string" },
+							},
+							required: ["container", "containerColor", "textColor", "ratio"],
+						},
+					},
+					fontFamily: { type: "string" },
+					fontIntention: { type: "string" },
+					fontReasoning: { type: "string" },
+					typography: {
+						type: "array",
+						items: {
+							type: "object",
+							properties: {
+								usage: { type: "string" },
+								font: { type: "string" },
+								weight: { type: "string" },
+								size: { type: "string" },
+								spacing: { type: "string" },
+							},
+							required: ["usage", "font", "weight", "size", "spacing"],
+						},
+					},
+					animationPhilosophy: { type: "string" },
+					animationRestraint: { type: "string" },
+					animationPurpose: { type: "string" },
+					animationHierarchy: { type: "string" },
+					components: {
+						type: "array",
+						items: {
+							type: "object",
+							properties: {
+								type: { type: "string" },
+								usage: { type: "string" },
+								variation: { type: "string" },
+								styling: { type: "string" },
+								state: { type: "string" },
+								functionality: { type: "string" },
+								purpose: { type: "string" },
+							},
+							required: ["type", "usage"],
+						},
+					},
+					customizations: { type: "string" },
+					states: {
+						type: "array",
+						items: {
+							type: "object",
+							properties: {
+								component: { type: "string" },
+								states: { type: "array", items: { type: "string" } },
+								specialFeature: { type: "string" },
+							},
+							required: ["component", "states"],
+						},
+					},
+					icons: { type: "array", items: { type: "string" } },
+					spacingRule: { type: "string" },
+					spacingContext: { type: "string" },
+					mobileLayout: { type: "string" },
+					// Optional prompt md frontmatter controls
+					mode: { type: "string" },
+					model: { type: "string" },
+					tools: { type: "array", items: { type: "string" } },
+					includeFrontmatter: { type: "boolean" },
+					includeDisclaimer: { type: "boolean" },
+					includeReferences: { type: "boolean" },
+					includeMetadata: { type: "boolean" },
+					inputFile: { type: "string" },
+					forcePromptMdStyle: { type: "boolean" },
+				},
+				required: [
+					"title",
+					"summary",
+					"complexityLevel",
+					"designDirection",
+					"colorSchemeType",
+					"colorPurpose",
+					"primaryColor",
+					"primaryColorPurpose",
+					"accentColor",
+					"accentColorPurpose",
+					"fontFamily",
+					"fontIntention",
+					"fontReasoning",
+					"animationPhilosophy",
+					"animationRestraint",
+					"animationPurpose",
+					"animationHierarchy",
+					"spacingRule",
+					"spacingContext",
+					"mobileLayout",
+				],
+			},
+			annotations: {
+				...GENERATION_TOOL_ANNOTATIONS,
+				title: "Spark Design Prompt Builder",
+			},
+		},
+		{
+			name: "coverage-dashboard-design-prompt-builder",
+			description:
+				"Generate UI/UX design prompts for test coverage dashboards with accessibility, WCAG compliance, interactive visualizations, and responsive layouts. BEST FOR: test coverage interfaces, metrics dashboards, data visualization, accessibility-first UI. OUTPUTS: Accessible dashboard design prompts.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					title: {
+						type: "string",
+						description: "Dashboard title",
+						default: "Coverage Dashboard Design",
+					},
+					projectContext: {
+						type: "string",
+						description: "Project context or description",
+					},
+					targetUsers: {
+						type: "array",
+						items: { type: "string" },
+						description:
+							"Target user personas (e.g., developers, qa-engineers, managers)",
+					},
+					dashboardStyle: {
+						type: "string",
+						enum: ["card-based", "table-heavy", "hybrid", "minimal"],
+						description: "Dashboard layout style",
+					},
+					primaryMetrics: {
+						type: "array",
+						items: { type: "string" },
+						description:
+							"Primary coverage metrics to display (e.g., statements, branches, functions, lines)",
+					},
+					colorScheme: {
+						type: "string",
+						enum: [
+							"light",
+							"dark",
+							"auto",
+							"high-contrast",
+							"colorblind-safe",
+							"custom",
+						],
+						description: "Color scheme preference",
+					},
+					primaryColor: {
+						type: "string",
+						description: "Primary color in OKLCH",
+					},
+					successColor: {
+						type: "string",
+						description: "Success/good coverage color",
+					},
+					warningColor: {
+						type: "string",
+						description: "Warning coverage color",
+					},
+					dangerColor: {
+						type: "string",
+						description: "Danger/critical coverage color",
+					},
+					useGradients: {
+						type: "boolean",
+						description: "Use gradient visual indicators",
+					},
+					visualIndicators: {
+						type: "array",
+						items: { type: "string" },
+						description:
+							"Visual indicator types (e.g., progress-bars, badges, sparklines, heat-maps)",
+					},
+					fontFamily: { type: "string", description: "UI font family" },
+					codeFont: { type: "string", description: "Code font family" },
+					accessibility: {
+						type: "object",
+						description: "Accessibility configuration",
+						properties: {
+							wcagLevel: { type: "string", enum: ["A", "AA", "AAA"] },
+							colorBlindSafe: { type: "boolean" },
+							keyboardNavigation: { type: "boolean" },
+							screenReaderOptimized: { type: "boolean" },
+							focusIndicators: { type: "boolean" },
+							highContrastMode: { type: "boolean" },
+						},
+					},
+					responsive: {
+						type: "object",
+						description: "Responsive design configuration",
+						properties: {
+							mobileFirst: { type: "boolean" },
+							touchOptimized: { type: "boolean" },
+							collapsibleNavigation: { type: "boolean" },
+						},
+					},
+					interactiveFeatures: {
+						type: "object",
+						description: "Interactive feature configuration",
+						properties: {
+							filters: { type: "boolean" },
+							sorting: { type: "boolean" },
+							search: { type: "boolean" },
+							tooltips: { type: "boolean" },
+							expandCollapse: { type: "boolean" },
+							drillDown: { type: "boolean" },
+							exportOptions: { type: "array", items: { type: "string" } },
+							realTimeUpdates: { type: "boolean" },
+						},
+					},
+					performance: {
+						type: "object",
+						description: "Performance optimization settings",
+						properties: {
+							lazyLoading: { type: "boolean" },
+							virtualScrolling: { type: "boolean" },
+							dataCaching: { type: "boolean" },
+							skeletonLoaders: { type: "boolean" },
+							progressiveEnhancement: { type: "boolean" },
+						},
+					},
+					framework: {
+						type: "string",
+						enum: ["react", "vue", "angular", "svelte", "static", "any"],
+						description: "Preferred frontend framework",
+					},
+					componentLibrary: {
+						type: "string",
+						description: "Preferred component library",
+					},
+					iterationCycle: {
+						type: "object",
+						description: "Design iteration configuration",
+						properties: {
+							includeABTesting: { type: "boolean" },
+							includeAnalytics: { type: "boolean" },
+							includeFeedbackWidget: { type: "boolean" },
+							includeUsabilityMetrics: { type: "boolean" },
+						},
+					},
+					mode: { type: "string" },
+					model: { type: "string" },
+					tools: { type: "array", items: { type: "string" } },
+					includeFrontmatter: { type: "boolean" },
+					includeDisclaimer: { type: "boolean" },
+					includeReferences: { type: "boolean" },
+					includeMetadata: { type: "boolean" },
+					inputFile: { type: "string" },
+					forcePromptMdStyle: { type: "boolean" },
+					techniques: {
+						type: "array",
+						items: {
 							type: "string",
-							description: "Target audience or expertise level",
+							enum: [
+								"zero-shot",
+								"few-shot",
+								"chain-of-thought",
+								"self-consistency",
+								"in-context-learning",
+								"generate-knowledge",
+								"prompt-chaining",
+								"tree-of-thoughts",
+								"meta-prompting",
+								"rag",
+								"react",
+								"art",
+							],
 						},
-						includeDisclaimer: {
-							type: "boolean",
-							description: "Append a third-party disclaimer section",
+						description: "Prompting techniques to include",
+					},
+					includeTechniqueHints: { type: "boolean" },
+					autoSelectTechniques: { type: "boolean" },
+					provider: {
+						type: "string",
+						enum: PROVIDER_ENUM_VALUES,
+					},
+					style: { type: "string", enum: ["markdown", "xml"] },
+				},
+				required: [],
+			},
+			annotations: {
+				...GENERATION_TOOL_ANNOTATIONS,
+				title: "Coverage Dashboard Design Prompt Builder",
+			},
+		},
+		{
+			name: "clean-code-scorer",
+			description:
+				"Calculate code quality scores (0-100) with metrics for hygiene, test coverage, TypeScript, linting, documentation, and security. BEST FOR: code review automation, refactoring prioritization, CI quality gates. OUTPUTS: Quality score, metrics, improvement recommendations.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					projectPath: {
+						type: "string",
+						description: "Path to the project root directory",
+					},
+					codeContent: {
+						type: "string",
+						description: "Code content to analyze",
+					},
+					language: {
+						type: "string",
+						description: "Programming language",
+					},
+					framework: {
+						type: "string",
+						description: "Framework or technology stack",
+					},
+					coverageMetrics: {
+						type: "object",
+						description: "Test coverage metrics",
+						properties: {
+							statements: {
+								type: "number",
+								description: "Statement coverage percentage (0-100)",
+							},
+							branches: {
+								type: "number",
+								description: "Branch coverage percentage (0-100)",
+							},
+							functions: {
+								type: "number",
+								description: "Function coverage percentage (0-100)",
+							},
+							lines: {
+								type: "number",
+								description: "Line coverage percentage (0-100)",
+							},
 						},
-						includeReferences: {
-							type: "boolean",
-							description: "Append a short references list",
+					},
+					includeReferences: {
+						type: "boolean",
+						description: "Include external best-practice links",
+					},
+					includeMetadata: {
+						type: "boolean",
+						description: "Include metadata in output",
+					},
+					inputFile: {
+						type: "string",
+						description: "Input file path for reference",
+					},
+				},
+				required: [],
+			},
+			annotations: {
+				...ANALYSIS_TOOL_ANNOTATIONS,
+				title: "Clean Code Quality Scorer",
+			},
+		},
+		{
+			name: "code-hygiene-analyzer",
+			description:
+				"Analyze codebase for outdated patterns, unused dependencies, deprecated APIs, code smells, and technical debt with modernization recommendations. BEST FOR: legacy code assessment, dependency cleanup, code modernization. OUTPUTS: Hygiene analysis with prioritized recommendations.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					codeContent: {
+						type: "string",
+						description: "Code content to analyze",
+					},
+					language: { type: "string", description: "Programming language" },
+					framework: {
+						type: "string",
+						description: "Framework or technology stack",
+					},
+					includeReferences: {
+						type: "boolean",
+						description: "Include external best-practice links",
+					},
+				},
+				required: ["codeContent", "language"],
+			},
+			annotations: {
+				...ANALYSIS_TOOL_ANNOTATIONS,
+				title: "Code Hygiene Analyzer",
+			},
+		},
+		{
+			name: "dependency-auditor",
+			description:
+				"Audit dependency files across multiple languages to identify outdated, deprecated, or insecure packages. BEST FOR: Ensuring project dependencies meet security and version requirements. Example: 'Use the dependency-auditor MCP to check our requirements.txt for security vulnerabilities.'",
+
+			inputSchema: {
+				type: "object",
+				properties: {
+					dependencyContent: {
+						type: "string",
+						description:
+							"Content of dependency file (package.json, requirements.txt, pyproject.toml, go.mod, Cargo.toml, Gemfile, vcpkg.json, or rockspec)",
+					},
+					packageJsonContent: {
+						type: "string",
+						description:
+							"Content of package.json file (deprecated: use dependencyContent)",
+					},
+					fileType: {
+						type: "string",
+						enum: [
+							"package.json",
+							"requirements.txt",
+							"pyproject.toml",
+							"pipfile",
+							"go.mod",
+							"Cargo.toml",
+							"Gemfile",
+							"vcpkg.json",
+							"conanfile.txt",
+							"rockspec",
+							"auto",
+						],
+						description:
+							"Type of dependency file. Use 'auto' for automatic detection based on content.",
+						default: "auto",
+					},
+					checkOutdated: {
+						type: "boolean",
+						description: "Check for outdated version patterns",
+						default: true,
+					},
+					checkDeprecated: {
+						type: "boolean",
+						description: "Check for deprecated packages",
+						default: true,
+					},
+					checkVulnerabilities: {
+						type: "boolean",
+						description: "Check for known vulnerabilities",
+						default: true,
+					},
+					suggestAlternatives: {
+						type: "boolean",
+						description: "Suggest modern alternatives",
+						default: true,
+					},
+					analyzeBundleSize: {
+						type: "boolean",
+						description: "Analyze bundle size concerns (JavaScript only)",
+						default: true,
+					},
+					includeReferences: {
+						type: "boolean",
+						description: "Include external reference links",
+						default: true,
+					},
+					includeMetadata: {
+						type: "boolean",
+						description: "Include metadata section",
+						default: true,
+					},
+					inputFile: {
+						type: "string",
+						description: "Input file path for reference",
+					},
+				},
+				required: [],
+			},
+			annotations: {
+				...ANALYSIS_TOOL_ANNOTATIONS,
+				title: "Dependency Security Auditor",
+			},
+		},
+		{
+			name: "iterative-coverage-enhancer",
+			description:
+				"Iterate on test coverage gaps, detect dead code, generate test suggestions, and recommend adaptive coverage thresholds. BEST FOR: test coverage optimization, dead code elimination, test suite enhancement, coverage threshold management. OUTPUTS: Test suggestions with coverage gap analysis.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					projectPath: {
+						type: "string",
+						description: "Path to the project root directory",
+					},
+					language: {
+						type: "string",
+						description: "Primary programming language",
+					},
+					framework: {
+						type: "string",
+						description: "Framework or technology stack",
+					},
+					analyzeCoverageGaps: {
+						type: "boolean",
+						description: "Analyze and identify coverage gaps",
+					},
+					detectDeadCode: {
+						type: "boolean",
+						description: "Detect unused code for elimination",
+					},
+					generateTestSuggestions: {
+						type: "boolean",
+						description: "Generate test suggestions for uncovered code",
+					},
+					adaptThresholds: {
+						type: "boolean",
+						description: "Recommend adaptive coverage threshold adjustments",
+					},
+					currentCoverage: {
+						type: "object",
+						description: "Current coverage metrics",
+						properties: {
+							statements: { type: "number", minimum: 0, maximum: 100 },
+							functions: { type: "number", minimum: 0, maximum: 100 },
+							lines: { type: "number", minimum: 0, maximum: 100 },
+							branches: { type: "number", minimum: 0, maximum: 100 },
 						},
-						// 2025 techniques integration
-						techniques: {
-							type: "array",
-							items: {
+					},
+					targetCoverage: {
+						type: "object",
+						description: "Target coverage goals",
+						properties: {
+							statements: { type: "number", minimum: 0, maximum: 100 },
+							functions: { type: "number", minimum: 0, maximum: 100 },
+							lines: { type: "number", minimum: 0, maximum: 100 },
+							branches: { type: "number", minimum: 0, maximum: 100 },
+						},
+					},
+					outputFormat: {
+						type: "string",
+						enum: ["markdown", "json", "text"],
+						description: "Output format for the report",
+					},
+					includeReferences: {
+						type: "boolean",
+						description: "Include references and best practice links",
+					},
+					includeCodeExamples: {
+						type: "boolean",
+						description: "Include code examples in suggestions",
+					},
+					generateCIActions: {
+						type: "boolean",
+						description: "Generate CI/CD integration actions",
+					},
+				},
+				required: [],
+			},
+			annotations: {
+				...ANALYSIS_TOOL_ANNOTATIONS,
+				title: "Test Coverage Enhancer",
+			},
+		},
+		{
+			name: "mermaid-diagram-generator",
+			description:
+				"Generate Mermaid diagrams from descriptions with support for flowcharts, sequence diagrams, class diagrams, state machines, and ERDs including auto-validation and repair. BEST FOR: architecture documentation, process flows, data modeling. OUTPUTS: Validated Mermaid syntax.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					description: {
+						type: "string",
+						description:
+							"Description of the system or process to diagram. Be specific and detailed for better diagram generation.",
+						examples: [
+							"OAuth2 authentication flow with authorization code grant, including user, client, authorization server, and resource server interactions",
+							"E-commerce checkout process from cart review to order confirmation with payment gateway integration",
+							"Microservices architecture showing API gateway, service mesh, and database interactions for order processing system",
+						],
+					},
+					diagramType: {
+						type: "string",
+						enum: [
+							"flowchart",
+							"sequence",
+							"class",
+							"state",
+							"gantt",
+							"pie",
+							"er",
+							"journey",
+							"quadrant",
+							"git-graph",
+							"mindmap",
+							"timeline",
+						],
+						description: "Type of diagram to generate",
+						examples: ["sequence", "flowchart", "class"],
+					},
+					theme: {
+						type: "string",
+						description:
+							"Visual theme for the diagram (e.g., 'default', 'dark', 'forest', 'neutral')",
+					},
+					direction: {
+						type: "string",
+						enum: ["TD", "TB", "BT", "LR", "RL"],
+						description:
+							"Direction for flowcharts: TD/TB (top-down), BT (bottom-top), LR (left-right), RL (right-left)",
+					},
+					strict: {
+						type: "boolean",
+						description:
+							"If true, never emit invalid diagram; fallback to minimal diagram if needed (default: true)",
+						default: true,
+					},
+					repair: {
+						type: "boolean",
+						description:
+							"Attempt auto-repair on diagram validation failure (default: true)",
+						default: true,
+					},
+					accTitle: {
+						type: "string",
+						description: "Accessibility title (added as a Mermaid comment)",
+					},
+					accDescr: {
+						type: "string",
+						description:
+							"Accessibility description (added as a Mermaid comment)",
+					},
+					customStyles: {
+						type: "string",
+						description:
+							"Custom CSS/styling directives for advanced customization",
+					},
+					advancedFeatures: {
+						type: "object",
+						description:
+							"Type-specific advanced features (e.g., {autonumber: true} for sequence diagrams)",
+					},
+				},
+				required: ["description", "diagramType"],
+			},
+			annotations: {
+				...GENERATION_TOOL_ANNOTATIONS,
+				title: "Mermaid Diagram Generator",
+			},
+		},
+		{
+			name: "memory-context-optimizer",
+			description:
+				"Optimize AI agent prompt caching and context window utilization for token efficiency, reduced API costs, and improved response quality. BEST FOR: token reduction, context management, API cost optimization, long-running sessions. OUTPUTS: Optimized context and caching recommendations.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					contextContent: {
+						type: "string",
+						description: "Context content to optimize",
+						examples: [
+							"Large codebase documentation with 50k tokens of API specifications",
+							"Multi-file context including design docs, requirements, and code samples",
+							"Long conversation history with technical architecture decisions",
+						],
+					},
+					maxTokens: {
+						type: "number",
+						description: "Maximum token limit",
+						examples: [4000, 8000, 16000],
+					},
+					cacheStrategy: {
+						type: "string",
+						enum: ["aggressive", "conservative", "balanced"],
+						description: "Caching strategy",
+					},
+					includeReferences: {
+						type: "boolean",
+						description: "Include external links on caching",
+					},
+				},
+				required: ["contextContent"],
+			},
+			annotations: {
+				...ANALYSIS_TOOL_ANNOTATIONS,
+				title: "Memory Context Optimizer",
+			},
+		},
+		{
+			name: "domain-neutral-prompt-builder",
+			description:
+				"Build domain-agnostic prompts from objectives, workflows, and capabilities without domain assumptions for flexible cross-domain execution. BEST FOR: cross-domain applications, general workflows, domain-independent tasks, flexible templates. OUTPUTS: Domain-neutral structured prompts.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					title: {
+						type: "string",
+						description: "Document title",
+						examples: [
+							"User Authentication System Specification",
+							"Data Pipeline Processing Workflow",
+							"API Gateway Configuration Requirements",
+						],
+					},
+					summary: {
+						type: "string",
+						description: "One-paragraph summary",
+						examples: [
+							"Design and implement secure OAuth2-based authentication supporting JWT tokens, multi-factor authentication, and session management for web and mobile clients.",
+							"Build ETL pipeline to ingest, transform, and load customer data from multiple sources into data warehouse with validation and error handling.",
+							"Configure API gateway for routing, rate limiting, and authentication across 20+ microservices with observability integration.",
+						],
+					},
+					objectives: { type: "array", items: { type: "string" } },
+					nonGoals: { type: "array", items: { type: "string" } },
+					background: { type: "string" },
+					stakeholdersUsers: { type: "string" },
+					environment: { type: "string" },
+					assumptions: { type: "string" },
+					constraints: { type: "string" },
+					dependencies: { type: "string" },
+					inputs: { type: "string" },
+					outputs: { type: "string" },
+					dataSchemas: { type: "array", items: { type: "string" } },
+					interfaces: {
+						type: "array",
+						items: {
+							type: "object",
+							properties: {
+								name: { type: "string" },
+								contract: { type: "string" },
+							},
+							required: ["name", "contract"],
+						},
+					},
+					workflow: { type: "array", items: { type: "string" } },
+					capabilities: {
+						type: "array",
+						items: {
+							type: "object",
+							properties: {
+								name: { type: "string" },
+								purpose: { type: "string" },
+								preconditions: { type: "string" },
+								inputs: { type: "string" },
+								processing: { type: "string" },
+								outputs: { type: "string" },
+								successCriteria: { type: "string" },
+								errors: { type: "string" },
+								observability: { type: "string" },
+							},
+							required: ["name", "purpose"],
+						},
+					},
+					edgeCases: {
+						type: "array",
+						items: {
+							type: "object",
+							properties: {
+								name: { type: "string" },
+								handling: { type: "string" },
+							},
+							required: ["name", "handling"],
+						},
+					},
+					risks: {
+						type: "array",
+						items: {
+							type: "object",
+							properties: {
+								description: { type: "string" },
+								likelihoodImpact: { type: "string" },
+								mitigation: { type: "string" },
+							},
+							required: ["description"],
+						},
+					},
+					successMetrics: { type: "array", items: { type: "string" } },
+					acceptanceTests: {
+						type: "array",
+						items: {
+							type: "object",
+							properties: {
+								setup: { type: "string" },
+								action: { type: "string" },
+								expected: { type: "string" },
+							},
+							required: ["setup", "action", "expected"],
+						},
+					},
+					manualChecklist: { type: "array", items: { type: "string" } },
+					performanceScalability: { type: "string" },
+					reliabilityAvailability: { type: "string" },
+					securityPrivacy: { type: "string" },
+					compliancePolicy: { type: "string" },
+					observabilityOps: { type: "string" },
+					costBudget: { type: "string" },
+					versioningStrategy: { type: "string" },
+					migrationCompatibility: { type: "string" },
+					changelog: { type: "array", items: { type: "string" } },
+					milestones: {
+						type: "array",
+						items: {
+							type: "object",
+							properties: {
+								name: { type: "string" },
+								deliverables: { type: "string" },
+								eta: { type: "string" },
+							},
+							required: ["name"],
+						},
+					},
+					openQuestions: { type: "array", items: { type: "string" } },
+					nextSteps: { type: "array", items: { type: "string" } },
+					// Optional prompt md frontmatter controls
+					mode: { type: "string" },
+					model: { type: "string" },
+					tools: { type: "array", items: { type: "string" } },
+					includeFrontmatter: { type: "boolean" },
+					includeDisclaimer: { type: "boolean" },
+					includeReferences: { type: "boolean" },
+					includeTechniqueHints: { type: "boolean" },
+					includePitfalls: { type: "boolean" },
+					includeMetadata: { type: "boolean" },
+					inputFile: { type: "string" },
+					forcePromptMdStyle: { type: "boolean" },
+				},
+				required: ["title", "summary"],
+			},
+			annotations: {
+				...GENERATION_TOOL_ANNOTATIONS,
+				title: "Domain-Neutral Prompt Builder",
+			},
+		},
+		{
+			name: "security-hardening-prompt-builder",
+			description:
+				"Generate OWASP-aligned security assessment prompts with threat modeling, vulnerability analysis, compliance support (NIST, ISO-27001, SOC-2), and remediation guidance. BEST FOR: security audits, penetration testing, threat modeling. OUTPUTS: Security analysis prompts with threat matrices.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					codeContext: {
+						type: "string",
+						description:
+							"The code context or description to analyze for security",
+						examples: [
+							"User authentication API endpoint handling password reset tokens",
+							"Payment processing service with credit card tokenization",
+							"File upload handler accepting user-submitted documents",
+						],
+					},
+					securityFocus: {
+						type: "string",
+						enum: [
+							"vulnerability-analysis",
+							"security-hardening",
+							"compliance-check",
+							"threat-modeling",
+							"penetration-testing",
+						],
+						description: "Primary security analysis focus",
+						examples: [
+							"vulnerability-analysis",
+							"compliance-check",
+							"threat-modeling",
+						],
+					},
+					securityRequirements: {
+						type: "array",
+						items: { type: "string" },
+						description: "Specific security requirements to check",
+					},
+					complianceStandards: {
+						type: "array",
+						items: {
+							type: "string",
+							enum: [
+								"OWASP-Top-10",
+								"NIST-Cybersecurity-Framework",
+								"ISO-27001",
+								"SOC-2",
+								"GDPR",
+								"HIPAA",
+								"PCI-DSS",
+							],
+						},
+						description: "Compliance standards to evaluate against",
+					},
+					language: {
+						type: "string",
+						description: "Programming language of the code",
+					},
+					framework: {
+						type: "string",
+						description: "Framework or technology stack",
+					},
+					riskTolerance: {
+						type: "string",
+						enum: ["low", "medium", "high"],
+						description: "Risk tolerance level for security assessment",
+					},
+					analysisScope: {
+						type: "array",
+						items: {
+							type: "string",
+							enum: [
+								"input-validation",
+								"authentication",
+								"authorization",
+								"data-encryption",
+								"session-management",
+								"error-handling",
+								"logging-monitoring",
+								"dependency-security",
+								"configuration-security",
+								"api-security",
+							],
+						},
+						description: "Specific security areas to focus analysis on",
+					},
+					includeCodeExamples: {
+						type: "boolean",
+						description: "Include secure code examples in output",
+					},
+					includeMitigations: {
+						type: "boolean",
+						description: "Include specific mitigation recommendations",
+					},
+					includeTestCases: {
+						type: "boolean",
+						description: "Include security test cases",
+					},
+					prioritizeFindings: {
+						type: "boolean",
+						description: "Prioritize findings by severity",
+					},
+					outputFormat: {
+						type: "string",
+						enum: ["detailed", "checklist", "annotated-code"],
+						description: "Preferred output format for security assessment",
+					},
+					mode: { type: "string" },
+					model: { type: "string" },
+					tools: { type: "array", items: { type: "string" } },
+					includeFrontmatter: { type: "boolean" },
+					includeDisclaimer: { type: "boolean" },
+					includeReferences: { type: "boolean" },
+					includeTechniqueHints: { type: "boolean" },
+					includePitfalls: { type: "boolean" },
+					includeMetadata: { type: "boolean" },
+					inputFile: { type: "string" },
+					forcePromptMdStyle: { type: "boolean" },
+					techniques: {
+						type: "array",
+						items: {
+							type: "string",
+							enum: [
+								"zero-shot",
+								"few-shot",
+								"chain-of-thought",
+								"self-consistency",
+								"in-context-learning",
+								"generate-knowledge",
+								"prompt-chaining",
+								"tree-of-thoughts",
+								"meta-prompting",
+								"rag",
+								"react",
+								"art",
+							],
+						},
+						description: "Optional list of technique hints to include",
+					},
+					autoSelectTechniques: {
+						type: "boolean",
+						description: "Automatically select appropriate techniques",
+					},
+					provider: {
+						type: "string",
+						enum: PROVIDER_ENUM_VALUES,
+						description: "Model family for tailored tips",
+					},
+					style: {
+						type: "string",
+						enum: ["markdown", "xml"],
+						description: "Preferred prompt formatting style",
+					},
+				},
+				required: ["codeContext"],
+			},
+			annotations: {
+				...GENERATION_TOOL_ANNOTATIONS,
+				title: "Security Hardening Prompt Generator",
+			},
+		},
+		{
+			name: "quick-developer-prompts-builder",
+			description:
+				"Generate 'Best of 25' developer prompts with checklist prompts across 5 categories: strategy & planning, code quality, testing, documentation, and DevOps. BEST FOR: rapid code analysis, daily standups, progress tracking, quick reviews. OUTPUTS: Category-organized actionable checklists.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					category: {
+						type: "string",
+						enum: [
+							"strategy",
+							"code-quality",
+							"testing",
+							"documentation",
+							"devops",
+							"all",
+						],
+						description:
+							"Category of prompts to generate. Use 'all' for all 25 prompts or select a specific category",
+						examples: ["all", "testing", "code-quality"],
+					},
+					mode: { type: "string" },
+					model: { type: "string" },
+					tools: { type: "array", items: { type: "string" } },
+					includeFrontmatter: { type: "boolean" },
+					includeMetadata: { type: "boolean" },
+					inputFile: { type: "string" },
+					forcePromptMdStyle: { type: "boolean" },
+				},
+				required: [],
+			},
+			annotations: {
+				...GENERATION_TOOL_ANNOTATIONS,
+				title: "Quick Developer Prompts",
+			},
+		},
+		{
+			name: "sprint-timeline-calculator",
+			description:
+				"Calculate sprint timelines, velocity projections, and iteration schedules by inputting story points and team capacity to generate realistic delivery forecasts. BEST FOR: project estimation, sprint planning, capacity analysis. OUTPUTS: Timeline and resource allocation.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					tasks: {
+						type: "array",
+						items: { type: "object" },
+						description: "List of tasks with estimates",
+					},
+					teamSize: {
+						type: "number",
+						description: "Number of team members",
+						examples: [5, 8, 12],
+					},
+					sprintLength: {
+						type: "number",
+						description: "Sprint length in days",
+					},
+					velocity: {
+						type: "number",
+						description: "Team velocity (story points per sprint)",
+						examples: [40, 60, 80],
+					},
+					optimizationStrategy: {
+						type: "string",
+						enum: ["greedy", "linear-programming"],
+						description:
+							"Optimization strategy: 'greedy' (default, deterministic bin-packing) or 'linear-programming' (future MILP optimization)",
+					},
+					includeMetadata: {
+						type: "boolean",
+						description: "Include metadata in output",
+					},
+					inputFile: {
+						type: "string",
+						description: "Input file reference",
+					},
+				},
+				required: ["tasks", "teamSize"],
+			},
+			annotations: {
+				...GENERATION_TOOL_ANNOTATIONS,
+				title: "Sprint Timeline Calculator",
+			},
+		},
+		{
+			name: "speckit-generator",
+			description:
+				"Generate GitHub Spec-Kit artifacts (all documents: README.md, spec.md, plan.md, tasks.md, progress.md, adr.md, roadmap.md) from requirements. Optionally validate against CONSTITUTION.md. BEST FOR: feature specs, project planning.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					title: {
+						type: "string",
+						description: "Specification title",
+						examples: [
+							"User Authentication System",
+							"Payment Processing Module",
+							"Real-time Analytics Dashboard",
+						],
+					},
+					overview: {
+						type: "string",
+						description: "High-level overview of the feature/project",
+						examples: [
+							"Implement OAuth2 authentication flow with JWT tokens",
+							"Build secure payment processing with Stripe integration",
+							"Create real-time WebSocket-based analytics dashboard",
+						],
+					},
+					objectives: {
+						type: "array",
+						items: {
+							type: "object",
+							properties: {
+								description: { type: "string" },
+								priority: {
+									type: "string",
+									enum: ["high", "medium", "low"],
+								},
+							},
+							required: ["description"],
+						},
+						description: "Strategic objectives for the project",
+					},
+					requirements: {
+						type: "array",
+						items: {
+							type: "object",
+							properties: {
+								description: { type: "string" },
+								type: {
+									type: "string",
+									enum: ["functional", "non-functional"],
+								},
+								priority: {
+									type: "string",
+									enum: ["high", "medium", "low"],
+								},
+							},
+							required: ["description"],
+						},
+						description: "Functional and non-functional requirements",
+					},
+					acceptanceCriteria: {
+						type: "array",
+						items: { type: "string" },
+						description: "Acceptance criteria for completion (optional)",
+					},
+					outOfScope: {
+						type: "array",
+						items: { type: "string" },
+						description: "Explicitly out-of-scope items (optional)",
+					},
+					constitutionPath: {
+						type: "string",
+						description: "Path to CONSTITUTION.md file (optional)",
+						examples: ["./CONSTITUTION.md", "./docs/CONSTITUTION.md"],
+					},
+					validateAgainstConstitution: {
+						type: "boolean",
+						description:
+							"Whether to validate against constitution before rendering (optional)",
+					},
+				},
+				required: ["title", "overview", "objectives", "requirements"],
+			},
+			annotations: {
+				...GENERATION_TOOL_ANNOTATIONS,
+				openWorldHint: true, // May read constitution file
+				title: "Spec-Kit Generator",
+			},
+		},
+		{
+			name: "validate-spec",
+			description:
+				"Validate spec.md content against constitutional constraints without generating artifacts. Useful for iterative spec refinement and quality assurance. BEST FOR: spec validation, quality checks, constitutional compliance. OUTPUTS: Validation report with score, errors, warnings, and recommendations.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					specContent: {
+						type: "string",
+						description: "The spec.md content to validate",
+					},
+					constitutionPath: {
+						type: "string",
+						description: "Path to CONSTITUTION.md file (optional)",
+					},
+					constitutionContent: {
+						type: "string",
+						description: "CONSTITUTION.md content directly (optional)",
+					},
+					outputFormat: {
+						type: "string",
+						enum: ["json", "markdown", "summary"],
+						description: "Output format for validation results",
+						default: "markdown",
+					},
+					includeRecommendations: {
+						type: "boolean",
+						description: "Whether to include recommendations in the output",
+						default: true,
+					},
+				},
+				required: ["specContent"],
+			},
+			annotations: {
+				...ANALYSIS_TOOL_ANNOTATIONS,
+				openWorldHint: true, // May read constitution file
+				title: "Validate Spec",
+			},
+		},
+		{
+			name: "update-progress",
+			description:
+				"Track spec progress.md updates with completed tasks and recalculated metrics. Provides direct MCP access to the ProgressTracker for AI agents. BEST FOR: marking tasks complete, tracking progress, syncing from git commits. OUTPUTS: Updated progress.md with completion metrics.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					progressPath: {
+						type: "string",
+						description: "Path to existing progress.md file (optional)",
+					},
+					progressContent: {
+						type: "string",
+						description: "Current progress.md content (optional)",
+					},
+					tasksPath: {
+						type: "string",
+						description: "Path to tasks.md for task list (optional)",
+					},
+					completedTaskIds: {
+						type: "array",
+						items: {
+							type: "string",
+						},
+						description: "Task IDs to mark as completed",
+					},
+					taskUpdates: {
+						type: "array",
+						items: {
+							type: "object",
+							properties: {
+								taskId: {
+									type: "string",
+									description: "Task ID to update",
+								},
+								status: {
+									type: "string",
+									enum: ["completed", "in-progress", "blocked"],
+									description: "New status for the task",
+								},
+								notes: {
+									type: "string",
+									description: "Optional notes about the update",
+								},
+							},
+							required: ["taskId", "status"],
+						},
+						description: "Detailed task status updates (optional)",
+					},
+					syncFromGit: {
+						type: "boolean",
+						description: "Also sync from git commits (default: false)",
+						default: false,
+					},
+					gitOptions: {
+						type: "object",
+						properties: {
+							repoPath: {
 								type: "string",
-								enum: [
-									"zero-shot",
-									"few-shot",
-									"chain-of-thought",
-									"self-consistency",
-									"in-context-learning",
-									"generate-knowledge",
-									"prompt-chaining",
-									"tree-of-thoughts",
-									"meta-prompting",
-									"rag",
-									"react",
-									"art",
-								],
+								description: "Path to git repository (optional)",
 							},
-							description: "Optional list of technique hints to include",
-						},
-						includeTechniqueHints: {
-							type: "boolean",
-							description: "Include a Technique Hints section",
-						},
-						includePitfalls: {
-							type: "boolean",
-							description: "Include a Pitfalls section",
-						},
-						autoSelectTechniques: {
-							type: "boolean",
-							description:
-								"Infer techniques automatically from context/goal/requirements",
-						},
-						provider: {
-							type: "string",
-							enum: PROVIDER_ENUM_VALUES,
-							description: "Model family for tailored tips",
-						},
-						style: {
-							type: "string",
-							enum: ["markdown", "xml"],
-							description: "Preferred prompt formatting style",
-						},
-					},
-					required: ["context", "goal"],
-				},
-			},
-			{
-				name: "code-analysis-prompt-builder",
-				description:
-					"Generate comprehensive code analysis prompts with customizable focus areas (security, performance, maintainability). Use this MCP to create targeted code review prompts for specific quality concerns. Example: 'Use the code-analysis-prompt-builder MCP to analyze authentication code for security vulnerabilities'",
-				inputSchema: {
-					type: "object",
-					properties: {
-						codebase: {
-							type: "string",
-							description: "The codebase or code snippet to analyze",
-						},
-						focusArea: {
-							type: "string",
-							enum: ["security", "performance", "maintainability", "general"],
-							description: "Specific area to focus on",
-						},
-						language: {
-							type: "string",
-							description: "Programming language of the code",
-						},
-						mode: { type: "string" },
-						model: { type: "string" },
-						tools: { type: "array", items: { type: "string" } },
-						includeFrontmatter: { type: "boolean" },
-						includeReferences: { type: "boolean" },
-						includeMetadata: { type: "boolean" },
-						inputFile: { type: "string" },
-						forcePromptMdStyle: { type: "boolean" },
-					},
-					required: ["codebase"],
-				},
-			},
-			{
-				name: "architecture-design-prompt-builder",
-				description:
-					"Generate system architecture design prompts with scale-appropriate guidance. Use this MCP to create architecture planning prompts for different system scales and technology stacks. Example: 'Use the architecture-design-prompt-builder MCP to design a microservices architecture for a medium-scale e-commerce platform'",
-				inputSchema: {
-					type: "object",
-					properties: {
-						systemRequirements: {
-							type: "string",
-							description: "System requirements and constraints",
-						},
-						scale: {
-							type: "string",
-							enum: ["small", "medium", "large"],
-							description: "Expected system scale",
-						},
-						technologyStack: {
-							type: "string",
-							description: "Preferred or required technology stack",
-						},
-						mode: { type: "string" },
-						model: { type: "string" },
-						tools: { type: "array", items: { type: "string" } },
-						includeFrontmatter: { type: "boolean" },
-						includeReferences: { type: "boolean" },
-						includeMetadata: { type: "boolean" },
-						inputFile: { type: "string" },
-						forcePromptMdStyle: { type: "boolean" },
-					},
-					required: ["systemRequirements"],
-				},
-			},
-			{
-				name: "digital-enterprise-architect-prompt-builder",
-				description:
-					"Guide enterprise architecture strategy with mentor perspectives and current research. Use this MCP to create strategic architecture prompts from an enterprise architect perspective. Example: 'Use the digital-enterprise-architect-prompt-builder MCP to guide cloud migration strategy for our legacy CRM system'",
-				inputSchema: {
-					type: "object",
-					properties: {
-						initiativeName: {
-							type: "string",
-							description: "Name or focus of the architecture initiative",
-						},
-						problemStatement: {
-							type: "string",
-							description: "Strategic problem or opportunity being addressed",
-						},
-						businessDrivers: {
-							type: "array",
-							items: { type: "string" },
-							description: "Key business objectives and desired outcomes",
-						},
-						currentLandscape: {
-							type: "string",
-							description: "Summary of the current ecosystem or architecture",
-						},
-						targetUsers: {
-							type: "string",
-							description: "Primary stakeholders or user segments",
-						},
-						differentiators: {
-							type: "array",
-							items: { type: "string" },
-							description: "Innovation themes or competitive differentiators",
-						},
-						constraints: {
-							type: "array",
-							items: { type: "string" },
-							description:
-								"Constraints or guardrails the solution must respect",
-						},
-						complianceObligations: {
-							type: "array",
-							items: { type: "string" },
-							description: "Regulatory or policy considerations",
-						},
-						technologyGuardrails: {
-							type: "array",
-							items: { type: "string" },
-							description:
-								"Existing technology standards or preferred platforms",
-						},
-						innovationThemes: {
-							type: "array",
-							items: { type: "string" },
-							description: "Innovation themes to explore",
-						},
-						timeline: {
-							type: "string",
-							description: "Timeline or planning horizon",
-						},
-						researchFocus: {
-							type: "array",
-							items: { type: "string" },
-							description:
-								"Research topics to benchmark against current best practices",
-						},
-						decisionDrivers: {
-							type: "array",
-							items: { type: "string" },
-							description:
-								"Decision drivers or evaluation criteria to emphasize",
-						},
-						knownRisks: {
-							type: "array",
-							items: { type: "string" },
-							description: "Known risks or assumptions to monitor",
-						},
-						mode: { type: "string" },
-						model: { type: "string" },
-						tools: { type: "array", items: { type: "string" } },
-						includeFrontmatter: { type: "boolean" },
-						includeReferences: { type: "boolean" },
-						includeMetadata: { type: "boolean" },
-						inputFile: { type: "string" },
-						forcePromptMdStyle: { type: "boolean" },
-					},
-					required: ["initiativeName", "problemStatement"],
-				},
-			},
-			{
-				name: "debugging-assistant-prompt-builder",
-				description:
-					"Generate systematic debugging and troubleshooting prompts with structured analysis. Use this MCP to create diagnostic prompts for error investigation and root cause analysis. Example: 'Use the debugging-assistant-prompt-builder MCP to troubleshoot a production database connection timeout issue'",
-				inputSchema: {
-					type: "object",
-					properties: {
-						errorDescription: {
-							type: "string",
-							description: "Description of the error or issue",
-						},
-						context: {
-							type: "string",
-							description: "Additional context about the problem",
-						},
-						attemptedSolutions: {
-							type: "string",
-							description: "Solutions already attempted",
-						},
-						mode: { type: "string" },
-						model: { type: "string" },
-						tools: { type: "array", items: { type: "string" } },
-						includeFrontmatter: { type: "boolean" },
-						includeReferences: { type: "boolean" },
-						includeMetadata: { type: "boolean" },
-						inputFile: { type: "string" },
-						forcePromptMdStyle: { type: "boolean" },
-					},
-					required: ["errorDescription"],
-				},
-			},
-			{
-				name: "l9-distinguished-engineer-prompt-builder",
-				description:
-					"Generate Distinguished Engineer (L9) technical design prompts for high-level software architecture and system design. Use this MCP to create expert-level technical architecture prompts. Example: 'Use the l9-distinguished-engineer-prompt-builder MCP to design a globally distributed real-time data processing platform'",
-				inputSchema: {
-					type: "object",
-					properties: {
-						projectName: {
-							type: "string",
-							description: "Name of the software project or system initiative",
-						},
-						technicalChallenge: {
-							type: "string",
-							description:
-								"Core technical problem, architectural complexity, or scale challenge",
-						},
-						technicalDrivers: {
-							type: "array",
-							items: { type: "string" },
-							description:
-								"Key technical objectives: performance targets, scalability goals, reliability requirements",
-						},
-						currentArchitecture: {
-							type: "string",
-							description:
-								"Existing system architecture, tech stack, and known pain points",
-						},
-						userScale: {
-							type: "string",
-							description:
-								"Scale context: users, requests/sec, data volume, geographical distribution",
-						},
-						technicalDifferentiators: {
-							type: "array",
-							items: { type: "string" },
-							description:
-								"Technical innovations, performance advantages, or unique capabilities",
-						},
-						engineeringConstraints: {
-							type: "array",
-							items: { type: "string" },
-							description:
-								"Technical constraints: latency budgets, backward compatibility, migration windows",
-						},
-						securityRequirements: {
-							type: "array",
-							items: { type: "string" },
-							description: "Security, privacy, and compliance requirements",
-						},
-						techStack: {
-							type: "array",
-							items: { type: "string" },
-							description:
-								"Current/preferred technologies, languages, frameworks, and platforms",
-						},
-						experimentationAreas: {
-							type: "array",
-							items: { type: "string" },
-							description:
-								"Emerging technologies or patterns worth prototyping",
-						},
-						deliveryTimeline: {
-							type: "string",
-							description:
-								"Engineering timeline: sprints, milestones, or release windows",
-						},
-						benchmarkingFocus: {
-							type: "array",
-							items: { type: "string" },
-							description:
-								"Systems/companies to benchmark against or research areas requiring investigation",
-						},
-						tradeoffPriorities: {
-							type: "array",
-							items: { type: "string" },
-							description:
-								"Engineering trade-off priorities: latency vs throughput, consistency vs availability, etc.",
-						},
-						technicalRisks: {
-							type: "array",
-							items: { type: "string" },
-							description:
-								"Known technical risks, debt, or areas of uncertainty",
-						},
-						teamContext: {
-							type: "string",
-							description:
-								"Team size, skill distribution, and organizational dependencies",
-						},
-						observabilityRequirements: {
-							type: "array",
-							items: { type: "string" },
-							description:
-								"Monitoring, logging, tracing, and debugging requirements",
-						},
-						performanceTargets: {
-							type: "array",
-							items: { type: "string" },
-							description:
-								"Specific performance SLOs/SLAs: p99 latency, throughput, availability",
-						},
-						migrationStrategy: {
-							type: "string",
-							description:
-								"Migration or rollout strategy if re-architecting existing system",
-						},
-						codeQualityStandards: {
-							type: "array",
-							items: { type: "string" },
-							description:
-								"Code quality expectations: test coverage, documentation, design patterns",
-						},
-						mode: { type: "string" },
-						model: { type: "string" },
-						tools: { type: "array", items: { type: "string" } },
-						includeFrontmatter: { type: "boolean" },
-						includeReferences: { type: "boolean" },
-						includeMetadata: { type: "boolean" },
-						inputFile: { type: "string" },
-						forcePromptMdStyle: { type: "boolean" },
-					},
-					required: ["projectName", "technicalChallenge"],
-				},
-			},
-			{
-				name: "documentation-generator-prompt-builder",
-				description:
-					"Generate technical documentation prompts tailored to content type and audience. Use this MCP to create structured documentation generation prompts for API docs, user guides, or technical specs. Example: 'Use the documentation-generator-prompt-builder MCP to create API documentation for our REST endpoints'",
-				inputSchema: {
-					type: "object",
-					properties: {
-						contentType: {
-							type: "string",
-							description:
-								"Type of documentation (API, user guide, technical spec)",
-						},
-						targetAudience: {
-							type: "string",
-							description: "Intended audience for the documentation",
-						},
-						existingContent: {
-							type: "string",
-							description: "Any existing content to build upon",
-						},
-						mode: { type: "string" },
-						model: { type: "string" },
-						tools: { type: "array", items: { type: "string" } },
-						includeFrontmatter: { type: "boolean" },
-						includeReferences: { type: "boolean" },
-						includeMetadata: { type: "boolean" },
-						inputFile: { type: "string" },
-						forcePromptMdStyle: { type: "boolean" },
-					},
-					required: ["contentType"],
-				},
-			},
-			{
-				name: "strategy-frameworks-builder",
-				description:
-					"Compose strategy analysis sections from selected frameworks (SWOT, BSC, VRIO, Porter's Five Forces, etc.). Use this MCP to generate strategic business analysis using established frameworks. Example: 'Use the strategy-frameworks-builder MCP to create a SWOT analysis and Balanced Scorecard for our market expansion plan'",
-				inputSchema: {
-					type: "object",
-					properties: {
-						frameworks: {
-							type: "array",
-							items: {
+							branch: {
 								type: "string",
-								enum: [
-									"asIsToBe",
-									"whereToPlayHowToWin",
-									"balancedScorecard",
-									"swot",
-									"objectives",
-									"portersFiveForces",
-									"mckinsey7S",
-									"marketAnalysis",
-									"strategyMap",
-									"visionToMission",
-									"stakeholderTheory",
-									"values",
-									"gapAnalysis",
-									"ansoffMatrix",
-									"pest",
-									"bcgMatrix",
-									"blueOcean",
-									"scenarioPlanning",
-									"vrio",
-									"goalBasedPlanning",
-									"gartnerQuadrant",
-								],
+								description: "Branch to scan (optional)",
 							},
-							description: "Framework identifiers to include",
-						},
-						context: { type: "string", description: "Business context" },
-						objectives: { type: "array", items: { type: "string" } },
-						market: { type: "string" },
-						stakeholders: { type: "array", items: { type: "string" } },
-						constraints: { type: "array", items: { type: "string" } },
-						includeReferences: { type: "boolean" },
-						includeMetadata: { type: "boolean" },
-						inputFile: { type: "string" },
-					},
-					required: ["frameworks", "context"],
-				},
-			},
-			{
-				name: "gap-frameworks-analyzers",
-				description:
-					"Analyze gaps between current and desired states using various frameworks (capability, performance, maturity, skills, technology, process, etc.). Use this MCP to identify and analyze gaps in capabilities, processes, or technologies. Example: 'Use the gap-frameworks-analyzers MCP to analyze the technology gap between our current monolith and desired microservices architecture'",
-				inputSchema: {
-					type: "object",
-					properties: {
-						frameworks: {
-							type: "array",
-							items: {
+							since: {
 								type: "string",
-								enum: [
-									"capability",
-									"performance",
-									"maturity",
-									"skills",
-									"technology",
-									"process",
-									"market",
-									"strategic",
-									"operational",
-									"cultural",
-									"security",
-									"compliance",
-								],
+								description:
+									"Only scan commits since this date/time (optional)",
 							},
-							description: "Gap analysis framework types to include",
 						},
-						currentState: {
-							type: "string",
-							description: "Current state description",
-						},
-						desiredState: {
-							type: "string",
-							description: "Desired state description",
-						},
-						context: { type: "string", description: "Analysis context" },
-						objectives: { type: "array", items: { type: "string" } },
-						timeframe: { type: "string" },
-						stakeholders: { type: "array", items: { type: "string" } },
-						constraints: { type: "array", items: { type: "string" } },
-						includeReferences: { type: "boolean" },
-						includeMetadata: { type: "boolean" },
-						includeActionPlan: { type: "boolean" },
-						inputFile: { type: "string" },
+						description: "Git sync options (optional)",
 					},
-					required: ["frameworks", "currentState", "desiredState", "context"],
-				},
-			},
-			{
-				name: "spark-prompt-builder",
-				description:
-					"Build comprehensive UI/UX product design prompts from structured inputs (title, features, colors, typography, animation, spacing, etc.). Use this MCP to create detailed design system prompts for developer tools and user interfaces. Example: 'Use the spark-prompt-builder MCP to design a dark-mode code editor with syntax highlighting and accessibility features'",
-				inputSchema: {
-					type: "object",
-					properties: {
-						title: { type: "string", description: "Prompt title" },
-						summary: { type: "string", description: "Brief summary / outlook" },
-						experienceQualities: {
-							type: "array",
-							description: "List of UX qualities",
-							items: {
-								type: "object",
-								properties: {
-									quality: { type: "string" },
-									detail: { type: "string" },
-								},
-								required: ["quality", "detail"],
-							},
-						},
-						complexityLevel: { type: "string" },
-						complexityDescription: { type: "string" },
-						primaryFocus: { type: "string" },
-						features: {
-							type: "array",
-							items: {
-								type: "object",
-								properties: {
-									name: { type: "string" },
-									functionality: { type: "string" },
-									purpose: { type: "string" },
-									trigger: { type: "string" },
-									progression: { type: "array", items: { type: "string" } },
-									successCriteria: { type: "string" },
-								},
-								required: [
-									"name",
-									"functionality",
-									"purpose",
-									"trigger",
-									"progression",
-									"successCriteria",
-								],
-							},
-						},
-						edgeCases: {
-							type: "array",
-							items: {
-								type: "object",
-								properties: {
-									name: { type: "string" },
-									handling: { type: "string" },
-								},
-								required: ["name", "handling"],
-							},
-						},
-						designDirection: { type: "string" },
-						colorSchemeType: { type: "string" },
-						colorPurpose: { type: "string" },
-						primaryColor: { type: "string" },
-						primaryColorPurpose: { type: "string" },
-						secondaryColors: {
-							type: "array",
-							items: {
-								type: "object",
-								properties: {
-									name: { type: "string" },
-									oklch: { type: "string" },
-									usage: { type: "string" },
-								},
-								required: ["name", "oklch", "usage"],
-							},
-						},
-						accentColor: { type: "string" },
-						accentColorPurpose: { type: "string" },
-						foregroundBackgroundPairings: {
-							type: "array",
-							items: {
-								type: "object",
-								properties: {
-									container: { type: "string" },
-									containerColor: { type: "string" },
-									textColor: { type: "string" },
-									ratio: { type: "string" },
-								},
-								required: ["container", "containerColor", "textColor", "ratio"],
-							},
-						},
-						fontFamily: { type: "string" },
-						fontIntention: { type: "string" },
-						fontReasoning: { type: "string" },
-						typography: {
-							type: "array",
-							items: {
-								type: "object",
-								properties: {
-									usage: { type: "string" },
-									font: { type: "string" },
-									weight: { type: "string" },
-									size: { type: "string" },
-									spacing: { type: "string" },
-								},
-								required: ["usage", "font", "weight", "size", "spacing"],
-							},
-						},
-						animationPhilosophy: { type: "string" },
-						animationRestraint: { type: "string" },
-						animationPurpose: { type: "string" },
-						animationHierarchy: { type: "string" },
-						components: {
-							type: "array",
-							items: {
-								type: "object",
-								properties: {
-									type: { type: "string" },
-									usage: { type: "string" },
-									variation: { type: "string" },
-									styling: { type: "string" },
-									state: { type: "string" },
-									functionality: { type: "string" },
-									purpose: { type: "string" },
-								},
-								required: ["type", "usage"],
-							},
-						},
-						customizations: { type: "string" },
-						states: {
-							type: "array",
-							items: {
-								type: "object",
-								properties: {
-									component: { type: "string" },
-									states: { type: "array", items: { type: "string" } },
-									specialFeature: { type: "string" },
-								},
-								required: ["component", "states"],
-							},
-						},
-						icons: { type: "array", items: { type: "string" } },
-						spacingRule: { type: "string" },
-						spacingContext: { type: "string" },
-						mobileLayout: { type: "string" },
-						// Optional prompt md frontmatter controls
-						mode: { type: "string" },
-						model: { type: "string" },
-						tools: { type: "array", items: { type: "string" } },
-						includeFrontmatter: { type: "boolean" },
-						includeDisclaimer: { type: "boolean" },
-						includeReferences: { type: "boolean" },
-						includeMetadata: { type: "boolean" },
-						inputFile: { type: "string" },
-						forcePromptMdStyle: { type: "boolean" },
+					outputFormat: {
+						type: "string",
+						enum: ["markdown", "json"],
+						description: "Output format",
+						default: "markdown",
 					},
-					required: [
-						"title",
-						"summary",
-						"complexityLevel",
-						"designDirection",
-						"colorSchemeType",
-						"colorPurpose",
-						"primaryColor",
-						"primaryColorPurpose",
-						"accentColor",
-						"accentColorPurpose",
-						"fontFamily",
-						"fontIntention",
-						"fontReasoning",
-						"animationPhilosophy",
-						"animationRestraint",
-						"animationPurpose",
-						"animationHierarchy",
-						"spacingRule",
-						"spacingContext",
-						"mobileLayout",
-					],
 				},
+				required: ["completedTaskIds"],
 			},
-			{
-				name: "coverage-dashboard-design-prompt-builder",
-				description:
-					"Generate comprehensive UI/UX design prompts for coverage reporting dashboards. Creates intuitive, accessible, and responsive coverage dashboards following Nielsen's usability heuristics and WCAG standards. Use this MCP to design user-optimized coverage reporting interfaces. Example: 'Use the coverage-dashboard-design-prompt-builder MCP to design a mobile-responsive coverage dashboard with card-based metrics and accessibility support'",
-				inputSchema: {
-					type: "object",
-					properties: {
-						title: {
-							type: "string",
-							description: "Dashboard title",
-							default: "Coverage Dashboard Design",
-						},
-						projectContext: {
-							type: "string",
-							description: "Project context or description",
-						},
-						targetUsers: {
-							type: "array",
-							items: { type: "string" },
-							description:
-								"Target user personas (e.g., developers, qa-engineers, managers)",
-						},
-						dashboardStyle: {
-							type: "string",
-							enum: ["card-based", "table-heavy", "hybrid", "minimal"],
-							description: "Dashboard layout style",
-						},
-						primaryMetrics: {
-							type: "array",
-							items: { type: "string" },
-							description:
-								"Primary coverage metrics to display (e.g., statements, branches, functions, lines)",
-						},
-						colorScheme: {
-							type: "string",
-							enum: [
-								"light",
-								"dark",
-								"auto",
-								"high-contrast",
-								"colorblind-safe",
-								"custom",
-							],
-							description: "Color scheme preference",
-						},
-						primaryColor: {
-							type: "string",
-							description: "Primary color in OKLCH",
-						},
-						successColor: {
-							type: "string",
-							description: "Success/good coverage color",
-						},
-						warningColor: {
-							type: "string",
-							description: "Warning coverage color",
-						},
-						dangerColor: {
-							type: "string",
-							description: "Danger/critical coverage color",
-						},
-						useGradients: {
-							type: "boolean",
-							description: "Use gradient visual indicators",
-						},
-						visualIndicators: {
-							type: "array",
-							items: { type: "string" },
-							description:
-								"Visual indicator types (e.g., progress-bars, badges, sparklines, heat-maps)",
-						},
-						fontFamily: { type: "string", description: "UI font family" },
-						codeFont: { type: "string", description: "Code font family" },
-						accessibility: {
-							type: "object",
-							description: "Accessibility configuration",
-							properties: {
-								wcagLevel: { type: "string", enum: ["A", "AA", "AAA"] },
-								colorBlindSafe: { type: "boolean" },
-								keyboardNavigation: { type: "boolean" },
-								screenReaderOptimized: { type: "boolean" },
-								focusIndicators: { type: "boolean" },
-								highContrastMode: { type: "boolean" },
-							},
-						},
-						responsive: {
-							type: "object",
-							description: "Responsive design configuration",
-							properties: {
-								mobileFirst: { type: "boolean" },
-								touchOptimized: { type: "boolean" },
-								collapsibleNavigation: { type: "boolean" },
-							},
-						},
-						interactiveFeatures: {
-							type: "object",
-							description: "Interactive feature configuration",
-							properties: {
-								filters: { type: "boolean" },
-								sorting: { type: "boolean" },
-								search: { type: "boolean" },
-								tooltips: { type: "boolean" },
-								expandCollapse: { type: "boolean" },
-								drillDown: { type: "boolean" },
-								exportOptions: { type: "array", items: { type: "string" } },
-								realTimeUpdates: { type: "boolean" },
-							},
-						},
-						performance: {
-							type: "object",
-							description: "Performance optimization settings",
-							properties: {
-								lazyLoading: { type: "boolean" },
-								virtualScrolling: { type: "boolean" },
-								dataCaching: { type: "boolean" },
-								skeletonLoaders: { type: "boolean" },
-								progressiveEnhancement: { type: "boolean" },
-							},
-						},
-						framework: {
-							type: "string",
-							enum: ["react", "vue", "angular", "svelte", "static", "any"],
-							description: "Preferred frontend framework",
-						},
-						componentLibrary: {
-							type: "string",
-							description: "Preferred component library",
-						},
-						iterationCycle: {
-							type: "object",
-							description: "Design iteration configuration",
-							properties: {
-								includeABTesting: { type: "boolean" },
-								includeAnalytics: { type: "boolean" },
-								includeFeedbackWidget: { type: "boolean" },
-								includeUsabilityMetrics: { type: "boolean" },
-							},
-						},
-						mode: { type: "string" },
-						model: { type: "string" },
-						tools: { type: "array", items: { type: "string" } },
-						includeFrontmatter: { type: "boolean" },
-						includeDisclaimer: { type: "boolean" },
-						includeReferences: { type: "boolean" },
-						includeMetadata: { type: "boolean" },
-						inputFile: { type: "string" },
-						forcePromptMdStyle: { type: "boolean" },
-						techniques: {
-							type: "array",
-							items: {
-								type: "string",
-								enum: [
-									"zero-shot",
-									"few-shot",
-									"chain-of-thought",
-									"self-consistency",
-									"in-context-learning",
-									"generate-knowledge",
-									"prompt-chaining",
-									"tree-of-thoughts",
-									"meta-prompting",
-									"rag",
-									"react",
-									"art",
-								],
-							},
-							description: "Prompting techniques to include",
-						},
-						includeTechniqueHints: { type: "boolean" },
-						autoSelectTechniques: { type: "boolean" },
-						provider: {
-							type: "string",
-							enum: PROVIDER_ENUM_VALUES,
-						},
-						style: { type: "string", enum: ["markdown", "xml"] },
+			annotations: {
+				...SESSION_TOOL_ANNOTATIONS,
+				openWorldHint: true, // May read progress/tasks files
+				title: "Update Progress",
+			},
+		},
+		{
+			name: "model-compatibility-checker",
+			description:
+				"Recommend optimal AI models for tasks by comparing Claude, GPT-4, Gemini, and other models based on capabilities, context length, budget, and task-specific requirements. BEST FOR: model selection, cost optimization, capability matching. OUTPUTS: Ranked recommendations with rationale.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					taskDescription: {
+						type: "string",
+						description: "Description of the task",
+						examples: [
+							"Code generation for complex TypeScript refactoring",
+							"Multi-modal image analysis with text extraction",
+							"Long-context document summarization (50k+ tokens)",
+						],
 					},
-					required: [],
-				},
-			},
-			{
-				name: "clean-code-scorer",
-				description:
-					"Calculate comprehensive Clean Code score (0-100) based on multiple quality metrics including code hygiene, test coverage, TypeScript, linting, documentation, and security. Use this MCP to get an overall quality assessment of your codebase. Example: 'Use the clean-code-scorer MCP to evaluate the quality of our authentication module and identify improvement areas'",
-				inputSchema: {
-					type: "object",
-					properties: {
-						projectPath: {
-							type: "string",
-							description: "Path to the project root directory",
-						},
-						codeContent: {
-							type: "string",
-							description: "Code content to analyze",
-						},
-						language: {
-							type: "string",
-							description: "Programming language",
-						},
-						framework: {
-							type: "string",
-							description: "Framework or technology stack",
-						},
-						coverageMetrics: {
-							type: "object",
-							description: "Test coverage metrics",
-							properties: {
-								statements: {
-									type: "number",
-									description: "Statement coverage percentage (0-100)",
-								},
-								branches: {
-									type: "number",
-									description: "Branch coverage percentage (0-100)",
-								},
-								functions: {
-									type: "number",
-									description: "Function coverage percentage (0-100)",
-								},
-								lines: {
-									type: "number",
-									description: "Line coverage percentage (0-100)",
-								},
-							},
-						},
-						includeReferences: {
-							type: "boolean",
-							description: "Include external best-practice links",
-						},
-						includeMetadata: {
-							type: "boolean",
-							description: "Include metadata in output",
-						},
-						inputFile: {
-							type: "string",
-							description: "Input file path for reference",
-						},
+					requirements: {
+						type: "array",
+						items: { type: "string" },
+						description:
+							"Specific requirements (context length, multimodal, etc.)",
 					},
-					required: [],
-				},
-			},
-			{
-				name: "code-hygiene-analyzer",
-				description:
-					"Analyze codebase for outdated patterns, unused dependencies, and code hygiene issues. Use this MCP to identify technical debt, code smells, and modernization opportunities. Example: 'Use the code-hygiene-analyzer MCP to scan our legacy codebase for outdated patterns and unused dependencies'",
-				inputSchema: {
-					type: "object",
-					properties: {
-						codeContent: {
-							type: "string",
-							description: "Code content to analyze",
-						},
-						language: { type: "string", description: "Programming language" },
-						framework: {
-							type: "string",
-							description: "Framework or technology stack",
-						},
-						includeReferences: {
-							type: "boolean",
-							description: "Include external best-practice links",
-						},
+					budget: {
+						type: "string",
+						enum: ["low", "medium", "high"],
+						description: "Budget constraints",
+						examples: ["low", "medium", "high"],
 					},
-					required: ["codeContent", "language"],
-				},
-			},
-			{
-				name: "dependency-auditor",
-				description:
-					"Multi-language dependency auditor for analyzing package files across multiple ecosystems including JavaScript/TypeScript (package.json), Python (requirements.txt, pyproject.toml), Go (go.mod), Rust (Cargo.toml), Ruby (Gemfile), C++ (vcpkg.json), and Lua (rockspec). Detects outdated, deprecated, or insecure packages and recommends modern, secure alternatives. Use this MCP to audit project dependencies for security vulnerabilities and modernization opportunities across polyglot codebases. Example: 'Use the dependency-auditor MCP to check our requirements.txt for security vulnerabilities and deprecated packages'",
-				inputSchema: {
-					type: "object",
-					properties: {
-						dependencyContent: {
-							type: "string",
-							description:
-								"Content of dependency file (package.json, requirements.txt, pyproject.toml, go.mod, Cargo.toml, Gemfile, vcpkg.json, or rockspec)",
-						},
-						packageJsonContent: {
-							type: "string",
-							description:
-								"Content of package.json file (deprecated: use dependencyContent)",
-						},
-						fileType: {
-							type: "string",
-							enum: [
-								"package.json",
-								"requirements.txt",
-								"pyproject.toml",
-								"pipfile",
-								"go.mod",
-								"Cargo.toml",
-								"Gemfile",
-								"vcpkg.json",
-								"conanfile.txt",
-								"rockspec",
-								"auto",
-							],
-							description:
-								"Type of dependency file. Use 'auto' for automatic detection based on content.",
-							default: "auto",
-						},
-						checkOutdated: {
-							type: "boolean",
-							description: "Check for outdated version patterns",
-							default: true,
-						},
-						checkDeprecated: {
-							type: "boolean",
-							description: "Check for deprecated packages",
-							default: true,
-						},
-						checkVulnerabilities: {
-							type: "boolean",
-							description: "Check for known vulnerabilities",
-							default: true,
-						},
-						suggestAlternatives: {
-							type: "boolean",
-							description: "Suggest modern alternatives",
-							default: true,
-						},
-						analyzeBundleSize: {
-							type: "boolean",
-							description: "Analyze bundle size concerns (JavaScript only)",
-							default: true,
-						},
-						includeReferences: {
-							type: "boolean",
-							description: "Include external reference links",
-							default: true,
-						},
-						includeMetadata: {
-							type: "boolean",
-							description: "Include metadata section",
-							default: true,
-						},
-						inputFile: {
-							type: "string",
-							description: "Input file path for reference",
-						},
+					language: {
+						type: "string",
+						description:
+							"Preferred language for example snippets (e.g., typescript, python)",
 					},
-					required: [],
+					includeReferences: {
+						type: "boolean",
+						description: "Include external documentation links",
+					},
+					includeCodeExamples: {
+						type: "boolean",
+						description: "Include language-specific example snippets",
+					},
+					linkFiles: {
+						type: "boolean",
+						description:
+							"Include links to relevant files/resources in this repo",
+					},
 				},
+				required: ["taskDescription"],
 			},
-			{
-				name: "iterative-coverage-enhancer",
-				description:
-					"Iteratively analyze code coverage, detect dead code, generate test suggestions, and adapt coverage thresholds for continuous improvement. Use this MCP to identify test coverage gaps and generate actionable test improvement suggestions. Example: 'Use the iterative-coverage-enhancer MCP to analyze test coverage gaps in our payment processing module and suggest new test cases'",
-				inputSchema: {
-					type: "object",
-					properties: {
-						projectPath: {
-							type: "string",
-							description: "Path to the project root directory",
-						},
-						language: {
-							type: "string",
-							description: "Primary programming language",
-						},
-						framework: {
-							type: "string",
-							description: "Framework or technology stack",
-						},
-						analyzeCoverageGaps: {
-							type: "boolean",
-							description: "Analyze and identify coverage gaps",
-						},
-						detectDeadCode: {
-							type: "boolean",
-							description: "Detect unused code for elimination",
-						},
-						generateTestSuggestions: {
-							type: "boolean",
-							description: "Generate test suggestions for uncovered code",
-						},
-						adaptThresholds: {
-							type: "boolean",
-							description: "Recommend adaptive coverage threshold adjustments",
-						},
-						currentCoverage: {
-							type: "object",
-							description: "Current coverage metrics",
-							properties: {
-								statements: { type: "number", minimum: 0, maximum: 100 },
-								functions: { type: "number", minimum: 0, maximum: 100 },
-								lines: { type: "number", minimum: 0, maximum: 100 },
-								branches: { type: "number", minimum: 0, maximum: 100 },
-							},
-						},
-						targetCoverage: {
-							type: "object",
-							description: "Target coverage goals",
-							properties: {
-								statements: { type: "number", minimum: 0, maximum: 100 },
-								functions: { type: "number", minimum: 0, maximum: 100 },
-								lines: { type: "number", minimum: 0, maximum: 100 },
-								branches: { type: "number", minimum: 0, maximum: 100 },
-							},
-						},
-						outputFormat: {
-							type: "string",
-							enum: ["markdown", "json", "text"],
-							description: "Output format for the report",
-						},
-						includeReferences: {
-							type: "boolean",
-							description: "Include references and best practice links",
-						},
-						includeCodeExamples: {
-							type: "boolean",
-							description: "Include code examples in suggestions",
-						},
-						generateCIActions: {
-							type: "boolean",
-							description: "Generate CI/CD integration actions",
+			annotations: {
+				...ANALYSIS_TOOL_ANNOTATIONS,
+				title: "AI Model Compatibility Checker",
+			},
+		},
+		{
+			name: "guidelines-validator",
+			description:
+				"Validate development practices, workflows, and architectural decisions against AI agent guidelines for prompting strategies, code management, and architecture patterns. BEST FOR: practice auditing, workflow compliance, AI best practices validation. OUTPUTS: Detailed validation reports.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					practiceDescription: {
+						type: "string",
+						description: "Description of the development practice",
+					},
+					category: {
+						type: "string",
+						enum: [
+							"prompting",
+							"code-management",
+							"architecture",
+							"visualization",
+							"memory",
+							"workflow",
+						],
+						description: "Category of practice to validate",
+					},
+				},
+				required: ["practiceDescription", "category"],
+			},
+			annotations: {
+				...ANALYSIS_TOOL_ANNOTATIONS,
+				title: "AI Guidelines Validator",
+			},
+		},
+		{
+			name: "semantic-code-analyzer",
+			description:
+				"Perform semantic code analysis with language server protocols to identify symbols, analyze structure, map dependencies, and find references. BEST FOR: code navigation, dependency analysis, symbol discovery, reference tracking. OUTPUTS: Comprehensive semantic analysis reports.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					codeContent: {
+						type: "string",
+						description: "Code content to analyze",
+					},
+					language: {
+						type: "string",
+						description: "Programming language (auto-detected if not provided)",
+					},
+					analysisType: {
+						type: "string",
+						enum: ["symbols", "structure", "dependencies", "patterns", "all"],
+						description: "Type of semantic analysis to perform",
+					},
+					includeReferences: {
+						type: "boolean",
+						description: "Include external reference links",
+					},
+					includeMetadata: {
+						type: "boolean",
+						description: "Include metadata section",
+					},
+					inputFile: {
+						type: "string",
+						description: "Optional input file path",
+					},
+				},
+				required: ["codeContent"],
+			},
+			annotations: {
+				...ANALYSIS_TOOL_ANNOTATIONS,
+				title: "Semantic Code Analyzer",
+			},
+		},
+		{
+			name: "project-onboarding",
+			description:
+				"Scan a project directory to generate onboarding docs from config files and structure, detecting common frameworks (React, Vue, Express) and listing dependencies.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					projectPath: {
+						type: "string",
+						description: "Path to the project directory",
+					},
+					projectName: {
+						type: "string",
+						description: "Name of the project",
+					},
+					projectType: {
+						type: "string",
+						enum: ["library", "application", "service", "tool", "other"],
+						description: "Type of project",
+					},
+					analysisDepth: {
+						type: "string",
+						enum: ["quick", "standard", "deep"],
+						description: "Depth of analysis",
+					},
+					includeMemories: {
+						type: "boolean",
+						description: "Generate project memories",
+					},
+					includeReferences: {
+						type: "boolean",
+						description: "Include external reference links",
+					},
+					includeMetadata: {
+						type: "boolean",
+						description: "Include metadata section",
+					},
+				},
+				required: ["projectPath"],
+			},
+			annotations: {
+				title: "Project Onboarding Scanner",
+				readOnlyHint: true, // Only reads files, doesn't modify
+				idempotentHint: true, // Same input = same output
+				destructiveHint: false, // No data loss
+				openWorldHint: true, // Accesses file system
+			},
+		},
+		{
+			name: "mode-switcher",
+			description:
+				"Switch the agent operating mode. Changes persist across tool calls and affect tool recommendations. Modes: planning, editing, analysis, debugging, refactoring, documentation, interactive, one-shot.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					currentMode: {
+						type: "string",
+						enum: [
+							"planning",
+							"editing",
+							"analysis",
+							"interactive",
+							"one-shot",
+							"debugging",
+							"refactoring",
+							"documentation",
+						],
+						description: "Current active mode",
+					},
+					targetMode: {
+						type: "string",
+						enum: [
+							"planning",
+							"editing",
+							"analysis",
+							"interactive",
+							"one-shot",
+							"debugging",
+							"refactoring",
+							"documentation",
+						],
+						description: "Mode to switch to",
+						examples: ["editing", "debugging", "refactoring"],
+					},
+					context: {
+						type: "string",
+						enum: [
+							"desktop-app",
+							"ide-assistant",
+							"agent",
+							"terminal",
+							"collaborative",
+						],
+						description: "Operating context",
+					},
+					reason: {
+						type: "string",
+						description: "Reason for mode switch",
+						examples: [
+							"Completed feature planning, ready to implement code changes",
+							"Tests failing, need to debug root cause of authentication error",
+							"Code review complete, refactoring needed to improve maintainability",
+						],
+					},
+					includeReferences: {
+						type: "boolean",
+						description: "Include external reference links",
+					},
+					includeMetadata: {
+						type: "boolean",
+						description: "Include metadata section",
+					},
+				},
+				required: ["targetMode"],
+			},
+			annotations: {
+				title: "Agent Mode Switcher",
+				readOnlyHint: false, // Actually changes state now
+				idempotentHint: false, // Different modes affect behavior
+				destructiveHint: false, // No data loss
+				openWorldHint: false, // No external resources
+			},
+		},
+		{
+			name: "agent-orchestrator",
+			description:
+				"Orchestrate multi-agent workflows: list agents, list workflows, run handoffs, or execute multi-step workflows.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					action: {
+						type: "string",
+						enum: ["handoff", "workflow", "list-agents", "list-workflows"],
+						description: "The action to perform",
+						examples: ["handoff", "list-agents", "workflow"],
+					},
+					targetAgent: {
+						type: "string",
+						description:
+							"Target agent for handoff (required for 'handoff' action)",
+						examples: ["code-scorer", "security-agent", "design-agent"],
+					},
+					context: {
+						type: "object",
+						description: "Context data to pass to target agent",
+					},
+					reason: {
+						type: "string",
+						description: "Reason for the handoff",
+						examples: [
+							"Delegating code quality analysis",
+							"Security review needed",
+						],
+					},
+					workflowName: {
+						type: "string",
+						description:
+							"Name of the workflow to execute (required for 'workflow' action)",
+						examples: ["code-review-chain", "design-to-spec"],
+					},
+					workflowInput: {
+						type: "object",
+						description: "Input data for the workflow",
+					},
+				},
+				required: ["action"],
+			},
+			annotations: {
+				title: "Agent Orchestrator",
+				readOnlyHint: false, // Executes agents
+				idempotentHint: false, // Execution may have side effects
+				destructiveHint: false, // No data loss
+				openWorldHint: true, // May invoke external tools
+			},
+		},
+		{
+			name: "prompting-hierarchy-evaluator",
+			description:
+				"Evaluate prompt quality with hierarchical taxonomy and numeric scoring based on clarity, specificity, completeness, and cognitive complexity. BEST FOR: prompt quality assessment, effectiveness measurement, prompt optimization. OUTPUTS: Detailed scores with improvement recommendations.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					promptText: {
+						type: "string",
+						description: "The prompt text to evaluate",
+					},
+					targetLevel: {
+						type: "string",
+						enum: [
+							"independent",
+							"indirect",
+							"direct",
+							"modeling",
+							"scaffolding",
+							"full-physical",
+						],
+						description: "Expected hierarchy level (if known)",
+					},
+					context: {
+						type: "string",
+						description: "Additional context about the task",
+					},
+					includeRecommendations: {
+						type: "boolean",
+						description: "Include improvement recommendations",
+					},
+					includeReferences: {
+						type: "boolean",
+						description: "Include reference links",
+					},
+				},
+				required: ["promptText"],
+			},
+			annotations: {
+				...GENERATION_TOOL_ANNOTATIONS,
+				title: "Prompt Quality Evaluator",
+			},
+		},
+		{
+			name: "prompt-hierarchy",
+			description:
+				"Manage prompting hierarchy operations with modes: 'build' (create prompts), 'select' (recommend level), 'evaluate' (score quality). BEST FOR: all hierarchy operations, prompt creation, level selection, quality assessment. OUTPUTS: Mode-specific structured responses.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					mode: {
+						type: "string",
+						enum: ["build", "select", "evaluate"],
+						description:
+							"Operation mode: 'build' creates prompts, 'select' recommends hierarchy level, 'evaluate' scores prompts",
+						examples: ["build", "evaluate", "select"],
+					},
+					// Build mode fields
+					context: {
+						type: "string",
+						description: "Build mode: Broad context or domain",
+					},
+					goal: {
+						type: "string",
+						description: "Build mode: Specific goal or objective",
+					},
+					requirements: {
+						type: "array",
+						items: { type: "string" },
+						description: "Build mode: Detailed requirements and constraints",
+					},
+					outputFormat: {
+						type: "string",
+						description: "Build mode: Desired output format",
+					},
+					audience: {
+						type: "string",
+						description: "Build mode: Target audience or expertise level",
+					},
+					// Select mode fields
+					taskDescription: {
+						type: "string",
+						description: "Select mode: Description of the task",
+						examples: [
+							"Review code for security vulnerabilities",
+							"Design a caching strategy for user sessions",
+						],
+					},
+					agentCapability: {
+						type: "string",
+						enum: ["novice", "intermediate", "advanced", "expert"],
+						description: "Select mode: Agent's capability level",
+					},
+					taskComplexity: {
+						type: "string",
+						enum: ["simple", "moderate", "complex", "very-complex"],
+						description: "Select mode: Task complexity level",
+					},
+					autonomyPreference: {
+						type: "string",
+						enum: ["low", "medium", "high"],
+						description: "Select mode: Desired autonomy level",
+					},
+					// Evaluate mode fields
+					promptText: {
+						type: "string",
+						description: "Evaluate mode: The prompt text to evaluate",
+					},
+					targetLevel: {
+						type: "string",
+						enum: [
+							"independent",
+							"indirect",
+							"direct",
+							"modeling",
+							"scaffolding",
+							"full-physical",
+						],
+						description: "Evaluate mode: Expected hierarchy level",
+					},
+					// Shared optional fields
+					includeExamples: {
+						type: "boolean",
+						description: "Include examples in output",
+					},
+					includeReferences: {
+						type: "boolean",
+						description: "Include reference links",
+					},
+					includeRecommendations: {
+						type: "boolean",
+						description: "Include improvement recommendations",
+					},
+					includeMetadata: {
+						type: "boolean",
+						description: "Include metadata section",
+					},
+					includeFrontmatter: {
+						type: "boolean",
+						description: "Include YAML frontmatter",
+					},
+					includeDisclaimer: {
+						type: "boolean",
+						description: "Include disclaimer section",
+					},
+				},
+				required: ["mode"],
+			},
+			annotations: {
+				...GENERATION_TOOL_ANNOTATIONS,
+				title: "Unified Prompt Hierarchy Tool",
+			},
+		},
+		{
+			name: "hierarchy-level-selector",
+			description:
+				"Select optimal prompting hierarchy level (independent, indirect, direct, modeling, scaffolding, full-physical) based on task complexity and agent capability. BEST FOR: prompt guidance calibration, autonomy tuning, task-capability matching. OUTPUTS: Recommended hierarchy level with justification.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					taskDescription: {
+						type: "string",
+						description: "Description of the task the prompt will address",
+						examples: [
+							"Refactor legacy authentication module to use modern JWT-based approach",
+							"Debug intermittent race condition in distributed cache layer",
+							"Design scalable event-driven architecture for order processing system",
+						],
+					},
+					agentCapability: {
+						type: "string",
+						enum: ["novice", "intermediate", "advanced", "expert"],
+						description: "Agent's capability level",
+					},
+					taskComplexity: {
+						type: "string",
+						enum: ["simple", "moderate", "complex", "very-complex"],
+						description: "Complexity of the task",
+						examples: ["simple", "complex", "very-complex"],
+					},
+					autonomyPreference: {
+						type: "string",
+						enum: ["low", "medium", "high"],
+						description: "Desired level of agent autonomy",
+					},
+					includeExamples: {
+						type: "boolean",
+						description: "Include example prompts for the recommended level",
+					},
+					includeReferences: {
+						type: "boolean",
+						description: "Include reference links",
+					},
+				},
+				required: ["taskDescription"],
+			},
+			annotations: {
+				...GENERATION_TOOL_ANNOTATIONS,
+				title: "Prompt Hierarchy Level Selector",
+			},
+		},
+		promptChainingBuilderSchema,
+		promptFlowBuilderSchema,
+		{
+			name: "design-assistant",
+			description:
+				"Orchestrate multi-phase design workflows with constraint validation, coverage enforcement, and artifact generation. BEST FOR: Coordinating design sessions, enforcing constraints, and producing ADRs and roadmaps. Example: 'Use the design-assistant to start a design session for an API gateway.'",
+
+			inputSchema: {
+				type: "object",
+				properties: {
+					action: {
+						type: "string",
+						enum: [
+							"start-session",
+							"advance-phase",
+							"validate-phase",
+							"evaluate-pivot",
+							"generate-strategic-pivot-prompt",
+							"generate-artifacts",
+							"enforce-coverage",
+							"enforce-consistency",
+							"get-status",
+							"load-constraints",
+							"select-methodology",
+							"enforce-cross-session-consistency",
+							"generate-enforcement-prompts",
+							"generate-constraint-documentation",
+							"generate-context-aware-guidance",
+						],
+						description: "Action to perform",
+						examples: ["start-session", "advance-phase", "generate-artifacts"],
+					},
+					sessionId: {
+						type: "string",
+						description: "Unique session identifier",
+						examples: [
+							"api-gateway-design-2024",
+							"payment-service-architecture",
+							"auth-system-refactor-q1",
+						],
+					},
+					config: {
+						type: "object",
+						description:
+							"Design session configuration (required for start-session)",
+						properties: {
+							sessionId: { type: "string" },
+							context: { type: "string" },
+							goal: { type: "string" },
+							requirements: { type: "array", items: { type: "string" } },
+							coverageThreshold: { type: "number", default: 85 },
+							enablePivots: { type: "boolean", default: true },
+							templateRefs: { type: "array", items: { type: "string" } },
+							outputFormats: { type: "array", items: { type: "string" } },
 						},
 					},
-					required: [],
-				},
-			},
-			{
-				name: "mermaid-diagram-generator",
-				description:
-					"Generate Mermaid diagrams from text descriptions following best practices. Supports flowcharts, sequence diagrams, class diagrams, state machines, ER diagrams, and more with validation and auto-repair. Use this MCP to create visual documentation and architecture diagrams. Example: 'Use the mermaid-diagram-generator MCP to create a sequence diagram showing the OAuth authentication flow'",
-				inputSchema: {
-					type: "object",
-					properties: {
-						description: {
-							type: "string",
-							description:
-								"Description of the system or process to diagram. Be specific and detailed for better diagram generation.",
-						},
-						diagramType: {
-							type: "string",
-							enum: [
-								"flowchart",
-								"sequence",
-								"class",
-								"state",
-								"gantt",
-								"pie",
-								"er",
-								"journey",
-								"quadrant",
-								"git-graph",
-								"mindmap",
-								"timeline",
-							],
-							description: "Type of diagram to generate",
-						},
-						theme: {
-							type: "string",
-							description:
-								"Visual theme for the diagram (e.g., 'default', 'dark', 'forest', 'neutral')",
-						},
-						direction: {
-							type: "string",
-							enum: ["TD", "TB", "BT", "LR", "RL"],
-							description:
-								"Direction for flowcharts: TD/TB (top-down), BT (bottom-top), LR (left-right), RL (right-left)",
-						},
-						strict: {
-							type: "boolean",
-							description:
-								"If true, never emit invalid diagram; fallback to minimal diagram if needed (default: true)",
-							default: true,
-						},
-						repair: {
-							type: "boolean",
-							description:
-								"Attempt auto-repair on diagram validation failure (default: true)",
-							default: true,
-						},
-						accTitle: {
-							type: "string",
-							description: "Accessibility title (added as a Mermaid comment)",
-						},
-						accDescr: {
-							type: "string",
-							description:
-								"Accessibility description (added as a Mermaid comment)",
-						},
-						customStyles: {
-							type: "string",
-							description:
-								"Custom CSS/styling directives for advanced customization",
-						},
-						advancedFeatures: {
-							type: "object",
-							description:
-								"Type-specific advanced features (e.g., {autonumber: true} for sequence diagrams)",
-						},
+					content: {
+						type: "string",
+						description: "Content to validate or analyze",
 					},
-					required: ["description", "diagramType"],
-				},
-			},
-			{
-				name: "memory-context-optimizer",
-				description:
-					"Optimize prompt caching and context window usage for AI agents. Use this MCP to reduce token usage and improve context efficiency in long conversations or large codebases. Example: 'Use the memory-context-optimizer MCP to compress our system architecture documentation for efficient AI agent context'",
-				inputSchema: {
-					type: "object",
-					properties: {
-						contextContent: {
-							type: "string",
-							description: "Context content to optimize",
-						},
-						maxTokens: { type: "number", description: "Maximum token limit" },
-						cacheStrategy: {
-							type: "string",
-							enum: ["aggressive", "conservative", "balanced"],
-							description: "Caching strategy",
-						},
-						includeReferences: {
-							type: "boolean",
-							description: "Include external links on caching",
-						},
+					phaseId: {
+						type: "string",
+						description: "Target phase ID for advance or validate actions",
 					},
-					required: ["contextContent"],
-				},
-			},
-			{
-				name: "domain-neutral-prompt-builder",
-				description:
-					"Build comprehensive domain-neutral prompts with objectives, scope, inputs/outputs, workflow, capabilities, risks, and acceptance criteria. Use this MCP to create structured specification documents or technical requirements. Example: 'Use the domain-neutral-prompt-builder MCP to create a technical specification for our API gateway service'",
-				inputSchema: {
-					type: "object",
-					properties: {
-						title: { type: "string", description: "Document title" },
-						summary: { type: "string", description: "One-paragraph summary" },
-						objectives: { type: "array", items: { type: "string" } },
-						nonGoals: { type: "array", items: { type: "string" } },
-						background: { type: "string" },
-						stakeholdersUsers: { type: "string" },
-						environment: { type: "string" },
-						assumptions: { type: "string" },
-						constraints: { type: "string" },
-						dependencies: { type: "string" },
-						inputs: { type: "string" },
-						outputs: { type: "string" },
-						dataSchemas: { type: "array", items: { type: "string" } },
-						interfaces: {
-							type: "array",
-							items: {
-								type: "object",
-								properties: {
-									name: { type: "string" },
-									contract: { type: "string" },
-								},
-								required: ["name", "contract"],
-							},
-						},
-						workflow: { type: "array", items: { type: "string" } },
-						capabilities: {
-							type: "array",
-							items: {
-								type: "object",
-								properties: {
-									name: { type: "string" },
-									purpose: { type: "string" },
-									preconditions: { type: "string" },
-									inputs: { type: "string" },
-									processing: { type: "string" },
-									outputs: { type: "string" },
-									successCriteria: { type: "string" },
-									errors: { type: "string" },
-									observability: { type: "string" },
-								},
-								required: ["name", "purpose"],
-							},
-						},
-						edgeCases: {
-							type: "array",
-							items: {
-								type: "object",
-								properties: {
-									name: { type: "string" },
-									handling: { type: "string" },
-								},
-								required: ["name", "handling"],
-							},
-						},
-						risks: {
-							type: "array",
-							items: {
-								type: "object",
-								properties: {
-									description: { type: "string" },
-									likelihoodImpact: { type: "string" },
-									mitigation: { type: "string" },
-								},
-								required: ["description"],
-							},
-						},
-						successMetrics: { type: "array", items: { type: "string" } },
-						acceptanceTests: {
-							type: "array",
-							items: {
-								type: "object",
-								properties: {
-									setup: { type: "string" },
-									action: { type: "string" },
-									expected: { type: "string" },
-								},
-								required: ["setup", "action", "expected"],
-							},
-						},
-						manualChecklist: { type: "array", items: { type: "string" } },
-						performanceScalability: { type: "string" },
-						reliabilityAvailability: { type: "string" },
-						securityPrivacy: { type: "string" },
-						compliancePolicy: { type: "string" },
-						observabilityOps: { type: "string" },
-						costBudget: { type: "string" },
-						versioningStrategy: { type: "string" },
-						migrationCompatibility: { type: "string" },
-						changelog: { type: "array", items: { type: "string" } },
-						milestones: {
-							type: "array",
-							items: {
-								type: "object",
-								properties: {
-									name: { type: "string" },
-									deliverables: { type: "string" },
-									eta: { type: "string" },
-								},
-								required: ["name"],
-							},
-						},
-						openQuestions: { type: "array", items: { type: "string" } },
-						nextSteps: { type: "array", items: { type: "string" } },
-						// Optional prompt md frontmatter controls
-						mode: { type: "string" },
-						model: { type: "string" },
-						tools: { type: "array", items: { type: "string" } },
-						includeFrontmatter: { type: "boolean" },
-						includeDisclaimer: { type: "boolean" },
-						includeReferences: { type: "boolean" },
-						includeTechniqueHints: { type: "boolean" },
-						includePitfalls: { type: "boolean" },
-						includeMetadata: { type: "boolean" },
-						inputFile: { type: "string" },
-						forcePromptMdStyle: { type: "boolean" },
+					constraintId: {
+						type: "string",
+						description: "Specific constraint ID for consistency enforcement",
 					},
-					required: ["title", "summary"],
-				},
-			},
-			{
-				name: "security-hardening-prompt-builder",
-				description:
-					"Build specialized security hardening and vulnerability analysis prompts for AI-guided security assessment with OWASP Top 10, NIST, and compliance framework support. Use this MCP to create comprehensive security analysis prompts with threat modeling and compliance checks. Example: 'Use the security-hardening-prompt-builder MCP to analyze our API endpoints for OWASP Top 10 vulnerabilities and PCI-DSS compliance'",
-				inputSchema: {
-					type: "object",
-					properties: {
-						codeContext: {
-							type: "string",
-							description:
-								"The code context or description to analyze for security",
-						},
-						securityFocus: {
-							type: "string",
-							enum: [
-								"vulnerability-analysis",
-								"security-hardening",
-								"compliance-check",
-								"threat-modeling",
-								"penetration-testing",
-							],
-							description: "Primary security analysis focus",
-						},
-						securityRequirements: {
-							type: "array",
-							items: { type: "string" },
-							description: "Specific security requirements to check",
-						},
-						complianceStandards: {
-							type: "array",
-							items: {
-								type: "string",
-								enum: [
-									"OWASP-Top-10",
-									"NIST-Cybersecurity-Framework",
-									"ISO-27001",
-									"SOC-2",
-									"GDPR",
-									"HIPAA",
-									"PCI-DSS",
-								],
-							},
-							description: "Compliance standards to evaluate against",
-						},
-						language: {
-							type: "string",
-							description: "Programming language of the code",
-						},
-						framework: {
-							type: "string",
-							description: "Framework or technology stack",
-						},
-						riskTolerance: {
-							type: "string",
-							enum: ["low", "medium", "high"],
-							description: "Risk tolerance level for security assessment",
-						},
-						analysisScope: {
-							type: "array",
-							items: {
-								type: "string",
-								enum: [
-									"input-validation",
-									"authentication",
-									"authorization",
-									"data-encryption",
-									"session-management",
-									"error-handling",
-									"logging-monitoring",
-									"dependency-security",
-									"configuration-security",
-									"api-security",
-								],
-							},
-							description: "Specific security areas to focus analysis on",
-						},
-						includeCodeExamples: {
-							type: "boolean",
-							description: "Include secure code examples in output",
-						},
-						includeMitigations: {
-							type: "boolean",
-							description: "Include specific mitigation recommendations",
-						},
-						includeTestCases: {
-							type: "boolean",
-							description: "Include security test cases",
-						},
-						prioritizeFindings: {
-							type: "boolean",
-							description: "Prioritize findings by severity",
-						},
-						outputFormat: {
-							type: "string",
-							enum: ["detailed", "checklist", "annotated-code"],
-							description: "Preferred output format for security assessment",
-						},
-						mode: { type: "string" },
-						model: { type: "string" },
-						tools: { type: "array", items: { type: "string" } },
-						includeFrontmatter: { type: "boolean" },
-						includeDisclaimer: { type: "boolean" },
-						includeReferences: { type: "boolean" },
-						includeTechniqueHints: { type: "boolean" },
-						includePitfalls: { type: "boolean" },
-						includeMetadata: { type: "boolean" },
-						inputFile: { type: "string" },
-						forcePromptMdStyle: { type: "boolean" },
-						techniques: {
-							type: "array",
-							items: {
-								type: "string",
-								enum: [
-									"zero-shot",
-									"few-shot",
-									"chain-of-thought",
-									"self-consistency",
-									"in-context-learning",
-									"generate-knowledge",
-									"prompt-chaining",
-									"tree-of-thoughts",
-									"meta-prompting",
-									"rag",
-									"react",
-									"art",
-								],
-							},
-							description: "Optional list of technique hints to include",
-						},
-						autoSelectTechniques: {
-							type: "boolean",
-							description: "Automatically select appropriate techniques",
-						},
-						provider: {
-							type: "string",
-							enum: PROVIDER_ENUM_VALUES,
-							description: "Model family for tailored tips",
-						},
-						style: {
-							type: "string",
-							enum: ["markdown", "xml"],
-							description: "Preferred prompt formatting style",
-						},
+					constraintConfig: {
+						type: "object",
+						description: "Custom constraint configuration in YAML/JSON format",
 					},
-					required: ["codeContext"],
-				},
-			},
-			{
-				name: "quick-developer-prompts-builder",
-				description:
-					"Generate the 'Best of 25' quick developer prompts bundle - ultra-efficient checklist prompts for rapid code analysis, planning, and progress checks. Use this MCP to access concise, actionable prompts organized in 5 categories: Strategy & Planning, Code Quality, Testing, Documentation, and DevOps. Example: 'Use the quick-developer-prompts-builder MCP to get all 25 quick prompts' or 'category: testing' for testing-specific prompts",
-				inputSchema: {
-					type: "object",
-					properties: {
-						category: {
+					artifactTypes: {
+						type: "array",
+						items: {
 							type: "string",
-							enum: [
-								"strategy",
-								"code-quality",
-								"testing",
-								"documentation",
-								"devops",
-								"all",
-							],
-							description:
-								"Category of prompts to generate. Use 'all' for all 25 prompts or select a specific category",
+							enum: ["adr", "specification", "roadmap"],
 						},
-						mode: { type: "string" },
-						model: { type: "string" },
-						tools: { type: "array", items: { type: "string" } },
-						includeFrontmatter: { type: "boolean" },
-						includeMetadata: { type: "boolean" },
-						inputFile: { type: "string" },
-						forcePromptMdStyle: { type: "boolean" },
+						description: "Types of artifacts to generate",
+						default: ["adr", "specification", "roadmap"],
 					},
-					required: [],
-				},
-			},
-			{
-				name: "sprint-timeline-calculator",
-				description:
-					"Calculate optimal development cycles and sprint timelines with dependency-aware scheduling, team velocity, and complexity analysis. Use this MCP to estimate project timelines and plan sprint allocations. Example: 'Use the sprint-timeline-calculator MCP to estimate the timeline for our microservices migration with a team of 6 developers'",
-				inputSchema: {
-					type: "object",
-					properties: {
-						tasks: {
-							type: "array",
-							items: { type: "object" },
-							description: "List of tasks with estimates",
-						},
-						teamSize: { type: "number", description: "Number of team members" },
-						sprintLength: {
-							type: "number",
-							description: "Sprint length in days",
-						},
-						velocity: {
-							type: "number",
-							description: "Team velocity (story points per sprint)",
-						},
-						optimizationStrategy: {
-							type: "string",
-							enum: ["greedy", "linear-programming"],
-							description:
-								"Optimization strategy: 'greedy' (default, deterministic bin-packing) or 'linear-programming' (future MILP optimization)",
-						},
-						includeMetadata: {
-							type: "boolean",
-							description: "Include metadata in output",
-						},
-						inputFile: {
-							type: "string",
-							description: "Input file reference",
-						},
+					methodologySignals: {
+						type: "object",
+						description:
+							"Methodology signals for select-methodology action (e.g., team size, project complexity, domain)",
 					},
-					required: ["tasks", "teamSize"],
-				},
-			},
-			{
-				name: "model-compatibility-checker",
-				description:
-					"Recommend best AI models for specific tasks and requirements based on capabilities, budget, and use case. Use this MCP to select optimal AI models for different development tasks. Example: 'Use the model-compatibility-checker MCP to recommend the best AI model for code generation with long context windows on a medium budget'",
-				inputSchema: {
-					type: "object",
-					properties: {
-						taskDescription: {
-							type: "string",
-							description: "Description of the task",
-						},
-						requirements: {
-							type: "array",
-							items: { type: "string" },
-							description:
-								"Specific requirements (context length, multimodal, etc.)",
-						},
-						budget: {
-							type: "string",
-							enum: ["low", "medium", "high"],
-							description: "Budget constraints",
-						},
-						language: {
-							type: "string",
-							description:
-								"Preferred language for example snippets (e.g., typescript, python)",
-						},
-						includeReferences: {
-							type: "boolean",
-							description: "Include external documentation links",
-						},
-						includeCodeExamples: {
-							type: "boolean",
-							description: "Include language-specific example snippets",
-						},
-						linkFiles: {
-							type: "boolean",
-							description:
-								"Include links to relevant files/resources in this repo",
-						},
+					includeTemplates: {
+						type: "boolean",
+						description:
+							"Include templates in generated prompts (for generate-strategic-pivot-prompt)",
 					},
-					required: ["taskDescription"],
-				},
-			},
-			{
-				name: "guidelines-validator",
-				description:
-					"Validate development practices against established AI agent guidelines for prompting, code management, architecture, visualization, memory, and workflow. Use this MCP to ensure your practices follow AI agent best practices. Example: 'Use the guidelines-validator MCP to validate our code review workflow against AI agent best practices'",
-				inputSchema: {
-					type: "object",
-					properties: {
-						practiceDescription: {
-							type: "string",
-							description: "Description of the development practice",
-						},
-						category: {
-							type: "string",
-							enum: [
-								"prompting",
-								"code-management",
-								"architecture",
-								"visualization",
-								"memory",
-								"workflow",
-							],
-							description: "Category of practice to validate",
-						},
+					includeSpace7Instructions: {
+						type: "boolean",
+						description:
+							"Include Space7 instructions in prompts (for generate-strategic-pivot-prompt)",
 					},
-					required: ["practiceDescription", "category"],
-				},
-			},
-			{
-				name: "semantic-code-analyzer",
-				description:
-					"Perform semantic code analysis to identify symbols, structure, dependencies, and patterns using language server-based analysis for precise code understanding. Use this MCP to analyze code semantics, find references, and understand code structure. Example: 'Use the semantic-code-analyzer MCP to map dependencies and identify tightly coupled components in our codebase'",
-				inputSchema: {
-					type: "object",
-					properties: {
-						codeContent: {
-							type: "string",
-							description: "Code content to analyze",
-						},
-						language: {
-							type: "string",
-							description:
-								"Programming language (auto-detected if not provided)",
-						},
-						analysisType: {
-							type: "string",
-							enum: ["symbols", "structure", "dependencies", "patterns", "all"],
-							description: "Type of semantic analysis to perform",
-						},
-						includeReferences: {
-							type: "boolean",
-							description: "Include external reference links",
-						},
-						includeMetadata: {
-							type: "boolean",
-							description: "Include metadata section",
-						},
-						inputFile: {
-							type: "string",
-							description: "Optional input file path",
-						},
+					customInstructions: {
+						type: "array",
+						items: { type: "string" },
+						description:
+							"Custom instructions for prompt generation (for generate-strategic-pivot-prompt)",
 					},
-					required: ["codeContent"],
 				},
+				required: ["action", "sessionId"],
 			},
-			{
-				name: "project-onboarding",
-				description:
-					"Perform comprehensive project onboarding including structure analysis, dependency detection, and documentation generation for efficient developer onboarding. Use this MCP to analyze and document project structure for new developers. Example: 'Use the project-onboarding MCP to generate onboarding documentation for our microservices repository'",
-				inputSchema: {
-					type: "object",
-					properties: {
-						projectPath: {
-							type: "string",
-							description: "Path to the project directory",
-						},
-						projectName: {
-							type: "string",
-							description: "Name of the project",
-						},
-						projectType: {
-							type: "string",
-							enum: ["library", "application", "service", "tool", "other"],
-							description: "Type of project",
-						},
-						analysisDepth: {
-							type: "string",
-							enum: ["quick", "standard", "deep"],
-							description: "Depth of analysis",
-						},
-						includeMemories: {
-							type: "boolean",
-							description: "Generate project memories",
-						},
-						includeReferences: {
-							type: "boolean",
-							description: "Include external reference links",
-						},
-						includeMetadata: {
-							type: "boolean",
-							description: "Include metadata section",
-						},
-					},
-					required: ["projectPath"],
-				},
+			annotations: {
+				...SESSION_TOOL_ANNOTATIONS,
+				title: "Design Session Assistant",
 			},
-			{
-				name: "mode-switcher",
-				description:
-					"Switch between different agent operation modes (planning, editing, analysis, debugging, refactoring, documentation, etc.) with tailored tool sets and prompting strategies for context-appropriate workflows. Use this MCP to transition between development workflows. Example: 'Use the mode-switcher MCP to transition from planning mode to implementation mode'",
-				inputSchema: {
-					type: "object",
-					properties: {
-						currentMode: {
-							type: "string",
-							enum: [
-								"planning",
-								"editing",
-								"analysis",
-								"interactive",
-								"one-shot",
-								"debugging",
-								"refactoring",
-								"documentation",
-							],
-							description: "Current active mode",
-						},
-						targetMode: {
-							type: "string",
-							enum: [
-								"planning",
-								"editing",
-								"analysis",
-								"interactive",
-								"one-shot",
-								"debugging",
-								"refactoring",
-								"documentation",
-							],
-							description: "Mode to switch to",
-						},
-						context: {
-							type: "string",
-							enum: [
-								"desktop-app",
-								"ide-assistant",
-								"agent",
-								"terminal",
-								"collaborative",
-							],
-							description: "Operating context",
-						},
-						reason: {
-							type: "string",
-							description: "Reason for mode switch",
-						},
-						includeReferences: {
-							type: "boolean",
-							description: "Include external reference links",
-						},
-						includeMetadata: {
-							type: "boolean",
-							description: "Include metadata section",
-						},
-					},
-					required: ["targetMode"],
-				},
-			},
-			{
-				name: "prompting-hierarchy-evaluator",
-				description:
-					"Evaluate prompts using hierarchical taxonomy and provide numeric scoring based on clarity, specificity, completeness, and cognitive complexity with reinforcement learning-inspired metrics. Use this MCP to assess and improve prompt quality. Example: 'Use the prompting-hierarchy-evaluator MCP to evaluate and score our code review prompt for effectiveness'",
-				inputSchema: {
-					type: "object",
-					properties: {
-						promptText: {
-							type: "string",
-							description: "The prompt text to evaluate",
-						},
-						targetLevel: {
-							type: "string",
-							enum: [
-								"independent",
-								"indirect",
-								"direct",
-								"modeling",
-								"scaffolding",
-								"full-physical",
-							],
-							description: "Expected hierarchy level (if known)",
-						},
-						context: {
-							type: "string",
-							description: "Additional context about the task",
-						},
-						includeRecommendations: {
-							type: "boolean",
-							description: "Include improvement recommendations",
-						},
-						includeReferences: {
-							type: "boolean",
-							description: "Include reference links",
-						},
-					},
-					required: ["promptText"],
-				},
-			},
-			{
-				name: "hierarchy-level-selector",
-				description:
-					"Select the most appropriate prompting hierarchy level (independent, indirect, direct, modeling, scaffolding, full-physical) based on task characteristics, agent capability, and autonomy preferences. Use this MCP to determine optimal prompt guidance level for different scenarios. Example: 'Use the hierarchy-level-selector MCP to determine the best prompting level for a junior developer working on complex refactoring'",
-				inputSchema: {
-					type: "object",
-					properties: {
-						taskDescription: {
-							type: "string",
-							description: "Description of the task the prompt will address",
-						},
-						agentCapability: {
-							type: "string",
-							enum: ["novice", "intermediate", "advanced", "expert"],
-							description: "Agent's capability level",
-						},
-						taskComplexity: {
-							type: "string",
-							enum: ["simple", "moderate", "complex", "very-complex"],
-							description: "Complexity of the task",
-						},
-						autonomyPreference: {
-							type: "string",
-							enum: ["low", "medium", "high"],
-							description: "Desired level of agent autonomy",
-						},
-						includeExamples: {
-							type: "boolean",
-							description: "Include example prompts for the recommended level",
-						},
-						includeReferences: {
-							type: "boolean",
-							description: "Include reference links",
-						},
-					},
-					required: ["taskDescription"],
-				},
-			},
-			promptChainingBuilderSchema,
-			promptFlowBuilderSchema,
-			{
-				name: "design-assistant",
-				description:
-					"Comprehensive multi-phase design workflow orchestration with constraint validation, coverage enforcement, and artifact generation (ADRs, specifications, roadmaps). This deterministic, context-driven design assistant utilizes a constraint framework for structured design sessions, providing context-aware design recommendations tailored to language, framework, and code patterns—including SOLID principles, design patterns, and framework-specific best practices. Use this MCP to manage complex design processes through discovery, requirements, architecture, and implementation phases. Example: 'Use the design-assistant MCP to start a design session for our new API gateway and guide it through all design phases'",
-				inputSchema: {
-					type: "object",
-					properties: {
-						action: {
-							type: "string",
-							enum: [
-								"start-session",
-								"advance-phase",
-								"validate-phase",
-								"evaluate-pivot",
-								"generate-strategic-pivot-prompt",
-								"generate-artifacts",
-								"enforce-coverage",
-								"enforce-consistency",
-								"get-status",
-								"load-constraints",
-								"select-methodology",
-								"enforce-cross-session-consistency",
-								"generate-enforcement-prompts",
-								"generate-constraint-documentation",
-								"generate-context-aware-guidance",
-							],
-							description: "Action to perform",
-						},
-						sessionId: {
-							type: "string",
-							description: "Unique session identifier",
-						},
-						config: {
-							type: "object",
-							description:
-								"Design session configuration (required for start-session)",
-							properties: {
-								sessionId: { type: "string" },
-								context: { type: "string" },
-								goal: { type: "string" },
-								requirements: { type: "array", items: { type: "string" } },
-								coverageThreshold: { type: "number", default: 85 },
-								enablePivots: { type: "boolean", default: true },
-								templateRefs: { type: "array", items: { type: "string" } },
-								outputFormats: { type: "array", items: { type: "string" } },
-							},
-						},
-						content: {
-							type: "string",
-							description: "Content to validate or analyze",
-						},
-						phaseId: {
-							type: "string",
-							description: "Target phase ID for advance or validate actions",
-						},
-						constraintId: {
-							type: "string",
-							description: "Specific constraint ID for consistency enforcement",
-						},
-						constraintConfig: {
-							type: "object",
-							description:
-								"Custom constraint configuration in YAML/JSON format",
-						},
-						artifactTypes: {
-							type: "array",
-							items: {
-								type: "string",
-								enum: ["adr", "specification", "roadmap"],
-							},
-							description: "Types of artifacts to generate",
-							default: ["adr", "specification", "roadmap"],
-						},
-						methodologySignals: {
-							type: "object",
-							description:
-								"Methodology signals for select-methodology action (e.g., team size, project complexity, domain)",
-						},
-						includeTemplates: {
-							type: "boolean",
-							description:
-								"Include templates in generated prompts (for generate-strategic-pivot-prompt)",
-						},
-						includeSpace7Instructions: {
-							type: "boolean",
-							description:
-								"Include Space7 instructions in prompts (for generate-strategic-pivot-prompt)",
-						},
-						customInstructions: {
-							type: "array",
-							items: { type: "string" },
-							description:
-								"Custom instructions for prompt generation (for generate-strategic-pivot-prompt)",
-						},
-					},
-					required: ["action", "sessionId"],
-				},
-			},
-		],
-	};
+		},
+	];
+
+	// Apply mode-aware filtering if enabled
+	if (flags.enableModeAwareToolFiltering) {
+		const currentMode = modeManager.getCurrentMode();
+		const allowedTools = modeManager.getToolsForMode(currentMode);
+
+		// If mode allows all tools (wildcard "*"), skip filtering
+		if (!allowedTools.includes("*")) {
+			tools = tools.filter((t) => allowedTools.includes(t.name));
+		}
+	}
+
+	return { tools };
 });
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
@@ -2091,6 +2769,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 				return memoryContextOptimizer(args);
 			case "sprint-timeline-calculator":
 				return sprintTimelineCalculator(args);
+			case "speckit-generator":
+				return specKitGenerator(
+					args as unknown as Parameters<typeof specKitGenerator>[0],
+				);
+			case "validate-spec":
+				return validateSpec(
+					args as unknown as Parameters<typeof validateSpec>[0],
+				);
+			case "update-progress":
+				return updateProgress(
+					args as unknown as Parameters<typeof updateProgress>[0],
+				);
 			case "model-compatibility-checker":
 				return modelCompatibilityChecker(args);
 			case "guidelines-validator":
@@ -2101,8 +2791,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 				return projectOnboarding(args);
 			case "mode-switcher":
 				return modeSwitcher(args);
+			case "agent-orchestrator":
+				return agentOrchestratorTool(
+					args as unknown as import("./tools/agent-orchestrator.js").AgentOrchestratorRequest,
+				);
 			case "prompting-hierarchy-evaluator":
 				return promptingHierarchyEvaluator(args);
+			case "prompt-hierarchy":
+				return promptHierarchy(args);
 			case "hierarchy-level-selector":
 				return hierarchyLevelSelector(args);
 			case "prompt-chaining-builder":
@@ -2159,10 +2855,19 @@ server.setRequestHandler(GetPromptRequestSchema, async (request) => {
 
 // Start the server
 async function main() {
+	// Register default agents on startup
+	registerDefaultAgents();
+
 	const transport = new StdioServerTransport();
 	await server.connect(transport);
 	console.error("MCP AI Agent Guide Server running on stdio");
 }
+
+// Export server for testing
+export { server };
+
+// Library exports for programmatic usage
+export * from "./strategies/index.js";
 
 main().catch((error) => {
 	console.error("Server error:", error);

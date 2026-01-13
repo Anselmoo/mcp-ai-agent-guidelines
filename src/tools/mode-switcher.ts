@@ -1,8 +1,10 @@
 import { z } from "zod";
+import { modeManager } from "./shared/mode-manager.js";
 import {
 	buildFurtherReadingSection,
 	buildMetadataSection,
 } from "./shared/prompt-utils.js";
+import { createMcpResponse } from "./shared/response-utils.js";
 
 const AgentModeSchema = z.enum([
 	"planning",
@@ -249,10 +251,26 @@ const MODE_PROFILES: Record<AgentMode, ModeProfile> = {
 export async function modeSwitcher(args: unknown) {
 	const input = ModeSwitcherSchema.parse(args);
 
+	// Get current mode before switch
+	const previousMode = modeManager.getCurrentMode();
+
+	// Validate transition (optional)
+	if (input.currentMode && input.currentMode !== previousMode) {
+		return createMcpResponse({
+			isError: true,
+			content: `Mode mismatch: expected ${input.currentMode}, but current mode is ${previousMode}`,
+		});
+	}
+
+	// Actually switch mode
+	const newState = modeManager.setMode(input.targetMode, input.reason);
+
+	// Get recommended tools for new mode
+	const recommendedTools = modeManager.getToolsForMode(input.targetMode);
+
+	// Get mode profiles for display
 	const targetProfile = MODE_PROFILES[input.targetMode];
-	const currentProfile = input.currentMode
-		? MODE_PROFILES[input.currentMode]
-		: null;
+	const previousProfile = MODE_PROFILES[previousMode];
 
 	const metadata = input.includeMetadata
 		? buildMetadataSection({
@@ -262,19 +280,21 @@ export async function modeSwitcher(args: unknown) {
 
 	const references = input.includeReferences ? buildModeReferences() : "";
 
-	return {
-		content: [
-			{
-				type: "text",
-				text: `## 🔄 Mode Switch: ${targetProfile.name}
+	return createMcpResponse({
+		content: `# Mode Switched Successfully
+
+**Previous Mode**: ${previousProfile.name}
+**Current Mode**: ${targetProfile.name}
+**Switched At**: ${newState.timestamp.toISOString()}
+${input.reason ? `**Reason**: ${input.reason}` : ""}
 
 ${metadata}
 
-### 📊 Mode Transition
-${currentProfile ? `**From**: ${currentProfile.name}\n` : ""}**To**: ${targetProfile.name}
-${input.reason ? `**Reason**: ${input.reason}\n` : ""}
+## Recommended Tools for ${targetProfile.name} Mode
 
-### 🎯 ${targetProfile.name} Overview
+${recommendedTools.map((t) => `- ${t}`).join("\n")}
+
+## 🎯 ${targetProfile.name} Overview
 ${targetProfile.description}
 
 ### 🔍 Primary Focus Areas
@@ -302,12 +322,14 @@ ${buildContextGuidance(input.context)}
 
 ${references}
 
+## Notes
+
+Mode will persist until explicitly changed. Use \`getCurrentMode\` to verify.
+
 ---
 **Mode Active**: ${targetProfile.name} 🟢
 `,
-			},
-		],
-	};
+	});
 }
 
 function generateNextSteps(mode: AgentMode): string {

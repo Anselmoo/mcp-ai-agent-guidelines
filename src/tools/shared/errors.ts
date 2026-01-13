@@ -2,92 +2,206 @@
  * Centralized error handling utilities with typed errors for improved debugging and resilience
  */
 
+import { ERROR_MESSAGES, type ErrorCode, isRetryable } from "./error-codes.js";
 import { logger } from "./logger.js";
 
 /**
- * Base class for all operational errors in the application
+ * Structured context payload for McpToolError instances.
  */
-export class OperationError extends Error {
-	public readonly code: string;
-	public readonly context?: Record<string, unknown>;
+export interface McpToolErrorContext {
+	[key: string]: unknown;
+}
+
+/**
+ * MCP-aware error with standardized codes, retry hints, and response formatting.
+ * @public
+ */
+export class McpToolError extends Error {
+	public readonly code: ErrorCode;
+	public readonly context: McpToolErrorContext;
 	public readonly timestamp: Date;
+	public readonly cause?: Error;
 
 	constructor(
-		message: string,
-		code: string,
-		context?: Record<string, unknown>,
+		code: ErrorCode,
+		message?: string,
+		context?: McpToolErrorContext,
+		cause?: Error,
 	) {
-		super(message);
-		this.name = "OperationError";
+		super(message ?? ERROR_MESSAGES[code]);
+		this.name = "McpToolError";
 		this.code = code;
-		this.context = context;
+		this.context = context ?? {};
 		this.timestamp = new Date();
+		this.cause = cause;
 
-		// Maintains proper stack trace for where our error was thrown (only available on V8)
 		if (Error.captureStackTrace) {
-			Error.captureStackTrace(this, OperationError);
+			Error.captureStackTrace(this, McpToolError);
 		}
 	}
-}
 
-/**
- * Validation error for input validation failures
- */
-export class ValidationError extends OperationError {
-	constructor(message: string, context?: Record<string, unknown>) {
-		super(message, "VALIDATION_ERROR", context);
-		this.name = "ValidationError";
+	/**
+	 * Determines if this error is safe to retry based on its code category.
+	 */
+	isRetryable(): boolean {
+		return isRetryable(this.code);
 	}
-}
 
-/**
- * Configuration error for invalid or missing configuration
- */
-export class ConfigurationError extends OperationError {
-	constructor(message: string, context?: Record<string, unknown>) {
-		super(message, "CONFIGURATION_ERROR", context);
-		this.name = "ConfigurationError";
+	/**
+	 * Formats the error into an MCP-compatible response payload.
+	 */
+	toResponse(): {
+		isError: true;
+		content: Array<{ type: "text"; text: string }>;
+	} {
+		return {
+			isError: true,
+			content: [
+				{
+					type: "text",
+					text: JSON.stringify(
+						{
+							error: this.name,
+							code: this.code,
+							message: this.message,
+							context: this.context,
+							retryable: this.isRetryable(),
+							timestamp: this.timestamp.toISOString(),
+						},
+						null,
+						2,
+					),
+				},
+			],
+		};
 	}
 }
 
 /**
  * Session error for session-related issues
  */
-export class SessionError extends OperationError {
+export class SessionError extends Error {
+	public readonly code: string;
+	public readonly context?: Record<string, unknown>;
+	public readonly timestamp: Date;
+
 	constructor(message: string, context?: Record<string, unknown>) {
-		super(message, "SESSION_ERROR", context);
+		super(message);
 		this.name = "SessionError";
+		this.code = "SESSION_ERROR";
+		this.context = context;
+		this.timestamp = new Date();
+
+		if (Error.captureStackTrace) {
+			Error.captureStackTrace(this, SessionError);
+		}
 	}
 }
 
 /**
  * Phase error for design phase workflow issues
  */
-export class PhaseError extends OperationError {
+export class PhaseError extends Error {
+	public readonly code: string;
+	public readonly context?: Record<string, unknown>;
+	public readonly timestamp: Date;
+
 	constructor(message: string, context?: Record<string, unknown>) {
-		super(message, "PHASE_ERROR", context);
+		super(message);
 		this.name = "PhaseError";
+		this.code = "PHASE_ERROR";
+		this.context = context;
+		this.timestamp = new Date();
+
+		if (Error.captureStackTrace) {
+			Error.captureStackTrace(this, PhaseError);
+		}
 	}
 }
 
 /**
  * Generation error for artifact generation failures
  */
-export class GenerationError extends OperationError {
+export class GenerationError extends Error {
+	public readonly code: string;
+	public readonly context?: Record<string, unknown>;
+	public readonly timestamp: Date;
+
 	constructor(message: string, context?: Record<string, unknown>) {
-		super(message, "GENERATION_ERROR", context);
+		super(message);
 		this.name = "GenerationError";
+		this.code = "GENERATION_ERROR";
+		this.context = context;
+		this.timestamp = new Date();
+
+		if (Error.captureStackTrace) {
+			Error.captureStackTrace(this, GenerationError);
+		}
 	}
 }
 
 /**
  * Consistency error for consistency enforcement failures
  */
-export class ConsistencyError extends OperationError {
+export class ConsistencyError extends Error {
+	public readonly code: string;
+	public readonly context?: Record<string, unknown>;
+	public readonly timestamp: Date;
+
 	constructor(message: string, context?: Record<string, unknown>) {
-		super(message, "CONSISTENCY_ERROR", context);
+		super(message);
 		this.name = "ConsistencyError";
+		this.code = "CONSISTENCY_ERROR";
+		this.context = context;
+		this.timestamp = new Date();
+
+		if (Error.captureStackTrace) {
+			Error.captureStackTrace(this, ConsistencyError);
+		}
 	}
+}
+
+/**
+ * Unknown error for unrecognized error types
+ */
+export class UnknownError extends Error {
+	public readonly code: string;
+	public readonly context?: Record<string, unknown>;
+	public readonly timestamp: Date;
+
+	constructor(message: string, context?: Record<string, unknown>) {
+		super(message);
+		this.name = "UnknownError";
+		this.code = "UNKNOWN_ERROR";
+		this.context = context;
+		this.timestamp = new Date();
+
+		if (Error.captureStackTrace) {
+			Error.captureStackTrace(this, UnknownError);
+		}
+	}
+}
+
+/**
+ * Type representing errors with standard structure
+ */
+export interface StandardError extends Error {
+	code: string;
+	context?: Record<string, unknown>;
+	timestamp: Date;
+}
+
+/**
+ * Type guard to check if an error has standard error properties
+ */
+function isStandardError(error: unknown): error is StandardError {
+	return (
+		error instanceof Error &&
+		"code" in error &&
+		typeof (error as { code: unknown }).code === "string" &&
+		"timestamp" in error &&
+		(error as { timestamp: unknown }).timestamp instanceof Date
+	);
 }
 
 /**
@@ -105,26 +219,26 @@ export class ErrorReporter {
 			rethrow?: boolean;
 			defaultMessage?: string;
 		},
-	): OperationError {
-		const operationError = ErrorReporter.toOperationError(
+	): StandardError {
+		const standardError = ErrorReporter.toStandardError(
 			error,
 			context,
 			options?.defaultMessage,
 		);
 
 		// Log the error
-		logger.error(operationError.message, {
-			code: operationError.code,
-			context: operationError.context,
-			stack: operationError.stack,
+		logger.error(standardError.message, {
+			code: standardError.code,
+			context: standardError.context,
+			stack: standardError.stack,
 		});
 
 		// Optionally rethrow
 		if (options?.rethrow) {
-			throw operationError;
+			throw standardError;
 		}
 
-		return operationError;
+		return standardError;
 	}
 
 	/**
@@ -143,41 +257,60 @@ export class ErrorReporter {
 	}
 
 	/**
-	 * Convert any error to an OperationError
+	 * Convert any error to a StandardError
 	 */
-	private static toOperationError(
+	private static toStandardError(
 		error: Error | unknown,
 		context?: Record<string, unknown>,
 		defaultMessage?: string,
-	): OperationError {
-		// If already an OperationError, merge context and return
-		if (error instanceof OperationError) {
-			return new OperationError(error.message, error.code, {
+	): StandardError {
+		// Special case: McpToolError needs conversion since code is numeric
+		if (error instanceof McpToolError) {
+			// Create a SessionError with the McpToolError's message and code info
+			const sessionError = new SessionError(error.message, {
+				...error.context,
+				...context,
+				mcpErrorCode: error.code,
+				retryable: error.isRetryable(),
+			});
+			sessionError.stack = error.stack;
+			return sessionError;
+		}
+
+		// If already a StandardError, preserve its type and merge context
+		if (isStandardError(error)) {
+			// If it already has all the context we need, return as-is
+			if (!context || Object.keys(context).length === 0) {
+				return error;
+			}
+			// Create a new error of the same type with merged context
+			const ErrorConstructor = error.constructor as new (
+				message: string,
+				ctx?: Record<string, unknown>,
+			) => StandardError;
+			const newError = new ErrorConstructor(error.message, {
 				...error.context,
 				...context,
 			});
+			newError.stack = error.stack;
+			return newError;
 		}
 
-		// If a regular Error, convert it
+		// If a regular Error, convert it with UNKNOWN_ERROR code
 		if (error instanceof Error) {
-			const opError = new OperationError(
-				error.message,
-				"UNKNOWN_ERROR",
-				context,
-			);
-			opError.stack = error.stack;
-			return opError;
+			const unknownError = new UnknownError(error.message, {
+				...context,
+				originalError: error.name,
+			});
+			unknownError.stack = error.stack;
+			return unknownError;
 		}
 
 		// Unknown error type
-		return new OperationError(
-			defaultMessage || "An unknown error occurred",
-			"UNKNOWN_ERROR",
-			{
-				...context,
-				originalError: String(error),
-			},
-		);
+		return new UnknownError(defaultMessage || "An unknown error occurred", {
+			...context,
+			originalError: String(error),
+		});
 	}
 
 	/**
@@ -211,15 +344,15 @@ export class ErrorReporter {
 			context?: Record<string, unknown>;
 		};
 	} {
-		const operationError = ErrorReporter.toOperationError(error, context);
+		const standardError = ErrorReporter.toStandardError(error, context);
 
 		return {
 			success: false,
 			error: {
-				message: operationError.message,
-				code: operationError.code,
-				timestamp: operationError.timestamp.toISOString(),
-				...(operationError.context && { context: operationError.context }),
+				message: standardError.message,
+				code: standardError.code,
+				timestamp: standardError.timestamp.toISOString(),
+				...(standardError.context && { context: standardError.context }),
 			},
 		};
 	}
@@ -243,13 +376,13 @@ export class ErrorReporter {
 		recommendations: string[];
 		artifacts: T[];
 	} {
-		const operationError = ErrorReporter.toOperationError(error);
+		const standardError = ErrorReporter.toStandardError(error);
 
 		return {
 			success: false,
 			sessionId: baseResponse.sessionId,
 			status: baseResponse.status || "error",
-			message: operationError.message,
+			message: standardError.message,
 			recommendations: baseResponse.recommendations || [
 				"Check request parameters and try again",
 			],

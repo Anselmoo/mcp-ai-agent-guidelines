@@ -1,65 +1,93 @@
 import { z } from "zod";
+import { handleToolError } from "./shared/error-handler.js";
 import {
 	buildFurtherReadingSection,
 	buildOptionalSectionsMap,
 } from "./shared/prompt-utils.js";
 
 const CodeHygieneSchema = z.object({
-	codeContent: z.string(),
-	language: z.string(),
-	framework: z.string().optional(),
-	includeReferences: z.boolean().optional().default(true),
-	includeMetadata: z.boolean().optional().default(true),
-	inputFile: z.string().optional(),
+	codeContent: z
+		.string()
+		.describe(
+			"Code content to analyze for hygiene issues. Example: A TypeScript file with potential issues like unused imports, any types, or console.log statements",
+		),
+	language: z
+		.string()
+		.describe(
+			"Programming language of the code. Examples: 'typescript', 'python', 'javascript', 'go'",
+		),
+	framework: z
+		.string()
+		.optional()
+		.describe(
+			"Framework or technology stack. Examples: 'react', 'express', 'nextjs'",
+		),
+	includeReferences: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe("Include external reference links in output. Example: true"),
+	includeMetadata: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe("Include metadata section in output. Example: true"),
+	inputFile: z
+		.string()
+		.optional()
+		.describe(
+			"Reference to input file being analyzed. Example: 'src/components/Button.tsx'",
+		),
 });
 
 type CodeHygieneInput = z.infer<typeof CodeHygieneSchema>;
 
 export async function codeHygieneAnalyzer(args: unknown) {
-	const input = CodeHygieneSchema.parse(args);
+	try {
+		const input = CodeHygieneSchema.parse(args);
 
-	const analysis = analyzeCodeHygiene(input);
+		const analysis = analyzeCodeHygiene(input);
 
-	// Build optional sections using the shared utility
-	const { references, metadata } = buildOptionalSectionsMap(input, {
-		references: {
-			key: "includeReferences",
-			builder: () =>
-				buildFurtherReadingSection([
-					{
-						title: "Refactoring Legacy Code Best Practices",
-						url: "https://graphite.dev/guides/refactoring-legacy-code-best-practices-techniques",
-						description:
-							"Techniques for safely refactoring and improving legacy codebases",
-					},
-					{
-						title: "Code Hygiene Checklist",
-						url: "https://github.com/topics/code-hygiene",
-						description:
-							"Community resources and tools for maintaining code quality",
-					},
-				]),
-		},
-		metadata: {
-			key: "includeMetadata",
-			builder: (cfg) =>
-				[
-					"### Metadata",
-					`- Updated: ${new Date().toISOString().slice(0, 10)}`,
-					"- Source tool: mcp_ai-agent-guid_code-hygiene-analyzer",
-					cfg.inputFile ? `- Input file: ${cfg.inputFile}` : undefined,
-					"",
-				]
-					.filter(Boolean)
-					.join("\n"),
-		},
-	});
+		// Build optional sections using the shared utility
+		const { references, metadata } = buildOptionalSectionsMap(input, {
+			references: {
+				key: "includeReferences",
+				builder: () =>
+					buildFurtherReadingSection([
+						{
+							title: "Refactoring Legacy Code Best Practices",
+							url: "https://graphite.dev/guides/refactoring-legacy-code-best-practices-techniques",
+							description:
+								"Techniques for safely refactoring and improving legacy codebases",
+						},
+						{
+							title: "Code Hygiene Checklist",
+							url: "https://github.com/topics/code-hygiene",
+							description:
+								"Community resources and tools for maintaining code quality",
+						},
+					]),
+			},
+			metadata: {
+				key: "includeMetadata",
+				builder: (cfg) =>
+					[
+						"### Metadata",
+						`- Updated: ${new Date().toISOString().slice(0, 10)}`,
+						"- Source tool: mcp_ai-agent-guid_code-hygiene-analyzer",
+						cfg.inputFile ? `- Input file: ${cfg.inputFile}` : undefined,
+						"",
+					]
+						.filter(Boolean)
+						.join("\n"),
+			},
+		});
 
-	return {
-		content: [
-			{
-				type: "text",
-				text: `## 🧹 Code Hygiene Analysis Report
+		return {
+			content: [
+				{
+					type: "text",
+					text: `## 🧹 Code Hygiene Analysis Report
 
 ${metadata}
 
@@ -93,9 +121,12 @@ ${analysis.nextSteps.map((step, index) => `${index + 1}. ${step}`).join("\n")}
 ${references ? `\n${references}\n` : ""}
 \n### ⚠️ Disclaimer\n- Findings are heuristic and may not capture project-specific conventions. Validate changes via code review and tests.
 `,
-			},
-		],
-	};
+				},
+			],
+		};
+	} catch (error) {
+		return handleToolError(error);
+	}
 }
 
 function analyzeCodeHygiene(input: CodeHygieneInput) {

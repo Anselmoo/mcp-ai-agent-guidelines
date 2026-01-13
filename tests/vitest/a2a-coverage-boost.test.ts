@@ -5,9 +5,9 @@
  * Uses simpler test patterns that avoid permission/context issues.
  */
 
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import crypto from "node:crypto";
+import { beforeEach, describe, expect, it } from "vitest";
 import { z } from "zod";
-import { agentOrchestrator } from "../../src/tools/agent-orchestrator.js";
 import {
 	type A2AContext,
 	createA2AContext,
@@ -37,7 +37,7 @@ describe("A2A Coverage Boost", () => {
 	describe("async-patterns comprehensive coverage", () => {
 		it("should cover mapReduceTools with failures (line 49)", async () => {
 			const failingTool = uniqueToolName("map-fail");
-			let calls = 0;
+			let _calls = 0;
 
 			toolRegistry.register(
 				{
@@ -47,7 +47,7 @@ describe("A2A Coverage Boost", () => {
 					canInvoke: [failingTool], // Allow self-invocation
 				},
 				async (args) => {
-					calls++;
+					_calls++;
 					const { shouldFail } = args as { shouldFail: boolean };
 					if (shouldFail) {
 						return { success: false, error: "Failed" };
@@ -1108,7 +1108,7 @@ describe("A2A Coverage Boost", () => {
 					inputSchema: z.object({ key: z.string() }),
 					canInvoke: [dedupTool],
 				},
-				async (args) => {
+				async (_args) => {
 					callCount++;
 					return { success: true, data: `result-${callCount}` };
 				},
@@ -1120,7 +1120,7 @@ describe("A2A Coverage Boost", () => {
 			context.executionLog.push({
 				timestamp: new Date(),
 				toolName: dedupTool,
-				inputHash: require("crypto")
+				inputHash: crypto
 					.createHash("sha256")
 					.update(inputHash)
 					.digest("hex")
@@ -1199,7 +1199,10 @@ describe("A2A Coverage Boost", () => {
 			);
 		});
 
-		it("should handle custom plan with non-object args", async () => {
+		// NOTE: The following tests are for the OLD agent-orchestrator implementation
+		// with mode="template" and mode="custom" API. This API is being replaced.
+		// Tests for the new action-based API are in agent-orchestrator.integration.spec.ts
+		it.skip("should handle custom plan with non-object args", async () => {
 			const result = await agentOrchestrator({
 				mode: "custom",
 				executionPlan: {
@@ -1221,7 +1224,7 @@ describe("A2A Coverage Boost", () => {
 			expect(parsed.success).toBeDefined();
 		});
 
-		it("should execute quality-audit template", async () => {
+		it.skip("should execute quality-audit template", async () => {
 			const result = await agentOrchestrator({
 				mode: "template",
 				template: "quality-audit",
@@ -1236,7 +1239,7 @@ describe("A2A Coverage Boost", () => {
 			expect(result.content).toBeDefined();
 		});
 
-		it("should execute security-scan template", async () => {
+		it.skip("should execute security-scan template", async () => {
 			const result = await agentOrchestrator({
 				mode: "template",
 				template: "security-scan",
@@ -1250,7 +1253,7 @@ describe("A2A Coverage Boost", () => {
 			expect(result.content).toBeDefined();
 		});
 
-		it("should execute code-analysis-pipeline template", async () => {
+		it.skip("should execute code-analysis-pipeline template", async () => {
 			const result = await agentOrchestrator({
 				mode: "template",
 				template: "code-analysis-pipeline",
@@ -1265,7 +1268,7 @@ describe("A2A Coverage Boost", () => {
 			expect(result.content).toBeDefined();
 		});
 
-		it("should execute documentation-generation template", async () => {
+		it.skip("should execute documentation-generation template", async () => {
 			const result = await agentOrchestrator({
 				mode: "template",
 				template: "documentation-generation",
@@ -1279,7 +1282,7 @@ describe("A2A Coverage Boost", () => {
 			expect(result.content).toBeDefined();
 		});
 
-		it("should include visualization with mermaid diagram", async () => {
+		it.skip("should include visualization with mermaid diagram", async () => {
 			const result = await agentOrchestrator({
 				mode: "custom",
 				executionPlan: {
@@ -1302,7 +1305,7 @@ describe("A2A Coverage Boost", () => {
 			expect(parsed.visualization).toContain("graph TD");
 		});
 
-		it("should use custom correlationId from config", async () => {
+		it.skip("should use custom correlationId from config", async () => {
 			const result = await agentOrchestrator({
 				mode: "custom",
 				executionPlan: {
@@ -1326,7 +1329,7 @@ describe("A2A Coverage Boost", () => {
 			expect(parsed.summary.correlationId).toBe("custom-correlation-123");
 		});
 
-		it("should handle error in template mode without template name", async () => {
+		it.skip("should handle error in template mode without template name", async () => {
 			const result = await agentOrchestrator({
 				mode: "template",
 				includeTrace: true,
@@ -1337,7 +1340,7 @@ describe("A2A Coverage Boost", () => {
 			expect(parsed.error).toContain("Template name is required");
 		});
 
-		it("should handle error in custom mode without execution plan", async () => {
+		it.skip("should handle error in custom mode without execution plan", async () => {
 			const result = await agentOrchestrator({
 				mode: "custom",
 				includeTrace: true,

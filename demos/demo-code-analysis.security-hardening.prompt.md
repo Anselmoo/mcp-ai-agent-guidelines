@@ -8,7 +8,7 @@ description: 'Security vulnerability analysis analysis and hardening recommendat
 ## 🛡️ Security Hardening Prompt Template
 
 ### Metadata
-- Updated: 2026-01-01
+- Updated: 2026-01-07
 - Source tool: mcp_ai-agent-guid_security-hardening-prompt-builder
 - Suggested filename: security-hardening-vulnerability-analysis-prompt.prompt.md
 
@@ -148,6 +148,52 @@ Based on the provided code context, pay special attention to:
 - **Context-Specific**: Review payment processing for PCI DSS compliance
 - Verify no storage of sensitive authentication data (CVV, full track data)
 - Check for proper data retention and disposal procedures
+
+## Core Security Checks (includes OWASP Top 10)
+- [OWASP-A01] Broken Access Control: Verify authorization on sensitive operations and enforce least privilege.
+- [OWASP-A02] Cryptographic Failures: Ensure strong encryption for data in transit and at rest with proper key handling.
+- [OWASP-A03] Injection: Check for SQL/NoSQL/OS/LDAP injection and require parameterized inputs.
+- [OWASP-A04] Insecure Design: Confirm threat modeling, secure defaults, and defense-in-depth patterns.
+- [OWASP-A05] Security Misconfiguration: Validate headers, error handling, TLS, and hardened runtime configuration.
+- [OWASP-A06] Vulnerable and Outdated Components: Review dependencies for CVEs and enforce supply-chain security checks.
+- [OWASP-A07] Identification and Authentication Failures: Assess credential handling, MFA, session controls, and brute-force protections.
+- [OWASP-A08] Software and Data Integrity Failures: Verify code signing, update validation, and integrity of pipelines and artifacts.
+- [OWASP-A09] Security Logging and Monitoring Failures: Ensure security events are logged, monitored, and trigger alerting with retention.
+- [OWASP-A10] Server-Side Request Forgery: Check SSRF protections on outbound calls, allowlists, and metadata service access.
+- [SCOPE-1] Input Validation Review: Evaluate Input Validation controls within the provided context.
+- [SCOPE-2] Authentication Review: Evaluate Authentication controls within the provided context.
+- [SCOPE-3] Authorization Review: Evaluate Authorization controls within the provided context.
+- [SCOPE-4] Data Encryption Review: Evaluate Data Encryption controls within the provided context.
+- [SCOPE-5] Session Management Review: Evaluate Session Management controls within the provided context.
+
+## Recommendations
+- Mitigate Broken Access Control: Provide remediation guidance, validation steps, and test cases addressing Verify authorization on sensitive operations and enforce least privilege.
+- Mitigate Cryptographic Failures: Provide remediation guidance, validation steps, and test cases addressing Ensure strong encryption for data in transit and at rest with proper key handling.
+- Mitigate Injection: Provide remediation guidance, validation steps, and test cases addressing Check for SQL/NoSQL/OS/LDAP injection and require parameterized inputs.
+- Mitigate Insecure Design: Provide remediation guidance, validation steps, and test cases addressing Confirm threat modeling, secure defaults, and defense-in-depth patterns.
+- Mitigate Security Misconfiguration: Provide remediation guidance, validation steps, and test cases addressing Validate headers, error handling, TLS, and hardened runtime configuration.
+- Mitigate Vulnerable and Outdated Components: Provide remediation guidance, validation steps, and test cases addressing Review dependencies for CVEs and enforce supply-chain security checks.
+- Mitigate Identification and Authentication Failures: Provide remediation guidance, validation steps, and test cases addressing Assess credential handling, MFA, session controls, and brute-force protections.
+- Mitigate Software and Data Integrity Failures: Provide remediation guidance, validation steps, and test cases addressing Verify code signing, update validation, and integrity of pipelines and artifacts.
+- Mitigate Security Logging and Monitoring Failures: Provide remediation guidance, validation steps, and test cases addressing Ensure security events are logged, monitored, and trigger alerting with retention.
+- Mitigate Server-Side Request Forgery: Provide remediation guidance, validation steps, and test cases addressing Check SSRF protections on outbound calls, allowlists, and metadata service access.
+- Mitigate Input Validation Review: Provide remediation guidance, validation steps, and test cases addressing Evaluate Input Validation controls within the provided context.
+- Mitigate Authentication Review: Provide remediation guidance, validation steps, and test cases addressing Evaluate Authentication controls within the provided context.
+- Mitigate Authorization Review: Provide remediation guidance, validation steps, and test cases addressing Evaluate Authorization controls within the provided context.
+- Mitigate Data Encryption Review: Provide remediation guidance, validation steps, and test cases addressing Evaluate Data Encryption controls within the provided context.
+- Mitigate Session Management Review: Provide remediation guidance, validation steps, and test cases addressing Evaluate Session Management controls within the provided context.
+
+## Compliance Controls
+- OWASP-Top-10: Map findings to OWASP Top 10 risks; Validate coverage across authentication, access control, and injection (Context: Express.js API endpoint handling user authentication and payment processing:
+
+```javascript
+app.post('/api/login', (req, res) => {
+	const { username, password })
+- PCI-DSS: Encrypt cardholder data in transit and at rest; Restrict access and log all access to cardholder environments (Context: Express.js API endpoint handling user authentication and payment processing:
+
+```javascript
+app.post('/api/login', (req, res) => {
+	const { username, password })
 
 ## Security Analysis Framework
 

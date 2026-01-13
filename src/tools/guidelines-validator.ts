@@ -3,7 +3,7 @@ import {
 	CATEGORY_CONFIG,
 	type CategoryConfig,
 } from "./config/guidelines-config.js";
-import { buildFurtherReadingSection } from "./shared/prompt-utils.js";
+import { handleToolError } from "./shared/error-handler.js";
 
 const GuidelinesValidationSchema = z.object({
 	practiceDescription: z.string(),
@@ -32,49 +32,41 @@ interface ValidationResult {
 }
 
 export async function guidelinesValidator(args: unknown) {
-	// Accept alias 'description' for practiceDescription for broader compatibility
-	const pre = ((): unknown => {
-		if (args && typeof args === "object" && args !== null) {
-			const obj = args as Record<string, unknown>;
-			if (
-				obj.practiceDescription === undefined &&
-				typeof obj.description === "string"
-			) {
-				return { ...obj, practiceDescription: obj.description };
+	try {
+		// Accept alias 'description' for practiceDescription for broader compatibility
+		const pre = ((): unknown => {
+			if (args && typeof args === "object" && args !== null) {
+				const obj = args as Record<string, unknown>;
+				if (
+					obj.practiceDescription === undefined &&
+					typeof obj.description === "string"
+				) {
+					return { ...obj, practiceDescription: obj.description };
+				}
 			}
-		}
-		return args;
-	})();
-	const input = GuidelinesValidationSchema.parse(pre);
+			return args;
+		})();
+		const input = GuidelinesValidationSchema.parse(pre);
 
-	const validation = validateAgainstGuidelines(input);
-	const references = input.includeReferences
-		? buildFurtherReadingSection(
-				buildCategoryReferences(input.category, true) as Array<{
-					title: string;
-					url: string;
-					description: string;
-				}>,
-			)
-		: undefined;
-	const metadata = input.includeMetadata
-		? [
-				"### Metadata",
-				`- Updated: ${new Date().toISOString().slice(0, 10)}`,
-				"- Source tool: mcp_ai-agent-guid_guidelines-validator",
-				input.inputFile ? `- Input file: ${input.inputFile}` : undefined,
-				`- Category: ${input.category}`,
-				"",
-			]
-				.filter(Boolean)
-				.join("\n")
-		: "";
+		const validation = validateAgainstGuidelines(input);
+		const metadata = input.includeMetadata
+			? [
+					"### Metadata",
+					`- Updated: ${new Date().toISOString().slice(0, 10)}`,
+					"- Source tool: mcp_ai-agent-guid_guidelines-validator",
+					input.inputFile ? `- Input file: ${input.inputFile}` : undefined,
+					`- Category: ${input.category}`,
+					"",
+				]
+					.filter(Boolean)
+					.join("\n")
+			: "";
 
-	return {
-		content: [
-			{
-				type: "text",
-				text: `## ✅ AI Agent Development Guidelines Validation
+		return {
+			content: [
+				{
+					type: "text",
+					text: `## ✅ AI Agent Development Guidelines Validation
 
 ${metadata}
 
@@ -117,27 +109,13 @@ ${validation.recommendations.map((rec, index) => `${index + 1}. 🔧 ${rec}`).jo
 
 ### 📚 Best Practices for ${input.category.charAt(0).toUpperCase() + input.category.slice(1)}
 ${validation.bestPractices.map((practice, index) => `${index + 1}. 📋 ${practice}`).join("\n")}
-
-### 🔗 Guidelines Reference
-For detailed information on AI agent development best practices, refer to:
-- **Hierarchical Prompting**: Structure prompts in layers of increasing specificity
-- **Code Hygiene**: Maintain clean, well-documented, and regularly refactored code
-- **Memory Optimization**: Implement efficient context management and caching
-- **Visualization**: Use Mermaid diagrams for clear system documentation
-- **Sprint Planning**: Apply data-driven timeline estimation and risk assessment
-- **Model Selection**: Choose appropriate models based on task requirements and constraints
-
-### ♻️ Continuous Improvement
-- Regular validation against updated guidelines
-- Peer review of development practices
-- Monitoring of industry best practices evolution
-- Iterative refinement based on project outcomes
-${references ? `\n${references}\n` : ""}
-\n### ⚠️ Disclaimer\n- These are recommendations, not guarantees. Validate with your context and current provider documentation.
 `,
-			},
-		],
-	};
+				},
+			],
+		};
+	} catch (error) {
+		return handleToolError(error);
+	}
 }
 
 function validateAgainstGuidelines(
@@ -184,85 +162,6 @@ function validateAgainstGuidelines(
 		recommendations,
 		bestPractices: config.bestPractices,
 	};
-}
-
-function buildCategoryReferences(
-	category: string,
-	asList = false,
-): Array<{ title: string; url: string; description: string }> | string {
-	const common = [
-		{
-			title: "Prompt Caching",
-			url: "https://www.anthropic.com/news/prompt-caching",
-			description: "Anthropic's guide to efficient prompt caching strategies",
-		},
-		{
-			title: "Mermaid.js",
-			url: "https://github.com/mermaid-js/mermaid",
-			description: "JavaScript library for generating diagrams from text",
-		},
-	];
-	const byCat: Record<
-		string,
-		Array<{ title: string; url: string; description: string }>
-	> = {
-		prompting: [
-			{
-				title: "Hierarchical Prompting",
-				url: "https://relevanceai.com/prompt-engineering/master-hierarchical-prompting-for-better-ai-interactions",
-				description: "Master hierarchical prompting for better AI interactions",
-			},
-			{
-				title: "Prompt Engineering Best Practices 2025",
-				url: "https://www.dataunboxed.io/blog/the-complete-guide-to-prompt-engineering-15-essential-techniques-for-2025",
-				description: "15 essential techniques for modern prompt engineering",
-			},
-		],
-		"code-management": [
-			{
-				title: "Refactoring Legacy Code",
-				url: "https://graphite.dev/guides/refactoring-legacy-code-best-practices-techniques",
-				description:
-					"Best practices and techniques for legacy code refactoring",
-			},
-		],
-		architecture: [
-			{
-				title: "Event-Driven Architecture Patterns",
-				url: "https://martinfowler.com/articles/201701-event-driven.html",
-				description:
-					"Martin Fowler on event-driven architecture and microservices",
-			},
-		],
-		visualization: [
-			{
-				title: "Kubernetes Diagram Guide",
-				url: "https://kubernetes.io/docs/contribute/style/diagram-guide/",
-				description:
-					"Official guide for creating Kubernetes architecture diagrams",
-			},
-		],
-		memory: [
-			{
-				title: "Prompt Caching Documentation",
-				url: "https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching",
-				description: "Comprehensive docs on Claude's prompt caching feature",
-			},
-		],
-		workflow: [
-			{
-				title: "AI-Assisted Sprint Planning Tools 2025",
-				url: "https://www.zenhub.com/blog-posts/the-7-best-ai-assisted-sprint-planning-tools-for-agile-teams-in-2025",
-				description: "ZenHub's guide to modern sprint planning tools",
-			},
-		],
-	} as const;
-	const set = [...(byCat[category as keyof typeof byCat] || []), ...common];
-	return asList
-		? set
-		: set
-				.map((r) => (typeof r === "string" ? r : `${r.title}: ${r.url}`))
-				.join("\n");
 }
 
 // Legacy per-category validators replaced by config-driven approach above.

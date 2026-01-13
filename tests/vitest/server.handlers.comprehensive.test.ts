@@ -29,7 +29,7 @@ vi.spyOn(console, "error").mockImplementation(() => {});
 
 describe("MCP Server Handlers - Comprehensive Coverage", () => {
 	describe("Tool Definitions Coverage", () => {
-		it("should list all 22 expected tools with complete schemas", async () => {
+		it("should list all 23 expected tools with complete schemas", async () => {
 			await import("../../src/index.ts");
 
 			const listToolsHandler = capturedHandlers[0]?.handler;
@@ -50,6 +50,7 @@ describe("MCP Server Handlers - Comprehensive Coverage", () => {
 				"domain-neutral-prompt-builder",
 				"security-hardening-prompt-builder",
 				"sprint-timeline-calculator",
+				"speckit-generator",
 				"model-compatibility-checker",
 				"guidelines-validator",
 				"semantic-code-analyzer",
@@ -240,7 +241,7 @@ describe("MCP Server Handlers - Comprehensive Coverage", () => {
 				{
 					name: "project-onboarding",
 					args: {
-						projectPath: "/test/project",
+						projectPath: process.cwd(),
 					},
 				},
 				{
@@ -290,6 +291,15 @@ describe("MCP Server Handlers - Comprehensive Coverage", () => {
 						goal: "Create design system",
 						requirements: ["Accessibility", "Scalability"],
 						constraints: [],
+					},
+				},
+				{
+					name: "speckit-generator",
+					args: {
+						title: "Test Spec-Kit",
+						overview: "Test overview",
+						objectives: [{ description: "Test objective" }],
+						requirements: [{ description: "Test requirement" }],
 					},
 				},
 			];

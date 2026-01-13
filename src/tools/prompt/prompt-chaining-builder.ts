@@ -1,4 +1,7 @@
 import { z } from "zod";
+import { emitDeprecationWarning } from "../shared/deprecation.js";
+import { validationError } from "../shared/error-factory.js";
+import { handleToolError } from "../shared/error-handler.js";
 import {
 	buildFurtherReadingSection,
 	buildMetadataSection,
@@ -76,31 +79,42 @@ type ChainStep = z.infer<typeof ChainStepSchema>;
  * @returns Formatted chain specification with visualization
  */
 export async function promptChainingBuilder(args: unknown) {
-	const input = PromptChainingSchema.parse(args);
+	try {
+		emitDeprecationWarning({
+			tool: "prompt-chaining-builder",
+			replacement: "prompt-hierarchy",
+			deprecatedIn: "v0.14.0",
+			removedIn: "v0.15.0",
+		});
 
-	// Validate dependencies are acyclic and reference valid steps
-	validateDependencies(input.steps);
+		const input = PromptChainingSchema.parse(args);
 
-	const chainPrompt = buildChainPrompt(input);
-	const visualization = input.includeVisualization
-		? buildChainVisualization(input.steps)
-		: "";
-	const metadata = input.includeMetadata
-		? buildMetadataSection({
-				sourceTool: "mcp_ai-agent-guid_prompt-chaining-builder",
-				filenameHint: `${slugify(input.chainName)}.chain.md`,
-			})
-		: "";
-	const references = input.includeReferences ? buildChainReferences() : "";
+		// Validate dependencies are acyclic and reference valid steps
+		validateDependencies(input.steps);
 
-	return {
-		content: [
-			{
-				type: "text",
-				text: `# 🔗 Prompt Chain: ${input.chainName}\n\n${metadata}${input.description ? `## Description\n${input.description}\n\n` : ""}${chainPrompt}\n\n${visualization}${references}`,
-			},
-		],
-	};
+		const chainPrompt = buildChainPrompt(input);
+		const visualization = input.includeVisualization
+			? buildChainVisualization(input.steps)
+			: "";
+		const metadata = input.includeMetadata
+			? buildMetadataSection({
+					sourceTool: "mcp_ai-agent-guid_prompt-chaining-builder",
+					filenameHint: `${slugify(input.chainName)}.chain.md`,
+				})
+			: "";
+		const references = input.includeReferences ? buildChainReferences() : "";
+
+		return {
+			content: [
+				{
+					type: "text",
+					text: `# 🔗 Prompt Chain: ${input.chainName}\n\n${metadata}${input.description ? `## Description\n${input.description}\n\n` : ""}${chainPrompt}\n\n${visualization}${references}`,
+				},
+			],
+		};
+	} catch (error) {
+		return handleToolError(error);
+	}
 }
 
 /**
@@ -124,8 +138,9 @@ function validateDependencies(steps: ChainStep[]): void {
 		for (const dep of step.dependencies || []) {
 			// Check if dependency is a step name or output key
 			if (!stepNames.has(dep) && !outputKeys.has(dep)) {
-				throw new Error(
+				throw validationError(
 					`Step "${step.name}" has invalid dependency "${dep}". Must reference an existing step name or output key.`,
+					{ step: step.name, dependency: dep },
 				);
 			}
 		}

@@ -1,7 +1,7 @@
 ## 🗓️ Sprint Timeline Calculation
 
 ### Metadata
-- **Updated:** 2026-01-01
+- **Updated:** 2026-01-07
 - **Source tool:** mcp_ai-agent-guid_sprint-timeline-calculator
 
 
@@ -38,35 +38,14 @@
 3. Plan for 20% buffer time to handle unexpected issues
 4. Review and adjust velocity after each sprint based on actual completion
 
-### Timeline Optimization Tips
-- **Prioritize high-value tasks** early in the timeline
-- **Address dependencies** before dependent tasks
-- **Plan for 80% capacity** to account for meetings, code reviews, and unexpected issues
-- **Include buffer time** for testing and bug fixes
-- **Regular velocity tracking** to adjust future estimations
-- **Consider skill distribution** when assigning tasks
-
-### Velocity Tracking Formula
-`Velocity = Completed Story Points / Sprint Duration`
-
-Current calculations based on:
-- Industry average: 8-10 story points per developer per sprint
-- Adjusted for team size and sprint length
-- Factoring in 20% overhead for meetings and coordination
-- Using greedy optimization strategy with dependency-aware scheduling
-
-### Gantt (Mermaid)
-```mermaid
-gantt
-	dateFormat  YYYY-MM-DD
-	title Sprint Plan
-%% Accessibility: Title=Project Sprint Plan; Description=Gantt chart of sprints and tasks over time. %%
+### Gantt Chart (Sprint Timeline)
+`
   section Sprint 1
-  Refactor functions :s1t0, 2026-01-01, 4d
-  Add tests :s1t1, 2026-01-05, 5d
-  Improve logging :s1t2, 2026-01-10, 3d
-  Docs :s1t3, 2026-01-13, 2d
-```
+  Refactor functions :s1t0, 2026-01-07, 4d
+  Add tests :s1t1, 2026-01-11, 5d
+  Improve logging :s1t2, 2026-01-16, 3d
+  Docs :s1t3, 2026-01-19, 2d
+`
 
 ## Further Reading
 

@@ -21,6 +21,7 @@ export type ArtifactType =
 	| "adr"
 	| "specification"
 	| "roadmap"
+	| "speckit"
 	| "diagram"
 	| "template"
 	| "validation"

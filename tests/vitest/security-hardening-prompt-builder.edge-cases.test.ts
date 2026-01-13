@@ -133,57 +133,51 @@ describe("security-hardening-prompt-builder edge cases", () => {
 		expect(text).not.toContain("## Framework-Specific Considerations");
 	});
 
-	it("should validate invalid security focus", async () => {
-		await expect(
-			securityHardeningPromptBuilder({
-				codeContext: "Test application",
-				securityFocus: "invalid-focus" as any,
-			}),
-		).rejects.toThrow();
+	it("should return error for invalid security focus", async () => {
+		const result = (await securityHardeningPromptBuilder({
+			codeContext: "Test application",
+			securityFocus: "invalid-focus" as any,
+		})) as { isError?: boolean; content: { text: string }[] };
+		expect(result.isError).toBe(true);
 	});
 
-	it("should validate invalid risk tolerance", async () => {
-		await expect(
-			securityHardeningPromptBuilder({
-				codeContext: "Test application",
-				riskTolerance: "invalid-tolerance" as any,
-			}),
-		).rejects.toThrow();
+	it("should return error for invalid risk tolerance", async () => {
+		const result = (await securityHardeningPromptBuilder({
+			codeContext: "Test application",
+			riskTolerance: "invalid-tolerance" as any,
+		})) as { isError?: boolean; content: { text: string }[] };
+		expect(result.isError).toBe(true);
 	});
 
-	it("should validate invalid compliance standard", async () => {
-		await expect(
-			securityHardeningPromptBuilder({
-				codeContext: "Test application",
-				complianceStandards: ["INVALID-STANDARD"] as any,
-			}),
-		).rejects.toThrow();
+	it("should return error for invalid compliance standard", async () => {
+		const result = (await securityHardeningPromptBuilder({
+			codeContext: "Test application",
+			complianceStandards: ["INVALID-STANDARD"] as any,
+		})) as { isError?: boolean; content: { text: string }[] };
+		expect(result.isError).toBe(true);
 	});
 
-	it("should validate invalid analysis scope", async () => {
-		await expect(
-			securityHardeningPromptBuilder({
-				codeContext: "Test application",
-				analysisScope: ["invalid-scope"] as any,
-			}),
-		).rejects.toThrow();
+	it("should return error for invalid analysis scope", async () => {
+		const result = (await securityHardeningPromptBuilder({
+			codeContext: "Test application",
+			analysisScope: ["invalid-scope"] as any,
+		})) as { isError?: boolean; content: { text: string }[] };
+		expect(result.isError).toBe(true);
 	});
 
-	it("should validate invalid output format", async () => {
-		await expect(
-			securityHardeningPromptBuilder({
-				codeContext: "Test application",
-				outputFormat: "invalid-format" as any,
-			}),
-		).rejects.toThrow();
+	it("should return error for invalid output format", async () => {
+		const result = (await securityHardeningPromptBuilder({
+			codeContext: "Test application",
+			outputFormat: "invalid-format" as any,
+		})) as { isError?: boolean; content: { text: string }[] };
+		expect(result.isError).toBe(true);
 	});
 
-	it("should require codeContext parameter", async () => {
-		await expect(
-			securityHardeningPromptBuilder({
-				// missing codeContext
-			}),
-		).rejects.toThrow();
+	it("should return error when codeContext parameter missing", async () => {
+		const result = (await securityHardeningPromptBuilder({
+			// missing codeContext
+		})) as { isError?: boolean; content: { text: string }[] };
+		expect(result.isError).toBe(true);
 	});
 
 	it("should handle provider-specific tips", async () => {

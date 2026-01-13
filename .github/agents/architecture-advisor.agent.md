@@ -2,7 +2,7 @@
 name: Architecture-Advisor
 description: Design pattern recommendations and ADR generation using project patterns
 tools:
-  - shell
+  - execute
   - read
   - edit
   - execute
@@ -10,7 +10,7 @@ tools:
   - search
   - todo
   - web
-  - runSubagent
+  - agent
   - ai-agent-guidelines/design-assistant
   - ai-agent-guidelines/architecture-design-prompt-builder
   - ai-agent-guidelines/mermaid-diagram-generator
@@ -19,8 +19,19 @@ tools:
   - sequentialthinking/*
   - fetch/*
   - context7/*
-  - agent
-
+handoffs:
+  - label: "Implement Design"
+    agent: MCP-Tool-Builder
+    prompt: "Implement architecture. Design: {{design}}. Follow ADR decisions."
+  - label: "Security Review"
+    agent: Security-Auditor
+    prompt: "Security assessment for architecture. Design: {{design}}. Threat modeling."
+  - label: "Performance Review"
+    agent: Performance-Optimizer
+    prompt: "Performance analysis for design. Architecture: {{architecture}}. Identify bottlenecks."
+  - label: "Document Architecture"
+    agent: Documentation-Generator
+    prompt: "Document architecture. ADRs: {{adrs}}. Create architecture docs."
 ---
 
 # Architecture Advisor Agent

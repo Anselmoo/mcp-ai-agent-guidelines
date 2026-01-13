@@ -1,6 +1,17 @@
 // Design Assistant - Main orchestrator/facade for the deterministic design framework
 import { z } from "zod";
-import { ConfigurationError } from "../shared/errors.js";
+import { getFeatureFlags } from "../../config/feature-flags.js";
+import { polyglotGateway } from "../../gateway/polyglot-gateway.js";
+import {
+	CrossCuttingCapability,
+	OutputApproach,
+} from "../../strategies/output-strategy.js";
+import {
+	missingRequiredError,
+	validationError,
+} from "../shared/error-factory.js";
+import { handleToolError } from "../shared/error-handler.js";
+import { logger } from "../shared/logger.js";
 import { confirmationModule } from "./confirmation-module.js";
 import {
 	constraintManager,
@@ -54,12 +65,27 @@ const _DesignAssistantRequestSchema = z.object({
 	constraintConfig: z.any().optional(),
 	methodologySignals: z.any().optional(), // MethodologySignals
 	artifactTypes: z
-		.array(z.enum(["adr", "specification", "roadmap"]))
+		.array(z.enum(["adr", "specification", "roadmap", "speckit"]))
 		.optional(),
 	includeTemplates: z.boolean().optional(),
 	includeSpace7Instructions: z.boolean().optional(),
 	customInstructions: z.array(z.string()).optional(),
 	metadata: z.record(z.unknown()).optional().default({}),
+	outputFormat: z
+		.enum(["chat", "rfc", "adr", "sdd", "togaf", "enterprise", "speckit"])
+		.optional(),
+	crossCutting: z
+		.array(
+			z.enum([
+				"workflow",
+				"shell-script",
+				"diagram",
+				"config",
+				"issues",
+				"pr-template",
+			]),
+		)
+		.optional(),
 });
 
 export interface DesignAssistantRequest {
@@ -86,11 +112,27 @@ export interface DesignAssistantRequest {
 	constraintId?: string;
 	constraintConfig?: unknown;
 	methodologySignals?: MethodologySignals;
-	artifactTypes?: ("adr" | "specification" | "roadmap")[];
+	artifactTypes?: ("adr" | "specification" | "roadmap" | "speckit")[];
 	includeTemplates?: boolean;
 	includeSpace7Instructions?: boolean;
 	customInstructions?: string[];
 	metadata?: Record<string, unknown>;
+	outputFormat?:
+		| "chat"
+		| "rfc"
+		| "adr"
+		| "sdd"
+		| "togaf"
+		| "enterprise"
+		| "speckit";
+	crossCutting?: (
+		| "workflow"
+		| "shell-script"
+		| "diagram"
+		| "config"
+		| "issues"
+		| "pr-template"
+	)[];
 }
 
 export interface DesignAssistantResponse {
@@ -109,6 +151,162 @@ export interface DesignAssistantResponse {
 	coverageReport?: unknown;
 	consistencyEnforcement?: ConsistencyEnforcementResult;
 	data?: Record<string, unknown>;
+}
+
+/**
+ * Map outputFormat string to OutputApproach enum.
+ */
+function mapOutputFormat(format: string | undefined): OutputApproach {
+	if (!format) return OutputApproach.CHAT;
+
+	const mapping: Record<string, OutputApproach> = {
+		chat: OutputApproach.CHAT,
+		rfc: OutputApproach.RFC,
+		adr: OutputApproach.ADR,
+		sdd: OutputApproach.SDD,
+		togaf: OutputApproach.TOGAF,
+		enterprise: OutputApproach.ENTERPRISE,
+		speckit: OutputApproach.SPECKIT,
+	};
+
+	return mapping[format.toLowerCase()] ?? OutputApproach.CHAT;
+}
+
+/**
+ * Map crossCutting strings to CrossCuttingCapability enum.
+ * Validates all capabilities and throws error if any are unknown.
+ */
+function mapCrossCutting(
+	capabilities: string[] | undefined,
+): CrossCuttingCapability[] {
+	if (!capabilities?.length) return [];
+
+	const mapping: Record<string, CrossCuttingCapability> = {
+		workflow: CrossCuttingCapability.WORKFLOW,
+		"shell-script": CrossCuttingCapability.SHELL_SCRIPT,
+		diagram: CrossCuttingCapability.DIAGRAM,
+		config: CrossCuttingCapability.CONFIG,
+		issues: CrossCuttingCapability.ISSUES,
+		"pr-template": CrossCuttingCapability.PR_TEMPLATE,
+	};
+
+	const resolved: CrossCuttingCapability[] = [];
+	const unknownCapabilities: string[] = [];
+
+	for (const rawCap of capabilities) {
+		const key = rawCap.toLowerCase();
+		const mapped = mapping[key];
+
+		if (mapped === undefined) {
+			unknownCapabilities.push(rawCap);
+		} else {
+			resolved.push(mapped);
+		}
+	}
+
+	if (unknownCapabilities.length > 0) {
+		throw validationError(
+			`Unknown crossCutting capabilities: ${unknownCapabilities.join(", ")}`,
+			{ unknownCapabilities, validCapabilities: Object.keys(mapping) },
+		);
+	}
+
+	return resolved;
+}
+
+/**
+ * Zod schema for validating gateway artifacts structure.
+ */
+const GatewayArtifactsSchema = z.object({
+	primary: z.object({
+		name: z.string(),
+		content: z.string(),
+		format: z.enum(["markdown", "json", "yaml"]),
+	}),
+	secondary: z
+		.array(
+			z.object({
+				name: z.string(),
+				content: z.string(),
+				format: z.enum(["markdown", "json", "yaml"]),
+			}),
+		)
+		.optional(),
+	crossCutting: z
+		.array(
+			z.object({
+				type: z.string(),
+				name: z.string(),
+				content: z.string(),
+			}),
+		)
+		.optional(),
+});
+
+/**
+ * Format gateway artifacts as DesignAssistantResponse.
+ * Validates artifacts structure before formatting.
+ */
+function formatGatewayResponse(
+	sessionId: string,
+	artifacts: unknown,
+): DesignAssistantResponse {
+	const parseResult = GatewayArtifactsSchema.safeParse(artifacts);
+
+	if (!parseResult.success) {
+		throw validationError("Invalid gateway artifacts structure", {
+			sessionId,
+			issues: parseResult.error.issues,
+		});
+	}
+
+	const artifactsData = parseResult.data;
+
+	const formattedArtifacts: Artifact[] = [
+		{
+			id: `${sessionId}-primary`,
+			name: artifactsData.primary.name,
+			type: "specification" as const,
+			content: artifactsData.primary.content,
+			format: artifactsData.primary.format,
+			timestamp: new Date().toISOString(),
+			metadata: { source: "polyglot-gateway" },
+		},
+	];
+
+	if (artifactsData.secondary?.length) {
+		formattedArtifacts.push(
+			...artifactsData.secondary.map((sec, idx) => ({
+				id: `${sessionId}-secondary-${idx}`,
+				name: sec.name,
+				type: "specification" as const,
+				content: sec.content,
+				format: sec.format,
+				timestamp: new Date().toISOString(),
+				metadata: { source: "polyglot-gateway" },
+			})),
+		);
+	}
+
+	return {
+		success: true,
+		sessionId,
+		status: "gateway-rendered",
+		message: "Response rendered via PolyglotGateway",
+		recommendations: [
+			"Output formatted using new gateway strategy",
+			...(artifactsData.crossCutting?.length
+				? ["Cross-cutting artifacts included"]
+				: []),
+		],
+		artifacts: formattedArtifacts,
+		data: {
+			gatewayEnabled: true,
+			primaryFormat: artifactsData.primary.format,
+			secondaryCount: artifactsData.secondary?.length ?? 0,
+			crossCuttingCount: artifactsData.crossCutting?.length ?? 0,
+		},
+	};
 }
 
 class DesignAssistantImpl {
@@ -132,7 +330,7 @@ class DesignAssistantImpl {
 
 			this.initialized = true;
 		} catch (error) {
-			throw new ConfigurationError("Failed to initialize Design Assistant", {
+			throw validationError("Failed to initialize Design Assistant", {
 				originalError: error instanceof Error ? error.message : String(error),
 			});
 		}
@@ -187,133 +385,183 @@ class DesignAssistantImpl {
 
 	async processRequest(
 		request: DesignAssistantRequest,
-	): Promise<DesignAssistantResponse> {
-		await this.initialize();
-
-		const { action, sessionId } = request;
-
+	): Promise<DesignAssistantResponse | ReturnType<typeof handleToolError>> {
 		try {
+			await this.initialize();
+
+			const { action, sessionId } = request;
+
+			// Get domain result from service layer
+			let domainResult:
+				| DesignAssistantResponse
+				| ReturnType<typeof handleToolError>;
+
 			switch (action) {
 				case "start-session":
 					if (!request.config) {
-						throw new Error(
-							"Configuration is required for start-session action",
-						);
+						throw missingRequiredError("config", { action, sessionId });
 					}
-					return sessionManagementService.startDesignSession(
+					domainResult = await sessionManagementService.startDesignSession(
 						sessionId,
 						request.config,
 						request.constraintConfig,
 					);
+					break;
 				case "advance-phase":
-					return phaseManagementService.advancePhase(
+					domainResult = await phaseManagementService.advancePhase(
 						sessionId,
 						request.content,
 						request.phaseId,
 					);
+					break;
 				case "validate-phase":
 					if (!request.phaseId || !request.content) {
-						throw new Error(
-							"Phase ID and content are required for validate-phase action",
-						);
+						throw missingRequiredError("phaseId/content", {
+							action,
+							sessionId,
+						});
 					}
-					return phaseManagementService.validatePhase(
+					domainResult = await phaseManagementService.validatePhase(
 						sessionId,
 						request.phaseId,
 						request.content,
 					);
+					break;
 				case "evaluate-pivot":
 					if (!request.content) {
-						throw new Error("Content is required for evaluate-pivot action");
+						throw missingRequiredError("content", { action, sessionId });
 					}
-					return additionalOperationsService.evaluatePivot(
+					domainResult = await additionalOperationsService.evaluatePivot(
 						sessionId,
 						request.content,
 					);
+					break;
 				case "generate-strategic-pivot-prompt":
 					if (!request.content) {
-						throw new Error(
-							"Content is required for generate-strategic-pivot-prompt action",
-						);
+						throw missingRequiredError("content", { action, sessionId });
 					}
-					return additionalOperationsService.generateStrategicPivotPrompt(
-						sessionId,
-						request.content,
-						request.includeTemplates,
-						request.includeSpace7Instructions,
-						request.customInstructions,
-					);
+					domainResult =
+						await additionalOperationsService.generateStrategicPivotPrompt(
+							sessionId,
+							request.content,
+							request.includeTemplates,
+							request.includeSpace7Instructions,
+							request.customInstructions,
+						);
+					break;
 				case "generate-artifacts":
-					return artifactGenerationService.generateArtifacts(
+					domainResult = await artifactGenerationService.generateArtifacts(
 						sessionId,
 						request.artifactTypes || ["adr", "specification", "roadmap"],
 					);
+					break;
 				case "enforce-coverage":
 					if (!request.content) {
-						throw new Error("Content is required for enforce-coverage action");
+						throw missingRequiredError("content", { action, sessionId });
 					}
-					return consistencyService.enforceCoverage(sessionId, request.content);
+					domainResult = await consistencyService.enforceCoverage(
+						sessionId,
+						request.content,
+					);
+					break;
 				case "enforce-consistency":
-					return consistencyService.enforceConsistency(
+					domainResult = await consistencyService.enforceConsistency(
 						sessionId,
 						request.constraintId,
 						request.phaseId,
 						request.content,
 					);
+					break;
 				case "get-status":
-					return sessionManagementService.getSessionStatus(sessionId);
+					domainResult =
+						await sessionManagementService.getSessionStatus(sessionId);
+					break;
 				case "load-constraints":
 					if (!request.constraintConfig) {
-						throw new Error(
-							"Constraint configuration is required for load-constraints action",
-						);
+						throw missingRequiredError("constraintConfig", {
+							action,
+							sessionId,
+						});
 					}
-					return additionalOperationsService.loadConstraints(
+					domainResult = await additionalOperationsService.loadConstraints(
 						request.constraintConfig,
 					);
+					break;
 				case "select-methodology":
 					if (!request.methodologySignals) {
-						throw new ConfigurationError(
-							"Methodology signals are required for select-methodology action",
-							{ sessionId, action },
-						);
+						throw missingRequiredError("methodologySignals", {
+							sessionId,
+							action,
+						});
 					}
-					return additionalOperationsService.selectMethodology(
+					domainResult = await additionalOperationsService.selectMethodology(
 						sessionId,
 						request.methodologySignals,
 					);
+					break;
 				case "enforce-cross-session-consistency":
-					return consistencyService.enforceCrossSessionConsistency(sessionId);
+					domainResult =
+						await consistencyService.enforceCrossSessionConsistency(sessionId);
+					break;
 				case "generate-enforcement-prompts":
-					return consistencyService.generateEnforcementPrompts(sessionId);
+					domainResult =
+						await consistencyService.generateEnforcementPrompts(sessionId);
+					break;
 				case "generate-constraint-documentation":
-					return artifactGenerationService.generateConstraintDocumentation(
-						sessionId,
-					);
+					domainResult =
+						await artifactGenerationService.generateConstraintDocumentation(
+							sessionId,
+						);
+					break;
 				case "generate-context-aware-guidance":
 					if (!request.content) {
-						throw new Error(
-							"Content is required for generate-context-aware-guidance action",
-						);
+						throw missingRequiredError("content", { action, sessionId });
 					}
-					return this.generateContextAwareGuidance(sessionId, request.content);
+					domainResult = await this.generateContextAwareGuidance(
+						sessionId,
+						request.content,
+					);
+					break;
 				default:
-					throw new ConfigurationError(`Unknown action: ${action}`, {
+					throw validationError(`Unknown action: ${action}`, {
 						action,
 						sessionId,
 					});
 			}
+
+			// Check if gateway rendering should be applied
+			const flags = getFeatureFlags();
+
+			if (flags.usePolyglotGateway && request.outputFormat) {
+				// Use new gateway for rendering
+				try {
+					const artifacts = polyglotGateway.render({
+						domainResult,
+						domainType: "DesignAssistantResponse",
+						approach: mapOutputFormat(request.outputFormat),
+						crossCutting: mapCrossCutting(request.crossCutting),
+					});
+
+					return formatGatewayResponse(sessionId, artifacts);
+				} catch (gatewayError) {
+					// Log the error and fallback to legacy behavior
+					logger.warn("Gateway rendering failed, falling back to legacy", {
+						sessionId,
+						action,
+						outputFormat: request.outputFormat,
+						error:
+							gatewayError instanceof Error
+								? gatewayError.message
+								: String(gatewayError),
+					});
+					return domainResult;
+				}
+			}
+
+			// Legacy behavior - return domain result directly
+			return domainResult;
 		} catch (error) {
-			// Use the same error response format as services
-			return {
-				success: false,
-				sessionId,
-				status: "error",
-				message:
-					error instanceof Error ? error.message : "Unknown error occurred",
-				recommendations: ["Check request parameters and try again"],
-				artifacts: [],
-			};
+			return handleToolError(error);
 		}
 	}
 
@@ -321,10 +569,9 @@ class DesignAssistantImpl {
 	async generateContextAwareGuidance(
 		sessionId: string,
 		codeContext: string,
-	): Promise<DesignAssistantResponse> {
-		await this.initialize();
-
+	): Promise<DesignAssistantResponse | ReturnType<typeof handleToolError>> {
 		try {
+			await this.initialize();
 			const language = detectLanguage(codeContext);
 			const framework = detectFramework(codeContext);
 			const guidanceText = generateContextAwareRecommendations(codeContext);
@@ -361,15 +608,7 @@ class DesignAssistantImpl {
 				},
 			};
 		} catch (error) {
-			return {
-				success: false,
-				sessionId,
-				status: "error",
-				message:
-					error instanceof Error ? error.message : "Unknown error occurred",
-				recommendations: ["Check the code context and try again"],
-				artifacts: [],
-			};
+			return handleToolError(error);
 		}
 	}
 

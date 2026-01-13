@@ -1,10 +1,12 @@
 // Design Phase Workflow - Orchestrates the structured design process
+//
+// NOTE: This is the tool orchestration layer. Pure domain logic for session management
+// and phase transitions is available in src/domain/design/session-manager.ts and
+// src/domain/design/phase-workflow.ts. This layer adds MCP-specific concerns like
+// methodology profiles, confirmation modules, and artifact generation.
 import { z } from "zod";
-import {
-	ConfigurationError,
-	PhaseError,
-	SessionError,
-} from "../shared/errors.js";
+import { ErrorCode } from "../shared/error-codes.js";
+import { McpToolError, PhaseError, SessionError } from "../shared/errors.js";
 import { confirmationModule } from "./confirmation-module.js";
 import { constraintManager } from "./constraint-manager.js";
 import { pivotModule } from "./pivot-module.js";
@@ -68,7 +70,8 @@ class DesignPhaseWorkflowImpl {
 		switch (action) {
 			case "start":
 				if (!request.config) {
-					throw new ConfigurationError(
+					throw new McpToolError(
+						ErrorCode.CONFIG_INVALID,
 						"Configuration is required for start action",
 						{ sessionId, action },
 					);
@@ -82,7 +85,8 @@ class DesignPhaseWorkflowImpl {
 				return this.advancePhase(sessionId, request.phaseId, request.content);
 			case "complete":
 				if (!request.phaseId || !request.content) {
-					throw new ConfigurationError(
+					throw new McpToolError(
+						ErrorCode.MISSING_REQUIRED_FIELD,
 						"Phase ID and content are required for complete action",
 						{ sessionId, action },
 					);
@@ -93,10 +97,14 @@ class DesignPhaseWorkflowImpl {
 			case "status":
 				return this.getSessionStatus(sessionId);
 			default:
-				throw new ConfigurationError(`Unknown workflow action: ${action}`, {
-					action,
-					sessionId,
-				});
+				throw new McpToolError(
+					ErrorCode.CONFIG_INVALID,
+					`Unknown workflow action: ${action}`,
+					{
+						action,
+						sessionId,
+					},
+				);
 		}
 	}
 
@@ -579,3 +587,24 @@ export const designPhaseWorkflow = new DesignPhaseWorkflowImpl();
 
 // Module Implementation Status Sentinel
 export const IMPLEMENTATION_STATUS = "IMPLEMENTED" as const;
+
+/**
+ * Domain Layer Integration Note:
+ *
+ * Pure domain logic for session management and phase workflows is now available:
+ * - Session CRUD: src/domain/design/session-manager.ts
+ * - Phase transitions: src/domain/design/phase-workflow.ts
+ *
+ * These provide pure, framework-independent functions for:
+ * - createSession(), getSession(), updateSessionPhase(), etc.
+ * - canTransition(), getNextPhase(), validatePhaseCompletion(), etc.
+ *
+ * The DesignPhaseWorkflowImpl above is an orchestration layer that adds:
+ * - Methodology profile support
+ * - Confirmation module integration
+ * - Pivot evaluation
+ * - Constraint management
+ * - Artifact generation
+ *
+ * Future refactoring can migrate more logic to the domain layer as needed.
+ */

@@ -1,9 +1,21 @@
+/**
+ * OLD agent-orchestrator tests for template/custom mode API
+ * This API is being replaced by the new action-based API (see P3-014).
+ * Tests for the new API are in agent-orchestrator.integration.spec.ts
+ */
 import { beforeEach, describe, expect, it } from "vitest";
 import { z } from "zod";
-import { agentOrchestrator } from "../../src/tools/agent-orchestrator.js";
 import { toolRegistry } from "../../src/tools/shared/tool-registry.js";
 
-describe("Agent Orchestrator", () => {
+// Local stub for the deprecated agentOrchestrator API.
+// These tests are skipped, so this function should never be executed.
+const agentOrchestrator = async (_options: unknown): Promise<unknown> => {
+	throw new Error(
+		"agentOrchestrator (OLD API) is no longer available. Use the new action-based API tests instead.",
+	);
+};
+
+describe.skip("Agent Orchestrator - OLD API (template/custom mode)", () => {
 	let toolSuffix: string;
 	let testToolName: string;
 

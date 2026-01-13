@@ -8,6 +8,7 @@ import {
 	type PackageFileType,
 	type ReferenceLink,
 } from "./dependency-auditor/index.js";
+import { handleToolError } from "./shared/error-handler.js";
 import {
 	buildFurtherReadingSection,
 	buildOptionalSectionsMap,
@@ -58,125 +59,166 @@ const DependencyAuditorSchema = z.object({
 		.string()
 		.optional()
 		.describe(
-			"Content of dependency file (package.json, requirements.txt, go.mod, Cargo.toml, Gemfile, csproj, etc.)",
+			"Content of dependency file (package.json, requirements.txt, go.mod, Cargo.toml, Gemfile, csproj, etc.). Example: Full content of a package.json with dependencies object, or requirements.txt with pinned versions",
 		),
 	// Backward compatibility: packageJsonContent still works for JS/TS
 	packageJsonContent: z
 		.string()
 		.optional()
 		.describe(
-			"Content of package.json file (deprecated: use dependencyContent)",
+			"Content of package.json file (deprecated: use dependencyContent). Example: JSON string with dependencies, devDependencies, and package metadata",
 		),
 	// File type specification
 	fileType: FileTypeEnum.optional()
 		.default("auto")
 		.describe(
-			"Type of dependency file. Use 'auto' for automatic detection based on content.",
+			"Type of dependency file. Use 'auto' for automatic detection based on content. Examples: 'package.json', 'requirements.txt', 'pyproject.toml', 'go.mod', 'Cargo.toml'",
 		),
 	// Analysis options
-	checkOutdated: z.boolean().optional().default(true),
-	checkDeprecated: z.boolean().optional().default(true),
-	checkVulnerabilities: z.boolean().optional().default(true),
-	suggestAlternatives: z.boolean().optional().default(true),
-	analyzeBundleSize: z.boolean().optional().default(true),
+	checkOutdated: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe("Check for outdated version patterns. Example: true"),
+	checkDeprecated: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe("Check for deprecated packages. Example: true"),
+	checkVulnerabilities: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe("Check for known vulnerabilities. Example: true"),
+	suggestAlternatives: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe("Suggest modern alternatives to packages. Example: true"),
+	analyzeBundleSize: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe("Analyze bundle size concerns (JavaScript only). Example: true"),
 	// Output options
-	includeReferences: z.boolean().optional().default(true),
-	includeMetadata: z.boolean().optional().default(true),
-	inputFile: z.string().optional(),
+	includeReferences: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe("Include external reference links in output. Example: true"),
+	includeMetadata: z
+		.boolean()
+		.optional()
+		.default(true)
+		.describe("Include metadata section in output. Example: true"),
+	inputFile: z
+		.string()
+		.optional()
+		.describe(
+			"Reference to input file being analyzed. Example: 'package.json' or 'requirements.txt'",
+		),
 });
 
 type DependencyAuditorInput = z.infer<typeof DependencyAuditorSchema>;
 
 export async function dependencyAuditor(args: unknown) {
-	const input = DependencyAuditorSchema.parse(args);
+	try {
+		const input = DependencyAuditorSchema.parse(args);
 
-	// Get content from either new or legacy parameter
-	const content = input.dependencyContent || input.packageJsonContent;
+		// Get content from either new or legacy parameter
+		const content = input.dependencyContent || input.packageJsonContent;
 
-	if (!content) {
-		return {
-			content: [
-				{
-					type: "text",
-					text: `## ❌ Error\n\nNo dependency content provided. Please provide either 'dependencyContent' or 'packageJsonContent'.`,
-				},
-			],
-		};
-	}
+		if (!content) {
+			return {
+				content: [
+					{
+						type: "text",
+						text: `## ❌ Error\n\nNo dependency content provided. Please provide either 'dependencyContent' or 'packageJsonContent'.`,
+					},
+				],
+			};
+		}
 
-	// Determine file type and get appropriate parser
-	const fileType = input.fileType;
-	let parser = null;
+		// Determine file type and get appropriate parser
+		const fileType = input.fileType;
+		let parser = null;
 
-	if (fileType && fileType !== "auto") {
-		parser = getParserForFileType(fileType as PackageFileType);
-	}
+		if (fileType && fileType !== "auto") {
+			parser = getParserForFileType(fileType as PackageFileType);
+		}
 
-	if (!parser) {
-		parser = detectParser(content);
-	}
+		if (!parser) {
+			parser = detectParser(content);
+		}
 
-	if (!parser) {
-		// Fall back to legacy package.json handling for backward compatibility
-		return handleLegacyPackageJson(content, input);
-	}
+		if (!parser) {
+			// Fall back to legacy package.json handling for backward compatibility
+			return handleLegacyPackageJson(content, input);
+		}
 
-	// Parse and analyze using the new multi-language system
-	const parseResult = parser.parse(content);
+		// Parse and analyze using the new multi-language system
+		const parseResult = parser.parse(content);
 
-	if (parseResult.errors && parseResult.errors.length > 0) {
-		return {
-			content: [
-				{
-					type: "text",
-					text: `## ❌ Error\n\n${parseResult.errors.join("\n")}`,
-				},
-			],
-		};
-	}
+		if (parseResult.errors && parseResult.errors.length > 0) {
+			return {
+				content: [
+					{
+						type: "text",
+						text: `## ❌ Error\n\n${parseResult.errors.join("\n")}`,
+					},
+				],
+			};
+		}
 
-	const analysisResult = parser.analyze(parseResult, {
-		checkOutdated: input.checkOutdated,
-		checkDeprecated: input.checkDeprecated,
-		checkVulnerabilities: input.checkVulnerabilities,
-		suggestAlternatives: input.suggestAlternatives,
-		analyzeBundleSize: input.analyzeBundleSize,
-	});
+		const analysisResult = parser.analyze(parseResult, {
+			checkOutdated: input.checkOutdated,
+			checkDeprecated: input.checkDeprecated,
+			checkVulnerabilities: input.checkVulnerabilities,
+			suggestAlternatives: input.suggestAlternatives,
+			analyzeBundleSize: input.analyzeBundleSize,
+		});
 
-	// Build optional sections using the shared utility
-	const { references, metadata } = buildOptionalSectionsMap(input, {
-		references: {
-			key: "includeReferences",
-			builder: () =>
-				buildFurtherReadingSection(
-					getEcosystemReferences(analysisResult.ecosystem),
-				),
-		},
-		metadata: {
-			key: "includeMetadata",
-			builder: (cfg) =>
-				[
-					"### Metadata",
-					`- Updated: ${new Date().toISOString().slice(0, 10)}`,
-					"- Source tool: mcp_ai-agent-guid_dependency-auditor",
-					`- Ecosystem: ${analysisResult.ecosystem}`,
-					`- File type: ${analysisResult.fileType}`,
-					cfg.inputFile ? `- Input file: ${cfg.inputFile}` : undefined,
-					"",
-				]
-					.filter(Boolean)
-					.join("\n"),
-		},
-	});
-
-	return {
-		content: [
-			{
-				type: "text",
-				text: generateMultiLanguageReport(analysisResult, metadata, references),
+		// Build optional sections using the shared utility
+		const { references, metadata } = buildOptionalSectionsMap(input, {
+			references: {
+				key: "includeReferences",
+				builder: () =>
+					buildFurtherReadingSection(
+						getEcosystemReferences(analysisResult.ecosystem),
+					),
 			},
-		],
-	};
+			metadata: {
+				key: "includeMetadata",
+				builder: (cfg) =>
+					[
+						"### Metadata",
+						`- Updated: ${new Date().toISOString().slice(0, 10)}`,
+						"- Source tool: mcp_ai-agent-guid_dependency-auditor",
+						`- Ecosystem: ${analysisResult.ecosystem}`,
+						`- File type: ${analysisResult.fileType}`,
+						cfg.inputFile ? `- Input file: ${cfg.inputFile}` : undefined,
+						"",
+					]
+						.filter(Boolean)
+						.join("\n"),
+			},
+		});
+
+		return {
+			content: [
+				{
+					type: "text",
+					text: generateMultiLanguageReport(
+						analysisResult,
+						metadata,
+						references,
+					),
+				},
+			],
+		};
+	} catch (error) {
+		return handleToolError(error);
+	}
 }
 
 /**

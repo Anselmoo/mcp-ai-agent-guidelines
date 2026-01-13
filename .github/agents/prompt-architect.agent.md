@@ -2,7 +2,7 @@
 name: Prompt-Architect
 description: Prompt engineering and optimization using project MCP tools
 tools:
-  - shell
+  - execute
   - read
   - edit
   - execute
@@ -10,6 +10,7 @@ tools:
   - search
   - todo
   - web
+  - agent
   - ai-agent-guidelines/hierarchical-prompt-builder
   - ai-agent-guidelines/prompt-flow-builder
   - ai-agent-guidelines/prompt-chaining-builder
@@ -22,9 +23,22 @@ tools:
   - sequentialthinking/*
   - fetch/*
   - context7/*
-  - agent
-
+handoffs:
+  - label: "Implement Prompt Tool"
+    agent: MCP-Tool-Builder
+    prompt: "Implement prompt builder. Design: {{design}}. Follow patterns."
+  - label: "Test Prompts"
+    agent: TDD-Workflow
+    prompt: "Test prompt builder. Prompts: {{prompts}}. Verify output."
+  - label: "Document Prompts"
+    agent: Documentation-Generator
+    prompt: "Document prompt patterns. Patterns: {{patterns}}. Usage guide."
+  - label: "Review Quality"
+    agent: Code-Reviewer
+    prompt: "Review prompt code. Files: {{files}}. Quality check."
 ---
+
+# Prompt Architect Agent
 
 # Prompt Architect Agent
 
