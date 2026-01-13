@@ -362,20 +362,22 @@ export class ProgressTracker {
 						// Malformed line, skip it
 						return null;
 					}
-					const [hash, message, date, author, ...rest] = parts;
-					// If message contained pipes, rejoin the extra parts
-					const fullMessage =
-						rest.length > 0
-							? [message, ...rest.slice(0, -2)].join("|")
-							: message;
-					const actualDate = rest.length > 0 ? rest[rest.length - 2] : date;
-					const actualAuthor = rest.length > 0 ? rest[rest.length - 1] : author;
+
+					// Format: hash|message|date|author
+					// If message contains pipes, we need to reassemble it
+					const hash = parts[0];
+					const author = parts[parts.length - 1];
+					const date = parts[parts.length - 2];
+
+					// Everything between hash and date is the message
+					const messageParts = parts.slice(1, parts.length - 2);
+					const message = messageParts.join("|");
 
 					return {
 						hash,
-						message: fullMessage,
-						date: actualDate,
-						author: actualAuthor,
+						message,
+						date,
+						author,
 					};
 				})
 				.filter((commit): commit is GitCommit => commit !== null);

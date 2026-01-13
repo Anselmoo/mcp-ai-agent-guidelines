@@ -148,6 +148,48 @@ describe("ProgressTracker Git Integration", () => {
 			});
 		});
 
+		it("should handle custom pattern with no captured task ID", () => {
+			// Pattern that doesn't capture a task ID (no capture group)
+			const customPattern = /implements\s+\S+/gi;
+			// biome-ignore lint/suspicious/noExplicitAny: Testing private method
+			const refs = (tracker as any).extractTaskReferences(
+				"implements something",
+				customPattern,
+			);
+			// Should skip matches without captured task ID
+			expect(refs).toEqual([]);
+		});
+
+		it("should handle custom pattern with non-alphabetic action", () => {
+			// Pattern where match[0] doesn't start with alphabetic action word
+			const customPattern = /(\d+-\d+)/gi;
+			// biome-ignore lint/suspicious/noExplicitAny: Testing private method
+			const refs = (tracker as any).extractTaskReferences(
+				"123-456 task reference",
+				customPattern,
+			);
+			// Should use "custom" as default action for non-alphabetic patterns
+			expect(refs).toContainEqual({
+				taskId: "123-456",
+				action: "custom",
+			});
+		});
+
+		it("should handle custom pattern with empty action token", () => {
+			// Pattern where the action word is empty after trimming
+			const customPattern = /\s+(\S+)/gi;
+			// biome-ignore lint/suspicious/noExplicitAny: Testing private method
+			const refs = (tracker as any).extractTaskReferences(
+				"  TASK-001",
+				customPattern,
+			);
+			// Should use "custom" as default action when no valid action word
+			expect(refs).toContainEqual({
+				taskId: "TASK-001",
+				action: "custom",
+			});
+		});
+
 		it("should handle empty message", () => {
 			// biome-ignore lint/suspicious/noExplicitAny: Testing private method
 			const refs = (tracker as any).extractTaskReferences("");
@@ -261,6 +303,60 @@ describe("ProgressTracker Git Integration", () => {
 			const commits = (tracker as any).fetchCommits({});
 
 			expect(commits).toEqual([]);
+		});
+
+		it("should handle commit messages with pipe characters", () => {
+			// Commit message contains pipes that should be preserved
+			const mockOutput =
+				"abc123|Fix bug | Update feature|2026-01-13T10:00:00Z|John Doe";
+
+			vi.mocked(execFileSync).mockReturnValue(mockOutput);
+
+			// biome-ignore lint/suspicious/noExplicitAny: Testing private method
+			const commits = (tracker as any).fetchCommits({});
+
+			expect(commits).toHaveLength(1);
+			expect(commits[0].message).toBe("Fix bug | Update feature");
+			expect(commits[0].hash).toBe("abc123");
+			expect(commits[0].date).toBe("2026-01-13T10:00:00Z");
+			expect(commits[0].author).toBe("John Doe");
+		});
+
+		it("should handle commit messages with multiple pipe characters", () => {
+			// Commit message contains multiple pipes
+			const mockOutput =
+				"abc123|Feature A | Feature B | Feature C|2026-01-13T10:00:00Z|Jane Smith";
+
+			vi.mocked(execFileSync).mockReturnValue(mockOutput);
+
+			// biome-ignore lint/suspicious/noExplicitAny: Testing private method
+			const commits = (tracker as any).fetchCommits({});
+
+			expect(commits).toHaveLength(1);
+			expect(commits[0].message).toBe("Feature A | Feature B | Feature C");
+			expect(commits[0].hash).toBe("abc123");
+			expect(commits[0].date).toBe("2026-01-13T10:00:00Z");
+			expect(commits[0].author).toBe("Jane Smith");
+		});
+
+		it("should skip malformed commit lines with too few fields", () => {
+			// Malformed lines with less than 4 fields
+			const mockOutput = [
+				"abc123|closes P4-001|2026-01-13T10:00:00Z|John Doe", // Valid
+				"def456|incomplete", // Malformed - only 2 fields
+				"ghi789|also|incomplete", // Malformed - only 3 fields
+				"jkl012|fixes P4-002|2026-01-13T11:00:00Z|Jane Smith", // Valid
+			].join("\n");
+
+			vi.mocked(execFileSync).mockReturnValue(mockOutput);
+
+			// biome-ignore lint/suspicious/noExplicitAny: Testing private method
+			const commits = (tracker as any).fetchCommits({});
+
+			// Should only return the 2 valid commits, skipping malformed ones
+			expect(commits).toHaveLength(2);
+			expect(commits[0].hash).toBe("abc123");
+			expect(commits[1].hash).toBe("jkl012");
 		});
 
 		it("should filter empty lines", () => {
