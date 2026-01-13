@@ -16,6 +16,7 @@ import { OutputApproach } from "../../../../src/strategies/output-strategy.js";
 import { parseConstitution } from "../../../../src/strategies/speckit/constitution-parser.js";
 import { createProgressTracker } from "../../../../src/strategies/speckit/progress-tracker.js";
 import { SpecKitStrategy } from "../../../../src/strategies/speckit-strategy.js";
+import { logger } from "../../../../src/tools/shared/logger.js";
 import { specKitGenerator } from "../../../../src/tools/speckit-generator.js";
 import { validateSpec } from "../../../../src/tools/validate-spec.js";
 
@@ -31,7 +32,7 @@ describe("Spec-Kit Final Integration", () => {
 			constitutionContent = await fs.readFile(CONSTITUTION_PATH, "utf-8");
 			constitutionAvailable = true;
 		} catch {
-			console.warn("CONSTITUTION.md not found, using mock data");
+			logger.warn("CONSTITUTION.md not found, using mock data");
 			constitutionContent = getMockConstitution();
 		}
 	});
@@ -394,15 +395,5 @@ Major refactoring effort for improved discoverability.
 ## Constraints
 - No breaking API changes
 - TypeScript strict mode required
-`;
-}
-
-function _getSampleProgress(): string {
-	return `# Progress
-
-## Tasks
-- [ ] **TASK-001**: Add annotations
-- [ ] **TASK-002**: Extract domains
-- [ ] **TASK-003**: Update tests
 `;
 }
