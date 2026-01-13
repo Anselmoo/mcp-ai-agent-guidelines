@@ -408,6 +408,71 @@ export interface DerivedTask {
 	dependencies?: string[];
 }
 
+/**
+ * Collection of tasks with metadata.
+ *
+ * Represents all tasks for a project or specification.
+ *
+ * @interface Tasks
+ * @example
+ * ```typescript
+ * {
+ *   items: [
+ *     { id: "TASK-001", title: "Setup database", ... },
+ *     { id: "TASK-002", title: "Create API", ... }
+ *   ],
+ *   metadata: {
+ *     version: "1.0.0",
+ *     createdAt: "2026-01-13T00:00:00Z"
+ *   }
+ * }
+ * ```
+ */
+export interface Tasks {
+	/** Array of tasks */
+	items: DerivedTask[];
+
+	/** Optional metadata about the task collection */
+	metadata?: {
+		/** Version of the task list */
+		version?: string;
+		/** Creation timestamp */
+		createdAt?: string;
+		/** Last updated timestamp */
+		lastUpdated?: string;
+	};
+}
+
+/**
+ * Progress metrics for task completion.
+ *
+ * Provides statistical summary of task progress.
+ *
+ * @interface ProgressMetrics
+ * @example
+ * ```typescript
+ * {
+ *   total: 10,
+ *   completed: 7,
+ *   remaining: 3,
+ *   percentComplete: 70
+ * }
+ * ```
+ */
+export interface ProgressMetrics {
+	/** Total number of tasks */
+	total: number;
+
+	/** Number of completed tasks */
+	completed: number;
+
+	/** Number of remaining tasks */
+	remaining: number;
+
+	/** Percentage complete (0-100) */
+	percentComplete: number;
+}
+
 // ============================================================================
 // Progress Types
 // ============================================================================
