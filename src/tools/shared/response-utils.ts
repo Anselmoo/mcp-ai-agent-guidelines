@@ -12,6 +12,8 @@ export interface McpResponseOptions {
 	content: string;
 	/** Whether this is an error response (default: false) */
 	isError?: boolean;
+	/** Optional metadata to include in the response */
+	metadata?: Record<string, unknown>;
 }
 
 /**
@@ -34,9 +36,17 @@ export interface McpResponseOptions {
  *   isError: true,
  * });
  * ```
+ *
+ * @example
+ * ```typescript
+ * return createMcpResponse({
+ *   content: '# Result',
+ *   metadata: { count: 42, status: 'success' },
+ * });
+ * ```
  */
 export function createMcpResponse(options: McpResponseOptions): McpResponse {
-	const { content, isError = false } = options;
+	const { content, isError = false, metadata } = options;
 
 	const response: McpResponse = {
 		content: [
@@ -48,6 +58,14 @@ export function createMcpResponse(options: McpResponseOptions): McpResponse {
 	};
 
 	// Only include isError if true
+	if (isError) {
+		response.isError = true;
+	}
+
+	// Include metadata if provided
+	if (metadata) {
+		response.metadata = metadata;
+	}
 	if (isError) {
 		response.isError = true;
 	}
