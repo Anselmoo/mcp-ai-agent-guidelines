@@ -101,7 +101,9 @@ pre-commit:
       glob: "*.{ts,tsx}"
       run: |
         failed=0
-        for file in {staged_files}; do
+        # Read staged files into array for proper iteration
+        IFS=$'\n' read -r -d '' -a files < <(echo "{staged_files}" && printf '\0')
+        for file in "${files[@]}"; do
           if [ -f "$file" ]; then
             # Check for relative imports without .js extension
             if grep -n "from ['\"]\.\.?/" "$file" | grep -v "\.js['\"]" > /dev/null 2>&1; then
@@ -204,12 +206,16 @@ pre-commit:
           echo "🧪 Running quick test validation..."
           echo "   (This prevents expensive CI failures!)"
 
-          # Build first (required for tests to run)
-          echo "📦 Building project..."
-          npm run build --silent || {
-            echo "❌ Build failed! Fix build errors before committing."
-            exit 1
-          }
+          # Build only when source implementation files (non-test) have changed
+          if echo "{staged_files}" | grep -E "src/.*\.tsx?$" | grep -Ev "\.(test|spec)\.tsx?$" > /dev/null 2>&1; then
+            echo "📦 Building project (source implementation changes detected)..."
+            npm run build --silent || {
+              echo "❌ Build failed! Fix build errors before committing."
+              exit 1
+            }
+          else
+            echo "📦 Skipping build (no source implementation changes detected)."
+          fi
 
           # Run only affected tests (fast check)
           echo "🧪 Running affected tests..."
