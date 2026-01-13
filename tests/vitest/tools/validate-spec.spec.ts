@@ -2,7 +2,9 @@
  * Unit tests for validate-spec tool
  */
 
-import { describe, expect, it } from "vitest";
+import { promises as fs } from "node:fs";
+import { join } from "node:path";
+import { afterEach, describe, expect, it } from "vitest";
 import type { ValidateSpecRequest } from "../../../src/schemas/validate-spec.js";
 import { validateSpec } from "../../../src/tools/validate-spec.js";
 
@@ -54,11 +56,50 @@ Implement OAuth2 authentication flow with JWT tokens
 - Tokens expire after 1 hour
 `;
 
+	// Track temporary files for cleanup
+	const tempFiles: string[] = [];
+
+	afterEach(async () => {
+		// Clean up temporary files
+		for (const file of tempFiles) {
+			try {
+				await fs.unlink(file);
+			} catch {
+				// Ignore cleanup errors
+			}
+		}
+		tempFiles.length = 0;
+	});
+
 	describe("basic validation", () => {
 		it("should validate spec with constitution content", async () => {
 			const request: ValidateSpecRequest = {
 				specContent: sampleSpec,
 				constitutionContent: sampleConstitution,
+				outputFormat: "markdown",
+			};
+
+			const result = await validateSpec(request);
+
+			expect(result).toBeDefined();
+			expect(result.content).toBeDefined();
+			expect(result.content[0].type).toBe("text");
+			expect(result.content[0].text).toContain("Validation Report");
+		});
+
+		it("should validate spec with constitution file path", async () => {
+			// Create a temporary constitution file
+			const tempConstitutionPath = join(
+				process.cwd(),
+				`test-constitution-${Date.now()}.md`,
+			);
+			tempFiles.push(tempConstitutionPath);
+
+			await fs.writeFile(tempConstitutionPath, sampleConstitution, "utf-8");
+
+			const request: ValidateSpecRequest = {
+				specContent: sampleSpec,
+				constitutionPath: tempConstitutionPath,
 				outputFormat: "markdown",
 			};
 
@@ -78,6 +119,18 @@ Implement OAuth2 authentication flow with JWT tokens
 
 			await expect(validateSpec(request)).rejects.toThrow(
 				"Either constitutionPath or constitutionContent must be provided",
+			);
+		});
+
+		it("should throw error when constitution file cannot be read", async () => {
+			const request: ValidateSpecRequest = {
+				specContent: sampleSpec,
+				constitutionPath: "/nonexistent/path/CONSTITUTION.md",
+				outputFormat: "markdown",
+			};
+
+			await expect(validateSpec(request)).rejects.toThrow(
+				"Failed to read constitution file",
 			);
 		});
 	});
@@ -132,7 +185,7 @@ Implement OAuth2 authentication flow with JWT tokens
 	});
 
 	describe("recommendations", () => {
-		it("should include recommendations by default", async () => {
+		it("should include recommendations by default in markdown", async () => {
 			const request: ValidateSpecRequest = {
 				specContent: sampleSpec,
 				constitutionContent: sampleConstitution,
@@ -146,7 +199,7 @@ Implement OAuth2 authentication flow with JWT tokens
 			expect(result.content[0].text).toBeDefined();
 		});
 
-		it("should exclude recommendations when requested", async () => {
+		it("should exclude recommendations when requested in markdown", async () => {
 			const request: ValidateSpecRequest = {
 				specContent: sampleSpec,
 				constitutionContent: sampleConstitution,
@@ -158,6 +211,55 @@ Implement OAuth2 authentication flow with JWT tokens
 
 			// Should not contain recommendations section
 			expect(result.content[0].text).not.toMatch(/## Recommendations/);
+		});
+
+		it("should include recommendations by default in JSON", async () => {
+			const request: ValidateSpecRequest = {
+				specContent: sampleSpec,
+				constitutionContent: sampleConstitution,
+				outputFormat: "json",
+				includeRecommendations: true,
+			};
+
+			const result = await validateSpec(request);
+			const report = JSON.parse(result.content[0].text);
+
+			// Recommendations may or may not be present depending on validation
+			// but when includeRecommendations is true, they should not be removed
+			// The report object should be complete
+			expect(report).toBeDefined();
+			expect(report).toHaveProperty("valid");
+			expect(report).toHaveProperty("score");
+		});
+
+		it("should exclude recommendations when requested in JSON", async () => {
+			const request: ValidateSpecRequest = {
+				specContent: sampleSpec,
+				constitutionContent: sampleConstitution,
+				outputFormat: "json",
+				includeRecommendations: false,
+			};
+
+			const result = await validateSpec(request);
+			const report = JSON.parse(result.content[0].text);
+
+			// Recommendations should be undefined
+			expect(report.recommendations).toBeUndefined();
+		});
+
+		it("should exclude recommendations when requested in summary", async () => {
+			const request: ValidateSpecRequest = {
+				specContent: sampleSpec,
+				constitutionContent: sampleConstitution,
+				outputFormat: "summary",
+				includeRecommendations: false,
+			};
+
+			const result = await validateSpec(request);
+
+			// Summary format doesn't include recommendations anyway
+			expect(result.content[0].text).toBeDefined();
+			expect(result.content[0].text).toMatch(/Validation:/);
 		});
 	});
 

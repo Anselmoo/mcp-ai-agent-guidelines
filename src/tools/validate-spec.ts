@@ -66,7 +66,12 @@ export async function validateSpec(
 
 	// Create validator and validate
 	const validator = createSpecValidator(constitution);
-	const report = validator.generateReport(specContent);
+	let report = validator.generateReport(specContent);
+
+	// Remove recommendations if not requested
+	if (!request.includeRecommendations && report.recommendations) {
+		report = { ...report, recommendations: undefined };
+	}
 
 	// Format output
 	let output: string;
@@ -82,12 +87,6 @@ export async function validateSpec(
 			break;
 		default:
 			output = validator.formatReportAsMarkdown(report);
-	}
-
-	// Add recommendations if requested
-	if (!request.includeRecommendations && request.outputFormat === "markdown") {
-		// Remove recommendations section from markdown output
-		output = output.replace(/## Recommendations\n\n[\s\S]*$/, "").trim();
 	}
 
 	return createMcpResponse({
