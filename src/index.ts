@@ -85,6 +85,7 @@ import {
 import { modeManager } from "./tools/shared/mode-manager.js";
 import { specKitGenerator } from "./tools/speckit-generator.js";
 import { sprintTimelineCalculator } from "./tools/sprint-timeline-calculator.js";
+import { updateProgress } from "./tools/update-progress.js";
 import { validateSpec } from "./tools/validate-spec.js";
 
 const server = new Server(
@@ -2007,6 +2008,94 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 			},
 		},
 		{
+			name: "update-progress",
+			description:
+				"Track spec progress.md updates with completed tasks and recalculated metrics. Provides direct MCP access to the ProgressTracker for AI agents. BEST FOR: marking tasks complete, tracking progress, syncing from git commits. OUTPUTS: Updated progress.md with completion metrics.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					progressPath: {
+						type: "string",
+						description: "Path to existing progress.md file (optional)",
+					},
+					progressContent: {
+						type: "string",
+						description: "Current progress.md content (optional)",
+					},
+					tasksPath: {
+						type: "string",
+						description: "Path to tasks.md for task list (optional)",
+					},
+					completedTaskIds: {
+						type: "array",
+						items: {
+							type: "string",
+						},
+						description: "Task IDs to mark as completed",
+					},
+					taskUpdates: {
+						type: "array",
+						items: {
+							type: "object",
+							properties: {
+								taskId: {
+									type: "string",
+									description: "Task ID to update",
+								},
+								status: {
+									type: "string",
+									enum: ["completed", "in-progress", "blocked"],
+									description: "New status for the task",
+								},
+								notes: {
+									type: "string",
+									description: "Optional notes about the update",
+								},
+							},
+							required: ["taskId", "status"],
+						},
+						description: "Detailed task status updates (optional)",
+					},
+					syncFromGit: {
+						type: "boolean",
+						description: "Also sync from git commits (default: false)",
+						default: false,
+					},
+					gitOptions: {
+						type: "object",
+						properties: {
+							repoPath: {
+								type: "string",
+								description: "Path to git repository (optional)",
+							},
+							branch: {
+								type: "string",
+								description: "Branch to scan (optional)",
+							},
+							since: {
+								type: "string",
+								description:
+									"Only scan commits since this date/time (optional)",
+							},
+						},
+						description: "Git sync options (optional)",
+					},
+					outputFormat: {
+						type: "string",
+						enum: ["markdown", "json"],
+						description: "Output format",
+						default: "markdown",
+					},
+				},
+				required: ["completedTaskIds"],
+			},
+			annotations: {
+				...SESSION_TOOL_ANNOTATIONS,
+				openWorldHint: true, // May read progress/tasks files
+				title: "Update Progress",
+			},
+		},
+		{
 			name: "model-compatibility-checker",
 			description:
 				"Recommend optimal AI models for tasks by comparing Claude, GPT-4, Gemini, and other models based on capabilities, context length, budget, and task-specific requirements. BEST FOR: model selection, cost optimization, capability matching. OUTPUTS: Ranked recommendations with rationale.",
@@ -2687,6 +2776,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 			case "validate-spec":
 				return validateSpec(
 					args as unknown as Parameters<typeof validateSpec>[0],
+				);
+			case "update-progress":
+				return updateProgress(
+					args as unknown as Parameters<typeof updateProgress>[0],
 				);
 			case "model-compatibility-checker":
 				return modelCompatibilityChecker(args);
