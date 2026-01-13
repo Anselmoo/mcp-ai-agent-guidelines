@@ -4,6 +4,7 @@
  * @module strategies/speckit/progress-tracker
  */
 
+import { execSync } from "node:child_process";
 import { promises as fs } from "node:fs";
 import type { ProgressMetrics, Tasks } from "./types.js";
 
@@ -39,6 +40,40 @@ export interface TaskProgressUpdate {
 
 	/** Optional timestamp for the update (ISO-8601) */
 	timestamp?: string;
+}
+
+/**
+ * Git commit information
+ */
+export interface GitCommit {
+	/** Commit hash */
+	hash: string;
+
+	/** Commit message */
+	message: string;
+
+	/** Commit date (ISO-8601) */
+	date: string;
+
+	/** Commit author */
+	author: string;
+}
+
+/**
+ * Options for syncing progress from git
+ */
+export interface GitSyncOptions {
+	/** Path to git repository (defaults to current directory) */
+	repoPath?: string;
+
+	/** Branch to scan (defaults to HEAD) */
+	branch?: string;
+
+	/** Only scan commits since this date/time (ISO-8601) */
+	since?: string;
+
+	/** Custom pattern for task ID extraction */
+	taskIdPattern?: RegExp;
 }
 
 /**
@@ -238,6 +273,200 @@ export class ProgressTracker {
 		}
 
 		return lines.join("");
+	}
+
+	/**
+	 * Sync progress from git commit history
+	 *
+	 * Scans git commit messages for task references and automatically updates
+	 * task status based on commit keywords like "closes", "fixes", etc.
+	 *
+	 * @param options - Options for git sync
+	 * @returns Array of progress updates that were applied
+	 *
+	 * @example
+	 * ```typescript
+	 * const updates = tracker.syncFromGit({
+	 *   since: "2026-01-01",
+	 *   branch: "main"
+	 * });
+	 * console.log(`Updated ${updates.length} tasks from git history`);
+	 * ```
+	 */
+	syncFromGit(options: GitSyncOptions = {}): TaskProgressUpdate[] {
+		const commits = this.fetchCommits(options);
+		const updates: TaskProgressUpdate[] = [];
+
+		for (const commit of commits) {
+			const taskRefs = this.extractTaskReferences(
+				commit.message,
+				options.taskIdPattern,
+			);
+
+			for (const taskRef of taskRefs) {
+				if (this.taskStatuses.has(taskRef.taskId)) {
+					// Actions that indicate completion: close, fix, resolve, complete
+					const completionActions = ["close", "fix", "resolve", "complete"];
+					const isCompleted = completionActions.includes(taskRef.action);
+
+					const update: TaskProgressUpdate = {
+						taskId: taskRef.taskId,
+						status: isCompleted ? "completed" : "in-progress",
+						notes: `${taskRef.action} via commit ${commit.hash.substring(0, 7)}`,
+						timestamp: commit.date,
+					};
+
+					this.updateProgress(update);
+					updates.push(update);
+				}
+			}
+		}
+
+		return updates;
+	}
+
+	/**
+	 * Fetch commits from git repository
+	 *
+	 * @param options - Git sync options
+	 * @returns Array of git commits
+	 * @private
+	 */
+	private fetchCommits(options: GitSyncOptions): GitCommit[] {
+		const cwd = options.repoPath ?? process.cwd();
+		const branch = options.branch ?? "HEAD";
+		const since = options.since ? `--since="${options.since}"` : "";
+
+		try {
+			const output = execSync(
+				`git log ${branch} ${since} --format="%H|%s|%aI|%an" --no-merges`,
+				{ cwd, encoding: "utf-8" },
+			);
+
+			return output
+				.trim()
+				.split("\n")
+				.filter(Boolean)
+				.map((line) => {
+					const [hash, message, date, author] = line.split("|");
+					return { hash, message, date, author };
+				});
+		} catch (_error) {
+			// Git not available or not a repo - graceful degradation
+			return [];
+		}
+	}
+
+	/**
+	 * Extract task references from commit message
+	 *
+	 * Parses commit messages for standard patterns like "closes #123" or
+	 * "fixes TASK-001" as well as standalone task ID mentions.
+	 *
+	 * @param message - Commit message to parse
+	 * @param customPattern - Optional custom regex pattern for task IDs
+	 * @returns Array of task references with action and task ID
+	 * @private
+	 */
+	private extractTaskReferences(
+		message: string,
+		customPattern?: RegExp,
+	): Array<{ taskId: string; action: string }> {
+		const results: Array<{ taskId: string; action: string }> = [];
+
+		// Standard patterns: closes #X, fixes #X, resolves #X
+		// Each pattern captures the action word and the task ID separately
+		const patterns: Array<{ pattern: RegExp; action: string }> = [
+			{
+				pattern: /(?:closes?|close)\s+#?([A-Z0-9]+-\d+)\b/gi,
+				action: "close",
+			},
+			{ pattern: /(?:fixes?|fix)\s+#?([A-Z0-9]+-\d+)\b/gi, action: "fix" },
+			{
+				pattern: /(?:resolves?|resolve)\s+#?([A-Z0-9]+-\d+)\b/gi,
+				action: "resolve",
+			},
+			{
+				pattern: /(?:completes?|complete)\s+#?([A-Z0-9]+-\d+)\b/gi,
+				action: "complete",
+			},
+		];
+
+		// Process standard patterns
+		for (const { pattern, action } of patterns) {
+			const matches = message.matchAll(pattern);
+			for (const match of matches) {
+				results.push({
+					taskId: match[1],
+					action,
+				});
+			}
+		}
+
+		// Add custom pattern if provided
+		if (customPattern) {
+			const matches = message.matchAll(customPattern);
+			for (const match of matches) {
+				const action = match[0].split(/\s+/)[0].toLowerCase().replace(/s$/, "");
+				results.push({
+					taskId: match[1],
+					action,
+				});
+			}
+		}
+
+		// Also check for task ID mentions like "P4-001" or "TASK-123"
+		const taskIdPattern = /\b([A-Z0-9]+-\d+)\b/g;
+		const taskIdMatches = message.matchAll(taskIdPattern);
+		for (const match of taskIdMatches) {
+			if (!results.some((r) => r.taskId === match[1])) {
+				results.push({
+					taskId: match[1],
+					action: "mention",
+				});
+			}
+		}
+
+		return results;
+	}
+
+	/**
+	 * Watch for new commits and update progress automatically
+	 *
+	 * Starts a periodic sync process that checks for new commits and updates
+	 * task progress. Returns a cleanup function to stop watching.
+	 *
+	 * @param options - Git sync options with optional interval
+	 * @returns Promise that resolves to a cleanup function
+	 *
+	 * @example
+	 * ```typescript
+	 * const stopWatching = await tracker.watchAndSync({
+	 *   intervalMs: 60000, // Check every minute
+	 *   branch: "main"
+	 * });
+	 *
+	 * // Later, to stop watching:
+	 * stopWatching();
+	 * ```
+	 */
+	async watchAndSync(
+		options: GitSyncOptions & { intervalMs?: number },
+	): Promise<() => void> {
+		const interval = options.intervalMs ?? 60000; // Default 1 minute
+		let lastSync = new Date().toISOString();
+
+		const intervalId = setInterval(() => {
+			const updates = this.syncFromGit({ ...options, since: lastSync });
+			lastSync = new Date().toISOString();
+
+			if (updates.length > 0) {
+				console.log(`Progress updated: ${updates.length} tasks`);
+			}
+		}, interval);
+
+		// Return cleanup function
+		return () => clearInterval(intervalId);
 	}
 
 	private getStatusIndicator(metrics: ProgressMetrics): string {
