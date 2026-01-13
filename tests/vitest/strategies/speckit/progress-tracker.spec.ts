@@ -8,8 +8,6 @@ import { beforeEach, describe, expect, it } from "vitest";
 import {
 	createProgressTracker,
 	ProgressTracker,
-	type TaskProgressUpdate,
-	type TaskStatus,
 } from "../../../../src/strategies/speckit/progress-tracker.js";
 import type {
 	DerivedTask,
