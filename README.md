@@ -245,6 +245,18 @@ Multi-phase design orchestration with constraint enforcement.
 | ------------------ | ---------------------------------------------------------------------------------- | ---------- | ----------------------------------------- |
 | `design-assistant` | Constraint-driven design sessions with artifact generation (ADRs, specs, roadmaps) | ⭐⭐⭐⭐   | [Guide](./docs/tools/design-assistant.md) |
 
+### 📝 Specification Tools (3 tools)
+
+Generate and manage project specifications using Spec-Kit methodology.
+
+| Tool                | Purpose                                                                      | Complexity | Learn More                        |
+| ------------------- | ---------------------------------------------------------------------------- | ---------- | --------------------------------- |
+| `speckit-generator` | Generate complete Spec-Kit artifacts (7 files) with constitutional validation | ⭐⭐⭐     | [Guide](./docs/speckit/README.md) |
+| `validate-spec`     | Validate spec.md against constitutional constraints for compliance           | ⭐⭐       | [Usage](./docs/speckit/usage.md)  |
+| `update-progress`   | Track progress.md updates with completed tasks and metrics                   | ⭐⭐       | [Usage](./docs/speckit/usage.md)  |
+
+**📖 [Spec-Kit Documentation](./docs/speckit/README.md)** - Complete guide to specification-driven development
+
 ### 🛠️ Utilities (3 tools)
 
 Supporting tools for workflow optimization.
