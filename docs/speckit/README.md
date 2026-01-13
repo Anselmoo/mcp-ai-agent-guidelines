@@ -5,12 +5,15 @@ based on [GitHub's Spec-Kit](https://github.com/github/spec-kit) approach.
 
 ## Overview
 
-Spec-Kit generates four interconnected artifacts:
+Spec-Kit generates seven interconnected artifacts:
 
-1. **spec.md** - Project specification with objectives, requirements, and constraints
-2. **plan.md** - Implementation plan with phases, dependencies, and timeline
-3. **tasks.md** - Derived tasks from requirements with priorities
-4. **progress.md** - Progress tracking with completion metrics
+1. **README.md** - High-level overview of the Spec-Kit package for the project
+2. **spec.md** - Project specification with objectives, requirements, and constraints
+3. **plan.md** - Implementation plan with phases, dependencies, and timeline
+4. **tasks.md** - Derived tasks from requirements with priorities
+5. **progress.md** - Progress tracking with completion metrics
+6. **adr.md** - Architecture Decision Records capturing key technical decisions
+7. **roadmap.md** - Roadmap outlining milestones and long-term evolution
 
 ## Quick Start
 

@@ -38,7 +38,12 @@ const result = await specKitGenerator({
 
 ### Output Structure
 
-The generator produces four files:
+The generator produces seven files:
+
+#### README.md
+- High-level overview of the Spec-Kit package
+- Quick navigation to all artifacts
+- Project summary
 
 #### spec.md
 - Title and overview
@@ -65,6 +70,16 @@ The generator produces four files:
 - Status indicator
 - Summary metrics
 - Task completion checklist
+
+#### adr.md
+- Architecture Decision Records
+- Key technical decisions
+- Decision rationale and context
+
+#### roadmap.md
+- Milestones and timeline
+- Long-term evolution
+- Strategic objectives
 
 ## Validating Against Constitution
 
@@ -106,11 +121,11 @@ Enable automatic progress updates from commits:
 git commit -m "closes TASK-001: Implement login endpoint"
 ```
 
-Recognized patterns:
+Recognized patterns (hash `#` is optional):
 - `closes #TASK-001`
-- `fixes TASK-002`
+- `fixes #TASK-002`
 - `resolves #TASK-003`
-- `completes TASK-004`
+- `completes #TASK-004`
 
 ## Design-Assistant Integration
 
