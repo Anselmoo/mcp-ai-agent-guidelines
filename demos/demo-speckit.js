@@ -15,7 +15,6 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { logger } from "../dist/tools/shared/logger.js";
 import { specKitGenerator } from "../dist/tools/speckit-generator.js";
-import { updateProgress } from "../dist/tools/update-progress.js";
 import { validateSpec } from "../dist/tools/validate-spec.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -174,7 +173,7 @@ function parseArtifacts(result) {
 
 	for (const { name, pattern } of filePatterns) {
 		const match = result.match(pattern);
-		if (match && match[1]) {
+		if (match?.[1]) {
 			artifacts[name] = match[1].trim();
 		}
 	}
