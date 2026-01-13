@@ -9,11 +9,7 @@ import {
 	createProgressTracker,
 	ProgressTracker,
 } from "../../../../src/strategies/speckit/progress-tracker.js";
-import type {
-	DerivedTask,
-	ProgressMetrics,
-	Tasks,
-} from "../../../../src/strategies/speckit/types.js";
+import type { Tasks } from "../../../../src/strategies/speckit/types.js";
 
 // Sample tasks for testing
 const SAMPLE_TASKS: Tasks = {
