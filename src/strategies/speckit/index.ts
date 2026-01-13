@@ -9,5 +9,6 @@
  */
 
 export * from "./constitution-parser.js";
+export * from "./spec-parser.js";
 export * from "./spec-validator.js";
 export * from "./types.js";
