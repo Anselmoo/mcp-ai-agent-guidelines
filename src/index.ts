@@ -2866,6 +2866,9 @@ async function main() {
 // Export server for testing
 export { server };
 
+// Library exports for programmatic usage
+export * from "./strategies/index.js";
+
 main().catch((error) => {
 	console.error("Server error:", error);
 	process.exit(1);
