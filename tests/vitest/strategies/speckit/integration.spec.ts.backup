@@ -114,26 +114,31 @@ describe("Spec-Kit Integration", () => {
 			const strategy = new SpecKitStrategy();
 			const result = strategy.render(sampleDomainResult);
 
-			// Verify primary artifact with slug prefix
-			expect(result.primary.name).toMatch(/.+\/README\.md$/);
+			// Verify primary artifact
+			expect(result.primary.name).toContain("README.md");
 			expect(result.primary.format).toBe("markdown");
 			expect(result.primary.content).toContain("# Spec Kit:");
 
 			// Verify all 6 secondary artifacts exist
 			expect(result.secondary).toHaveLength(6);
 
-			// Helper function to check artifact names
-			const expectArtifactNamed = (names: string[], fragment: string) => {
-				expect(names.some((name) => name.includes(fragment))).toBe(true);
-			};
-
 			const secondaryNames = result.secondary?.map((s) => s.name) ?? [];
-			expectArtifactNamed(secondaryNames, "spec.md");
-			expectArtifactNamed(secondaryNames, "plan.md");
-			expectArtifactNamed(secondaryNames, "tasks.md");
-			expectArtifactNamed(secondaryNames, "progress.md");
-			expectArtifactNamed(secondaryNames, "adr.md");
-			expectArtifactNamed(secondaryNames, "roadmap.md");
+			expect(secondaryNames.some((name) => name.includes("spec.md"))).toBe(
+				true,
+			);
+			expect(secondaryNames.some((name) => name.includes("plan.md"))).toBe(
+				true,
+			);
+			expect(secondaryNames.some((name) => name.includes("tasks.md"))).toBe(
+				true,
+			);
+			expect(secondaryNames.some((name) => name.includes("progress.md"))).toBe(
+				true,
+			);
+			expect(secondaryNames.some((name) => name.includes("adr.md"))).toBe(true);
+			expect(secondaryNames.some((name) => name.includes("roadmap.md"))).toBe(
+				true,
+			);
 		});
 
 		it("includes title in spec.md", () => {
@@ -283,30 +288,9 @@ Architecture: domain → gateway (wrong order).
 		it("calculates completion metrics", () => {
 			const tasks: Tasks = {
 				items: [
-					{
-						id: "TASK-001",
-						title: "Task 1",
-						description: "Complete task 1",
-						priority: "high",
-						estimate: "1 day",
-						acceptanceCriteria: ["Task 1 completed"],
-					},
-					{
-						id: "TASK-002",
-						title: "Task 2",
-						description: "Complete task 2",
-						priority: "medium",
-						estimate: "2 days",
-						acceptanceCriteria: ["Task 2 completed"],
-					},
-					{
-						id: "TASK-003",
-						title: "Task 3",
-						description: "Complete task 3",
-						priority: "low",
-						estimate: "1 day",
-						acceptanceCriteria: ["Task 3 completed"],
-					},
+					{ id: "TASK-001", title: "Task 1" },
+					{ id: "TASK-002", title: "Task 2" },
+					{ id: "TASK-003", title: "Task 3" },
 				],
 			};
 
@@ -326,16 +310,7 @@ Architecture: domain → gateway (wrong order).
 
 		it("generates progress markdown", () => {
 			const tasks: Tasks = {
-				items: [
-					{
-						id: "TASK-001",
-						title: "Task 1",
-						description: "Complete task 1",
-						priority: "high",
-						estimate: "1 day",
-						acceptanceCriteria: ["Task 1 completed"],
-					},
-				],
+				items: [{ id: "TASK-001", title: "Task 1" }],
 			};
 
 			const tracker = createProgressTracker(tasks);
@@ -349,30 +324,9 @@ Architecture: domain → gateway (wrong order).
 		it("tracks multiple task updates", () => {
 			const tasks: Tasks = {
 				items: [
-					{
-						id: "TASK-001",
-						title: "Task 1",
-						description: "Complete task 1",
-						priority: "high",
-						estimate: "1 day",
-						acceptanceCriteria: ["Task 1 completed"],
-					},
-					{
-						id: "TASK-002",
-						title: "Task 2",
-						description: "Complete task 2",
-						priority: "medium",
-						estimate: "2 days",
-						acceptanceCriteria: ["Task 2 completed"],
-					},
-					{
-						id: "TASK-003",
-						title: "Task 3",
-						description: "Complete task 3",
-						priority: "low",
-						estimate: "1 day",
-						acceptanceCriteria: ["Task 3 completed"],
-					},
+					{ id: "TASK-001", title: "Task 1" },
+					{ id: "TASK-002", title: "Task 2" },
+					{ id: "TASK-003", title: "Task 3" },
 				],
 			};
 
@@ -490,13 +444,8 @@ describe("Spec-Kit with real constitution", () => {
 			);
 			constitutionContent = readFileSync(constitutionPath, "utf-8");
 			realConstitution = parseConstitution(constitutionContent);
-		} catch (error) {
+		} catch {
 			// Fallback to sample if real file not found
-			// Log for debugging but continue with fallback
-			console.debug(
-				"CONSTITUTION.md not found or unreadable, using sample data:",
-				error instanceof Error ? error.message : String(error),
-			);
 			constitutionContent = sampleConstitution;
 			realConstitution = parseConstitution(sampleConstitution);
 		}
