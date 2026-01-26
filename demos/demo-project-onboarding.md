@@ -1,83 +1,105 @@
-## 🚀 Project Onboarding Complete
+# Project Onboarding: mcp-ai-agent-guidelines
 
+**Type**: typescript
+**Root**: /home/runner/work/mcp-ai-agent-guidelines/mcp-ai-agent-guidelines
 
+## Frameworks Detected
 
-### 📋 Project Profile
-| Attribute | Value |
-|---|---|
-| Name | MCP AI Agent Guidelines |
-| Type | library |
-| Languages | TypeScript/JavaScript, Python, Rust, Go, Ruby, Java |
-| Frameworks | Node.js |
-| Build System | npm/yarn |
-| Test Framework | Jest/Vitest/Mocha (check package.json) |
+- **Express** ^5.1.0 (confidence: high)
+- **Vitest** ^4.0.0 (confidence: high)
 
-### 🏗️ Project Structure
-**Key Directories:**
-- `src`
-- `lib`
-- `app`
-- `tests`
-- `test`
-- `docs`
-- `scripts`
-- `config`
-- `public`
-- `dist`
-- `build`
+## Entry Points
 
-**Key Files:**
-- `package.json`
-- `tsconfig.json`
-- `README.md`
-- `Cargo.toml`
-- `go.mod`
-- `requirements.txt`
-- `setup.py`
-- `Gemfile`
-- `pom.xml`
-- `build.gradle`
-- `.gitignore`
+- `dist/index.js`
+- `dist/index.js`
+- `dist/index.js`
+- `./dist/index.js`
 
-**Entry Points:**
-- `src/index.ts`
-- `src/main.ts`
-- `src/app.ts`
-- `main.py`
-- `app.py`
-- `main.go`
-- `src/main.rs`
-- `index.js`
+## Dependencies (16)
 
-### 📦 Dependencies
-- Check package.json for npm dependencies
-- Check requirements.txt for Python dependencies
-- Check Cargo.toml for Rust crates
+### Production Dependencies
 
-### 🧠 Project Memories Generated
+- @modelcontextprotocol/sdk@^1.17.1
+- @types/express@^5.0.3
+- cheerio@^1.1.2
+- express@^5.1.0
+- js-yaml@^4.1.0
+- mermaid@^11.0.0
+- zod@^3.25.76
 
-**Architecture**:
-- Project Architecture
+### Development Dependencies
 
-**Workflow**:
-- Development Workflow
+- @biomejs/biome@2.3.12
+- @types/js-yaml@^4.0.9
+- @types/node@^25.0.2
+- @vitest/coverage-v8@^4.0.0
+- c8@^10.0.0
+- lefthook@^2.0.0
+- markdown-link-check@^3.14.1
+- typescript@^5.9.2
+- vitest@^4.0.0
 
-**Conventions**:
-- Code Conventions
+## Available Scripts
 
-**Dependencies**:
-- Dependencies
-
-💾 **Memory Storage**: These memories should be stored for future reference and can be recalled when working on the project.
-
-
-
-### 💡 Next Steps
-1. Review the project structure and memories above
-2. Familiarize yourself with entry points: src/index.ts, src/main.ts, src/app.ts, main.py, app.py, main.go, src/main.rs, index.js
-3. Check build commands using npm/yarn
-4. Run tests using Jest/Vitest/Mocha (check package.json)
-5. Start with small, well-defined tasks to build context
+- `npm run build`: npm run generate:models:internal && tsc && npm run copy-yaml
+- `npm run copy-yaml`: cp src/tools/config/models.yaml dist/tools/config/
+- `npm run generate:models`: node scripts/generate-model-types.js
+- `npm run generate:models:internal`: node scripts/generate-model-types.js
+- `npm run start`: npm run build && node dist/index.js
+- `npm run dev`: npm run generate:models:internal && tsc --watch
+- `npm run test`: npm run test:all
+- `npm run test:unit`: node tests/unit/run-unit-tests.js
+- `npm run test:integration`: node tests/test-server.js
+- `npm run test:demo`: node demos/demo-tools.js
+- `npm run test:mcp`: scripts/test-mcp-server.sh
+- `npm run validate:demo-coverage`: node scripts/validate-demo-coverage.js
+- `npm run test:all`: npm run build && npm run test:unit && npm run test:integration && npm run test:demo && npm run test:mcp
+- `npm run test:coverage:unit`: npm run build && c8 -r text-summary -r lcov -r html -o coverage node tests/unit/run-unit-tests.js
+- `npm run test:vitest`: vitest
+- `npm run test:coverage:vitest`: vitest run --coverage
+- `npm run coverage:patch`: node ./scripts/coverage-patch.mjs --lcov coverage/lcov.info --base main --head HEAD --output artifacts/coverage-patch.json
+- `npm run coverage:low`: npm run test:coverage:vitest && node ./scripts/generate-low-coverage.cjs
+- `npm run generate-low-coverage`: node ./scripts/generate-low-coverage.cjs
+- `npm run check:branch-coverage`: node scripts/check-branch-coverage.mjs --lcov coverage/lcov.info --threshold=90
+- `npm run check:coverage-threshold`: npm run test:coverage:vitest && node scripts/check-coverage.cjs --threshold=90
+- `npm run audit`: npm audit --audit-level=moderate
+- `npm run audit:fix`: npm audit fix
+- `npm run audit:production`: npm audit --omit=dev --audit-level=moderate
+- `npm run lint`: biome lint src/
+- `npm run lint:fix`: biome lint --write src/
+- `npm run format`: biome format src/
+- `npm run format:fix`: biome format --write src/
+- `npm run check`: biome check src/
+- `npm run check:fix`: biome check --write src/
+- `npm run type-check`: npm run generate:models:internal && tsc --noEmit
+- `npm run quality`: npm run type-check && npm run check
+- `npm run validate`: npm run lint && npm run type-check && npm run test:all
+- `npm run hooks:install`: lefthook install
+- `npm run hooks:uninstall`: lefthook uninstall
+- `npm run hooks:run`: lefthook run
+- `npm run links:check`: npx markdown-link-check --config .mlc_config.json README.md CONTRIBUTING.md DISCLAIMER.md
+- `npm run docs:lint`: node scripts/lint-docs.js
+- `npm run docs:lint:warn-only`: node scripts/lint-docs.js --warn-only
+- `npm run docs:lint:naming-only`: node scripts/lint-docs.js --naming-only
+- `npm run docs:generate-tool-docs`: node scripts/generate-tool-docs.js
+- `npm run docs:generate-tool-docs:dry-run`: node scripts/generate-tool-docs.js --dry-run
+- `npm run docs:generate-tool-docs:force`: node scripts/generate-tool-docs.js --force
+- `npm run docs:generate-tool-docs:clean`: node scripts/generate-tool-docs.js --clean
+- `npm run docs:fix-svg`: node scripts/fix-svg-visibility.js
+- `npm run docs:fix-svg:dry-run`: node scripts/fix-svg-visibility.js --dry-run
+- `npm run docs:update-svg-bg`: node scripts/update-svg-background.js
+- `npm run docs:update-svg-bg:dry-run`: node scripts/update-svg-background.js --dry-run
+- `npm run links:check:all`: find . -name '*.md' -not -path './node_modules/*' -not -path './dist/*' -not -path './coverage/*' -exec npx markdown-link-check --config .mlc_config.json {} \;
+- `npm run links:extract`: node scripts/extract-external-links.js
+- `npm run links:extract:json`: node scripts/extract-external-links.js --format=json
+- `npm run links:extract:csv`: node scripts/extract-external-links.js --format=csv
+- `npm run links:extract:md`: node scripts/extract-external-links.js --format=markdown
+- `npm run clean-code-dashboard`: node scripts/generate-clean-code-dashboard.js
+- `npm run frames:generate-interactive`: node scripts/generate-interactive-frames.js
+- `npm run frames:apply-interactive`: node scripts/apply-interactive-frames.js
+- `npm run frames:preview-interactive`: echo 'Preview: open docs/.frames-interactive/header-README.html and footer-README.html in your browser'
+- `npm run frames:apply`: node scripts/apply-frames.js
+- `npm run prepare`: if [ -d .git ]; then lefthook install; else echo 'Skipping lefthook install (no Git repository)'; fi
 
 ## Further Reading
 
@@ -87,12 +109,3 @@
 - **[VS Code Navigation](https://code.visualstudio.com/docs/editor/editingevolved)**: Advanced code navigation features in Visual Studio Code
 - **[Meta AI Research: Memory Layers](https://ai.meta.com/blog/meta-fair-updates-agents-robustness-safety-architecture/)**: Meta's research on memory systems and memory layers for AI agents
 
-
-
-### 🎯 Onboarding Success Criteria
-- [x] Project structure analyzed
-- [x] Key files and directories identified
-- [x] Dependencies catalogued
-- [x] Project memories generated
-- [ ] Initial exploration completed
-- [ ] First task identified
