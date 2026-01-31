@@ -1,6 +1,6 @@
 {
 	"name": "mcp-ai-agent-guidelines",
-	"version": "0.13.2",
+	"version": "0.13.1",
 	"description": "A comprehensive Model Context Protocol server providing advanced tools, resources, and prompts for implementing AI agent best practices",
 	"main": "dist/index.js",
 	"type": "module",
@@ -115,12 +115,15 @@
 		"vitest": "^4.0.0"
 	},
 	"dependencies": {
+		"@chevrotain/cst-dts-gen": "^11.1.1",
+		"@chevrotain/gast": "^11.1.1",
 		"@modelcontextprotocol/sdk": "^1.17.1",
 		"@types/express": "^5.0.3",
 		"cheerio": "^1.1.2",
+		"chevrotain": "^11.1.1",
 		"express": "^5.1.0",
 		"js-yaml": "^4.1.0",
-		"mermaid": "^11.0.0",
+		"mermaid": "^10.9.5",
 		"zod": "^3.25.76"
 	}
 }
