@@ -32,72 +32,180 @@ Complete the 'Implement CI Job: validate_progress' work as specified in tasks.md
 
 ### Current State
 
-- Review existing modules and integrations
-- Capture baseline behavior before changes
+- No automated progress.md validation in CI
+- Manual verification of spec-kit documentation
+- Inconsistent progress tracking format
 
 ### Target State
 
-- Implement CI Job: validate_progress fully implemented per requirements
-- Supporting tests/validation in place
+- GitHub Actions workflow validates all progress.md files on PR
+- Schema validation ensures consistent format
+- Aggregated progress report generated as CI artifact
+- Blocking on invalid progress.md files
 
 ### Out of Scope
 
-- Unrelated refactors or non-task enhancements
+- Progress.md content quality (only structure validation)
+- Historical progress tracking
 
 ## 3. Prerequisites
 
 ### Dependencies
 
-- T-048
+- T-048: Progress validation script implemented
 
 ### Target Files
 
-- `.github/workflows/validate-progress.yml`
+- `.github/workflows/validate-progress.yml` (new)
+- `scripts/validate-progress.ts`
+- `artifacts/progress-report.md` (output)
 
 ### Tooling
 
 - Node.js 22.x
-- npm scripts from the root package.json
+- GitHub Actions
 
 ## 4. Implementation Guide
 
-### Step 4.1: Define Workflow Skeleton
+### Step 4.1: Create Validation Workflow
 
+**File**: `.github/workflows/validate-progress.yml`
 ```yaml
-name: Implement CI Job: validate_progress
+name: Validate Progress Files
+
 on:
   pull_request:
-    branches: [main]
+    paths:
+      - 'plan-*/**/progress.md'
+      - 'scripts/validate-progress.ts'
   push:
     branches: [main]
+    paths:
+      - 'plan-*/**/progress.md'
 
 jobs:
-  implement-ci-job-validate-progress:
+  validate-progress:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: 'npm'
+
       - run: npm ci
-      - run: npm run build
-      - run: npm run validate:progress
+
+      - name: Validate progress.md files
+        run: npx tsx scripts/validate-progress.ts
+
+      - name: Generate progress report
+        run: npx tsx scripts/aggregate-progress.ts > artifacts/progress-report.md
+
+      - name: Upload progress report
+        uses: actions/upload-artifact@v4
+        with:
+          name: progress-report
+          path: artifacts/progress-report.md
+          retention-days: 30
 ```
 
-### Step 4.2: Add Task-Specific Steps
+### Step 4.2: Implement Validation Script
 
-- Insert validation or lint steps required by the task
-- Ensure failures surface with actionable logs
+**File**: `scripts/validate-progress.ts`
+```typescript
+import { readFileSync } from 'fs';
+import { glob } from 'glob';
 
-### Step 4.3: Optimize Runtime
+interface ValidationResult {
+  file: string;
+  valid: boolean;
+  errors: string[];
+}
 
-- Use npm cache in setup-node
-- Split jobs only when parallelism provides net benefit
+const requiredSections = [
+  /^# Progress:/m,
+  /## Summary/m,
+  /## Phase Progress/m,
+];
 
-## 5. Testing Strategy
+function validateProgress(filePath: string): ValidationResult {
+  const content = readFileSync(filePath, 'utf-8');
+  const errors: string[] = [];
 
-- Trigger workflow on a test branch
+  for (const section of requiredSections) {
+    if (!section.test(content)) {
+      errors.push(`Missing required section: ${section.source}`);
+    }
+  }
+
+  // Check summary table format
+  if (!/\| Total Tasks \|/.test(content)) {
+    errors.push('Summary table missing "Total Tasks" row');
+  }
+
+  return {
+    file: filePath,
+    valid: errors.length === 0,
+    errors,
+  };
+}
+
+async function main() {
+  const files = await glob('plan-*/**/progress.md');
+  const results = files.map(validateProgress);
+
+  const failed = results.filter(r => !r.valid);
+
+  if (failed.length > 0) {
+    console.error('\n❌ Progress validation failed:\n');
+    for (const result of failed) {
+      console.error(`  ${result.file}:`);
+      for (const error of result.errors) {
+        console.error(`    - ${error}`);
+      }
+    }
+    process.exit(1);
+  }
+
+  console.log(`✓ Validated ${results.length} progress.md files`);
+}
+
+main();
+```
+
+### Step 4.3: Add Aggregate Report Script
+
+**File**: `scripts/aggregate-progress.ts`
+```typescript
+import { readFileSync } from 'fs';
+import { glob } from 'glob';
+
+async function main() {
+  const files = await glob('plan-*/**/progress.md');
+
+  console.log('# Aggregated Progress Report');
+  console.log(`\n_Generated: ${new Date().toISOString()}_\n`);
+  console.log(`## Files: ${files.length}\n`);
+
+  for (const file of files) {
+    const content = readFileSync(file, 'utf-8');
+    const titleMatch = content.match(/^# Progress: (.+)/m);
+    const title = titleMatch?.[1] ?? file;
+
+    console.log(`### ${title}`);
+    console.log(`_Source: ${file}_\n`);
+
+    // Extract summary table
+    const summaryMatch = content.match(/\| Metric[\s\S]*?\n\n/);
+    if (summaryMatch) {
+      console.log(summaryMatch[0]);
+    }
+  }
+}
+
+main();
+```
 - Validate job steps and failure behavior
 - Capture timing metrics
 
@@ -110,11 +218,11 @@ jobs:
 
 ## 7. Acceptance Criteria
 
-| Criterion | Status | Verification |
-|-----------|--------|--------------|
-| Workflow runs successfully | ⬜ | TBD |
-| Failure modes reported clearly | ⬜ | TBD |
-| Runtime/coverage targets met | ⬜ | TBD |
+| Criterion                      | Status | Verification |
+| ------------------------------ | ------ | ------------ |
+| Workflow runs successfully     | ⬜      | TBD          |
+| Failure modes reported clearly | ⬜      | TBD          |
+| Runtime/coverage targets met   | ⬜      | TBD          |
 
 ---
 

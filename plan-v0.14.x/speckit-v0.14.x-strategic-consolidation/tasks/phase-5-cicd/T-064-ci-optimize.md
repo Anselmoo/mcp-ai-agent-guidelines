@@ -32,47 +32,69 @@ Complete the 'Optimize CI Pipeline' work as specified in tasks.md and related is
 
 ### Current State
 
-- Review existing modules and integrations
-- Capture baseline behavior before changes
+- CI pipeline runs ~18 minutes
+- No npm caching configured
+- Sequential test execution
+- Full install on every run
 
 ### Target State
 
-- Optimize CI Pipeline fully implemented per requirements
-- Supporting tests/validation in place
+- CI pipeline ≤12 minutes (33% reduction)
+- npm cache hit rate >80%
+- Parallel test execution where possible
+- Incremental builds where supported
 
 ### Out of Scope
 
-- Unrelated refactors or non-task enhancements
+- Self-hosted runners
+- Build caching beyond npm
 
 ## 3. Prerequisites
 
 ### Dependencies
 
-- None
+- None (applies to all workflows)
 
 ### Target Files
 
-- `.github/workflows/`
+- `.github/workflows/*.yml` (all workflow files)
 
 ### Tooling
 
-- Node.js 22.x
-- npm scripts from the root package.json
+- GitHub Actions
+- actions/setup-node with cache
+- actions/cache for custom caching
 
 ## 4. Implementation Guide
 
-### Step 4.1: Define Workflow Skeleton
+### Step 4.1: Enable npm Caching
+
+**In all workflows**:
+```yaml
+- uses: actions/setup-node@v4
+  with:
+    node-version: '22'
+    cache: 'npm'  # Enables npm cache
+```
+
+### Step 4.2: Add Dependency Caching
 
 ```yaml
-name: Optimize CI Pipeline
-on:
-  pull_request:
-    branches: [main]
-  push:
-    branches: [main]
+- name: Cache node_modules
+  uses: actions/cache@v4
+  with:
+    path: node_modules
+    key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+    restore-keys: |
+      ${{ runner.os }}-node-
+```
 
+### Step 4.3: Parallelize Test Execution
+
+**File**: `.github/workflows/ci.yml`
+```yaml
 jobs:
-  optimize-ci-pipeline:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -81,22 +103,80 @@ jobs:
           node-version: '22'
           cache: 'npm'
       - run: npm ci
-      - run: npm run build
+      - run: npm run lint
+      - run: npm run type-check
+
+  test:
+    runs-on: ubuntu-latest
+    needs: lint  # Run after lint passes
+    strategy:
+      matrix:
+        shard: [1, 2, 3]  # Split tests into 3 shards
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run test:vitest -- --shard=${{ matrix.shard }}/3
+
+  coverage:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run test:coverage:vitest
 ```
 
-### Step 4.2: Add Task-Specific Steps
+### Step 4.4: Skip Unnecessary Work
 
-- Insert validation or lint steps required by the task
-- Ensure failures surface with actionable logs
+**Path filtering**:
+```yaml
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'package*.json'
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+```
 
-### Step 4.3: Optimize Runtime
+### Step 4.5: Optimize npm ci
 
-- Use npm cache in setup-node
-- Split jobs only when parallelism provides net benefit
+```yaml
+- run: npm ci --prefer-offline
+  env:
+    CI: true
+```
 
-### Step 4.5: Target Outcome
+### Step 4.6: Measure and Track
 
-- Target: ≤12 minutes runtime (from 18 minutes)
+**Add timing annotations**:
+```yaml
+- name: Build
+  run: |
+    start=$(date +%s)
+    npm run build
+    end=$(date +%s)
+    echo "::notice::Build took $((end-start)) seconds"
+```
+
+## 5. Expected Results
+
+| Metric         | Before | After  | Improvement |
+| -------------- | ------ | ------ | ----------- |
+| Total runtime  | 18min  | ≤12min | -33%        |
+| npm install    | 2min   | 30s    | -75%        |
+| Tests          | 10min  | 6min   | -40%        |
+| Cache hit rate | 0%     | >80%   | +80%        |
 
 ## 5. Testing Strategy
 
@@ -113,11 +193,11 @@ jobs:
 
 ## 7. Acceptance Criteria
 
-| Criterion | Status | Verification |
-|-----------|--------|--------------|
-| Workflow runs successfully | ⬜ | TBD |
-| Failure modes reported clearly | ⬜ | TBD |
-| Runtime/coverage targets met | ⬜ | TBD |
+| Criterion                      | Status | Verification |
+| ------------------------------ | ------ | ------------ |
+| Workflow runs successfully     | ⬜      | TBD          |
+| Failure modes reported clearly | ⬜      | TBD          |
+| Runtime/coverage targets met   | ⬜      | TBD          |
 
 ---
 
