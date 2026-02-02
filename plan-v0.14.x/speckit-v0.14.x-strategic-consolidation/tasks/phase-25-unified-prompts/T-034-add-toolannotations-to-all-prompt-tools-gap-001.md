@@ -61,19 +61,151 @@ Complete the 'Add ToolAnnotations to All Prompt Tools (GAP-001)' work as specifi
 
 ## 4. Implementation Guide
 
-### Step 4.1: Review Existing State
+### Step 4.1: Define ToolAnnotations Type
 
-- Locate related code and determine current gaps
-- Confirm requirements from tasks.md
-
-### Step 4.2: Implement Core Changes
+Create or update `src/tools/shared/tool-annotations.ts`:
 
 ```typescript
-export class AddToolannotationsToAllPromptToolsGap001 {
-  constructor(private readonly config: Config) {}
+import { z } from 'zod';
 
-  execute(): Result {
-    // TODO: implement core logic
+/**
+ * MCP 2025-03-26 ToolAnnotations for LLM hint behavior
+ * @see https://spec.modelcontextprotocol.io/specification/2025-03-26/server/tools/
+ */
+export const toolAnnotationsSchema = z.object({
+  /** Free-form hints for LLM behavior */
+  title: z.string().optional().describe('Human-readable tool title'),
+  readOnlyHint: z.boolean().optional().describe('Tool does not modify state'),
+  destructiveHint: z.boolean().optional().describe('Tool may perform destructive operations'),
+  idempotentHint: z.boolean().optional().describe('Repeated calls with same args have same effect'),
+  openWorldHint: z.boolean().optional().describe('Tool interacts with external entities'),
+}).describe('Hints for LLM behavior with this tool');
+
+export type ToolAnnotations = z.infer<typeof toolAnnotationsSchema>;
+
+// Predefined annotation sets for common tool types
+export const READ_ONLY_ANNOTATIONS: ToolAnnotations = {
+  readOnlyHint: true,
+  destructiveHint: false,
+  idempotentHint: true,
+};
+
+export const GENERATOR_ANNOTATIONS: ToolAnnotations = {
+  readOnlyHint: false,
+  destructiveHint: false,
+  idempotentHint: true,
+  openWorldHint: false,
+};
+
+export const ANALYZER_ANNOTATIONS: ToolAnnotations = {
+  readOnlyHint: true,
+  destructiveHint: false,
+  idempotentHint: true,
+  openWorldHint: false,
+};
+```
+
+### Step 4.2: Update Prompt Tool Registration Pattern
+
+Update each prompt tool in `src/index.ts` to include annotations:
+
+```typescript
+import { READ_ONLY_ANNOTATIONS, GENERATOR_ANNOTATIONS, ANALYZER_ANNOTATIONS } from './tools/shared/tool-annotations.js';
+
+// Example: hierarchical-prompt-builder
+server.tool(
+  'hierarchical_prompt_builder',
+  'Generate hierarchical prompts with multiple specificity levels',
+  hierarchicalPromptBuilderSchema,
+  {
+    annotations: {
+      ...GENERATOR_ANNOTATIONS,
+      title: 'Hierarchical Prompt Builder',
+    },
+  },
+  handleHierarchicalPromptBuilder
+);
+
+// Example: clean-code-scorer
+server.tool(
+  'clean_code_scorer',
+  'Score code quality on a 0-100 scale',
+  cleanCodeScorerSchema,
+  {
+    annotations: {
+      ...ANALYZER_ANNOTATIONS,
+      title: 'Clean Code Scorer',
+    },
+  },
+  handleCleanCodeScorer
+);
+
+// Example: design-assistant
+server.tool(
+  'design_assistant',
+  'Orchestrate multi-phase design workflows',
+  designAssistantSchema,
+  {
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false, // Sessions have state
+      openWorldHint: false,
+      title: 'Design Assistant',
+    },
+  },
+  handleDesignAssistant
+);
+```
+
+### Step 4.3: Validate All Tools Have Annotations
+
+Create `scripts/validate-tool-annotations.ts`:
+
+```typescript
+import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+import { toolAnnotationsSchema, ToolAnnotations } from '../src/tools/shared/tool-annotations.js';
+
+interface ToolValidationResult {
+  toolName: string;
+  hasAnnotations: boolean;
+  annotations?: ToolAnnotations;
+  errors?: string[];
+}
+
+export function validateToolAnnotations(server: Server): ToolValidationResult[] {
+  const results: ToolValidationResult[] = [];
+
+  for (const [name, tool] of server.getTools()) {
+    const result: ToolValidationResult = {
+      toolName: name,
+      hasAnnotations: !!tool.annotations,
+    };
+
+    if (tool.annotations) {
+      const parsed = toolAnnotationsSchema.safeParse(tool.annotations);
+      if (parsed.success) {
+        result.annotations = parsed.data;
+      } else {
+        result.errors = parsed.error.issues.map(i => i.message);
+      }
+    }
+
+    results.push(result);
+  }
+
+  return results;
+}
+```
+
+### Step 4.4: Create Coverage Report
+
+Add npm script to `package.json`:
+
+```json
+{
+  "scripts": {
+    "validate:annotations": "tsx scripts/validate-tool-annotations.ts"
   }
 }
 ```
@@ -104,11 +236,11 @@ export class AddToolannotationsToAllPromptToolsGap001 {
 
 ## 7. Acceptance Criteria
 
-| Criterion | Status | Verification |
-|-----------|--------|--------------|
-| Implementation completed per requirements | ⬜ | TBD |
-| Integration points wired and documented | ⬜ | TBD |
-| Quality checks pass | ⬜ | TBD |
+| Criterion                                 | Status | Verification |
+| ----------------------------------------- | ------ | ------------ |
+| Implementation completed per requirements | ⬜      | TBD          |
+| Integration points wired and documented   | ⬜      | TBD          |
+| Quality checks pass                       | ⬜      | TBD          |
 
 ---
 

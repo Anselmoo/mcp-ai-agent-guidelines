@@ -61,33 +61,165 @@ Complete the 'Implement Domain Generator: Code Analysis' work as specified in ta
 
 ## 4. Implementation Guide
 
-### Step 4.1: Review Existing State
+### Step 4.1: Create Code Analysis Domain Generator Template
 
-- Locate related code and determine current gaps
-- Confirm requirements from tasks.md
+Create `src/tools/templates/generators/code-analysis-domain.hbs`:
 
-### Step 4.2: Implement Core Changes
+```handlebars
+{{! Code Analysis Domain Generator Template }}
+{{#with domain}}
+// Code Analysis Domain: {{name}}
+// Generated: {{../metadata.timestamp}}
+
+import { z } from 'zod';
+import type { AnalysisConfig, CodeMetric, QualityRule } from './types.js';
+
+/**
+ * {{description}}
+ * Analysis Types: {{#each analysisTypes}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}
+ */
+
+// Analysis Configuration Schema
+export const analysisConfigSchema = z.object({
+  target: z.string().describe('Target file or directory'),
+  analysisTypes: z.array(z.enum(['complexity', 'coverage', 'dependencies', 'security', 'style'])),
+  thresholds: z.object({
+    complexity: z.number().optional().describe('Max cyclomatic complexity'),
+    coverage: z.number().optional().describe('Min coverage percentage'),
+    duplicateThreshold: z.number().optional().describe('Max duplicate lines'),
+  }).optional(),
+  ignorePatterns: z.array(z.string()).optional().describe('Glob patterns to ignore'),
+});
+
+// Code Metric Schema
+export const codeMetricSchema = z.object({
+  name: z.string().describe('Metric name'),
+  value: z.number().describe('Metric value'),
+  unit: z.string().optional().describe('Unit of measurement'),
+  threshold: z.number().optional().describe('Threshold for warnings'),
+  status: z.enum(['pass', 'warn', 'fail']).describe('Metric status'),
+});
+
+{{#each analyzers}}
+// Analyzer: {{name}}
+export interface {{pascalCase name}}Analyzer {
+  {{#each properties}}
+  /** {{description}} */
+  {{name}}: {{type}};
+  {{/each}}
+  analyze(source: string): AnalysisResult;
+}
+{{/each}}
+
+// Analysis Functions
+{{#each functions}}
+/**
+ * {{description}}
+ * @complexity {{complexity}}
+ */
+export function {{name}}({{#each params}}{{name}}: {{type}}{{#unless @last}}, {{/unless}}{{/each}}): {{returnType}} {
+  // Analysis implementation
+}
+{{/each}}
+{{/with}}
+```
+
+### Step 4.2: Create Code Analysis Generator Logic
+
+Create `src/tools/templates/generators/code-analysis-generator.ts`:
 
 ```typescript
-export class ImplementDomainGeneratorCodeAnalysis {
-  constructor(private readonly config: Config) {}
+import Handlebars from 'handlebars';
+import { z } from 'zod';
+import type { GeneratorResult, CodeAnalysisDomainConfig } from '../types.js';
 
-  execute(): Result {
-    // TODO: implement core logic
-  }
+export const codeAnalysisDomainConfigSchema = z.object({
+  name: z.string().min(1).describe('Analysis domain name'),
+  description: z.string().describe('Domain description'),
+  analysisTypes: z.array(z.enum([
+    'complexity', 'coverage', 'dependencies', 'security',
+    'style', 'duplication', 'documentation'
+  ])).describe('Types of analysis to include'),
+  analyzers: z.array(z.object({
+    name: z.string(),
+    properties: z.array(z.object({
+      name: z.string(),
+      type: z.string(),
+      description: z.string(),
+    })),
+  })).optional(),
+  functions: z.array(z.object({
+    name: z.string(),
+    description: z.string(),
+    params: z.array(z.object({ name: z.string(), type: z.string() })),
+    returnType: z.string(),
+    complexity: z.string().optional(),
+  })).optional(),
+  thresholds: z.object({
+    complexity: z.number().optional(),
+    coverage: z.number().optional(),
+    duplication: z.number().optional(),
+  }).optional(),
+});
+
+export async function generateCodeAnalysisDomain(
+  config: CodeAnalysisDomainConfig,
+  templatePath: string
+): Promise<GeneratorResult> {
+  const validated = codeAnalysisDomainConfigSchema.parse(config);
+
+  const context = {
+    domain: validated,
+    metadata: {
+      timestamp: new Date().toISOString(),
+      generator: 'code-analysis-domain-generator',
+      version: '0.14.0',
+    },
+  };
+
+  const template = await loadTemplate(templatePath);
+  const compiled = Handlebars.compile(template);
+  const output = compiled(context);
+
+  return {
+    success: true,
+    output,
+    metadata: context.metadata,
+    analysisTypes: validated.analysisTypes,
+  };
 }
 ```
 
-### Step 4.3: Wire Integrations
+### Step 4.3: Register Code Analysis Generator
 
-- Update barrel exports and registries
-- Register new handler or service if required
-- Add configuration entries where needed
+Update `src/tools/templates/generators/index.ts`:
 
-### Step 4.4: Validate Behavior
+```typescript
+export { generateCodeAnalysisDomain, codeAnalysisDomainConfigSchema } from './code-analysis-generator.js';
+```
 
-- Run unit tests for new logic
-- Ensure TypeScript strict mode passes
+### Step 4.4: Add Analysis-Specific Helpers
+
+Update `src/tools/templates/helpers/analysis-helpers.ts`:
+
+```typescript
+import Handlebars from 'handlebars';
+
+export function registerAnalysisHelpers(): void {
+  Handlebars.registerHelper('metricStatus', (value: number, threshold: number) => {
+    if (value <= threshold * 0.8) return 'pass';
+    if (value <= threshold) return 'warn';
+    return 'fail';
+  });
+
+  Handlebars.registerHelper('complexityGrade', (complexity: number) => {
+    if (complexity <= 5) return 'A';
+    if (complexity <= 10) return 'B';
+    if (complexity <= 20) return 'C';
+    return 'D';
+  });
+}
+```
 
 ## 5. Testing Strategy
 
@@ -104,11 +236,11 @@ export class ImplementDomainGeneratorCodeAnalysis {
 
 ## 7. Acceptance Criteria
 
-| Criterion | Status | Verification |
-|-----------|--------|--------------|
-| Implementation completed per requirements | ⬜ | TBD |
-| Integration points wired and documented | ⬜ | TBD |
-| Quality checks pass | ⬜ | TBD |
+| Criterion                                 | Status | Verification |
+| ----------------------------------------- | ------ | ------------ |
+| Implementation completed per requirements | ⬜      | TBD          |
+| Integration points wired and documented   | ⬜      | TBD          |
+| Quality checks pass                       | ⬜      | TBD          |
 
 ---
 

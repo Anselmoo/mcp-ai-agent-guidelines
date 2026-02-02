@@ -61,33 +61,162 @@ Complete the 'Implement Domain Generator: Security' work as specified in tasks.m
 
 ## 4. Implementation Guide
 
-### Step 4.1: Review Existing State
+### Step 4.1: Create Security Domain Generator Template
 
-- Locate related code and determine current gaps
-- Confirm requirements from tasks.md
+Create `src/tools/templates/generators/security-domain.hbs`:
 
-### Step 4.2: Implement Core Changes
+```handlebars
+{{! Security Domain Generator Template }}
+{{#with domain}}
+// Security Domain: {{name}}
+// Generated: {{../metadata.timestamp}}
+
+import { z } from 'zod';
+import type { SecurityConfig, ThreatModel, ComplianceFramework } from './types.js';
+
+/**
+ * {{description}}
+ * Compliance: {{#each compliance}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}
+ */
+
+// Security Schemas
+export const threatModelSchema = z.object({
+  threatId: z.string().describe('Unique threat identifier'),
+  category: z.enum(['STRIDE', 'OWASP', 'CWE', 'CUSTOM']).describe('Threat category'),
+  severity: z.enum(['critical', 'high', 'medium', 'low']).describe('Threat severity'),
+  likelihood: z.enum(['certain', 'likely', 'possible', 'unlikely']).describe('Occurrence likelihood'),
+  impact: z.string().describe('Impact description'),
+  mitigation: z.string().describe('Mitigation strategy'),
+});
+
+export const securityConfigSchema = z.object({
+  enableThreatModeling: z.boolean().default(true).describe('Enable threat modeling'),
+  complianceFrameworks: z.array(z.string()).describe('Compliance frameworks'),
+  securityLevel: z.enum(['basic', 'standard', 'strict']).default('standard'),
+  auditLogging: z.boolean().default(true).describe('Enable audit logging'),
+});
+
+{{#each entities}}
+// Security Entity: {{name}}
+export interface {{pascalCase name}}Security {
+  {{#each properties}}
+  /** {{description}} */
+  {{name}}: {{type}};
+  {{/each}}
+}
+{{/each}}
+
+// Security Functions
+{{#each functions}}
+/**
+ * {{description}}
+ * @security {{securityLevel}}
+ */
+export function {{name}}({{#each params}}{{name}}: {{type}}{{#unless @last}}, {{/unless}}{{/each}}): {{returnType}} {
+  // Security validation
+  {{#if requiresAudit}}
+  auditLog('{{name}}', { params: arguments });
+  {{/if}}
+  // Implementation
+}
+{{/each}}
+{{/with}}
+```
+
+### Step 4.2: Create Security Generator Logic
+
+Create `src/tools/templates/generators/security-generator.ts`:
 
 ```typescript
-export class ImplementDomainGeneratorSecurity {
-  constructor(private readonly config: Config) {}
+import Handlebars from 'handlebars';
+import { z } from 'zod';
+import type { GeneratorResult, SecurityDomainConfig } from '../types.js';
 
-  execute(): Result {
-    // TODO: implement core logic
-  }
+export const securityDomainConfigSchema = z.object({
+  name: z.string().min(1).describe('Security domain name'),
+  description: z.string().describe('Domain description'),
+  compliance: z.array(z.enum(['OWASP', 'SOC2', 'GDPR', 'HIPAA', 'PCI-DSS'])).describe('Compliance frameworks'),
+  threatCategories: z.array(z.enum(['STRIDE', 'OWASP-Top10', 'CWE-Top25'])).optional(),
+  securityLevel: z.enum(['basic', 'standard', 'strict']).default('standard'),
+  entities: z.array(z.object({
+    name: z.string(),
+    properties: z.array(z.object({
+      name: z.string(),
+      type: z.string(),
+      description: z.string(),
+      sensitive: z.boolean().optional(),
+    })),
+  })).optional(),
+  functions: z.array(z.object({
+    name: z.string(),
+    description: z.string(),
+    params: z.array(z.object({ name: z.string(), type: z.string() })),
+    returnType: z.string(),
+    securityLevel: z.string(),
+    requiresAudit: z.boolean().optional(),
+  })).optional(),
+});
+
+export async function generateSecurityDomain(
+  config: SecurityDomainConfig,
+  templatePath: string
+): Promise<GeneratorResult> {
+  const validated = securityDomainConfigSchema.parse(config);
+
+  const context = {
+    domain: validated,
+    metadata: {
+      timestamp: new Date().toISOString(),
+      generator: 'security-domain-generator',
+      version: '0.14.0',
+    },
+  };
+
+  const template = await loadTemplate(templatePath);
+  const compiled = Handlebars.compile(template);
+  const output = compiled(context);
+
+  return {
+    success: true,
+    output,
+    metadata: context.metadata,
+    compliance: validated.compliance,
+  };
 }
 ```
 
-### Step 4.3: Wire Integrations
+### Step 4.3: Register Security Generator
 
-- Update barrel exports and registries
-- Register new handler or service if required
-- Add configuration entries where needed
+Update `src/tools/templates/generators/index.ts`:
 
-### Step 4.4: Validate Behavior
+```typescript
+export { generateSecurityDomain, securityDomainConfigSchema } from './security-generator.js';
+```
 
-- Run unit tests for new logic
-- Ensure TypeScript strict mode passes
+### Step 4.4: Add Security-Specific Helpers
+
+Update `src/tools/templates/helpers/security-helpers.ts`:
+
+```typescript
+import Handlebars from 'handlebars';
+
+export function registerSecurityHelpers(): void {
+  Handlebars.registerHelper('threatSeverityColor', (severity: string) => {
+    const colors: Record<string, string> = {
+      critical: 'red', high: 'orange', medium: 'yellow', low: 'green'
+    };
+    return colors[severity] || 'gray';
+  });
+
+  Handlebars.registerHelper('complianceBadge', (framework: string) => {
+    return `[${framework}]`;
+  });
+
+  Handlebars.registerHelper('sensitiveField', (isSensitive: boolean) => {
+    return isSensitive ? '@sensitive' : '';
+  });
+}
+```
 
 ## 5. Testing Strategy
 
@@ -104,11 +233,11 @@ export class ImplementDomainGeneratorSecurity {
 
 ## 7. Acceptance Criteria
 
-| Criterion | Status | Verification |
-|-----------|--------|--------------|
-| Implementation completed per requirements | ⬜ | TBD |
-| Integration points wired and documented | ⬜ | TBD |
-| Quality checks pass | ⬜ | TBD |
+| Criterion                                 | Status | Verification |
+| ----------------------------------------- | ------ | ------------ |
+| Implementation completed per requirements | ⬜      | TBD          |
+| Integration points wired and documented   | ⬜      | TBD          |
+| Quality checks pass                       | ⬜      | TBD          |
 
 ---
 

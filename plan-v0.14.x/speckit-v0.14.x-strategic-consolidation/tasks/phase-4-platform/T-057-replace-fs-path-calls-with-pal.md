@@ -61,33 +61,173 @@ Complete the 'Replace fs/path Calls with PAL' work as specified in tasks.md and 
 
 ## 4. Implementation Guide
 
-### Step 4.1: Review Existing State
+### Step 4.1: Review PAL Interface
 
-- Locate related code and determine current gaps
-- Confirm requirements from tasks.md
-
-### Step 4.2: Implement Core Changes
+Ensure PAL interface from T-053 is available in `src/platform/pal.ts`:
 
 ```typescript
-export class ReplaceFsPathCallsWithPAL {
-  constructor(private readonly config: Config) {}
+/**
+ * Platform Abstraction Layer (PAL) Interface
+ * Abstracts filesystem and path operations for cross-platform compatibility
+ */
+export interface PAL {
+  // File operations
+  readFile(path: string, encoding?: BufferEncoding): Promise<string>;
+  writeFile(path: string, content: string): Promise<void>;
+  exists(path: string): Promise<boolean>;
+  mkdir(path: string, options?: { recursive?: boolean }): Promise<void>;
+  readdir(path: string): Promise<string[]>;
+  stat(path: string): Promise<{ isFile: boolean; isDirectory: boolean }>;
+  unlink(path: string): Promise<void>;
 
-  execute(): Result {
-    // TODO: implement core logic
+  // Path operations
+  join(...paths: string[]): string;
+  resolve(...paths: string[]): string;
+  dirname(path: string): string;
+  basename(path: string, ext?: string): string;
+  extname(path: string): string;
+  relative(from: string, to: string): string;
+  isAbsolute(path: string): boolean;
+  normalize(path: string): string;
+}
+```
+
+### Step 4.2: Create Migration Script
+
+Create `scripts/migrate-to-pal.ts`:
+
+```typescript
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import { glob } from 'glob';
+
+interface MigrationResult {
+  file: string;
+  changes: number;
+  migrations: string[];
+}
+
+const REPLACEMENTS: Array<{ from: RegExp; to: string; description: string }> = [
+  // Import replacements
+  {
+    from: /import \* as fs from ['"]node:fs['"];?/g,
+    to: "import { getPAL } from '../platform/index.js';",
+    description: 'Replace fs import',
+  },
+  {
+    from: /import \* as path from ['"]node:path['"];?/g,
+    to: '', // PAL includes path operations
+    description: 'Remove path import (included in PAL)',
+  },
+  {
+    from: /import \{ (.*) \} from ['"]node:fs\/promises['"];?/g,
+    to: "import { getPAL } from '../platform/index.js';",
+    description: 'Replace fs/promises import',
+  },
+
+  // Method replacements
+  {
+    from: /fs\.readFileSync\(([^,]+),\s*['"]utf-?8['"]\)/g,
+    to: 'await getPAL().readFile($1)',
+    description: 'Replace fs.readFileSync',
+  },
+  {
+    from: /fs\.writeFileSync\(([^,]+),\s*([^)]+)\)/g,
+    to: 'await getPAL().writeFile($1, $2)',
+    description: 'Replace fs.writeFileSync',
+  },
+  {
+    from: /fs\.existsSync\(([^)]+)\)/g,
+    to: 'await getPAL().exists($1)',
+    description: 'Replace fs.existsSync',
+  },
+  {
+    from: /fs\.mkdirSync\(([^,)]+)(?:,\s*\{[^}]*\})?\)/g,
+    to: 'await getPAL().mkdir($1, { recursive: true })',
+    description: 'Replace fs.mkdirSync',
+  },
+  {
+    from: /path\.(join|resolve|dirname|basename|extname|relative|normalize)\(/g,
+    to: 'getPAL().$1(',
+    description: 'Replace path methods',
+  },
+];
+
+export async function migrateFile(filePath: string): Promise<MigrationResult> {
+  let content = fs.readFileSync(filePath, 'utf-8');
+  const migrations: string[] = [];
+  let changes = 0;
+
+  for (const replacement of REPLACEMENTS) {
+    const matches = content.match(replacement.from);
+    if (matches) {
+      content = content.replace(replacement.from, replacement.to);
+      changes += matches.length;
+      migrations.push(`${replacement.description} (${matches.length}x)`);
+    }
+  }
+
+  if (changes > 0) {
+    fs.writeFileSync(filePath, content);
+  }
+
+  return { file: filePath, changes, migrations };
+}
+
+export async function migrateProject(srcDir: string): Promise<MigrationResult[]> {
+  const files = await glob(`${srcDir}/**/*.ts`, {
+    ignore: ['**/*.spec.ts', '**/platform/**', '**/node_modules/**'],
+  });
+
+  const results: MigrationResult[] = [];
+  for (const file of files) {
+    const result = await migrateFile(file);
+    if (result.changes > 0) {
+      results.push(result);
+    }
+  }
+
+  return results;
+}
+```
+
+### Step 4.3: Run Migration
+
+Add npm script to `package.json`:
+
+```json
+{
+  "scripts": {
+    "migrate:pal": "tsx scripts/migrate-to-pal.ts src",
+    "migrate:pal:dry": "tsx scripts/migrate-to-pal.ts src --dry-run"
   }
 }
 ```
 
-### Step 4.3: Wire Integrations
+Run migration:
 
-- Update barrel exports and registries
-- Register new handler or service if required
-- Add configuration entries where needed
+```bash
+# Preview changes
+npm run migrate:pal:dry
 
-### Step 4.4: Validate Behavior
+# Apply changes
+npm run migrate:pal
+```
 
-- Run unit tests for new logic
-- Ensure TypeScript strict mode passes
+### Step 4.4: Verify Migration
+
+Post-migration verification:
+
+```bash
+# Type-check to ensure imports are correct
+npm run type-check
+
+# Run tests to verify functionality
+npm run test:vitest
+
+# Re-audit to confirm no direct fs/path usage remains
+npm run audit:fs
+```
 
 ## 5. Testing Strategy
 
@@ -104,11 +244,11 @@ export class ReplaceFsPathCallsWithPAL {
 
 ## 7. Acceptance Criteria
 
-| Criterion | Status | Verification |
-|-----------|--------|--------------|
-| Implementation completed per requirements | ⬜ | TBD |
-| Integration points wired and documented | ⬜ | TBD |
-| Quality checks pass | ⬜ | TBD |
+| Criterion                                 | Status | Verification |
+| ----------------------------------------- | ------ | ------------ |
+| Implementation completed per requirements | ⬜      | TBD          |
+| Integration points wired and documented   | ⬜      | TBD          |
+| Quality checks pass                       | ⬜      | TBD          |
 
 ---
 

@@ -61,33 +61,174 @@ Complete the 'Implement Domain Generator: Domain Neutral' work as specified in t
 
 ## 4. Implementation Guide
 
-### Step 4.1: Review Existing State
+### Step 4.1: Create Domain-Neutral Generator Template
 
-- Locate related code and determine current gaps
-- Confirm requirements from tasks.md
+Create `src/tools/templates/generators/domain-neutral.hbs`:
 
-### Step 4.2: Implement Core Changes
+```handlebars
+{{! Domain-Neutral Generator Template }}
+{{#with domain}}
+// Domain: {{name}}
+// Generated: {{../metadata.timestamp}}
+// Purpose: {{purpose}}
+
+import { z } from 'zod';
+
+/**
+ * {{description}}
+ * Domain Type: {{domainType}}
+ * Cross-Domain: {{crossDomain}}
+ */
+
+// Configuration Schema
+export const {{camelCase name}}ConfigSchema = z.object({
+  {{#each configFields}}
+  {{name}}: {{zodType}}.describe('{{description}}'),
+  {{/each}}
+});
+
+// Domain Types
+{{#each types}}
+export type {{name}} = {
+  {{#each properties}}
+  /** {{description}} */
+  {{name}}: {{type}};
+  {{/each}}
+};
+{{/each}}
+
+// Domain Interfaces
+{{#each interfaces}}
+/**
+ * {{description}}
+ */
+export interface {{name}} {
+  {{#each methods}}
+  /** {{description}} */
+  {{name}}({{#each params}}{{name}}: {{type}}{{#unless @last}}, {{/unless}}{{/each}}): {{returnType}};
+  {{/each}}
+}
+{{/each}}
+
+// Domain Functions
+{{#each functions}}
+/**
+ * {{description}}
+{{#if domain}}
+ * @domain {{domain}}
+{{/if}}
+ */
+export function {{name}}({{#each params}}{{name}}: {{type}}{{#unless @last}}, {{/unless}}{{/each}}): {{returnType}} {
+  // Domain-neutral implementation
+}
+{{/each}}
+{{/with}}
+```
+
+### Step 4.2: Create Domain-Neutral Generator Logic
+
+Create `src/tools/templates/generators/domain-neutral-generator.ts`:
 
 ```typescript
-export class ImplementDomainGeneratorDomainNeutral {
-  constructor(private readonly config: Config) {}
+import Handlebars from 'handlebars';
+import { z } from 'zod';
+import type { GeneratorResult, DomainNeutralConfig } from '../types.js';
 
-  execute(): Result {
-    // TODO: implement core logic
-  }
+export const domainNeutralConfigSchema = z.object({
+  name: z.string().min(1).describe('Domain name'),
+  description: z.string().describe('Domain description'),
+  purpose: z.string().describe('Primary purpose'),
+  domainType: z.enum(['utility', 'workflow', 'integration', 'analysis', 'generation']),
+  crossDomain: z.boolean().default(false).describe('Is cross-domain applicable'),
+  configFields: z.array(z.object({
+    name: z.string(),
+    zodType: z.string(),
+    description: z.string(),
+  })).optional(),
+  types: z.array(z.object({
+    name: z.string(),
+    properties: z.array(z.object({
+      name: z.string(),
+      type: z.string(),
+      description: z.string(),
+    })),
+  })).optional(),
+  interfaces: z.array(z.object({
+    name: z.string(),
+    description: z.string(),
+    methods: z.array(z.object({
+      name: z.string(),
+      description: z.string(),
+      params: z.array(z.object({ name: z.string(), type: z.string() })),
+      returnType: z.string(),
+    })),
+  })).optional(),
+  functions: z.array(z.object({
+    name: z.string(),
+    description: z.string(),
+    params: z.array(z.object({ name: z.string(), type: z.string() })),
+    returnType: z.string(),
+    domain: z.string().optional(),
+  })).optional(),
+});
+
+export async function generateDomainNeutral(
+  config: DomainNeutralConfig,
+  templatePath: string
+): Promise<GeneratorResult> {
+  const validated = domainNeutralConfigSchema.parse(config);
+
+  const context = {
+    domain: validated,
+    metadata: {
+      timestamp: new Date().toISOString(),
+      generator: 'domain-neutral-generator',
+      version: '0.14.0',
+    },
+  };
+
+  const template = await loadTemplate(templatePath);
+  const compiled = Handlebars.compile(template);
+  const output = compiled(context);
+
+  return {
+    success: true,
+    output,
+    metadata: context.metadata,
+    domainType: validated.domainType,
+  };
 }
 ```
 
-### Step 4.3: Wire Integrations
+### Step 4.3: Register Domain-Neutral Generator
 
-- Update barrel exports and registries
-- Register new handler or service if required
-- Add configuration entries where needed
+Update `src/tools/templates/generators/index.ts`:
 
-### Step 4.4: Validate Behavior
+```typescript
+export { generateDomainNeutral, domainNeutralConfigSchema } from './domain-neutral-generator.js';
+```
 
-- Run unit tests for new logic
-- Ensure TypeScript strict mode passes
+### Step 4.4: Add Domain-Neutral Helpers
+
+Update `src/tools/templates/helpers/domain-helpers.ts`:
+
+```typescript
+import Handlebars from 'handlebars';
+
+export function registerDomainNeutralHelpers(): void {
+  Handlebars.registerHelper('zodType', (type: string) => {
+    const zodMap: Record<string, string> = {
+      string: 'z.string()', number: 'z.number()', boolean: 'z.boolean()',
+      array: 'z.array(z.unknown())', object: 'z.object({})',
+    };
+    return zodMap[type] || 'z.unknown()';
+  });
+
+  Handlebars.registerHelper('domainTag', (domainType: string) => {
+    return `@domain-${domainType}`;
+  });
+}
+```
 
 ## 5. Testing Strategy
 
@@ -104,11 +245,11 @@ export class ImplementDomainGeneratorDomainNeutral {
 
 ## 7. Acceptance Criteria
 
-| Criterion | Status | Verification |
-|-----------|--------|--------------|
-| Implementation completed per requirements | ⬜ | TBD |
-| Integration points wired and documented | ⬜ | TBD |
-| Quality checks pass | ⬜ | TBD |
+| Criterion                                 | Status | Verification |
+| ----------------------------------------- | ------ | ------------ |
+| Implementation completed per requirements | ⬜      | TBD          |
+| Integration points wired and documented   | ⬜      | TBD          |
+| Quality checks pass                       | ⬜      | TBD          |
 
 ---
 
