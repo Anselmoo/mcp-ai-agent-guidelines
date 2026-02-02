@@ -1,12 +1,13 @@
 # T-023: Design UnifiedPromptBuilder Architecture
 
 **Task ID**: T-023
-**Phase**: 2.5
-**Priority**: P0
+**Phase**: 2.5 - Unified Prompt Ecosystem
+**Priority**: P0 (Critical Path)
 **Estimate**: 4h
 **Owner**: @architecture-advisor
 **Reviewer**: @code-reviewer
-**Dependencies**: T-022
+**Dependencies**: T-022 (Phase 2 Integration)
+**Blocks**: T-024, T-025, T-026, T-027-T-031
 
 ---
 
@@ -14,96 +15,274 @@
 
 ### What
 
-Complete the 'Design UnifiedPromptBuilder Architecture' work as specified in tasks.md and related issue templates.
+Design the architecture for `UnifiedPromptBuilder` - a single entry point replacing 12+ prompt builders with registry pattern and template engine (REQ-007).
 
 ### Why
 
-- Aligns with the v0.14.x consolidation plan
-- Ensures repeatable delivery across phases
-- Reduces risk by documenting clear steps
+- **Tool Fragmentation**: 12+ prompt builders with overlapping functionality
+- **Inconsistent Patterns**: Different output formats, techniques, metadata handling
+- **Maintenance Burden**: Changes require updates across multiple files
+- **REQ-007 Compliance**: Spec mandates single entry point
 
 ### Deliverables
 
-- Updated implementation for T-023
-- Updated tests or validation evidence
-- Documentation or notes as required
+- `docs/adr/ADR-XXX-unified-prompt-builder.md` - Architecture Decision Record
+- Component diagram (Mermaid) showing data flow
+- Interface contracts for PromptRegistry, TemplateEngine, DomainGenerator
+- Migration strategy document
 
 ## 2. Context and Scope
 
-### Current State
+### Current State (12+ Prompt Builders)
 
-- Review existing modules and integrations
-- Capture baseline behavior before changes
+```
+src/tools/prompt/
+├── hierarchical-prompt-builder.ts      (650 lines)
+├── domain-neutral-prompt-builder.ts    (445 lines)
+├── security-hardening-prompt-builder.ts (520 lines)
+├── architecture-design-prompt-builder.ts (380 lines)
+├── code-analysis-prompt-builder.ts     (290 lines)
+├── debugging-assistant-prompt-builder.ts (310 lines)
+├── spark-prompt-builder.ts             (280 lines)
+├── prompt-flow-builder.ts              (420 lines)
+├── prompt-chaining-builder.ts          (350 lines)
+└── ... (3 more)
+```
 
 ### Target State
 
-- Design UnifiedPromptBuilder Architecture fully implemented per requirements
-- Supporting tests/validation in place
+```
+src/tools/prompt/
+├── unified/
+│   ├── unified-prompt-builder.ts       (Entry point)
+│   ├── prompt-registry.ts              (Domain registration)
+│   ├── template-engine.ts              (Handlebars rendering)
+│   └── generators/
+│       ├── hierarchical-generator.ts   (Domain logic)
+│       ├── security-generator.ts
+│       ├── architecture-generator.ts
+│       └── ... (per-domain generators)
+├── facades/                            (Backward compat)
+│   ├── hierarchical-facade.ts
+│   └── domain-neutral-facade.ts
+└── shared/                             (Existing utils)
+```
 
 ### Out of Scope
 
-- Unrelated refactors or non-task enhancements
+- Implementing generators (T-027-T-031)
+- Creating facades (T-032, T-033)
+- Performance optimization
 
 ## 3. Prerequisites
 
 ### Dependencies
 
-- T-022
+| Task  | Requirement                  |
+| ----- | ---------------------------- |
+| T-022 | Phase 2 Integration complete |
 
 ### Target Files
 
-- `TBD`
+| File                                          | Action |
+| --------------------------------------------- | ------ |
+| `docs/adr/ADR-XXX-unified-prompt-builder.md`  | Create |
+| `docs/architecture/unified-prompt-builder.md` | Create |
 
-### Tooling
+### Research Required
 
-- Node.js 22.x
-- npm scripts from the root package.json
+- Review existing prompt builder patterns in `src/tools/prompt/`
+- Analyze shared utilities in `src/tools/shared/prompt-*.ts`
+- Study registry patterns (e.g., `src/tools/design/constraint-manager.ts`)
 
-## 4. Implementation Guide
+## 4. Architecture Design
 
-### Step 4.1: Review Requirements
+### 4.1: Component Diagram
 
-- Re-read `spec.md` and relevant ADRs
-- Identify constraints, assumptions, and open questions
+```mermaid
+flowchart TB
+    subgraph Entry["Entry Point"]
+        UPB[UnifiedPromptBuilder]
+    end
 
-### Step 4.2: Draft Architecture
+    subgraph Registry["Registration"]
+        PR[PromptRegistry]
+        DG1[HierarchicalGenerator]
+        DG2[SecurityGenerator]
+        DG3[ArchitectureGenerator]
+        DGN[...DomainGenerators]
+    end
 
-- Produce an ADR with alternatives considered
-- Capture interface contracts and data flow
+    subgraph Engine["Rendering"]
+        TE[TemplateEngine]
+        HB[Handlebars Templates]
+    end
 
-### Step 4.3: Socialize
+    subgraph Shared["Shared Utilities"]
+        PS[prompt-sections.ts]
+        PU[prompt-utils.ts]
+    end
 
-- Share the draft with reviewers
-- Incorporate feedback before implementation
+    UPB --> PR
+    PR --> DG1 & DG2 & DG3 & DGN
+    DG1 & DG2 & DG3 & DGN --> TE
+    TE --> HB
+    DG1 & DG2 & DG3 & DGN --> PS & PU
+```
 
-## 5. Testing Strategy
+### 4.2: Interface Contracts
 
-- Confirm architecture review approval
-- Align with spec requirements
-- Ensure follow-on implementation tasks reference the design
+```typescript
+// Core interfaces for UnifiedPromptBuilder
+
+export interface PromptDomain {
+  name: string;  // 'hierarchical' | 'security' | 'architecture' | ...
+  version: string;
+  generator: DomainGenerator;
+  schema: z.ZodSchema;
+}
+
+export interface DomainGenerator {
+  generate(input: unknown, context: GeneratorContext): Promise<PromptOutput>;
+  validate(input: unknown): ValidationResult;
+}
+
+export interface GeneratorContext {
+  templateEngine: TemplateEngine;
+  config: PromptConfig;
+  metadata: PromptMetadata;
+}
+
+export interface PromptOutput {
+  content: string;
+  format: 'markdown' | 'xml' | 'json';
+  metadata: Record<string, unknown>;
+}
+
+export interface UnifiedPromptInput {
+  domain: string;           // Required: which generator to use
+  title: string;            // Required: prompt title
+  description?: string;     // Optional: brief description
+  sections: Record<string, unknown>;  // Domain-specific data
+  config?: PromptConfig;    // Optional: rendering config
+}
+```
+
+### 4.3: Registry Pattern
+
+```typescript
+// PromptRegistry - singleton managing domain generators
+
+export class PromptRegistry {
+  private static instance: PromptRegistry;
+  private domains = new Map<string, PromptDomain>();
+
+  static getInstance(): PromptRegistry {
+    if (!PromptRegistry.instance) {
+      PromptRegistry.instance = new PromptRegistry();
+    }
+    return PromptRegistry.instance;
+  }
+
+  register(domain: PromptDomain): void {
+    if (this.domains.has(domain.name)) {
+      throw new Error(`Domain '${domain.name}' already registered`);
+    }
+    this.domains.set(domain.name, domain);
+  }
+
+  get(name: string): PromptDomain | undefined {
+    return this.domains.get(name);
+  }
+
+  list(): string[] {
+    return Array.from(this.domains.keys());
+  }
+}
+```
+
+### 4.4: Template Engine
+
+```typescript
+// TemplateEngine - Handlebars-based rendering
+
+import Handlebars from 'handlebars';
+
+export class TemplateEngine {
+  private templates = new Map<string, HandlebarsTemplateDelegate>();
+
+  registerTemplate(name: string, source: string): void {
+    this.templates.set(name, Handlebars.compile(source));
+  }
+
+  render(templateName: string, data: Record<string, unknown>): string {
+    const template = this.templates.get(templateName);
+    if (!template) {
+      throw new Error(`Template '${templateName}' not found`);
+    }
+    return template(data);
+  }
+
+  registerHelpers(): void {
+    // Register common helpers
+    Handlebars.registerHelper('slug', slugify);
+    Handlebars.registerHelper('join', (arr, sep) => arr?.join(sep) ?? '');
+  }
+}
+```
+
+## 5. ADR Template
+
+```markdown
+# ADR-XXX: UnifiedPromptBuilder Architecture
+
+## Status
+Proposed
+
+## Context
+The codebase has 12+ prompt builders with overlapping functionality...
+
+## Decision
+Implement UnifiedPromptBuilder with:
+1. PromptRegistry for domain registration
+2. TemplateEngine for Handlebars rendering
+3. DomainGenerators for per-domain logic
+4. Legacy facades for backward compatibility
+
+## Consequences
+- Single entry point for all prompt generation
+- Reduced code duplication
+- Easier testing via generator isolation
+- Migration period with deprecation warnings
+```
 
 ## 6. Risks and Mitigations
 
-- Risk: Scope creep beyond tasks.md
-  - Mitigation: Validate against acceptance criteria
-- Risk: Integration regressions
-  - Mitigation: Run targeted tests and CI checks
+| Risk                   | Likelihood | Impact | Mitigation                                 |
+| ---------------------- | ---------- | ------ | ------------------------------------------ |
+| Over-abstraction       | Medium     | High   | Start with 3 domains, expand iteratively   |
+| Breaking changes       | High       | High   | Legacy facades (T-032, T-033)              |
+| Performance regression | Low        | Medium | Benchmark critical paths                   |
+| Template complexity    | Medium     | Medium | Keep templates simple, logic in generators |
 
 ## 7. Acceptance Criteria
 
-| Criterion | Status | Verification |
-|-----------|--------|--------------|
-| Architecture decision documented | ⬜ | TBD |
-| Design aligns with spec and ADRs | ⬜ | TBD |
-| Stakeholder review completed | ⬜ | TBD |
+| Criterion                     | Status | Verification                   |
+| ----------------------------- | ------ | ------------------------------ |
+| ADR document created          | ⬜      | `docs/adr/ADR-XXX-*.md` exists |
+| Interface contracts defined   | ⬜      | TypeScript interfaces in ADR   |
+| Component diagram included    | ⬜      | Mermaid diagram renders        |
+| Migration strategy documented | ⬜      | Facade approach documented     |
+| Stakeholder review completed  | ⬜      | PR approved by @code-reviewer  |
 
 ---
 
 ## 8. References
 
-- [spec.md](../../spec.md)
-- [tasks.md](../../tasks.md)
-- [issue template](../../issues/templates/issue-009-unified-prompt-builder.md)
+- [spec.md - REQ-007](../../spec.md)
+- [Existing prompt builders](../../../../src/tools/prompt/)
+- [Shared utilities](../../../../src/tools/shared/prompt-utils.ts)
+- [Handlebars documentation](https://handlebarsjs.com/)
 
 ---
 
