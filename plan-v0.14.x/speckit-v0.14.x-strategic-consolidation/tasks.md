@@ -30,8 +30,9 @@
 - **Estimate**: 4h
 - **Owner**: @mcp-tool-builder
 - **Dependencies**: None
+- **References**: REQ-001 (spec.md), ADR-001 (adr.md), AC-005 (spec.md)
 
-**Description**: Create abstract base class for all strategy implementations enforcing consistent interface, validation, and ExecutionTrace logging.
+**Description**: Create abstract base class for all strategy implementations enforcing consistent interface, validation, and ExecutionTrace logging. This implements the foundational pattern for mandatory HITL (Human-In-The-Loop) feedback across all 7 strategies (SpecKit, TOGAF, ADR, RFC, Enterprise, SDD, Chat), as specified in ADR-001. The template method pattern ensures ExecutionTrace logging cannot be bypassed.
 
 **File**: `src/strategies/shared/base-strategy.ts`
 
@@ -83,8 +84,9 @@ export abstract class BaseStrategy<TInput, TOutput> {
 - **Estimate**: 4h
 - **Owner**: @mcp-tool-builder
 - **Dependencies**: None
+- **References**: REQ-002 (spec.md), ADR-001 (adr.md), AC-013 (spec.md)
 
-**Description**: Implement decision logging class for transparency and debugging.
+**Description**: Implement decision logging class for transparency and debugging. ExecutionTrace records all strategy decisions (recordDecision), metrics (recordMetric), and errors (recordError) with timestamps, enabling full audit trails for AI agent workflows. Supports serialization to JSON and Markdown for integration with reporting tools. Critical for AC-013 validation.
 
 **File**: `src/shared/execution-trace.ts`
 
@@ -403,6 +405,9 @@ const THRESHOLDS = [
 - **Estimate**: 8h
 - **Owner**: @mcp-tool-builder
 - **Dependencies**: T-024, T-025
+- **References**: REQ-007 (spec.md), ADR-003 (adr.md), AC-009 (spec.md)
+
+**Description**: Implement UnifiedPromptBuilder as the single entry point for all prompt generation, replacing 12+ scattered prompt builders. Uses PromptRegistry for domain routing and TemplateEngine for consistent output formatting. This is a BREAKING CHANGE with strict "no backward compatibility" policy for internal APIs (Phase 2.5). Achieves 92% reduction in prompt builders per ADR-003, enabling AC-009 validation.
 
 **File**: `src/domain/prompts/unified-prompt-builder.ts`
 
@@ -619,8 +624,9 @@ const THRESHOLDS = [
 - **Estimate**: 6h
 - **Owner**: @mcp-tool-builder
 - **Dependencies**: None
+- **References**: REQ-011 (spec.md), NFR-001 (spec.md), AC-002 (spec.md)
 
-**Description**: Add .describe() to all Zod schemas (≥80% coverage).
+**Description**: Add .describe() to all Zod schemas (≥80% coverage). This enhances schema introspection and provides better error messages for AI agents and developers. Schemas must use Pattern A (inline co-located) as default per NFR-001, with Pattern B (external) only for shared schemas. Validated by validate_schema_examples CI job for AC-002 compliance.
 
 ---
 
@@ -651,6 +657,9 @@ export function warnDeprecated(options: {
 - **Estimate**: 6h
 - **Owner**: @mcp-tool-builder
 - **Dependencies**: None
+- **References**: REQ-013 (spec.md), AC-007 (spec.md)
+
+**Description**: Create validate_progress enforcement tool with dry-run mode, --apply patch generation, and progress-template.hbs support. Normalizes progress.md files across all Spec-Kits to ensure consistent format and completeness. Validates checklist structure, phase status tracking, and markdown formatting. Part of ADR-006 enforcement automation layer. Enables AC-007 validation of all progress.md files.
 
 **File**: `src/tools/enforcement/validate-progress.ts`
 
