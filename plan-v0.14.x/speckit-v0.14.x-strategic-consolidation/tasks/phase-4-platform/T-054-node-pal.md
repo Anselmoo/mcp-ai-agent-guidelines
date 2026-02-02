@@ -32,72 +32,204 @@ Complete the 'Implement NodePAL' work as specified in tasks.md and related issue
 
 ### Current State
 
-- Review existing modules and integrations
-- Capture baseline behavior before changes
+- PAL interface defined in T-053
+- No production implementation exists
+- Direct fs/path calls scattered throughout codebase
 
 ### Target State
 
-- Implement NodePAL fully implemented per requirements
-- Supporting tests/validation in place
+- `NodePAL` implements full `PlatformAbstractionLayer` interface
+- Cross-platform path handling (Windows, Linux, macOS)
+- Async file operations with proper error handling
+- Thread-safe implementation for concurrent access
 
 ### Out of Scope
 
-- Unrelated refactors or non-task enhancements
+- Shell script replacement (future task)
+- Streaming file operations
 
 ## 3. Prerequisites
 
 ### Dependencies
 
-- T-053
+- T-053: PAL interface defined
 
 ### Target Files
 
-- `src/platform/node-pal.ts`
+- `src/platform/node-pal.ts` (new)
+- `src/platform/index.ts` (barrel export)
 
 ### Tooling
 
-- Node.js 22.x
-- npm scripts from the root package.json
+- Node.js 22.x (fs/promises API)
+- TypeScript strict mode
 
 ## 4. Implementation Guide
 
-### Step 4.1: Review Existing State
+### Step 4.1: Create NodePAL Class
 
-- Locate related code and determine current gaps
-- Confirm requirements from tasks.md
-
-### Step 4.2: Implement Core Changes
-
+**File**: `src/platform/node-pal.ts`
 ```typescript
-import type { PlatformAbstractionLayer } from './pal-interface.js';
-import * as fs from 'fs/promises';
-import * as fsSync from 'fs';
-import * as path from 'path';
-import * as os from 'os';
+import type { PlatformAbstractionLayer, FileInfo, Platform } from './pal.interface.js';
+import * as fs from 'node:fs/promises';
+import * as fsSync from 'node:fs';
+import * as path from 'node:path';
+import * as os from 'node:os';
+import { glob } from 'glob';
 
 export class NodePAL implements PlatformAbstractionLayer {
+  // File Operations
   async readFile(filePath: string): Promise<string> {
     return fs.readFile(filePath, 'utf-8');
   }
 
+  async writeFile(filePath: string, content: string): Promise<void> {
+    const dir = path.dirname(filePath);
+    await fs.mkdir(dir, { recursive: true });
+    await fs.writeFile(filePath, content, 'utf-8');
+  }
+
+  async exists(filePath: string): Promise<boolean> {
+    try {
+      await fs.access(filePath);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  async delete(filePath: string): Promise<void> {
+    await fs.rm(filePath, { recursive: true, force: true });
+  }
+
+  async stat(filePath: string): Promise<FileInfo> {
+    const stats = await fs.stat(filePath);
+    return {
+      path: filePath,
+      isDirectory: stats.isDirectory(),
+      isFile: stats.isFile(),
+      size: stats.size,
+      mtime: stats.mtime,
+    };
+  }
+
+  // Directory Operations
+  async listFiles(dir: string, pattern?: string): Promise<string[]> {
+    if (pattern) {
+      return glob(pattern, { cwd: dir, absolute: true });
+    }
+    const entries = await fs.readdir(dir, { withFileTypes: true });
+    return entries
+      .filter(e => e.isFile())
+      .map(e => path.join(dir, e.name));
+  }
+
+  async createDir(dirPath: string): Promise<void> {
+    await fs.mkdir(dirPath, { recursive: true });
+  }
+
+  // Path Operations
   resolvePath(...segments: string[]): string {
     return path.resolve(...segments);
   }
 
-  getPlatform(): 'darwin' | 'linux' | 'win32' {
-    return process.platform as 'darwin' | 'linux' | 'win32';
+  joinPath(...segments: string[]): string {
+    return path.join(...segments);
+  }
+
+  dirname(filePath: string): string {
+    return path.dirname(filePath);
+  }
+
+  basename(filePath: string, ext?: string): string {
+    return path.basename(filePath, ext);
+  }
+
+  extname(filePath: string): string {
+    return path.extname(filePath);
+  }
+
+  // Environment
+  getEnv(key: string): string | undefined {
+    return process.env[key];
+  }
+
+  getPlatform(): Platform {
+    return process.platform as Platform;
   }
 
   getHomeDir(): string {
     return os.homedir();
   }
+
+  getTempDir(): string {
+    return os.tmpdir();
+  }
+
+  getCwd(): string {
+    return process.cwd();
+  }
 }
 ```
 
-### Step 4.3: Wire Integrations
+### Step 4.2: Export Singleton
 
-- Update barrel exports and registries
-- Register new handler or service if required
+**File**: `src/platform/index.ts`
+```typescript
+import { NodePAL } from './node-pal.js';
+import type { PlatformAbstractionLayer } from './pal.interface.js';
+
+export type { PlatformAbstractionLayer, FileInfo, Platform } from './pal.interface.js';
+export { NodePAL } from './node-pal.js';
+export { MockPAL } from './mock-pal.js';
+
+// Singleton for production use
+export const pal: PlatformAbstractionLayer = new NodePAL();
+```
+
+### Step 4.3: Add Unit Tests
+
+**File**: `tests/vitest/platform/node-pal.spec.ts`
+```typescript
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { NodePAL } from '../../../src/platform/node-pal.js';
+import * as os from 'node:os';
+import * as path from 'node:path';
+
+describe('NodePAL', () => {
+  let pal: NodePAL;
+  let testDir: string;
+
+  beforeEach(async () => {
+    pal = new NodePAL();
+    testDir = path.join(os.tmpdir(), `nodepal-test-${Date.now()}`);
+    await pal.createDir(testDir);
+  });
+
+  afterEach(async () => {
+    await pal.delete(testDir);
+  });
+
+  it('should write and read files', async () => {
+    const filePath = pal.joinPath(testDir, 'test.txt');
+    await pal.writeFile(filePath, 'hello world');
+    const content = await pal.readFile(filePath);
+    expect(content).toBe('hello world');
+  });
+
+  it('should check file existence', async () => {
+    const filePath = pal.joinPath(testDir, 'exists.txt');
+    expect(await pal.exists(filePath)).toBe(false);
+    await pal.writeFile(filePath, 'content');
+    expect(await pal.exists(filePath)).toBe(true);
+  });
+
+  it('should return correct platform', () => {
+    const platform = pal.getPlatform();
+    expect(['darwin', 'linux', 'win32']).toContain(platform);
+  });
+});
+```
 - Add configuration entries where needed
 
 ### Step 4.4: Validate Behavior
@@ -120,11 +252,11 @@ export class NodePAL implements PlatformAbstractionLayer {
 
 ## 7. Acceptance Criteria
 
-| Criterion | Status | Verification |
-|-----------|--------|--------------|
-| Implementation completed per requirements | ⬜ | TBD |
-| Integration points wired and documented | ⬜ | TBD |
-| Quality checks pass | ⬜ | TBD |
+| Criterion                                 | Status | Verification |
+| ----------------------------------------- | ------ | ------------ |
+| Implementation completed per requirements | ⬜      | TBD          |
+| Integration points wired and documented   | ⬜      | TBD          |
+| Quality checks pass                       | ⬜      | TBD          |
 
 ---
 

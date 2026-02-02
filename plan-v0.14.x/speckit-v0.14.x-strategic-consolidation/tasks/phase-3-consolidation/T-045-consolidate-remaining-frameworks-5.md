@@ -32,62 +32,159 @@ Complete the 'Consolidate Remaining Frameworks (5)' work as specified in tasks.m
 
 ### Current State
 
-- Review existing modules and integrations
-- Capture baseline behavior before changes
+From spec.md, 5 remaining framework categories need consolidation:
+1. **Strategic Planning**: strategy-frameworks, gap-analysis, sprint-calculator
+2. **Agent Orchestration**: agent-orchestrator, design-assistant
+3. **Prompt Optimization**: memory-optimizer, hierarchy-selector
+4. **Visualization**: mermaid-generator, spark-ui-cards
+5. **Project Management**: speckit-generator, validate-spec
 
 ### Target State
 
-- Consolidate Remaining Frameworks (5) fully implemented per requirements
-- Supporting tests/validation in place
+Per ADR-005, consolidate remaining tools into 5 unified frameworks:
+
+| #   | Framework           | Source Tools                         | Actions                         |
+| --- | ------------------- | ------------------------------------ | ------------------------------- |
+| 7   | Strategic Planning  | strategy-frameworks, gap-analysis    | `swot`, `gap`, `sprint`         |
+| 8   | Agent Orchestration | agent-orchestrator, design-assistant | `orchestrate`, `design-session` |
+| 9   | Prompt Optimization | memory-optimizer, hierarchy-selector | `optimize`, `select-level`      |
+| 10  | Visualization       | mermaid-generator, spark-ui          | `diagram`, `ui-card`            |
+| 11  | Project Management  | speckit-generator, validate-spec     | `generate`, `validate`          |
 
 ### Out of Scope
 
-- Unrelated refactors or non-task enhancements
+- Tool logic changes (structure consolidation only)
+- New features beyond consolidation
 
 ## 3. Prerequisites
 
 ### Dependencies
 
-- T-038
+- T-038: Framework Router implemented
+- T-039 through T-044: First 6 frameworks consolidated
 
 ### Target Files
 
-- `TBD`
+```
+src/frameworks/
+├── strategic-planning/
+├── agent-orchestration/
+├── prompt-optimization/
+├── visualization/
+└── project-management/
+```
 
 ### Tooling
 
 - Node.js 22.x
-- npm scripts from the root package.json
+- Zod for schema validation
 
 ## 4. Implementation Guide
 
-### Step 4.1: Review Existing State
+### Step 4.1: Strategic Planning Framework
 
-- Locate related code and determine current gaps
-- Confirm requirements from tasks.md
-
-### Step 4.2: Implement Core Changes
-
+**File**: `src/frameworks/strategic-planning/handler.ts`
 ```typescript
-export class ConsolidateRemainingFrameworks5 {
-  constructor(private readonly config: Config) {}
+import { z } from 'zod';
 
-  execute(): Result {
-    // TODO: implement core logic
-  }
+export const strategicPlanningSchema = z.object({
+  action: z.enum(['swot', 'gap', 'vrio', 'bsc', 'sprint']),
+  context: z.string(),
+  factors: z.array(z.string()).optional(),
+  outputFormat: z.enum(['markdown', 'json']).default('markdown'),
+});
+
+const actionHandlers = {
+  'swot': swotAnalysisAction,
+  'gap': gapAnalysisAction,
+  'vrio': vrioAction,
+  'bsc': balancedScorecardAction,
+  'sprint': sprintCalculatorAction,
+};
+
+export async function handleStrategicPlanning(input: unknown) {
+  const validated = strategicPlanningSchema.parse(input);
+  return actionHandlers[validated.action](validated);
 }
 ```
 
-### Step 4.3: Wire Integrations
+### Step 4.2: Agent Orchestration Framework
 
-- Update barrel exports and registries
-- Register new handler or service if required
-- Add configuration entries where needed
+**File**: `src/frameworks/agent-orchestration/handler.ts`
+```typescript
+export const agentOrchestrationSchema = z.object({
+  action: z.enum(['orchestrate', 'design-session', 'handoff', 'list-agents']),
+  sessionId: z.string().optional(),
+  targetAgent: z.string().optional(),
+  workflowName: z.string().optional(),
+});
 
-### Step 4.4: Validate Behavior
+export async function handleAgentOrchestration(input: unknown) {
+  const validated = agentOrchestrationSchema.parse(input);
+  // Route to appropriate action
+}
+```
 
-- Run unit tests for new logic
-- Ensure TypeScript strict mode passes
+### Step 4.3: Prompt Optimization Framework
+
+**File**: `src/frameworks/prompt-optimization/handler.ts`
+```typescript
+export const promptOptimizationSchema = z.object({
+  action: z.enum(['optimize', 'select-level', 'evaluate']),
+  contextContent: z.string().optional(),
+  maxTokens: z.number().default(8000),
+  taskDescription: z.string().optional(),
+});
+
+export async function handlePromptOptimization(input: unknown) {
+  const validated = promptOptimizationSchema.parse(input);
+  // Route to appropriate action
+}
+```
+
+### Step 4.4: Visualization Framework
+
+**File**: `src/frameworks/visualization/handler.ts`
+```typescript
+export const visualizationSchema = z.object({
+  action: z.enum(['diagram', 'ui-card', 'dashboard']),
+  diagramType: z.enum(['flowchart', 'sequence', 'class', 'state', 'er']).optional(),
+  description: z.string(),
+  theme: z.string().optional(),
+});
+
+export async function handleVisualization(input: unknown) {
+  const validated = visualizationSchema.parse(input);
+  // Route to appropriate action
+}
+```
+
+### Step 4.5: Project Management Framework
+
+**File**: `src/frameworks/project-management/handler.ts`
+```typescript
+export const projectManagementSchema = z.object({
+  action: z.enum(['generate', 'validate', 'enforce-planning']),
+  directory: z.string().default('.'),
+  artifacts: z.array(z.enum(['spec', 'plan', 'tasks', 'progress'])).optional(),
+});
+
+export async function handleProjectManagement(input: unknown) {
+  const validated = projectManagementSchema.parse(input);
+  // Route to appropriate action
+}
+```
+
+### Step 4.6: Register All in Framework Router
+
+```typescript
+// src/frameworks/registry.ts
+frameworkRouter.register('strategic-planning', handleStrategicPlanning);
+frameworkRouter.register('agent-orchestration', handleAgentOrchestration);
+frameworkRouter.register('prompt-optimization', handlePromptOptimization);
+frameworkRouter.register('visualization', handleVisualization);
+frameworkRouter.register('project-management', handleProjectManagement);
+```
 
 ## 5. Testing Strategy
 
@@ -104,11 +201,11 @@ export class ConsolidateRemainingFrameworks5 {
 
 ## 7. Acceptance Criteria
 
-| Criterion | Status | Verification |
-|-----------|--------|--------------|
-| Implementation completed per requirements | ⬜ | TBD |
-| Integration points wired and documented | ⬜ | TBD |
-| Quality checks pass | ⬜ | TBD |
+| Criterion                                 | Status | Verification |
+| ----------------------------------------- | ------ | ------------ |
+| Implementation completed per requirements | ⬜      | TBD          |
+| Integration points wired and documented   | ⬜      | TBD          |
+| Quality checks pass                       | ⬜      | TBD          |
 
 ---
 

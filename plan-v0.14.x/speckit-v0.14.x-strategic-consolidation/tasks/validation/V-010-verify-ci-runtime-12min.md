@@ -2,11 +2,12 @@
 
 **Task ID**: V-010
 **Phase**: Validation
-**Priority**: TBD
-**Estimate**: TBD
-**Owner**: TBD
-**Reviewer**: @code-reviewer
-**Dependencies**: T-064
+**Priority**: P1 (Developer Experience)
+**Estimate**: 1h
+**Owner**: @performance-optimizer
+**Reviewer**: @ci-fixer
+**Dependencies**: T-064 (CI Performance Optimization)
+**References**: AC-010 (spec.md), REQ-018 (spec.md)
 
 ---
 
@@ -14,19 +15,31 @@
 
 ### What
 
-Complete the 'Verify CI Runtime ≤12min' work as specified in tasks.md and related issue templates.
+Verify that CI pipeline runtime is ≤12 minutes per job, ensuring fast feedback loops for developers. This validation confirms performance optimizations including caching, parallelization, and test sharding are effective.
 
 ### Why
 
-- Aligns with the v0.14.x consolidation plan
-- Ensures repeatable delivery across phases
-- Reduces risk by documenting clear steps
+- **Requirement**: AC-010 mandates CI runtime ≤12min
+- **Developer Experience**: Fast CI enables rapid iteration
+- **Cost**: Shorter runtimes reduce GitHub Actions billing
+- **Productivity**: Quick feedback prevents context switching
+
+### Context from Spec-Kit
+
+From spec.md AC-010:
+> "CI pipeline runtime ≤12 minutes (per job in matrix)"
+
+From roadmap.md metrics:
+> "CI Time: 18min → 12min (-33%)"
+
+From plan.md optimizations:
+> "Implement npm cache, parallel test execution, and intelligent test sharding"
 
 ### Deliverables
 
-- Updated implementation for V-010
-- Updated tests or validation evidence
-- Documentation or notes as required
+- CI timing analysis showing all jobs ≤12min
+- Breakdown of time by workflow step
+- Optimization recommendations if any job exceeds target
 
 ## 2. Context and Scope
 
@@ -62,28 +75,60 @@ Complete the 'Verify CI Runtime ≤12min' work as specified in tasks.md and rela
 
 ## 4. Implementation Guide
 
-### Step 4.1: Prepare Inputs
+### Step 4.1: Collect CI Timing Data
 
-- Confirm all dependent tasks are complete
-- Ensure required artifacts/logs are available
-
-### Step 4.2: Execute Validation
-
-- Method: CI timing
-
+**Command**:
 ```bash
-# review CI timing
+# Get last 10 CI runs timing
+gh run list --workflow=ci.yml --limit 10 --json databaseId,conclusion,startedAt,updatedAt \
+  | jq '.[] | {id: .databaseId, duration: ((.updatedAt | fromdateiso8601) - (.startedAt | fromdateiso8601))}'
 ```
 
-### Step 4.3: Capture Evidence
+### Step 4.2: Analyze Job-Level Timing
 
-- Save reports under `artifacts/` or attach to CI logs
-- Note any failures with remediation steps
+```bash
+# Get detailed job timing for a run
+gh run view <run-id> --json jobs \
+  | jq '.jobs[] | {name: .name, duration: ((.completedAt | fromdateiso8601) - (.startedAt | fromdateiso8601))/60}'
+```
 
-### Step 4.4: Remediate and Re-run
+**Expected Output**:
+```json
+{"name": "test (ubuntu-latest, 22)", "duration": 8.5}
+{"name": "test (macos-latest, 22)", "duration": 10.2}
+{"name": "test (windows-latest, 22)", "duration": 11.8}
+```
 
-- Fix issues discovered by validation
-- Re-run until validation passes
+### Step 4.3: Step-Level Breakdown
+
+**Target Step Timings**:
+| Step              | Target            | Typical |
+| ----------------- | ----------------- | ------- |
+| Checkout          | <10s              | 5s      |
+| Setup Node        | <30s              | 15s     |
+| npm ci (cached)   | <60s              | 45s     |
+| Type check        | <60s              | 40s     |
+| Lint              | <30s              | 20s     |
+| Unit tests        | <300s             | 240s    |
+| Integration tests | <120s             | 90s     |
+| Coverage          | <60s              | 45s     |
+| **Total**         | **<720s (12min)** | ~500s   |
+
+### Step 4.4: Verify Cache Effectiveness
+
+```bash
+# Check cache hit rate
+gh run view <run-id> --log | grep -E "(Cache|cache)" | head -20
+```
+
+**Expected**: npm cache hit on non-lockfile-change runs
+
+### Step 4.5: Generate Timing Report
+
+```bash
+# Export timing analysis
+npx tsx scripts/ci-timing-analysis.ts > artifacts/ci-timing-report.md
+```
 
 ## 5. Testing Strategy
 
@@ -100,19 +145,31 @@ Complete the 'Verify CI Runtime ≤12min' work as specified in tasks.md and rela
 
 ## 7. Acceptance Criteria
 
-| Criterion | Status | Verification |
-|-----------|--------|--------------|
-| Validation executed successfully | ⬜ | TBD |
-| Results recorded with evidence | ⬜ | TBD |
-| Follow-up items documented | ⬜ | TBD |
+| Criterion                | Status | Verification    |
+| ------------------------ | ------ | --------------- |
+| Linux jobs ≤10min        | ⬜      | Timing analysis |
+| macOS jobs ≤12min        | ⬜      | Timing analysis |
+| Windows jobs ≤12min      | ⬜      | Timing analysis |
+| npm cache hit rate >80%  | ⬜      | Cache logs      |
+| No test timeout failures | ⬜      | CI logs         |
+| P95 runtime ≤12min       | ⬜      | 10-run analysis |
+
+### Optimization Techniques (Implemented)
+
+| Technique                    | Impact            |
+| ---------------------------- | ----------------- |
+| npm ci with cache            | -40% install time |
+| Parallel test execution      | -30% test time    |
+| TypeScript incremental build | -25% build time   |
+| Smart test selection         | -20% test time    |
 
 ---
 
 ## 8. References
 
-- [spec.md](../../spec.md)
-- [tasks.md](../../tasks.md)
+- [spec.md](../../spec.md) - AC-010, REQ-018
+- [GitHub Actions Caching](https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows)
 
 ---
 
-*Task: V-010 | Phase: Validation | Priority: TBD*
+*Task: V-010 | Phase: Validation | Priority: P1*

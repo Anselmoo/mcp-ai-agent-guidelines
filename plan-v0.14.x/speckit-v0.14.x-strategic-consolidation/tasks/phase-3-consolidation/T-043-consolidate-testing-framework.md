@@ -32,65 +32,117 @@ Complete the 'Consolidate Testing Framework' work as specified in tasks.md and r
 
 ### Current State
 
-- Review existing modules and integrations
-- Capture baseline behavior before changes
+From spec.md baseline:
+- `iterative-coverage-enhancer.ts` - Coverage gap analysis
+- `coverage-dashboard-design-prompt-builder.ts` - Dashboard UI prompts
+- Separate test utilities across multiple files
 
 ### Target State
 
-- Consolidate Testing Framework fully implemented per requirements
-- Supporting tests/validation in place
+Per ADR-005 Framework Consolidation:
+- Single `TestingFramework` in `src/frameworks/testing/`
+- Actions: `coverage-analysis`, `gap-detection`, `dashboard-design`, `test-generation`
+- Unified coverage metrics and threshold management
+- Shared test pattern recommendations
 
 ### Out of Scope
 
-- Unrelated refactors or non-task enhancements
+- Actual test execution (delegated to Vitest)
+- Test file generation (suggestions only)
 
 ## 3. Prerequisites
 
 ### Dependencies
 
-- T-038
+- T-038: Framework Router implemented
 
 ### Target Files
 
-- `tests/vitest/`
-- `tests/test-server.js`
+- `src/frameworks/testing/index.ts` (new)
+- `src/frameworks/testing/handler.ts`
+- `src/frameworks/testing/actions/` (4 actions)
+- `src/frameworks/testing/schema.ts`
+- `src/frameworks/testing/coverage-analyzer.ts`
 
 ### Tooling
 
 - Node.js 22.x
-- npm scripts from the root package.json
+- Vitest for test execution
+- c8/istanbul for coverage data
 
 ## 4. Implementation Guide
 
-### Step 4.1: Identify Test Surface
+### Step 4.1: Define Schema
 
-- Review the related implementation for critical paths
-- Document edge cases and failure modes
-
-### Step 4.2: Implement Tests
-
+**File**: `src/frameworks/testing/schema.ts`
 ```typescript
-import { describe, it, expect } from 'vitest';
+import { z } from 'zod';
 
-describe('TargetBehavior', () => {
-  it('covers the primary path', () => {
-    // Arrange
-    // Act
-    // Assert
-  });
-
-  it('covers failure modes', () => {
-    // Arrange
-    // Act
-    // Assert
-  });
+export const testingFrameworkSchema = z.object({
+  action: z.enum(['coverage-analysis', 'gap-detection', 'dashboard-design', 'test-generation']),
+  coverageReport: z.string().optional(),
+  targetFiles: z.array(z.string()).optional(),
+  threshold: z.number().min(0).max(100).default(90),
+  includeUncovered: z.boolean().default(true),
+  outputFormat: z.enum(['markdown', 'json']).default('markdown'),
 });
+
+export type TestingFrameworkInput = z.infer<typeof testingFrameworkSchema>;
 ```
 
-### Step 4.3: Validate Coverage
+### Step 4.2: Implement Handler
 
-- Run the targeted Vitest suite
-- Confirm coverage thresholds meet requirements
+**File**: `src/frameworks/testing/handler.ts`
+```typescript
+import { testingFrameworkSchema } from './schema.js';
+import { coverageAnalysisAction } from './actions/coverage-analysis.js';
+import { gapDetectionAction } from './actions/gap-detection.js';
+import { dashboardDesignAction } from './actions/dashboard-design.js';
+import { testGenerationAction } from './actions/test-generation.js';
+
+const actionHandlers = {
+  'coverage-analysis': coverageAnalysisAction,
+  'gap-detection': gapDetectionAction,
+  'dashboard-design': dashboardDesignAction,
+  'test-generation': testGenerationAction,
+};
+
+export async function handleTesting(input: unknown) {
+  const validated = testingFrameworkSchema.parse(input);
+  const handler = actionHandlers[validated.action];
+  return handler(validated);
+}
+```
+
+### Step 4.3: Implement Coverage Analysis
+
+**File**: `src/frameworks/testing/actions/coverage-analysis.ts`
+```typescript
+import { TestingFrameworkInput } from '../schema.js';
+import { parseLcov } from '../coverage-analyzer.js';
+
+export async function coverageAnalysisAction(input: TestingFrameworkInput) {
+  const coverage = input.coverageReport
+    ? await parseLcov(input.coverageReport)
+    : await parseLcov('coverage/lcov.info');
+
+  const summary = {
+    statements: coverage.statements.pct,
+    branches: coverage.branches.pct,
+    functions: coverage.functions.pct,
+    lines: coverage.lines.pct,
+  };
+
+  const meetsThreshold = Object.values(summary).every(v => v >= input.threshold);
+
+  return {
+    summary,
+    threshold: input.threshold,
+    passes: meetsThreshold,
+    filesBelow: coverage.files.filter(f => f.pct < input.threshold),
+  };
+}
+```
 
 ## 5. Testing Strategy
 
@@ -107,11 +159,11 @@ describe('TargetBehavior', () => {
 
 ## 7. Acceptance Criteria
 
-| Criterion | Status | Verification |
-|-----------|--------|--------------|
-| Core paths covered by tests | ⬜ | TBD |
-| Failure paths validated | ⬜ | TBD |
-| Coverage thresholds met | ⬜ | TBD |
+| Criterion                   | Status | Verification |
+| --------------------------- | ------ | ------------ |
+| Core paths covered by tests | ⬜      | TBD          |
+| Failure paths validated     | ⬜      | TBD          |
+| Coverage thresholds met     | ⬜      | TBD          |
 
 ---
 

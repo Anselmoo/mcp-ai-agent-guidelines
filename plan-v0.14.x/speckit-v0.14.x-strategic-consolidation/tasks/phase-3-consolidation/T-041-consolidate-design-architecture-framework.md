@@ -32,49 +32,115 @@ Complete the 'Consolidate Design & Architecture Framework' work as specified in 
 
 ### Current State
 
-- Review existing modules and integrations
-- Capture baseline behavior before changes
+From spec.md baseline:
+- `architecture-design-prompt-builder.ts` - Architecture prompts
+- `l9-distinguished-engineer-prompt-builder.ts` - L9 engineering prompts
+- `digital-enterprise-architect-prompt-builder.ts` - Enterprise prompts
+- ~35% code duplication between these tools
 
 ### Target State
 
-- Consolidate Design & Architecture Framework fully implemented per requirements
-- Supporting tests/validation in place
+Per ADR-005 Framework Consolidation:
+- Single `DesignArchitectureFramework` in `src/frameworks/design-architecture/`
+- Unified interface with action-based routing
+- Actions: `architecture`, `l9-engineering`, `enterprise-architect`
+- Shared validation, output formatting, and template rendering
 
 ### Out of Scope
 
-- Unrelated refactors or non-task enhancements
+- Prompt content changes (only structural consolidation)
+- Breaking external API (facades maintain compatibility)
 
 ## 3. Prerequisites
 
 ### Dependencies
 
-- T-038
+- T-038: Framework Router implemented
 
 ### Target Files
 
-- `TBD`
+- `src/frameworks/design-architecture/index.ts` (new)
+- `src/frameworks/design-architecture/handler.ts`
+- `src/frameworks/design-architecture/actions/` (3 actions)
+- `src/frameworks/design-architecture/schema.ts`
+- `src/frameworks/design-architecture/types.ts`
 
 ### Tooling
 
 - Node.js 22.x
-- npm scripts from the root package.json
+- Zod for schema validation
+- Handlebars for template rendering
 
 ## 4. Implementation Guide
 
-### Step 4.1: Review Requirements
+### Step 4.1: Create Framework Structure
 
-- Re-read `spec.md` and relevant ADRs
-- Identify constraints, assumptions, and open questions
+```bash
+mkdir -p src/frameworks/design-architecture/actions
+```
 
-### Step 4.2: Draft Architecture
+### Step 4.2: Define Schema
 
-- Produce an ADR with alternatives considered
-- Capture interface contracts and data flow
+**File**: `src/frameworks/design-architecture/schema.ts`
+```typescript
+import { z } from 'zod';
 
-### Step 4.3: Socialize
+export const designArchitectureSchema = z.object({
+  action: z.enum(['architecture', 'l9-engineering', 'enterprise-architect']),
+  projectContext: z.string().optional(),
+  requirements: z.array(z.string()).optional(),
+  constraints: z.array(z.string()).optional(),
+  technicalStack: z.array(z.string()).optional(),
+  outputFormat: z.enum(['markdown', 'json']).default('markdown'),
+});
 
-- Share the draft with reviewers
-- Incorporate feedback before implementation
+export type DesignArchitectureInput = z.infer<typeof designArchitectureSchema>;
+```
+
+### Step 4.3: Implement Handler
+
+**File**: `src/frameworks/design-architecture/handler.ts`
+```typescript
+import { designArchitectureSchema, DesignArchitectureInput } from './schema.js';
+import { architectureAction } from './actions/architecture.js';
+import { l9EngineeringAction } from './actions/l9-engineering.js';
+import { enterpriseArchitectAction } from './actions/enterprise-architect.js';
+
+const actionHandlers = {
+  'architecture': architectureAction,
+  'l9-engineering': l9EngineeringAction,
+  'enterprise-architect': enterpriseArchitectAction,
+};
+
+export async function handleDesignArchitecture(input: unknown) {
+  const validated = designArchitectureSchema.parse(input);
+  const handler = actionHandlers[validated.action];
+  return handler(validated);
+}
+```
+
+### Step 4.4: Implement Actions
+
+**File**: `src/frameworks/design-architecture/actions/architecture.ts`
+```typescript
+import { DesignArchitectureInput } from '../schema.js';
+import { formatOutput } from '../../shared/output-formatter.js';
+
+export async function architectureAction(input: DesignArchitectureInput) {
+  // Consolidate logic from architecture-design-prompt-builder.ts
+  const prompt = buildArchitecturePrompt(input);
+  return formatOutput(prompt, input.outputFormat);
+}
+```
+
+### Step 4.5: Register in Framework Router
+
+```typescript
+// In src/frameworks/registry.ts
+import { handleDesignArchitecture } from './design-architecture/handler.js';
+
+frameworkRouter.register('design-architecture', handleDesignArchitecture);
+```
 
 ## 5. Testing Strategy
 
@@ -91,13 +157,26 @@ Complete the 'Consolidate Design & Architecture Framework' work as specified in 
 
 ## 7. Acceptance Criteria
 
-| Criterion | Status | Verification |
-|-----------|--------|--------------|
-| Architecture decision documented | ⬜ | TBD |
-| Design aligns with spec and ADRs | ⬜ | TBD |
-| Stakeholder review completed | ⬜ | TBD |
+| Criterion                            | Status | Verification                                                   |
+| ------------------------------------ | ------ | -------------------------------------------------------------- |
+| Framework handler created            | ⬜      | File exists at `src/frameworks/design-architecture/handler.ts` |
+| All 3 actions implemented            | ⬜      | `architecture`, `l9-engineering`, `enterprise-architect`       |
+| Schema validates inputs              | ⬜      | Zod schema with TypeScript inference                           |
+| Registered in router                 | ⬜      | `frameworkRouter.get('design-architecture')` returns handler   |
+| Unit tests pass                      | ⬜      | `npm run test:vitest -- design-architecture`                   |
+| Legacy tools route through framework | ⬜      | Old tool calls redirect to new handler                         |
 
 ---
+
+## 8. References
+
+- [spec.md](../../spec.md) - Framework Consolidation requirements
+- [adr.md](../../adr.md) - ADR-005 (Framework Consolidation)
+- [T-038](./T-038-implement-framework-router.md) - Framework Router
+
+---
+
+*Task: T-041 | Phase: 3-Consolidation | Priority: P0*
 
 ## 8. References
 
