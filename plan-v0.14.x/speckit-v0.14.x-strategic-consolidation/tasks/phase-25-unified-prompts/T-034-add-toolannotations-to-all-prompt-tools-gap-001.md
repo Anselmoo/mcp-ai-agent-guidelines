@@ -52,7 +52,11 @@ Complete the 'Add ToolAnnotations to All Prompt Tools (GAP-001)' work as specifi
 
 ### Target Files
 
-- `TBD`
+- `src/tools/shared/annotation-presets.ts`
+- `src/index.ts`
+- `src/schemas/flow-tool-schemas.ts`
+- `scripts/validate-tool-annotations.ts`
+- `package.json`
 
 ### Tooling
 
@@ -198,6 +202,10 @@ export function validateToolAnnotations(server: Server): ToolValidationResult[] 
 }
 ```
 
+- Update barrel exports and registries
+- Register new handler or service if required
+- Add configuration entries where needed
+
 ### Step 4.4: Create Coverage Report
 
 Add npm script to `package.json`:
@@ -209,14 +217,6 @@ Add npm script to `package.json`:
   }
 }
 ```
-
-### Step 4.3: Wire Integrations
-
-- Update barrel exports and registries
-- Register new handler or service if required
-- Add configuration entries where needed
-
-### Step 4.4: Validate Behavior
 
 - Run unit tests for new logic
 - Ensure TypeScript strict mode passes

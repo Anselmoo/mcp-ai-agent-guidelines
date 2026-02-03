@@ -108,10 +108,10 @@ describe('TargetBehavior', () => {
 
 | Criterion | Status | Verification |
 |-----------|--------|--------------|
-| Tests for validate() flow | ⬜ | TBD |
-| Tests for execute() flow | ⬜ | TBD |
-| Tests for error handling | ⬜ | TBD |
-| 100% coverage of BaseStrategy | ⬜ | TBD |
+| Tests for validate() flow | ⬜ | `npm run test:vitest` |
+| Tests for execute() flow | ⬜ | `npm run test:vitest` |
+| Tests for error handling | ⬜ | `npm run test:vitest` |
+| 100% coverage of BaseStrategy | ⬜ | `npm run test:coverage:vitest` |
 
 ---
 

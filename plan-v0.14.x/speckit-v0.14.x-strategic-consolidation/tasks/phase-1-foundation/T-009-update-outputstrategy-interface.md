@@ -108,9 +108,9 @@ export class MarkdownStrategy implements OutputStrategy {
 
 | Criterion | Status | Verification |
 |-----------|--------|--------------|
-| Implementation completed per requirements | ⬜ | TBD |
-| Integration points wired and documented | ⬜ | TBD |
-| Quality checks pass | ⬜ | TBD |
+| Implementation completed per requirements | ⬜ | `npm run quality` |
+| Integration points wired and documented | ⬜ | Code review |
+| Quality checks pass | ⬜ | `npm run quality` |
 
 ---
 

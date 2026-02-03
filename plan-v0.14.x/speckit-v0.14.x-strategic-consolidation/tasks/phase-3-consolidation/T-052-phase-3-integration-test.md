@@ -109,9 +109,9 @@ describe('TargetBehavior', () => {
 
 | Criterion | Status | Verification |
 |-----------|--------|--------------|
-| Core paths covered by tests | ⬜ | TBD |
-| Failure paths validated | ⬜ | TBD |
-| Coverage thresholds met | ⬜ | TBD |
+| Core paths covered by tests | ⬜ | `npm run test:vitest` |
+| Failure paths validated | ⬜ | `npm run test:vitest` |
+| Coverage thresholds met | ⬜ | `npm run test:coverage:vitest` |
 
 ---
 

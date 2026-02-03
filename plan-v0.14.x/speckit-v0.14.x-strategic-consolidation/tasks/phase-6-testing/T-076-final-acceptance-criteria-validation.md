@@ -103,9 +103,9 @@ npm run validate:final_acceptance_criteria_validation
 
 | Criterion | Status | Verification |
 |-----------|--------|--------------|
-| Validation executed successfully | ⬜ | TBD |
-| Results recorded with evidence | ⬜ | TBD |
-| Follow-up items documented | ⬜ | TBD |
+| Validation executed successfully | ⬜ | `npm run quality` |
+| Results recorded with evidence | ⬜ | PR description |
+| Follow-up items documented | ⬜ | Issue tracker |
 
 ---
 

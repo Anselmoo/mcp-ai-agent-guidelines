@@ -93,9 +93,9 @@ Complete the 'Implement Domain Generator: Architecture' work as specified in tas
 
 | Criterion | Status | Verification |
 |-----------|--------|--------------|
-| Architecture decision documented | ⬜ | TBD |
-| Design aligns with spec and ADRs | ⬜ | TBD |
-| Stakeholder review completed | ⬜ | TBD |
+| Architecture decision documented | ⬜ | ADR file exists |
+| Design aligns with spec and ADRs | ⬜ | Code review |
+| Stakeholder review completed | ⬜ | PR approval |
 
 ---
 

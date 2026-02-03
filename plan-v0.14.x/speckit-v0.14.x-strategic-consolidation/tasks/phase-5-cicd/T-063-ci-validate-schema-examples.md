@@ -112,9 +112,9 @@ jobs:
 
 | Criterion | Status | Verification |
 |-----------|--------|--------------|
-| Workflow runs successfully | ⬜ | TBD |
-| Failure modes reported clearly | ⬜ | TBD |
-| Runtime/coverage targets met | ⬜ | TBD |
+| Workflow runs successfully | ⬜ | GitHub Actions |
+| Failure modes reported clearly | ⬜ | CI log review |
+| Runtime/coverage targets met | ⬜ | `npm run test:coverage:vitest` |
 
 ---
 

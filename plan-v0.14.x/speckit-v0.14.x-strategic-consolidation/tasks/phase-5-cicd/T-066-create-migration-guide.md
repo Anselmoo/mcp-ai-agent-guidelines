@@ -94,9 +94,9 @@ Complete the 'Create Migration Guide' work as specified in tasks.md and related 
 
 | Criterion | Status | Verification |
 |-----------|--------|--------------|
-| Documentation updated for new behavior | ⬜ | TBD |
-| Examples compile or run | ⬜ | TBD |
-| Links verified | ⬜ | TBD |
+| Documentation updated for new behavior | ⬜ | Docs review |
+| Examples compile or run | ⬜ | `npm run build` |
+| Links verified | ⬜ | Manual check |
 
 ---
 
