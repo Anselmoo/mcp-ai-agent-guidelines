@@ -1,0 +1,119 @@
+# T-021: Verify BaseStrategy Compliance
+
+**Task ID**: T-021
+**Phase**: 2
+**Priority**: P0
+**Estimate**: 2h
+**Owner**: @code-reviewer
+**Reviewer**: @code-reviewer
+**Dependencies**: T-011 through T-017
+
+---
+
+## 1. Overview
+
+### What
+
+Verify all 7 strategies extend BaseStrategy<T> correctly.
+
+### Why
+
+- Aligns with the v0.14.x consolidation plan
+- Ensures repeatable delivery across phases
+- Reduces risk by documenting clear steps
+
+### Deliverables
+
+- Updated implementation for T-021
+- Updated tests or validation evidence
+- Documentation or notes as required
+
+## 2. Context and Scope
+
+### Current State
+
+- Review existing modules and integrations
+- Capture baseline behavior before changes
+
+### Target State
+
+- Verify BaseStrategy Compliance fully implemented per requirements
+- Supporting tests/validation in place
+
+### Out of Scope
+
+- Unrelated refactors or non-task enhancements
+
+## 3. Prerequisites
+
+### Dependencies
+
+- T-011 through T-017
+
+### Target Files
+
+- `artifacts/`
+- `CI logs`
+
+### Tooling
+
+- Node.js 22.x
+- npm scripts from the root package.json
+
+## 4. Implementation Guide
+
+### Step 4.1: Prepare Inputs
+
+- Confirm all dependent tasks are complete
+- Ensure required artifacts/logs are available
+
+### Step 4.2: Execute Validation
+
+- Method: Run the relevant validation command or audit.
+
+```bash
+# Example (replace with the actual command)
+npm run validate:verify_basestrategy_compliance
+```
+
+### Step 4.3: Capture Evidence
+
+- Save reports under `artifacts/` or attach to CI logs
+- Note any failures with remediation steps
+
+### Step 4.4: Remediate and Re-run
+
+- Fix issues discovered by validation
+- Re-run until validation passes
+
+## 5. Testing Strategy
+
+- Confirm validation command exits with code 0
+- Attach output artifacts to CI or `artifacts/`
+- Document any follow-up actions
+
+## 6. Risks and Mitigations
+
+- Risk: Scope creep beyond tasks.md
+  - Mitigation: Validate against acceptance criteria
+- Risk: Integration regressions
+  - Mitigation: Run targeted tests and CI checks
+
+## 7. Acceptance Criteria
+
+| Criterion | Status | Verification |
+|-----------|--------|--------------|
+| Validation executed successfully | ⬜ | `npm run quality` |
+| Results recorded with evidence | ⬜ | PR description |
+| Follow-up items documented | ⬜ | Issue tracker |
+
+---
+
+## 8. References
+
+- [spec.md](../../spec.md)
+- [tasks.md](../../tasks.md)
+
+---
+
+*Task: T-021 | Phase: 2 | Priority: P0*
