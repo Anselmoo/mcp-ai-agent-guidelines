@@ -32,62 +32,119 @@ Complete the 'Consolidate Security Framework' work as specified in tasks.md and 
 
 ### Current State
 
-- Review existing modules and integrations
-- Capture baseline behavior before changes
+From spec.md baseline:
+- `security-hardening-prompt-builder.ts` - OWASP/security prompts
+- `dependency-auditor.ts` - Dependency vulnerability scanning
+- Separate tools with overlapping security concerns
 
 ### Target State
 
-- Consolidate Security Framework fully implemented per requirements
-- Supporting tests/validation in place
+Per ADR-005 Framework Consolidation:
+- Single `SecurityFramework` in `src/frameworks/security/`
+- Actions: `hardening`, `audit`, `compliance`, `threat-model`
+- Unified OWASP integration and vulnerability database
+- Shared severity classification and remediation suggestions
 
 ### Out of Scope
 
-- Unrelated refactors or non-task enhancements
+- New security features (only consolidation)
+- External security scanner integrations
 
 ## 3. Prerequisites
 
 ### Dependencies
 
-- T-038
+- T-038: Framework Router implemented
 
 ### Target Files
 
-- `TBD`
+- `src/frameworks/security/index.ts` (new)
+- `src/frameworks/security/handler.ts`
+- `src/frameworks/security/actions/` (4 actions)
+- `src/frameworks/security/schema.ts`
+- `src/frameworks/security/owasp-rules.ts`
 
 ### Tooling
 
 - Node.js 22.x
-- npm scripts from the root package.json
+- Zod for schema validation
 
 ## 4. Implementation Guide
 
-### Step 4.1: Review Existing State
+### Step 4.1: Define Schema
 
-- Locate related code and determine current gaps
-- Confirm requirements from tasks.md
-
-### Step 4.2: Implement Core Changes
-
+**File**: `src/frameworks/security/schema.ts`
 ```typescript
-export class ConsolidateSecurityFramework {
-  constructor(private readonly config: Config) {}
+import { z } from 'zod';
 
-  execute(): Result {
-    // TODO: implement core logic
-  }
+export const securityFrameworkSchema = z.object({
+  action: z.enum(['hardening', 'audit', 'compliance', 'threat-model']),
+  targetCode: z.string().optional(),
+  dependencyFile: z.string().optional(),
+  complianceStandards: z.array(z.enum(['OWASP', 'SOC2', 'HIPAA', 'PCI-DSS'])).optional(),
+  severity: z.enum(['critical', 'high', 'medium', 'low', 'all']).default('all'),
+  outputFormat: z.enum(['markdown', 'json', 'sarif']).default('markdown'),
+});
+
+export type SecurityFrameworkInput = z.infer<typeof securityFrameworkSchema>;
+```
+
+### Step 4.2: Implement Handler
+
+**File**: `src/frameworks/security/handler.ts`
+```typescript
+import { securityFrameworkSchema, SecurityFrameworkInput } from './schema.js';
+import { hardeningAction } from './actions/hardening.js';
+import { auditAction } from './actions/audit.js';
+import { complianceAction } from './actions/compliance.js';
+import { threatModelAction } from './actions/threat-model.js';
+
+const actionHandlers = {
+  'hardening': hardeningAction,
+  'audit': auditAction,
+  'compliance': complianceAction,
+  'threat-model': threatModelAction,
+};
+
+export async function handleSecurity(input: unknown) {
+  const validated = securityFrameworkSchema.parse(input);
+  const handler = actionHandlers[validated.action];
+  return handler(validated);
 }
 ```
 
-### Step 4.3: Wire Integrations
+### Step 4.3: Implement Actions
 
-- Update barrel exports and registries
-- Register new handler or service if required
-- Add configuration entries where needed
+**File**: `src/frameworks/security/actions/hardening.ts`
+```typescript
+import { SecurityFrameworkInput } from '../schema.js';
+import { owaspRules } from '../owasp-rules.js';
 
-### Step 4.4: Validate Behavior
+export async function hardeningAction(input: SecurityFrameworkInput) {
+  // Consolidate logic from security-hardening-prompt-builder.ts
+  const relevantRules = owaspRules.filter(r =>
+    input.complianceStandards?.includes(r.standard) ?? true
+  );
 
-- Run unit tests for new logic
-- Ensure TypeScript strict mode passes
+  return {
+    recommendations: relevantRules.map(r => ({
+      rule: r.id,
+      description: r.description,
+      severity: r.severity,
+      remediation: r.remediation,
+    })),
+  };
+}
+```
+
+### Step 4.4: Register in Framework Router
+
+```typescript
+// In src/frameworks/registry.ts
+import { handleSecurity } from './security/handler.js';
+
+frameworkRouter.register('security', handleSecurity);
+```
 
 ## 5. Testing Strategy
 
@@ -104,11 +161,11 @@ export class ConsolidateSecurityFramework {
 
 ## 7. Acceptance Criteria
 
-| Criterion | Status | Verification |
-|-----------|--------|--------------|
-| Implementation completed per requirements | ⬜ | TBD |
-| Integration points wired and documented | ⬜ | TBD |
-| Quality checks pass | ⬜ | TBD |
+| Criterion                                 | Status | Verification |
+| ----------------------------------------- | ------ | ------------ |
+| Implementation completed per requirements | ⬜      | TBD          |
+| Integration points wired and documented   | ⬜      | TBD          |
+| Quality checks pass                       | ⬜      | TBD          |
 
 ---
 

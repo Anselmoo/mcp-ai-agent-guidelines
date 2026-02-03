@@ -2,11 +2,12 @@
 
 **Task ID**: V-007
 **Phase**: Validation
-**Priority**: TBD
-**Estimate**: TBD
-**Owner**: TBD
+**Priority**: P1 (Documentation Quality)
+**Estimate**: 1h
+**Owner**: @documentation-generator
 **Reviewer**: @code-reviewer
-**Dependencies**: T-048, T-061
+**Dependencies**: T-048 (Progress Tracking), T-061 (CI Progress Validation)
+**References**: AC-007 (spec.md), REQ-019 (spec.md)
 
 ---
 
@@ -14,19 +15,29 @@
 
 ### What
 
-Complete the 'Verify All progress.md Valid' work as specified in tasks.md and related issue templates.
+Verify that all progress.md files across planning directories conform to the Spec-Kit schema and contain valid tracking information. This ensures consistent progress reporting and enables automated status dashboards.
 
 ### Why
 
-- Aligns with the v0.14.x consolidation plan
-- Ensures repeatable delivery across phases
-- Reduces risk by documenting clear steps
+- **Requirement**: AC-007 mandates valid progress.md files in all planning directories
+- **Automation**: Valid structure enables CI-based progress tracking
+- **Visibility**: Standardized format supports dashboard generation
+- **Compliance**: Spec-Kit methodology requires progress.md for HITL workflow
+
+### Context from Spec-Kit
+
+From spec.md AC-007:
+> "All progress.md files are valid and conform to Spec-Kit schema"
+
+From plan.md Phase 5:
+> "Progress tracking via progress.md enables real-time visibility into task completion and blockers"
 
 ### Deliverables
 
-- Updated implementation for V-007
-- Updated tests or validation evidence
-- Documentation or notes as required
+- Progress.md validation script execution report
+- List of all valid progress.md files with paths
+- Schema compliance report (0 violations expected)
+- Progress summary aggregation (tasks completed, in-progress, blocked)
 
 ## 2. Context and Scope
 
@@ -62,28 +73,92 @@ Complete the 'Verify All progress.md Valid' work as specified in tasks.md and re
 
 ## 4. Implementation Guide
 
-### Step 4.1: Prepare Inputs
+### Step 4.1: Find All progress.md Files
 
-- Confirm all dependent tasks are complete
-- Ensure required artifacts/logs are available
+**Command**:
+```bash
+find plan-v0.14.x -name "progress.md" -type f
+```
 
-### Step 4.2: Execute Validation
+**Expected Output**:
+```
+plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/progress.md
+plan-v0.14.x/*/progress.md
+```
 
-- Method: Run validate_progress
+### Step 4.2: Validate Progress Schema
+
+**Required Schema Structure**:
+```markdown
+# Progress: [Project Name]
+
+## Summary
+| Metric      | Value |
+| ----------- | ----- |
+| Total Tasks | N     |
+| Completed   | X     |
+| In Progress | Y     |
+| Blocked     | Z     |
+
+## Phase Progress
+
+### Phase N: [Name]
+- [x] Task completed
+- [ ] Task pending
+- [⚠️] Task blocked - REASON
+
+## Blockers
+| Task | Blocker | Owner | ETA |
+| ---- | ------- | ----- | --- |
+
+## Recent Updates
+- [Date] Update description
+```
+
+**Validation Script** (`scripts/validate-progress.ts`):
+```typescript
+import { readFileSync, existsSync } from 'fs';
+import { glob } from 'glob';
+
+const progressFiles = glob.sync('plan-v0.14.x/**/progress.md');
+let valid = 0;
+let invalid = 0;
+
+for (const file of progressFiles) {
+  const content = readFileSync(file, 'utf-8');
+
+  // Check required sections
+  const hasTitle = /^# Progress:/.test(content);
+  const hasSummary = /## Summary/.test(content);
+  const hasPhaseProgress = /## Phase Progress/.test(content);
+
+  if (hasTitle && hasSummary && hasPhaseProgress) {
+    console.log(`✓ ${file}`);
+    valid++;
+  } else {
+    console.error(`✗ ${file} - Missing sections`);
+    invalid++;
+  }
+}
+
+console.log(`\nValid: ${valid}, Invalid: ${invalid}`);
+process.exit(invalid > 0 ? 1 : 0);
+```
+
+### Step 4.3: Run Validation
 
 ```bash
 npm run validate:progress
+# or
+npx tsx scripts/validate-progress.ts
 ```
 
-### Step 4.3: Capture Evidence
+### Step 4.4: Generate Progress Report
 
-- Save reports under `artifacts/` or attach to CI logs
-- Note any failures with remediation steps
-
-### Step 4.4: Remediate and Re-run
-
-- Fix issues discovered by validation
-- Re-run until validation passes
+```bash
+# Aggregate progress across all projects
+npx tsx scripts/aggregate-progress.ts > artifacts/progress-summary.md
+```
 
 ## 5. Testing Strategy
 
@@ -100,11 +175,11 @@ npm run validate:progress
 
 ## 7. Acceptance Criteria
 
-| Criterion | Status | Verification |
-|-----------|--------|--------------|
-| Validation executed successfully | ⬜ | TBD |
-| Results recorded with evidence | ⬜ | TBD |
-| Follow-up items documented | ⬜ | TBD |
+| Criterion                        | Status | Verification |
+| -------------------------------- | ------ | ------------ |
+| Validation executed successfully | ⬜      | TBD          |
+| Results recorded with evidence   | ⬜      | TBD          |
+| Follow-up items documented       | ⬜      | TBD          |
 
 ---
 

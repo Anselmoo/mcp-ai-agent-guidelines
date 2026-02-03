@@ -32,50 +32,133 @@ Complete the 'Consolidate Documentation Framework' work as specified in tasks.md
 
 ### Current State
 
-- Review existing modules and integrations
-- Capture baseline behavior before changes
+From spec.md baseline:
+- `documentation-generator-prompt-builder.ts` - Doc generation prompts
+- `quick-prompts-builder.ts` - Quick reference generation
+- Scattered documentation utilities
 
 ### Target State
 
-- Consolidate Documentation Framework fully implemented per requirements
-- Supporting tests/validation in place
+Per ADR-005 Framework Consolidation:
+- Single `DocumentationFramework` in `src/frameworks/documentation/`
+- Actions: `api-reference`, `readme`, `migration-guide`, `quick-reference`
+- Unified template engine and output formatting
+- Shared JSDoc/TSDoc parsing
 
 ### Out of Scope
 
-- Unrelated refactors or non-task enhancements
+- Documentation hosting (just generation)
+- Internationalization
 
 ## 3. Prerequisites
 
 ### Dependencies
 
-- T-038
+- T-038: Framework Router implemented
 
 ### Target Files
 
-- `docs/`
-- `README.md`
+- `src/frameworks/documentation/index.ts` (new)
+- `src/frameworks/documentation/handler.ts`
+- `src/frameworks/documentation/actions/` (4 actions)
+- `src/frameworks/documentation/schema.ts`
+- `src/frameworks/documentation/templates/`
 
 ### Tooling
 
 - Node.js 22.x
-- npm scripts from the root package.json
+- Handlebars for templates
+- TypeScript Compiler API for JSDoc extraction
 
 ## 4. Implementation Guide
 
-### Step 4.1: Gather Inputs
+### Step 4.1: Define Schema
 
-- Review task requirements and recent code changes
-- Identify impacted tools or APIs
+**File**: `src/frameworks/documentation/schema.ts`
+```typescript
+import { z } from 'zod';
 
-### Step 4.2: Draft Documentation
+export const documentationFrameworkSchema = z.object({
+  action: z.enum(['api-reference', 'readme', 'migration-guide', 'quick-reference']),
+  sourceFiles: z.array(z.string()).optional(),
+  projectName: z.string().optional(),
+  version: z.string().optional(),
+  includeExamples: z.boolean().default(true),
+  outputFormat: z.enum(['markdown', 'html', 'json']).default('markdown'),
+});
 
-- Follow the docs template in `docs/`
-- Include runnable examples and parameter tables
+export type DocumentationFrameworkInput = z.infer<typeof documentationFrameworkSchema>;
+```
 
-### Step 4.3: Validate
+### Step 4.2: Implement Handler
 
-- Check links and anchors
-- Ensure examples align with current code
+**File**: `src/frameworks/documentation/handler.ts`
+```typescript
+import { documentationFrameworkSchema } from './schema.js';
+import { apiReferenceAction } from './actions/api-reference.js';
+import { readmeAction } from './actions/readme.js';
+import { migrationGuideAction } from './actions/migration-guide.js';
+import { quickReferenceAction } from './actions/quick-reference.js';
+
+const actionHandlers = {
+  'api-reference': apiReferenceAction,
+  'readme': readmeAction,
+  'migration-guide': migrationGuideAction,
+  'quick-reference': quickReferenceAction,
+};
+
+export async function handleDocumentation(input: unknown) {
+  const validated = documentationFrameworkSchema.parse(input);
+  const handler = actionHandlers[validated.action];
+  return handler(validated);
+}
+```
+
+### Step 4.3: Implement API Reference Generator
+
+**File**: `src/frameworks/documentation/actions/api-reference.ts`
+```typescript
+import { DocumentationFrameworkInput } from '../schema.js';
+import { extractJSDoc } from '../jsdoc-extractor.js';
+import { renderTemplate } from '../template-engine.js';
+
+export async function apiReferenceAction(input: DocumentationFrameworkInput) {
+  const docs = await extractJSDoc(input.sourceFiles ?? ['src/**/*.ts']);
+
+  return renderTemplate('api-reference', {
+    projectName: input.projectName ?? 'API Reference',
+    version: input.version,
+    modules: docs.modules,
+    includeExamples: input.includeExamples,
+  });
+}
+```
+
+### Step 4.4: Create Templates
+
+**File**: `src/frameworks/documentation/templates/api-reference.hbs`
+```handlebars
+# {{projectName}}{{#if version}} v{{version}}{{/if}}
+
+{{#each modules}}
+## {{name}}
+
+{{description}}
+
+{{#each functions}}
+### `{{name}}({{params}})`
+
+{{description}}
+
+{{#if examples}}#### Examples
+{{#each examples}}
+```typescript
+{{this}}
+```
+{{/each}}{{/if}}
+{{/each}}
+{{/each}}
+```
 
 ## 5. Testing Strategy
 
@@ -92,11 +175,26 @@ Complete the 'Consolidate Documentation Framework' work as specified in tasks.md
 
 ## 7. Acceptance Criteria
 
-| Criterion | Status | Verification |
-|-----------|--------|--------------|
-| Documentation updated for new behavior | ⬜ | TBD |
-| Examples compile or run | ⬜ | TBD |
-| Links verified | ⬜ | TBD |
+| Criterion                 | Status | Verification                                                    |
+| ------------------------- | ------ | --------------------------------------------------------------- |
+| Framework handler created | ⬜      | File exists at `src/frameworks/documentation/handler.ts`        |
+| All 4 actions implemented | ⬜      | `api-reference`, `readme`, `migration-guide`, `quick-reference` |
+| Templates created         | ⬜      | `src/frameworks/documentation/templates/` has `.hbs` files      |
+| JSDoc extraction works    | ⬜      | `extractJSDoc` parses TypeScript files                          |
+| Registered in router      | ⬜      | `frameworkRouter.get('documentation')` returns handler          |
+| Unit tests pass           | ⬜      | `npm run test:vitest -- documentation`                          |
+
+---
+
+## 8. References
+
+- [spec.md](../../spec.md) - Documentation requirements
+- [adr.md](../../adr.md) - ADR-005 (Framework Consolidation)
+- [T-038](./T-038-implement-framework-router.md) - Framework Router
+
+---
+
+*Task: T-044 | Phase: 3-Consolidation | Priority: P0*
 
 ---
 
