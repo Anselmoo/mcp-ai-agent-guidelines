@@ -170,9 +170,9 @@ frameworkRouter.register('design-architecture', handleDesignArchitecture);
 
 ## 8. References
 
-- [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md) - Framework Consolidation requirements
-- [adr.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/adr.md) - ADR-005 (Framework Consolidation)
-- [T-038](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-3-consolidation/T-038-implement-framework-router.md) - Framework Router
+- [spec.md](../../spec.md) - Framework Consolidation requirements
+- [adr.md](../../adr.md) - ADR-005 (Framework Consolidation)
+- [T-038](./T-038-implement-framework-router.md) - Framework Router
 
 ---
 
@@ -180,8 +180,8 @@ frameworkRouter.register('design-architecture', handleDesignArchitecture);
 
 ## 8. References
 
-- [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md)
-- [tasks.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks.md)
+- [spec.md](../../spec.md)
+- [tasks.md](../../tasks.md)
 
 ---
 

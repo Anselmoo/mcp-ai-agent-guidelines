@@ -90,10 +90,10 @@ This ensures consistent migration steps across all strategies:
 
 ## 6. References
 
-- [T-001: BaseStrategy](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-1-foundation/T-001-base-strategy.md)
-- [T-003: ExecutionTrace](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-1-foundation/T-003-execution-trace.md)
-- [T-011: SpecKit Migration](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-2-migration/T-011-migrate-speckit.md)
-- [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md)
+- [T-001: BaseStrategy](../phase-1-foundation/T-001-base-strategy.md)
+- [T-003: ExecutionTrace](../phase-1-foundation/T-003-execution-trace.md)
+- [T-011: SpecKit Migration](./T-011-migrate-speckit.md)
+- [spec.md](../../spec.md)
 
 ---
 

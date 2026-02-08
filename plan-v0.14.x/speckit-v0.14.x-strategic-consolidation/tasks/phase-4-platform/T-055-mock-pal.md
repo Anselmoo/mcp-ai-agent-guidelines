@@ -341,10 +341,10 @@ describe('MockPAL', () => {
 
 ## 8. References
 
-- [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md)
-- [tasks.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks.md)
+- [spec.md](../../spec.md)
+- [tasks.md](../../tasks.md)
 - `src/platform/mock-pal.ts`
-- [issue template](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/issues/templates/issue-022-pal-interface.md)
+- [issue template](../../issues/templates/issue-022-pal-interface.md)
 
 ---
 

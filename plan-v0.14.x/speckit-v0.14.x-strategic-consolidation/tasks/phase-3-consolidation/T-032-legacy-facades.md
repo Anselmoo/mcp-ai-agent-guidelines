@@ -862,9 +862,9 @@ const prompt = unifiedPromptBuilder.build({
 
 | Document                        | Link                                                                             |
 | ------------------------------- | -------------------------------------------------------------------------------- |
-| T-026: UnifiedPromptBuilder     | [T-026-unified-builder.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-25-unified-prompts/T-026-unified-builder.md) |
-| T-037: FrameworkRouter          | [T-037-framework-router.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-3-consolidation/T-037-framework-router.md)                         |
-| ADR-004: Backward Compatibility | [adr.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/adr.md#adr-004)                                                   |
+| T-026: UnifiedPromptBuilder     | [T-026-unified-builder.md](../phase-25-unified-prompts/T-026-unified-builder.md) |
+| T-037: FrameworkRouter          | [T-037-framework-router.md](./T-037-framework-router.md)                         |
+| ADR-004: Backward Compatibility | [adr.md](../../adr.md#adr-004)                                                   |
 
 ---
 

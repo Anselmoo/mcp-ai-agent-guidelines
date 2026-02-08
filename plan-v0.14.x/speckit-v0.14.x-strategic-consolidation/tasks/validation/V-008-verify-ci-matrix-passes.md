@@ -183,8 +183,8 @@ gh run view <run-id> --json jobs > artifacts/ci-matrix-results.json
 
 ## 8. References
 
-- [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md) - AC-008, REQ-017
-- [adr.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/adr.md) - ADR-009 (CI Strategy)
+- [spec.md](../../spec.md) - AC-008, REQ-017
+- [adr.md](../../adr.md) - ADR-009 (CI Strategy)
 - [GitHub Actions Matrix](https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs)
 
 ---

@@ -216,8 +216,8 @@ design-architecture-framework,"Generate architecture design prompts for distribu
 
 ## 8. References
 
-- [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md)
-- [tasks.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks.md)
+- [spec.md](../../spec.md)
+- [tasks.md](../../tasks.md)
 - `scripts/export-descriptions.ts`
 
 ---

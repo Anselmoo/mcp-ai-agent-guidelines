@@ -116,8 +116,8 @@ export class MarkdownStrategy implements OutputStrategy {
 
 ## 8. References
 
-- [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md)
-- [tasks.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks.md)
+- [spec.md](../../spec.md)
+- [tasks.md](../../tasks.md)
 - `src/strategies/output-strategy.ts`
 
 ---

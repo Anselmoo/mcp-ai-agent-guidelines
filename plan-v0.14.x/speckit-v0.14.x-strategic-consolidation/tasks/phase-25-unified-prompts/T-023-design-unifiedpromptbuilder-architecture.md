@@ -279,7 +279,7 @@ Implement UnifiedPromptBuilder with:
 
 ## 8. References
 
-- [spec.md - REQ-007](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md)
+- [spec.md - REQ-007](../../spec.md)
 - [Existing prompt builders](../../../../src/tools/prompt/)
 - [Shared utilities](../../../../src/tools/shared/prompt-utils.ts)
 - [Handlebars documentation](https://handlebarsjs.com/)

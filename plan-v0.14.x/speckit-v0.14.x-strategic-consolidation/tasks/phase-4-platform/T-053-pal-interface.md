@@ -1234,8 +1234,8 @@ describe('MyModule', () => {
 
 | Document                            | Link                                                     |
 | ----------------------------------- | -------------------------------------------------------- |
-| ADR-004: Platform Abstraction Layer | [adr.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/adr.md#adr-004)                           |
-| Spec REQ-014, REQ-015, REQ-016      | [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md)                                 |
+| ADR-004: Platform Abstraction Layer | [adr.md](../../adr.md#adr-004)                           |
+| Spec REQ-014, REQ-015, REQ-016      | [spec.md](../../spec.md)                                 |
 | Node.js fs module                   | [nodejs.org/api/fs.html](https://nodejs.org/api/fs.html) |
 
 ---

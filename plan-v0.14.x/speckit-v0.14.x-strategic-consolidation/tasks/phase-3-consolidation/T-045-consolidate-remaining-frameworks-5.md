@@ -104,7 +104,7 @@ const actionHandlers = {
 
 export async function handleStrategicPlanning(input: unknown) {
   const validated = strategicPlanningSchema.parse(input);
-  return actionHandlers[validated.action](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-3-consolidation/validated);
+  return actionHandlers[validated.action](validated);
 }
 ```
 
@@ -211,8 +211,8 @@ frameworkRouter.register('project-management', handleProjectManagement);
 
 ## 8. References
 
-- [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md)
-- [tasks.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks.md)
+- [spec.md](../../spec.md)
+- [tasks.md](../../tasks.md)
 
 ---
 

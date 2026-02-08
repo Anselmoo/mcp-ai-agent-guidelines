@@ -168,10 +168,10 @@ From spec.md AC-009:
 
 ## 8. References
 
-- [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md) - AC-009, REQ-007
-- [adr.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/adr.md) - ADR-003 Unified Prompt Ecosystem
-- [plan.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/plan.md) - Phase 2.5 Breaking Change Policy
-- [tasks.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks.md) - T-026 through T-036
+- [spec.md](../../spec.md) - AC-009, REQ-007
+- [adr.md](../../adr.md) - ADR-003 Unified Prompt Ecosystem
+- [plan.md](../../plan.md) - Phase 2.5 Breaking Change Policy
+- [tasks.md](../../tasks.md) - T-026 through T-036
 
 ---
 

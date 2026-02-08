@@ -175,8 +175,8 @@ npx markdown-link-check README.md docs/**/*.md
 
 ## 8. References
 
-- [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md) - AC-011, REQ-020 through REQ-022
-- [docs/](/plan-v0.14.x/docs/) - Documentation directory
+- [spec.md](../../spec.md) - AC-011, REQ-020 through REQ-022
+- [docs/](../../../docs/) - Documentation directory
 
 ---
 

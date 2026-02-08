@@ -244,9 +244,9 @@ export class MarkdownRenderer implements SectionRenderer {
 
     for (const ref of references) {
       if (ref.description) {
-        lines.push(`- [${ref.title}](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-25-unified-prompts/${ref.url}) - ${ref.description}`);
+        lines.push(`- [${ref.title}](${ref.url}) - ${ref.description}`);
       } else {
-        lines.push(`- [${ref.title}](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-25-unified-prompts/${ref.url})`);
+        lines.push(`- [${ref.title}](${ref.url})`);
       }
     }
 
@@ -1079,9 +1079,9 @@ Implement OAuth2 authorization flow with JWT tokens.
 
 | Document                          | Link                                                   |
 | --------------------------------- | ------------------------------------------------------ |
-| T-024: PromptRegistry             | [T-024-prompt-registry.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-25-unified-prompts/T-024-prompt-registry.md) |
-| T-026: UnifiedPromptBuilder       | [T-026-unified-builder.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-25-unified-prompts/T-026-unified-builder.md) |
-| ADR-003: Unified Prompt Ecosystem | [adr.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/adr.md#adr-003)                         |
+| T-024: PromptRegistry             | [T-024-prompt-registry.md](./T-024-prompt-registry.md) |
+| T-026: UnifiedPromptBuilder       | [T-026-unified-builder.md](./T-026-unified-builder.md) |
+| ADR-003: Unified Prompt Ecosystem | [adr.md](../../adr.md#adr-003)                         |
 
 ---
 

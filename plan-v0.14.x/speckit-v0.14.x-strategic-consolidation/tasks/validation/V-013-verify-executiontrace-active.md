@@ -203,7 +203,7 @@ const input = {
 strategy.execute(input).then(result => {
   console.log('=== JSON Export ===');
   console.log(JSON.stringify(result.trace.toJSON(), null, 2));
-
+  
   console.log('\n=== Markdown Export ===');
   console.log(result.trace.toMarkdown());
 });
@@ -341,10 +341,10 @@ From spec.md AC-013:
 
 ## 8. References
 
-- [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md) - AC-013, REQ-002
-- [adr.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/adr.md) - ADR-001 BaseStrategy Pattern
-- [plan.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/plan.md) - Phase 1 Core Infrastructure
-- [tasks.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks.md) - T-003, T-004, T-011 through T-017
+- [spec.md](../../spec.md) - AC-013, REQ-002
+- [adr.md](../../adr.md) - ADR-001 BaseStrategy Pattern
+- [plan.md](../../plan.md) - Phase 1 Core Infrastructure
+- [tasks.md](../../tasks.md) - T-003, T-004, T-011 through T-017
 
 ---
 

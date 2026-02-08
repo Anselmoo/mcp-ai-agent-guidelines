@@ -120,9 +120,9 @@ jobs:
 
 ## 8. References
 
-- [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md)
-- [tasks.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks.md)
-- [issue template](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/issues/templates/issue-027-enforcement-tools.md)
+- [spec.md](../../spec.md)
+- [tasks.md](../../tasks.md)
+- [issue template](../../issues/templates/issue-027-enforcement-tools.md)
 
 ---
 

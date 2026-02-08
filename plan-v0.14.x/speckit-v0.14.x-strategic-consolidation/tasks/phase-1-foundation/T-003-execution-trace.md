@@ -810,8 +810,8 @@ describe('trace-utils', () => {
 
 | Document                      | Link                                                         |
 | ----------------------------- | ------------------------------------------------------------ |
-| T-001: BaseStrategy           | [T-001-base-strategy.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-1-foundation/T-001-base-strategy.md)           |
-| ADR-001: BaseStrategy Pattern | [adr.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/adr.md#adr-001)                               |
+| T-001: BaseStrategy           | [T-001-base-strategy.md](./T-001-base-strategy.md)           |
+| ADR-001: BaseStrategy Pattern | [adr.md](../../adr.md#adr-001)                               |
 | uuid package                  | [npmjs.com/package/uuid](https://www.npmjs.com/package/uuid) |
 
 ---

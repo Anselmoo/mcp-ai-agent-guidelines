@@ -108,9 +108,9 @@ const result = domainGenerator(input);
 
 ## 8. References
 
-- [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md)
-- [tasks.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks.md)
-- [migration-checklist](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-2-migration/migration-checklist.md)
+- [spec.md](../../spec.md)
+- [tasks.md](../../tasks.md)
+- [migration-checklist](../phase-2-migration/migration-checklist.md)
 
 ---
 

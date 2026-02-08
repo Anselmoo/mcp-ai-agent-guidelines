@@ -15,17 +15,17 @@ This implementation follows an iterative, phase-based approach with:
 - **Continuous Integration**: Every phase includes CI validation
 - **Human-In-The-Loop**: Mandatory review at phase boundaries
 - **Agent Handoffs**: Specialized agents for specific tasks
-- **Detailed Task Guides**: Each task has a [detailed implementation guide](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/README.md) with full code examples
+- **Detailed Task Guides**: Each task has a [detailed implementation guide](./tasks/README.md) with full code examples
 
 ### Key Architectural Patterns
 
 | Pattern | Current State | Target State | Implementation |
 |---------|---------------|--------------|----------------|
-| Strategy abstraction | 7 independent classes | `BaseStrategy<T>` with generics | [T-001](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-1-foundation/T-001-base-strategy.md) |
-| Execution tracing | None | `ExecutionTrace` with decisions/metrics | [T-003](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-1-foundation/T-003-execution-trace.md) |
-| Prompt generation | 12+ builders with duplication | `UnifiedPromptBuilder` | [T-026](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-25-unified-prompts/T-026-unified-builder.md) |
-| Framework routing | Direct instantiation | `FrameworkRouter` with registry | [T-037](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-3-consolidation/T-037-framework-router.md) |
-| Platform ops | Direct fs/path | Platform Abstraction Layer | [T-053](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-4-platform/T-053-pal-interface.md) |
+| Strategy abstraction | 7 independent classes | `BaseStrategy<T>` with generics | [T-001](./tasks/phase-1-foundation/T-001-base-strategy.md) |
+| Execution tracing | None | `ExecutionTrace` with decisions/metrics | [T-003](./tasks/phase-1-foundation/T-003-execution-trace.md) |
+| Prompt generation | 12+ builders with duplication | `UnifiedPromptBuilder` | [T-026](./tasks/phase-25-unified-prompts/T-026-unified-builder.md) |
+| Framework routing | Direct instantiation | `FrameworkRouter` with registry | [T-037](./tasks/phase-3-consolidation/T-037-framework-router.md) |
+| Platform ops | Direct fs/path | Platform Abstraction Layer | [T-053](./tasks/phase-4-platform/T-053-pal-interface.md) |
 
 ---
 
@@ -129,10 +129,10 @@ export abstract class BaseStrategy<TInput, TOutput> {
 
 | ID   | Deliverable                     | Task Guide | Hours |
 | ---- | ------------------------------- | ---------- | ----- |
-| D1.1 | BaseStrategy<T>                 | [T-001](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-1-foundation/T-001-base-strategy.md) | 4h |
-| D1.2 | ExecutionTrace                  | [T-003](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-1-foundation/T-003-execution-trace.md) | 4h |
-| D1.3 | SummaryFeedbackCoordinator      | [T-005](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-1-foundation/T-005-summary-feedback.md) | 4h |
-| D1.4 | AgentHandoffCoordinator         | [T-007](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-1-foundation/T-007-agent-handoff.md) | 4h |
+| D1.1 | BaseStrategy<T>                 | [T-001](./tasks/phase-1-foundation/T-001-base-strategy.md) | 4h |
+| D1.2 | ExecutionTrace                  | [T-003](./tasks/phase-1-foundation/T-003-execution-trace.md) | 4h |
+| D1.3 | SummaryFeedbackCoordinator      | [T-005](./tasks/phase-1-foundation/T-005-summary-feedback.md) | 4h |
+| D1.4 | AgentHandoffCoordinator         | [T-007](./tasks/phase-1-foundation/T-007-agent-handoff.md) | 4h |
 | D1.5 | Update OutputStrategy interface | Part of T-001 | 2h |
 | D1.6 | Tests for all components        | Included in each task | 6h |
 
@@ -217,7 +217,7 @@ src/domain/speckit/
 
 | Strategy | Current Lines | Target Lines | Task Guide | Complexity |
 |----------|--------------|--------------|------------|------------|
-| SpecKitStrategy | 2181 | ~400 | [T-011](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-2-migration/T-011-migrate-speckit.md) | High |
+| SpecKitStrategy | 2181 | ~400 | [T-011](./tasks/phase-2-migration/T-011-migrate-speckit.md) | High |
 | TOGAFStrategy | ~1800 | ~350 | T-012 | Medium |
 | ADRStrategy | ~800 | ~200 | T-013 | Low |
 | RFCStrategy | ~700 | ~180 | T-014 | Low |
@@ -283,11 +283,11 @@ const legacyBuilder = new HierarchicalPromptBuilder(); // ⚠️ emits deprecati
 
 | Component | Purpose | Task Guide |
 |-----------|---------|------------|
-| PromptRegistry | Singleton registry of domain generators | [T-024](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-25-unified-prompts/T-024-prompt-registry.md) |
-| TemplateEngine | Markdown/XML template composition | [T-025](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-25-unified-prompts/T-025-template-engine.md) |
-| UnifiedPromptBuilder | Single entry point | [T-026](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-25-unified-prompts/T-026-unified-builder.md) |
+| PromptRegistry | Singleton registry of domain generators | [T-024](./tasks/phase-25-unified-prompts/T-024-prompt-registry.md) |
+| TemplateEngine | Markdown/XML template composition | [T-025](./tasks/phase-25-unified-prompts/T-025-template-engine.md) |
+| UnifiedPromptBuilder | Single entry point | [T-026](./tasks/phase-25-unified-prompts/T-026-unified-builder.md) |
 | HierarchicalGenerator | Domain generator | Part of T-026 |
-| LegacyFacades | Backward compatibility | [T-032](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-25-unified-prompts/T-032-legacy-facades.md) |
+| LegacyFacades | Backward compatibility | [T-032](./tasks/phase-25-unified-prompts/T-032-legacy-facades.md) |
 
 #### Deliverables
 
@@ -520,5 +520,5 @@ graph TD
 
 ---
 
-*See [tasks.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks.md) for detailed task breakdown*
-*See [roadmap.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/roadmap.md) for milestones and deliverables*
+*See [tasks.md](./tasks.md) for detailed task breakdown*
+*See [roadmap.md](./roadmap.md) for milestones and deliverables*

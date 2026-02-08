@@ -305,11 +305,11 @@ graph TD
 
 | Item                   | Link                         |
 | ---------------------- | ---------------------------- |
-| Specification          | [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md)         |
-| Implementation Plan    | [plan.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/plan.md)         |
-| Task Breakdown         | [tasks.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks.md)       |
-| Progress Tracking      | [progress.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/progress.md) |
-| Architecture Decisions | [adr.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/adr.md)           |
+| Specification          | [spec.md](./spec.md)         |
+| Implementation Plan    | [plan.md](./plan.md)         |
+| Task Breakdown         | [tasks.md](./tasks.md)       |
+| Progress Tracking      | [progress.md](./progress.md) |
+| Architecture Decisions | [adr.md](./adr.md)           |
 
 ### Contact
 

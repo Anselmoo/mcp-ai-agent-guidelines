@@ -1199,8 +1199,8 @@ export async function hierarchicalPromptBuilder(args: unknown) {
 
 | Document                            | Link                                                                                          |
 | ----------------------------------- | --------------------------------------------------------------------------------------------- |
-| ADR-003: Unified Prompt Ecosystem   | [adr.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/adr.md#adr-003)                                                                |
-| Spec REQ-007, REQ-008, REQ-009      | [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md)                                                                      |
+| ADR-003: Unified Prompt Ecosystem   | [adr.md](../../adr.md#adr-003)                                                                |
+| Spec REQ-007, REQ-008, REQ-009      | [spec.md](../../spec.md)                                                                      |
 | Current hierarchical-prompt-builder | [hierarchical-prompt-builder.ts](../../../../src/tools/prompt/hierarchical-prompt-builder.ts) |
 | Prompt utilities                    | [prompt-utils.ts](../../../../src/tools/shared/prompt-utils.ts)                               |
 

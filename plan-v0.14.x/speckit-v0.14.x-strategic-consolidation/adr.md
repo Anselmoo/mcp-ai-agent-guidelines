@@ -71,8 +71,8 @@ export abstract class BaseStrategy<TInput, TOutput> {
 
 ### References
 
-- [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md) - REQ-001, REQ-005
-- [tasks.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks.md) - T-001 through T-017
+- [spec.md](./spec.md) - REQ-001, REQ-005
+- [tasks.md](./tasks.md) - T-001 through T-017
 
 ---
 
@@ -128,8 +128,8 @@ Enforcement via `validate_annotations` CI job:
 
 ### References
 
-- [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md) - REQ-024
-- [tasks.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks.md) - T-034, T-062
+- [spec.md](./spec.md) - REQ-024
+- [tasks.md](./tasks.md) - T-034, T-062
 
 ---
 
@@ -216,8 +216,8 @@ Phase 2.5 has **strict "no backward compatibility" policy** for internal APIs:
 
 ### References
 
-- [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md) - REQ-007 through REQ-009
-- [tasks.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks.md) - T-023 through T-036
+- [spec.md](./spec.md) - REQ-007 through REQ-009
+- [tasks.md](./tasks.md) - T-023 through T-036
 
 ---
 
@@ -288,8 +288,8 @@ interface PlatformAbstractionLayer {
 
 ### References
 
-- [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md) - REQ-014 through REQ-016
-- [tasks.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks.md) - T-053 through T-060
+- [spec.md](./spec.md) - REQ-014 through REQ-016
+- [tasks.md](./tasks.md) - T-053 through T-060
 
 ---
 
@@ -357,8 +357,8 @@ class FrameworkRouter {
 
 ### References
 
-- [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md) - REQ-010, OBJ-001
-- [tasks.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks.md) - T-037 through T-052
+- [spec.md](./spec.md) - REQ-010, OBJ-001
+- [tasks.md](./tasks.md) - T-037 through T-052
 
 ---
 
@@ -423,8 +423,8 @@ jobs:
 
 ### References
 
-- [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md) - REQ-025 through REQ-027
-- [tasks.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks.md) - T-048, T-061 through T-063
+- [spec.md](./spec.md) - REQ-025 through REQ-027
+- [tasks.md](./tasks.md) - T-048, T-061 through T-063
 
 ---
 
@@ -441,5 +441,5 @@ jobs:
 
 ---
 
-*See [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md) for full requirements*
-*See [plan.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/plan.md) for implementation approach*
+*See [spec.md](./spec.md) for full requirements*
+*See [plan.md](./plan.md) for implementation approach*

@@ -180,8 +180,8 @@ cp coverage/lcov.info artifacts/coverage-v014.lcov
 
 ## 8. References
 
-- [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md) - AC-004, REQ-006
-- [adr.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/adr.md) - ADR-007 (Testing Strategy)
+- [spec.md](../../spec.md) - AC-004, REQ-006
+- [adr.md](../../adr.md) - ADR-007 (Testing Strategy)
 - [Vitest Coverage Docs](https://vitest.dev/guide/coverage.html)
 
 ---

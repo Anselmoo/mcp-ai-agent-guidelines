@@ -167,7 +167,7 @@ npx tsx scripts/ci-timing-analysis.ts > artifacts/ci-timing-report.md
 
 ## 8. References
 
-- [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md) - AC-010, REQ-018
+- [spec.md](../../spec.md) - AC-010, REQ-018
 - [GitHub Actions Caching](https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows)
 
 ---

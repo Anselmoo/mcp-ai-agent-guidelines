@@ -89,9 +89,9 @@ console.log(trace.toMarkdown());
 
 ## References
 
-- [ADR-001](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/issues/adr.md#adr-001-basestrategy-pattern-for-mandatory-hitl)
-- [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/issues/spec.md) - REQ-002
-- [tasks.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/issues/tasks.md) - T-002
+- [ADR-001](../adr.md#adr-001-basestrategy-pattern-for-mandatory-hitl)
+- [spec.md](../spec.md) - REQ-002
+- [tasks.md](../tasks.md) - T-002
 
 ---
 

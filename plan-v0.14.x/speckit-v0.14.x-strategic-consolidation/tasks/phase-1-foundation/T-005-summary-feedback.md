@@ -929,9 +929,9 @@ isError: summary.status === 'failed',
 
 | Document               | Link                                                                                                     |
 | ---------------------- | -------------------------------------------------------------------------------------------------------- |
-| T-003: ExecutionTrace  | [T-003-execution-trace.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-1-foundation/T-003-execution-trace.md)                                                   |
-| T-037: FrameworkRouter | [../phase-3-consolidation/T-037-framework-router.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-3-consolidation/T-037-framework-router.md) |
-| Spec REQ-009           | [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md)                                                                                 |
+| T-003: ExecutionTrace  | [T-003-execution-trace.md](./T-003-execution-trace.md)                                                   |
+| T-037: FrameworkRouter | [../phase-3-consolidation/T-037-framework-router.md](../phase-3-consolidation/T-037-framework-router.md) |
+| Spec REQ-009           | [spec.md](../../spec.md)                                                                                 |
 
 ---
 
