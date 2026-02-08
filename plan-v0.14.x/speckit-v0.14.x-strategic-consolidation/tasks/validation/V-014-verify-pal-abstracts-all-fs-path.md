@@ -71,17 +71,17 @@ interface PlatformAbstractionLayer {
   readFile(path: string): Promise<string>;
   writeFile(path: string, content: string): Promise<void>;
   exists(path: string): Promise<boolean>;
-  
+
   // Directory operations
   listFiles(dir: string, pattern?: string): Promise<string[]>;
   createDir(path: string): Promise<void>;
-  
+
   // Path operations
   resolvePath(...segments: string[]): string;
   joinPath(...segments: string[]): string;
   dirname(path: string): string;
   basename(path: string): string;
-  
+
   // Environment
   getEnv(key: string): string | undefined;
   getPlatform(): 'darwin' | 'linux' | 'win32';
@@ -297,11 +297,11 @@ From spec.md AC-014:
 
 ## 8. References
 
-- [spec.md](../../spec.md) - AC-014, REQ-014 through REQ-016
-- [adr.md](../../adr.md) - ADR-004 Platform Abstraction Layer
-- [plan.md](../../plan.md) - Phase 4 Platform Abstraction
-- [roadmap.md](../../roadmap.md) - M4: Cross-Platform Ready
-- [tasks.md](../../tasks.md) - T-053 through T-060
+- [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md) - AC-014, REQ-014 through REQ-016
+- [adr.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/adr.md) - ADR-004 Platform Abstraction Layer
+- [plan.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/plan.md) - Phase 4 Platform Abstraction
+- [roadmap.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/roadmap.md) - M4: Cross-Platform Ready
+- [tasks.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks.md) - T-053 through T-060
 
 ---
 

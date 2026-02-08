@@ -281,8 +281,8 @@ describe("Code Quality Router", () => {
 
 ## 8. References
 
-- [spec.md - REQ-010](../../spec.md)
-- [T-038 Framework Router](./T-038-implement-framework-router.md)
+- [spec.md - REQ-010](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md)
+- [T-038 Framework Router](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-3-consolidation/T-038-implement-framework-router.md)
 - [clean-code-scorer.ts](../../../../src/tools/analysis/clean-code-scorer.ts)
 - [code-hygiene-analyzer.ts](../../../../src/tools/analysis/code-hygiene-analyzer.ts)
 

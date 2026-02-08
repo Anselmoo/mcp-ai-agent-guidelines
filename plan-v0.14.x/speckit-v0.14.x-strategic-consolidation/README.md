@@ -24,21 +24,21 @@ This plan consolidates BaseStrategy pattern, ExecutionTrace system, framework co
 
 | Document                     | Purpose                                                           |
 | ---------------------------- | ----------------------------------------------------------------- |
-| [spec.md](./spec.md)         | Full specification with requirements, objectives, and constraints |
-| [plan.md](./plan.md)         | Implementation plan with phases and timeline                      |
-| [tasks.md](./tasks.md)       | Detailed task breakdown with dependencies (74 tasks)              |
-| [progress.md](./progress.md) | Progress tracking and status updates                              |
-| [adr.md](./adr.md)           | Architecture decision records                                     |
-| [roadmap.md](./roadmap.md)   | Timeline, milestones, and deliverables                            |
-| [issues/](./issues/)         | GitHub issue templates ready for creation                         |
+| [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md)         | Full specification with requirements, objectives, and constraints |
+| [plan.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/plan.md)         | Implementation plan with phases and timeline                      |
+| [tasks.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks.md)       | Detailed task breakdown with dependencies (74 tasks)              |
+| [progress.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/progress.md) | Progress tracking and status updates                              |
+| [adr.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/adr.md)           | Architecture decision records                                     |
+| [roadmap.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/roadmap.md)   | Timeline, milestones, and deliverables                            |
+| [issues/](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/issues/)         | GitHub issue templates ready for creation                         |
 
 ## Quick Start
 
-1. **Review the specification** → Read [spec.md](./spec.md) for complete requirements
-2. **Understand decisions** → Review [adr.md](./adr.md) for architectural rationale
-3. **Follow the plan** → Execute phases per [plan.md](./plan.md)
-4. **Track progress** → Update [progress.md](./progress.md) and [tasks.md](./tasks.md)
-5. **Create issues** → Use templates in [issues/](./issues/) for GitHub tracking
+1. **Review the specification** → Read [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md) for complete requirements
+2. **Understand decisions** → Review [adr.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/adr.md) for architectural rationale
+3. **Follow the plan** → Execute phases per [plan.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/plan.md)
+4. **Track progress** → Update [progress.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/progress.md) and [tasks.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks.md)
+5. **Create issues** → Use templates in [issues/](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/issues/) for GitHub tracking
 
 ## Phase Overview
 
@@ -102,9 +102,9 @@ This plan consolidates BaseStrategy pattern, ExecutionTrace system, framework co
 
 ## Related Documents
 
-- [comprehensive-refactoring-plan.md](../basics/comprehensive-refactoring-plan.md)
-- [master-refactoring-plan.md](../basics/master-refactoring-plan.md)
-- [mcp-ai-agent-guidelines-refactoring-plan.md](../basics/mcp-ai-agent-guidelines-refactoring-plan.md)
+- [comprehensive-refactoring-plan.md](/plan-v0.14.x/basics/comprehensive-refactoring-plan.md)
+- [master-refactoring-plan.md](/plan-v0.14.x/basics/master-refactoring-plan.md)
+- [mcp-ai-agent-guidelines-refactoring-plan.md](/plan-v0.14.x/basics/mcp-ai-agent-guidelines-refactoring-plan.md)
 
 ## Contributors
 

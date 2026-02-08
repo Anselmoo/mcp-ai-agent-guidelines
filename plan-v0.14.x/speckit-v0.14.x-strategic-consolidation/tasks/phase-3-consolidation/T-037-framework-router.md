@@ -1151,8 +1151,8 @@ describe('StrategyRegistry', () => {
 
 | Document                   | Link                                                                               |
 | -------------------------- | ---------------------------------------------------------------------------------- |
-| T-011: Migrate SpecKit     | [T-011-migrate-speckit.md](../phase-2-migration/T-011-migrate-speckit.md)          |
-| ADR-002: Framework Router  | [adr.md](../../adr.md#adr-002)                                                     |
+| T-011: Migrate SpecKit     | [T-011-migrate-speckit.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-2-migration/T-011-migrate-speckit.md)          |
+| ADR-002: Framework Router  | [adr.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/adr.md#adr-002)                                                     |
 | Current output-strategy.ts | [src/strategies/output-strategy.ts](../../../../src/strategies/output-strategy.ts) |
 
 ---
