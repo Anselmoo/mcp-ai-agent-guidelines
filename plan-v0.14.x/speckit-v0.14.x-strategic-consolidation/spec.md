@@ -233,5 +233,5 @@ The following items are explicitly **NOT** included in v0.14.x:
 
 ---
 
-*See [plan.md](./plan.md) for implementation details*
-*See [adr.md](./adr.md) for architectural decisions*
+*See [plan.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/plan.md) for implementation details*
+*See [adr.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/adr.md) for architectural decisions*

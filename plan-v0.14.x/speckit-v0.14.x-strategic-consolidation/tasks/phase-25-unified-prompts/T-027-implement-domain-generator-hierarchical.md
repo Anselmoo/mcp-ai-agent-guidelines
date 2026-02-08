@@ -442,8 +442,8 @@ describe("HierarchicalGenerator", () => {
 
 ## 8. References
 
-- [T-026 UnifiedPromptBuilder](./T-026-unified-builder.md)
-- [T-023 Architecture](./T-023-design-unifiedpromptbuilder-architecture.md)
+- [T-026 UnifiedPromptBuilder](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-25-unified-prompts/T-026-unified-builder.md)
+- [T-023 Architecture](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-25-unified-prompts/T-023-design-unifiedpromptbuilder-architecture.md)
 - [hierarchical-prompt-builder.ts](../../../../src/tools/prompt/hierarchical-prompt-builder.ts)
 - [prompt-sections.ts](../../../../src/tools/shared/prompt-sections.ts)
 

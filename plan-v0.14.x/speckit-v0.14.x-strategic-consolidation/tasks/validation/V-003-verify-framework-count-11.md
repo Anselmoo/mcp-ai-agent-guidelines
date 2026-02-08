@@ -279,11 +279,11 @@ From spec.md AC-003:
 
 ## 8. References
 
-- [spec.md](../../spec.md) - AC-003, REQ-010
-- [adr.md](../../adr.md) - ADR-005 Framework Consolidation
-- [plan.md](../../plan.md) - Phase 3 Framework Consolidation
-- [roadmap.md](../../roadmap.md) - M3: Frameworks Consolidated
-- [tasks.md](../../tasks.md) - T-037 through T-052
+- [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md) - AC-003, REQ-010
+- [adr.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/adr.md) - ADR-005 Framework Consolidation
+- [plan.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/plan.md) - Phase 3 Framework Consolidation
+- [roadmap.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/roadmap.md) - M3: Frameworks Consolidated
+- [tasks.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks.md) - T-037 through T-052
 
 ---
 

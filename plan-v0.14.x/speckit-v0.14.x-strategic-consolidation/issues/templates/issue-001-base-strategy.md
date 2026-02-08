@@ -88,9 +88,9 @@ src/strategies/
 
 ## References
 
-- [ADR-001](../adr.md#adr-001-basestrategy-pattern-for-mandatory-hitl)
-- [spec.md](../spec.md) - REQ-001, REQ-005
-- [tasks.md](../tasks.md) - T-001
+- [ADR-001](plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/adr.md/#adr-001-basestrategy-pattern-for-mandatory-hitl)
+- [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/issues/spec.md) - REQ-001, REQ-005
+- [tasks.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/issues/tasks.md) - T-001
 
 ---
 

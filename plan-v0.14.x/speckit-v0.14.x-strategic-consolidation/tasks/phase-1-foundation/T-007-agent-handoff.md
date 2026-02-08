@@ -1090,9 +1090,9 @@ const summary = AgentHandoffCoordinator.toMarkdown(handoff);
 
 | Document                               | Link                                                     |
 | -------------------------------------- | -------------------------------------------------------- |
-| T-003: ExecutionTrace                  | [T-003-execution-trace.md](./T-003-execution-trace.md)   |
-| T-005: SummaryFeedbackCoordinator      | [T-005-summary-feedback.md](./T-005-summary-feedback.md) |
-| ADR-001: Strategy Pattern Architecture | [adr.md](../../adr.md#adr-001)                           |
+| T-003: ExecutionTrace                  | [T-003-execution-trace.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-1-foundation/T-003-execution-trace.md)   |
+| T-005: SummaryFeedbackCoordinator      | [T-005-summary-feedback.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-1-foundation/T-005-summary-feedback.md) |
+| ADR-001: Strategy Pattern Architecture | [adr.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/adr.md#adr-001)                           |
 | AGENTS.md                              | [AGENTS.md](../../../../AGENTS.md)                       |
 
 ---

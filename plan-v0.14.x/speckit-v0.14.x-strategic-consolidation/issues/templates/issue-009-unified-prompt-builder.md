@@ -120,9 +120,9 @@ src/domain/prompts/
 
 ## References
 
-- [ADR-003](../adr.md#adr-003-unified-prompt-ecosystem-gap-003)
-- [spec.md](../spec.md) - REQ-007, REQ-008, REQ-009
-- [tasks.md](../tasks.md) - T-023, T-024, T-025
+- [ADR-003](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/issues/adr.md#adr-003-unified-prompt-ecosystem-gap-003)
+- [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/issues/spec.md) - REQ-007, REQ-008, REQ-009
+- [tasks.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/issues/tasks.md) - T-023, T-024, T-025
 
 ---
 

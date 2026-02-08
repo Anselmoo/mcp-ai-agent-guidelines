@@ -188,9 +188,9 @@ export async function apiReferenceAction(input: DocumentationFrameworkInput) {
 
 ## 8. References
 
-- [spec.md](../../spec.md) - Documentation requirements
-- [adr.md](../../adr.md) - ADR-005 (Framework Consolidation)
-- [T-038](./T-038-implement-framework-router.md) - Framework Router
+- [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md) - Documentation requirements
+- [adr.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/adr.md) - ADR-005 (Framework Consolidation)
+- [T-038](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-3-consolidation/T-038-implement-framework-router.md) - Framework Router
 
 ---
 
@@ -200,8 +200,8 @@ export async function apiReferenceAction(input: DocumentationFrameworkInput) {
 
 ## 8. References
 
-- [spec.md](../../spec.md)
-- [tasks.md](../../tasks.md)
+- [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md)
+- [tasks.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks.md)
 
 ---
 

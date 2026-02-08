@@ -556,9 +556,9 @@ Add to `.github/workflows/quality.yml`:
 
 ## 10. References
 
-- [spec.md](../../spec.md) - Consolidation goals
-- [plan.md](../../plan.md) - Migration targets
-- [tasks.md](../../tasks.md) - Phase completion checklist
+- [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md) - Consolidation goals
+- [plan.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/plan.md) - Migration targets
+- [tasks.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks.md) - Phase completion checklist
 
 ---
 
