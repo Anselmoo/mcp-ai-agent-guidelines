@@ -3131,7 +3131,7 @@ If critical issues arise:
 
 ### Appendix A: Complete Task List
 
-See [harmonized-tasks.md](harmonized-tasks.md) for full task breakdown (T-001 through T-090).
+The harmonized task breakdown (T-001 through T-090) will be documented in [`harmonized-tasks.md`](/plan-v0.14.x/basics/harmonized-tasks.md) as tasks are finalized; until then, use the phase-by-phase tasks in [Section 5](#5-phase-by-phase-implementation) as the primary reference.
 
 ### Appendix B: File Structure
 
@@ -3208,7 +3208,7 @@ mcp-ai-agent-guidelines/
 2. [Zod Documentation](https://zod.dev/)
 3. [TypeScript Handbook](https://www.typescriptlang.org/docs/)
 4. [Vitest Documentation](https://vitest.dev/)
-5. [Project ADRs](docs/architecture/)
+5. [Project ADRs](/docs/adr/)
 
 ### Appendix F: Contact & Support
 

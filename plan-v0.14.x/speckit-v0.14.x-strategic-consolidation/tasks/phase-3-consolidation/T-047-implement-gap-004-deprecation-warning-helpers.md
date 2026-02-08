@@ -384,9 +384,9 @@ npm run quality
 
 ## 8. References
 
-- [spec.md - REQ-012](../../spec.md)
-- [T-032 Legacy Facade](../phase-3-consolidation/T-032-legacy-facades.md)
-- [T-033 Domain-Neutral Facade](../phase-25-unified-prompts/T-033-create-legacy-facade-domainneutralpromptbuilder.md)
+- [spec.md - REQ-012](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md)
+- [T-032 Legacy Facade](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-3-consolidation/T-032-legacy-facades.md)
+- [T-033 Domain-Neutral Facade](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-25-unified-prompts/T-033-create-legacy-facade-domainneutralpromptbuilder.md)
 - [Existing logger](../../../../src/tools/shared/logger.ts)
 
 ---

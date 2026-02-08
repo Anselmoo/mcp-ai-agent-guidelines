@@ -776,9 +776,9 @@ describe('PromptRegistry', () => {
 
 | Document                          | Link                                                   |
 | --------------------------------- | ------------------------------------------------------ |
-| T-026: UnifiedPromptBuilder       | [T-026-unified-builder.md](./T-026-unified-builder.md) |
-| T-025: TemplateEngine             | [T-025-template-engine.md](./T-025-template-engine.md) |
-| ADR-003: Unified Prompt Ecosystem | [adr.md](../../adr.md#adr-003)                         |
+| T-026: UnifiedPromptBuilder       | [T-026-unified-builder.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-25-unified-prompts/T-026-unified-builder.md) |
+| T-025: TemplateEngine             | [T-025-template-engine.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-25-unified-prompts/T-025-template-engine.md) |
+| ADR-003: Unified Prompt Ecosystem | [adr.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/adr.md#adr-003)                         |
 
 ---
 

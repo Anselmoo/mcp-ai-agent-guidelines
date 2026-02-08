@@ -192,8 +192,8 @@ npx tsx scripts/test-bypass-attempts.ts
 
 ## 8. References
 
-- [spec.md](../../spec.md) - AC-012, REQ-001 through REQ-003
-- [adr.md](../../adr.md) - ADR-001 (HITL Enforcement)
+- [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md) - AC-012, REQ-001 through REQ-003
+- [adr.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/adr.md) - ADR-001 (HITL Enforcement)
 
 ---
 

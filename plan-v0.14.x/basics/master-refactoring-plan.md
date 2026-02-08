@@ -2988,9 +2988,9 @@ mcp-ai-agent-guidelines/
 ### Appendix C: References
 
 **Internal**:
-- [v0.14.x README](./README.md)
-- [v0.14.x Specification](./spec.md)
-- [Architecture Decisions](./adr.md)
+- v0.14.x README (see plan-v0.14.x documentation)
+- v0.14.x Specification (see plan-v0.14.x documentation)
+- Architecture Decisions (see plan-v0.14.x ADRs)
 
 **External**:
 - [MCP Protocol](https://modelcontextprotocol.io)

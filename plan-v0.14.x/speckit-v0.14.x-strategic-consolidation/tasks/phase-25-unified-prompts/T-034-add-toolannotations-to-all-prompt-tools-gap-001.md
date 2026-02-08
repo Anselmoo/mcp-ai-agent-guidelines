@@ -246,8 +246,8 @@ Add npm script to `package.json`:
 
 ## 8. References
 
-- [spec.md](../../spec.md)
-- [tasks.md](../../tasks.md)
+- [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md)
+- [tasks.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks.md)
 
 ---
 

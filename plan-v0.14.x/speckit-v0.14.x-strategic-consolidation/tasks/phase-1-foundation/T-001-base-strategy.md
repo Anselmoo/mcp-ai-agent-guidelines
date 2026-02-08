@@ -51,9 +51,9 @@ npm run build
 
 | File                                                               | Purpose                        |
 | ------------------------------------------------------------------ | ------------------------------ |
-| [output-strategy.ts](../../../src/strategies/output-strategy.ts)   | Current interface to extend    |
-| [speckit-strategy.ts](../../../src/strategies/speckit-strategy.ts) | Example of existing strategy   |
-| [types.ts](../../../src/strategies/speckit/types.ts)               | Type definitions to understand |
+| [output-strategy.ts](/src/strategies/output-strategy.ts)                 | Current interface to extend    |
+| [speckit-strategy.ts](/src/strategies/speckit-strategy.ts)               | Example of existing strategy   |
+| [types.ts](/src/strategies/speckit/types.ts)                             | Type definitions to understand |
 
 ---
 
@@ -853,8 +853,8 @@ npm run quality
 
 | Document                      | Link                                                                  |
 | ----------------------------- | --------------------------------------------------------------------- |
-| ADR-001: BaseStrategy Pattern | [adr.md](../../adr.md#adr-001)                                        |
-| Spec REQ-001, REQ-005         | [spec.md](../../spec.md)                                              |
+| ADR-001: BaseStrategy Pattern | [adr.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/adr.md#adr-001)                                        |
+| Spec REQ-001, REQ-005         | [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md)                                              |
 | Output Strategy Interface     | [output-strategy.ts](../../../../src/strategies/output-strategy.ts)   |
 | Existing SpecKitStrategy      | [speckit-strategy.ts](../../../../src/strategies/speckit-strategy.ts) |
 

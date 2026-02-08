@@ -1079,9 +1079,9 @@ Implement OAuth2 authorization flow with JWT tokens.
 
 | Document                          | Link                                                   |
 | --------------------------------- | ------------------------------------------------------ |
-| T-024: PromptRegistry             | [T-024-prompt-registry.md](./T-024-prompt-registry.md) |
-| T-026: UnifiedPromptBuilder       | [T-026-unified-builder.md](./T-026-unified-builder.md) |
-| ADR-003: Unified Prompt Ecosystem | [adr.md](../../adr.md#adr-003)                         |
+| T-024: PromptRegistry             | [T-024-prompt-registry.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-25-unified-prompts/T-024-prompt-registry.md) |
+| T-026: UnifiedPromptBuilder       | [T-026-unified-builder.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-25-unified-prompts/T-026-unified-builder.md) |
+| ADR-003: Unified Prompt Ecosystem | [adr.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/adr.md#adr-003)                         |
 
 ---
 

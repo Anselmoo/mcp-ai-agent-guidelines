@@ -424,8 +424,8 @@ npm run quality
 
 ## 8. References
 
-- [spec.md - REQ-008](../../spec.md) - Legacy facade requirement
-- [T-026 UnifiedPromptBuilder](./T-026-unified-builder.md) - Core builder dependency
+- [spec.md - REQ-008](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md) - Legacy facade requirement
+- [T-026 UnifiedPromptBuilder](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-25-unified-prompts/T-026-unified-builder.md) - Core builder dependency
 - [domain-neutral-prompt-builder.ts](../../../../src/tools/prompt/domain-neutral-prompt-builder.ts) - Existing implementation
 - [ADR-002 ToolAnnotations](../../../../docs/adr/ADR-002-tool-annotations.md) - Annotation standard
 

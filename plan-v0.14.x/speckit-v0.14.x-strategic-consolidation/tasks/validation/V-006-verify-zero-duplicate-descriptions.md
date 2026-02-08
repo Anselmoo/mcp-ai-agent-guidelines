@@ -193,9 +193,9 @@ If duplicates found:
 
 ## 8. References
 
-- [spec.md](../../spec.md) - AC-006, REQ-025
-- [adr.md](../../adr.md) - ADR-008 (Discoverability)
-- [artifacts/tool-descriptions.csv](../../artifacts/tool-descriptions.csv)
+- [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md) - AC-006, REQ-025
+- [adr.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/adr.md) - ADR-008 (Discoverability)
+- [artifacts/tool-descriptions.csv](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/artifacts/tool-descriptions.csv)
 
 ---
 

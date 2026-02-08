@@ -163,9 +163,9 @@ const content = await pal.readFile(pal.joinPath(dir, 'file.txt'));
 
 ## References
 
-- [ADR-004](../adr.md#adr-004-platform-abstraction-layer-pal)
-- [spec.md](../spec.md) - REQ-014, REQ-015, REQ-016
-- [tasks.md](../tasks.md) - T-053, T-054, T-055
+- [ADR-004](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/adr.md#adr-004-platform-abstraction-layer-pal)
+- [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md) - REQ-014, REQ-015, REQ-016
+- [tasks.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks.md) - T-053, T-054, T-055
 
 ---
 

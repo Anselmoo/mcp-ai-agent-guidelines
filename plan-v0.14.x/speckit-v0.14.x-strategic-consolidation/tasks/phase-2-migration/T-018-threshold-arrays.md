@@ -958,9 +958,9 @@ const strictEvaluator = createCodeQualityEvaluator({
 
 | Document                  | Link                                                                                           |
 | ------------------------- | ---------------------------------------------------------------------------------------------- |
-| T-001: BaseStrategy       | [T-001-base-strategy.md](../phase-1-foundation/T-001-base-strategy.md)                         |
+| T-001: BaseStrategy       | [T-001-base-strategy.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-1-foundation/T-001-base-strategy.md)                         |
 | clean-code-scorer.ts      | [src/tools/analysis/clean-code-scorer.ts](../../../../src/tools/analysis/clean-code-scorer.ts) |
-| ADR-001: Strategy Pattern | [adr.md](../../adr.md#adr-001)                                                                 |
+| ADR-001: Strategy Pattern | [adr.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/adr.md#adr-001)                                                                 |
 
 ---
 

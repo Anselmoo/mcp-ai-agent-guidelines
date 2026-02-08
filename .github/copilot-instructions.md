@@ -281,7 +281,11 @@ try {
 9. **Use zod for input validation** - ensure robust schema definitions for all tool inputs
 10. **Reuse singleton instances** - don't create new instances of shared services
 
-## 8. GitHub Copilot Coding Agent
+## 8. Plan Mode Guidance
+
+When responding to [[PLAN]] requests, use the regular plan mode workflow and tools only. Do not use serena tools in plan mode.
+
+## 9. GitHub Copilot Coding Agent
 
 This section provides guidance specific to the autonomous Copilot Coding Agent running on GitHub.com.
 

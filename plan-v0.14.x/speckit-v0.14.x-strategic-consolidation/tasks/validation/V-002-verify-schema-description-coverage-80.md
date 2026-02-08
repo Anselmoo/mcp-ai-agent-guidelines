@@ -227,10 +227,10 @@ main();
 
 ## 8. References
 
-- [spec.md - AC-002](../../spec.md)
-- [T-046 Schema Examples](../phase-3-consolidation/T-046-schema-examples.md)
+- [spec.md - AC-002](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md)
+- [T-046 Schema Examples](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks/phase-3-consolidation/T-046-schema-examples.md)
 - [Zod .describe() docs](https://zod.dev/?id=describe)
-- [NFR-001 Schema Pattern](../../spec.md#nfr-001)
+- [NFR-001 Schema Pattern](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md#nfr-001)
 
 ---
 
