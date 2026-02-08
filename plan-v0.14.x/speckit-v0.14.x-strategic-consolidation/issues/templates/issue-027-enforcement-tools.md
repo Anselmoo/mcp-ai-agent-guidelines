@@ -187,9 +187,9 @@ src/tools/enforcement/
 
 ## References
 
-- [ADR-006](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/issues/adr.md#adr-006-enforcement-automation-layer)
-- [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/issues/spec.md) - REQ-025, REQ-026, REQ-027
-- [tasks.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/issues/tasks.md) - T-061, T-062, T-063
+- [ADR-006](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/adr.md#adr-006-enforcement-automation-layer)
+- [spec.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/spec.md) - REQ-025, REQ-026, REQ-027
+- [tasks.md](/plan-v0.14.x/speckit-v0.14.x-strategic-consolidation/tasks.md) - T-061, T-062, T-063
 
 ---
 

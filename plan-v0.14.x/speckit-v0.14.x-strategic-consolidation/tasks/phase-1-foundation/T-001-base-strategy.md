@@ -51,9 +51,9 @@ npm run build
 
 | File                                                               | Purpose                        |
 | ------------------------------------------------------------------ | ------------------------------ |
-| [output-strategy.ts](/plan-v0.14.x/src/strategies/output-strategy.ts)   | Current interface to extend    |
-| [speckit-strategy.ts](/plan-v0.14.x/src/strategies/speckit-strategy.ts) | Example of existing strategy   |
-| [types.ts](/plan-v0.14.x/src/strategies/speckit/types.ts)               | Type definitions to understand |
+| [output-strategy.ts](/src/strategies/output-strategy.ts)                 | Current interface to extend    |
+| [speckit-strategy.ts](/src/strategies/speckit-strategy.ts)               | Example of existing strategy   |
+| [types.ts](/src/strategies/speckit/types.ts)                             | Type definitions to understand |
 
 ---
 

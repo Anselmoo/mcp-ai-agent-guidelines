@@ -102,7 +102,9 @@ async function listMarkdownFiles(dir) {
 
 async function processFile(filePath) {
 	const content = await fs.readFile(filePath, "utf-8");
-	const repoPath = toRepoPath(filePath.replace(rootDir + "/", ""));
+	const repoPath = toRepoPath(
+		path.relative(rootDir, filePath).replace(/\\/g, "/"),
+	);
 	const { text, changed } = rewriteMarkdownLinks(content, repoPath);
 
 	if (!changed) {
