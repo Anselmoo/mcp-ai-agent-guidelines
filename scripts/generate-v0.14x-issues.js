@@ -139,6 +139,15 @@ const MERMAID_PLACEHOLDERS = {
 let existingLabelsCache = null;
 
 const args = process.argv.slice(2);
+const dryRunIndex = args.findIndex((arg) => arg.startsWith("--dry-run-limit"));
+const dryRunLimitValue =
+	dryRunIndex === -1
+		? null
+		: args[dryRunIndex].includes("=")
+			? args[dryRunIndex].split("=")[1]
+			: args[dryRunIndex + 1];
+const dryRunLimit = Math.max(1, Number(dryRunLimitValue || 4));
+
 const options = {
 	output: args.includes("--stdout"),
 	create: args.includes("--create"),
@@ -613,6 +622,23 @@ function createIssue(issue) {
 async function main() {
 	const issues = await buildIssues();
 	const json = JSON.stringify(issues);
+
+	if (options.dryRun && !options.create) {
+		const preview = issues.slice(0, dryRunLimit);
+		console.log(
+			JSON.stringify(
+				{
+					mode: "dry-run",
+					total: issues.length,
+					previewCount: preview.length,
+					preview,
+				},
+				null,
+				2,
+			),
+		);
+		return;
+	}
 
 	await fs.mkdir("artifacts", { recursive: true });
 	await fs.writeFile(OUTPUT_FILE, json);
