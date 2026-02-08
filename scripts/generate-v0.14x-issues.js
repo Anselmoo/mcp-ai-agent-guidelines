@@ -239,19 +239,31 @@ function extractDependencies(depText) {
 	return matches ? matches : [];
 }
 
-function removeMentions(text) {
-	return text.replace(/@\w+/g, "");
-}
-
 function cleanBody(content) {
-	const cleanedLines = content
-		.split("\n")
-		.filter(
-			(line) =>
-				!line.startsWith("**Owner**:") && !line.startsWith("**Reviewer**:"),
-		)
-		.map((line) => line.replace(/\s+$/g, ""));
-	return removeMentions(cleanedLines.join("\n")).replace(/ +/g, " ");
+	// Parse content to identify fenced code blocks
+	const lines = content.split("\n");
+	const result = [];
+	let inCodeBlock = false;
+
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i];
+
+		// Track code block boundaries
+		if (line.trim().startsWith("```")) {
+			inCodeBlock = !inCodeBlock;
+		}
+
+		// Filter out Owner/Reviewer lines
+		if (line.startsWith("**Owner**:") || line.startsWith("**Reviewer**:")) {
+			continue;
+		}
+
+		// Preserve trailing whitespace in code blocks, trim elsewhere
+		const processedLine = inCodeBlock ? line : line.replace(/\s+$/g, "");
+		result.push(processedLine);
+	}
+
+	return result.join("\n");
 }
 
 function ensureSectionsForCodeBlocks(text) {
