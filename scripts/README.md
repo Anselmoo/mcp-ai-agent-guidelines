@@ -310,3 +310,26 @@ After creating issues:
 ---
 
 **Questions?** See [docs/ISSUE-LABELS.md](../docs/ISSUE-LABELS.md) for label guide.
+
+### v0.14.x Issue JSON Generator
+
+Generate the v0.14.x issue JSON array from task markdown files:
+
+```bash
+node scripts/generate-v0.14x-issues.js --stdout > artifacts/issues-v0.14x.json
+```
+
+The generator includes parent phase issues plus all task sub-issues (each task has a parent_issue reference).
+
+
+Create issues via gh (optional):
+
+```bash
+node scripts/generate-v0.14x-issues.js --create
+```
+
+Dry-run (prints titles only):
+
+```bash
+node scripts/generate-v0.14x-issues.js --create --dry-run
+```
