@@ -1,5 +1,5 @@
 // Comprehensive tests for src/index.ts handlers and tool definitions
-import { describe, expect, it, vi } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 
 // Store captured handlers - needs to persist across tests
 const capturedHandlers: Array<{ schema: any; handler: any }> = [];
@@ -28,10 +28,11 @@ vi.mock("@modelcontextprotocol/sdk/server/stdio.js", () => {
 vi.spyOn(console, "error").mockImplementation(() => {});
 
 describe("MCP Server Handlers - Comprehensive Coverage", () => {
+	beforeAll(async () => {
+		await import("../../src/index.ts");
+	}, 10_000);
 	describe("Tool Definitions Coverage", () => {
 		it("should list all 23 expected tools with complete schemas", async () => {
-			await import("../../src/index.ts");
-
 			const listToolsHandler = capturedHandlers[0]?.handler;
 			expect(listToolsHandler).toBeDefined();
 
@@ -76,11 +77,9 @@ describe("MCP Server Handlers - Comprehensive Coverage", () => {
 				expect(tool).toHaveProperty("inputSchema");
 				expect(tool.inputSchema).toHaveProperty("type", "object");
 			}
-		}, 10_000);
+		});
 
 		it("should define comprehensive schemas for all tools", async () => {
-			await import("../../src/index.ts");
-
 			const listToolsHandler = capturedHandlers[0]?.handler;
 			const result = await listToolsHandler({});
 
@@ -112,8 +111,6 @@ describe("MCP Server Handlers - Comprehensive Coverage", () => {
 
 	describe("Tool Execution Coverage", () => {
 		it("should execute all tools successfully with valid arguments", async () => {
-			await import("../../src/index.ts");
-
 			const callToolHandler = capturedHandlers[1]?.handler;
 			expect(callToolHandler).toBeDefined();
 
@@ -319,8 +316,6 @@ describe("MCP Server Handlers - Comprehensive Coverage", () => {
 		});
 
 		it("should handle tool execution errors gracefully", async () => {
-			await import("../../src/index.ts");
-
 			const callToolHandler = capturedHandlers[1]?.handler;
 
 			// Test with unknown tool - should return error content wrapped by handler
@@ -337,8 +332,6 @@ describe("MCP Server Handlers - Comprehensive Coverage", () => {
 
 	describe("Resource Handlers Coverage", () => {
 		it("should list all resources", async () => {
-			await import("../../src/index.ts");
-
 			const listResourcesHandler = capturedHandlers[2]?.handler;
 			expect(listResourcesHandler).toBeDefined();
 
@@ -348,8 +341,6 @@ describe("MCP Server Handlers - Comprehensive Coverage", () => {
 		});
 
 		it("should read resources successfully", async () => {
-			await import("../../src/index.ts");
-
 			const readResourceHandler = capturedHandlers[3]?.handler;
 			expect(readResourceHandler).toBeDefined();
 
@@ -370,8 +361,6 @@ describe("MCP Server Handlers - Comprehensive Coverage", () => {
 
 	describe("Prompt Handlers Coverage", () => {
 		it("should list all prompts", async () => {
-			await import("../../src/index.ts");
-
 			const listPromptsHandler = capturedHandlers[4]?.handler;
 			expect(listPromptsHandler).toBeDefined();
 
@@ -381,8 +370,6 @@ describe("MCP Server Handlers - Comprehensive Coverage", () => {
 		});
 
 		it("should get specific prompts successfully", async () => {
-			await import("../../src/index.ts");
-
 			const getPromptHandler = capturedHandlers[5]?.handler;
 			expect(getPromptHandler).toBeDefined();
 
@@ -415,8 +402,6 @@ describe("MCP Server Handlers - Comprehensive Coverage", () => {
 
 	describe("Server Connection Coverage", () => {
 		it("should connect to stdio transport", async () => {
-			await import("../../src/index.ts");
-
 			// Verify all handlers are registered
 			expect(capturedHandlers.length).toBeGreaterThanOrEqual(6);
 		});

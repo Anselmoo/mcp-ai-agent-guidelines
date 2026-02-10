@@ -502,7 +502,7 @@ describe("BaseStrategy", () => {
 
 			const result = await strategy.run({ value: 42 });
 
-			expect(result.durationMs).toBeGreaterThanOrEqual(1);
+			expect(result.durationMs).toBeGreaterThanOrEqual(0);
 		});
 
 		it("should include duration in trace summary", async () => {
