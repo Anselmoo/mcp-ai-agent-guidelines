@@ -40,20 +40,37 @@ export interface ValidationWarning {
 }
 
 /**
- * Result of strategy execution.
+ * Successful strategy execution result.
  */
-export interface StrategyResult<T> {
+export interface StrategySuccessResult<T> {
 	/** Whether execution succeeded */
-	success: boolean;
+	success: true;
 	/** Output data (present if success=true) */
-	data?: T;
-	/** Execution errors (present if success=false) */
-	errors?: ValidationError[];
+	data: T;
 	/** Execution trace for debugging */
 	trace: ExecutionTraceExport;
 	/** Execution duration in milliseconds */
 	durationMs: number;
 }
+
+/**
+ * Failed strategy execution result.
+ */
+export interface StrategyErrorResult {
+	/** Whether execution succeeded */
+	success: false;
+	/** Execution errors (present if success=false) */
+	errors: ValidationError[];
+	/** Execution trace for debugging */
+	trace: ExecutionTraceExport;
+	/** Execution duration in milliseconds */
+	durationMs: number;
+}
+
+/**
+ * Result of strategy execution.
+ */
+export type StrategyResult<T> = StrategySuccessResult<T> | StrategyErrorResult;
 
 /**
  * Exported execution trace for serialization.

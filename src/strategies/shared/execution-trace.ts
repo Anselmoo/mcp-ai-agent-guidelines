@@ -20,7 +20,7 @@ import type {
  * const trace = new ExecutionTrace();
  * trace.recordDecision('Selected approach', 'Based on input complexity');
  * trace.recordMetric('validationTime', 45, 'ms');
- * console.log(trace.toMarkdown());
+ * const markdown = trace.toMarkdown();
  * ```
  */
 export class ExecutionTrace {
@@ -29,9 +29,9 @@ export class ExecutionTrace {
 	private readonly entries: TraceEntry[] = [];
 	private endTime?: Date;
 
-	constructor() {
+	constructor(startTime: Date = new Date()) {
 		this.traceId = this.generateTraceId();
-		this.startTime = new Date();
+		this.startTime = startTime;
 	}
 
 	/**

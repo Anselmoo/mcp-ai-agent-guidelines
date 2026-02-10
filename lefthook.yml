@@ -101,9 +101,7 @@ pre-commit:
       glob: "*.{ts,tsx}"
       run: |
         failed=0
-        # Read staged files into array for proper iteration
-        IFS=$'\n' read -r -d '' -a files < <(echo "{staged_files}" && printf '\0')
-        for file in "${files[@]}"; do
+        for file in {staged_files}; do
           if [ -f "$file" ]; then
             # Check for relative imports without .js extension
             if grep -n "from ['\"]\.\.?/" "$file" | grep -v "\.js['\"]" > /dev/null 2>&1; then
@@ -127,16 +125,19 @@ pre-commit:
         for file in {staged_files}; do
           if [ -f "$file" ]; then
             # Check for 'any' types (but allow in test files)
-            if [[ ! "$file" =~ \.spec\.ts$ ]] && [[ ! "$file" =~ \.test\.ts$ ]]; then
-              if grep -n ": any" "$file" > /dev/null 2>&1; then
-                echo "⚠️  WARNING: Avoid using 'any' types in $file"
-                echo "   Use proper TypeScript types instead"
-                grep -n ": any" "$file" | while read line; do
-                  echo "   Line: $line"
-                done
-                # Don't fail, just warn
-              fi
-            fi
+            case "$file" in
+              *.spec.ts|*.test.ts) ;;
+              *)
+                if grep -n ": any" "$file" > /dev/null 2>&1; then
+                  echo "⚠️  WARNING: Avoid using 'any' types in $file"
+                  echo "   Use proper TypeScript types instead"
+                  grep -n ": any" "$file" | while read line; do
+                    echo "   Line: $line"
+                  done
+                  # Don't fail, just warn
+                fi
+                ;;
+            esac
           fi
         done
         exit 0
@@ -149,9 +150,9 @@ pre-commit:
         missing_tests=""
         for file in {staged_files}; do
           # Skip index.ts files
-          if [[ "$file" == *"/index.ts" ]]; then
-            continue
-          fi
+          case "$file" in
+            */index.ts) continue ;;
+          esac
 
           # Convert src/tools/foo.ts → tests/vitest/tools/foo.spec.ts
           test_file=$(echo "$file" | sed 's|^src/|tests/vitest/|' | sed 's|\.ts$|.spec.ts|')

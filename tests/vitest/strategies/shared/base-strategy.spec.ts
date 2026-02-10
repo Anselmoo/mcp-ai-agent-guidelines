@@ -8,10 +8,7 @@ import {
 	isErrorResult,
 	isSuccessResult,
 } from "../../../../src/strategies/shared/base-strategy.js";
-import type {
-	StrategyResult,
-	ValidationResult,
-} from "../../../../src/strategies/shared/types.js";
+import type { ValidationResult } from "../../../../src/strategies/shared/types.js";
 
 // Concrete implementation for testing
 class TestStrategy extends BaseStrategy<{ value: number }, { result: string }> {
@@ -48,6 +45,9 @@ describe("BaseStrategy", () => {
 			const result = await strategy.run({ value: 42 });
 
 			expect(result.success).toBe(true);
+			if (!result.success) {
+				throw new Error("Expected success result");
+			}
 			expect(result.data).toEqual({ result: "processed: 42" });
 			expect(result.trace).toBeDefined();
 			expect(result.durationMs).toBeGreaterThanOrEqual(0);
@@ -63,8 +63,11 @@ describe("BaseStrategy", () => {
 			const result = await strategy.run({ value: -1 });
 
 			expect(result.success).toBe(false);
+			if (result.success) {
+				throw new Error("Expected error result");
+			}
 			expect(result.errors).toHaveLength(1);
-			expect(result.errors?.[0].code).toBe("INVALID_VALUE");
+			expect(result.errors[0].code).toBe("INVALID_VALUE");
 		});
 
 		it("should return error result when execution throws", async () => {
@@ -75,8 +78,11 @@ describe("BaseStrategy", () => {
 			const result = await strategy.run({ value: 42 });
 
 			expect(result.success).toBe(false);
-			expect(result.errors?.[0].code).toBe("EXECUTION_ERROR");
-			expect(result.errors?.[0].message).toBe("Execution failed");
+			if (result.success) {
+				throw new Error("Expected error result");
+			}
+			expect(result.errors[0].code).toBe("EXECUTION_ERROR");
+			expect(result.errors[0].message).toBe("Execution failed");
 		});
 
 		it("should timeout when execution takes too long", async () => {
@@ -89,7 +95,10 @@ describe("BaseStrategy", () => {
 			const result = await slowStrategy.run({ value: 42 });
 
 			expect(result.success).toBe(false);
-			expect(result.errors?.[0].message).toContain("timed out");
+			if (result.success) {
+				throw new Error("Expected error result");
+			}
+			expect(result.errors[0].message).toContain("timed out");
 		});
 
 		it("should include multiple validation errors", async () => {
@@ -105,7 +114,31 @@ describe("BaseStrategy", () => {
 			const result = await strategy.run({ value: 42 });
 
 			expect(result.success).toBe(false);
+			if (result.success) {
+				throw new Error("Expected error result");
+			}
 			expect(result.errors).toHaveLength(2);
+		});
+
+		it("should fail fast when configured", async () => {
+			const failFastStrategy = new TestStrategy({ failFast: true });
+			failFastStrategy.validateFn = () => ({
+				valid: false,
+				errors: [
+					{ code: "ERROR_1", message: "First error" },
+					{ code: "ERROR_2", message: "Second error" },
+				],
+				warnings: [],
+			});
+
+			const result = await failFastStrategy.run({ value: 42 });
+
+			expect(result.success).toBe(false);
+			if (result.success) {
+				throw new Error("Expected error result");
+			}
+			expect(result.errors).toHaveLength(1);
+			expect(result.errors[0].code).toBe("ERROR_1");
 		});
 
 		it("should record validation warnings in trace", async () => {
@@ -135,8 +168,11 @@ describe("BaseStrategy", () => {
 			const result = await strategy.run({ value: 42 });
 
 			expect(result.success).toBe(false);
-			expect(result.errors?.[0].code).toBe("EXECUTION_ERROR");
-			expect(result.errors?.[0].message).toBe("string error");
+			if (result.success) {
+				throw new Error("Expected error result");
+			}
+			expect(result.errors[0].code).toBe("EXECUTION_ERROR");
+			expect(result.errors[0].message).toBe("string error");
 		});
 	});
 
@@ -156,6 +192,14 @@ describe("BaseStrategy", () => {
 			expect(startEntry).toBeDefined();
 			expect(startEntry?.data).toHaveProperty("strategy", "TestStrategy");
 			expect(startEntry?.data).toHaveProperty("version", "1.0.0");
+		});
+
+		it("should include input type when verbose is enabled", async () => {
+			const verboseStrategy = new TestStrategy({ verbose: true });
+			const result = await verboseStrategy.run({ value: 42 });
+
+			const startEntry = result.trace.entries.find((e) => e.type === "start");
+			expect(startEntry?.data).toHaveProperty("inputType", "object");
 		});
 
 		it("should record decision trace for validation", async () => {
@@ -319,6 +363,9 @@ describe("BaseStrategy", () => {
 			});
 
 			expect(result.success).toBe(true);
+			if (!result.success) {
+				throw new Error("Expected success result");
+			}
 			expect(result.trace.entries[0].data?.inputKeys).toContain("value");
 			expect(result.trace.entries[0].data?.inputKeys).toContain("name");
 		});
@@ -341,6 +388,9 @@ describe("BaseStrategy", () => {
 			const result = await primitiveStrategy.run(42);
 
 			expect(result.success).toBe(true);
+			if (!result.success) {
+				throw new Error("Expected success result");
+			}
 			expect(result.data).toBe("result: 42");
 		});
 	});
@@ -353,7 +403,10 @@ describe("BaseStrategy", () => {
 
 			const result = await strategy.run({ value: 42 });
 
-			expect(result.errors?.[0].context?.stack).toBeDefined();
+			if (result.success) {
+				throw new Error("Expected error result");
+			}
+			expect(result.errors[0].context?.stack).toBeDefined();
 		});
 
 		it("should include validation error field", async () => {
@@ -372,8 +425,11 @@ describe("BaseStrategy", () => {
 
 			const result = await strategy.run({ value: -1 });
 
-			expect(result.errors?.[0].field).toBe("value");
-			expect(result.errors?.[0].context).toEqual({ min: 0 });
+			if (result.success) {
+				throw new Error("Expected error result");
+			}
+			expect(result.errors[0].field).toBe("value");
+			expect(result.errors[0].context).toEqual({ min: 0 });
 		});
 	});
 

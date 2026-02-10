@@ -64,7 +64,7 @@ const DEFAULT_CONFIG: Required<StrategyConfig> = {
  */
 export abstract class BaseStrategy<TInput, TOutput> {
 	/** Execution trace for this strategy invocation */
-	protected readonly trace: ExecutionTrace;
+	protected trace: ExecutionTrace;
 
 	/** Configuration for this strategy */
 	protected readonly config: Required<StrategyConfig>;
@@ -117,22 +117,32 @@ export abstract class BaseStrategy<TInput, TOutput> {
 	 * @returns Strategy result with output or errors
 	 */
 	async run(input: TInput): Promise<StrategyResult<TOutput>> {
-		const startTime = Date.now();
+		const runStart = new Date();
+		const startTime = runStart.getTime();
+		this.trace = new ExecutionTrace(runStart);
 
 		// Record start
 		if (this.config.enableTrace) {
-			this.trace.recordStart({
+			const startData: Record<string, unknown> = {
 				strategy: this.name,
 				version: this.version,
 				config: this.config,
 				inputKeys: this.getInputKeys(input),
+			};
+
+			if (this.config.verbose) {
+				startData.inputType = this.getInputType(input);
+			}
+
+			this.trace.recordStart({
+				...startData,
 			});
 		}
 
 		// Step 1: Validate input
 		const validation = this.validateWithTrace(input);
 		if (!validation.valid) {
-			return this.buildErrorResult(validation.errors, startTime);
+			return this.buildErrorResult(validation.errors);
 		}
 
 		// Step 2: Execute with timeout
@@ -147,14 +157,15 @@ export abstract class BaseStrategy<TInput, TOutput> {
 				});
 			}
 
+			const durationMs = this.trace.getDuration();
 			return {
 				success: true,
 				data: output,
 				trace: this.trace.toJSON(),
-				durationMs: Date.now() - startTime,
+				durationMs,
 			};
 		} catch (error) {
-			return this.handleExecutionError(error, startTime);
+			return this.handleExecutionError(error);
 		}
 	}
 
@@ -171,7 +182,7 @@ export abstract class BaseStrategy<TInput, TOutput> {
 			);
 		}
 
-		const result = this.validate(input);
+		const result = this.normalizeValidationResult(this.validate(input));
 
 		if (this.config.enableTrace) {
 			this.trace.recordMetric(
@@ -179,6 +190,11 @@ export abstract class BaseStrategy<TInput, TOutput> {
 				Date.now() - validateStart,
 				"ms",
 			);
+
+			if (this.config.verbose) {
+				this.trace.recordMetric("validationErrors", result.errors.length);
+				this.trace.recordMetric("validationWarnings", result.warnings.length);
+			}
 
 			if (!result.valid) {
 				for (const error of result.errors) {
@@ -204,8 +220,9 @@ export abstract class BaseStrategy<TInput, TOutput> {
 	 * Execute with timeout protection.
 	 */
 	private async executeWithTimeout(input: TInput): Promise<TOutput> {
+		let timeoutId: ReturnType<typeof setTimeout> | undefined;
 		const timeoutPromise = new Promise<never>((_, reject) => {
-			setTimeout(() => {
+			timeoutId = setTimeout(() => {
 				reject(
 					new Error(
 						`Strategy execution timed out after ${this.config.timeoutMs}ms`,
@@ -214,31 +231,32 @@ export abstract class BaseStrategy<TInput, TOutput> {
 			}, this.config.timeoutMs);
 		});
 
-		return Promise.race([this.execute(input), timeoutPromise]);
+		try {
+			return await Promise.race([this.execute(input), timeoutPromise]);
+		} finally {
+			if (timeoutId) {
+				clearTimeout(timeoutId);
+			}
+		}
 	}
 
 	/**
 	 * Build error result for validation failures.
 	 */
-	private buildErrorResult(
-		errors: ValidationError[],
-		startTime: number,
-	): StrategyResult<TOutput> {
+	private buildErrorResult(errors: ValidationError[]): StrategyResult<TOutput> {
+		const durationMs = this.trace.getDuration();
 		return {
 			success: false,
 			errors,
 			trace: this.trace.toJSON(),
-			durationMs: Date.now() - startTime,
+			durationMs,
 		};
 	}
 
 	/**
 	 * Handle execution errors.
 	 */
-	private handleExecutionError(
-		error: unknown,
-		startTime: number,
-	): StrategyResult<TOutput> {
+	private handleExecutionError(error: unknown): StrategyResult<TOutput> {
 		const errorMessage = error instanceof Error ? error.message : String(error);
 
 		if (this.config.enableTrace) {
@@ -248,6 +266,7 @@ export abstract class BaseStrategy<TInput, TOutput> {
 			);
 		}
 
+		const durationMs = this.trace.getDuration();
 		return {
 			success: false,
 			errors: [
@@ -260,7 +279,23 @@ export abstract class BaseStrategy<TInput, TOutput> {
 				},
 			],
 			trace: this.trace.toJSON(),
-			durationMs: Date.now() - startTime,
+			durationMs,
+		};
+	}
+
+	/**
+	 * Normalize validation results based on configuration.
+	 */
+	private normalizeValidationResult(
+		result: ValidationResult,
+	): ValidationResult {
+		if (!this.config.failFast || result.errors.length <= 1) {
+			return result;
+		}
+
+		return {
+			...result,
+			errors: result.errors.slice(0, 1),
 		};
 	}
 
@@ -273,6 +308,16 @@ export abstract class BaseStrategy<TInput, TOutput> {
 		}
 		return [];
 	}
+
+	private getInputType(input: TInput): string {
+		if (input === null) {
+			return "null";
+		}
+		if (Array.isArray(input)) {
+			return "array";
+		}
+		return typeof input;
+	}
 }
 
 /**
@@ -281,7 +326,7 @@ export abstract class BaseStrategy<TInput, TOutput> {
 export function isSuccessResult<T>(
 	result: StrategyResult<T>,
 ): result is StrategyResult<T> & { success: true; data: T } {
-	return result.success && result.data !== undefined;
+	return result.success;
 }
 
 /**
@@ -290,5 +335,5 @@ export function isSuccessResult<T>(
 export function isErrorResult<T>(
 	result: StrategyResult<T>,
 ): result is StrategyResult<T> & { success: false; errors: ValidationError[] } {
-	return !result.success && result.errors !== undefined;
+	return !result.success;
 }

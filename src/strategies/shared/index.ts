@@ -14,7 +14,9 @@ export { ExecutionTrace } from "./execution-trace.js";
 
 export type {
 	ExecutionTraceExport,
+	StrategyErrorResult,
 	StrategyResult,
+	StrategySuccessResult,
 	TraceEntry,
 	TraceSummary,
 	ValidationError,
