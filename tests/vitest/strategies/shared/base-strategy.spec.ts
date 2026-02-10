@@ -502,6 +502,7 @@ describe("BaseStrategy", () => {
 
 			const result = await strategy.run({ value: 42 });
 
+			expect(Number.isFinite(result.durationMs)).toBe(true);
 			expect(result.durationMs).toBeGreaterThanOrEqual(0);
 		});
 
