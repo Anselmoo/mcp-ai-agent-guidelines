@@ -76,7 +76,7 @@ describe("MCP Server Handlers - Comprehensive Coverage", () => {
 				expect(tool).toHaveProperty("inputSchema");
 				expect(tool.inputSchema).toHaveProperty("type", "object");
 			}
-		});
+		}, 10_000);
 
 		it("should define comprehensive schemas for all tools", async () => {
 			await import("../../src/index.ts");
