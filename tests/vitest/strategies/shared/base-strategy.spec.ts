@@ -338,13 +338,13 @@ describe("BaseStrategy", () => {
 				protected readonly version = "1.0.0";
 
 				validate(input: null): ValidationResult {
-					return { valid: input === null, errors: [], warnings: [] };
+					void input;
+					return { valid: true, errors: [], warnings: [] };
 				}
 
 				async execute(input: null): Promise<{ result: string }> {
-					return {
-						result: input === null ? "null processed" : "unexpected input",
-					};
+					void input;
+					return { result: "null processed" };
 				}
 			}
 
@@ -362,7 +362,8 @@ describe("BaseStrategy", () => {
 				protected readonly version = "1.0.0";
 
 				validate(input: number[]): ValidationResult {
-					return { valid: input.length >= 0, errors: [], warnings: [] };
+					void input;
+					return { valid: true, errors: [], warnings: [] };
 				}
 
 				async execute(input: number[]): Promise<{ result: string }> {
