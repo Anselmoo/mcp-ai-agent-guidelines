@@ -337,12 +337,14 @@ describe("BaseStrategy", () => {
 				protected readonly name = "NullStrategy";
 				protected readonly version = "1.0.0";
 
-				validate(_input: null): ValidationResult {
-					return { valid: true, errors: [], warnings: [] };
+				validate(input: null): ValidationResult {
+					return { valid: input === null, errors: [], warnings: [] };
 				}
 
-				async execute(_input: null): Promise<{ result: string }> {
-					return { result: "null processed" };
+				async execute(input: null): Promise<{ result: string }> {
+					return {
+						result: input === null ? "null processed" : "unexpected input",
+					};
 				}
 			}
 
@@ -359,8 +361,8 @@ describe("BaseStrategy", () => {
 				protected readonly name = "ArrayStrategy";
 				protected readonly version = "1.0.0";
 
-				validate(_input: number[]): ValidationResult {
-					return { valid: true, errors: [], warnings: [] };
+				validate(input: number[]): ValidationResult {
+					return { valid: input.length >= 0, errors: [], warnings: [] };
 				}
 
 				async execute(input: number[]): Promise<{ result: string }> {
