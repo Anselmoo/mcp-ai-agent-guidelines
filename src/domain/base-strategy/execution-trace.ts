@@ -24,8 +24,9 @@ const defaultIdGenerator: IdGenerator = () => {
 	if (cryptoApi?.randomUUID) {
 		return cryptoApi.randomUUID();
 	}
-	// Fallback IDs are not cryptographically secure; use ExecutionTraceOptions.idGenerator
-	// to inject a custom ID generator if stronger guarantees are required.
+	// Fallback IDs are not cryptographically secure; use the idGenerator option in
+	// ExecutionTraceOptions to inject a custom ID generator if stronger guarantees
+	// are required.
 	return generateFallbackUuid();
 };
 
@@ -378,7 +379,7 @@ export class ExecutionTrace {
 		}
 
 		if (value instanceof Map) {
-			// Map entries are serialized as [key, value] tuples to keep ordering explicit.
+			// Map entries are serialized as [key, value] tuples with stringified keys.
 			return Array.from(value.entries()).map(([key, entryValue]) => [
 				String(key),
 				this.sanitizeValue(entryValue, path),
