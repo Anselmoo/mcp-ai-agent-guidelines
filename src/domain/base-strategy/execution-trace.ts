@@ -24,7 +24,8 @@ const defaultIdGenerator: IdGenerator = () => {
 	if (cryptoApi?.randomUUID) {
 		return cryptoApi.randomUUID();
 	}
-	// Fallback IDs are not cryptographically secure; inject a custom ID generator if needed.
+	// Fallback IDs are not cryptographically secure; use ExecutionTraceOptions.idGenerator
+	// to inject a custom ID generator if stronger guarantees are required.
 	return generateFallbackUuid();
 };
 
@@ -329,6 +330,7 @@ export class ExecutionTrace {
 	 * Circular detection is scoped to the current traversal path; shared references
 	 * are serialized independently rather than de-duplicated (for example, if the
 	 * same object is referenced by two sibling keys, each key gets its own copy).
+	 * This can increase trace size when large objects are referenced multiple times.
 	 */
 	private sanitizeContext(
 		context: Record<string, unknown>,
@@ -376,6 +378,7 @@ export class ExecutionTrace {
 		}
 
 		if (value instanceof Map) {
+			// Map entries are serialized as [key, value] tuples to keep ordering explicit.
 			return Array.from(value.entries()).map(([key, entryValue]) => [
 				String(key),
 				this.sanitizeValue(entryValue, path),
