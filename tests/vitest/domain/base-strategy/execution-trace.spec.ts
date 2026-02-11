@@ -362,14 +362,7 @@ describe("domain/base-strategy/execution-trace", () => {
 		});
 
 		it("should calculate duration correctly", () => {
-			// Arrange
-			const startTime = Date.now();
-
 			// Act
-			// Small delay to ensure measurable duration
-			const delay = 10;
-			const endTime = startTime + delay;
-			// Mock the completion time by calling complete and checking metric
 			trace.complete();
 
 			// Assert
@@ -945,7 +938,8 @@ describe("domain/base-strategy/execution-trace", () => {
 
 		it("should handle circular references", () => {
 			// Arrange
-			const circular: any = { name: "circular" };
+			type CircularContext = { name: string; self?: unknown };
+			const circular: CircularContext = { name: "circular" };
 			circular.self = circular;
 
 			// Act
