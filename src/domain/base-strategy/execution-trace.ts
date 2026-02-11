@@ -15,6 +15,7 @@ interface ExecutionTraceOptions {
 	readonly startedAt?: Date;
 	readonly now?: Clock;
 	readonly idGenerator?: IdGenerator;
+	readonly onFallbackId?: (fallbackId: string) => void;
 }
 
 const defaultClock: Clock = () => new Date();
@@ -80,10 +81,15 @@ export class ExecutionTrace {
 		private readonly strategyVersion: string,
 		options: ExecutionTraceOptions = {},
 	) {
+		const usingDefaultIdGenerator =
+			!options.executionId && !options.idGenerator;
 		this.now = options.now ?? defaultClock;
 		this.idGenerator = options.idGenerator ?? defaultIdGenerator;
 		this.executionId = options.executionId ?? this.idGenerator();
 		this.startedAt = options.startedAt ?? this.now();
+		if (usingDefaultIdGenerator && !globalThis.crypto?.randomUUID) {
+			options.onFallbackId?.(this.executionId);
+		}
 	}
 
 	// ============================================
@@ -380,6 +386,7 @@ export class ExecutionTrace {
 
 		if (value instanceof Map) {
 			// Map entries are serialized as [key, value] tuples with stringified keys.
+			// Non-string keys that stringify to the same value may collide.
 			return Array.from(value.entries()).map(([key, entryValue]) => [
 				String(key),
 				this.sanitizeValue(entryValue, path),
