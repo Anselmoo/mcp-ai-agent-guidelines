@@ -78,7 +78,7 @@ describe("domain/base-strategy/execution-trace", () => {
 			expect(trace.decisions[1].description).toBe("Second decision");
 		});
 
-		it("should preserve all context values (even non-JSON-serializable)", () => {
+		it("should coerce non-serializable context values to strings", () => {
 			// Arrange
 			const func = () => "test";
 			const sym = Symbol("test");
@@ -93,12 +93,10 @@ describe("domain/base-strategy/execution-trace", () => {
 			const decision = trace.recordDecision("test", "description", context);
 
 			// Assert
-			// sanitizeContext keeps all values that don't throw errors
-			// (JSON.stringify doesn't throw on functions/symbols, just omits them)
 			expect(decision.context.valid).toBe("string");
-			expect(decision.context.func).toBe(func);
-			expect(decision.context.symbol).toBe(sym);
-			expect(decision.context.undef).toBeUndefined();
+			expect(decision.context.func).toBe(String(func));
+			expect(decision.context.symbol).toBe(String(sym));
+			expect(decision.context.undef).toBe("undefined");
 		});
 	});
 
@@ -300,7 +298,7 @@ describe("domain/base-strategy/execution-trace", () => {
 			expect(trace.errors[2].message).toBe("Third error");
 		});
 
-		it("should preserve error context values (even non-JSON-serializable)", () => {
+		it("should coerce non-serializable error context values to strings", () => {
 			// Arrange
 			const error = new Error("Test error");
 			const func = () => "test";
@@ -315,10 +313,9 @@ describe("domain/base-strategy/execution-trace", () => {
 			trace.recordError(error, context);
 
 			// Assert
-			// sanitizeContext keeps all values that don't throw errors
 			expect(trace.errors[0].context.valid).toBe("string");
-			expect(trace.errors[0].context.func).toBe(func);
-			expect(trace.errors[0].context.symbol).toBe(sym);
+			expect(trace.errors[0].context.func).toBe(String(func));
+			expect(trace.errors[0].context.symbol).toBe(String(sym));
 		});
 	});
 
@@ -910,7 +907,7 @@ describe("domain/base-strategy/execution-trace", () => {
 			expect(decision.context).toEqual(context);
 		});
 
-		it("should preserve functions in context", () => {
+		it("should coerce functions in context to strings", () => {
 			// Arrange
 			const func = () => "test";
 			const context = { func };
@@ -919,11 +916,10 @@ describe("domain/base-strategy/execution-trace", () => {
 			const decision = trace.recordDecision("test", "test", context);
 
 			// Assert
-			// sanitizeContext preserves functions (they're omitted later during JSON serialization)
-			expect(decision.context.func).toBe(func);
+			expect(decision.context.func).toBe(String(func));
 		});
 
-		it("should preserve symbols in context", () => {
+		it("should coerce symbols in context to strings", () => {
 			// Arrange
 			const sym = Symbol("test-symbol");
 			const context = { sym };
@@ -932,8 +928,7 @@ describe("domain/base-strategy/execution-trace", () => {
 			const decision = trace.recordDecision("test", "test", context);
 
 			// Assert
-			// sanitizeContext preserves symbols (they're omitted later during JSON serialization)
-			expect(decision.context.sym).toBe(sym);
+			expect(decision.context.sym).toBe(String(sym));
 		});
 
 		it("should handle circular references", () => {
@@ -947,10 +942,10 @@ describe("domain/base-strategy/execution-trace", () => {
 
 			// Assert
 			expect(decision.context.name).toBe("circular");
-			expect(decision.context.self).toBe("[object Object]");
+			expect(decision.context.self).toBe("[Circular]");
 		});
 
-		it("should preserve undefined in context", () => {
+		it("should coerce undefined in context to strings", () => {
 			// Arrange
 			const context = { undef: undefined };
 
@@ -958,11 +953,10 @@ describe("domain/base-strategy/execution-trace", () => {
 			const decision = trace.recordDecision("test", "test", context);
 
 			// Assert
-			// sanitizeContext preserves undefined (it's omitted later during JSON serialization)
-			expect(decision.context.undef).toBeUndefined();
+			expect(decision.context.undef).toBe("undefined");
 		});
 
-		it("should preserve Date objects in context", () => {
+		it("should convert Date objects in context to ISO strings", () => {
 			// Arrange
 			const date = new Date("2024-01-01T00:00:00Z");
 			const context = { date };
@@ -971,9 +965,7 @@ describe("domain/base-strategy/execution-trace", () => {
 			const decision = trace.recordDecision("test", "test", context);
 
 			// Assert
-			// sanitizeContext preserves Date objects (converted to ISO string during JSON serialization)
-			expect(decision.context.date).toBe(date);
-			expect(decision.context.date).toBeInstanceOf(Date);
+			expect(decision.context.date).toBe(date.toISOString());
 		});
 
 		it("should handle BigInt by converting to string", () => {
@@ -1007,11 +999,10 @@ describe("domain/base-strategy/execution-trace", () => {
 			// Assert
 			expect(decision.context.valid).toBe("string");
 			expect(decision.context.number).toBe(42);
-			// sanitizeContext preserves all values
-			expect(decision.context.func).toBe(func);
-			expect(decision.context.symbol).toBe(sym);
+			expect(decision.context.func).toBe(String(func));
+			expect(decision.context.symbol).toBe(String(sym));
 			expect(decision.context.nested.value).toBe("ok");
-			expect(decision.context.nested.func).toBe(nestedFunc);
+			expect(decision.context.nested.func).toBe(String(nestedFunc));
 		});
 
 		it("should handle empty context", () => {
@@ -1025,7 +1016,7 @@ describe("domain/base-strategy/execution-trace", () => {
 			expect(decision.context).toEqual({});
 		});
 
-		it("should preserve RegExp in context", () => {
+		it("should convert RegExp in context to strings", () => {
 			// Arrange
 			const regex = /test/gi;
 			const context = { regex };
@@ -1034,9 +1025,7 @@ describe("domain/base-strategy/execution-trace", () => {
 			const decision = trace.recordDecision("test", "test", context);
 
 			// Assert
-			// sanitizeContext preserves RegExp (converted to {} during JSON serialization)
-			expect(decision.context.regex).toBe(regex);
-			expect(decision.context.regex).toBeInstanceOf(RegExp);
+			expect(decision.context.regex).toBe(regex.toString());
 		});
 	});
 });

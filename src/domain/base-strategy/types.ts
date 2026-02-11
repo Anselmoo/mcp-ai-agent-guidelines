@@ -24,7 +24,7 @@ export interface Decision {
 	/** Human-readable description */
 	readonly description: string;
 
-	/** Additional context (must be JSON-serializable) */
+	/** Additional context (non-serializable values are coerced to strings) */
 	readonly context: Record<string, unknown>;
 }
 
@@ -46,7 +46,7 @@ export interface TracedError {
 	/** Original error stack trace */
 	readonly stack?: string;
 
-	/** Context at time of error */
+	/** Context at time of error (non-serializable values are coerced to strings) */
 	readonly context: Record<string, unknown>;
 }
 

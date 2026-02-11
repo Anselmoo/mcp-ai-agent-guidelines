@@ -2,10 +2,37 @@
  * Execution Trace - records decisions, metrics, and errors during strategy execution.
  *
  * The trace is mutable during execution but provides immutable snapshots for export.
+ * This domain-level trace is distinct from the legacy strategies/shared ExecutionTrace.
  */
 
-import { randomUUID } from "node:crypto";
 import type { Decision, ExecutionTraceData, TracedError } from "./types.js";
+
+type IdGenerator = () => string;
+type Clock = () => Date;
+
+interface ExecutionTraceOptions {
+	readonly executionId?: string;
+	readonly startedAt?: Date;
+	readonly now?: Clock;
+	readonly idGenerator?: IdGenerator;
+}
+
+const defaultClock: Clock = () => new Date();
+
+const defaultIdGenerator: IdGenerator = () => {
+	const cryptoApi = globalThis.crypto;
+	if (cryptoApi?.randomUUID) {
+		return cryptoApi.randomUUID();
+	}
+	return generateFallbackUuid();
+};
+
+const generateFallbackUuid = (): string =>
+	"xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (char) => {
+		const randomValue = Math.floor(Math.random() * 16);
+		const value = char === "x" ? randomValue : (randomValue & 0x3) | 0x8;
+		return value.toString(16);
+	});
 
 /**
  * Execution Trace - records decisions, metrics, and errors during strategy execution.
@@ -38,6 +65,8 @@ export class ExecutionTrace {
 	private readonly executionId: string;
 	private readonly startedAt: Date;
 	private completedAt: Date | null = null;
+	private readonly now: Clock;
+	private readonly idGenerator: IdGenerator;
 
 	private readonly _decisions: Decision[] = [];
 	private readonly _metrics: Record<string, number> = {};
@@ -46,9 +75,12 @@ export class ExecutionTrace {
 	constructor(
 		private readonly strategyName: string,
 		private readonly strategyVersion: string,
+		options: ExecutionTraceOptions = {},
 	) {
-		this.executionId = randomUUID();
-		this.startedAt = new Date();
+		this.now = options.now ?? defaultClock;
+		this.idGenerator = options.idGenerator ?? defaultIdGenerator;
+		this.executionId = options.executionId ?? this.idGenerator();
+		this.startedAt = options.startedAt ?? this.now();
 	}
 
 	// ============================================
@@ -69,8 +101,8 @@ export class ExecutionTrace {
 		context: Record<string, unknown> = {},
 	): Decision {
 		const decision: Decision = {
-			id: randomUUID(),
-			timestamp: new Date(),
+			id: this.idGenerator(),
+			timestamp: this.now(),
 			category,
 			description,
 			context: this.sanitizeContext(context),
@@ -108,7 +140,7 @@ export class ExecutionTrace {
 	 */
 	recordError(error: Error, context: Record<string, unknown> = {}): void {
 		this._errors.push({
-			timestamp: new Date(),
+			timestamp: this.now(),
 			category: error.name || "Error",
 			message: error.message,
 			stack: error.stack,
@@ -120,7 +152,7 @@ export class ExecutionTrace {
 	 * Mark the trace as complete.
 	 */
 	complete(): void {
-		this.completedAt = new Date();
+		this.completedAt = this.now();
 		this.recordMetric("total_duration_ms", this.durationMs);
 	}
 
@@ -132,7 +164,7 @@ export class ExecutionTrace {
 	 * Get all recorded decisions.
 	 */
 	get decisions(): readonly Decision[] {
-		return [...this._decisions];
+		return this._decisions.map((decision) => this.cloneDecision(decision));
 	}
 
 	/**
@@ -146,14 +178,14 @@ export class ExecutionTrace {
 	 * Get all recorded errors.
 	 */
 	get errors(): readonly TracedError[] {
-		return [...this._errors];
+		return this._errors.map((error) => this.cloneError(error));
 	}
 
 	/**
 	 * Get current duration in milliseconds.
 	 */
 	get durationMs(): number {
-		const endTime = this.completedAt ?? new Date();
+		const endTime = this.completedAt ?? this.now();
 		return endTime.getTime() - this.startedAt.getTime();
 	}
 
@@ -183,11 +215,13 @@ export class ExecutionTrace {
 			executionId: this.executionId,
 			strategyName: this.strategyName,
 			strategyVersion: this.strategyVersion,
-			startedAt: this.startedAt,
-			completedAt: this.completedAt,
-			decisions: [...this._decisions],
+			startedAt: this.cloneDate(this.startedAt),
+			completedAt: this.completedAt ? this.cloneDate(this.completedAt) : null,
+			decisions: this._decisions.map((decision) =>
+				this.cloneDecision(decision),
+			),
 			metrics: { ...this._metrics },
-			errors: [...this._errors],
+			errors: this._errors.map((error) => this.cloneError(error)),
 		};
 	}
 
@@ -295,19 +329,114 @@ export class ExecutionTrace {
 	private sanitizeContext(
 		context: Record<string, unknown>,
 	): Record<string, unknown> {
-		const result: Record<string, unknown> = {};
+		const sanitized = this.sanitizeValue(context, new WeakSet());
+		return this.isRecord(sanitized) ? sanitized : {};
+	}
 
-		for (const [key, value] of Object.entries(context)) {
-			try {
-				// Test if value is serializable
-				JSON.stringify(value);
-				result[key] = value;
-			} catch {
-				// Convert non-serializable values to strings
-				result[key] = String(value);
-			}
+	private sanitizeValue(value: unknown, seen: WeakSet<object>): unknown {
+		if (value === null) {
+			return null;
 		}
 
-		return result;
+		if (typeof value === "string" || typeof value === "number") {
+			return value;
+		}
+
+		if (typeof value === "boolean") {
+			return value;
+		}
+
+		if (
+			typeof value === "bigint" ||
+			typeof value === "symbol" ||
+			typeof value === "function" ||
+			typeof value === "undefined"
+		) {
+			return String(value);
+		}
+
+		if (value instanceof Date) {
+			return value.toISOString();
+		}
+
+		if (value instanceof RegExp) {
+			return value.toString();
+		}
+
+		if (value instanceof Error) {
+			return {
+				name: value.name,
+				message: value.message,
+				stack: value.stack,
+			};
+		}
+
+		if (value instanceof Map) {
+			return Array.from(value.entries()).map(([key, entryValue]) => [
+				String(key),
+				this.sanitizeValue(entryValue, seen),
+			]);
+		}
+
+		if (value instanceof Set) {
+			return Array.from(value.values()).map((entryValue) =>
+				this.sanitizeValue(entryValue, seen),
+			);
+		}
+
+		if (Array.isArray(value)) {
+			return value.map((entryValue) => this.sanitizeValue(entryValue, seen));
+		}
+
+		if (typeof value === "object") {
+			if (seen.has(value)) {
+				return "[Circular]";
+			}
+			seen.add(value);
+			const result: Record<string, unknown> = {};
+			for (const [key, entryValue] of Object.entries(
+				value as Record<string, unknown>,
+			)) {
+				result[key] = this.sanitizeValue(entryValue, seen);
+			}
+			seen.delete(value);
+			return result;
+		}
+
+		return String(value);
+	}
+
+	private cloneDecision(decision: Decision): Decision {
+		return {
+			...decision,
+			timestamp: this.cloneDate(decision.timestamp),
+			context: this.cloneContext(decision.context),
+		};
+	}
+
+	private cloneError(error: TracedError): TracedError {
+		return {
+			...error,
+			timestamp: this.cloneDate(error.timestamp),
+			context: this.cloneContext(error.context),
+		};
+	}
+
+	private cloneDate(date: Date): Date {
+		return new Date(date.getTime());
+	}
+
+	private cloneContext(
+		context: Record<string, unknown>,
+	): Record<string, unknown> {
+		try {
+			return JSON.parse(JSON.stringify(context)) as Record<string, unknown>;
+		} catch {
+			return { ...context };
+		}
+	}
+
+	private isRecord(value: unknown): value is Record<string, unknown> {
+		return typeof value === "object" && value !== null && !Array.isArray(value);
 	}
 }

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { ExecutionTrace } from "../../../../src/domain/base-strategy/execution-trace.js";
 import {
 	createTrace,
@@ -166,20 +166,24 @@ describe("trace-utils", () => {
 			expect(trace.metrics.operation_time_ms).toBe(duration);
 		});
 
-		it("should measure time between start and end", async () => {
-			// Arrange
-			const trace = createTrace("test-strategy", "1.0.0");
+		it("should measure time between start and end", () => {
+			vi.useFakeTimers();
+			vi.setSystemTime(new Date(0));
+			try {
+				// Arrange
+				const trace = createTrace("test-strategy", "1.0.0");
 
-			// Act
-			const endTiming = startTiming(trace, "async_operation_ms");
-			await new Promise((resolve) => setTimeout(resolve, 10));
-			const duration = endTiming();
+				// Act
+				const endTiming = startTiming(trace, "async_operation_ms");
+				vi.advanceTimersByTime(10);
+				const duration = endTiming();
 
-			// Assert
-			// Allow for timing imprecision - should be close to 10ms but not exact
-			expect(duration).toBeGreaterThanOrEqual(8);
-			expect(duration).toBeLessThan(100);
-			expect(trace.metrics.async_operation_ms).toBe(duration);
+				// Assert
+				expect(duration).toBe(10);
+				expect(trace.metrics.async_operation_ms).toBe(duration);
+			} finally {
+				vi.useRealTimers();
+			}
 		});
 
 		it("should return duration value", () => {
