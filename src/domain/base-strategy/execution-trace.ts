@@ -31,7 +31,7 @@ import type { Decision, ExecutionTraceData, TracedError } from "./types.js";
  * }
  *
  * // Export for debugging
- * console.log(trace.toMarkdown());
+ * const markdown = trace.toMarkdown();
  * ```
  */
 export class ExecutionTrace {
