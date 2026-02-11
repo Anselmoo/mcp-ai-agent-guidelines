@@ -28,10 +28,10 @@ const defaultIdGenerator: IdGenerator = () => {
 	// Fallback IDs are not cryptographically secure; use the idGenerator option in
 	// ExecutionTraceOptions to inject a custom ID generator if stronger guarantees
 	// are required (or use onFallbackId to surface a warning to callers).
-	return generateFallbackUuid();
+	return generateFallbackUUID();
 };
 
-const generateFallbackUuid = (): string =>
+const generateFallbackUUID = (): string =>
 	"xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (char) => {
 		const randomValue = Math.floor(Math.random() * 16);
 		const value = char === "x" ? randomValue : (randomValue & 0x3) | 0x8;
@@ -387,7 +387,8 @@ export class ExecutionTrace {
 		if (value instanceof Map) {
 			// Map entries are serialized as [key, value] tuples with stringified keys.
 			// Non-string keys that stringify to the same value may collide (for example,
-			// keys 1 and "1" both stringify to "1"), so consider string keys for traces.
+			// keys 1 and "1" both stringify to "1"), which risks data loss.
+			// Prefer string keys for traceable context.
 			return Array.from(value.entries()).map(([key, entryValue]) => [
 				String(key),
 				this.sanitizeValue(entryValue, path),
@@ -448,6 +449,9 @@ export class ExecutionTrace {
 	private cloneContext(
 		context: Record<string, unknown>,
 	): Record<string, unknown> {
+		if (typeof structuredClone === "function") {
+			return structuredClone(context) as Record<string, unknown>;
+		}
 		return JSON.parse(JSON.stringify(context)) as Record<string, unknown>;
 	}
 
