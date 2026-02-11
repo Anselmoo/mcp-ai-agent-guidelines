@@ -339,11 +339,15 @@ describe("domain/base-strategy/execution-trace", () => {
 			// Assert
 			const afterComplete = new Date();
 			const data = trace.toData();
-			expect(data.completedAt).toBeInstanceOf(Date);
-			expect(data.completedAt!.getTime()).toBeGreaterThanOrEqual(
+			const completedAt = data.completedAt;
+			expect(completedAt).toBeInstanceOf(Date);
+			if (!completedAt) {
+				throw new Error("Expected completion timestamp to be set");
+			}
+			expect(completedAt.getTime()).toBeGreaterThanOrEqual(
 				beforeComplete.getTime(),
 			);
-			expect(data.completedAt!.getTime()).toBeLessThanOrEqual(
+			expect(completedAt.getTime()).toBeLessThanOrEqual(
 				afterComplete.getTime(),
 			);
 		});
