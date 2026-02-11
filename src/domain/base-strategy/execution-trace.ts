@@ -326,6 +326,8 @@ export class ExecutionTrace {
 
 	/**
 	 * Sanitize context to ensure it's JSON-serializable.
+	 * Circular detection is scoped to the current traversal path; shared references
+	 * are serialized independently rather than de-duplicated.
 	 */
 	private sanitizeContext(
 		context: Record<string, unknown>,
