@@ -24,6 +24,7 @@ const defaultIdGenerator: IdGenerator = () => {
 	if (cryptoApi?.randomUUID) {
 		return cryptoApi.randomUUID();
 	}
+	// Fallback IDs are not cryptographically secure; inject a custom idGenerator if needed.
 	return generateFallbackUuid();
 };
 
@@ -333,7 +334,7 @@ export class ExecutionTrace {
 		return this.isRecord(sanitized) ? sanitized : {};
 	}
 
-	private sanitizeValue(value: unknown, seen: WeakSet<object>): unknown {
+	private sanitizeValue(value: unknown, path: WeakSet<object>): unknown {
 		if (value === null) {
 			return null;
 		}
@@ -374,33 +375,36 @@ export class ExecutionTrace {
 		if (value instanceof Map) {
 			return Array.from(value.entries()).map(([key, entryValue]) => [
 				String(key),
-				this.sanitizeValue(entryValue, seen),
+				this.sanitizeValue(entryValue, path),
 			]);
 		}
 
 		if (value instanceof Set) {
 			return Array.from(value.values()).map((entryValue) =>
-				this.sanitizeValue(entryValue, seen),
+				this.sanitizeValue(entryValue, path),
 			);
 		}
 
 		if (Array.isArray(value)) {
-			return value.map((entryValue) => this.sanitizeValue(entryValue, seen));
+			return value.map((entryValue) => this.sanitizeValue(entryValue, path));
 		}
 
 		if (typeof value === "object") {
-			if (seen.has(value)) {
+			if (path.has(value)) {
 				return "[Circular]";
 			}
-			seen.add(value);
-			const result: Record<string, unknown> = {};
-			for (const [key, entryValue] of Object.entries(
-				value as Record<string, unknown>,
-			)) {
-				result[key] = this.sanitizeValue(entryValue, seen);
+			path.add(value);
+			try {
+				const result: Record<string, unknown> = {};
+				for (const [key, entryValue] of Object.entries(
+					value as Record<string, unknown>,
+				)) {
+					result[key] = this.sanitizeValue(entryValue, path);
+				}
+				return result;
+			} finally {
+				path.delete(value);
 			}
-			seen.delete(value);
-			return result;
 		}
 
 		return String(value);
