@@ -24,7 +24,7 @@ const defaultIdGenerator: IdGenerator = () => {
 	if (cryptoApi?.randomUUID) {
 		return cryptoApi.randomUUID();
 	}
-	// Fallback IDs are not cryptographically secure; inject a custom idGenerator if needed.
+	// Fallback IDs are not cryptographically secure; inject a custom ID generator if needed.
 	return generateFallbackUuid();
 };
 
@@ -327,7 +327,8 @@ export class ExecutionTrace {
 	/**
 	 * Sanitize context to ensure it's JSON-serializable.
 	 * Circular detection is scoped to the current traversal path; shared references
-	 * are serialized independently rather than de-duplicated.
+	 * are serialized independently rather than de-duplicated (for example, if the
+	 * same object is referenced by two sibling keys, each key gets its own copy).
 	 */
 	private sanitizeContext(
 		context: Record<string, unknown>,
@@ -435,11 +436,7 @@ export class ExecutionTrace {
 	private cloneContext(
 		context: Record<string, unknown>,
 	): Record<string, unknown> {
-		try {
-			return JSON.parse(JSON.stringify(context)) as Record<string, unknown>;
-		} catch {
-			return { ...context };
-		}
+		return JSON.parse(JSON.stringify(context)) as Record<string, unknown>;
 	}
 
 	private isRecord(value: unknown): value is Record<string, unknown> {
