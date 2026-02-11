@@ -27,7 +27,7 @@ const defaultIdGenerator: IdGenerator = () => {
 	}
 	// Fallback IDs are not cryptographically secure; use the idGenerator option in
 	// ExecutionTraceOptions to inject a custom ID generator if stronger guarantees
-	// are required.
+	// are required (or use onFallbackId to surface a warning to callers).
 	return generateFallbackUuid();
 };
 
@@ -386,7 +386,8 @@ export class ExecutionTrace {
 
 		if (value instanceof Map) {
 			// Map entries are serialized as [key, value] tuples with stringified keys.
-			// Non-string keys that stringify to the same value may collide.
+			// Non-string keys that stringify to the same value may collide (for example,
+			// keys 1 and "1" both stringify to "1"), so consider string keys for traces.
 			return Array.from(value.entries()).map(([key, entryValue]) => [
 				String(key),
 				this.sanitizeValue(entryValue, path),
