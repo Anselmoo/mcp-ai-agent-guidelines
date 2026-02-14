@@ -51,6 +51,25 @@ describe("SummaryFeedbackCoordinator", () => {
 			expect(summary.warnings).toContain("Constitution validation skipped");
 		});
 
+		it("should extract warnings from descriptions containing warning", () => {
+			coordinator.collect(
+				createMockTrace({
+					decisions: [
+						{
+							id: "1",
+							timestamp: new Date(),
+							category: "info",
+							description: "This is a warning about something",
+							context: {},
+						},
+					],
+				}),
+			);
+
+			const summary = coordinator.summarize();
+			expect(summary.warnings).toContain("This is a warning about something");
+		});
+
 		it("should extract errors from trace", () => {
 			coordinator.collect(
 				createMockTrace({
@@ -67,9 +86,27 @@ describe("SummaryFeedbackCoordinator", () => {
 
 			expect(coordinator.hasErrors()).toBe(true);
 		});
+
+		it("should use custom name when provided", () => {
+			const trace = createMockTrace({ strategyName: "original-strategy" });
+
+			coordinator.collect(trace, "custom-name");
+			const summary = coordinator.summarize({ includeOperations: true });
+
+			expect(summary.operations).toContain("custom-name");
+			expect(summary.operations).not.toContain("original-strategy");
+		});
 	});
 
 	describe("addFeedback", () => {
+		it("should add info feedback", () => {
+			coordinator.collect(createMockTrace());
+			coordinator.addFeedback("info", "Test info", "test-source");
+
+			const summary = coordinator.summarize();
+			expect(summary.status).toBe("completed");
+		});
+
 		it("should add warning feedback", () => {
 			coordinator.addWarning("Test warning", "test-source");
 
@@ -142,6 +179,30 @@ describe("SummaryFeedbackCoordinator", () => {
 			expect(summary.text.length).toBeLessThanOrEqual(50);
 		});
 
+		it("should handle maxLength 0 by returning an empty string", () => {
+			coordinator.collect(createMockTrace());
+
+			const summary = coordinator.summarize({ maxLength: 0 });
+
+			expect(summary.text).toBe("");
+		});
+
+		it("should handle maxLength 1 by returning a single dot", () => {
+			coordinator.collect(createMockTrace());
+
+			const summary = coordinator.summarize({ maxLength: 1 });
+
+			expect(summary.text).toBe(".");
+		});
+
+		it("should handle maxLength 3 by returning three dots", () => {
+			coordinator.collect(createMockTrace());
+
+			const summary = coordinator.summarize({ maxLength: 3 });
+
+			expect(summary.text).toBe("...");
+		});
+
 		it("should include operations list when requested", () => {
 			coordinator.collect(createMockTrace({ strategyName: "speckit" }));
 			coordinator.collect(createMockTrace({ strategyName: "validation" }));
@@ -150,6 +211,70 @@ describe("SummaryFeedbackCoordinator", () => {
 
 			expect(summary.operations).toContain("speckit");
 			expect(summary.operations).toContain("validation");
+		});
+
+		it("should exclude document and token metrics from text in minimal verbosity", () => {
+			coordinator.collect(
+				createMockTrace({
+					metrics: {
+						documentsGenerated: 3,
+						totalTokens: 5000,
+					},
+				}),
+			);
+
+			const summary = coordinator.summarize({
+				includeMetrics: true,
+				verbosity: "minimal",
+			});
+
+			expect(summary.text).not.toMatch(/document/i);
+			expect(summary.text).not.toMatch(/token/i);
+		});
+
+		it("should include document and token metrics in normal verbosity", () => {
+			coordinator.collect(
+				createMockTrace({
+					metrics: {
+						documentsGenerated: 4,
+						totalTokens: 6000,
+					},
+				}),
+			);
+
+			const summary = coordinator.summarize({
+				includeMetrics: true,
+			});
+
+			expect(summary.text).toMatch(/document/i);
+			expect(summary.text).toMatch(/token/i);
+		});
+
+		it("should include more text details in verbose verbosity", () => {
+			coordinator.collect(
+				createMockTrace({
+					strategyName: "detailed-strategy",
+					metrics: {
+						documentsGenerated: 2,
+						totalTokens: 2000,
+					},
+				}),
+			);
+			coordinator.addWarning("Potential performance issue");
+
+			const normalSummary = coordinator.summarize({
+				includeMetrics: true,
+				verbosity: "normal",
+			});
+			const verboseSummary = coordinator.summarize({
+				includeMetrics: true,
+				verbosity: "verbose",
+			});
+
+			expect(verboseSummary.text).toContain("Operations:");
+			expect(verboseSummary.text.length).toBeGreaterThan(
+				normalSummary.text.length,
+			);
 		});
 	});
 
@@ -180,6 +305,15 @@ describe("SummaryFeedbackCoordinator", () => {
 
 			expect(actions).toContain("Consider splitting into smaller documents");
 			expect(actions).toContain(
+				"Add constitution validation for compliance checking",
+			);
+		});
+
+		it("should not suggest validation when no operations were collected", () => {
+			const summary = coordinator.summarize({ includeSuggestions: true });
+			const actions = summary.suggestions?.map((s) => s.action) ?? [];
+
+			expect(actions).not.toContain(
 				"Add constitution validation for compliance checking",
 			);
 		});
@@ -240,6 +374,26 @@ describe("SummaryFeedbackCoordinator", () => {
 
 			const summary = coordinator.summarize();
 			expect(summary.status).toBe("partial");
+		});
+	});
+
+	describe("time source", () => {
+		it("should use injected clock for deterministic duration", () => {
+			const now = new Date("2026-01-01T00:00:10.000Z");
+			const deterministic = new SummaryFeedbackCoordinator({
+				startTime: new Date("2026-01-01T00:00:00.000Z"),
+				now: () => now,
+			});
+
+			deterministic.collect(
+				createMockTrace({
+					startedAt: new Date("2026-01-01T00:00:08.000Z"),
+					completedAt: null,
+				}),
+			);
+
+			const summary = deterministic.summarize();
+			expect(summary.duration).toBe("10.0s");
 		});
 	});
 });

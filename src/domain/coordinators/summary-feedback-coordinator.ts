@@ -4,23 +4,57 @@ import type {
 	FeedbackItem,
 	OperationStatus,
 	Suggestion,
+	SummaryFeedbackCoordinatorOptions,
 	SummaryOptions,
 	SummaryResult,
 } from "./types.js";
 
 /**
- * SummaryFeedbackCoordinator - aggregates execution traces and generates user feedback.
+ * Coordinates summary feedback for one or more strategy execution traces.
+ *
+ * Use this coordinator when an operation executes multiple strategies/sub-steps and
+ * needs a single user-facing summary for status, warnings, errors, metrics, and
+ * next-step suggestions.
+ *
+ * @example
+ * ```typescript
+ * const coordinator = new SummaryFeedbackCoordinator();
+ * coordinator.collect(specKitTrace);
+ * coordinator.collect(validationTrace, "constitution-validation");
+ *
+ * const summary = coordinator.summarize({
+ *   includeMetrics: true,
+ *   includeSuggestions: true,
+ * });
+ * ```
  */
 export class SummaryFeedbackCoordinator {
 	private operations: CollectedOperation[] = [];
 	private feedback: FeedbackItem[] = [];
 	private customSuggestions: Suggestion[] = [];
+	private readonly now: () => Date;
 	private startTime: Date;
 
-	constructor() {
-		this.startTime = new Date();
+	/**
+	 * Creates a new coordinator instance.
+	 *
+	 * @param options - Optional clock and initial start-time overrides.
+	 */
+	constructor(options: SummaryFeedbackCoordinatorOptions = {}) {
+		this.now = options.now ?? (() => new Date());
+		this.startTime = options.startTime ?? this.now();
 	}
 
+	/**
+	 * Collects a strategy execution trace as one operation.
+	 *
+	 * Warning detection is intentionally dual-path:
+	 * - category exactly equal to "warning" (case-insensitive), or
+	 * - description containing the word "warning" (case-insensitive).
+	 *
+	 * @param trace - Trace exported from strategy execution.
+	 * @param name - Optional operation name override.
+	 */
 	collect(trace: ExecutionTraceData, name?: string): void {
 		const operation: CollectedOperation = {
 			name: name ?? trace.strategyName,
@@ -47,6 +81,13 @@ export class SummaryFeedbackCoordinator {
 		}
 	}
 
+	/**
+	 * Adds a manual feedback item to the summary pool.
+	 *
+	 * @param severity - Feedback severity level.
+	 * @param message - User-facing feedback message.
+	 * @param source - Optional source identifier.
+	 */
 	addFeedback(
 		severity: "info" | "warning" | "error",
 		message: string,
@@ -56,18 +97,37 @@ export class SummaryFeedbackCoordinator {
 			severity,
 			message,
 			source,
-			timestamp: new Date(),
+			timestamp: this.now(),
 		});
 	}
 
+	/**
+	 * Adds a warning feedback entry.
+	 *
+	 * @param message - Warning message.
+	 * @param source - Optional source identifier.
+	 */
 	addWarning(message: string, source?: string): void {
 		this.addFeedback("warning", message, source);
 	}
 
+	/**
+	 * Adds an error feedback entry.
+	 *
+	 * @param message - Error message.
+	 * @param source - Optional source identifier.
+	 */
 	addError(message: string, source?: string): void {
 		this.addFeedback("error", message, source);
 	}
 
+	/**
+	 * Adds a custom next-step suggestion.
+	 *
+	 * @param action - Suggested action.
+	 * @param reason - Why the action is suggested.
+	 * @param priority - Suggestion priority.
+	 */
 	addSuggestion(
 		action: string,
 		reason: string,
@@ -76,6 +136,12 @@ export class SummaryFeedbackCoordinator {
 		this.customSuggestions.push({ action, reason, priority });
 	}
 
+	/**
+	 * Produces a consolidated summary from collected operations and manual feedback.
+	 *
+	 * @param options - Summary generation options.
+	 * @returns Structured and display-ready summary payload.
+	 */
 	summarize(options: SummaryOptions = {}): SummaryResult {
 		const {
 			maxLength = 500,
@@ -130,21 +196,33 @@ export class SummaryFeedbackCoordinator {
 		};
 	}
 
+	/**
+	 * Resets all collected state so the coordinator can be reused.
+	 */
 	reset(): void {
 		this.operations = [];
 		this.feedback = [];
 		this.customSuggestions = [];
-		this.startTime = new Date();
+		this.startTime = this.now();
 	}
 
+	/**
+	 * Returns true when at least one error feedback entry exists.
+	 */
 	hasErrors(): boolean {
 		return this.feedback.some((item) => item.severity === "error");
 	}
 
+	/**
+	 * Returns true when at least one warning feedback entry exists.
+	 */
 	hasWarnings(): boolean {
 		return this.feedback.some((item) => item.severity === "warning");
 	}
 
+	/**
+	 * Number of currently collected operations.
+	 */
 	get operationCount(): number {
 		return this.operations.length;
 	}
@@ -156,7 +234,7 @@ export class SummaryFeedbackCoordinator {
 	}
 
 	private calculateDuration(trace: ExecutionTraceData): number {
-		const endTime = trace.completedAt ?? new Date();
+		const endTime = trace.completedAt ?? this.now();
 		return endTime.getTime() - trace.startedAt.getTime();
 	}
 
@@ -180,7 +258,7 @@ export class SummaryFeedbackCoordinator {
 	}
 
 	private calculateTotalDuration(): number {
-		return Date.now() - this.startTime.getTime();
+		return this.now().getTime() - this.startTime.getTime();
 	}
 
 	private aggregateMetrics(totalDuration: number): Record<string, number> {
@@ -237,7 +315,7 @@ export class SummaryFeedbackCoordinator {
 			),
 		);
 
-		if (!hasValidationDecision) {
+		if (this.operations.length > 0 && !hasValidationDecision) {
 			suggestions.push({
 				action: "Add constitution validation for compliance checking",
 				reason: "No validation step was detected in the execution",
@@ -281,6 +359,11 @@ export class SummaryFeedbackCoordinator {
 			if (metrics.totalTokens) {
 				parts.push(`Total tokens: ${metrics.totalTokens.toLocaleString()}.`);
 			}
+		}
+		if (verbosity === "verbose" && this.operations.length > 0) {
+			parts.push(
+				`Operations: ${this.operations.map((operation) => operation.name).join(", ")}.`,
+			);
 		}
 
 		if (warnings.length > 0) {
@@ -326,7 +409,9 @@ export class SummaryFeedbackCoordinator {
 					? "❌"
 					: status === "partial"
 						? "⚠️"
-						: "⏳";
+						: status === "in-progress"
+							? "⏳"
+							: "⏳";
 		lines.push(`## ${statusIcon} Execution Summary`);
 		lines.push("");
 

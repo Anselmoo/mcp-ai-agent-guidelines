@@ -55,6 +55,22 @@ export interface SummaryOptions {
 }
 
 /**
+ * Clock function used for deterministic time handling.
+ */
+export type Clock = () => Date;
+
+/**
+ * Constructor options for SummaryFeedbackCoordinator.
+ */
+export interface SummaryFeedbackCoordinatorOptions {
+	/** Optional initial start time. Defaults to current clock time. */
+	startTime?: Date;
+
+	/** Optional clock provider for deterministic behavior in tests. */
+	now?: Clock;
+}
+
+/**
  * Generated summary result.
  */
 export interface SummaryResult {
