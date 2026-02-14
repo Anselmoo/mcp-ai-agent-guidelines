@@ -44,7 +44,7 @@ describe("shared/execution-trace", () => {
 	it("exports markdown with expected sections", () => {
 		const trace = new ExecutionTrace();
 		trace.recordDecision("validation", "input verified");
-		trace.recordError("validation warning");
+		trace.recordError("validation failed");
 
 		const markdown = trace.toMarkdown();
 
