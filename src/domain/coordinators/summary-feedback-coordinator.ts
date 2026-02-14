@@ -410,8 +410,10 @@ export class SummaryFeedbackCoordinator {
 					: status === "partial"
 						? "⚠️"
 						: status === "in-progress"
-							? "⏳"
-							: "⏳";
+							? "🔄"
+							: status === "pending"
+								? "⏳"
+								: "❔";
 		lines.push(`## ${statusIcon} Execution Summary`);
 		lines.push("");
 

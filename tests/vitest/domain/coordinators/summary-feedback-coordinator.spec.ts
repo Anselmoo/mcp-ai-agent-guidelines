@@ -336,6 +336,7 @@ describe("SummaryFeedbackCoordinator", () => {
 		it("should be pending when no operations", () => {
 			const summary = coordinator.summarize();
 			expect(summary.status).toBe("pending");
+			expect(summary.markdown).toContain("## ⏳ Execution Summary");
 		});
 
 		it("should be failed when any operation failed", () => {
@@ -374,6 +375,19 @@ describe("SummaryFeedbackCoordinator", () => {
 
 			const summary = coordinator.summarize();
 			expect(summary.status).toBe("partial");
+		});
+
+		it("should show in-progress icon for in-progress status", () => {
+			coordinator.collect(
+				createMockTrace({
+					completedAt: null,
+					errors: [],
+				}),
+			);
+
+			const summary = coordinator.summarize();
+			expect(summary.status).toBe("in-progress");
+			expect(summary.markdown).toContain("## 🔄 Execution Summary");
 		});
 	});
 
