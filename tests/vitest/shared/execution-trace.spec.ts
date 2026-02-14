@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { ExecutionTrace } from "../../../src/strategies/shared/execution-trace.js";
 
+const TRACE_ID_PATTERN = /^trace_[a-z0-9]+_[a-z0-9]{6}$/;
+const ISO_TIMESTAMP_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/;
+const ISO_TIMESTAMP_CONTAINS_PATTERN = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/;
+
 describe("strategies/shared/execution-trace", () => {
 	it("covers the primary trace path", () => {
 		// Arrange
@@ -25,7 +29,17 @@ describe("strategies/shared/execution-trace", () => {
 			"success",
 		]);
 		expect(exported.entries[2]?.message).toBe("tokens: 42t");
+		expect(exported.entries[2]?.data).toEqual({
+			name: "tokens",
+			value: 42,
+			unit: "t",
+		});
 		expect(exported.entries[3]?.message).toBe("latency_ms: 10");
+		expect(exported.entries[3]?.data).toEqual({
+			name: "latency_ms",
+			value: 10,
+			unit: undefined,
+		});
 		expect(exported.summary.totalDecisions).toBe(1);
 		expect(exported.summary.totalWarnings).toBe(1);
 		expect(exported.summary.totalErrors).toBe(0);
@@ -82,9 +96,8 @@ describe("strategies/shared/execution-trace", () => {
 		);
 		expect(timelineLines.some((line) => line.includes("**error**"))).toBe(true);
 
-		const timestampPattern = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/;
 		for (const line of timelineLines) {
-			expect(line).toMatch(timestampPattern);
+			expect(line).toMatch(ISO_TIMESTAMP_CONTAINS_PATTERN);
 		}
 	});
 
@@ -96,8 +109,8 @@ describe("strategies/shared/execution-trace", () => {
 		const traceBId = traceB.toJSON().traceId;
 
 		// Assert
-		expect(traceAId).toMatch(/^trace_[a-z0-9]+_[a-z0-9]{6}$/);
-		expect(traceBId).toMatch(/^trace_[a-z0-9]+_[a-z0-9]{6}$/);
+		expect(traceAId).toMatch(TRACE_ID_PATTERN);
+		expect(traceBId).toMatch(TRACE_ID_PATTERN);
 		expect(traceAId).not.toBe(traceBId);
 	});
 
@@ -115,12 +128,8 @@ describe("strategies/shared/execution-trace", () => {
 		);
 
 		// Assert
-		expect(beforeSuccess.startTime).toMatch(
-			/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/,
-		);
-		expect(beforeSuccess.endTime).toMatch(
-			/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/,
-		);
+		expect(beforeSuccess.startTime).toMatch(ISO_TIMESTAMP_PATTERN);
+		expect(beforeSuccess.endTime).toMatch(ISO_TIMESTAMP_PATTERN);
 		expect(new Date(beforeSuccess.endTime).getTime()).toBeGreaterThanOrEqual(
 			new Date(beforeSuccess.startTime).getTime(),
 		);
