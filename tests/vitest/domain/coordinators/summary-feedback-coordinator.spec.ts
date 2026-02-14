@@ -70,6 +70,25 @@ describe("SummaryFeedbackCoordinator", () => {
 			expect(summary.warnings).toContain("This is a warning about something");
 		});
 
+		it("should not extract warnings from non-warning decisions", () => {
+			coordinator.collect(
+				createMockTrace({
+					decisions: [
+						{
+							id: "1",
+							timestamp: new Date(),
+							category: "info",
+							description: "This is purely informational",
+							context: {},
+						},
+					],
+				}),
+			);
+
+			const summary = coordinator.summarize();
+			expect(summary.warnings).toHaveLength(0);
+		});
+
 		it("should extract errors from trace", () => {
 			coordinator.collect(
 				createMockTrace({
@@ -203,6 +222,14 @@ describe("SummaryFeedbackCoordinator", () => {
 			expect(summary.text).toBe("...");
 		});
 
+		it("should handle maxLength 2 by returning two dots", () => {
+			coordinator.collect(createMockTrace());
+
+			const summary = coordinator.summarize({ maxLength: 2 });
+
+			expect(summary.text).toBe("..");
+		});
+
 		it("should include operations list when requested", () => {
 			coordinator.collect(createMockTrace({ strategyName: "speckit" }));
 			coordinator.collect(createMockTrace({ strategyName: "validation" }));
@@ -275,6 +302,40 @@ describe("SummaryFeedbackCoordinator", () => {
 			expect(verboseSummary.text.length).toBeGreaterThan(
 				normalSummary.text.length,
 			);
+		});
+
+		it("should exclude suggestions and metrics when disabled", () => {
+			coordinator.addSuggestion(
+				"Run validation",
+				"No validation was performed",
+			);
+			coordinator.collect(
+				createMockTrace({
+					metrics: { totalTokens: 12000 },
+				}),
+			);
+
+			const summary = coordinator.summarize({
+				includeSuggestions: false,
+				includeMetrics: false,
+			});
+
+			expect(summary.suggestions).toBeUndefined();
+			expect(summary.metrics).toBeUndefined();
+			expect(summary.markdown).not.toContain("### Metrics");
+		});
+
+		it("should summarize multiple warnings and errors with ellipsis", () => {
+			coordinator.collect(createMockTrace());
+			coordinator.addWarning("First warning");
+			coordinator.addWarning("Second warning");
+			coordinator.addError("First error");
+			coordinator.addError("Second error");
+
+			const summary = coordinator.summarize();
+
+			expect(summary.text).toContain("2 warning(s): First warning...");
+			expect(summary.text).toContain("2 error(s): First error...");
 		});
 	});
 
@@ -408,6 +469,16 @@ describe("SummaryFeedbackCoordinator", () => {
 
 			const summary = deterministic.summarize();
 			expect(summary.duration).toBe("10.0s");
+		});
+
+		it("should format duration in minutes and seconds when over one minute", () => {
+			const deterministic = new SummaryFeedbackCoordinator({
+				startTime: new Date("2026-01-01T00:00:00.000Z"),
+				now: () => new Date("2026-01-01T00:02:35.000Z"),
+			});
+
+			const summary = deterministic.summarize();
+			expect(summary.duration).toBe("2m 35s");
 		});
 	});
 });
