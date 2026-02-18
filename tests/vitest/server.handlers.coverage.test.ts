@@ -7,6 +7,7 @@ import {
 	it,
 	vi,
 } from "vitest";
+import { modeManager } from "../../src/tools/shared/mode-manager.ts";
 
 // Store captured handlers
 let capturedHandlers: Array<{ schema: any; handler: any }> = [];
@@ -72,6 +73,38 @@ describe("Server Handlers Coverage", () => {
 			expect(result.tools.length).toBeGreaterThan(0);
 		}
 	}, 20000);
+
+	it("should exercise mode-aware tool filtering branches", async () => {
+		await import("../../src/index.ts");
+
+		const listToolsHandler = capturedHandlers[0]?.handler;
+		if (!listToolsHandler) return;
+
+		const previousFlag = process.env.MCP_ENABLE_MODE_FILTERING;
+		process.env.MCP_ENABLE_MODE_FILTERING = "true";
+
+		try {
+			modeManager.setMode("analysis", "test mode filtering");
+			const filtered = await listToolsHandler({});
+			expect(
+				filtered.tools.every((t: { name: string }) => t.name !== undefined),
+			).toBe(true);
+			expect(filtered.tools.length).toBeGreaterThan(0);
+
+			modeManager.setMode("interactive", "test wildcard mode");
+			const unfiltered = await listToolsHandler({});
+			expect(unfiltered.tools.length).toBeGreaterThanOrEqual(
+				filtered.tools.length,
+			);
+		} finally {
+			modeManager.reset();
+			if (previousFlag === undefined) {
+				delete process.env.MCP_ENABLE_MODE_FILTERING;
+			} else {
+				process.env.MCP_ENABLE_MODE_FILTERING = previousFlag;
+			}
+		}
+	});
 
 	it("should exercise CallTool handler with valid tool", async () => {
 		// Import the server to register handlers
@@ -198,6 +231,21 @@ describe("Server Handlers Coverage", () => {
 		}
 	});
 
+	it("should exercise GetPrompt handler default arguments branch", async () => {
+		await import("../../src/index.ts");
+
+		const getPromptHandler = capturedHandlers[5]?.handler;
+		if (!getPromptHandler) return;
+
+		await expect(
+			getPromptHandler({
+				params: {
+					name: "non-existent-prompt",
+				},
+			}),
+		).rejects.toBeDefined();
+	});
+
 	it("should test multiple tool executions for coverage", async () => {
 		// Import the server to register handlers
 		await import("../../src/index.ts");
@@ -205,6 +253,50 @@ describe("Server Handlers Coverage", () => {
 		const callToolHandler = capturedHandlers[1]?.handler;
 		if (callToolHandler) {
 			const toolTests = [
+				{
+					name: "code-analysis-prompt-builder",
+					args: {},
+				},
+				{
+					name: "architecture-design-prompt-builder",
+					args: {},
+				},
+				{
+					name: "digital-enterprise-architect-prompt-builder",
+					args: {},
+				},
+				{
+					name: "debugging-assistant-prompt-builder",
+					args: {},
+				},
+				{
+					name: "documentation-generator-prompt-builder",
+					args: {},
+				},
+				{
+					name: "strategy-frameworks-builder",
+					args: {},
+				},
+				{
+					name: "gap-frameworks-analyzers",
+					args: {},
+				},
+				{
+					name: "spark-prompt-builder",
+					args: {},
+				},
+				{
+					name: "domain-neutral-prompt-builder",
+					args: {},
+				},
+				{
+					name: "security-hardening-prompt-builder",
+					args: {},
+				},
+				{
+					name: "quick-developer-prompts-builder",
+					args: {},
+				},
 				{
 					name: "model-compatibility-checker",
 					args: {
@@ -221,11 +313,47 @@ describe("Server Handlers Coverage", () => {
 					},
 				},
 				{
+					name: "dependency-auditor",
+					args: {},
+				},
+				{
+					name: "iterative-coverage-enhancer",
+					args: {},
+				},
+				{
 					name: "mermaid-diagram-generator",
 					args: {
 						description: "Test diagram",
 						diagramType: "flowchart",
 					},
+				},
+				{
+					name: "semantic-code-analyzer",
+					args: {},
+				},
+				{
+					name: "mode-switcher",
+					args: {},
+				},
+				{
+					name: "prompting-hierarchy-evaluator",
+					args: {},
+				},
+				{
+					name: "prompt-hierarchy",
+					args: {},
+				},
+				{
+					name: "hierarchy-level-selector",
+					args: {},
+				},
+				{
+					name: "prompt-chaining-builder",
+					args: {},
+				},
+				{
+					name: "prompt-flow-builder",
+					args: {},
 				},
 			];
 
