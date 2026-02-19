@@ -172,6 +172,9 @@ export class AgentHandoffCoordinator {
 	/**
 	 * Update handoff status.
 	 *
+	 * Creates a new HandoffPackage object with the updated status rather than
+	 * mutating the existing entry, preserving immutability of stored values.
+	 *
 	 * @param id - The handoff ID
 	 * @param status - New status value
 	 * @returns true if updated, false if not found
@@ -180,7 +183,7 @@ export class AgentHandoffCoordinator {
 		const handoff = this.handoffs.get(id);
 		if (!handoff) return false;
 
-		handoff.status = status;
+		this.handoffs.set(id, { ...handoff, status });
 		return true;
 	}
 

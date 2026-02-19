@@ -4,7 +4,6 @@ import {
 	agentHandoffCoordinator,
 } from "../../../../src/domain/coordination/agent-handoff-coordinator.js";
 import { ExecutionTrace } from "../../../../src/domain/coordination/execution-trace.js";
-import type { CreateHandoffRequest } from "../../../../src/domain/coordination/handoff-types.js";
 
 describe("AgentHandoffCoordinator", () => {
 	let coordinator: AgentHandoffCoordinator;
@@ -328,6 +327,23 @@ describe("AgentHandoffCoordinator", () => {
 			const updated = coordinator.updateStatus(handoff.id, "accepted");
 
 			expect(updated).toBe(true);
+			expect(coordinator.get(handoff.id)?.status).toBe("accepted");
+		});
+
+		it("does not mutate the original handoff object", () => {
+			const handoff = AgentHandoffCoordinator.prepareHandoff({
+				sourceAgent: "speckit-generator",
+				targetAgent: "code-reviewer",
+				context: {},
+				instructions: "Test",
+			});
+
+			coordinator.register(handoff);
+			coordinator.updateStatus(handoff.id, "accepted");
+
+			// The original local reference must remain unchanged
+			expect(handoff.status).toBe("pending");
+			// The stored copy has the updated status
 			expect(coordinator.get(handoff.id)?.status).toBe("accepted");
 		});
 
