@@ -58,7 +58,7 @@ class LifecycleOutputStrategy implements OutputStrategy<{ doubled: number }> {
 	}
 
 	supports(domainType: string): boolean {
-		return domainType === "NumericResult";
+		return domainType === "NumericDoubledResult";
 	}
 
 	validate(_result: { doubled: number }): ValidationResult {
@@ -113,7 +113,7 @@ describe("Phase 1 foundation integration", () => {
 		const domainTrace = new DomainExecutionTrace("NumericStrategy", "1.0.0");
 		domainTrace.recordDecision(
 			"validation",
-			"Validation completed without warning",
+			"Validation completed without warnings",
 		);
 		domainTrace.recordMetric("documentsGenerated", 1);
 		domainTrace.complete();
@@ -134,7 +134,7 @@ describe("Phase 1 foundation integration", () => {
 			sourceAgent: "mcp-tool-builder",
 			targetAgent: "code-reviewer",
 			context: { artifacts: [rendered.data.primary.name] },
-			instructions: "Review phase 1 output",
+			instructions: { task: "Review phase 1 output" },
 			trace: handoffTrace,
 		});
 
