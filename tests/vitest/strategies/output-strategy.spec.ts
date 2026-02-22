@@ -324,6 +324,13 @@ describe("OutputStrategy interface", () => {
 		expect(result.crossCutting?.[0].type).toBe(CrossCuttingCapability.WORKFLOW);
 	});
 
+	it("should preserve compatibility with render-only strategies", () => {
+		const strategy = new TestRFCStrategy();
+		expect(strategy.validate).toBeUndefined();
+		expect(strategy.execute).toBeUndefined();
+		expect(strategy.run).toBeUndefined();
+	});
+
 	it("should work with different domain result types", () => {
 		interface AnalysisResult {
 			score: number;
@@ -356,5 +363,64 @@ describe("OutputStrategy interface", () => {
 
 		expect(result.primary.content).toContain("85");
 		expect(result.primary.content).toContain("Improve tests");
+	});
+
+	it("should allow BaseStrategy-compatible lifecycle methods", async () => {
+		class LifecycleStrategy implements OutputStrategy<MockDomainResult> {
+			readonly approach = OutputApproach.CHAT;
+
+			render(result: MockDomainResult): OutputArtifacts {
+				return {
+					primary: {
+						name: "output.md",
+						content: result.content,
+						format: "markdown",
+					},
+				};
+			}
+
+			supports(domainType: string): boolean {
+				return domainType === "MockDomainResult";
+			}
+
+			validate(_result: MockDomainResult) {
+				return { valid: true, errors: [], warnings: [] };
+			}
+
+			async execute(result: MockDomainResult): Promise<OutputArtifacts> {
+				return this.render(result);
+			}
+
+			async run(result: MockDomainResult) {
+				return {
+					success: true as const,
+					data: await this.execute(result),
+					trace: {
+						traceId: "trace-1",
+						startTime: new Date(0).toISOString(),
+						endTime: new Date(0).toISOString(),
+						entries: [],
+						summary: {
+							totalDecisions: 0,
+							totalErrors: 0,
+							totalWarnings: 0,
+							durationMs: 0,
+						},
+					},
+					durationMs: 0,
+				};
+			}
+		}
+
+		const strategy = new LifecycleStrategy();
+		const result = await strategy.run({
+			title: "Lifecycle",
+			content: "Lifecycle output",
+		});
+
+		expect(result?.success).toBe(true);
+		expect(result && "data" in result ? result.data.primary.name : "").toBe(
+			"output.md",
+		);
 	});
 });
