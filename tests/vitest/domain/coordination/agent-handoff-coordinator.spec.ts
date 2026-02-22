@@ -113,7 +113,9 @@ describe("AgentHandoffCoordinator", () => {
 		});
 
 		it("should fail for invalid JSON payloads", () => {
-			expect(() => AgentHandoffCoordinator.parseHandoff("{")).toThrow();
+			expect(() => AgentHandoffCoordinator.parseHandoff("{")).toThrow(
+				SyntaxError,
+			);
 		});
 	});
 
