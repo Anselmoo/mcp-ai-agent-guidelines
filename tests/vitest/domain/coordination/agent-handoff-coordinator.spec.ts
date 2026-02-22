@@ -93,6 +93,30 @@ describe("AgentHandoffCoordinator", () => {
 				AgentHandoffCoordinator.parseHandoff({ version: "2.0.0" }),
 			).toThrow("Incompatible handoff version");
 		});
+
+		it("should parse object payloads without optional dates", () => {
+			const parsed = AgentHandoffCoordinator.parseHandoff({
+				id: "handoff-1",
+				version: "1.0.0",
+				sourceAgent: "speckit-generator",
+				targetAgent: "code-reviewer",
+				priority: "normal",
+				status: "pending",
+				context: {},
+				instructions: { task: "Review" },
+				createdAt: "2026-01-01T00:00:00.000Z",
+			});
+
+			expect(parsed.createdAt).toBeInstanceOf(Date);
+			expect(parsed.expiresAt).toBeUndefined();
+			expect(parsed.instructions.deadline).toBeUndefined();
+		});
+
+		it("should fail for invalid JSON payloads", () => {
+			expect(() => AgentHandoffCoordinator.parseHandoff("{")).toThrow(
+				SyntaxError,
+			);
+		});
 	});
 
 	describe("instance management", () => {
@@ -183,6 +207,20 @@ describe("AgentHandoffCoordinator", () => {
 
 			const json = AgentHandoffCoordinator.toJSON(handoff);
 			expect(() => JSON.parse(json)).not.toThrow();
+		});
+
+		it("should return 0 when no handoffs are expired", () => {
+			const active = AgentHandoffCoordinator.prepareHandoff({
+				sourceAgent: "speckit-generator",
+				targetAgent: "code-reviewer",
+				context: {},
+				instructions: "Still active",
+				expirationMinutes: 10,
+			});
+			coordinator.register(active);
+
+			expect(coordinator.clearExpired()).toBe(0);
+			expect(coordinator.get(active.id)).toBeDefined();
 		});
 	});
 });
