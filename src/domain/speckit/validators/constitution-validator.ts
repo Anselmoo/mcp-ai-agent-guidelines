@@ -1,19 +1,18 @@
 import type {
 	ConstitutionConstraints,
-	OutputArtifacts,
+	SessionState,
 	ValidationIssue,
 	ValidationResult,
 } from "../types.js";
 
 export function validateAgainstConstitution(
-	artifacts: OutputArtifacts,
+	state: SessionState,
 	constitution: ConstitutionConstraints,
 ): ValidationResult {
 	const issues: ValidationIssue[] = [];
 
 	for (const rule of constitution.rules) {
-		const haystack = Object.values(artifacts).join("\n");
-		if (!haystack.includes(rule.description)) {
+		if (!rule.check(state)) {
 			issues.push({
 				ruleId: rule.id,
 				message: `Rule check failed: ${rule.description}`,

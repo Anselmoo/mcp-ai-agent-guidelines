@@ -73,18 +73,7 @@ export class SpecKitStrategy extends BaseStrategy<unknown, SpecKitOutput> {
 
 		const validation =
 			parsed.validateAgainstConstitution && state.constitution
-				? validateAgainstConstitution(
-						{
-							readme: generated[0].content,
-							spec: generated[1].content,
-							plan: generated[2].content,
-							tasks: generated[3].content,
-							progress: generated[4].content,
-							adr: generated[5].content,
-							roadmap: generated[6].content,
-						},
-						state.constitution,
-					)
+				? validateAgainstConstitution(state, state.constitution)
 				: null;
 
 		if (validation) {
@@ -121,8 +110,21 @@ export class SpecKitStrategy extends BaseStrategy<unknown, SpecKitOutput> {
 		path: string,
 	): Promise<ConstitutionConstraints | null> {
 		try {
-			await fs.readFile(path, "utf-8");
-			return { path, loadedAt: new Date(), rules: [] };
+			const content = await fs.readFile(path, "utf-8");
+			const rules = content
+				.split("\n")
+				.map((line) => line.trim())
+				.filter((line) => line.startsWith("- "))
+				.map((line, index) => {
+					const description = line.replace(/^-\s*/, "");
+					return {
+						id: `RULE-${index + 1}`,
+						description,
+						severity: "warning" as const,
+						check: () => true,
+					};
+				});
+			return { path, loadedAt: new Date(), rules };
 		} catch {
 			this.trace.recordWarning("Constitution could not be loaded", { path });
 			return null;
