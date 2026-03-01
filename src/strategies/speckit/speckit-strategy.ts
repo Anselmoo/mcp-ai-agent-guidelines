@@ -9,6 +9,8 @@ import {
 	generateRoadmap,
 	generateSpec,
 	generateTasks,
+	type MarkdownSection,
+	type SessionState,
 	type SpecKitInput,
 	SpecKitInputSchema,
 	type SpecKitOutput,
@@ -17,12 +19,25 @@ import {
 import { BaseStrategy } from "../shared/base-strategy.js";
 import type { ValidationResult as BaseValidationResult } from "../shared/types.js";
 
+/**
+ * BaseStrategy-backed SpecKit migration strategy.
+ *
+ * Validates SpecKit input, orchestrates document generation through domain-level
+ * pure generators, and optionally evaluates generated content against loaded
+ * constitution rules.
+ */
 export class SpecKitStrategy extends BaseStrategy<unknown, SpecKitOutput> {
 	protected readonly name = "speckit";
 	protected readonly version = "2.0.0";
 
 	private validatedInput: SpecKitInput | null = null;
 
+	/**
+	 * Validate unknown strategy input against SpecKit schema.
+	 *
+	 * @param input - Raw input payload
+	 * @returns Base validation result consumed by BaseStrategy
+	 */
 	validate(input: unknown): BaseValidationResult {
 		const parsed = SpecKitInputSchema.safeParse(input);
 		if (!parsed.success) {
@@ -41,8 +56,16 @@ export class SpecKitStrategy extends BaseStrategy<unknown, SpecKitOutput> {
 		return { valid: true, errors: [], warnings: [] };
 	}
 
+	/**
+	 * Execute SpecKit generation flow for validated input.
+	 *
+	 * @param input - Raw input payload
+	 * @returns Generated SpecKit output artifacts, validation, and stats
+	 */
 	async execute(input: unknown): Promise<SpecKitOutput> {
-		const parsed = this.validatedInput ?? SpecKitInputSchema.parse(input);
+		const cachedInput = this.validatedInput;
+		this.validatedInput = null;
+		const parsed = cachedInput ?? SpecKitInputSchema.parse(input);
 		const state = createInitialSessionState(parsed);
 		const start = Date.now();
 
@@ -67,9 +90,19 @@ export class SpecKitStrategy extends BaseStrategy<unknown, SpecKitOutput> {
 			generateAdr(state),
 			generateRoadmap(state),
 		];
+		const [readme, spec, plan, tasks, progress, adr, roadmap] = generated;
 		this.trace.recordDecision("generate-documents", "Generated artifacts", {
 			count: generated.length,
 		});
+		state.sections = {
+			readme,
+			spec,
+			plan,
+			tasks,
+			progress,
+			adr,
+			roadmap,
+		};
 
 		const validation =
 			parsed.validateAgainstConstitution && state.constitution
@@ -85,13 +118,13 @@ export class SpecKitStrategy extends BaseStrategy<unknown, SpecKitOutput> {
 
 		return {
 			artifacts: {
-				readme: generated[0].content,
-				spec: generated[1].content,
-				plan: generated[2].content,
-				tasks: generated[3].content,
-				progress: generated[4].content,
-				adr: generated[5].content,
-				roadmap: generated[6].content,
+				readme: readme.content,
+				spec: spec.content,
+				plan: plan.content,
+				tasks: tasks.content,
+				progress: progress.content,
+				adr: adr.content,
+				roadmap: roadmap.content,
 			},
 			validation,
 			stats: {
@@ -121,7 +154,20 @@ export class SpecKitStrategy extends BaseStrategy<unknown, SpecKitOutput> {
 						id: `RULE-${index + 1}`,
 						description,
 						severity: "warning" as const,
-						check: () => true,
+						check: (state: SessionState) => {
+							const sectionContent = Object.values(state.sections)
+								.filter(
+									(section): section is MarkdownSection => section !== null,
+								)
+								.map((section) => section.content);
+							if (sectionContent.length === 0) {
+								return false;
+							}
+							return sectionContent
+								.join("\n")
+								.toLowerCase()
+								.includes(description.toLowerCase());
+						},
 					};
 				});
 			return { path, loadedAt: new Date(), rules };

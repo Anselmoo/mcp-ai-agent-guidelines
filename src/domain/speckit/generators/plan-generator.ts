@@ -71,13 +71,14 @@ function formatPhases(
 function formatTimeline(
 	objectives: Array<{ description: string; priority?: string }>,
 ): string {
+	const startDate = new Date().toISOString().split("T")[0];
 	const lines = [
 		"```mermaid",
 		"gantt",
 		"    title Implementation Timeline",
 		"    dateFormat YYYY-MM-DD",
 		"    section Phase 1",
-		"    Foundation tasks :p1, 2026-01-01, 1w",
+		`    Foundation tasks :p1, ${startDate}, 1w`,
 		"    section Phase 2",
 		`    Core tasks (${objectives.length}) :p2, after p1, 1w`,
 		"```",

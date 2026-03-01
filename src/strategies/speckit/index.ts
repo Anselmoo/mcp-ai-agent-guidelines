@@ -26,6 +26,8 @@ export {
 	createSpecValidator,
 	SpecValidator,
 } from "./spec-validator.js";
+
+// BaseStrategy Migration Path
 export { SpecKitStrategy as SpecKitMigrationStrategy } from "./speckit-strategy.js";
 // Tasks Parser
 export { parseTasksFromMarkdown } from "./tasks-parser.js";
