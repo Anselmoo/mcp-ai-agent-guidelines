@@ -131,7 +131,7 @@ jobs:
 
       - name: Upload audit reports
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: security-audit-reports
           path: |
@@ -214,7 +214,7 @@ jobs:
 
       - name: Upload coverage artifacts
         if: matrix.node-version == '22'
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-report
           path: coverage/
@@ -248,7 +248,7 @@ jobs:
         run: npm pack
 
       - name: Store NPM package
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: npm-package
           path: '*.tgz'
