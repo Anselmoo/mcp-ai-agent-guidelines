@@ -1,7 +1,7 @@
 ## 🗓️ Sprint Timeline Calculation
 
 ### Metadata
-- **Updated:** 2026-01-07
+- **Updated:** 2026-03-02
 - **Source tool:** mcp_ai-agent-guid_sprint-timeline-calculator
 
 
@@ -41,10 +41,10 @@
 ### Gantt Chart (Sprint Timeline)
 `
   section Sprint 1
-  Refactor functions :s1t0, 2026-01-07, 4d
-  Add tests :s1t1, 2026-01-11, 5d
-  Improve logging :s1t2, 2026-01-16, 3d
-  Docs :s1t3, 2026-01-19, 2d
+  Refactor functions :s1t0, 2026-03-02, 4d
+  Add tests :s1t1, 2026-03-06, 5d
+  Improve logging :s1t2, 2026-03-11, 3d
+  Docs :s1t3, 2026-03-14, 2d
 `
 
 ## Further Reading
