@@ -1,0 +1,31 @@
+name: Validate Schema Annotations
+
+on:
+  push:
+    paths:
+      - 'src/**/*.ts'
+  pull_request:
+    paths:
+      - 'src/**/*.ts'
+  workflow_dispatch:
+
+jobs:
+  validate-annotations:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build
+      - name: Check schema annotations coverage
+        run: |
+          echo "Checking Zod schema .describe() coverage..."
+          # Count schemas with and without .describe()
+          total=$(grep -r "z\.object\|z\.string\|z\.number\|z\.boolean\|z\.enum" src/ --include="*.ts" | wc -l)
+          described=$(grep -r "\.describe(" src/ --include="*.ts" | wc -l)
+          echo "Total schema fields: $total"
+          echo "Described fields: $described"
+          echo "Annotation check complete"

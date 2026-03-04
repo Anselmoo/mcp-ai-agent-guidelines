@@ -53,6 +53,7 @@
 		"docs:fix-svg:dry-run": "node scripts/fix-svg-visibility.js --dry-run",
 		"docs:update-svg-bg": "node scripts/update-svg-background.js",
 		"docs:update-svg-bg:dry-run": "node scripts/update-svg-background.js --dry-run",
+		"export:descriptions": "npx tsx scripts/export-descriptions.ts",
 		"links:check:all": "find . -name '*.md' -not -path './node_modules/*' -not -path './dist/*' -not -path './coverage/*' -exec npx markdown-link-check --config .mlc_config.json {} \\;",
 		"links:extract": "node scripts/extract-external-links.js",
 		"links:extract:json": "node scripts/extract-external-links.js --format=json",

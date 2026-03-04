@@ -49,6 +49,7 @@ import {
 	type DesignAssistantRequest,
 	designAssistant,
 } from "./tools/design/index.js";
+import { validateProgress } from "./tools/enforcement/validate-progress.js";
 import { guidelinesValidator } from "./tools/guidelines-validator.js";
 import { iterativeCoverageEnhancer } from "./tools/iterative-coverage-enhancer.js";
 import { memoryContextOptimizer } from "./tools/memory-context-optimizer.js";
@@ -2706,6 +2707,38 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 				title: "Design Session Assistant",
 			},
 		},
+		{
+			name: "validate-progress",
+			description:
+				"Validate progress.md files in plan directories against task specifications. BEST FOR: Enforcing task completion tracking, verifying phase progress, checking consistency between tasks.md and progress.md. OUTPUTS: Validation report with per-phase completion rates and issues.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					planDir: {
+						type: "string",
+						description:
+							"Path to the plan directory containing progress.md files",
+					},
+					phaseFilter: {
+						type: "string",
+						description: "Optional phase ID to filter results",
+					},
+					strictMode: {
+						type: "boolean",
+						description: "If true, treat warnings as errors",
+						default: false,
+					},
+				},
+				required: ["planDir"],
+			},
+			annotations: {
+				readOnlyHint: true,
+				destructiveHint: false,
+				idempotentHint: true,
+				openWorldHint: false,
+				title: "Validate Progress",
+			},
+		},
 	];
 
 	// Apply mode-aware filtering if enabled
@@ -2818,6 +2851,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 					],
 				};
 			}
+			case "validate-progress":
+				return validateProgress(
+					args as unknown as Parameters<typeof validateProgress>[0],
+				);
 			default:
 				throw new Error(`Unknown tool: ${name}`);
 		}
