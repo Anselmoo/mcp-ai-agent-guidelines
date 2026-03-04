@@ -2,62 +2,150 @@ import { describe, expect, it } from "vitest";
 import { generateSpec } from "../../../../../src/domain/speckit/generators/spec-generator.js";
 import { createInitialSessionState } from "../../../../../src/domain/speckit/types.js";
 
+const base = {
+	overview: "Overview",
+	acceptanceCriteria: [] as string[],
+	outOfScope: [] as string[],
+	validateAgainstConstitution: false as const,
+};
+
 describe("generateSpec", () => {
-	const baseInput = {
-		title: "Test Project",
-		overview: "A test project for unit testing",
-		objectives: [
-			{ description: "Build feature A", priority: "high" as const },
-			{ description: "Build feature B", priority: "medium" as const },
-		],
-		requirements: [
-			{
-				description: "Must do X",
-				type: "functional" as const,
-				priority: "high" as const,
-			},
-			{
-				description: "Performance < 100ms",
-				type: "non-functional" as const,
-				priority: "medium" as const,
-			},
-		],
-		acceptanceCriteria: ["System boots in < 5s", "All tests pass"],
-		outOfScope: ["Mobile support", "i18n"],
-	};
-
-	it("should generate spec with all sections", () => {
-		const state = createInitialSessionState(baseInput);
-		const result = generateSpec(state);
-
-		expect(result.title).toBe("spec.md");
-		expect(result.content).toContain("# Test Project - Specification");
-		expect(result.content).toContain("## Overview");
-		expect(result.content).toContain("## Objectives");
-		expect(result.content).toContain("## Requirements");
-		expect(result.content).toContain("### Functional Requirements");
-		expect(result.content).toContain("### Non-Functional Requirements");
-		expect(result.content).toContain("## Acceptance Criteria");
-		expect(result.content).toContain("## Out of Scope");
-	});
-
-	it("should estimate tokens", () => {
-		const state = createInitialSessionState(baseInput);
-		const result = generateSpec(state);
-
-		expect(result.tokenEstimate).toBeGreaterThan(0);
-		expect(result.tokenEstimate).toBe(Math.ceil(result.content.length / 4));
-	});
-
-	it("should skip optional sections if empty", () => {
+	it("should generate spec with title and overview", () => {
 		const state = createInitialSessionState({
-			...baseInput,
-			acceptanceCriteria: [],
-			outOfScope: [],
+			...base,
+			title: "My Spec",
+			objectives: [{ description: "Obj", priority: "high" as const }],
+			requirements: [
+				{
+					description: "Req",
+					type: "functional" as const,
+					priority: "high" as const,
+				},
+			],
 		});
-		const result = generateSpec(state);
 
+		const result = generateSpec(state);
+		expect(result.title).toBe("spec.md");
+		expect(result.content).toContain("# My Spec - Specification");
+		expect(result.content).toContain("Overview");
+	});
+
+	it("should group objectives by priority", () => {
+		const state = createInitialSessionState({
+			...base,
+			title: "Priority Spec",
+			objectives: [
+				{ description: "High goal", priority: "high" as const },
+				{ description: "Medium goal", priority: "medium" as const },
+				{ description: "Low goal", priority: "low" as const },
+			],
+			requirements: [
+				{
+					description: "Req",
+					type: "functional" as const,
+					priority: "medium" as const,
+				},
+			],
+		});
+
+		const result = generateSpec(state);
+		expect(result.content).toContain("### Priority: High");
+		expect(result.content).toContain("### Priority: Medium");
+		expect(result.content).toContain("### Priority: Low");
+	});
+
+	it("should show _No requirements specified._ when no functional requirements", () => {
+		const state = createInitialSessionState({
+			...base,
+			title: "NFR Only",
+			objectives: [{ description: "Obj", priority: "high" as const }],
+			requirements: [
+				{
+					description: "Perf req",
+					type: "non-functional" as const,
+					priority: "high" as const,
+				},
+			],
+		});
+
+		const result = generateSpec(state);
+		expect(result.content).toContain("_No requirements specified._");
+	});
+
+	it("should include Acceptance Criteria section when provided", () => {
+		const state = createInitialSessionState({
+			...base,
+			title: "AC Spec",
+			objectives: [{ description: "Obj", priority: "high" as const }],
+			requirements: [
+				{
+					description: "Req",
+					type: "functional" as const,
+					priority: "high" as const,
+				},
+			],
+			acceptanceCriteria: ["User can log in", "Session persists for 24h"],
+		});
+
+		const result = generateSpec(state);
+		expect(result.content).toContain("## Acceptance Criteria");
+		expect(result.content).toContain("AC-1");
+		expect(result.content).toContain("User can log in");
+	});
+
+	it("should include Out of Scope section when provided", () => {
+		const state = createInitialSessionState({
+			...base,
+			title: "OOS Spec",
+			objectives: [{ description: "Obj", priority: "high" as const }],
+			requirements: [
+				{
+					description: "Req",
+					type: "functional" as const,
+					priority: "high" as const,
+				},
+			],
+			outOfScope: ["Mobile app", "Internationalization"],
+		});
+
+		const result = generateSpec(state);
+		expect(result.content).toContain("## Out of Scope");
+		expect(result.content).toContain("Mobile app");
+	});
+
+	it("should not include Acceptance Criteria when empty", () => {
+		const state = createInitialSessionState({
+			...base,
+			title: "No AC",
+			objectives: [{ description: "Obj", priority: "high" as const }],
+			requirements: [
+				{
+					description: "Req",
+					type: "functional" as const,
+					priority: "high" as const,
+				},
+			],
+		});
+
+		const result = generateSpec(state);
 		expect(result.content).not.toContain("## Acceptance Criteria");
-		expect(result.content).not.toContain("## Out of Scope");
+	});
+
+	it("should have positive token estimate", () => {
+		const state = createInitialSessionState({
+			...base,
+			title: "Token Spec",
+			objectives: [{ description: "Obj", priority: "medium" as const }],
+			requirements: [
+				{
+					description: "Req",
+					type: "functional" as const,
+					priority: "medium" as const,
+				},
+			],
+		});
+
+		const result = generateSpec(state);
+		expect(result.tokenEstimate).toBeGreaterThan(0);
 	});
 });

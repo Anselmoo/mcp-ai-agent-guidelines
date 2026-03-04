@@ -19,7 +19,7 @@
 		"validate:demo-coverage": "node scripts/validate-demo-coverage.js",
 		"test:all": "npm run build && npm run test:unit && npm run test:integration && npm run test:demo && npm run test:mcp",
 		"test:coverage:unit": "npm run build && c8 -r text-summary -r lcov -r html -o coverage node tests/unit/run-unit-tests.js",
-		"test:vitest": "vitest",
+		"test:vitest": "vitest run",
 		"test:coverage:vitest": "vitest run --coverage",
 		"coverage:patch": "node ./scripts/coverage-patch.mjs --lcov coverage/lcov.info --base main --head HEAD --output artifacts/coverage-patch.json",
 		"coverage:low": "npm run test:coverage:vitest && node ./scripts/generate-low-coverage.cjs",
