@@ -110,31 +110,67 @@ async function validateDiagram(code: string): Promise<ValidateResult> {
 }
 
 const MermaidDiagramSchema = z.object({
-	description: z.string(),
-	diagramType: z.enum([
-		"flowchart",
-		"sequence",
-		"class",
-		"state",
-		"gantt",
-		"pie",
-		"er",
-		"journey",
-		"quadrant",
-		"git-graph",
-		"mindmap",
-		"timeline",
-	]),
-	theme: z.string().optional(),
-	strict: z.boolean().optional().default(true), // if true, never emit invalid diagram; fallback if needed
-	repair: z.boolean().optional().default(true), // attempt auto-repair on failure
+	description: z
+		.string()
+		.describe("Description of the system or process to diagram"),
+	diagramType: z
+		.enum([
+			"flowchart",
+			"sequence",
+			"class",
+			"state",
+			"gantt",
+			"pie",
+			"er",
+			"journey",
+			"quadrant",
+			"git-graph",
+			"mindmap",
+			"timeline",
+		])
+		.describe("Type of Mermaid diagram to generate"),
+	theme: z
+		.string()
+		.describe("Visual theme for the diagram (e.g., default, dark, forest)")
+		.optional(),
+	strict: z
+		.boolean()
+		.describe(
+			"If true, never emit invalid diagram; fallback to minimal diagram if needed",
+		)
+		.optional()
+		.default(true),
+	repair: z
+		.boolean()
+		.describe("Attempt auto-repair on diagram validation failure")
+		.optional()
+		.default(true),
 	// Accessibility metadata (added as Mermaid comments to avoid requiring specific Mermaid versions)
-	accTitle: z.string().optional(),
-	accDescr: z.string().optional(),
+	accTitle: z
+		.string()
+		.describe("Accessibility title added as a Mermaid comment")
+		.optional(),
+	accDescr: z
+		.string()
+		.describe("Accessibility description added as a Mermaid comment")
+		.optional(),
 	// Advanced customization options
-	direction: z.enum(["TD", "TB", "BT", "LR", "RL"]).optional(), // flowchart direction
-	customStyles: z.string().optional(), // custom CSS/styling directives
-	advancedFeatures: z.record(z.unknown()).optional(), // type-specific advanced features
+	direction: z
+		.enum(["TD", "TB", "BT", "LR", "RL"])
+		.describe(
+			"Direction for flowcharts: TD/TB (top-down), BT (bottom-top), LR (left-right), RL (right-left)",
+		)
+		.optional(),
+	customStyles: z
+		.string()
+		.describe("Custom CSS/styling directives for advanced customization")
+		.optional(),
+	advancedFeatures: z
+		.record(z.unknown())
+		.describe(
+			"Type-specific advanced features (e.g., {autonumber: true} for sequence diagrams)",
+		)
+		.optional(),
 });
 
 type MermaidDiagramInput = z.infer<typeof MermaidDiagramSchema>;

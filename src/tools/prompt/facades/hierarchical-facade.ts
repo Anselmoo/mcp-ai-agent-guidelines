@@ -20,16 +20,47 @@ const builder = new UnifiedPromptBuilder(registry);
  * @deprecated Use UnifiedPromptBuilder directly with domain='hierarchical'
  */
 export const HierarchicalFacadeSchema = HierarchicalRequestSchema.extend({
-	forcePromptMdStyle: z.boolean().optional(),
-	mode: z.string().optional(),
-	model: z.string().optional(),
-	inputFile: z.string().optional(),
-	includeDisclaimer: z.boolean().optional(),
-	includeFrontmatter: z.boolean().optional().default(false),
-	includeMetadata: z.boolean().optional().default(false),
-	includeReferences: z.boolean().optional().default(false),
-	includeTechniqueHints: z.boolean().optional().default(false),
-	tools: z.array(z.string()).optional(),
+	forcePromptMdStyle: z
+		.boolean()
+		.describe("Force *.prompt.md file style with frontmatter")
+		.optional(),
+	mode: z
+		.string()
+		.describe("Execution mode for the generated prompt")
+		.optional(),
+	model: z
+		.string()
+		.describe("AI model identifier to use for generation")
+		.optional(),
+	inputFile: z.string().describe("Input file path for reference").optional(),
+	includeDisclaimer: z
+		.boolean()
+		.describe("Whether to include a disclaimer section")
+		.optional(),
+	includeFrontmatter: z
+		.boolean()
+		.describe("Whether to include YAML frontmatter in output")
+		.optional()
+		.default(false),
+	includeMetadata: z
+		.boolean()
+		.describe("Whether to include metadata section")
+		.optional()
+		.default(false),
+	includeReferences: z
+		.boolean()
+		.describe("Whether to include reference links")
+		.optional()
+		.default(false),
+	includeTechniqueHints: z
+		.boolean()
+		.describe("Whether to include technique hint annotations")
+		.optional()
+		.default(false),
+	tools: z
+		.array(z.string())
+		.describe("List of tools available to the agent")
+		.optional(),
 });
 
 export type HierarchicalFacadeInput = z.infer<typeof HierarchicalFacadeSchema>;

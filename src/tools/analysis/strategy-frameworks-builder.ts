@@ -40,34 +40,60 @@ const SUPPORTED = [
 type FrameworkId = (typeof SUPPORTED)[number];
 
 const PointSchema = z.object({
-	label: z.string(),
-	x: z.number().min(0).max(1),
-	y: z.number().min(0).max(1),
-	radius: z.number().optional(),
-	color: z.string().optional(),
+	label: z.string().describe("Data point label"),
+	x: z.number().describe("X-axis position (0-1)").min(0).max(1),
+	y: z.number().describe("Y-axis position (0-1)").min(0).max(1),
+	radius: z.number().describe("Point radius for visualization").optional(),
+	color: z.string().describe("Point color hex or name").optional(),
 });
 
 type Point = z.infer<typeof PointSchema>;
 
 const StrategyFrameworkSchema = z.object({
 	// One or more frameworks to include in the analysis builder
-	frameworks: z.array(
-		z.enum(SUPPORTED as unknown as [FrameworkId, ...FrameworkId[]]),
-	),
+	frameworks: z
+		.array(z.enum(SUPPORTED as unknown as [FrameworkId, ...FrameworkId[]]))
+		.describe("Strategy framework identifiers to include"),
 	// Domain inputs
-	context: z.string(),
-	objectives: z.array(z.string()).optional(),
-	market: z.string().optional(),
-	stakeholders: z.array(z.string()).optional(),
-	constraints: z.array(z.string()).optional(),
+	context: z.string().describe("Business context or scenario to analyze"),
+	objectives: z
+		.array(z.string())
+		.describe("Strategic objectives or goals to evaluate")
+		.optional(),
+	market: z.string().describe("Target market or industry sector").optional(),
+	stakeholders: z
+		.array(z.string())
+		.describe("Key stakeholders to consider")
+		.optional(),
+	constraints: z
+		.array(z.string())
+		.describe("Business or operational constraints")
+		.optional(),
 	// Output controls
-	includeReferences: z.boolean().optional().default(true),
-	includeMetadata: z.boolean().optional().default(true),
-	includeDiagrams: z.boolean().optional().default(false),
-	inputFile: z.string().optional(),
+	includeReferences: z
+		.boolean()
+		.describe("Include external reference links")
+		.optional()
+		.default(true),
+	includeMetadata: z
+		.boolean()
+		.describe("Include metadata section")
+		.optional()
+		.default(true),
+	includeDiagrams: z
+		.boolean()
+		.describe("Include diagram visualizations")
+		.optional()
+		.default(false),
+	inputFile: z.string().describe("Input file path for reference").optional(),
 	// Optional structured points keyed by framework id. Each entry is an array of points
 	// with x/y values in the 0..1 range (Mermaid quadrantChart requirement).
-	points: z.record(z.array(PointSchema)).optional(),
+	points: z
+		.record(z.array(PointSchema))
+		.describe(
+			"Structured data points keyed by framework id for diagram rendering",
+		)
+		.optional(),
 });
 
 export async function strategyFrameworksBuilder(args: unknown) {

@@ -6,18 +6,30 @@ import {
 import { handleToolError } from "./shared/error-handler.js";
 
 const GuidelinesValidationSchema = z.object({
-	practiceDescription: z.string(),
-	category: z.enum([
-		"prompting",
-		"code-management",
-		"architecture",
-		"visualization",
-		"memory",
-		"workflow",
-	]),
-	includeReferences: z.boolean().optional().default(true),
-	includeMetadata: z.boolean().optional().default(true),
-	inputFile: z.string().optional(),
+	practiceDescription: z
+		.string()
+		.describe("Description of the development practice to validate"),
+	category: z
+		.enum([
+			"prompting",
+			"code-management",
+			"architecture",
+			"visualization",
+			"memory",
+			"workflow",
+		])
+		.describe("Category of practice to validate against guidelines"),
+	includeReferences: z
+		.boolean()
+		.describe("Include external reference links")
+		.optional()
+		.default(true),
+	includeMetadata: z
+		.boolean()
+		.describe("Include metadata section")
+		.optional()
+		.default(true),
+	inputFile: z.string().describe("Input file path for reference").optional(),
 });
 
 type GuidelinesValidationInput = z.infer<typeof GuidelinesValidationSchema>;

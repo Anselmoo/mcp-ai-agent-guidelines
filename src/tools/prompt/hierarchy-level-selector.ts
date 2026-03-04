@@ -28,18 +28,29 @@ const HierarchyLevelSelectorSchema = z.object({
 		.describe("Description of the task the prompt will address"),
 	agentCapability: z
 		.enum(["novice", "intermediate", "advanced", "expert"])
+		.describe("Agent's capability level")
 		.optional()
 		.default("intermediate"),
 	taskComplexity: z
 		.enum(["simple", "moderate", "complex", "very-complex"])
+		.describe("Complexity of the task")
 		.optional()
 		.default("moderate"),
 	autonomyPreference: z
 		.enum(["low", "medium", "high"])
+		.describe("Desired level of agent autonomy")
 		.optional()
 		.default("medium"),
-	includeExamples: z.boolean().optional().default(true),
-	includeReferences: z.boolean().optional().default(true),
+	includeExamples: z
+		.boolean()
+		.describe("Include example prompts for the recommended level")
+		.optional()
+		.default(true),
+	includeReferences: z
+		.boolean()
+		.describe("Include reference links")
+		.optional()
+		.default(true),
 });
 
 type HierarchyLevelSelectorInput = z.infer<typeof HierarchyLevelSelectorSchema>;

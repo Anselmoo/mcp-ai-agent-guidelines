@@ -20,137 +20,272 @@ import {
 
 const DomainNeutralSchema = z.object({
 	// Header
-	title: z.string(),
-	summary: z.string(),
+	title: z.string().describe("Document title for the domain-neutral prompt"),
+	summary: z
+		.string()
+		.describe("One-paragraph summary of what the prompt accomplishes"),
 
 	// Core planning
-	objectives: z.array(z.string()).optional(),
-	nonGoals: z.array(z.string()).optional(),
+	objectives: z
+		.array(z.string())
+		.describe("Primary objectives or goals to achieve")
+		.optional(),
+	nonGoals: z
+		.array(z.string())
+		.describe("Explicitly out-of-scope items")
+		.optional(),
 
 	// Scope & context
-	background: z.string().optional(),
-	stakeholdersUsers: z.string().optional(),
-	environment: z.string().optional(),
-	assumptions: z.string().optional(),
-	constraints: z.string().optional(),
-	dependencies: z.string().optional(),
+	background: z
+		.string()
+		.describe("Background information and problem context")
+		.optional(),
+	stakeholdersUsers: z
+		.string()
+		.describe("Primary stakeholders or user segments")
+		.optional(),
+	environment: z
+		.string()
+		.describe("Operating environment or deployment context")
+		.optional(),
+	assumptions: z.string().describe("Key assumptions being made").optional(),
+	constraints: z
+		.string()
+		.describe("Constraints or limitations to respect")
+		.optional(),
+	dependencies: z
+		.string()
+		.describe("External dependencies or prerequisites")
+		.optional(),
 
 	// IO & interfaces
-	inputs: z.string().optional(),
-	outputs: z.string().optional(),
-	dataSchemas: z.array(z.string()).optional(),
+	inputs: z
+		.string()
+		.describe("Expected inputs to the system or process")
+		.optional(),
+	outputs: z
+		.string()
+		.describe("Expected outputs produced by the system or process")
+		.optional(),
+	dataSchemas: z
+		.array(z.string())
+		.describe("Data schemas or models used")
+		.optional(),
 	interfaces: z
 		.array(
 			z.object({
-				name: z.string(),
-				contract: z.string(),
+				name: z.string().describe("Interface name"),
+				contract: z.string().describe("Interface contract or specification"),
 			}),
 		)
+		.describe("External interfaces and their contracts")
 		.optional(),
 
 	// Workflow
-	workflow: z.array(z.string()).optional(),
+	workflow: z
+		.array(z.string())
+		.describe("Ordered list of workflow steps")
+		.optional(),
 
 	// Capabilities
 	capabilities: z
 		.array(
 			z.object({
-				name: z.string(),
-				purpose: z.string(),
-				preconditions: z.string().optional(),
-				inputs: z.string().optional(),
-				processing: z.string().optional(),
-				outputs: z.string().optional(),
-				successCriteria: z.string().optional(),
-				errors: z.string().optional(),
-				observability: z.string().optional(),
+				name: z.string().describe("Capability name"),
+				purpose: z.string().describe("Purpose of the capability"),
+				preconditions: z.string().describe("Preconditions required").optional(),
+				inputs: z
+					.string()
+					.describe("Inputs consumed by the capability")
+					.optional(),
+				processing: z
+					.string()
+					.describe("Processing logic description")
+					.optional(),
+				outputs: z
+					.string()
+					.describe("Outputs produced by the capability")
+					.optional(),
+				successCriteria: z
+					.string()
+					.describe("Success criteria for the capability")
+					.optional(),
+				errors: z.string().describe("Error conditions and handling").optional(),
+				observability: z
+					.string()
+					.describe("Observability and monitoring requirements")
+					.optional(),
 			}),
 		)
+		.describe("System capabilities and their specifications")
 		.optional(),
 
 	// Edge cases
 	edgeCases: z
 		.array(
 			z.object({
-				name: z.string(),
-				handling: z.string(),
+				name: z.string().describe("Edge case name"),
+				handling: z.string().describe("How the edge case is handled"),
 			}),
 		)
+		.describe("Edge cases and their handling strategies")
 		.optional(),
 
 	// Risks
 	risks: z
 		.array(
 			z.object({
-				description: z.string(),
-				likelihoodImpact: z.string().optional(),
-				mitigation: z.string().optional(),
+				description: z.string().describe("Risk description"),
+				likelihoodImpact: z
+					.string()
+					.describe("Likelihood and impact assessment")
+					.optional(),
+				mitigation: z.string().describe("Mitigation strategy").optional(),
 			}),
 		)
+		.describe("Identified risks and mitigations")
 		.optional(),
 
 	// Validation
-	successMetrics: z.array(z.string()).optional(),
+	successMetrics: z
+		.array(z.string())
+		.describe("Metrics defining success")
+		.optional(),
 	acceptanceTests: z
 		.array(
 			z.object({
-				setup: z.string(),
-				action: z.string(),
-				expected: z.string(),
+				setup: z.string().describe("Test setup or preconditions"),
+				action: z.string().describe("Action to perform"),
+				expected: z.string().describe("Expected outcome"),
 			}),
 		)
+		.describe("Acceptance test cases")
 		.optional(),
-	manualChecklist: z.array(z.string()).optional(),
+	manualChecklist: z
+		.array(z.string())
+		.describe("Manual verification checklist items")
+		.optional(),
 
 	// Ops
-	performanceScalability: z.string().optional(),
-	reliabilityAvailability: z.string().optional(),
-	securityPrivacy: z.string().optional(),
-	compliancePolicy: z.string().optional(),
-	observabilityOps: z.string().optional(),
-	costBudget: z.string().optional(),
+	performanceScalability: z
+		.string()
+		.describe("Performance and scalability requirements")
+		.optional(),
+	reliabilityAvailability: z
+		.string()
+		.describe("Reliability and availability requirements")
+		.optional(),
+	securityPrivacy: z
+		.string()
+		.describe("Security and privacy requirements")
+		.optional(),
+	compliancePolicy: z
+		.string()
+		.describe("Compliance and policy requirements")
+		.optional(),
+	observabilityOps: z
+		.string()
+		.describe("Observability and operational requirements")
+		.optional(),
+	costBudget: z.string().describe("Cost and budget constraints").optional(),
 
 	// Versioning & changes
-	versioningStrategy: z.string().optional(),
-	migrationCompatibility: z.string().optional(),
-	changelog: z.array(z.string()).optional(),
+	versioningStrategy: z
+		.string()
+		.describe("Versioning strategy for the artifact")
+		.optional(),
+	migrationCompatibility: z
+		.string()
+		.describe("Migration and backward compatibility notes")
+		.optional(),
+	changelog: z.array(z.string()).describe("Changelog entries").optional(),
 
 	// Timeline
 	milestones: z
 		.array(
 			z.object({
-				name: z.string(),
-				deliverables: z.string().optional(),
-				eta: z.string().optional(),
+				name: z.string().describe("Milestone name"),
+				deliverables: z.string().describe("Expected deliverables").optional(),
+				eta: z.string().describe("Estimated completion date").optional(),
 			}),
 		)
+		.describe("Project milestones and deliverables")
 		.optional(),
 
 	// Questions & next steps
-	openQuestions: z.array(z.string()).optional(),
-	nextSteps: z.array(z.string()).optional(),
+	openQuestions: z
+		.array(z.string())
+		.describe("Open questions requiring resolution")
+		.optional(),
+	nextSteps: z.array(z.string()).describe("Recommended next steps").optional(),
 
 	// Prompt frontmatter controls
-	mode: z.string().optional().default("agent"),
-	model: z.string().optional().default(DEFAULT_MODEL),
+	mode: z
+		.string()
+		.describe("Execution mode for the generated prompt")
+		.optional()
+		.default("agent"),
+	model: z
+		.string()
+		.describe("AI model identifier to use for generation")
+		.optional()
+		.default(DEFAULT_MODEL),
 	tools: z
 		.array(z.string())
+		.describe("List of tools available to the agent")
 		.optional()
 		.default(["githubRepo", "codebase", "editFiles"]),
-	includeFrontmatter: z.boolean().optional().default(true),
-	includeDisclaimer: z.boolean().optional().default(true),
-	includeReferences: z.boolean().optional().default(false),
-	includeTechniqueHints: z.boolean().optional().default(false),
-	includePitfalls: z.boolean().optional().default(false),
-	includeMetadata: z.boolean().optional().default(true),
-	inputFile: z.string().optional(),
-	forcePromptMdStyle: z.boolean().optional().default(true),
+	includeFrontmatter: z
+		.boolean()
+		.describe("Whether to include YAML frontmatter in output")
+		.optional()
+		.default(true),
+	includeDisclaimer: z
+		.boolean()
+		.describe("Whether to include a disclaimer section")
+		.optional()
+		.default(true),
+	includeReferences: z
+		.boolean()
+		.describe("Whether to include reference links")
+		.optional()
+		.default(false),
+	includeTechniqueHints: z
+		.boolean()
+		.describe("Whether to include technique hint annotations")
+		.optional()
+		.default(false),
+	includePitfalls: z
+		.boolean()
+		.describe("Whether to include common pitfalls section")
+		.optional()
+		.default(false),
+	includeMetadata: z
+		.boolean()
+		.describe("Whether to include metadata section")
+		.optional()
+		.default(true),
+	inputFile: z.string().describe("Input file path for reference").optional(),
+	forcePromptMdStyle: z
+		.boolean()
+		.describe("Force *.prompt.md file style with frontmatter")
+		.optional()
+		.default(true),
 
 	// Optional model tips
-	techniques: z.array(TechniqueEnum).optional(),
-	autoSelectTechniques: z.boolean().optional().default(false),
-	provider: ProviderEnum.optional().default(DEFAULT_MODEL_SLUG),
-	style: StyleEnum.optional(),
+	techniques: z
+		.array(TechniqueEnum)
+		.describe("Prompting techniques to apply")
+		.optional(),
+	autoSelectTechniques: z
+		.boolean()
+		.describe("Automatically select appropriate techniques based on context")
+		.optional()
+		.default(false),
+	provider: ProviderEnum.describe("AI provider family for tailored tips")
+		.optional()
+		.default(DEFAULT_MODEL_SLUG),
+	style: StyleEnum.describe("Preferred prompt formatting style").optional(),
 });
 
 export type DomainNeutralInput = z.infer<typeof DomainNeutralSchema>;

@@ -18,149 +18,233 @@ import {
 
 const SparkPromptSchema = z.object({
 	// Header
-	title: z.string(),
-	summary: z.string(),
+	title: z.string().describe("Prompt title for the design card"),
+	summary: z.string().describe("Brief summary or outlook for the design"),
 
 	// Experience qualities
 	experienceQualities: z
 		.array(
 			z.object({
-				quality: z.string(),
-				detail: z.string(),
+				quality: z.string().describe("UX quality name"),
+				detail: z.string().describe("Detailed description of the quality"),
 			}),
 		)
+		.describe("List of UX qualities to emphasize")
 		.optional(),
 
 	// Complexity
-	complexityLevel: z.string(),
-	complexityDescription: z.string().optional(),
-	primaryFocus: z.string().optional(),
+	complexityLevel: z
+		.string()
+		.describe(
+			"Complexity level of the design (e.g., simple, moderate, complex)",
+		),
+	complexityDescription: z
+		.string()
+		.describe("Description of the complexity characteristics")
+		.optional(),
+	primaryFocus: z.string().describe("Primary design focus area").optional(),
 
 	// Features
 	features: z
 		.array(
 			z.object({
-				name: z.string(),
-				functionality: z.string(),
-				purpose: z.string(),
-				trigger: z.string(),
-				progression: z.array(z.string()),
-				successCriteria: z.string(),
+				name: z.string().describe("Feature name"),
+				functionality: z.string().describe("What the feature does"),
+				purpose: z.string().describe("Why the feature exists"),
+				trigger: z.string().describe("What triggers the feature"),
+				progression: z
+					.array(z.string())
+					.describe("Step-by-step progression of the feature"),
+				successCriteria: z.string().describe("Criteria for feature success"),
 			}),
 		)
+		.describe("Interactive features with progression flows")
 		.optional(),
 
 	// Edge cases
 	edgeCases: z
 		.array(
 			z.object({
-				name: z.string(),
-				handling: z.string(),
+				name: z.string().describe("Edge case name"),
+				handling: z.string().describe("How the edge case is handled"),
 			}),
 		)
+		.describe("Edge cases and their handling strategies")
 		.optional(),
 
 	// Design
-	designDirection: z.string(),
+	designDirection: z
+		.string()
+		.describe("Overall design direction or aesthetic approach"),
 
 	// Colors
-	colorSchemeType: z.string(),
-	colorPurpose: z.string(),
-	primaryColor: z.string(), // Allow embedding name + OKLCH in one string
-	primaryColorPurpose: z.string(),
+	colorSchemeType: z
+		.string()
+		.describe("Color scheme type (e.g., light, dark, high-contrast)"),
+	colorPurpose: z.string().describe("Purpose and intent of the color palette"),
+	primaryColor: z.string().describe("Primary color (name + OKLCH value)"),
+	primaryColorPurpose: z
+		.string()
+		.describe("Purpose of the primary color in the design"),
 	secondaryColors: z
 		.array(
 			z.object({
-				name: z.string(), // e.g., "Neutral Gray"
-				oklch: z.string(), // e.g., "oklch(0.85 0.02 250)"
-				usage: z.string(), // e.g., "backgrounds and supporting elements"
+				name: z.string().describe("Color name"),
+				oklch: z.string().describe("OKLCH color value"),
+				usage: z.string().describe("Where and how this color is used"),
 			}),
 		)
+		.describe("Secondary color palette entries")
 		.optional(),
-	accentColor: z.string(),
-	accentColorPurpose: z.string(),
+	accentColor: z.string().describe("Accent color (name + OKLCH value)"),
+	accentColorPurpose: z
+		.string()
+		.describe("Purpose of the accent color in the design"),
 	foregroundBackgroundPairings: z
 		.array(
 			z.object({
-				container: z.string(), // e.g., "Background" or "Accent"
-				containerColor: z.string(), // e.g., "White oklch(1 0 0)" or "Vibrant Green oklch(0.65 0.18 130)"
-				textColor: z.string(), // e.g., "Dark Gray (oklch(0.2 0.02 250))"
-				ratio: z.string(), // e.g., "12.6:1"
+				container: z.string().describe("Container or surface name"),
+				containerColor: z.string().describe("Container background color"),
+				textColor: z.string().describe("Text color on this container"),
+				ratio: z.string().describe("Contrast ratio (e.g., 12.6:1)"),
 			}),
 		)
+		.describe("Foreground/background color pairings with contrast ratios")
 		.optional(),
 
 	// Fonts
-	fontFamily: z.string(),
-	fontIntention: z.string(),
-	fontReasoning: z.string(),
+	fontFamily: z.string().describe("Primary font family"),
+	fontIntention: z.string().describe("Typographic intention and tone"),
+	fontReasoning: z.string().describe("Reasoning for font selection"),
 	typography: z
 		.array(
 			z.object({
-				usage: z.string(), // e.g., "H1 (App Title)"
-				font: z.string(), // e.g., "Inter"
-				weight: z.string(), // e.g., "Bold"
-				size: z.string(), // e.g., "32"
-				spacing: z.string(), // e.g., "tight letter spacing"
+				usage: z.string().describe("Typography usage context (e.g., H1, body)"),
+				font: z.string().describe("Font family name"),
+				weight: z.string().describe("Font weight"),
+				size: z.string().describe("Font size"),
+				spacing: z.string().describe("Letter or line spacing"),
 			}),
 		)
+		.describe("Typography scale definitions")
 		.optional(),
 
 	// Animations
-	animationPhilosophy: z.string(),
-	animationRestraint: z.string(),
-	animationPurpose: z.string(),
-	animationHierarchy: z.string(),
+	animationPhilosophy: z
+		.string()
+		.describe("Overall animation philosophy and approach"),
+	animationRestraint: z.string().describe("Constraints on animation usage"),
+	animationPurpose: z.string().describe("Purpose of animations in the design"),
+	animationHierarchy: z.string().describe("Animation priority and hierarchy"),
 
 	// Prompting techniques (shared with hierarchical)
-	techniques: z.array(TechniqueEnum).optional(),
-	includeTechniqueHints: z.boolean().optional().default(false),
-	autoSelectTechniques: z.boolean().optional().default(false),
-	provider: ProviderEnum.optional().default(DEFAULT_MODEL_SLUG),
-	style: StyleEnum.optional(),
+	techniques: z
+		.array(TechniqueEnum)
+		.describe("Prompting techniques to apply")
+		.optional(),
+	includeTechniqueHints: z
+		.boolean()
+		.describe("Whether to include technique hint annotations")
+		.optional()
+		.default(false),
+	autoSelectTechniques: z
+		.boolean()
+		.describe("Automatically select appropriate techniques based on context")
+		.optional()
+		.default(false),
+	provider: ProviderEnum.describe("AI provider family for tailored tips")
+		.optional()
+		.default(DEFAULT_MODEL_SLUG),
+	style: StyleEnum.describe("Preferred prompt formatting style").optional(),
 
 	// Components
 	components: z
 		.array(
 			z.object({
-				type: z.string(), // e.g., "Button"
-				usage: z.string(), // e.g., "primary action"
-				variation: z.string().optional(),
-				styling: z.string().optional(),
-				state: z.string().optional(),
-				functionality: z.string().optional(),
-				purpose: z.string().optional(),
+				type: z.string().describe("Component type (e.g., Button, Card)"),
+				usage: z.string().describe("How the component is used"),
+				variation: z
+					.string()
+					.describe("Component variation or variant")
+					.optional(),
+				styling: z.string().describe("Styling specifications").optional(),
+				state: z.string().describe("Component states to handle").optional(),
+				functionality: z
+					.string()
+					.describe("Component functionality description")
+					.optional(),
+				purpose: z.string().describe("Purpose of this component").optional(),
 			}),
 		)
+		.describe("UI component specifications")
 		.optional(),
-	customizations: z.string().optional(),
+	customizations: z
+		.string()
+		.describe("Additional customization notes")
+		.optional(),
 	states: z
 		.array(
 			z.object({
-				component: z.string(),
-				states: z.array(z.string()),
-				specialFeature: z.string().optional(),
+				component: z.string().describe("Component name"),
+				states: z.array(z.string()).describe("List of states to implement"),
+				specialFeature: z
+					.string()
+					.describe("Special feature for this component's states")
+					.optional(),
 			}),
 		)
+		.describe("Component state specifications")
 		.optional(),
-	icons: z.array(z.string()).optional(),
-	spacingRule: z.string(),
-	spacingContext: z.string(),
-	mobileLayout: z.string(),
+	icons: z
+		.array(z.string())
+		.describe("Icon names or identifiers to use")
+		.optional(),
+	spacingRule: z.string().describe("Spacing system rule (e.g., 8px base grid)"),
+	spacingContext: z.string().describe("Context for applying spacing rules"),
+	mobileLayout: z.string().describe("Mobile layout strategy and breakpoints"),
 
 	// YAML prompt frontmatter (optional, to mirror hierarchical builder)
-	mode: z.string().optional().default("agent"),
-	model: z.string().optional().default(DEFAULT_MODEL),
+	mode: z
+		.string()
+		.describe("Execution mode for the generated prompt")
+		.optional()
+		.default("agent"),
+	model: z
+		.string()
+		.describe("AI model identifier to use for generation")
+		.optional()
+		.default(DEFAULT_MODEL),
 	tools: z
 		.array(z.string())
+		.describe("List of tools available to the agent")
 		.optional()
 		.default(["githubRepo", "codebase", "editFiles"]),
-	includeFrontmatter: z.boolean().optional().default(true),
-	includeDisclaimer: z.boolean().optional().default(true),
-	includeReferences: z.boolean().optional().default(false),
-	includeMetadata: z.boolean().optional().default(true),
-	inputFile: z.string().optional(),
-	forcePromptMdStyle: z.boolean().optional().default(true),
+	includeFrontmatter: z
+		.boolean()
+		.describe("Whether to include YAML frontmatter in output")
+		.optional()
+		.default(true),
+	includeDisclaimer: z
+		.boolean()
+		.describe("Whether to include a disclaimer section")
+		.optional()
+		.default(true),
+	includeReferences: z
+		.boolean()
+		.describe("Whether to include reference links")
+		.optional()
+		.default(false),
+	includeMetadata: z
+		.boolean()
+		.describe("Whether to include metadata section")
+		.optional()
+		.default(true),
+	inputFile: z.string().describe("Input file path for reference").optional(),
+	forcePromptMdStyle: z
+		.boolean()
+		.describe("Force *.prompt.md file style with frontmatter")
+		.optional()
+		.default(true),
 });
 
 export type SparkPromptInput = z.infer<typeof SparkPromptSchema>;
