@@ -2,7 +2,11 @@ import { z } from "zod";
 
 export const ObjectiveSchema = z.object({
 	description: z.string().min(1),
-	priority: z.enum(["high", "medium", "low"]).optional().default("medium"),
+	priority: z
+		.enum(["high", "medium", "low"])
+		.optional()
+		.catch("medium")
+		.default("medium"),
 });
 
 export const RequirementSchema = z.object({
@@ -11,15 +15,17 @@ export const RequirementSchema = z.object({
 		.enum(["functional", "non-functional"])
 		.optional()
 		.default("functional"),
-	priority: z.enum(["high", "medium", "low"]).optional().default("medium"),
+	priority: z
+		.enum(["high", "medium", "low"])
+		.optional()
+		.catch("medium")
+		.default("medium"),
 });
 
 export const SpecKitInputSchema = z.object({
 	title: z.string().min(1, "Title is required"),
 	overview: z.string().min(1, "Overview is required"),
-	objectives: z
-		.array(ObjectiveSchema)
-		.min(1, "At least one objective required"),
+	objectives: z.array(ObjectiveSchema).min(0).default([]),
 	requirements: z
 		.array(RequirementSchema)
 		.min(1, "At least one requirement required"),

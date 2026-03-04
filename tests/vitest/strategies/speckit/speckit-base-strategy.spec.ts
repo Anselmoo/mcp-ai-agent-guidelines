@@ -25,14 +25,15 @@ describe("SpecKitStrategy (BaseStrategy)", () => {
 		if (!result.success) {
 			return;
 		}
-		expect(result.data.artifacts.readme).toBeTruthy();
-		expect(result.data.artifacts.spec).toBeTruthy();
-		expect(result.data.artifacts.plan).toBeTruthy();
-		expect(result.data.artifacts.tasks).toBeTruthy();
-		expect(result.data.artifacts.progress).toBeTruthy();
-		expect(result.data.artifacts.adr).toBeTruthy();
-		expect(result.data.artifacts.roadmap).toBeTruthy();
-		expect(result.data.stats.documentsGenerated).toBe(7);
+		expect(result.data.primary.content).toBeTruthy();
+		expect(result.data.secondary).toHaveLength(6);
+		const names = result.data.secondary?.map((d) => d.name) ?? [];
+		expect(names.some((n) => n.endsWith("spec.md"))).toBe(true);
+		expect(names.some((n) => n.endsWith("plan.md"))).toBe(true);
+		expect(names.some((n) => n.endsWith("tasks.md"))).toBe(true);
+		expect(names.some((n) => n.endsWith("progress.md"))).toBe(true);
+		expect(names.some((n) => n.endsWith("adr.md"))).toBe(true);
+		expect(names.some((n) => n.endsWith("roadmap.md"))).toBe(true);
 	});
 
 	it("should include execution trace", async () => {
@@ -90,7 +91,13 @@ describe("SpecKitStrategy (BaseStrategy)", () => {
 
 			expect(result.success).toBe(true);
 			if (!result.success) return;
-			expect(result.data.validation).toBeNull();
+			// No validation_score metric in trace when constitution fails to load
+			const hasValidation = result.trace.entries.some(
+				(e) =>
+					e.type === "metric" &&
+					(e as { data?: { name?: string } }).data?.name === "validation_score",
+			);
+			expect(hasValidation).toBe(false);
 		});
 
 		it("should validate artifacts against constitution when validateAgainstConstitution is true", async () => {
@@ -104,8 +111,13 @@ describe("SpecKitStrategy (BaseStrategy)", () => {
 
 			expect(result.success).toBe(true);
 			if (!result.success) return;
-			expect(result.data.validation).not.toBeNull();
-			expect(result.data.validation?.score).toBeGreaterThanOrEqual(0);
+			// validation_score metric should be present in trace
+			const validationEntry = result.trace.entries.find(
+				(e) =>
+					e.type === "metric" &&
+					(e as { data?: { name?: string } }).data?.name === "validation_score",
+			);
+			expect(validationEntry).toBeDefined();
 		});
 
 		it("should not validate when validateAgainstConstitution is false even with constitutionPath", async () => {
@@ -119,7 +131,13 @@ describe("SpecKitStrategy (BaseStrategy)", () => {
 
 			expect(result.success).toBe(true);
 			if (!result.success) return;
-			expect(result.data.validation).toBeNull();
+			// No validation_score metric when validateAgainstConstitution is false
+			const hasValidation = result.trace.entries.some(
+				(e) =>
+					e.type === "metric" &&
+					(e as { data?: { name?: string } }).data?.name === "validation_score",
+			);
+			expect(hasValidation).toBe(false);
 		});
 	});
 
@@ -130,6 +148,9 @@ describe("SpecKitStrategy (BaseStrategy)", () => {
 		expect(first.success).toBe(true);
 		expect(second.success).toBe(true);
 		if (!second.success) return;
-		expect(second.data.artifacts.spec).toContain("Second Run");
+		const specDoc = second.data.secondary?.find((d) =>
+			d.name.endsWith("spec.md"),
+		);
+		expect(specDoc?.content).toContain("Second Run");
 	});
 });

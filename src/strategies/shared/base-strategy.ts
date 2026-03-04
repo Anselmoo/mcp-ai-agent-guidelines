@@ -3,6 +3,7 @@
  * Enforces consistent interface, validation, execution tracing, and error handling.
  */
 
+import type { RenderOptions } from "../output-strategy.js";
 import { ExecutionTrace } from "./execution-trace.js";
 import type {
 	StrategyResult,
@@ -92,6 +93,17 @@ export abstract class BaseStrategy<TInput, TOutput> {
 	abstract validate(input: TInput): ValidationResult;
 
 	/**
+	 * Check if this strategy supports rendering a specific domain type.
+	 *
+	 * MUST be implemented by subclasses to indicate which domain types
+	 * this strategy can render.
+	 *
+	 * @param domainType - The domain type identifier (e.g., "SessionState")
+	 * @returns True if this strategy can render the domain type
+	 */
+	abstract supports(domainType: string): boolean;
+
+	/**
 	 * Execute the strategy's core logic.
 	 *
 	 * MUST be implemented by subclasses to perform the main work.
@@ -101,7 +113,10 @@ export abstract class BaseStrategy<TInput, TOutput> {
 	 * @returns Strategy output
 	 * @throws Error if execution fails
 	 */
-	abstract execute(input: TInput): Promise<TOutput>;
+	abstract execute(
+		input: TInput,
+		options?: Partial<RenderOptions>,
+	): Promise<TOutput>;
 
 	/**
 	 * Run the strategy with validation and tracing.
@@ -116,7 +131,10 @@ export abstract class BaseStrategy<TInput, TOutput> {
 	 * @param input - Strategy input
 	 * @returns Strategy result with output or errors
 	 */
-	async run(input: TInput): Promise<StrategyResult<TOutput>> {
+	async run(
+		input: TInput,
+		options?: Partial<RenderOptions>,
+	): Promise<StrategyResult<TOutput>> {
 		const runStart = new Date();
 		const startTime = runStart.getTime();
 		this.trace = new ExecutionTrace(runStart);
@@ -147,7 +165,7 @@ export abstract class BaseStrategy<TInput, TOutput> {
 
 		// Step 2: Execute with timeout
 		try {
-			const output = await this.executeWithTimeout(input);
+			const output = await this.executeWithTimeout(input, options);
 
 			// Record success
 			if (this.config.enableTrace) {
@@ -219,7 +237,10 @@ export abstract class BaseStrategy<TInput, TOutput> {
 	/**
 	 * Execute with timeout protection.
 	 */
-	private async executeWithTimeout(input: TInput): Promise<TOutput> {
+	private async executeWithTimeout(
+		input: TInput,
+		options?: Partial<RenderOptions>,
+	): Promise<TOutput> {
 		let timeoutId: ReturnType<typeof setTimeout> | undefined;
 		const timeoutPromise = new Promise<never>((_, reject) => {
 			timeoutId = setTimeout(() => {
@@ -232,7 +253,7 @@ export abstract class BaseStrategy<TInput, TOutput> {
 		});
 
 		try {
-			return await Promise.race([this.execute(input), timeoutPromise]);
+			return await Promise.race([this.execute(input, options), timeoutPromise]);
 		} finally {
 			if (timeoutId) {
 				clearTimeout(timeoutId);

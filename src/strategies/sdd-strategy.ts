@@ -15,10 +15,11 @@ import type { PromptResult } from "../domain/prompting/types.js";
 import type {
 	OutputArtifacts,
 	OutputDocument,
-	OutputStrategy,
 	RenderOptions,
 } from "./output-strategy.js";
 import { OutputApproach } from "./output-strategy.js";
+import { BaseStrategy } from "./shared/base-strategy.js";
+import type { ValidationResult } from "./shared/types.js";
 
 /**
  * SDDStrategy implements Spec-Driven Development output format.
@@ -27,33 +28,54 @@ import { OutputApproach } from "./output-strategy.js";
  * - SessionState: Complete design session state into spec/plan/tasks
  * - PromptResult: Prompt configuration into SDD format
  *
- * @implements {OutputStrategy<SessionState | PromptResult>}
+ * @extends {BaseStrategy<SessionState | PromptResult, OutputArtifacts>}
  */
-export class SDDStrategy
-	implements OutputStrategy<SessionState | PromptResult>
-{
+export class SDDStrategy extends BaseStrategy<
+	SessionState | PromptResult,
+	OutputArtifacts
+> {
+	protected readonly name = "sdd";
+	protected readonly version = "2.0.0";
+
 	/** The output approach this strategy implements */
 	readonly approach = OutputApproach.SDD;
 
 	/**
-	 * Render a domain result to SDD artifacts (spec.md, plan.md, tasks.md).
+	 * Validate that the input is a SessionState or PromptResult.
 	 *
-	 * @param result - The domain result to render (SessionState or PromptResult)
-	 * @param options - Optional rendering options
-	 * @returns Output artifacts with primary spec.md and secondary plan.md, tasks.md
-	 * @throws {Error} If result type is not supported
+	 * @param input - Input to validate
+	 * @returns Validation result
 	 */
-	render(
-		result: SessionState | PromptResult,
-		options?: Partial<RenderOptions>,
-	): OutputArtifacts {
-		if (this.isSessionState(result)) {
-			return this.renderSession(result, options);
+	validate(input: SessionState | PromptResult): ValidationResult {
+		if (this.isSessionState(input) || this.isPromptResult(input)) {
+			return { valid: true, errors: [], warnings: [] };
 		}
-		if (this.isPromptResult(result)) {
-			return this.renderPrompt(result, options);
+		return {
+			valid: false,
+			errors: [
+				{
+					code: "UNSUPPORTED_TYPE",
+					message: "Input must be a SessionState or PromptResult",
+				},
+			],
+			warnings: [],
+		};
+	}
+
+	/**
+	 * Execute the SDD rendering strategy.
+	 *
+	 * @param input - The domain result to render (SessionState or PromptResult)
+	 * @returns Output artifacts with primary spec.md and secondary plan.md, tasks.md
+	 */
+	async execute(
+		input: SessionState | PromptResult,
+		_options?: Partial<RenderOptions>,
+	): Promise<OutputArtifacts> {
+		if (this.isSessionState(input)) {
+			return this.renderSession(input);
 		}
-		throw new Error("Unsupported domain result type");
+		return this.renderPrompt(input as PromptResult);
 	}
 
 	/**

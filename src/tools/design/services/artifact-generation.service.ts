@@ -219,7 +219,7 @@ class ArtifactGenerationServiceImpl {
 		const domainResult = this.convertSessionToDomainResult(sessionState);
 
 		// Use PolyglotGateway to render Spec-Kit artifacts
-		const gatewayArtifacts = polyglotGateway.render({
+		const gatewayArtifacts = await polyglotGateway.render({
 			domainResult,
 			domainType: "SessionState",
 			approach: OutputApproach.SPECKIT,

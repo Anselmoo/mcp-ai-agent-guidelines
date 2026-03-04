@@ -14,10 +14,11 @@ import type { SessionState } from "../domain/design/types.js";
 import type {
 	OutputArtifacts,
 	OutputDocument,
-	OutputStrategy,
 	RenderOptions,
 } from "./output-strategy.js";
 import { OutputApproach } from "./output-strategy.js";
+import { BaseStrategy } from "./shared/base-strategy.js";
+import type { ValidationResult } from "./shared/types.js";
 
 /**
  * TOGAFStrategy implements the TOGAF enterprise architecture document format.
@@ -29,38 +30,61 @@ import { OutputApproach } from "./output-strategy.js";
  * Supports rendering:
  * - SessionState: Design workflow to TOGAF deliverables
  *
- * @implements {OutputStrategy<SessionState>}
+ * @extends {BaseStrategy<SessionState, OutputArtifacts>}
  */
-export class TOGAFStrategy implements OutputStrategy<SessionState> {
+export class TOGAFStrategy extends BaseStrategy<SessionState, OutputArtifacts> {
+	protected readonly name = "togaf";
+	protected readonly version = "2.0.0";
+
 	/** The output approach this strategy implements */
 	readonly approach = OutputApproach.TOGAF;
 
 	/**
-	 * Render a domain result to TOGAF format artifacts.
+	 * Validate that the input is a valid SessionState.
 	 *
-	 * @param result - The session state to render
-	 * @param options - Optional rendering options
-	 * @returns Output artifacts with primary Architecture Vision and secondary TOGAF documents
-	 * @throws {Error} If result type is not supported
+	 * @param input - Input to validate
+	 * @returns Validation result
 	 */
-	render(
-		result: SessionState,
-		options?: Partial<RenderOptions>,
-	): OutputArtifacts {
-		if (!this.isSessionState(result)) {
-			throw new Error("Unsupported domain result type for TOGAFStrategy");
+	validate(input: SessionState): ValidationResult {
+		if (this.isSessionState(input)) {
+			return { valid: true, errors: [], warnings: [] };
 		}
-
 		return {
-			primary: this.generateArchitectureVision(result, options),
+			valid: false,
+			errors: [
+				{
+					code: "UNSUPPORTED_TYPE",
+					message: "Input must be a valid SessionState",
+				},
+			],
+			warnings: [],
+		};
+	}
+
+	/**
+	 * Execute the TOGAF rendering strategy.
+	 *
+	 * @param input - The session state to render
+	 * @returns Output artifacts with primary Architecture Vision and secondary TOGAF documents
+	 */
+	async execute(
+		input: SessionState,
+		options?: Partial<RenderOptions>,
+	): Promise<OutputArtifacts> {
+		const result = {
+			primary: this.generateArchitectureVision(input),
 			secondary: [
-				this.generateBusinessArchitecture(result),
-				this.generateDataArchitecture(result),
-				this.generateApplicationArchitecture(result),
-				this.generateTechnologyArchitecture(result),
-				this.generateMigrationPlan(result),
+				this.generateBusinessArchitecture(input),
+				this.generateDataArchitecture(input),
+				this.generateApplicationArchitecture(input),
+				this.generateTechnologyArchitecture(input),
+				this.generateMigrationPlan(input),
 			],
 		};
+		if (options?.includeMetadata) {
+			result.primary.content += `\n\n*TOGAF Architecture Vision generated: ${new Date().toISOString()}*`;
+		}
+		return result;
 	}
 
 	/**
@@ -86,7 +110,7 @@ export class TOGAFStrategy implements OutputStrategy<SessionState> {
 	 */
 	private generateArchitectureVision(
 		result: SessionState,
-		options?: Partial<RenderOptions>,
+		_options?: Partial<RenderOptions>,
 	): OutputDocument {
 		const content = `# Architecture Vision Document
 
@@ -121,7 +145,7 @@ ${this.extractRisks(result)}
 ## Architecture Repository
 
 ${this.extractArchitectureRepository(result)}
-${this.formatFooter(options)}`;
+`;
 
 		return {
 			name: "architecture-vision.md",
@@ -659,10 +683,7 @@ ${this.extractSuccessMetrics(result)}
 		return String(data);
 	}
 
-	private formatFooter(options?: Partial<RenderOptions>): string {
-		if (options?.includeMetadata === true) {
-			return `\n\n---\n*TOGAF Architecture Vision generated: ${new Date().toISOString()}*`;
-		}
+	private formatFooter(_options?: Partial<RenderOptions>): string {
 		return "";
 	}
 

@@ -100,32 +100,22 @@ export async function specKitGenerator(
 		}
 	}
 
-	// Create domain result from request
-	// Map request to SessionState-like structure for SpecKitStrategy
+	// Create domain result as proper SpecKitInput for SpecKitStrategy
 	const domainResult = {
-		id: `speckit-${Date.now()}`,
-		phase: "implementation",
-		status: "active",
-		config: {
-			goal: request.title,
-			requirements: request.requirements.map((r) => r.description),
-		},
-		context: {
-			title: request.title,
-			overview: request.overview,
-			objectives: request.objectives.map((o) => o.description),
-			requirements: request.requirements.map((r) => r.description),
-			acceptanceCriteria: request.acceptanceCriteria ?? [],
-			outOfScope: request.outOfScope ?? [],
-		},
-		history: [],
-		phases: {},
+		title: request.title,
+		overview: request.overview,
+		objectives: request.objectives,
+		requirements: request.requirements,
+		acceptanceCriteria: request.acceptanceCriteria,
+		outOfScope: request.outOfScope,
+		constitutionPath: request.constitutionPath,
+		validateAgainstConstitution: request.validateAgainstConstitution,
 	};
 
 	// Generate artifacts via gateway
-	const artifacts = polyglotGateway.render({
+	const artifacts = await polyglotGateway.render({
 		domainResult,
-		domainType: "SessionState",
+		domainType: "SpecKitInput",
 		approach: OutputApproach.SPECKIT,
 		options: {
 			constitution,

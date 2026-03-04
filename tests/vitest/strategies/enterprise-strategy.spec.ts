@@ -11,24 +11,24 @@ import { OutputApproach } from "../../../src/strategies/output-strategy.js";
 
 describe("EnterpriseStrategy", () => {
 	describe("constructor and properties", () => {
-		it("should have ENTERPRISE approach", () => {
+		it("should have ENTERPRISE approach", async () => {
 			const strategy = new EnterpriseStrategy();
 			expect(strategy.approach).toBe(OutputApproach.ENTERPRISE);
 		});
 
-		it("should have readonly approach property", () => {
+		it("should have readonly approach property", async () => {
 			const strategy = new EnterpriseStrategy();
 			expect(strategy.approach).toBe(OutputApproach.ENTERPRISE);
 		});
 	});
 
 	describe("supports() method", () => {
-		it("should support SessionState", () => {
+		it("should support SessionState", async () => {
 			const strategy = new EnterpriseStrategy();
 			expect(strategy.supports("SessionState")).toBe(true);
 		});
 
-		it("should not support unsupported types", () => {
+		it("should not support unsupported types", async () => {
 			const strategy = new EnterpriseStrategy();
 			expect(strategy.supports("PromptResult")).toBe(false);
 			expect(strategy.supports("ScoringResult")).toBe(false);
@@ -38,7 +38,7 @@ describe("EnterpriseStrategy", () => {
 	});
 
 	describe("render() - SessionState", () => {
-		it("should render SessionState with full context to enterprise format", () => {
+		it("should render SessionState with full context to enterprise format", async () => {
 			const strategy = new EnterpriseStrategy();
 			const result: SessionState = {
 				id: "session-enterprise-001",
@@ -58,7 +58,9 @@ describe("EnterpriseStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			// Verify primary document (Executive Summary)
 			expect(artifacts.primary).toBeDefined();
@@ -162,7 +164,7 @@ describe("EnterpriseStrategy", () => {
 			expect(budget?.content).toContain("## Budget Contingency");
 		});
 
-		it("should render SessionState with minimal metadata", () => {
+		it("should render SessionState with minimal metadata", async () => {
 			const strategy = new EnterpriseStrategy();
 			const result: SessionState = {
 				id: "session-minimal",
@@ -171,7 +173,9 @@ describe("EnterpriseStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("# Executive Summary");
 			expect(artifacts.primary.content).toContain(
@@ -180,7 +184,7 @@ describe("EnterpriseStrategy", () => {
 			expect(artifacts.secondary).toHaveLength(4);
 		});
 
-		it("should include metadata footer when requested", () => {
+		it("should include metadata footer when requested", async () => {
 			const strategy = new EnterpriseStrategy();
 			const result: SessionState = {
 				id: "session-metadata",
@@ -189,7 +193,9 @@ describe("EnterpriseStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result, { includeMetadata: true });
+			const stratResult = await strategy.run(result, { includeMetadata: true });
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain(
 				"*Executive Summary generated:",
@@ -197,7 +203,7 @@ describe("EnterpriseStrategy", () => {
 			expect(artifacts.primary.content).toMatch(/\d{4}-\d{2}-\d{2}T/);
 		});
 
-		it("should not include metadata footer by default", () => {
+		it("should not include metadata footer by default", async () => {
 			const strategy = new EnterpriseStrategy();
 			const result: SessionState = {
 				id: "session-no-metadata",
@@ -206,14 +212,16 @@ describe("EnterpriseStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).not.toContain(
 				"*Executive Summary generated:",
 			);
 		});
 
-		it("should extract goal and status in overview", () => {
+		it("should extract goal and status in overview", async () => {
 			const strategy = new EnterpriseStrategy();
 			const result: SessionState = {
 				id: "session-overview",
@@ -228,7 +236,9 @@ describe("EnterpriseStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain(
 				"Modernize Legacy Infrastructure",
@@ -241,7 +251,7 @@ describe("EnterpriseStrategy", () => {
 			);
 		});
 
-		it("should include phase milestones in board presentation", () => {
+		it("should include phase milestones in board presentation", async () => {
 			const strategy = new EnterpriseStrategy();
 			const result: SessionState = {
 				id: "session-milestones",
@@ -256,7 +266,9 @@ describe("EnterpriseStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			const boardPresentation = artifacts.secondary?.[0];
 			expect(boardPresentation?.content).toContain("**Phase 1:** discovery");
@@ -267,7 +279,7 @@ describe("EnterpriseStrategy", () => {
 			expect(boardPresentation?.content).toContain("**Phase 4:** architecture");
 		});
 
-		it("should include phase breakdown in implementation roadmap", () => {
+		it("should include phase breakdown in implementation roadmap", async () => {
 			const strategy = new EnterpriseStrategy();
 			const result: SessionState = {
 				id: "session-roadmap",
@@ -286,7 +298,9 @@ describe("EnterpriseStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			const roadmap = artifacts.secondary?.[2];
 			expect(roadmap?.content).toContain("## Phase Breakdown");
@@ -294,7 +308,7 @@ describe("EnterpriseStrategy", () => {
 			expect(roadmap?.content).toContain("### Phase 2: implementation");
 		});
 
-		it("should include proposed architecture from phases", () => {
+		it("should include proposed architecture from phases", async () => {
 			const strategy = new EnterpriseStrategy();
 			const result: SessionState = {
 				id: "session-architecture",
@@ -308,7 +322,9 @@ describe("EnterpriseStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			const detailedAnalysis = artifacts.secondary?.[1];
 			expect(detailedAnalysis?.content).toContain(
@@ -319,7 +335,7 @@ describe("EnterpriseStrategy", () => {
 			expect(detailedAnalysis?.content).toContain("**specification:**");
 		});
 
-		it("should handle empty phases gracefully", () => {
+		it("should handle empty phases gracefully", async () => {
 			const strategy = new EnterpriseStrategy();
 			const result: SessionState = {
 				id: "session-no-phases",
@@ -328,7 +344,9 @@ describe("EnterpriseStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			const roadmap = artifacts.secondary?.[2];
 			expect(roadmap?.content).toContain(
@@ -336,7 +354,7 @@ describe("EnterpriseStrategy", () => {
 			);
 		});
 
-		it("should include strategic alignment in executive summary", () => {
+		it("should include strategic alignment in executive summary", async () => {
 			const strategy = new EnterpriseStrategy();
 			const result: SessionState = {
 				id: "session-alignment",
@@ -345,7 +363,9 @@ describe("EnterpriseStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain(
 				"Improving operational efficiency",
@@ -357,7 +377,7 @@ describe("EnterpriseStrategy", () => {
 			);
 		});
 
-		it("should include business value proposition", () => {
+		it("should include business value proposition", async () => {
 			const strategy = new EnterpriseStrategy();
 			const result: SessionState = {
 				id: "session-value",
@@ -366,7 +386,9 @@ describe("EnterpriseStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("**Expected Benefits:**");
 			expect(artifacts.primary.content).toContain(
@@ -379,7 +401,7 @@ describe("EnterpriseStrategy", () => {
 			expect(artifacts.primary.content).toContain("Accelerated time to market");
 		});
 
-		it("should include key success factors", () => {
+		it("should include key success factors", async () => {
 			const strategy = new EnterpriseStrategy();
 			const result: SessionState = {
 				id: "session-success",
@@ -388,7 +410,9 @@ describe("EnterpriseStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain(
 				"Executive sponsorship and stakeholder alignment",
@@ -404,7 +428,7 @@ describe("EnterpriseStrategy", () => {
 			);
 		});
 
-		it("should include quality gates in roadmap", () => {
+		it("should include quality gates in roadmap", async () => {
 			const strategy = new EnterpriseStrategy();
 			const result: SessionState = {
 				id: "session-quality",
@@ -413,7 +437,9 @@ describe("EnterpriseStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			const roadmap = artifacts.secondary?.[2];
 			expect(roadmap?.content).toContain("## Quality Gates");
@@ -424,7 +450,7 @@ describe("EnterpriseStrategy", () => {
 			expect(roadmap?.content).toContain("**Performance Testing:**");
 		});
 
-		it("should include budget categories", () => {
+		it("should include budget categories", async () => {
 			const strategy = new EnterpriseStrategy();
 			const result: SessionState = {
 				id: "session-budget",
@@ -433,7 +459,9 @@ describe("EnterpriseStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			const budget = artifacts.secondary?.[3];
 			expect(budget?.content).toContain("### Infrastructure Costs");
@@ -444,7 +472,7 @@ describe("EnterpriseStrategy", () => {
 			expect(budget?.content).toContain("### Training & Development");
 		});
 
-		it("should include contingency in budget", () => {
+		it("should include contingency in budget", async () => {
 			const strategy = new EnterpriseStrategy();
 			const result: SessionState = {
 				id: "session-contingency",
@@ -453,7 +481,9 @@ describe("EnterpriseStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			const budget = artifacts.secondary?.[3];
 			expect(budget?.content).toContain("## Budget Contingency");
@@ -462,48 +492,48 @@ describe("EnterpriseStrategy", () => {
 	});
 
 	describe("render() - error handling", () => {
-		it("should throw error for unsupported result type", () => {
+		it("should throw error for unsupported result type", async () => {
 			const strategy = new EnterpriseStrategy();
 			const invalidResult = {
 				someField: "value",
 			};
 
-			expect(() => strategy.render(invalidResult as SessionState)).toThrow(
-				"Unsupported domain result type for EnterpriseStrategy",
-			);
+			const errResult = await strategy.run(invalidResult as SessionState);
+			expect(errResult.success).toBe(false);
 		});
 
-		it("should throw error for null result", () => {
+		it("should throw error for null result", async () => {
 			const strategy = new EnterpriseStrategy();
 
-			expect(() => strategy.render(null as unknown as SessionState)).toThrow(
-				"Unsupported domain result type for EnterpriseStrategy",
-			);
+			const errResult = await strategy.run(null as unknown as SessionState);
+			expect(errResult.success).toBe(false);
 		});
 
-		it("should throw error for undefined result", () => {
+		it("should throw error for undefined result", async () => {
 			const strategy = new EnterpriseStrategy();
 
-			expect(() =>
-				strategy.render(undefined as unknown as SessionState),
-			).toThrow("Unsupported domain result type for EnterpriseStrategy");
+			const errResult = await strategy.run(
+				undefined as unknown as SessionState,
+			);
+			expect(errResult.success).toBe(false);
 		});
 
-		it("should throw error for PromptResult type", () => {
+		it("should throw error for PromptResult type", async () => {
 			const strategy = new EnterpriseStrategy();
 			const promptResult = {
 				sections: [{ title: "Test", body: "Content", level: 1 }],
 				metadata: { complexity: 50, tokenEstimate: 100 },
 			};
 
-			expect(() =>
-				strategy.render(promptResult as unknown as SessionState),
-			).toThrow("Unsupported domain result type for EnterpriseStrategy");
+			const errResult = await strategy.run(
+				promptResult as unknown as SessionState,
+			);
+			expect(errResult.success).toBe(false);
 		});
 	});
 
 	describe("output artifacts structure", () => {
-		it("should return OutputArtifacts with primary and secondary documents", () => {
+		it("should return OutputArtifacts with primary and secondary documents", async () => {
 			const strategy = new EnterpriseStrategy();
 			const result: SessionState = {
 				id: "session-structure",
@@ -512,7 +542,9 @@ describe("EnterpriseStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary).toBeDefined();
 			expect(artifacts.secondary).toBeDefined();
@@ -520,7 +552,7 @@ describe("EnterpriseStrategy", () => {
 			expect(artifacts.crossCutting).toBeUndefined();
 		});
 
-		it("should have correct document formats", () => {
+		it("should have correct document formats", async () => {
 			const strategy = new EnterpriseStrategy();
 			const result: SessionState = {
 				id: "session-formats",
@@ -529,7 +561,9 @@ describe("EnterpriseStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.format).toBe("markdown");
 			expect(artifacts.primary.name).toMatch(/\.md$/);
@@ -542,7 +576,7 @@ describe("EnterpriseStrategy", () => {
 			}
 		});
 
-		it("should have unique names for all documents", () => {
+		it("should have unique names for all documents", async () => {
 			const strategy = new EnterpriseStrategy();
 			const result: SessionState = {
 				id: "session-names",
@@ -551,7 +585,9 @@ describe("EnterpriseStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			const names = [
 				artifacts.primary.name,
@@ -564,7 +600,7 @@ describe("EnterpriseStrategy", () => {
 	});
 
 	describe("enterprise documentation coverage", () => {
-		it("should include all required executive summary sections", () => {
+		it("should include all required executive summary sections", async () => {
 			const strategy = new EnterpriseStrategy();
 			const result: SessionState = {
 				id: "session-executive",
@@ -573,7 +609,9 @@ describe("EnterpriseStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 			const content = artifacts.primary.content;
 
 			expect(content).toContain("## Overview");
@@ -586,7 +624,7 @@ describe("EnterpriseStrategy", () => {
 			expect(content).toContain("## Key Success Factors");
 		});
 
-		it("should include all required board presentation slides", () => {
+		it("should include all required board presentation slides", async () => {
 			const strategy = new EnterpriseStrategy();
 			const result: SessionState = {
 				id: "session-board",
@@ -595,7 +633,9 @@ describe("EnterpriseStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 			const boardPresentation = artifacts.secondary?.[0];
 
 			expect(boardPresentation?.content).toContain(
@@ -628,7 +668,7 @@ describe("EnterpriseStrategy", () => {
 			);
 		});
 
-		it("should include comprehensive risk analysis", () => {
+		it("should include comprehensive risk analysis", async () => {
 			const strategy = new EnterpriseStrategy();
 			const result: SessionState = {
 				id: "session-risks",
@@ -637,7 +677,9 @@ describe("EnterpriseStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 			const detailedAnalysis = artifacts.secondary?.[1];
 
 			expect(detailedAnalysis?.content).toContain("## 5. Risk Analysis");
@@ -649,7 +691,7 @@ describe("EnterpriseStrategy", () => {
 			);
 		});
 
-		it("should include financial analysis sections", () => {
+		it("should include financial analysis sections", async () => {
 			const strategy = new EnterpriseStrategy();
 			const result: SessionState = {
 				id: "session-financial",
@@ -658,7 +700,9 @@ describe("EnterpriseStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 			const detailedAnalysis = artifacts.secondary?.[1];
 
 			expect(detailedAnalysis?.content).toContain("## 4. Financial Analysis");
@@ -675,7 +719,7 @@ describe("EnterpriseStrategy", () => {
 	});
 
 	describe("data extraction and formatting", () => {
-		it("should handle string phase data", () => {
+		it("should handle string phase data", async () => {
 			const strategy = new EnterpriseStrategy();
 			const result: SessionState = {
 				id: "session-string-phase",
@@ -687,13 +731,15 @@ describe("EnterpriseStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			const roadmap = artifacts.secondary?.[2];
 			expect(roadmap?.content).toContain("Simple description");
 		});
 
-		it("should handle object phase data", () => {
+		it("should handle object phase data", async () => {
 			const strategy = new EnterpriseStrategy();
 			const result: SessionState = {
 				id: "session-object-phase",
@@ -705,14 +751,16 @@ describe("EnterpriseStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			const roadmap = artifacts.secondary?.[2];
 			expect(roadmap?.content).toContain('"key"');
 			expect(roadmap?.content).toContain('"value"');
 		});
 
-		it("should format timeline based on phase count", () => {
+		it("should format timeline based on phase count", async () => {
 			const strategy = new EnterpriseStrategy();
 			const result: SessionState = {
 				id: "session-timeline",
@@ -726,7 +774,9 @@ describe("EnterpriseStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("**Duration:** 3 phases");
 		});

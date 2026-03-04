@@ -12,12 +12,12 @@ import { RFCStrategy } from "../../../src/strategies/rfc-strategy.js";
 
 describe("RFCStrategy", () => {
 	describe("constructor and properties", () => {
-		it("should have RFC approach", () => {
+		it("should have RFC approach", async () => {
 			const strategy = new RFCStrategy();
 			expect(strategy.approach).toBe(OutputApproach.RFC);
 		});
 
-		it("should have readonly approach property", () => {
+		it("should have readonly approach property", async () => {
 			const strategy = new RFCStrategy();
 			// TypeScript readonly is compile-time only, verify it's set correctly
 			expect(strategy.approach).toBe(OutputApproach.RFC);
@@ -25,17 +25,17 @@ describe("RFCStrategy", () => {
 	});
 
 	describe("supports() method", () => {
-		it("should support PromptResult", () => {
+		it("should support PromptResult", async () => {
 			const strategy = new RFCStrategy();
 			expect(strategy.supports("PromptResult")).toBe(true);
 		});
 
-		it("should support SessionState", () => {
+		it("should support SessionState", async () => {
 			const strategy = new RFCStrategy();
 			expect(strategy.supports("SessionState")).toBe(true);
 		});
 
-		it("should not support unsupported types", () => {
+		it("should not support unsupported types", async () => {
 			const strategy = new RFCStrategy();
 			expect(strategy.supports("ScoringResult")).toBe(false);
 			expect(strategy.supports("UnknownType")).toBe(false);
@@ -45,7 +45,7 @@ describe("RFCStrategy", () => {
 	});
 
 	describe("render() - PromptResult", () => {
-		it("should render simple PromptResult to RFC format", () => {
+		it("should render simple PromptResult to RFC format", async () => {
 			const strategy = new RFCStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -65,7 +65,9 @@ describe("RFCStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.name).toBe("RFC.md");
 			expect(artifacts.primary.format).toBe("markdown");
@@ -82,7 +84,7 @@ describe("RFCStrategy", () => {
 			expect(artifacts.primary.content).toContain("## Conclusion");
 		});
 
-		it("should include all RFC sections", () => {
+		it("should include all RFC sections", async () => {
 			const strategy = new RFCStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -102,7 +104,9 @@ describe("RFCStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 			const content = artifacts.primary.content;
 
 			// Verify all required RFC sections are present
@@ -117,7 +121,7 @@ describe("RFCStrategy", () => {
 			expect(content).toMatch(/## Conclusion/);
 		});
 
-		it("should extract title from first section", () => {
+		it("should extract title from first section", async () => {
 			const strategy = new RFCStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -137,14 +141,16 @@ describe("RFCStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain(
 				"# RFC: Microservices Architecture",
 			);
 		});
 
-		it("should use default title when no sections", () => {
+		it("should use default title when no sections", async () => {
 			const strategy = new RFCStrategy();
 			const result: PromptResult = {
 				sections: [],
@@ -158,12 +164,14 @@ describe("RFCStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("# RFC: Untitled Proposal");
 		});
 
-		it("should extract summary from first section body", () => {
+		it("should extract summary from first section body", async () => {
 			const strategy = new RFCStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -183,7 +191,9 @@ describe("RFCStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("## Summary");
 			expect(artifacts.primary.content).toContain(
@@ -191,7 +201,7 @@ describe("RFCStrategy", () => {
 			);
 		});
 
-		it("should truncate long summaries", () => {
+		it("should truncate long summaries", async () => {
 			const strategy = new RFCStrategy();
 			const longBody = "A".repeat(250);
 			const result: PromptResult = {
@@ -212,12 +222,14 @@ describe("RFCStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("...");
 		});
 
-		it("should extract scope from scope section", () => {
+		it("should extract scope from scope section", async () => {
 			const strategy = new RFCStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -242,14 +254,16 @@ describe("RFCStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain(
 				"This proposal covers authentication and authorization",
 			);
 		});
 
-		it("should use default scope when not found", () => {
+		it("should use default scope when not found", async () => {
 			const strategy = new RFCStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -269,12 +283,14 @@ describe("RFCStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("To be defined");
 		});
 
-		it("should extract proposal from goal section", () => {
+		it("should extract proposal from goal section", async () => {
 			const strategy = new RFCStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -299,14 +315,16 @@ describe("RFCStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain(
 				"Implement OAuth 2.0 authentication",
 			);
 		});
 
-		it("should use default when no specific proposal section", () => {
+		it("should use default when no specific proposal section", async () => {
 			const strategy = new RFCStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -331,12 +349,14 @@ describe("RFCStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("To be defined");
 		});
 
-		it("should extract pros from benefits section", () => {
+		it("should extract pros from benefits section", async () => {
 			const strategy = new RFCStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -361,13 +381,15 @@ describe("RFCStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("- Improved security");
 			expect(artifacts.primary.content).toContain("- Better performance");
 		});
 
-		it("should convert pros to bullet list", () => {
+		it("should convert pros to bullet list", async () => {
 			const strategy = new RFCStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -392,14 +414,16 @@ describe("RFCStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("- Fast");
 			expect(artifacts.primary.content).toContain("- Secure");
 			expect(artifacts.primary.content).toContain("- Scalable");
 		});
 
-		it("should use default pros when not found", () => {
+		it("should use default pros when not found", async () => {
 			const strategy = new RFCStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -419,12 +443,14 @@ describe("RFCStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toMatch(/## Pros\n\n- TBD/);
 		});
 
-		it("should extract cons from risks section", () => {
+		it("should extract cons from risks section", async () => {
 			const strategy = new RFCStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -449,13 +475,15 @@ describe("RFCStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("- High complexity");
 			expect(artifacts.primary.content).toContain("- Migration cost");
 		});
 
-		it("should use default cons when not found", () => {
+		it("should use default cons when not found", async () => {
 			const strategy = new RFCStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -475,12 +503,14 @@ describe("RFCStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toMatch(/## Cons\n\n- TBD/);
 		});
 
-		it("should extract alternatives section", () => {
+		it("should extract alternatives section", async () => {
 			const strategy = new RFCStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -505,7 +535,9 @@ describe("RFCStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain(
 				"Option A: Use existing system",
@@ -515,7 +547,7 @@ describe("RFCStrategy", () => {
 			);
 		});
 
-		it("should use default alternatives when not found", () => {
+		it("should use default alternatives when not found", async () => {
 			const strategy = new RFCStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -535,12 +567,14 @@ describe("RFCStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("None documented");
 		});
 
-		it("should extract conclusion section", () => {
+		it("should extract conclusion section", async () => {
 			const strategy = new RFCStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -565,14 +599,16 @@ describe("RFCStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain(
 				"We should proceed with Option A",
 			);
 		});
 
-		it("should use default conclusion when not found", () => {
+		it("should use default conclusion when not found", async () => {
 			const strategy = new RFCStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -592,12 +628,14 @@ describe("RFCStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("Pending team discussion");
 		});
 
-		it("should include metadata footer when includeMetadata is true", () => {
+		it("should include metadata footer when includeMetadata is true", async () => {
 			const strategy = new RFCStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -617,13 +655,15 @@ describe("RFCStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result, { includeMetadata: true });
+			const stratResult = await strategy.run(result, { includeMetadata: true });
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("---");
 			expect(artifacts.primary.content).toContain("*RFC generated:");
 		});
 
-		it("should exclude metadata when includeMetadata is false", () => {
+		it("should exclude metadata when includeMetadata is false", async () => {
 			const strategy = new RFCStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -643,12 +683,16 @@ describe("RFCStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result, { includeMetadata: false });
+			const stratResult = await strategy.run(result, {
+				includeMetadata: false,
+			});
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).not.toContain("*RFC generated:");
 		});
 
-		it("should not include metadata by default", () => {
+		it("should not include metadata by default", async () => {
 			const strategy = new RFCStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -668,14 +712,16 @@ describe("RFCStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).not.toContain("*RFC generated:");
 		});
 	});
 
 	describe("render() - SessionState", () => {
-		it("should render SessionState to RFC format", () => {
+		it("should render SessionState to RFC format", async () => {
 			const strategy = new RFCStrategy();
 			const result: SessionState = {
 				id: "session-123",
@@ -688,7 +734,9 @@ describe("RFCStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.name).toBe("RFC.md");
 			expect(artifacts.primary.format).toBe("markdown");
@@ -698,7 +746,7 @@ describe("RFCStrategy", () => {
 			expect(artifacts.primary.content).toContain("active");
 		});
 
-		it("should extract title from config goal", () => {
+		it("should extract title from config goal", async () => {
 			const strategy = new RFCStrategy();
 			const result: SessionState = {
 				id: "session-123",
@@ -713,12 +761,14 @@ describe("RFCStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("# RFC: Implement OAuth 2.0");
 		});
 
-		it("should extract title from context", () => {
+		it("should extract title from context", async () => {
 			const strategy = new RFCStrategy();
 			const result: SessionState = {
 				id: "session-123",
@@ -729,12 +779,14 @@ describe("RFCStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("# RFC: Database Migration");
 		});
 
-		it("should use default title when not found", () => {
+		it("should use default title when not found", async () => {
 			const strategy = new RFCStrategy();
 			const result: SessionState = {
 				id: "session-123",
@@ -743,12 +795,14 @@ describe("RFCStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("# RFC: Untitled Session");
 		});
 
-		it("should extract summary from context", () => {
+		it("should extract summary from context", async () => {
 			const strategy = new RFCStrategy();
 			const result: SessionState = {
 				id: "session-123",
@@ -759,14 +813,16 @@ describe("RFCStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain(
 				"Comprehensive API gateway design",
 			);
 		});
 
-		it("should use phase as fallback summary", () => {
+		it("should use phase as fallback summary", async () => {
 			const strategy = new RFCStrategy();
 			const result: SessionState = {
 				id: "session-123",
@@ -775,14 +831,16 @@ describe("RFCStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain(
 				"Design session in architecture phase",
 			);
 		});
 
-		it("should extract scope from context", () => {
+		it("should extract scope from context", async () => {
 			const strategy = new RFCStrategy();
 			const result: SessionState = {
 				id: "session-123",
@@ -793,14 +851,16 @@ describe("RFCStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain(
 				"Authentication and authorization services",
 			);
 		});
 
-		it("should use phase as default scope", () => {
+		it("should use phase as default scope", async () => {
 			const strategy = new RFCStrategy();
 			const result: SessionState = {
 				id: "session-123",
@@ -809,12 +869,14 @@ describe("RFCStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("Phase: specification");
 		});
 
-		it("should extract proposal from context", () => {
+		it("should extract proposal from context", async () => {
 			const strategy = new RFCStrategy();
 			const result: SessionState = {
 				id: "session-123",
@@ -825,14 +887,16 @@ describe("RFCStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain(
 				"Implement microservices architecture",
 			);
 		});
 
-		it("should extract pros from context array", () => {
+		it("should extract pros from context array", async () => {
 			const strategy = new RFCStrategy();
 			const result: SessionState = {
 				id: "session-123",
@@ -843,13 +907,15 @@ describe("RFCStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("- Improved scalability");
 			expect(artifacts.primary.content).toContain("- Better maintainability");
 		});
 
-		it("should extract cons from context array", () => {
+		it("should extract cons from context array", async () => {
 			const strategy = new RFCStrategy();
 			const result: SessionState = {
 				id: "session-123",
@@ -860,13 +926,15 @@ describe("RFCStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("- Increased complexity");
 			expect(artifacts.primary.content).toContain("- Higher costs");
 		});
 
-		it("should extract alternatives from context string", () => {
+		it("should extract alternatives from context string", async () => {
 			const strategy = new RFCStrategy();
 			const result: SessionState = {
 				id: "session-123",
@@ -877,13 +945,15 @@ describe("RFCStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("Option A: Monolith");
 			expect(artifacts.primary.content).toContain("Option B: Microservices");
 		});
 
-		it("should extract alternatives from context array", () => {
+		it("should extract alternatives from context array", async () => {
 			const strategy = new RFCStrategy();
 			const result: SessionState = {
 				id: "session-123",
@@ -894,14 +964,16 @@ describe("RFCStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("- Monolith");
 			expect(artifacts.primary.content).toContain("- Microservices");
 			expect(artifacts.primary.content).toContain("- Hybrid");
 		});
 
-		it("should extract conclusion from context", () => {
+		it("should extract conclusion from context", async () => {
 			const strategy = new RFCStrategy();
 			const result: SessionState = {
 				id: "session-123",
@@ -912,12 +984,14 @@ describe("RFCStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("Proceed with microservices");
 		});
 
-		it("should use completed status for conclusion", () => {
+		it("should use completed status for conclusion", async () => {
 			const strategy = new RFCStrategy();
 			const result: SessionState = {
 				id: "session-123",
@@ -927,14 +1001,16 @@ describe("RFCStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain(
 				"Session completed successfully",
 			);
 		});
 
-		it("should render phases data when available", () => {
+		it("should render phases data when available", async () => {
 			const strategy = new RFCStrategy();
 			const result: SessionState = {
 				id: "session-123",
@@ -947,13 +1023,15 @@ describe("RFCStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("discovery");
 			expect(artifacts.primary.content).toContain("requirements");
 		});
 
-		it("should include status section", () => {
+		it("should include status section", async () => {
 			const strategy = new RFCStrategy();
 			const result: SessionState = {
 				id: "session-123",
@@ -963,12 +1041,14 @@ describe("RFCStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toMatch(/## Status\n\nactive/);
 		});
 
-		it("should use default status when not provided", () => {
+		it("should use default status when not provided", async () => {
 			const strategy = new RFCStrategy();
 			const result: SessionState = {
 				id: "session-123",
@@ -977,43 +1057,48 @@ describe("RFCStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toMatch(/## Status\n\nDraft/);
 		});
 	});
 
 	describe("render() - error handling", () => {
-		it("should throw error for unsupported result type", () => {
+		it("should throw error for unsupported result type", async () => {
 			const strategy = new RFCStrategy();
 			const invalidResult = {
 				someField: "value",
 			};
 
-			expect(() =>
-				strategy.render(invalidResult as PromptResult | SessionState),
-			).toThrow("Unsupported domain result type");
+			const errResult = await strategy.run(
+				invalidResult as PromptResult | SessionState,
+			);
+			expect(errResult.success).toBe(false);
 		});
 
-		it("should throw error for null result", () => {
+		it("should throw error for null result", async () => {
 			const strategy = new RFCStrategy();
 
-			expect(() =>
-				strategy.render(null as unknown as PromptResult | SessionState),
-			).toThrow("Unsupported domain result type");
+			const errResult = await strategy.run(
+				null as unknown as PromptResult | SessionState,
+			);
+			expect(errResult.success).toBe(false);
 		});
 
-		it("should throw error for undefined result", () => {
+		it("should throw error for undefined result", async () => {
 			const strategy = new RFCStrategy();
 
-			expect(() =>
-				strategy.render(undefined as unknown as PromptResult | SessionState),
-			).toThrow("Unsupported domain result type");
+			const errResult = await strategy.run(
+				undefined as unknown as PromptResult | SessionState,
+			);
+			expect(errResult.success).toBe(false);
 		});
 	});
 
 	describe("output artifacts structure", () => {
-		it("should return OutputArtifacts with primary document only", () => {
+		it("should return OutputArtifacts with primary document only", async () => {
 			const strategy = new RFCStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -1033,14 +1118,16 @@ describe("RFCStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary).toBeDefined();
 			expect(artifacts.secondary).toBeUndefined();
 			expect(artifacts.crossCutting).toBeUndefined();
 		});
 
-		it("should have correct document format", () => {
+		it("should have correct document format", async () => {
 			const strategy = new RFCStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -1060,7 +1147,9 @@ describe("RFCStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.format).toBe("markdown");
 			expect(artifacts.primary.name).toBe("RFC.md");
@@ -1069,7 +1158,7 @@ describe("RFCStrategy", () => {
 	});
 
 	describe("participants section", () => {
-		it("should include participants in RFC", () => {
+		it("should include participants in RFC", async () => {
 			const strategy = new RFCStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -1089,7 +1178,9 @@ describe("RFCStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("## Participants");
 			expect(artifacts.primary.content).toContain("**Author**: @copilot");
@@ -1099,7 +1190,7 @@ describe("RFCStrategy", () => {
 	});
 
 	describe("integration with RenderOptions", () => {
-		it("should accept partial RenderOptions", () => {
+		it("should accept partial RenderOptions", async () => {
 			const strategy = new RFCStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -1119,16 +1210,18 @@ describe("RFCStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result, {
+			const stratResult = await strategy.run(result, {
 				includeMetadata: true,
 				verbosity: "verbose",
 			});
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts).toBeDefined();
 			expect(artifacts.primary.content).toContain("*RFC generated:");
 		});
 
-		it("should work without options parameter", () => {
+		it("should work without options parameter", async () => {
 			const strategy = new RFCStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -1148,7 +1241,9 @@ describe("RFCStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts).toBeDefined();
 			expect(artifacts.primary.content).not.toContain("*RFC generated:");

@@ -17,12 +17,12 @@ import {
 	type CrossCuttingCapability,
 	OutputApproach,
 	type OutputArtifacts,
-	type OutputStrategy,
 	type RenderOptions,
 } from "../strategies/output-strategy.js";
 import { RFCStrategy } from "../strategies/rfc-strategy.js";
 import { SDDStrategy } from "../strategies/sdd-strategy.js";
-import { SpecKitStrategy } from "../strategies/speckit-strategy.js";
+import type { BaseStrategy } from "../strategies/shared/base-strategy.js";
+import { SpecKitMigrationStrategy as SpecKitStrategy } from "../strategies/speckit/index.js";
 import { TOGAFStrategy } from "../strategies/togaf-strategy.js";
 
 /**
@@ -62,7 +62,7 @@ export interface GatewayRequest {
  */
 export class PolyglotGateway {
 	// biome-ignore lint/suspicious/noExplicitAny: Strategies handle different domain types
-	private strategies: Map<OutputApproach, OutputStrategy<any>>;
+	private strategies: Map<OutputApproach, BaseStrategy<any, any>>;
 
 	/**
 	 * Create a new PolyglotGateway with all 7 output strategies registered.
@@ -78,7 +78,7 @@ export class PolyglotGateway {
 	 */
 	constructor() {
 		// biome-ignore lint/suspicious/noExplicitAny: Strategies handle different domain types
-		this.strategies = new Map<OutputApproach, OutputStrategy<any>>([
+		this.strategies = new Map<OutputApproach, BaseStrategy<any, any>>([
 			[OutputApproach.CHAT, new ChatStrategy()],
 			[OutputApproach.RFC, new RFCStrategy()],
 			[OutputApproach.ADR, new ADRStrategy()],
@@ -112,7 +112,7 @@ export class PolyglotGateway {
 	 * });
 	 * ```
 	 */
-	render(request: GatewayRequest): OutputArtifacts {
+	async render(request: GatewayRequest): Promise<OutputArtifacts> {
 		const approach = request.approach ?? OutputApproach.CHAT;
 		const strategy = this.strategies.get(approach);
 
@@ -127,7 +127,17 @@ export class PolyglotGateway {
 		}
 
 		// Render primary and secondary documents
-		const artifacts = strategy.render(request.domainResult, request.options);
+		const strategyResult = await strategy.run(
+			request.domainResult,
+			request.options,
+		);
+		if (!strategyResult.success) {
+			const errors = strategyResult.errors ?? [];
+			throw new Error(
+				`Strategy rendering failed: ${errors.map((e) => e.message).join(", ")}`,
+			);
+		}
+		const artifacts = strategyResult.data as OutputArtifacts;
 
 		// Add cross-cutting artifacts if requested
 		if (request.crossCutting?.length) {

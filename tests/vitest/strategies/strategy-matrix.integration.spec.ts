@@ -9,6 +9,7 @@
 
 import { describe, expect, it } from "vitest";
 import { polyglotGateway } from "../../../src/gateway/polyglot-gateway.js";
+import type { OutputArtifacts } from "../../../src/strategies/output-strategy.js";
 import {
 	CrossCuttingCapability,
 	OutputApproach,
@@ -75,10 +76,10 @@ describe("Strategy Matrix Integration", () => {
 						workingCombinations[approach]?.includes(domainType);
 
 					if (shouldWork) {
-						it(`renders ${domainType} without error`, () => {
+						it(`renders ${domainType} without error`, async () => {
 							const result = createDomainResult(domainType);
 
-							const artifacts = polyglotGateway.render({
+							const artifacts = await await polyglotGateway.render({
 								domainResult: result,
 								domainType,
 								approach,
@@ -91,24 +92,24 @@ describe("Strategy Matrix Integration", () => {
 							);
 						});
 					} else {
-						it(`correctly rejects ${domainType}`, () => {
+						it(`correctly rejects ${domainType}`, async () => {
 							const result = createDomainResult(domainType);
 
 							// Should either throw or be unsupported
 							const supported =
 								polyglotGateway.getSupportedApproaches(domainType);
 							if (!supported.includes(approach)) {
-								expect(() =>
+								await expect(
 									polyglotGateway.render({
 										domainResult: result,
 										domainType,
 										approach,
 									}),
-								).toThrow();
+								).rejects.toThrow();
 							} else {
 								// Supported but may not render - catch errors
 								try {
-									polyglotGateway.render({
+									await polyglotGateway.render({
 										domainResult: result,
 										domainType,
 										approach,
@@ -128,11 +129,11 @@ describe("Strategy Matrix Integration", () => {
 	describe("Cross-Cutting Capabilities", () => {
 		for (const capability of CROSS_CUTTING) {
 			describe(`${capability} Capability`, () => {
-				it(`generates artifact for SessionState`, () => {
+				it(`generates artifact for SessionState`, async () => {
 					const result = createTestSessionState();
 
 					// Use SDD approach which properly supports SessionState
-					const artifacts = polyglotGateway.render({
+					const artifacts = await await polyglotGateway.render({
 						domainResult: result,
 						domainType: "SessionState",
 						approach: OutputApproach.SDD,
@@ -151,8 +152,8 @@ describe("Strategy Matrix Integration", () => {
 	});
 
 	describe("Output Validation", () => {
-		it("CHAT produces valid markdown", () => {
-			const artifacts = polyglotGateway.render({
+		it("CHAT produces valid markdown", async () => {
+			const artifacts = await await polyglotGateway.render({
 				domainResult: createTestPromptResult(),
 				domainType: "PromptResult",
 				approach: OutputApproach.CHAT,
@@ -162,8 +163,8 @@ describe("Strategy Matrix Integration", () => {
 			expect(artifacts.primary.format).toBe("markdown");
 		});
 
-		it("SPECKIT produces folder structure", () => {
-			const artifacts = polyglotGateway.render({
+		it("SPECKIT produces folder structure", async () => {
+			const artifacts = await await polyglotGateway.render({
 				domainResult: createTestSessionState(),
 				domainType: "SessionState",
 				approach: OutputApproach.SPECKIT,
@@ -174,8 +175,8 @@ describe("Strategy Matrix Integration", () => {
 			expect(artifacts.secondary?.length).toBeGreaterThanOrEqual(5);
 		});
 
-		it("RFC produces RFC document", () => {
-			const artifacts = polyglotGateway.render({
+		it("RFC produces RFC document", async () => {
+			const artifacts = await await polyglotGateway.render({
 				domainResult: createTestPromptResult(),
 				domainType: "PromptResult",
 				approach: OutputApproach.RFC,
@@ -186,8 +187,8 @@ describe("Strategy Matrix Integration", () => {
 			expect(artifacts.primary.content).toBeTruthy();
 		});
 
-		it("ADR produces ADR document", () => {
-			const artifacts = polyglotGateway.render({
+		it("ADR produces ADR document", async () => {
+			const artifacts = await await polyglotGateway.render({
 				domainResult: createTestPromptResult(),
 				domainType: "PromptResult",
 				approach: OutputApproach.ADR,
@@ -198,8 +199,8 @@ describe("Strategy Matrix Integration", () => {
 			expect(artifacts.primary.content).toBeTruthy();
 		});
 
-		it("SDD produces spec.md and secondary documents", () => {
-			const artifacts = polyglotGateway.render({
+		it("SDD produces spec.md and secondary documents", async () => {
+			const artifacts = await await polyglotGateway.render({
 				domainResult: createTestPromptResult(),
 				domainType: "PromptResult",
 				approach: OutputApproach.SDD,
@@ -211,8 +212,8 @@ describe("Strategy Matrix Integration", () => {
 			expect(artifacts.secondary?.length).toBeGreaterThan(0);
 		});
 
-		it("TOGAF produces architecture document", () => {
-			const artifacts = polyglotGateway.render({
+		it("TOGAF produces architecture document", async () => {
+			const artifacts = await await polyglotGateway.render({
 				domainResult: createTestSessionState(),
 				domainType: "SessionState",
 				approach: OutputApproach.TOGAF,
@@ -223,8 +224,8 @@ describe("Strategy Matrix Integration", () => {
 			expect(artifacts.primary.content).toBeTruthy();
 		});
 
-		it("ENTERPRISE produces enterprise document", () => {
-			const artifacts = polyglotGateway.render({
+		it("ENTERPRISE produces enterprise document", async () => {
+			const artifacts = await await polyglotGateway.render({
 				domainResult: createTestSessionState(),
 				domainType: "SessionState",
 				approach: OutputApproach.ENTERPRISE,
@@ -237,29 +238,29 @@ describe("Strategy Matrix Integration", () => {
 	});
 
 	describe("Error Handling", () => {
-		it("throws error for unsupported domain type", () => {
-			expect(() =>
+		it("throws error for unsupported domain type", async () => {
+			await expect(
 				polyglotGateway.render({
 					domainResult: {},
 					domainType: "UnsupportedType",
 					approach: OutputApproach.CHAT,
 				}),
-			).toThrow();
+			).rejects.toThrow();
 		});
 
-		it("throws error for unknown approach", () => {
-			expect(() =>
+		it("throws error for unknown approach", async () => {
+			await expect(
 				polyglotGateway.render({
 					domainResult: createTestPromptResult(),
 					domainType: "PromptResult",
 					approach: "unknown" as OutputApproach,
 				}),
-			).toThrow();
+			).rejects.toThrow();
 		});
 	});
 
 	describe("Strategy Support Matrix", () => {
-		it("CHAT supports all domain types", () => {
+		it("CHAT supports all domain types", async () => {
 			const chatSupported = DOMAIN_TYPES.map((type) =>
 				polyglotGateway
 					.getSupportedApproaches(type)
@@ -269,7 +270,7 @@ describe("Strategy Matrix Integration", () => {
 			expect(chatSupported.every((s) => s)).toBe(true);
 		});
 
-		it("each strategy supports at least one domain type", () => {
+		it("each strategy supports at least one domain type", async () => {
 			for (const approach of STRATEGIES) {
 				const supportsAny = DOMAIN_TYPES.some((type) =>
 					polyglotGateway.getSupportedApproaches(type).includes(approach),
@@ -279,7 +280,7 @@ describe("Strategy Matrix Integration", () => {
 			}
 		});
 
-		it("each domain type is supported by at least one strategy", () => {
+		it("each domain type is supported by at least one strategy", async () => {
 			for (const domainType of DOMAIN_TYPES) {
 				const supported = polyglotGateway.getSupportedApproaches(domainType);
 

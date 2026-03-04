@@ -13,10 +13,11 @@ import type { SessionState } from "../domain/design/types.js";
 import type {
 	OutputArtifacts,
 	OutputDocument,
-	OutputStrategy,
 	RenderOptions,
 } from "./output-strategy.js";
 import { OutputApproach } from "./output-strategy.js";
+import { BaseStrategy } from "./shared/base-strategy.js";
+import type { ValidationResult } from "./shared/types.js";
 
 /**
  * EnterpriseStrategy implements traditional enterprise documentation format.
@@ -28,37 +29,63 @@ import { OutputApproach } from "./output-strategy.js";
  * Supports rendering:
  * - SessionState: Design workflow to enterprise documentation
  *
- * @implements {OutputStrategy<SessionState>}
+ * @extends {BaseStrategy<SessionState, OutputArtifacts>}
  */
-export class EnterpriseStrategy implements OutputStrategy<SessionState> {
+export class EnterpriseStrategy extends BaseStrategy<
+	SessionState,
+	OutputArtifacts
+> {
+	protected readonly name = "enterprise";
+	protected readonly version = "2.0.0";
+
 	/** The output approach this strategy implements */
 	readonly approach = OutputApproach.ENTERPRISE;
 
 	/**
-	 * Render a domain result to enterprise documentation format.
+	 * Validate that the input is a valid SessionState.
 	 *
-	 * @param result - The session state to render
-	 * @param options - Optional rendering options
-	 * @returns Output artifacts with primary Executive Summary and secondary enterprise documents
-	 * @throws {Error} If result type is not supported
+	 * @param input - Input to validate
+	 * @returns Validation result
 	 */
-	render(
-		result: SessionState,
-		options?: Partial<RenderOptions>,
-	): OutputArtifacts {
-		if (!this.isSessionState(result)) {
-			throw new Error("Unsupported domain result type for EnterpriseStrategy");
+	validate(input: SessionState): ValidationResult {
+		if (this.isSessionState(input)) {
+			return { valid: true, errors: [], warnings: [] };
 		}
-
 		return {
-			primary: this.generateExecutiveSummary(result, options),
+			valid: false,
+			errors: [
+				{
+					code: "UNSUPPORTED_TYPE",
+					message: "Input must be a valid SessionState",
+				},
+			],
+			warnings: [],
+		};
+	}
+
+	/**
+	 * Execute the enterprise documentation rendering strategy.
+	 *
+	 * @param input - The session state to render
+	 * @returns Output artifacts with primary Executive Summary and secondary enterprise documents
+	 */
+	async execute(
+		input: SessionState,
+		options?: Partial<RenderOptions>,
+	): Promise<OutputArtifacts> {
+		const result = {
+			primary: this.generateExecutiveSummary(input),
 			secondary: [
-				this.generateBoardPresentation(result),
-				this.generateDetailedAnalysis(result),
-				this.generateImplementationRoadmap(result),
-				this.generateBudgetEstimate(result),
+				this.generateBoardPresentation(input),
+				this.generateDetailedAnalysis(input),
+				this.generateImplementationRoadmap(input),
+				this.generateBudgetEstimate(input),
 			],
 		};
+		if (options?.includeMetadata) {
+			result.primary.content += `\n\n*Executive Summary generated: ${new Date().toISOString()}*`;
+		}
+		return result;
 	}
 
 	/**
@@ -83,7 +110,7 @@ export class EnterpriseStrategy implements OutputStrategy<SessionState> {
 	 */
 	private generateExecutiveSummary(
 		result: SessionState,
-		options?: Partial<RenderOptions>,
+		_options?: Partial<RenderOptions>,
 	): OutputDocument {
 		const content = `# Executive Summary
 
@@ -118,7 +145,7 @@ ${this.extractRecommendation(result)}
 ## Key Success Factors
 
 ${this.extractKeySuccessFactors(result)}
-${this.formatFooter(options)}`;
+`;
 
 		return {
 			name: "executive-summary.md",
@@ -898,10 +925,7 @@ Contingency usage requires approval and justification.`;
 		return String(data);
 	}
 
-	private formatFooter(options?: Partial<RenderOptions>): string {
-		if (options?.includeMetadata === true) {
-			return `\n\n---\n*Executive Summary generated: ${new Date().toISOString()}*`;
-		}
+	private formatFooter(_options?: Partial<RenderOptions>): string {
 		return "";
 	}
 

@@ -38,7 +38,7 @@ describe("Spec-Kit Final Integration", () => {
 	});
 
 	describe("Real CONSTITUTION.md parsing", () => {
-		it("parses all section types", () => {
+		it("parses all section types", async () => {
 			const constitution = parseConstitution(constitutionContent);
 
 			// Verify structure
@@ -52,7 +52,7 @@ describe("Spec-Kit Final Integration", () => {
 			}
 		});
 
-		it("extracts principle IDs correctly", () => {
+		it("extracts principle IDs correctly", async () => {
 			const constitution = parseConstitution(constitutionContent);
 
 			if (constitution.principles?.length) {
@@ -61,7 +61,7 @@ describe("Spec-Kit Final Integration", () => {
 			}
 		});
 
-		it("extracts constraint IDs correctly", () => {
+		it("extracts constraint IDs correctly", async () => {
 			const constitution = parseConstitution(constitutionContent);
 
 			if (constitution.constraints?.length) {
@@ -94,7 +94,7 @@ describe("Spec-Kit Final Integration", () => {
 			const constitution = constitutionAvailable
 				? parseConstitution(constitutionContent)
 				: undefined;
-			const result = strategy.render(domainResult, { constitution });
+			const result = strategy.render(domainResult);
 
 			// Primary is README.md with slug prefix
 			expect(result.primary.name).toContain("README.md");
@@ -162,7 +162,7 @@ describe("Spec-Kit Final Integration", () => {
 	});
 
 	describe("Progress tracking workflow", () => {
-		it("tracks progress correctly", () => {
+		it("tracks progress correctly", async () => {
 			const tasks = createSampleTasks();
 			const tracker = createProgressTracker(tasks);
 
@@ -179,7 +179,7 @@ describe("Spec-Kit Final Integration", () => {
 			expect(metrics.percentComplete).toBeGreaterThan(0);
 		});
 
-		it("generates valid progress.md", () => {
+		it("generates valid progress.md", async () => {
 			const tasks = createSampleTasks();
 			const tracker = createProgressTracker(tasks);
 
@@ -192,7 +192,7 @@ describe("Spec-Kit Final Integration", () => {
 			expect(markdown).toContain("[ ]"); // Incomplete checkbox
 		});
 
-		it("updates multiple tasks", () => {
+		it("updates multiple tasks", async () => {
 			const tasks = createSampleTasks();
 			const tracker = createProgressTracker(tasks);
 
@@ -207,12 +207,12 @@ describe("Spec-Kit Final Integration", () => {
 	});
 
 	describe("Gateway integration", () => {
-		it("routes to SpecKitStrategy correctly", () => {
-			const domainResult = createDomainResult();
+		it("routes to SpecKitStrategy correctly", async () => {
+			const domainResult = getRealRequirements();
 
-			const result = polyglotGateway.render({
+			const result = await polyglotGateway.render({
 				domainResult,
-				domainType: "SessionState",
+				domainType: "SpecKitInput",
 				approach: OutputApproach.SPECKIT,
 			});
 
@@ -221,15 +221,15 @@ describe("Spec-Kit Final Integration", () => {
 			expect(result.secondary).toBeDefined();
 		});
 
-		it("includes constitution when provided", () => {
+		it("includes constitution when provided", async () => {
 			if (!constitutionAvailable) return;
 
-			const domainResult = createDomainResult();
+			const domainResult = getRealRequirements();
 			const constitution = parseConstitution(constitutionContent);
 
-			const result = polyglotGateway.render({
+			const result = await polyglotGateway.render({
 				domainResult,
-				domainType: "SessionState",
+				domainType: "SpecKitInput",
 				approach: OutputApproach.SPECKIT,
 				options: {
 					constitution,

@@ -13,9 +13,9 @@ import {
 	type SessionState,
 	type SpecKitInput,
 	SpecKitInputSchema,
-	type SpecKitOutput,
 	validateAgainstConstitution,
 } from "../../domain/speckit/index.js";
+import type { OutputArtifacts, RenderOptions } from "../output-strategy.js";
 import { BaseStrategy } from "../shared/base-strategy.js";
 import type { ValidationResult as BaseValidationResult } from "../shared/types.js";
 
@@ -26,7 +26,7 @@ import type { ValidationResult as BaseValidationResult } from "../shared/types.j
  * pure generators, and optionally evaluates generated content against loaded
  * constitution rules.
  */
-export class SpecKitStrategy extends BaseStrategy<unknown, SpecKitOutput> {
+export class SpecKitStrategy extends BaseStrategy<unknown, OutputArtifacts> {
 	protected readonly name = "speckit";
 	protected readonly version = "2.0.0";
 
@@ -39,34 +39,94 @@ export class SpecKitStrategy extends BaseStrategy<unknown, SpecKitOutput> {
 	 * @returns Base validation result consumed by BaseStrategy
 	 */
 	validate(input: unknown): BaseValidationResult {
+		// Try SpecKitInput schema first
 		const parsed = SpecKitInputSchema.safeParse(input);
-		if (!parsed.success) {
-			return {
-				valid: false,
-				errors: parsed.error.issues.map((issue) => ({
-					code: "VALIDATION_ERROR",
-					message: issue.message,
-					field: issue.path.join("."),
-				})),
-				warnings: [],
-			};
+		if (parsed.success) {
+			this.validatedInput = parsed.data;
+			return { valid: true, errors: [], warnings: [] };
 		}
 
-		this.validatedInput = parsed.data;
-		return { valid: true, errors: [], warnings: [] };
+		// Fallback: try to convert from SessionState-shaped input
+		const converted = this.tryConvertSessionState(input);
+		if (converted) {
+			this.validatedInput = converted;
+			return { valid: true, errors: [], warnings: [] };
+		}
+
+		return {
+			valid: false,
+			errors: parsed.error.issues.map((issue) => ({
+				code: "VALIDATION_ERROR",
+				message: issue.message,
+				field: issue.path.join("."),
+			})),
+			warnings: [],
+		};
+	}
+
+	private tryConvertSessionState(input: unknown): SpecKitInput | null {
+		if (!input || typeof input !== "object") return null;
+		const s = input as Record<string, unknown>;
+		const cfg = s.config as Record<string, unknown> | undefined;
+		const ctx = (cfg?.context ?? s.context) as
+			| Record<string, unknown>
+			| undefined;
+		const goal =
+			(typeof cfg?.goal === "string" && cfg.goal) ||
+			(typeof ctx?.goal === "string" && ctx.goal) ||
+			(typeof s.id === "string" && s.id) ||
+			null;
+		if (!goal) return null;
+		const reqs = Array.isArray(cfg?.requirements)
+			? (cfg.requirements as string[])
+			: [];
+		const consts = Array.isArray(cfg?.constraints)
+			? (cfg.constraints as Array<string | { description?: string }>).map(
+					(c) => (typeof c === "string" ? c : (c.description ?? "")),
+				)
+			: [];
+		const functionalReqs =
+			reqs.length > 0 ? reqs : ["See session requirements"];
+		const nonFunctionalReqs = consts.filter(Boolean);
+		const allReqs = [
+			...functionalReqs.map((r) => ({
+				description: r,
+				type: "functional" as const,
+			})),
+			...nonFunctionalReqs.map((c) => ({
+				description: c,
+				type: "non-functional" as const,
+			})),
+		];
+		return SpecKitInputSchema.parse({
+			title: goal,
+			overview: (typeof ctx?.overview === "string" && ctx.overview) || goal,
+			objectives: (reqs.length > 0 ? reqs : [goal]).map((r) => ({
+				description: r,
+				priority: "high" as const,
+			})),
+			requirements:
+				allReqs.length > 0
+					? allReqs
+					: [{ description: goal, type: "functional" as const }],
+		});
 	}
 
 	/**
 	 * Execute SpecKit generation flow for validated input.
 	 *
 	 * @param input - Raw input payload
-	 * @returns Generated SpecKit output artifacts, validation, and stats
+	 * @returns Generated SpecKit output as OutputArtifacts
 	 */
-	async execute(input: unknown): Promise<SpecKitOutput> {
+	async execute(
+		input: unknown,
+		_options?: Partial<RenderOptions>,
+	): Promise<OutputArtifacts> {
 		const cachedInput = this.validatedInput;
 		this.validatedInput = null;
 		const parsed = cachedInput ?? SpecKitInputSchema.parse(input);
 		const state = createInitialSessionState(parsed);
+		const slug = this.slugify(parsed.title ?? "Feature");
 		const start = Date.now();
 
 		this.trace.recordDecision("initialize", "Session state initialized", {
@@ -117,26 +177,39 @@ export class SpecKitStrategy extends BaseStrategy<unknown, SpecKitOutput> {
 		this.trace.recordMetric("total_duration_ms", duration, "ms");
 
 		return {
-			artifacts: {
-				readme: readme.content,
-				spec: spec.content,
-				plan: plan.content,
-				tasks: tasks.content,
-				progress: progress.content,
-				adr: adr.content,
-				roadmap: roadmap.content,
+			primary: {
+				name: `${slug}/README.md`,
+				content: readme.content,
+				format: "markdown",
 			},
-			validation,
-			stats: {
-				totalDuration: duration,
-				documentsGenerated: generated.length,
-				totalTokens: generated.reduce(
-					(sum, item) => sum + item.tokenEstimate,
-					0,
-				),
-				warnings: [],
-			},
+			secondary: [
+				{ name: `${slug}/spec.md`, content: spec.content, format: "markdown" },
+				{ name: `${slug}/plan.md`, content: plan.content, format: "markdown" },
+				{
+					name: `${slug}/tasks.md`,
+					content: tasks.content,
+					format: "markdown",
+				},
+				{
+					name: `${slug}/progress.md`,
+					content: progress.content,
+					format: "markdown",
+				},
+				{ name: `${slug}/adr.md`, content: adr.content, format: "markdown" },
+				{
+					name: `${slug}/roadmap.md`,
+					content: roadmap.content,
+					format: "markdown",
+				},
+			],
 		};
+	}
+
+	private slugify(title: string): string {
+		return title
+			.toLowerCase()
+			.replace(/[^a-z0-9]+/g, "-")
+			.replace(/^-|-$/g, "");
 	}
 
 	private async loadConstitution(
@@ -175,5 +248,15 @@ export class SpecKitStrategy extends BaseStrategy<unknown, SpecKitOutput> {
 			this.trace.recordWarning("Constitution could not be loaded", { path });
 			return null;
 		}
+	}
+
+	/**
+	 * Check if this strategy supports a given domain type.
+	 *
+	 * @param domainType - Domain type identifier
+	 * @returns True for SpecKitInput domain types
+	 */
+	supports(domainType: string): boolean {
+		return ["SpecKitInput", "SessionState", "unknown"].includes(domainType);
 	}
 }

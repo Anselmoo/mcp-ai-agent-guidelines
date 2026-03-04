@@ -10,12 +10,10 @@
 
 import type { ScoringResult } from "../domain/analysis/types.js";
 import type { PromptResult } from "../domain/prompting/types.js";
-import type {
-	OutputArtifacts,
-	OutputStrategy,
-	RenderOptions,
-} from "./output-strategy.js";
+import type { OutputArtifacts, RenderOptions } from "./output-strategy.js";
 import { OutputApproach } from "./output-strategy.js";
+import { BaseStrategy } from "./shared/base-strategy.js";
+import type { ValidationResult } from "./shared/types.js";
 
 /**
  * ChatStrategy implements the default chat-optimized markdown output format.
@@ -24,33 +22,54 @@ import { OutputApproach } from "./output-strategy.js";
  * - PromptResult: Hierarchical sections with optional metadata
  * - ScoringResult: Score breakdown table with recommendations
  *
- * @implements {OutputStrategy<PromptResult | ScoringResult>}
+ * @extends {BaseStrategy<PromptResult | ScoringResult, OutputArtifacts>}
  */
-export class ChatStrategy
-	implements OutputStrategy<PromptResult | ScoringResult>
-{
+export class ChatStrategy extends BaseStrategy<
+	PromptResult | ScoringResult,
+	OutputArtifacts
+> {
+	protected readonly name = "chat";
+	protected readonly version = "2.0.0";
+
 	/** The output approach this strategy implements */
 	readonly approach = OutputApproach.CHAT;
 
 	/**
-	 * Render a domain result to chat-optimized markdown artifacts.
+	 * Validate that the input is a supported domain result type.
 	 *
-	 * @param result - The domain result to render (PromptResult or ScoringResult)
-	 * @param options - Optional rendering options
-	 * @returns Output artifacts with primary markdown document
-	 * @throws {Error} If result type is not supported
+	 * @param input - Input to validate
+	 * @returns Validation result
 	 */
-	render(
-		result: PromptResult | ScoringResult,
+	validate(input: PromptResult | ScoringResult): ValidationResult {
+		if (this.isPromptResult(input) || this.isScoringResult(input)) {
+			return { valid: true, errors: [], warnings: [] };
+		}
+		return {
+			valid: false,
+			errors: [
+				{
+					code: "UNSUPPORTED_TYPE",
+					message: "Input must be PromptResult or ScoringResult",
+				},
+			],
+			warnings: [],
+		};
+	}
+
+	/**
+	 * Execute the chat rendering strategy.
+	 *
+	 * @param input - The domain result to render
+	 * @returns Output artifacts with primary markdown document
+	 */
+	async execute(
+		input: PromptResult | ScoringResult,
 		options?: Partial<RenderOptions>,
-	): OutputArtifacts {
-		if (this.isPromptResult(result)) {
-			return this.renderPrompt(result, options);
+	): Promise<OutputArtifacts> {
+		if (this.isPromptResult(input)) {
+			return this.renderPrompt(input, options);
 		}
-		if (this.isScoringResult(result)) {
-			return this.renderScoring(result, options);
-		}
-		throw new Error("Unsupported domain result type");
+		return this.renderScoring(input as ScoringResult);
 	}
 
 	/**
@@ -60,9 +79,12 @@ export class ChatStrategy
 	 * @returns True if this strategy can render the domain type
 	 */
 	supports(domainType: string): boolean {
-		return ["PromptResult", "ScoringResult", "SessionState"].includes(
-			domainType,
-		);
+		return [
+			"PromptResult",
+			"ScoringResult",
+			"SessionState",
+			"DesignAssistantResponse",
+		].includes(domainType);
 	}
 
 	/**
@@ -88,10 +110,12 @@ export class ChatStrategy
 			})
 			.join("\n\n");
 
-		const metadata =
-			options?.includeMetadata === true
-				? `\n\n---\n*Technique: ${result.metadata.techniques.join(", ")} | Tokens: ~${result.metadata.tokenEstimate}*`
-				: "";
+		let metadata = "";
+		if (options?.includeMetadata && result.metadata) {
+			const techniques = result.metadata.techniques?.join(", ") ?? "";
+			const tokens = result.metadata.tokenEstimate ?? 0;
+			metadata = `\n\n---\nTechnique: ${techniques}\nTokens: ~${tokens}`;
+		}
 
 		return {
 			primary: {

@@ -110,7 +110,7 @@ const sampleDomainResult: SessionState = {
 
 describe("Spec-Kit Integration", () => {
 	describe("End-to-end generation", () => {
-		it("generates all 7 artifacts (README + 6 secondary)", () => {
+		it("generates all 7 artifacts (README + 6 secondary)", async () => {
 			const strategy = new SpecKitStrategy();
 			const result = strategy.render(sampleDomainResult);
 
@@ -136,7 +136,7 @@ describe("Spec-Kit Integration", () => {
 			expectArtifactNamed(secondaryNames, "roadmap.md");
 		});
 
-		it("includes title in spec.md", () => {
+		it("includes title in spec.md", async () => {
 			const strategy = new SpecKitStrategy();
 			const result = strategy.render(sampleDomainResult);
 
@@ -146,7 +146,7 @@ describe("Spec-Kit Integration", () => {
 			expect(specDoc?.content).toContain("# Specification:");
 		});
 
-		it("derives tasks from requirements", () => {
+		it("derives tasks from requirements", async () => {
 			const strategy = new SpecKitStrategy();
 			const result = strategy.render(sampleDomainResult);
 
@@ -159,7 +159,7 @@ describe("Spec-Kit Integration", () => {
 			expect(tasksDoc?.content).toContain("Requirement 1");
 		});
 
-		it("generates progress.md with initial metrics", () => {
+		it("generates progress.md with initial metrics", async () => {
 			const strategy = new SpecKitStrategy();
 			const result = strategy.render(sampleDomainResult);
 
@@ -172,7 +172,7 @@ describe("Spec-Kit Integration", () => {
 			expect(progressDoc?.content).toContain("Status:");
 		});
 
-		it("generates plan.md with phases", () => {
+		it("generates plan.md with phases", async () => {
 			const strategy = new SpecKitStrategy();
 			const result = strategy.render(sampleDomainResult);
 
@@ -182,7 +182,7 @@ describe("Spec-Kit Integration", () => {
 			expect(planDoc?.content).toContain("## Phases");
 		});
 
-		it("generates adr.md with decision structure", () => {
+		it("generates adr.md with decision structure", async () => {
 			const strategy = new SpecKitStrategy();
 			const result = strategy.render(sampleDomainResult);
 
@@ -195,7 +195,7 @@ describe("Spec-Kit Integration", () => {
 			expect(adrDoc?.content).toContain("## Consequences");
 		});
 
-		it("generates roadmap.md with milestones", () => {
+		it("generates roadmap.md with milestones", async () => {
 			const strategy = new SpecKitStrategy();
 			const result = strategy.render(sampleDomainResult);
 
@@ -209,7 +209,7 @@ describe("Spec-Kit Integration", () => {
 	});
 
 	describe("Constitution validation", () => {
-		it("validates spec against constitution", () => {
+		it("validates spec against constitution", async () => {
 			const constitution = parseConstitution(sampleConstitution);
 			const validator = createSpecValidator(constitution);
 
@@ -226,7 +226,7 @@ describe("Spec-Kit Integration", () => {
 			expect(result.checkedConstraints).toBeGreaterThan(0);
 		});
 
-		it("generates validation report", () => {
+		it("generates validation report", async () => {
 			const constitution = parseConstitution(sampleConstitution);
 			const validator = createSpecValidator(constitution);
 
@@ -243,7 +243,7 @@ describe("Spec-Kit Integration", () => {
 			expect(report.byType.constraints).toBeDefined();
 		});
 
-		it("detects violations in problematic specs", () => {
+		it("detects violations in problematic specs", async () => {
 			const constitution = parseConstitution(sampleConstitution);
 			const validator = createSpecValidator(constitution);
 
@@ -266,7 +266,7 @@ Architecture: domain → gateway (wrong order).
 			expect(Array.isArray(result.issues)).toBe(true);
 		});
 
-		it("provides constraint breakdown by type", () => {
+		it("provides constraint breakdown by type", async () => {
 			const constitution = parseConstitution(sampleConstitution);
 			const validator = createSpecValidator(constitution);
 
@@ -280,7 +280,7 @@ Architecture: domain → gateway (wrong order).
 	});
 
 	describe("Progress tracking", () => {
-		it("calculates completion metrics", () => {
+		it("calculates completion metrics", async () => {
 			const tasks: Tasks = {
 				items: [
 					{
@@ -324,7 +324,7 @@ Architecture: domain → gateway (wrong order).
 			expect(metrics.percentComplete).toBe(33);
 		});
 
-		it("generates progress markdown", () => {
+		it("generates progress markdown", async () => {
 			const tasks: Tasks = {
 				items: [
 					{
@@ -346,7 +346,7 @@ Architecture: domain → gateway (wrong order).
 			expect(markdown).toContain("Last Updated");
 		});
 
-		it("tracks multiple task updates", () => {
+		it("tracks multiple task updates", async () => {
 			const tasks: Tasks = {
 				items: [
 					{
@@ -388,7 +388,7 @@ Architecture: domain → gateway (wrong order).
 			expect(metrics.percentComplete).toBe(67);
 		});
 
-		it("handles empty task list", () => {
+		it("handles empty task list", async () => {
 			const tracker = createProgressTracker();
 			const metrics = tracker.calculateCompletion();
 
@@ -399,10 +399,10 @@ Architecture: domain → gateway (wrong order).
 	});
 
 	describe("Gateway integration", () => {
-		it("routes speckit approach correctly", () => {
-			const result = polyglotGateway.render({
-				domainResult: sampleDomainResult,
-				domainType: "SessionState",
+		it("routes speckit approach correctly", async () => {
+			const result = await polyglotGateway.render({
+				domainResult: sampleDomainResult.context,
+				domainType: "SpecKitInput",
 				approach: OutputApproach.SPECKIT,
 			});
 
@@ -416,10 +416,10 @@ Architecture: domain → gateway (wrong order).
 			expect(hasSpecMd).toBe(true);
 		});
 
-		it("generates correct artifact structure through gateway", () => {
-			const result = polyglotGateway.render({
-				domainResult: sampleDomainResult,
-				domainType: "SessionState",
+		it("generates correct artifact structure through gateway", async () => {
+			const result = await polyglotGateway.render({
+				domainResult: sampleDomainResult.context,
+				domainType: "SpecKitInput",
 				approach: OutputApproach.SPECKIT,
 			});
 
@@ -435,7 +435,7 @@ Architecture: domain → gateway (wrong order).
 	});
 
 	describe("Constitution parsing", () => {
-		it("parses constitution sections", () => {
+		it("parses constitution sections", async () => {
 			const constitution = parseConstitution(sampleConstitution);
 
 			expect(constitution.principles).toBeDefined();
@@ -448,7 +448,7 @@ Architecture: domain → gateway (wrong order).
 			expect(constitution.constraints.length).toBeGreaterThan(0);
 		});
 
-		it("extracts metadata from constitution", () => {
+		it("extracts metadata from constitution", async () => {
 			const constitution = parseConstitution(sampleConstitution);
 
 			expect(constitution.metadata).toBeDefined();
@@ -456,7 +456,7 @@ Architecture: domain → gateway (wrong order).
 			expect(constitution.metadata?.appliesTo).toContain("v0.13.x");
 		});
 
-		it("parses principle details", () => {
+		it("parses principle details", async () => {
 			const constitution = parseConstitution(sampleConstitution);
 
 			const firstPrinciple = constitution.principles[0];
@@ -466,7 +466,7 @@ Architecture: domain → gateway (wrong order).
 			expect(firstPrinciple.description).toContain("TypeScript");
 		});
 
-		it("parses constraint details", () => {
+		it("parses constraint details", async () => {
 			const constitution = parseConstitution(sampleConstitution);
 
 			const firstConstraint = constitution.constraints[0];
@@ -502,7 +502,7 @@ describe("Spec-Kit with real constitution", () => {
 		}
 	});
 
-	it("parses real constitution", () => {
+	it("parses real constitution", async () => {
 		expect(realConstitution.principles).toBeDefined();
 		expect(realConstitution.constraints).toBeDefined();
 		expect(realConstitution.architectureRules).toBeDefined();
@@ -518,7 +518,7 @@ describe("Spec-Kit with real constitution", () => {
 		expect(totalItems).toBeGreaterThan(0);
 	});
 
-	it("validates against real constitution", () => {
+	it("validates against real constitution", async () => {
 		const validator = createSpecValidator(realConstitution);
 
 		const validSpec = {
@@ -538,7 +538,7 @@ describe("Spec-Kit with real constitution", () => {
 		expect(result.score).toBeLessThanOrEqual(100);
 	});
 
-	it("generates validation report with real constitution", () => {
+	it("generates validation report with real constitution", async () => {
 		const validator = createSpecValidator(realConstitution);
 
 		const report = validator.generateReport({
@@ -553,7 +553,7 @@ describe("Spec-Kit with real constitution", () => {
 		expect(report.metrics.total).toBeGreaterThan(0);
 	});
 
-	it("formats report as markdown", () => {
+	it("formats report as markdown", async () => {
 		const validator = createSpecValidator(realConstitution);
 
 		const report = validator.generateReport({

@@ -33,12 +33,12 @@ interface ADRSessionState {
 
 describe("ADRStrategy", () => {
 	describe("constructor and properties", () => {
-		it("should have ADR approach", () => {
+		it("should have ADR approach", async () => {
 			const strategy = new ADRStrategy();
 			expect(strategy.approach).toBe(OutputApproach.ADR);
 		});
 
-		it("should have readonly approach property", () => {
+		it("should have readonly approach property", async () => {
 			const strategy = new ADRStrategy();
 			// TypeScript readonly is compile-time only, verify it's set correctly
 			expect(strategy.approach).toBe(OutputApproach.ADR);
@@ -46,17 +46,17 @@ describe("ADRStrategy", () => {
 	});
 
 	describe("supports() method", () => {
-		it("should support SessionState", () => {
+		it("should support SessionState", async () => {
 			const strategy = new ADRStrategy();
 			expect(strategy.supports("SessionState")).toBe(true);
 		});
 
-		it("should support PromptResult", () => {
+		it("should support PromptResult", async () => {
 			const strategy = new ADRStrategy();
 			expect(strategy.supports("PromptResult")).toBe(true);
 		});
 
-		it("should not support unsupported types", () => {
+		it("should not support unsupported types", async () => {
 			const strategy = new ADRStrategy();
 			expect(strategy.supports("ScoringResult")).toBe(false);
 			expect(strategy.supports("UnknownType")).toBe(false);
@@ -65,7 +65,7 @@ describe("ADRStrategy", () => {
 	});
 
 	describe("render() - SessionState", () => {
-		it("should render SessionState with full metadata to ADR format", () => {
+		it("should render SessionState with full metadata to ADR format", async () => {
 			const strategy = new ADRStrategy();
 			const result: SessionState = {
 				id: "session-123",
@@ -90,7 +90,9 @@ describe("ADRStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.format).toBe("markdown");
 			expect(artifacts.primary.name).toMatch(
@@ -128,20 +130,22 @@ describe("ADRStrategy", () => {
 			);
 		});
 
-		it("should render SessionState with minimal metadata", () => {
+		it("should render SessionState with minimal metadata", async () => {
 			const strategy = new ADRStrategy();
 			const result: SessionState = {
 				id: "session-456",
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("# ADR-");
 			expect(artifacts.primary.content).toContain("Untitled Decision");
 			expect(artifacts.primary.content).toContain("- To be determined");
 		});
 
-		it("should use config.goal as title when metadata.title is missing", () => {
+		it("should use config.goal as title when metadata.title is missing", async () => {
 			const strategy = new ADRStrategy();
 			const result: SessionState = {
 				id: "session-789",
@@ -150,7 +154,9 @@ describe("ADRStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain(
 				"Migrate to Cloud Infrastructure",
@@ -158,7 +164,7 @@ describe("ADRStrategy", () => {
 			expect(artifacts.primary.name).toMatch(/migrate-to-cloud-infrastructure/);
 		});
 
-		it("should extract context from config", () => {
+		it("should extract context from config", async () => {
 			const strategy = new ADRStrategy();
 			const result: SessionState = {
 				id: "session-context",
@@ -171,14 +177,16 @@ describe("ADRStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("Improve API Performance");
 			expect(artifacts.primary.content).toContain("currentLoad");
 			expect(artifacts.primary.content).toContain("targetLoad");
 		});
 
-		it("should include phase in references when present", () => {
+		it("should include phase in references when present", async () => {
 			const strategy = new ADRStrategy();
 			const result: SessionState = {
 				id: "session-phase",
@@ -188,12 +196,14 @@ describe("ADRStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("Phase: implementation");
 		});
 
-		it("should include artifacts in references when present", () => {
+		it("should include artifacts in references when present", async () => {
 			const strategy = new ADRStrategy();
 			const result: SessionState = {
 				id: "session-artifacts",
@@ -203,14 +213,16 @@ describe("ADRStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain(
 				"Related artifacts: spec, diagram",
 			);
 		});
 
-		it("should handle empty consequences arrays", () => {
+		it("should handle empty consequences arrays", async () => {
 			const strategy = new ADRStrategy();
 			const result: SessionState = {
 				id: "session-empty",
@@ -221,7 +233,9 @@ describe("ADRStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain(
 				"### Positive\n\n- To be determined",
@@ -236,7 +250,7 @@ describe("ADRStrategy", () => {
 	});
 
 	describe("render() - PromptResult", () => {
-		it("should render PromptResult to ADR format", () => {
+		it("should render PromptResult to ADR format", async () => {
 			const strategy = new ADRStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -271,7 +285,9 @@ describe("ADRStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.format).toBe("markdown");
 			expect(artifacts.primary.name).toMatch(
@@ -289,7 +305,7 @@ describe("ADRStrategy", () => {
 			);
 		});
 
-		it("should handle PromptResult with missing ADR sections", () => {
+		it("should handle PromptResult with missing ADR sections", async () => {
 			const strategy = new ADRStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -309,14 +325,16 @@ describe("ADRStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("No context provided");
 			expect(artifacts.primary.content).toContain("Decision to be documented");
 			expect(artifacts.primary.content).toContain("- To be determined");
 		});
 
-		it("should include metadata when includeMetadata is true", () => {
+		it("should include metadata when includeMetadata is true", async () => {
 			const strategy = new ADRStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -336,7 +354,9 @@ describe("ADRStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result, { includeMetadata: true });
+			const stratResult = await strategy.run(result, { includeMetadata: true });
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain(
 				"Technique: chain-of-thought, few-shot",
@@ -344,7 +364,7 @@ describe("ADRStrategy", () => {
 			expect(artifacts.primary.content).toContain("Tokens: ~250");
 		});
 
-		it("should not include metadata by default", () => {
+		it("should not include metadata by default", async () => {
 			const strategy = new ADRStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -364,65 +384,76 @@ describe("ADRStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).not.toContain("Technique:");
 			expect(artifacts.primary.content).not.toContain("Tokens:");
 		});
 	});
 
-	describe("render() - error handling", () => {
-		it("should throw error for unsupported result type", () => {
+	describe("run() - error handling", () => {
+		it("should return failure for unsupported result type", async () => {
 			const strategy = new ADRStrategy();
 			const invalidResult = {
 				someField: "value",
 			};
 
-			expect(() =>
-				strategy.render(invalidResult as ADRSessionState | PromptResult),
-			).toThrow("Unsupported domain result type for ADRStrategy");
+			const r = await strategy.run(
+				invalidResult as ADRSessionState | PromptResult,
+			);
+			expect(r.success).toBe(false);
 		});
 
-		it("should throw error for null result", () => {
+		it("should return failure for null result", async () => {
 			const strategy = new ADRStrategy();
 
-			expect(() =>
-				strategy.render(null as unknown as ADRSessionState | PromptResult),
-			).toThrow("Unsupported domain result type for ADRStrategy");
+			const r = await strategy.run(
+				null as unknown as ADRSessionState | PromptResult,
+			);
+			expect(r.success).toBe(false);
 		});
 
-		it("should throw error for undefined result", () => {
+		it("should return failure for undefined result", async () => {
 			const strategy = new ADRStrategy();
 
-			expect(() =>
-				strategy.render(undefined as unknown as ADRSessionState | PromptResult),
-			).toThrow("Unsupported domain result type for ADRStrategy");
+			const r = await strategy.run(
+				undefined as unknown as ADRSessionState | PromptResult,
+			);
+			expect(r.success).toBe(false);
 		});
 	});
 
 	describe("ADR numbering", () => {
-		it("should generate 4-digit ADR numbers", () => {
+		it("should generate 4-digit ADR numbers", async () => {
 			const strategy = new ADRStrategy();
 			const result: SessionState = {
 				id: "session-number",
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			const match = artifacts.primary.name.match(/^ADR-(\d{4})-/);
 			expect(match).not.toBeNull();
 			expect(match?.[1]).toHaveLength(4);
 		});
 
-		it("should generate unique ADR numbers for different renders", () => {
+		it("should generate unique ADR numbers for different renders", async () => {
 			const strategy = new ADRStrategy();
 			const result: SessionState = {
 				id: "session-unique",
 			};
 
-			const artifacts1 = strategy.render(result);
+			const stratResult1 = await strategy.run(result);
+			expect(stratResult1.success).toBe(true);
+			const artifacts1 = stratResult1.data as OutputArtifacts;
 			// Small delay to ensure different timestamp
-			const artifacts2 = strategy.render(result);
+			const stratResult2 = await strategy.run(result);
+			expect(stratResult2.success).toBe(true);
+			const artifacts2 = stratResult2.data as OutputArtifacts;
 
 			// Numbers might be same if executed in same millisecond, but format should be correct
 			expect(artifacts1.primary.name).toMatch(/^ADR-\d{4}-/);
@@ -431,7 +462,7 @@ describe("ADRStrategy", () => {
 	});
 
 	describe("slugify", () => {
-		it("should convert title to lowercase slug", () => {
+		it("should convert title to lowercase slug", async () => {
 			const strategy = new ADRStrategy();
 			const result: SessionState = {
 				id: "session-slug",
@@ -440,14 +471,16 @@ describe("ADRStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.name).toContain(
 				"adopt-microservices-architecture",
 			);
 		});
 
-		it("should replace spaces with hyphens", () => {
+		it("should replace spaces with hyphens", async () => {
 			const strategy = new ADRStrategy();
 			const result: SessionState = {
 				id: "session-spaces",
@@ -456,12 +489,14 @@ describe("ADRStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.name).toContain("multiple-word-title-here");
 		});
 
-		it("should remove special characters", () => {
+		it("should remove special characters", async () => {
 			const strategy = new ADRStrategy();
 			const result: SessionState = {
 				id: "session-special",
@@ -470,7 +505,9 @@ describe("ADRStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.name).toContain("title-with-special-characters");
 			expect(artifacts.primary.name).not.toContain("@");
@@ -479,7 +516,7 @@ describe("ADRStrategy", () => {
 			expect(artifacts.primary.name).not.toContain("?");
 		});
 
-		it("should truncate long titles to 50 characters", () => {
+		it("should truncate long titles to 50 characters", async () => {
 			const strategy = new ADRStrategy();
 			const longTitle =
 				"This is a very long title that exceeds fifty characters and should be truncated appropriately";
@@ -490,7 +527,9 @@ describe("ADRStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			const slugPart =
 				artifacts.primary.name.match(/ADR-\d{4}-(.*?)\.md$/)?.[1];
@@ -498,7 +537,7 @@ describe("ADRStrategy", () => {
 			expect(slugPart?.length).toBeLessThanOrEqual(50);
 		});
 
-		it("should handle titles with consecutive spaces", () => {
+		it("should handle titles with consecutive spaces", async () => {
 			const strategy = new ADRStrategy();
 			const result: SessionState = {
 				id: "session-spaces",
@@ -507,7 +546,9 @@ describe("ADRStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.name).toContain("title-with-multiple-spaces");
 			expect(artifacts.primary.name).not.toContain("--");
@@ -515,26 +556,30 @@ describe("ADRStrategy", () => {
 	});
 
 	describe("output artifacts structure", () => {
-		it("should return OutputArtifacts with primary document only", () => {
+		it("should return OutputArtifacts with primary document only", async () => {
 			const strategy = new ADRStrategy();
 			const result: SessionState = {
 				id: "session-structure",
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary).toBeDefined();
 			expect(artifacts.secondary).toBeUndefined();
 			expect(artifacts.crossCutting).toBeUndefined();
 		});
 
-		it("should have correct document format", () => {
+		it("should have correct document format", async () => {
 			const strategy = new ADRStrategy();
 			const result: SessionState = {
 				id: "session-format",
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.format).toBe("markdown");
 			expect(artifacts.primary.name).toMatch(/\.md$/);
@@ -543,13 +588,15 @@ describe("ADRStrategy", () => {
 	});
 
 	describe("date formatting", () => {
-		it("should include current date in ISO format", () => {
+		it("should include current date in ISO format", async () => {
 			const strategy = new ADRStrategy();
 			const result: SessionState = {
 				id: "session-date",
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			const dateRegex = /\d{4}-\d{2}-\d{2}/;
 			expect(artifacts.primary.content).toMatch(dateRegex);
@@ -557,7 +604,7 @@ describe("ADRStrategy", () => {
 	});
 
 	describe("Michael Nygard format compliance", () => {
-		it("should include all required ADR sections in correct order", () => {
+		it("should include all required ADR sections in correct order", async () => {
 			const strategy = new ADRStrategy();
 			const result: SessionState = {
 				id: "session-format",
@@ -566,7 +613,9 @@ describe("ADRStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 			const content = artifacts.primary.content;
 
 			// Check section order
@@ -583,13 +632,15 @@ describe("ADRStrategy", () => {
 			expect(referencesIndex).toBeGreaterThan(consequencesIndex);
 		});
 
-		it("should split consequences into Positive, Negative, and Neutral", () => {
+		it("should split consequences into Positive, Negative, and Neutral", async () => {
 			const strategy = new ADRStrategy();
 			const result: SessionState = {
 				id: "session-consequences",
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("### Positive");
 			expect(artifacts.primary.content).toContain("### Negative");

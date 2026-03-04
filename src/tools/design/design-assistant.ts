@@ -535,7 +535,7 @@ class DesignAssistantImpl {
 			if (flags.usePolyglotGateway && request.outputFormat) {
 				// Use new gateway for rendering
 				try {
-					const artifacts = polyglotGateway.render({
+					const artifacts = await polyglotGateway.render({
 						domainResult,
 						domainType: "DesignAssistantResponse",
 						approach: mapOutputFormat(request.outputFormat),

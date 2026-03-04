@@ -37,14 +37,17 @@ describe("SpecKitStrategy", () => {
 			return;
 		}
 
-		expect(result.data.stats.documentsGenerated).toBe(7);
-		expect(result.data.artifacts.readme).toBeTruthy();
-		expect(result.data.artifacts.spec).toBeTruthy();
-		expect(result.data.artifacts.plan).toBeTruthy();
-		expect(result.data.artifacts.tasks).toBeTruthy();
-		expect(result.data.artifacts.progress).toBeTruthy();
-		expect(result.data.artifacts.adr).toBeTruthy();
-		expect(result.data.artifacts.roadmap).toBeTruthy();
+		// primary = README.md; secondary = spec, plan, tasks, progress, adr, roadmap (6)
+		expect(result.data.primary.content).toBeTruthy();
+		expect(result.data.primary.name).toContain("README.md");
+		expect(result.data.secondary?.length).toBe(6);
+		const names = result.data.secondary?.map((d) => d.name) ?? [];
+		expect(names.some((n) => n.includes("spec"))).toBe(true);
+		expect(names.some((n) => n.includes("plan"))).toBe(true);
+		expect(names.some((n) => n.includes("tasks"))).toBe(true);
+		expect(names.some((n) => n.includes("progress"))).toBe(true);
+		expect(names.some((n) => n.includes("adr"))).toBe(true);
+		expect(names.some((n) => n.includes("roadmap"))).toBe(true);
 	});
 
 	it("should validate against loaded constitution rules", async () => {
@@ -61,9 +64,13 @@ describe("SpecKitStrategy", () => {
 		if (!result.success) {
 			return;
 		}
-		expect(result.data.validation).not.toBeNull();
-		expect(result.data.validation?.isValid).toBe(true);
-		expect(result.data.validation?.warnings.length).toBeGreaterThan(0);
+		// Validation is reflected in trace as a validation_score metric
+		const validationEntry = result.trace.entries.find(
+			(e) =>
+				e.type === "metric" &&
+				(e as { data?: { name?: string } }).data?.name === "validation_score",
+		);
+		expect(validationEntry).toBeDefined();
 	});
 
 	it("should handle missing constitution path gracefully", async () => {
@@ -77,6 +84,12 @@ describe("SpecKitStrategy", () => {
 		if (!result.success) {
 			return;
 		}
-		expect(result.data.validation).toBeNull();
+		// When constitution fails to load, no validation_score metric in trace
+		const hasValidation = result.trace.entries.some(
+			(e) =>
+				e.type === "metric" &&
+				(e as { data?: { name?: string } }).data?.name === "validation_score",
+		);
+		expect(hasValidation).toBe(false);
 	});
 });

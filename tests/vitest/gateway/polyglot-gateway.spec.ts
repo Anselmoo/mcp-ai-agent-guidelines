@@ -19,16 +19,16 @@ import {
 
 describe("PolyglotGateway", () => {
 	describe("constructor and singleton", () => {
-		it("should create gateway instance", () => {
+		it("should create gateway instance", async () => {
 			const gateway = new PolyglotGateway();
 			expect(gateway).toBeInstanceOf(PolyglotGateway);
 		});
 
-		it("should export singleton instance", () => {
+		it("should export singleton instance", async () => {
 			expect(polyglotGateway).toBeInstanceOf(PolyglotGateway);
 		});
 
-		it("should have all 7 strategies registered", () => {
+		it("should have all 7 strategies registered", async () => {
 			const gateway = new PolyglotGateway();
 			// Verify all 7 OutputApproach enum values are supported for at least one domain type
 			const allApproaches = [
@@ -60,7 +60,7 @@ describe("PolyglotGateway", () => {
 
 	describe("render() method", () => {
 		describe("with CHAT approach", () => {
-			it("should render PromptResult with CHAT approach", () => {
+			it("should render PromptResult with CHAT approach", async () => {
 				const gateway = new PolyglotGateway();
 				const promptResult: PromptResult = {
 					sections: [
@@ -86,14 +86,14 @@ describe("PolyglotGateway", () => {
 					approach: OutputApproach.CHAT,
 				};
 
-				const artifacts = gateway.render(request);
+				const artifacts = await gateway.render(request);
 
 				expect(artifacts.primary).toBeDefined();
 				expect(artifacts.primary.name).toBe("prompt.md");
 				expect(artifacts.primary.content).toContain("# Context");
 			});
 
-			it("should default to CHAT approach when not specified", () => {
+			it("should default to CHAT approach when not specified", async () => {
 				const gateway = new PolyglotGateway();
 				const promptResult: PromptResult = {
 					sections: [
@@ -119,13 +119,13 @@ describe("PolyglotGateway", () => {
 					// No approach specified
 				};
 
-				const artifacts = gateway.render(request);
+				const artifacts = await gateway.render(request);
 
 				expect(artifacts.primary).toBeDefined();
 				expect(artifacts.primary.name).toBe("prompt.md");
 			});
 
-			it("should render ScoringResult with CHAT approach", () => {
+			it("should render ScoringResult with CHAT approach", async () => {
 				const gateway = new PolyglotGateway();
 				const scoringResult: ScoringResult = {
 					overallScore: 85,
@@ -144,7 +144,7 @@ describe("PolyglotGateway", () => {
 					approach: OutputApproach.CHAT,
 				};
 
-				const artifacts = gateway.render(request);
+				const artifacts = await gateway.render(request);
 
 				expect(artifacts.primary).toBeDefined();
 				expect(artifacts.primary.name).toBe("score-report.md");
@@ -153,7 +153,7 @@ describe("PolyglotGateway", () => {
 		});
 
 		describe("with ADR approach", () => {
-			it("should render PromptResult with ADR approach", () => {
+			it("should render PromptResult with ADR approach", async () => {
 				const gateway = new PolyglotGateway();
 				const promptResult: PromptResult = {
 					sections: [
@@ -179,7 +179,7 @@ describe("PolyglotGateway", () => {
 					approach: OutputApproach.ADR,
 				};
 
-				const artifacts = gateway.render(request);
+				const artifacts = await gateway.render(request);
 
 				expect(artifacts.primary).toBeDefined();
 				expect(artifacts.primary.name).toMatch(/ADR-\d{3}.*\.md/);
@@ -187,7 +187,7 @@ describe("PolyglotGateway", () => {
 		});
 
 		describe("with RFC approach", () => {
-			it("should render PromptResult with RFC approach", () => {
+			it("should render PromptResult with RFC approach", async () => {
 				const gateway = new PolyglotGateway();
 				const promptResult: PromptResult = {
 					sections: [
@@ -213,7 +213,7 @@ describe("PolyglotGateway", () => {
 					approach: OutputApproach.RFC,
 				};
 
-				const artifacts = gateway.render(request);
+				const artifacts = await gateway.render(request);
 
 				expect(artifacts.primary).toBeDefined();
 				expect(artifacts.primary.name).toBe("RFC.md");
@@ -221,7 +221,7 @@ describe("PolyglotGateway", () => {
 		});
 
 		describe("with SDD approach", () => {
-			it("should render PromptResult with SDD approach", () => {
+			it("should render PromptResult with SDD approach", async () => {
 				const gateway = new PolyglotGateway();
 				const promptResult: PromptResult = {
 					sections: [
@@ -247,7 +247,7 @@ describe("PolyglotGateway", () => {
 					approach: OutputApproach.SDD,
 				};
 
-				const artifacts = gateway.render(request);
+				const artifacts = await gateway.render(request);
 
 				expect(artifacts.primary).toBeDefined();
 				expect(artifacts.primary.name).toBe("spec.md");
@@ -257,23 +257,22 @@ describe("PolyglotGateway", () => {
 		});
 
 		describe("with SPECKIT approach", () => {
-			it("should render SessionState with SPECKIT approach", () => {
+			it("should render SpecKitInput with SPECKIT approach", async () => {
 				const gateway = new PolyglotGateway();
-				// SessionState compatible with SPECKIT strategy type guards
-				const sessionState = {
-					id: "test-session",
-					phase: "discovery",
-					context: { goal: "Test goal" },
-					history: [],
+				const specKitInput = {
+					title: "Feature",
+					overview: "Test goal",
+					objectives: [{ description: "Objective 1" }],
+					requirements: [{ description: "Requirement 1" }],
 				};
 
 				const request: GatewayRequest = {
-					domainResult: sessionState,
-					domainType: "SessionState",
+					domainResult: specKitInput,
+					domainType: "SpecKitInput",
 					approach: OutputApproach.SPECKIT,
 				};
 
-				const artifacts = gateway.render(request);
+				const artifacts = await gateway.render(request);
 
 				expect(artifacts.primary).toBeDefined();
 				expect(artifacts.primary.name).toBe("feature/README.md");
@@ -281,7 +280,7 @@ describe("PolyglotGateway", () => {
 		});
 
 		describe("with TOGAF approach", () => {
-			it("should render SessionState with TOGAF approach", () => {
+			it("should render SessionState with TOGAF approach", async () => {
 				const gateway = new PolyglotGateway();
 				// SessionState compatible with TOGAF strategy type guards
 				const sessionState = {
@@ -297,7 +296,7 @@ describe("PolyglotGateway", () => {
 					approach: OutputApproach.TOGAF,
 				};
 
-				const artifacts = gateway.render(request);
+				const artifacts = await gateway.render(request);
 
 				expect(artifacts.primary).toBeDefined();
 				expect(artifacts.primary.name).toBe("architecture-vision.md");
@@ -305,7 +304,7 @@ describe("PolyglotGateway", () => {
 		});
 
 		describe("with ENTERPRISE approach", () => {
-			it("should render SessionState with ENTERPRISE approach", () => {
+			it("should render SessionState with ENTERPRISE approach", async () => {
 				const gateway = new PolyglotGateway();
 				// SessionState compatible with ENTERPRISE strategy type guards
 				const sessionState = {
@@ -321,7 +320,7 @@ describe("PolyglotGateway", () => {
 					approach: OutputApproach.ENTERPRISE,
 				};
 
-				const artifacts = gateway.render(request);
+				const artifacts = await gateway.render(request);
 
 				expect(artifacts.primary).toBeDefined();
 				expect(artifacts.primary.name).toBe("executive-summary.md");
@@ -329,7 +328,7 @@ describe("PolyglotGateway", () => {
 		});
 
 		describe("error handling", () => {
-			it("should throw error for unknown output approach", () => {
+			it("should throw error for unknown output approach", async () => {
 				const gateway = new PolyglotGateway();
 				const promptResult: PromptResult = {
 					sections: [{ title: "Test", body: "Test", level: 1 }],
@@ -349,12 +348,12 @@ describe("PolyglotGateway", () => {
 					approach: "unknown" as OutputApproach,
 				};
 
-				expect(() => gateway.render(request)).toThrow(
+				await expect(() => gateway.render(request)).rejects.toThrow(
 					"Unknown output approach: unknown",
 				);
 			});
 
-			it("should throw error when strategy doesn't support domain type", () => {
+			it("should throw error when strategy doesn't support domain type", async () => {
 				const gateway = new PolyglotGateway();
 				const promptResult: PromptResult = {
 					sections: [{ title: "Test", body: "Test", level: 1 }],
@@ -375,7 +374,7 @@ describe("PolyglotGateway", () => {
 					approach: OutputApproach.TOGAF,
 				};
 
-				expect(() => gateway.render(request)).toThrow(
+				await expect(() => gateway.render(request)).rejects.toThrow(
 					`Strategy ${OutputApproach.TOGAF} does not support PromptResult`,
 				);
 			});
@@ -383,7 +382,7 @@ describe("PolyglotGateway", () => {
 	});
 
 	describe("render() with cross-cutting capabilities", () => {
-		it("should add cross-cutting artifacts when requested", () => {
+		it("should add cross-cutting artifacts when requested", async () => {
 			const gateway = new PolyglotGateway();
 			const promptResult: PromptResult = {
 				sections: [{ title: "Test", body: "Test content", level: 1 }],
@@ -404,7 +403,7 @@ describe("PolyglotGateway", () => {
 				crossCutting: [CrossCuttingCapability.WORKFLOW],
 			};
 
-			const artifacts = gateway.render(request);
+			const artifacts = await gateway.render(request);
 
 			expect(artifacts.primary).toBeDefined();
 			// Cross-cutting artifacts may or may not be added depending on whether
@@ -414,7 +413,7 @@ describe("PolyglotGateway", () => {
 			}
 		});
 
-		it("should not add cross-cutting artifacts when not requested", () => {
+		it("should not add cross-cutting artifacts when not requested", async () => {
 			const gateway = new PolyglotGateway();
 			const promptResult: PromptResult = {
 				sections: [{ title: "Test", body: "Test", level: 1 }],
@@ -435,13 +434,13 @@ describe("PolyglotGateway", () => {
 				// No crossCutting specified
 			};
 
-			const artifacts = gateway.render(request);
+			const artifacts = await gateway.render(request);
 
 			expect(artifacts.primary).toBeDefined();
 			expect(artifacts.crossCutting).toBeUndefined();
 		});
 
-		it("should not add cross-cutting artifacts when empty array", () => {
+		it("should not add cross-cutting artifacts when empty array", async () => {
 			const gateway = new PolyglotGateway();
 			const promptResult: PromptResult = {
 				sections: [{ title: "Test", body: "Test", level: 1 }],
@@ -462,7 +461,7 @@ describe("PolyglotGateway", () => {
 				crossCutting: [],
 			};
 
-			const artifacts = gateway.render(request);
+			const artifacts = await gateway.render(request);
 
 			expect(artifacts.primary).toBeDefined();
 			expect(artifacts.crossCutting).toBeUndefined();
@@ -470,7 +469,7 @@ describe("PolyglotGateway", () => {
 	});
 
 	describe("getSupportedApproaches() method", () => {
-		it("should return approaches that support PromptResult", () => {
+		it("should return approaches that support PromptResult", async () => {
 			const gateway = new PolyglotGateway();
 			const approaches = gateway.getSupportedApproaches("PromptResult");
 
@@ -478,7 +477,7 @@ describe("PolyglotGateway", () => {
 			expect(approaches.length).toBeGreaterThan(0);
 		});
 
-		it("should return approaches that support SessionState", () => {
+		it("should return approaches that support SessionState", async () => {
 			const gateway = new PolyglotGateway();
 			const approaches = gateway.getSupportedApproaches("SessionState");
 
@@ -489,7 +488,7 @@ describe("PolyglotGateway", () => {
 			expect(approaches.length).toBeGreaterThan(0);
 		});
 
-		it("should return approaches that support ScoringResult", () => {
+		it("should return approaches that support ScoringResult", async () => {
 			const gateway = new PolyglotGateway();
 			const approaches = gateway.getSupportedApproaches("ScoringResult");
 
@@ -497,14 +496,14 @@ describe("PolyglotGateway", () => {
 			expect(approaches.length).toBeGreaterThan(0);
 		});
 
-		it("should return empty array for unsupported domain type", () => {
+		it("should return empty array for unsupported domain type", async () => {
 			const gateway = new PolyglotGateway();
 			const approaches = gateway.getSupportedApproaches("UnknownType");
 
 			expect(approaches).toEqual([]);
 		});
 
-		it("should return all 7 approaches for a universally supported type", () => {
+		it("should return all 7 approaches for a universally supported type", async () => {
 			const gateway = new PolyglotGateway();
 			// SessionState is supported by most strategies
 			const approaches = gateway.getSupportedApproaches("SessionState");
@@ -514,7 +513,7 @@ describe("PolyglotGateway", () => {
 	});
 
 	describe("getSupportedCrossCutting() method", () => {
-		it("should return cross-cutting capabilities for SessionState", () => {
+		it("should return cross-cutting capabilities for SessionState", async () => {
 			const gateway = new PolyglotGateway();
 			const capabilities = gateway.getSupportedCrossCutting("SessionState");
 
@@ -522,7 +521,7 @@ describe("PolyglotGateway", () => {
 			expect(capabilities).toContain(CrossCuttingCapability.WORKFLOW);
 		});
 
-		it("should return cross-cutting capabilities for PromptResult", () => {
+		it("should return cross-cutting capabilities for PromptResult", async () => {
 			const gateway = new PolyglotGateway();
 			const capabilities = gateway.getSupportedCrossCutting("PromptResult");
 
@@ -530,7 +529,7 @@ describe("PolyglotGateway", () => {
 			expect(Array.isArray(capabilities)).toBe(true);
 		});
 
-		it("should delegate to crossCuttingManager", () => {
+		it("should delegate to crossCuttingManager", async () => {
 			const gateway = new PolyglotGateway();
 			const capabilities = gateway.getSupportedCrossCutting("SessionState");
 
@@ -540,7 +539,7 @@ describe("PolyglotGateway", () => {
 	});
 
 	describe("render options forwarding", () => {
-		it("should forward options to strategy render method", () => {
+		it("should forward options to strategy render method", async () => {
 			const gateway = new PolyglotGateway();
 			const promptResult: PromptResult = {
 				sections: [{ title: "Test", body: "Test", level: 1 }],
@@ -563,14 +562,14 @@ describe("PolyglotGateway", () => {
 				},
 			};
 
-			const artifacts = gateway.render(request);
+			const artifacts = await gateway.render(request);
 
 			expect(artifacts.primary.content).toContain("Technique:");
 		});
 	});
 
 	describe("integration scenarios", () => {
-		it("should handle complete workflow: PromptResult -> SDD + WORKFLOW", () => {
+		it("should handle complete workflow: PromptResult -> SDD + WORKFLOW", async () => {
 			const gateway = new PolyglotGateway();
 			const promptResult: PromptResult = {
 				sections: [
@@ -605,7 +604,7 @@ describe("PolyglotGateway", () => {
 				},
 			};
 
-			const artifacts = gateway.render(request);
+			const artifacts = await gateway.render(request);
 
 			// Should have primary (spec.md)
 			expect(artifacts.primary).toBeDefined();
