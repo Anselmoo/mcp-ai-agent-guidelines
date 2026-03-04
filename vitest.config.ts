@@ -3,6 +3,9 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
 	test: {
 		environment: "node",
+		pool: "vmThreads",
+		maxWorkers: 4,
+		testTimeout: 10000,
 		setupFiles: ["./tests/setup/vitest.setup.ts"],
 		coverage: {
 			provider: "v8",

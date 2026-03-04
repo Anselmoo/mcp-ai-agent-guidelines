@@ -393,8 +393,6 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-# Serena
-.serena/
 
 # Generated model types - regenerated at build time
 # Source of truth: src/tools/config/models.yaml
