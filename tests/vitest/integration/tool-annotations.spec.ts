@@ -71,7 +71,7 @@ describe("Tool registration", () => {
 		 * Note: prompt-hierarchy (unified) is implemented but not yet registered.
 		 * If this test fails after adding/removing tools, update the count below.
 		 */
-		const EXPECTED_TOOL_COUNT = 37; // Updated for validate-progress tool (Phase 3 enforcement)
+		const EXPECTED_TOOL_COUNT = 40; // Updated for enforce-planning, validate-annotations, validate-schema-examples (Phase 6)
 		expect(
 			tools.length,
 			`Expected ${EXPECTED_TOOL_COUNT} tools, got ${tools.length}. Update EXPECTED_TOOL_COUNT if tools were intentionally added/removed.`,
