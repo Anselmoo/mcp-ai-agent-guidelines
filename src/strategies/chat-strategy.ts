@@ -79,12 +79,7 @@ export class ChatStrategy extends BaseStrategy<
 	 * @returns True if this strategy can render the domain type
 	 */
 	supports(domainType: string): boolean {
-		return [
-			"PromptResult",
-			"ScoringResult",
-			"SessionState",
-			"DesignAssistantResponse",
-		].includes(domainType);
+		return ["PromptResult", "ScoringResult"].includes(domainType);
 	}
 
 	/**

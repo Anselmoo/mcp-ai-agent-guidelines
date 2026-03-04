@@ -10,7 +10,7 @@ const base = {
 };
 
 describe("generatePlan", () => {
-	it("should generate a plan with dynamic timeline start date", () => {
+	it("should generate a plan with deterministic timeline when startDate is provided", () => {
 		const state = createInitialSessionState({
 			...base,
 			title: "Plan Test",
@@ -24,13 +24,33 @@ describe("generatePlan", () => {
 			],
 		});
 
-		const result = generatePlan(state);
-		const today = new Date().toISOString().split("T")[0];
+		const fixedDate = new Date("2024-01-15");
+		const result = generatePlan(state, fixedDate);
 
 		expect(result.title).toBe("plan.md");
 		expect(result.content).toContain("## Timeline");
+		expect(result.content).toContain("2024-01-15");
+	});
+
+	it("should use current date when no startDate is provided", () => {
+		const state = createInitialSessionState({
+			...base,
+			title: "Plan Test",
+			objectives: [{ description: "Obj 1", priority: "high" as const }],
+			requirements: [
+				{
+					description: "Req 1",
+					type: "functional" as const,
+					priority: "high" as const,
+				},
+			],
+		});
+
+		const today = new Date().toISOString().split("T")[0];
+		const result = generatePlan(state);
+
+		expect(result.content).toContain("## Timeline");
 		expect(result.content).toContain(today);
-		expect(result.content).not.toContain("2026-01-01");
 	});
 
 	it("should generate Phase 2 section for medium priority objectives", () => {

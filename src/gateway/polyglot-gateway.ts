@@ -104,7 +104,7 @@ export class PolyglotGateway {
 	 *
 	 * @example
 	 * ```typescript
-	 * const artifacts = gateway.render({
+	 * const artifacts = await gateway.render({
 	 *   domainResult: promptResult,
 	 *   domainType: 'PromptResult',
 	 *   approach: OutputApproach.RFC,
