@@ -481,7 +481,7 @@ describe("PolyglotGateway", () => {
 			const gateway = new PolyglotGateway();
 			const approaches = gateway.getSupportedApproaches("SessionState");
 
-			expect(approaches).toContain(OutputApproach.CHAT);
+			expect(approaches).not.toContain(OutputApproach.CHAT);
 			expect(approaches).toContain(OutputApproach.ADR);
 			expect(approaches).toContain(OutputApproach.RFC);
 			expect(approaches).toContain(OutputApproach.SDD);

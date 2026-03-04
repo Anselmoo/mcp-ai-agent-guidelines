@@ -35,9 +35,14 @@ describe("ChatStrategy", () => {
 			expect(strategy.supports("ScoringResult")).toBe(true);
 		});
 
-		it("should support SessionState", async () => {
+		it("should not support SessionState", async () => {
 			const strategy = new ChatStrategy();
-			expect(strategy.supports("SessionState")).toBe(true);
+			expect(strategy.supports("SessionState")).toBe(false);
+		});
+
+		it("should not support DesignAssistantResponse", async () => {
+			const strategy = new ChatStrategy();
+			expect(strategy.supports("DesignAssistantResponse")).toBe(false);
 		});
 
 		it("should not support unsupported types", async () => {

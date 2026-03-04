@@ -9,7 +9,6 @@
 
 import { describe, expect, it } from "vitest";
 import { polyglotGateway } from "../../../src/gateway/polyglot-gateway.js";
-import type { OutputArtifacts } from "../../../src/strategies/output-strategy.js";
 import {
 	CrossCuttingCapability,
 	OutputApproach,
@@ -79,7 +78,7 @@ describe("Strategy Matrix Integration", () => {
 						it(`renders ${domainType} without error`, async () => {
 							const result = createDomainResult(domainType);
 
-							const artifacts = await await polyglotGateway.render({
+							const artifacts = await polyglotGateway.render({
 								domainResult: result,
 								domainType,
 								approach,
@@ -133,7 +132,7 @@ describe("Strategy Matrix Integration", () => {
 					const result = createTestSessionState();
 
 					// Use SDD approach which properly supports SessionState
-					const artifacts = await await polyglotGateway.render({
+					const artifacts = await polyglotGateway.render({
 						domainResult: result,
 						domainType: "SessionState",
 						approach: OutputApproach.SDD,
@@ -153,7 +152,7 @@ describe("Strategy Matrix Integration", () => {
 
 	describe("Output Validation", () => {
 		it("CHAT produces valid markdown", async () => {
-			const artifacts = await await polyglotGateway.render({
+			const artifacts = await polyglotGateway.render({
 				domainResult: createTestPromptResult(),
 				domainType: "PromptResult",
 				approach: OutputApproach.CHAT,
@@ -164,7 +163,7 @@ describe("Strategy Matrix Integration", () => {
 		});
 
 		it("SPECKIT produces folder structure", async () => {
-			const artifacts = await await polyglotGateway.render({
+			const artifacts = await polyglotGateway.render({
 				domainResult: createTestSessionState(),
 				domainType: "SessionState",
 				approach: OutputApproach.SPECKIT,
@@ -176,7 +175,7 @@ describe("Strategy Matrix Integration", () => {
 		});
 
 		it("RFC produces RFC document", async () => {
-			const artifacts = await await polyglotGateway.render({
+			const artifacts = await polyglotGateway.render({
 				domainResult: createTestPromptResult(),
 				domainType: "PromptResult",
 				approach: OutputApproach.RFC,
@@ -188,7 +187,7 @@ describe("Strategy Matrix Integration", () => {
 		});
 
 		it("ADR produces ADR document", async () => {
-			const artifacts = await await polyglotGateway.render({
+			const artifacts = await polyglotGateway.render({
 				domainResult: createTestPromptResult(),
 				domainType: "PromptResult",
 				approach: OutputApproach.ADR,
@@ -200,7 +199,7 @@ describe("Strategy Matrix Integration", () => {
 		});
 
 		it("SDD produces spec.md and secondary documents", async () => {
-			const artifacts = await await polyglotGateway.render({
+			const artifacts = await polyglotGateway.render({
 				domainResult: createTestPromptResult(),
 				domainType: "PromptResult",
 				approach: OutputApproach.SDD,
@@ -213,7 +212,7 @@ describe("Strategy Matrix Integration", () => {
 		});
 
 		it("TOGAF produces architecture document", async () => {
-			const artifacts = await await polyglotGateway.render({
+			const artifacts = await polyglotGateway.render({
 				domainResult: createTestSessionState(),
 				domainType: "SessionState",
 				approach: OutputApproach.TOGAF,
@@ -225,7 +224,7 @@ describe("Strategy Matrix Integration", () => {
 		});
 
 		it("ENTERPRISE produces enterprise document", async () => {
-			const artifacts = await await polyglotGateway.render({
+			const artifacts = await polyglotGateway.render({
 				domainResult: createTestSessionState(),
 				domainType: "SessionState",
 				approach: OutputApproach.ENTERPRISE,
@@ -260,14 +259,22 @@ describe("Strategy Matrix Integration", () => {
 	});
 
 	describe("Strategy Support Matrix", () => {
-		it("CHAT supports all domain types", async () => {
-			const chatSupported = DOMAIN_TYPES.map((type) =>
+		it("CHAT supports PromptResult and ScoringResult but not SessionState", async () => {
+			expect(
 				polyglotGateway
-					.getSupportedApproaches(type)
+					.getSupportedApproaches("PromptResult")
 					.includes(OutputApproach.CHAT),
-			);
-
-			expect(chatSupported.every((s) => s)).toBe(true);
+			).toBe(true);
+			expect(
+				polyglotGateway
+					.getSupportedApproaches("ScoringResult")
+					.includes(OutputApproach.CHAT),
+			).toBe(true);
+			expect(
+				polyglotGateway
+					.getSupportedApproaches("SessionState")
+					.includes(OutputApproach.CHAT),
+			).toBe(false);
 		});
 
 		it("each strategy supports at least one domain type", async () => {

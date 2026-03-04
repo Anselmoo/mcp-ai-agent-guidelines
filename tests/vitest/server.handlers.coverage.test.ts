@@ -1,21 +1,11 @@
-import {
-	afterEach,
-	beforeAll,
-	beforeEach,
-	describe,
-	expect,
-	it,
-	vi,
-} from "vitest";
-import { modeManager } from "../../src/tools/shared/mode-manager.ts";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { modeManager } from "../../src/tools/shared/mode-manager.js";
 
 // Store captured handlers
 let capturedHandlers: Array<{ schema: any; handler: any }> = [];
 
 vi.mock("@modelcontextprotocol/sdk/server/index.js", () => {
 	class Server {
-		constructor(_info?: unknown, _caps?: unknown) {}
-
 		setRequestHandler(schema: any, handler: any) {
 			// Store the handler for testing
 			capturedHandlers.push({ schema, handler });

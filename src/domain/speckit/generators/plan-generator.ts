@@ -1,6 +1,9 @@
 import type { MarkdownSection, SessionState } from "../types.js";
 
-export function generatePlan(state: SessionState): MarkdownSection {
+export function generatePlan(
+	state: SessionState,
+	startDate?: Date,
+): MarkdownSection {
 	const { input } = state;
 
 	const lines = [
@@ -16,7 +19,7 @@ export function generatePlan(state: SessionState): MarkdownSection {
 		"",
 		"## Timeline",
 		"",
-		formatTimeline(input.objectives),
+		formatTimeline(input.objectives, startDate),
 		"",
 		"## Risks & Mitigations",
 		"",
@@ -70,15 +73,16 @@ function formatPhases(
 
 function formatTimeline(
 	objectives: Array<{ description: string; priority?: string }>,
+	startDate?: Date,
 ): string {
-	const startDate = new Date().toISOString().split("T")[0];
+	const dateStr = (startDate ?? new Date()).toISOString().split("T")[0];
 	const lines = [
 		"```mermaid",
 		"gantt",
 		"    title Implementation Timeline",
 		"    dateFormat YYYY-MM-DD",
 		"    section Phase 1",
-		`    Foundation tasks :p1, ${startDate}, 1w`,
+		`    Foundation tasks :p1, ${dateStr}, 1w`,
 		"    section Phase 2",
 		`    Core tasks (${objectives.length}) :p2, after p1, 1w`,
 		"```",

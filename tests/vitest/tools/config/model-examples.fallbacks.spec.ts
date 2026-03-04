@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("../../../../src/tools/config/model-selectors", () => ({
+vi.mock("../../../../src/tools/config/model-selectors.js", () => ({
 	getBudgetModel: vi.fn(),
 	getLargeContextModel: vi.fn(),
 	getBalancedModel: vi.fn(),
@@ -10,13 +10,13 @@ vi.mock("../../../../src/tools/config/model-selectors", () => ({
 import {
 	generatePythonExample,
 	generateTypeScriptExample,
-} from "../../../../src/tools/config/model-examples";
+} from "../../../../src/tools/config/model-examples.js";
 import {
 	getAdvancedReasoningModel,
 	getBalancedModel,
 	getBudgetModel,
 	getLargeContextModel,
-} from "../../../../src/tools/config/model-selectors";
+} from "../../../../src/tools/config/model-selectors.js";
 
 describe("model-examples fallback coverage", () => {
 	const mockBudgetModel = vi.mocked(getBudgetModel);
