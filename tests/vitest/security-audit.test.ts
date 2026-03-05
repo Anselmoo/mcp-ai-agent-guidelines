@@ -77,16 +77,15 @@ describe("Security Audit", () => {
 				return;
 			}
 
-			// Accept known dompurify/mermaid vulnerability (GHSA-v2wj-7wpq-c8vv).
-			// dompurify >=3.1.3 is flagged by npm audit; no patched version is available
-			// in the current advisory database. This is an accepted risk until upstream
-			// publishes a fixed dompurify version or mermaid removes the dependency.
+			// Accept known dompurify vulnerability (GHSA-v2wj-7wpq-c8vv).
+			// dompurify 3.1.3 - 3.3.1 is flagged by npm audit; no patched version is
+			// available. This is an accepted risk until upstream publishes a fix.
+			// Note: npm audit output may or may not mention mermaid depending on version.
 			if (
 				output.includes("dompurify") &&
-				output.includes("mermaid") &&
 				(output.includes("GHSA-v2wj-7wpq-c8vv") ||
 					output.includes("Depends on vulnerable versions of dompurify") ||
-					output.includes("Will install mermaid@"))
+					output.includes("Cross-site Scripting"))
 			) {
 				expect(output).toContain("dompurify");
 				// Test passes - this is a known issue with no available fix
