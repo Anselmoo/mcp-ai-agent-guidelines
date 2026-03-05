@@ -92,4 +92,57 @@ describe("SpecKitStrategy", () => {
 		);
 		expect(hasValidation).toBe(false);
 	});
+
+	describe("tryConvertSessionState via validate()", () => {
+		it("should convert session-shaped input with config.goal", () => {
+			const result = strategy.validate({
+				config: {
+					goal: "Session Goal",
+					requirements: ["req1", "req2"],
+					constraints: ["constraint1"],
+				},
+			});
+			expect(result.valid).toBe(true);
+		});
+
+		it("should convert session-shaped input with context.goal", () => {
+			const result = strategy.validate({
+				context: { goal: "Context Goal", overview: "Some overview" },
+			});
+			expect(result.valid).toBe(true);
+		});
+
+		it("should convert session-shaped input with s.id as goal", () => {
+			const result = strategy.validate({ id: "session-id-as-goal" });
+			expect(result.valid).toBe(true);
+		});
+
+		it("should convert session-shaped input with object constraints", () => {
+			const result = strategy.validate({
+				config: {
+					goal: "Goal with Object Constraints",
+					constraints: [
+						{ description: "constraint-desc" },
+						{ description: "" },
+					],
+				},
+			});
+			expect(result.valid).toBe(true);
+		});
+
+		it("should return invalid when no goal is found", () => {
+			const result = strategy.validate({ config: {} });
+			expect(result.valid).toBe(false);
+		});
+
+		it("should return null for non-object input (null)", () => {
+			const result = strategy.validate(null);
+			expect(result.valid).toBe(false);
+		});
+
+		it("should return null for non-object input (string)", () => {
+			const result = strategy.validate("not-an-object");
+			expect(result.valid).toBe(false);
+		});
+	});
 });

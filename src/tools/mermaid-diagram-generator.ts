@@ -45,23 +45,21 @@ function importMermaidModule(): Promise<unknown> {
 
 function extractMermaidParse(mod: unknown): MermaidParseLike | null {
 	if (!mod) return null;
-	if (typeof mod === "function") {
-		return mod as MermaidParseLike;
-	}
-	if (typeof (mod as { parse?: unknown }).parse === "function") {
-		const parse = (mod as { parse: MermaidParseLike }).parse;
-		return parse.bind(mod);
-	}
-	const defaultExport = (mod as { default?: unknown }).default;
-	if (typeof defaultExport === "function") {
-		return defaultExport as MermaidParseLike;
-	}
-	if (
-		defaultExport &&
-		typeof (defaultExport as { parse?: unknown }).parse === "function"
-	) {
-		const parse = (defaultExport as { parse: MermaidParseLike }).parse;
-		return parse.bind(defaultExport);
+	const m = mod as Record<string, unknown>;
+	const d = m["default"] as Record<string, unknown> | undefined;
+	// Try all common mermaid export shapes: module, module.parse, default, default.parse
+	const candidates: [unknown, unknown][] = [
+		[m, null],
+		[m["parse"], m],
+		[d, null],
+		[d?.["parse"], d],
+	];
+	for (const [fn, ctx] of candidates) {
+		if (typeof fn === "function") {
+			return ctx
+				? (fn as MermaidParseLike).bind(ctx)
+				: (fn as MermaidParseLike);
+		}
 	}
 	return null;
 }
@@ -96,7 +94,7 @@ async function validateDiagram(code: string): Promise<ValidateResult> {
 		await Promise.resolve(parse(code));
 		return { valid: true };
 	} catch (err) {
-		const msg = (err as Error).message || String(err);
+		const msg = (err as Error).message ?? String(err);
 		// If mermaid is not installed/available, or requires DOM environment, skip validation but allow diagram output
 		if (
 			/Cannot find module 'mermaid'|Cannot use import statement|module not found|DOMPurify|document is not defined|window is not defined|Mermaid parse function unavailable/i.test(
@@ -411,17 +409,16 @@ function generateFlowchart(
 	};
 	const lower = description.toLowerCase();
 	const firstId = "A";
-	if (/api key|secret/.test(lower)) {
-		const id = String.fromCharCode(65 + riskIndex++);
-		addRisk(id, "Hardcoded Secret", firstId);
-	}
-	if (/sql/.test(lower)) {
-		const id = String.fromCharCode(65 + riskIndex++);
-		addRisk(id, "Raw SQL Query Risk", firstId);
-	}
-	if (/deprecated|old method|old\b/.test(lower)) {
-		const id = String.fromCharCode(65 + riskIndex++);
-		addRisk(id, "Deprecated Method", firstId);
+	const RISK_PATTERNS: ReadonlyArray<{ re: RegExp; label: string }> = [
+		{ re: /api key|secret/, label: "Hardcoded Secret" },
+		{ re: /sql/, label: "Raw SQL Query Risk" },
+		{ re: /deprecated|old method|old\b/, label: "Deprecated Method" },
+	];
+	for (const { re, label } of RISK_PATTERNS) {
+		if (re.test(lower)) {
+			const id = String.fromCharCode(65 + riskIndex++);
+			addRisk(id, label, firstId);
+		}
 	}
 	if (riskNodes.length) {
 		lines.push("classDef risk fill:#fee,stroke:#d33,stroke-width:1px;");
