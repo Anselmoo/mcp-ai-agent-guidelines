@@ -92,51 +92,48 @@ jobs:
 
       - name: Run npm audit (production dependencies)
         run: |
+          echo "=== Production Dependencies Security Audit ==="
+          # Run audit: output is visible in CI log AND captured to file via tee
+          npm audit --omit=dev --audit-level=moderate 2>&1 | tee audit-prod.txt
+          AUDIT_EXIT=${PIPESTATUS[0]}
+
+          # Write structured summary to step summary tab
           echo "### 🔒 Security Audit Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Running npm audit for production dependencies..." >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-          # Run audit and capture output
-          if npm audit --omit=dev --audit-level=moderate --json > audit-prod.json 2>&1; then
-            echo "✅ No vulnerabilities found in production dependencies" >> $GITHUB_STEP_SUMMARY
+          if [ $AUDIT_EXIT -eq 0 ]; then
+            echo "✅ No moderate+ vulnerabilities in production dependencies" >> $GITHUB_STEP_SUMMARY
           else
             echo "⚠️ Vulnerabilities detected in production dependencies:" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo '```json' >> $GITHUB_STEP_SUMMARY
-            cat audit-prod.json | jq -r '.vulnerabilities | to_entries | .[] | "- \(.key): \(.value.severity) severity"' >> $GITHUB_STEP_SUMMARY || cat audit-prod.json >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
-            exit 1
+            cat audit-prod.txt >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
           fi
+          exit $AUDIT_EXIT
 
       - name: Run npm audit (all dependencies)
         run: |
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Running npm audit for all dependencies..." >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "=== All Dependencies Security Audit (informational) ==="
+          # Run full audit with output visible in CI log
+          npm audit --audit-level=moderate 2>&1 | tee audit-all.txt || true
 
-          # Run full audit and capture output
-          if npm audit --audit-level=moderate --json > audit-all.json 2>&1; then
-            echo "✅ No vulnerabilities found in all dependencies" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "⚠️ Vulnerabilities detected in all dependencies (including dev):" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo '```json' >> $GITHUB_STEP_SUMMARY
-            cat audit-all.json | jq -r '.vulnerabilities | to_entries | .[] | "- \(.key): \(.value.severity) severity"' >> $GITHUB_STEP_SUMMARY || cat audit-all.json >> $GITHUB_STEP_SUMMARY
-            echo '```' >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "**Note:** This includes dev dependencies. Only production vulnerabilities will fail the build." >> $GITHUB_STEP_SUMMARY
-          fi
+          # Write to step summary (informational only — dev vulns don't fail build)
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "#### All Dependencies (including dev) — informational" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat audit-all.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "> **Note:** Only production vulnerabilities fail the build." >> $GITHUB_STEP_SUMMARY
         continue-on-error: true
 
       - name: Upload audit reports
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: security-audit-reports
           path: |
-            audit-prod.json
-            audit-all.json
+            audit-prod.txt
+            audit-all.txt
 
   # ============================================================================
   # Testing and Quality Assurance
@@ -214,7 +211,7 @@ jobs:
 
       - name: Upload coverage artifacts
         if: matrix.node-version == '22'
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-report
           path: coverage/
@@ -248,7 +245,7 @@ jobs:
         run: npm pack
 
       - name: Store NPM package
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: npm-package
           path: '*.tgz'
