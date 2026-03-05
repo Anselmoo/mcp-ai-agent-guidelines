@@ -15,16 +15,47 @@ import {
 import { handleToolError } from "./shared/error-handler.js";
 
 const ModelCompatibilitySchema = z.object({
-	taskDescription: z.string(),
-	requirements: z.array(z.string()).optional(),
-	budget: z.enum(["low", "medium", "high"]).optional(),
+	taskDescription: z
+		.string()
+		.describe("Description of the task to match with an AI model"),
+	requirements: z
+		.array(z.string())
+		.describe(
+			"Specific requirements such as context length or multimodal support",
+		)
+		.optional(),
+	budget: z
+		.enum(["low", "medium", "high"])
+		.describe("Budget constraints for model selection")
+		.optional(),
 	// Optional additions
-	language: z.string().optional(), // for example snippets (e.g., 'typescript', 'python')
-	includeReferences: z.boolean().optional().default(true),
-	includeCodeExamples: z.boolean().optional().default(true),
-	linkFiles: z.boolean().optional().default(true),
-	includeMetadata: z.boolean().optional().default(true),
-	inputFile: z.string().optional(),
+	language: z
+		.string()
+		.describe(
+			"Preferred language for example snippets (e.g., typescript, python)",
+		)
+		.optional(),
+	includeReferences: z
+		.boolean()
+		.describe("Include external reference links")
+		.optional()
+		.default(true),
+	includeCodeExamples: z
+		.boolean()
+		.describe("Include language-specific example snippets")
+		.optional()
+		.default(true),
+	linkFiles: z
+		.boolean()
+		.describe("Include links to relevant files or resources")
+		.optional()
+		.default(true),
+	includeMetadata: z
+		.boolean()
+		.describe("Include metadata section")
+		.optional()
+		.default(true),
+	inputFile: z.string().describe("Input file path for reference").optional(),
 });
 
 type ModelCompatibilityInput = z.infer<typeof ModelCompatibilitySchema>;

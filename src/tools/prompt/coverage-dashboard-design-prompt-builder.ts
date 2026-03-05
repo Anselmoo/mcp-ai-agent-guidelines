@@ -74,125 +74,212 @@ const DEFAULT_ITERATION = {
 
 // Schema for coverage metric card configuration
 const CoverageMetricCardSchema = z.object({
-	metricName: z.string(),
-	displayFormat: z.enum(["percentage", "ratio", "trend", "badge"]).optional(),
+	metricName: z
+		.string()
+		.describe("Coverage metric name (e.g., statements, branches, functions)"),
+	displayFormat: z
+		.enum(["percentage", "ratio", "trend", "badge"])
+		.describe("How to display the metric value")
+		.optional(),
 	thresholds: z
 		.object({
-			critical: z.number().min(0).max(100).optional(),
-			warning: z.number().min(0).max(100).optional(),
-			good: z.number().min(0).max(100).optional(),
+			critical: z
+				.number()
+				.describe("Critical threshold percentage")
+				.min(0)
+				.max(100)
+				.optional(),
+			warning: z
+				.number()
+				.describe("Warning threshold percentage")
+				.min(0)
+				.max(100)
+				.optional(),
+			good: z
+				.number()
+				.describe("Good coverage threshold percentage")
+				.min(0)
+				.max(100)
+				.optional(),
 		})
+		.describe("Coverage threshold values for coloring")
 		.optional(),
-	showTrend: z.boolean().optional(),
-	priority: z.enum(["high", "medium", "low"]).optional(),
+	showTrend: z
+		.boolean()
+		.describe("Whether to show coverage trend indicator")
+		.optional(),
+	priority: z
+		.enum(["high", "medium", "low"])
+		.describe("Display priority for the metric card")
+		.optional(),
 });
 
 // Schema for dashboard section configuration
 const DashboardSectionSchema = z.object({
-	sectionId: z.string(),
-	title: z.string(),
-	description: z.string().optional(),
-	collapsible: z.boolean().optional(),
-	defaultExpanded: z.boolean().optional(),
-	metrics: z.array(CoverageMetricCardSchema).optional(),
+	sectionId: z.string().describe("Unique identifier for the dashboard section"),
+	title: z.string().describe("Section display title"),
+	description: z.string().describe("Optional section description").optional(),
+	collapsible: z
+		.boolean()
+		.describe("Whether the section can be collapsed")
+		.optional(),
+	defaultExpanded: z
+		.boolean()
+		.describe("Whether the section is expanded by default")
+		.optional(),
+	metrics: z
+		.array(CoverageMetricCardSchema)
+		.describe("Metric cards to display in this section")
+		.optional(),
 });
 
 // Schema for accessibility configuration
 const AccessibilityConfigSchema = z.object({
 	wcagLevel: z
 		.enum(["A", "AA", "AAA"])
+		.describe("WCAG accessibility compliance level")
 		.optional()
 		.default(DEFAULT_ACCESSIBILITY.wcagLevel),
 	colorBlindSafe: z
 		.boolean()
+		.describe("Use color-blind safe color palette")
 		.optional()
 		.default(DEFAULT_ACCESSIBILITY.colorBlindSafe),
 	keyboardNavigation: z
 		.boolean()
+		.describe("Enable full keyboard navigation support")
 		.optional()
 		.default(DEFAULT_ACCESSIBILITY.keyboardNavigation),
 	screenReaderOptimized: z
 		.boolean()
+		.describe("Optimize for screen reader compatibility")
 		.optional()
 		.default(DEFAULT_ACCESSIBILITY.screenReaderOptimized),
 	focusIndicators: z
 		.boolean()
+		.describe("Show visible focus indicators for keyboard navigation")
 		.optional()
 		.default(DEFAULT_ACCESSIBILITY.focusIndicators),
 	highContrastMode: z
 		.boolean()
+		.describe("Support high contrast display mode")
 		.optional()
 		.default(DEFAULT_ACCESSIBILITY.highContrastMode),
 });
 
 // Schema for responsive design configuration
 const ResponsiveConfigSchema = z.object({
-	mobileFirst: z.boolean().optional().default(DEFAULT_RESPONSIVE.mobileFirst),
+	mobileFirst: z
+		.boolean()
+		.describe("Use mobile-first responsive design approach")
+		.optional()
+		.default(DEFAULT_RESPONSIVE.mobileFirst),
 	breakpoints: z
 		.object({
 			mobile: z
 				.string()
+				.describe("Mobile breakpoint (e.g., 768px)")
 				.optional()
 				.default(DEFAULT_RESPONSIVE.breakpoints.mobile),
 			tablet: z
 				.string()
+				.describe("Tablet breakpoint (e.g., 1024px)")
 				.optional()
 				.default(DEFAULT_RESPONSIVE.breakpoints.tablet),
 			desktop: z
 				.string()
+				.describe("Desktop breakpoint (e.g., 1280px)")
 				.optional()
 				.default(DEFAULT_RESPONSIVE.breakpoints.desktop),
 			largeDesktop: z
 				.string()
+				.describe("Large desktop breakpoint (e.g., 1920px)")
 				.optional()
 				.default(DEFAULT_RESPONSIVE.breakpoints.largeDesktop),
 		})
+		.describe("Responsive breakpoint values")
 		.optional(),
 	touchOptimized: z
 		.boolean()
+		.describe("Optimize touch targets for mobile devices")
 		.optional()
 		.default(DEFAULT_RESPONSIVE.touchOptimized),
 	collapsibleNavigation: z
 		.boolean()
+		.describe("Use collapsible navigation on smaller screens")
 		.optional()
 		.default(DEFAULT_RESPONSIVE.collapsibleNavigation),
 });
 
 // Schema for interactive features configuration
 const InteractiveFeaturesSchema = z.object({
-	filters: z.boolean().optional().default(DEFAULT_INTERACTIVE.filters),
-	sorting: z.boolean().optional().default(DEFAULT_INTERACTIVE.sorting),
-	search: z.boolean().optional().default(DEFAULT_INTERACTIVE.search),
-	tooltips: z.boolean().optional().default(DEFAULT_INTERACTIVE.tooltips),
+	filters: z
+		.boolean()
+		.describe("Enable filtering capabilities")
+		.optional()
+		.default(DEFAULT_INTERACTIVE.filters),
+	sorting: z
+		.boolean()
+		.describe("Enable column/row sorting")
+		.optional()
+		.default(DEFAULT_INTERACTIVE.sorting),
+	search: z
+		.boolean()
+		.describe("Enable search functionality")
+		.optional()
+		.default(DEFAULT_INTERACTIVE.search),
+	tooltips: z
+		.boolean()
+		.describe("Show tooltips on hover")
+		.optional()
+		.default(DEFAULT_INTERACTIVE.tooltips),
 	expandCollapse: z
 		.boolean()
+		.describe("Enable expand/collapse for nested data")
 		.optional()
 		.default(DEFAULT_INTERACTIVE.expandCollapse),
-	drillDown: z.boolean().optional().default(DEFAULT_INTERACTIVE.drillDown),
+	drillDown: z
+		.boolean()
+		.describe("Enable drill-down into coverage details")
+		.optional()
+		.default(DEFAULT_INTERACTIVE.drillDown),
 	exportOptions: z
 		.array(z.string())
+		.describe("Available export formats (e.g., csv, pdf, png)")
 		.optional()
 		.default(DEFAULT_INTERACTIVE.exportOptions),
 	realTimeUpdates: z
 		.boolean()
+		.describe("Enable real-time data updates")
 		.optional()
 		.default(DEFAULT_INTERACTIVE.realTimeUpdates),
 });
 
 // Schema for performance optimization configuration
 const PerformanceConfigSchema = z.object({
-	lazyLoading: z.boolean().optional().default(DEFAULT_PERFORMANCE.lazyLoading),
+	lazyLoading: z
+		.boolean()
+		.describe("Lazy load dashboard sections and components")
+		.optional()
+		.default(DEFAULT_PERFORMANCE.lazyLoading),
 	virtualScrolling: z
 		.boolean()
+		.describe("Use virtual scrolling for large data sets")
 		.optional()
 		.default(DEFAULT_PERFORMANCE.virtualScrolling),
-	dataCaching: z.boolean().optional().default(DEFAULT_PERFORMANCE.dataCaching),
+	dataCaching: z
+		.boolean()
+		.describe("Cache coverage data for faster reloads")
+		.optional()
+		.default(DEFAULT_PERFORMANCE.dataCaching),
 	skeletonLoaders: z
 		.boolean()
+		.describe("Show skeleton loaders while data is fetching")
 		.optional()
 		.default(DEFAULT_PERFORMANCE.skeletonLoaders),
 	progressiveEnhancement: z
 		.boolean()
+		.describe("Use progressive enhancement for broader browser support")
 		.optional()
 		.default(DEFAULT_PERFORMANCE.progressiveEnhancement),
 });
@@ -200,23 +287,35 @@ const PerformanceConfigSchema = z.object({
 // Main schema for the coverage dashboard design prompt builder
 const CoverageDashboardDesignSchema = z.object({
 	// Basic info
-	title: z.string().default("Coverage Dashboard Design"),
-	projectContext: z.string().optional(),
+	title: z
+		.string()
+		.describe("Dashboard title")
+		.default("Coverage Dashboard Design"),
+	projectContext: z
+		.string()
+		.describe("Project context or description for the dashboard")
+		.optional(),
 	targetUsers: z
 		.array(z.string())
+		.describe("Target user personas (e.g., developers, qa-engineers, managers)")
 		.optional()
 		.default(["developers", "qa-engineers", "managers"]),
 
 	// Dashboard configuration
 	dashboardStyle: z
 		.enum(["card-based", "table-heavy", "hybrid", "minimal"])
+		.describe("Dashboard layout style")
 		.optional()
 		.default("card-based"),
 	primaryMetrics: z
 		.array(z.string())
+		.describe("Primary coverage metrics to display")
 		.optional()
 		.default(["statements", "branches", "functions", "lines"]),
-	sections: z.array(DashboardSectionSchema).optional(),
+	sections: z
+		.array(DashboardSectionSchema)
+		.describe("Custom dashboard sections")
+		.optional(),
 
 	// Visual design
 	colorScheme: z
@@ -228,87 +327,231 @@ const CoverageDashboardDesignSchema = z.object({
 			"colorblind-safe",
 			"custom",
 		])
+		.describe("Color scheme preference")
 		.optional()
 		.default("auto"),
-	primaryColor: z.string().optional().default("oklch(0.55 0.15 240)"), // Professional blue
-	successColor: z.string().optional().default("oklch(0.65 0.18 145)"), // Green for good coverage
-	warningColor: z.string().optional().default("oklch(0.70 0.20 85)"), // Yellow/amber for warnings
-	dangerColor: z.string().optional().default("oklch(0.55 0.22 25)"), // Red for critical
-	useGradients: z.boolean().optional().default(true),
+	primaryColor: z
+		.string()
+		.describe("Primary color in OKLCH format")
+		.optional()
+		.default("oklch(0.55 0.15 240)"),
+	successColor: z
+		.string()
+		.describe("Color for good/passing coverage")
+		.optional()
+		.default("oklch(0.65 0.18 145)"),
+	warningColor: z
+		.string()
+		.describe("Color for warning-level coverage")
+		.optional()
+		.default("oklch(0.70 0.20 85)"),
+	dangerColor: z
+		.string()
+		.describe("Color for critical/failing coverage")
+		.optional()
+		.default("oklch(0.55 0.22 25)"),
+	useGradients: z
+		.boolean()
+		.describe("Use gradient visual indicators")
+		.optional()
+		.default(true),
 	visualIndicators: z
 		.array(z.string())
+		.describe(
+			"Visual indicator types (e.g., progress-bars, badges, sparklines, heat-maps)",
+		)
 		.optional()
 		.default(["progress-bars", "badges", "sparklines", "heat-maps"]),
 
 	// Typography
-	fontFamily: z.string().optional().default("Inter, system-ui, sans-serif"),
-	codeFont: z.string().optional().default("JetBrains Mono, monospace"),
+	fontFamily: z
+		.string()
+		.describe("UI font family")
+		.optional()
+		.default("Inter, system-ui, sans-serif"),
+	codeFont: z
+		.string()
+		.describe("Code font family for file paths and identifiers")
+		.optional()
+		.default("JetBrains Mono, monospace"),
 
 	// Accessibility
-	accessibility: AccessibilityConfigSchema.optional(),
+	accessibility: AccessibilityConfigSchema.describe(
+		"Accessibility configuration",
+	).optional(),
 
 	// Responsive design
-	responsive: ResponsiveConfigSchema.optional(),
+	responsive: ResponsiveConfigSchema.describe(
+		"Responsive design configuration",
+	).optional(),
 
 	// Interactive features
-	interactiveFeatures: InteractiveFeaturesSchema.optional(),
+	interactiveFeatures: InteractiveFeaturesSchema.describe(
+		"Interactive feature configuration",
+	).optional(),
 
 	// Performance
-	performance: PerformanceConfigSchema.optional(),
+	performance: PerformanceConfigSchema.describe(
+		"Performance optimization settings",
+	).optional(),
 
 	// UX patterns based on Nielsen's heuristics
 	heuristicsCompliance: z
 		.object({
-			visibilityOfSystemStatus: z.boolean().optional().default(true),
-			matchWithRealWorld: z.boolean().optional().default(true),
-			userControlAndFreedom: z.boolean().optional().default(true),
-			consistencyAndStandards: z.boolean().optional().default(true),
-			errorPrevention: z.boolean().optional().default(true),
-			recognitionOverRecall: z.boolean().optional().default(true),
-			flexibilityAndEfficiency: z.boolean().optional().default(true),
-			aestheticAndMinimalist: z.boolean().optional().default(true),
-			helpUsersRecognizeErrors: z.boolean().optional().default(true),
-			helpAndDocumentation: z.boolean().optional().default(true),
+			visibilityOfSystemStatus: z
+				.boolean()
+				.describe("Keep users informed about system status")
+				.optional()
+				.default(true),
+			matchWithRealWorld: z
+				.boolean()
+				.describe("Use real-world language and conventions")
+				.optional()
+				.default(true),
+			userControlAndFreedom: z
+				.boolean()
+				.describe("Support undo and redo")
+				.optional()
+				.default(true),
+			consistencyAndStandards: z
+				.boolean()
+				.describe("Follow platform conventions")
+				.optional()
+				.default(true),
+			errorPrevention: z
+				.boolean()
+				.describe("Prevent errors before they occur")
+				.optional()
+				.default(true),
+			recognitionOverRecall: z
+				.boolean()
+				.describe("Minimize user memory load")
+				.optional()
+				.default(true),
+			flexibilityAndEfficiency: z
+				.boolean()
+				.describe("Support both novice and expert users")
+				.optional()
+				.default(true),
+			aestheticAndMinimalist: z
+				.boolean()
+				.describe("Show only relevant information")
+				.optional()
+				.default(true),
+			helpUsersRecognizeErrors: z
+				.boolean()
+				.describe("Provide clear error messages")
+				.optional()
+				.default(true),
+			helpAndDocumentation: z
+				.boolean()
+				.describe("Provide searchable help documentation")
+				.optional()
+				.default(true),
 		})
+		.describe("Nielsen's usability heuristics compliance settings")
 		.optional(),
 
 	// Iteration and feedback
 	iterationCycle: z
 		.object({
-			includeABTesting: z.boolean().optional().default(false),
-			includeAnalytics: z.boolean().optional().default(true),
-			includeFeedbackWidget: z.boolean().optional().default(true),
-			includeUsabilityMetrics: z.boolean().optional().default(true),
+			includeABTesting: z
+				.boolean()
+				.describe("Include A/B testing support")
+				.optional()
+				.default(false),
+			includeAnalytics: z
+				.boolean()
+				.describe("Include usage analytics")
+				.optional()
+				.default(true),
+			includeFeedbackWidget: z
+				.boolean()
+				.describe("Include user feedback widget")
+				.optional()
+				.default(true),
+			includeUsabilityMetrics: z
+				.boolean()
+				.describe("Include usability metrics tracking")
+				.optional()
+				.default(true),
 		})
+		.describe("Design iteration and feedback cycle configuration")
 		.optional(),
 
 	// Framework preferences
 	framework: z
 		.enum(["react", "vue", "angular", "svelte", "static", "any"])
+		.describe("Preferred frontend framework")
 		.optional()
 		.default("any"),
-	componentLibrary: z.string().optional(),
+	componentLibrary: z
+		.string()
+		.describe("Preferred component library (e.g., MUI, Shadcn)")
+		.optional(),
 
 	// Output configuration
-	mode: z.string().optional().default("agent"),
-	model: z.string().optional().default(DEFAULT_MODEL),
+	mode: z
+		.string()
+		.describe("Execution mode for the generated prompt")
+		.optional()
+		.default("agent"),
+	model: z
+		.string()
+		.describe("AI model identifier to use for generation")
+		.optional()
+		.default(DEFAULT_MODEL),
 	tools: z
 		.array(z.string())
+		.describe("List of tools available to the agent")
 		.optional()
 		.default(["githubRepo", "codebase", "editFiles"]),
-	includeFrontmatter: z.boolean().optional().default(true),
-	includeDisclaimer: z.boolean().optional().default(true),
-	includeReferences: z.boolean().optional().default(true),
-	includeMetadata: z.boolean().optional().default(true),
-	inputFile: z.string().optional(),
-	forcePromptMdStyle: z.boolean().optional().default(true),
+	includeFrontmatter: z
+		.boolean()
+		.describe("Whether to include YAML frontmatter in output")
+		.optional()
+		.default(true),
+	includeDisclaimer: z
+		.boolean()
+		.describe("Whether to include a disclaimer section")
+		.optional()
+		.default(true),
+	includeReferences: z
+		.boolean()
+		.describe("Whether to include reference links")
+		.optional()
+		.default(true),
+	includeMetadata: z
+		.boolean()
+		.describe("Whether to include metadata section")
+		.optional()
+		.default(true),
+	inputFile: z.string().describe("Input file path for reference").optional(),
+	forcePromptMdStyle: z
+		.boolean()
+		.describe("Force *.prompt.md file style with frontmatter")
+		.optional()
+		.default(true),
 
 	// Prompting technique configuration
-	techniques: z.array(TechniqueEnum).optional(),
-	includeTechniqueHints: z.boolean().optional().default(false),
-	autoSelectTechniques: z.boolean().optional().default(false),
-	provider: ProviderEnum.optional().default(DEFAULT_MODEL_SLUG),
-	style: StyleEnum.optional(),
+	techniques: z
+		.array(TechniqueEnum)
+		.describe("Prompting techniques to apply")
+		.optional(),
+	includeTechniqueHints: z
+		.boolean()
+		.describe("Whether to include technique hint annotations")
+		.optional()
+		.default(false),
+	autoSelectTechniques: z
+		.boolean()
+		.describe("Automatically select appropriate techniques based on context")
+		.optional()
+		.default(false),
+	provider: ProviderEnum.describe("AI provider family for tailored tips")
+		.optional()
+		.default(DEFAULT_MODEL_SLUG),
+	style: StyleEnum.describe("Preferred prompt formatting style").optional(),
 });
 
 export type CoverageDashboardDesignInput = z.infer<

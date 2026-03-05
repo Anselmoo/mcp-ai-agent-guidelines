@@ -36,15 +36,17 @@ const AgentOrchestratorActionSchema = z.enum([
 const AgentOrchestratorSchema = z.discriminatedUnion("action", [
 	// list-agents action - no additional parameters required
 	z.object({
-		action: z.literal("list-agents"),
+		action: z.literal("list-agents").describe("List all available agents"),
 	}),
 	// list-workflows action - no additional parameters required
 	z.object({
-		action: z.literal("list-workflows"),
+		action: z
+			.literal("list-workflows")
+			.describe("List all available workflows"),
 	}),
 	// handoff action - requires targetAgent, optional context and reason
 	z.object({
-		action: z.literal("handoff"),
+		action: z.literal("handoff").describe("Hand off control to another agent"),
 		targetAgent: z
 			.string()
 			.min(1, "targetAgent must be a non-empty string")
@@ -66,7 +68,7 @@ const AgentOrchestratorSchema = z.discriminatedUnion("action", [
 	}),
 	// workflow action - requires workflowName, optional workflowInput
 	z.object({
-		action: z.literal("workflow"),
+		action: z.literal("workflow").describe("Execute a named workflow"),
 		workflowName: z
 			.string()
 			.min(1, "workflowName must be a non-empty string")

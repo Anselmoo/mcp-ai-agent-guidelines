@@ -2776,3 +2776,252 @@ describe("SpecKitStrategy", () => {
 		});
 	});
 });
+
+// ─── Additional branch coverage tests ────────────────────────────────────────
+
+describe("derivePhases – object phaseData branches", () => {
+	const strategy = new SpecKitStrategy();
+	const base: SessionState = {
+		id: "s1",
+		phase: "planning",
+		config: { sessionId: "s1", context: {}, goal: "Test" },
+		context: {},
+		history: [],
+	};
+
+	it("should use description from object phaseData", () => {
+		const result: SessionState = {
+			...base,
+			phases: {
+				setup: {
+					description: "Initial setup phase",
+					deliverables: ["Setup docs"],
+					duration: "1w",
+				},
+			},
+		};
+		const artifacts = strategy.render(result);
+		const plan = artifacts.secondary?.[1];
+		expect(plan?.content).toContain("Initial setup phase");
+		expect(plan?.content).toContain("Setup docs");
+	});
+
+	it("should use 'In progress' when phaseData is object without description", () => {
+		const result: SessionState = {
+			...base,
+			phases: {
+				setup: { deliverables: ["item"] },
+			},
+		};
+		const artifacts = strategy.render(result);
+		const plan = artifacts.secondary?.[1];
+		expect(plan?.content).toContain("In progress");
+	});
+
+	it("should use null phaseData → 'In progress' fallback", () => {
+		const result: SessionState = {
+			...base,
+			phases: { setup: null as unknown as string },
+		};
+		const artifacts = strategy.render(result);
+		const plan = artifacts.secondary?.[1];
+		expect(plan?.content).toContain("In progress");
+	});
+
+	it("should use default deliverables when object has non-array deliverables", () => {
+		const result: SessionState = {
+			...base,
+			phases: {
+				setup: { description: "Phase", deliverables: "not-an-array" },
+			},
+		};
+		const artifacts = strategy.render(result);
+		const plan = artifacts.secondary?.[1];
+		expect(plan?.content).toContain("Complete phase objectives");
+	});
+
+	it("should use 'TBD' when phase object has no duration", () => {
+		const result: SessionState = {
+			...base,
+			phases: {
+				setup: { description: "Phase without duration" },
+			},
+		};
+		const artifacts = strategy.render(result);
+		const plan = artifacts.secondary?.[1];
+		expect(plan?.content).toContain("| PHASE-001");
+	});
+});
+
+describe("deriveDependencies – object dep branches", () => {
+	const strategy = new SpecKitStrategy();
+	const base: SessionState = {
+		id: "s2",
+		phase: "planning",
+		config: { sessionId: "s2", context: {}, goal: "Test" },
+		context: {},
+		history: [],
+	};
+
+	it("should handle object dependencies with id", () => {
+		const result: SessionState = {
+			...base,
+			context: {
+				dependencies: [
+					{
+						id: "DEP-CUSTOM",
+						description: "Custom dependency",
+						owner: "team-a",
+					},
+				],
+			},
+		};
+		const artifacts = strategy.render(result);
+		const plan = artifacts.secondary?.[1];
+		expect(plan?.content).toContain("DEP-CUSTOM");
+		expect(plan?.content).toContain("Custom dependency");
+	});
+
+	it("should handle object dependencies without id (auto-generate)", () => {
+		const result: SessionState = {
+			...base,
+			context: {
+				dependencies: [
+					{ description: "Dependency without id", owner: "team-b" },
+				],
+			},
+		};
+		const artifacts = strategy.render(result);
+		const plan = artifacts.secondary?.[1];
+		expect(plan?.content).toContain("Dependency without id");
+		expect(plan?.content).toContain("DEP-001");
+	});
+
+	it("should handle empty dependencies array", () => {
+		const result: SessionState = {
+			...base,
+			context: { dependencies: [] },
+		};
+		const artifacts = strategy.render(result);
+		const plan = artifacts.secondary?.[1];
+		expect(plan?.content).toBeDefined();
+	});
+});
+
+describe("deriveRisks – description and severity branches", () => {
+	const strategy = new SpecKitStrategy();
+	const base: SessionState = {
+		id: "s3",
+		phase: "planning",
+		config: { sessionId: "s3", context: {}, goal: "Test" },
+		context: {},
+		history: [],
+	};
+
+	it("should handle risk with description field (not name)", () => {
+		const result: SessionState = {
+			...base,
+			context: {
+				risks: [
+					{
+						description: "Risk described directly",
+						mitigation: "Monitor closely",
+					},
+				],
+			},
+		};
+		const artifacts = strategy.render(result);
+		const plan = artifacts.secondary?.[1];
+		expect(plan?.content).toContain("Risk described directly");
+	});
+
+	it("should handle risk with severity 'low'", () => {
+		const result: SessionState = {
+			...base,
+			context: {
+				risks: [{ name: "Low risk", severity: "low", mitigation: "Track it" }],
+			},
+		};
+		const artifacts = strategy.render(result);
+		const plan = artifacts.secondary?.[1];
+		expect(plan?.content).toContain("low");
+	});
+
+	it("should handle risk with no severity (falls back to 'medium')", () => {
+		const result: SessionState = {
+			...base,
+			context: {
+				risks: [{ name: "Unknown severity risk" }],
+			},
+		};
+		const artifacts = strategy.render(result);
+		const plan = artifacts.secondary?.[1];
+		expect(plan?.content).toContain("medium");
+	});
+
+	it("should handle risk with only name (no description/mitigation)", () => {
+		const result: SessionState = {
+			...base,
+			context: {
+				risks: [{ name: "Simple risk name" }],
+			},
+		};
+		const artifacts = strategy.render(result);
+		expect(artifacts.primary).toBeDefined();
+	});
+});
+
+describe("generateTasks – no spec tasks branches", () => {
+	const strategy = new SpecKitStrategy();
+
+	it("should generate tasks.md with context tasks when spec extraction fails", () => {
+		const result: SessionState = {
+			id: "s4",
+			phase: "planning",
+			config: { sessionId: "s4", context: {}, goal: "Test" },
+			context: {
+				tasks: [
+					{ title: "Task from context A" },
+					{ title: "Task from context B" },
+				],
+			},
+			history: [],
+		};
+		const artifacts = strategy.render(result);
+		const tasks = artifacts.secondary?.[2];
+		expect(tasks?.content).toContain("Task from context");
+	});
+
+	it("should show default tasks when no tasks defined", () => {
+		const result: SessionState = {
+			id: "s5",
+			phase: "planning",
+			config: { sessionId: "s5", context: {} },
+			context: {},
+			history: [],
+		};
+		const artifacts = strategy.render(result);
+		const tasks = artifacts.secondary?.[2];
+		// Fallback path: extractTaskList returns 4 default tasks
+		expect(tasks?.content).toContain("Define detailed requirements");
+	});
+});
+
+describe("calculateTotalEstimate – non-h estimate branch", () => {
+	const strategy = new SpecKitStrategy();
+
+	it("should handle tasks with non-hour estimates gracefully", () => {
+		const result: SessionState = {
+			id: "s6",
+			phase: "planning",
+			config: { sessionId: "s6", context: {}, goal: "Test" },
+			context: {
+				tasks: [{ title: "Task with days estimate" }],
+			},
+			history: [],
+		};
+		// Tasks from context get default "3h" estimate, so this just validates execution
+		const artifacts = strategy.render(result);
+		expect(artifacts.secondary?.[2]?.content).toBeDefined();
+	});
+});

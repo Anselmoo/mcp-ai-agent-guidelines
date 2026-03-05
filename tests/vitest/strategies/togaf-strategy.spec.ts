@@ -11,24 +11,24 @@ import { TOGAFStrategy } from "../../../src/strategies/togaf-strategy.js";
 
 describe("TOGAFStrategy", () => {
 	describe("constructor and properties", () => {
-		it("should have TOGAF approach", () => {
+		it("should have TOGAF approach", async () => {
 			const strategy = new TOGAFStrategy();
 			expect(strategy.approach).toBe(OutputApproach.TOGAF);
 		});
 
-		it("should have readonly approach property", () => {
+		it("should have readonly approach property", async () => {
 			const strategy = new TOGAFStrategy();
 			expect(strategy.approach).toBe(OutputApproach.TOGAF);
 		});
 	});
 
 	describe("supports() method", () => {
-		it("should support SessionState", () => {
+		it("should support SessionState", async () => {
 			const strategy = new TOGAFStrategy();
 			expect(strategy.supports("SessionState")).toBe(true);
 		});
 
-		it("should not support unsupported types", () => {
+		it("should not support unsupported types", async () => {
 			const strategy = new TOGAFStrategy();
 			expect(strategy.supports("PromptResult")).toBe(false);
 			expect(strategy.supports("ScoringResult")).toBe(false);
@@ -38,7 +38,7 @@ describe("TOGAFStrategy", () => {
 	});
 
 	describe("render() - SessionState", () => {
-		it("should render SessionState with full context to TOGAF format", () => {
+		it("should render SessionState with full context to TOGAF format", async () => {
 			const strategy = new TOGAFStrategy();
 			const result: SessionState = {
 				id: "session-togaf-001",
@@ -79,7 +79,9 @@ describe("TOGAFStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			// Verify primary document (Architecture Vision)
 			expect(artifacts.primary).toBeDefined();
@@ -175,7 +177,7 @@ describe("TOGAFStrategy", () => {
 			);
 		});
 
-		it("should render SessionState with minimal metadata", () => {
+		it("should render SessionState with minimal metadata", async () => {
 			const strategy = new TOGAFStrategy();
 			const result: SessionState = {
 				id: "session-minimal",
@@ -184,7 +186,9 @@ describe("TOGAFStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain(
 				"# Architecture Vision Document",
@@ -195,7 +199,7 @@ describe("TOGAFStrategy", () => {
 			expect(artifacts.secondary).toHaveLength(5);
 		});
 
-		it("should include metadata footer when requested", () => {
+		it("should include metadata footer when requested", async () => {
 			const strategy = new TOGAFStrategy();
 			const result: SessionState = {
 				id: "session-metadata",
@@ -204,7 +208,9 @@ describe("TOGAFStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result, { includeMetadata: true });
+			const stratResult = await strategy.run(result, { includeMetadata: true });
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain(
 				"*TOGAF Architecture Vision generated:",
@@ -212,7 +218,7 @@ describe("TOGAFStrategy", () => {
 			expect(artifacts.primary.content).toMatch(/\d{4}-\d{2}-\d{2}T/);
 		});
 
-		it("should not include metadata footer by default", () => {
+		it("should not include metadata footer by default", async () => {
 			const strategy = new TOGAFStrategy();
 			const result: SessionState = {
 				id: "session-no-metadata",
@@ -221,14 +227,16 @@ describe("TOGAFStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).not.toContain(
 				"*TOGAF Architecture Vision generated:",
 			);
 		});
 
-		it("should extract requirements into Architecture Work section", () => {
+		it("should extract requirements into Architecture Work section", async () => {
 			const strategy = new TOGAFStrategy();
 			const result: SessionState = {
 				id: "session-requirements",
@@ -245,7 +253,9 @@ describe("TOGAFStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain(
 				"**Objective:** Modernize Legacy Systems",
@@ -256,7 +266,7 @@ describe("TOGAFStrategy", () => {
 			expect(artifacts.primary.content).toContain("- Adopt DevOps practices");
 		});
 
-		it("should format phase data in High-Level Architecture", () => {
+		it("should format phase data in High-Level Architecture", async () => {
 			const strategy = new TOGAFStrategy();
 			const result: SessionState = {
 				id: "session-phases",
@@ -272,13 +282,15 @@ describe("TOGAFStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("### discovery");
 			expect(artifacts.primary.content).toContain("### requirements");
 		});
 
-		it("should include current phase and status in executive summary", () => {
+		it("should include current phase and status in executive summary", async () => {
 			const strategy = new TOGAFStrategy();
 			const result: SessionState = {
 				id: "session-status",
@@ -293,7 +305,9 @@ describe("TOGAFStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain(
 				"Deploy Cloud Infrastructure",
@@ -304,7 +318,7 @@ describe("TOGAFStrategy", () => {
 			expect(artifacts.primary.content).toContain("**Status:** completed");
 		});
 
-		it("should extract business capabilities from context", () => {
+		it("should extract business capabilities from context", async () => {
 			const strategy = new TOGAFStrategy();
 			const result: SessionState = {
 				id: "session-capabilities",
@@ -315,7 +329,9 @@ describe("TOGAFStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			const businessArch = artifacts.secondary?.[0];
 			expect(businessArch?.content).toContain("## Business Capabilities");
@@ -324,7 +340,7 @@ describe("TOGAFStrategy", () => {
 			expect(businessArch?.content).toContain("- Analytics");
 		});
 
-		it("should extract dependencies from context", () => {
+		it("should extract dependencies from context", async () => {
 			const strategy = new TOGAFStrategy();
 			const result: SessionState = {
 				id: "session-dependencies",
@@ -335,7 +351,9 @@ describe("TOGAFStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			const migrationPlan = artifacts.secondary?.[4];
 			expect(migrationPlan?.content).toContain("## Dependencies");
@@ -343,7 +361,7 @@ describe("TOGAFStrategy", () => {
 			expect(migrationPlan?.content).toContain("- Third-party APIs");
 		});
 
-		it("should include implementation roadmap from phases", () => {
+		it("should include implementation roadmap from phases", async () => {
 			const strategy = new TOGAFStrategy();
 			const result: SessionState = {
 				id: "session-roadmap",
@@ -358,7 +376,9 @@ describe("TOGAFStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			const migrationPlan = artifacts.secondary?.[4];
 			expect(migrationPlan?.content).toContain("## Implementation Roadmap");
@@ -370,48 +390,48 @@ describe("TOGAFStrategy", () => {
 	});
 
 	describe("render() - error handling", () => {
-		it("should throw error for unsupported result type", () => {
+		it("should throw error for unsupported result type", async () => {
 			const strategy = new TOGAFStrategy();
 			const invalidResult = {
 				someField: "value",
 			};
 
-			expect(() => strategy.render(invalidResult as SessionState)).toThrow(
-				"Unsupported domain result type for TOGAFStrategy",
-			);
+			const errResult = await strategy.run(invalidResult as SessionState);
+			expect(errResult.success).toBe(false);
 		});
 
-		it("should throw error for null result", () => {
+		it("should throw error for null result", async () => {
 			const strategy = new TOGAFStrategy();
 
-			expect(() => strategy.render(null as unknown as SessionState)).toThrow(
-				"Unsupported domain result type for TOGAFStrategy",
-			);
+			const errResult = await strategy.run(null as unknown as SessionState);
+			expect(errResult.success).toBe(false);
 		});
 
-		it("should throw error for undefined result", () => {
+		it("should throw error for undefined result", async () => {
 			const strategy = new TOGAFStrategy();
 
-			expect(() =>
-				strategy.render(undefined as unknown as SessionState),
-			).toThrow("Unsupported domain result type for TOGAFStrategy");
+			const errResult = await strategy.run(
+				undefined as unknown as SessionState,
+			);
+			expect(errResult.success).toBe(false);
 		});
 
-		it("should throw error for PromptResult type", () => {
+		it("should throw error for PromptResult type", async () => {
 			const strategy = new TOGAFStrategy();
 			const promptResult = {
 				sections: [{ title: "Test", body: "Content", level: 1 }],
 				metadata: { complexity: 50, tokenEstimate: 100 },
 			};
 
-			expect(() =>
-				strategy.render(promptResult as unknown as SessionState),
-			).toThrow("Unsupported domain result type for TOGAFStrategy");
+			const errResult = await strategy.run(
+				promptResult as unknown as SessionState,
+			);
+			expect(errResult.success).toBe(false);
 		});
 	});
 
 	describe("output artifacts structure", () => {
-		it("should return OutputArtifacts with primary and secondary documents", () => {
+		it("should return OutputArtifacts with primary and secondary documents", async () => {
 			const strategy = new TOGAFStrategy();
 			const result: SessionState = {
 				id: "session-structure",
@@ -420,7 +440,9 @@ describe("TOGAFStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary).toBeDefined();
 			expect(artifacts.secondary).toBeDefined();
@@ -428,7 +450,7 @@ describe("TOGAFStrategy", () => {
 			expect(artifacts.crossCutting).toBeUndefined();
 		});
 
-		it("should have correct document formats", () => {
+		it("should have correct document formats", async () => {
 			const strategy = new TOGAFStrategy();
 			const result: SessionState = {
 				id: "session-formats",
@@ -437,7 +459,9 @@ describe("TOGAFStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.format).toBe("markdown");
 			expect(artifacts.primary.name).toMatch(/\.md$/);
@@ -450,7 +474,7 @@ describe("TOGAFStrategy", () => {
 			}
 		});
 
-		it("should have unique names for all documents", () => {
+		it("should have unique names for all documents", async () => {
 			const strategy = new TOGAFStrategy();
 			const result: SessionState = {
 				id: "session-names",
@@ -459,7 +483,9 @@ describe("TOGAFStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			const names = [
 				artifacts.primary.name,
@@ -472,7 +498,7 @@ describe("TOGAFStrategy", () => {
 	});
 
 	describe("TOGAF ADM phase coverage", () => {
-		it("should include all required TOGAF sections in Architecture Vision", () => {
+		it("should include all required TOGAF sections in Architecture Vision", async () => {
 			const strategy = new TOGAFStrategy();
 			const result: SessionState = {
 				id: "session-vision",
@@ -481,7 +507,9 @@ describe("TOGAFStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 			const content = artifacts.primary.content;
 
 			expect(content).toContain("## Executive Summary");
@@ -494,7 +522,7 @@ describe("TOGAFStrategy", () => {
 			expect(content).toContain("## Architecture Repository");
 		});
 
-		it("should include all TOGAF ADM phases in secondary documents", () => {
+		it("should include all TOGAF ADM phases in secondary documents", async () => {
 			const strategy = new TOGAFStrategy();
 			const result: SessionState = {
 				id: "session-phases",
@@ -503,7 +531,9 @@ describe("TOGAFStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 			const secondaryNames = artifacts.secondary?.map((d) => d.name) || [];
 
 			expect(secondaryNames).toContain("business-architecture.md");
@@ -513,7 +543,7 @@ describe("TOGAFStrategy", () => {
 			expect(secondaryNames).toContain("migration-plan.md");
 		});
 
-		it("should include default principles when not provided", () => {
+		it("should include default principles when not provided", async () => {
 			const strategy = new TOGAFStrategy();
 			const result: SessionState = {
 				id: "session-default-principles",
@@ -522,7 +552,9 @@ describe("TOGAFStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain(
 				"**Principle 1:** Follow industry best practices",
@@ -535,7 +567,7 @@ describe("TOGAFStrategy", () => {
 			);
 		});
 
-		it("should include default stakeholders when not provided", () => {
+		it("should include default stakeholders when not provided", async () => {
 			const strategy = new TOGAFStrategy();
 			const result: SessionState = {
 				id: "session-default-stakeholders",
@@ -544,7 +576,9 @@ describe("TOGAFStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("**Business Sponsor:** TBD");
 			expect(artifacts.primary.content).toContain("**Architecture Team:** TBD");
@@ -554,7 +588,7 @@ describe("TOGAFStrategy", () => {
 	});
 
 	describe("data extraction and formatting", () => {
-		it("should handle string phase data", () => {
+		it("should handle string phase data", async () => {
 			const strategy = new TOGAFStrategy();
 			const result: SessionState = {
 				id: "session-string-phase",
@@ -566,12 +600,14 @@ describe("TOGAFStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("Simple string description");
 		});
 
-		it("should handle object phase data", () => {
+		it("should handle object phase data", async () => {
 			const strategy = new TOGAFStrategy();
 			const result: SessionState = {
 				id: "session-object-phase",
@@ -583,14 +619,16 @@ describe("TOGAFStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			// Should be formatted as JSON
 			expect(artifacts.primary.content).toContain('"key"');
 			expect(artifacts.primary.content).toContain('"value"');
 		});
 
-		it("should handle array context fields", () => {
+		it("should handle array context fields", async () => {
 			const strategy = new TOGAFStrategy();
 			const result: SessionState = {
 				id: "session-arrays",
@@ -601,7 +639,9 @@ describe("TOGAFStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("- Goal 1");
 			expect(artifacts.primary.content).toContain("- Goal 2");

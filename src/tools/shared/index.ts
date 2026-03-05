@@ -14,6 +14,7 @@ export * from "./annotation-presets.js";
 export * from "./async-patterns.js";
 export * from "./constants.js";
 export * from "./deprecation.js";
+export * from "./deprecation-helpers.js";
 export * from "./error-codes.js";
 export * from "./error-factory.js";
 export * from "./error-handler.js";

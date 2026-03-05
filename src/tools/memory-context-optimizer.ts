@@ -2,13 +2,32 @@ import { z } from "zod";
 import { buildFurtherReadingSection } from "./shared/prompt-utils.js";
 
 const MemoryOptimizationSchema = z.object({
-	contextContent: z.string(),
-	maxTokens: z.number().optional(),
-	cacheStrategy: z.enum(["aggressive", "conservative", "balanced"]).optional(),
-	includeReferences: z.boolean().optional().default(true),
-	language: z.string().optional(),
-	includeMetadata: z.boolean().optional().default(true),
-	inputFile: z.string().optional(),
+	contextContent: z
+		.string()
+		.describe("Context content to optimize for token efficiency"),
+	maxTokens: z
+		.number()
+		.describe("Maximum token limit for the optimized context")
+		.optional(),
+	cacheStrategy: z
+		.enum(["aggressive", "conservative", "balanced"])
+		.describe("Caching strategy to apply")
+		.optional(),
+	includeReferences: z
+		.boolean()
+		.describe("Include external reference links")
+		.optional()
+		.default(true),
+	language: z
+		.string()
+		.describe("Primary programming language for context hints")
+		.optional(),
+	includeMetadata: z
+		.boolean()
+		.describe("Include metadata section")
+		.optional()
+		.default(true),
+	inputFile: z.string().describe("Input file path for reference").optional(),
 });
 
 type MemoryOptimizationInput = z.infer<typeof MemoryOptimizationSchema>;

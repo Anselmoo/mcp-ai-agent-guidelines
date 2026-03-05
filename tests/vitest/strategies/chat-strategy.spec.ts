@@ -12,12 +12,12 @@ import { OutputApproach } from "../../../src/strategies/output-strategy.js";
 
 describe("ChatStrategy", () => {
 	describe("constructor and properties", () => {
-		it("should have CHAT approach", () => {
+		it("should have CHAT approach", async () => {
 			const strategy = new ChatStrategy();
 			expect(strategy.approach).toBe(OutputApproach.CHAT);
 		});
 
-		it("should have readonly approach property", () => {
+		it("should have readonly approach property", async () => {
 			const strategy = new ChatStrategy();
 			// TypeScript readonly is compile-time only, verify it's set correctly
 			expect(strategy.approach).toBe(OutputApproach.CHAT);
@@ -25,22 +25,27 @@ describe("ChatStrategy", () => {
 	});
 
 	describe("supports() method", () => {
-		it("should support PromptResult", () => {
+		it("should support PromptResult", async () => {
 			const strategy = new ChatStrategy();
 			expect(strategy.supports("PromptResult")).toBe(true);
 		});
 
-		it("should support ScoringResult", () => {
+		it("should support ScoringResult", async () => {
 			const strategy = new ChatStrategy();
 			expect(strategy.supports("ScoringResult")).toBe(true);
 		});
 
-		it("should support SessionState", () => {
+		it("should not support SessionState", async () => {
 			const strategy = new ChatStrategy();
-			expect(strategy.supports("SessionState")).toBe(true);
+			expect(strategy.supports("SessionState")).toBe(false);
 		});
 
-		it("should not support unsupported types", () => {
+		it("should not support DesignAssistantResponse", async () => {
+			const strategy = new ChatStrategy();
+			expect(strategy.supports("DesignAssistantResponse")).toBe(false);
+		});
+
+		it("should not support unsupported types", async () => {
 			const strategy = new ChatStrategy();
 			expect(strategy.supports("UnknownType")).toBe(false);
 			expect(strategy.supports("AnalysisResult")).toBe(false);
@@ -49,7 +54,7 @@ describe("ChatStrategy", () => {
 	});
 
 	describe("render() - PromptResult", () => {
-		it("should render simple PromptResult to markdown", () => {
+		it("should render simple PromptResult to markdown", async () => {
 			const strategy = new ChatStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -74,7 +79,9 @@ describe("ChatStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.name).toBe("prompt.md");
 			expect(artifacts.primary.format).toBe("markdown");
@@ -84,7 +91,7 @@ describe("ChatStrategy", () => {
 			expect(artifacts.primary.content).toContain("Implement checkout flow");
 		});
 
-		it("should render hierarchical sections with different levels", () => {
+		it("should render hierarchical sections with different levels", async () => {
 			const strategy = new ChatStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -114,14 +121,16 @@ describe("ChatStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("# Main Section");
 			expect(artifacts.primary.content).toContain("## Subsection");
 			expect(artifacts.primary.content).toContain("### Deep Section");
 		});
 
-		it("should handle sections without level (default to 1)", () => {
+		it("should handle sections without level (default to 1)", async () => {
 			const strategy = new ChatStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -140,13 +149,15 @@ describe("ChatStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("# Section Without Level");
 			expect(artifacts.primary.content).toContain("Default level content");
 		});
 
-		it("should include metadata when includeMetadata is true", () => {
+		it("should include metadata when includeMetadata is true", async () => {
 			const strategy = new ChatStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -166,7 +177,9 @@ describe("ChatStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result, { includeMetadata: true });
+			const stratResult = await strategy.run(result, { includeMetadata: true });
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("---");
 			expect(artifacts.primary.content).toContain(
@@ -175,7 +188,7 @@ describe("ChatStrategy", () => {
 			expect(artifacts.primary.content).toContain("Tokens: ~250");
 		});
 
-		it("should not include metadata when includeMetadata is false", () => {
+		it("should not include metadata when includeMetadata is false", async () => {
 			const strategy = new ChatStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -195,14 +208,18 @@ describe("ChatStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result, { includeMetadata: false });
+			const stratResult = await strategy.run(result, {
+				includeMetadata: false,
+			});
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).not.toContain("---");
 			expect(artifacts.primary.content).not.toContain("Technique:");
 			expect(artifacts.primary.content).not.toContain("Tokens:");
 		});
 
-		it("should not include metadata by default", () => {
+		it("should not include metadata by default", async () => {
 			const strategy = new ChatStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -222,12 +239,14 @@ describe("ChatStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).not.toContain("Technique:");
 		});
 
-		it("should render multiple techniques in metadata", () => {
+		it("should render multiple techniques in metadata", async () => {
 			const strategy = new ChatStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -247,7 +266,9 @@ describe("ChatStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result, { includeMetadata: true });
+			const stratResult = await strategy.run(result, { includeMetadata: true });
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain(
 				"Technique: zero-shot, few-shot, chain-of-thought",
@@ -256,7 +277,7 @@ describe("ChatStrategy", () => {
 	});
 
 	describe("render() - ScoringResult", () => {
-		it("should render ScoringResult to markdown table", () => {
+		it("should render ScoringResult to markdown table", async () => {
 			const strategy = new ChatStrategy();
 			const result: ScoringResult = {
 				overallScore: 85,
@@ -281,7 +302,9 @@ describe("ChatStrategy", () => {
 				recommendations: ["Improve test coverage", "Add more documentation"],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.name).toBe("score-report.md");
 			expect(artifacts.primary.format).toBe("markdown");
@@ -294,7 +317,7 @@ describe("ChatStrategy", () => {
 			expect(artifacts.primary.content).toContain("| Security | 10 |");
 		});
 
-		it("should render recommendations list", () => {
+		it("should render recommendations list", async () => {
 			const strategy = new ChatStrategy();
 			const result: ScoringResult = {
 				overallScore: 70,
@@ -324,7 +347,9 @@ describe("ChatStrategy", () => {
 				],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("## Recommendations");
 			expect(artifacts.primary.content).toContain(
@@ -339,7 +364,7 @@ describe("ChatStrategy", () => {
 			);
 		});
 
-		it("should handle empty recommendations", () => {
+		it("should handle empty recommendations", async () => {
 			const strategy = new ChatStrategy();
 			const result: ScoringResult = {
 				overallScore: 100,
@@ -364,14 +389,16 @@ describe("ChatStrategy", () => {
 				recommendations: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("## Recommendations");
 			// Empty recommendations should still have the heading
 			expect(artifacts.primary.content).toMatch(/## Recommendations\n\n\n$/);
 		});
 
-		it("should handle zero scores", () => {
+		it("should handle zero scores", async () => {
 			const strategy = new ChatStrategy();
 			const result: ScoringResult = {
 				overallScore: 0,
@@ -396,7 +423,9 @@ describe("ChatStrategy", () => {
 				recommendations: ["Fix all critical issues immediately"],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("# Clean Code Score: 0/100");
 			expect(artifacts.primary.content).toContain("| Hygiene | 0 |");
@@ -405,36 +434,39 @@ describe("ChatStrategy", () => {
 	});
 
 	describe("render() - error handling", () => {
-		it("should throw error for unsupported result type", () => {
+		it("should throw error for unsupported result type", async () => {
 			const strategy = new ChatStrategy();
 			const invalidResult = {
 				someField: "value",
 			};
 
-			expect(() =>
-				strategy.render(invalidResult as PromptResult | ScoringResult),
-			).toThrow("Unsupported domain result type");
+			const errResult = await strategy.run(
+				invalidResult as PromptResult | ScoringResult,
+			);
+			expect(errResult.success).toBe(false);
 		});
 
-		it("should throw error for null result", () => {
+		it("should throw error for null result", async () => {
 			const strategy = new ChatStrategy();
 
-			expect(() =>
-				strategy.render(null as unknown as PromptResult | ScoringResult),
-			).toThrow("Unsupported domain result type");
+			const errResult = await strategy.run(
+				null as unknown as PromptResult | ScoringResult,
+			);
+			expect(errResult.success).toBe(false);
 		});
 
-		it("should throw error for undefined result", () => {
+		it("should throw error for undefined result", async () => {
 			const strategy = new ChatStrategy();
 
-			expect(() =>
-				strategy.render(undefined as unknown as PromptResult | ScoringResult),
-			).toThrow("Unsupported domain result type");
+			const errResult = await strategy.run(
+				undefined as unknown as PromptResult | ScoringResult,
+			);
+			expect(errResult.success).toBe(false);
 		});
 	});
 
 	describe("output artifacts structure", () => {
-		it("should return OutputArtifacts with primary document only", () => {
+		it("should return OutputArtifacts with primary document only", async () => {
 			const strategy = new ChatStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -454,14 +486,16 @@ describe("ChatStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary).toBeDefined();
 			expect(artifacts.secondary).toBeUndefined();
 			expect(artifacts.crossCutting).toBeUndefined();
 		});
 
-		it("should have correct document format for PromptResult", () => {
+		it("should have correct document format for PromptResult", async () => {
 			const strategy = new ChatStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -481,14 +515,16 @@ describe("ChatStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.format).toBe("markdown");
 			expect(artifacts.primary.name).toBe("prompt.md");
 			expect(typeof artifacts.primary.content).toBe("string");
 		});
 
-		it("should have correct document format for ScoringResult", () => {
+		it("should have correct document format for ScoringResult", async () => {
 			const strategy = new ChatStrategy();
 			const result: ScoringResult = {
 				overallScore: 85,
@@ -513,7 +549,9 @@ describe("ChatStrategy", () => {
 				recommendations: ["Improve coverage"],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.format).toBe("markdown");
 			expect(artifacts.primary.name).toBe("score-report.md");
@@ -522,7 +560,7 @@ describe("ChatStrategy", () => {
 	});
 
 	describe("integration with RenderOptions", () => {
-		it("should accept partial RenderOptions", () => {
+		it("should accept partial RenderOptions", async () => {
 			const strategy = new ChatStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -542,16 +580,18 @@ describe("ChatStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result, {
+			const stratResult = await strategy.run(result, {
 				includeMetadata: true,
 				verbosity: "verbose",
 			});
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts).toBeDefined();
 			expect(artifacts.primary.content).toContain("Technique:");
 		});
 
-		it("should work without options parameter", () => {
+		it("should work without options parameter", async () => {
 			const strategy = new ChatStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -571,13 +611,15 @@ describe("ChatStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts).toBeDefined();
 			expect(artifacts.primary.content).not.toContain("Technique:");
 		});
 
-		it("should ignore verbosity option (not used in ChatStrategy)", () => {
+		it("should ignore verbosity option (not used in ChatStrategy)", async () => {
 			const strategy = new ChatStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -597,12 +639,16 @@ describe("ChatStrategy", () => {
 				},
 			};
 
-			const minimalArtifacts = strategy.render(result, {
+			const strat_minimalArtifacts = await strategy.run(result, {
 				verbosity: "minimal",
 			});
-			const verboseArtifacts = strategy.render(result, {
+			expect(strat_minimalArtifacts.success).toBe(true);
+			const minimalArtifacts = strat_minimalArtifacts.data as OutputArtifacts;
+			const strat_verboseArtifacts = await strategy.run(result, {
 				verbosity: "verbose",
 			});
+			expect(strat_verboseArtifacts.success).toBe(true);
+			const verboseArtifacts = strat_verboseArtifacts.data as OutputArtifacts;
 
 			expect(minimalArtifacts.primary.content).toBe(
 				verboseArtifacts.primary.content,

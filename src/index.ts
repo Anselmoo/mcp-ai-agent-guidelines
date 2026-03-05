@@ -49,6 +49,10 @@ import {
 	type DesignAssistantRequest,
 	designAssistant,
 } from "./tools/design/index.js";
+import { enforceP } from "./tools/enforcement/enforce-planning.js";
+import { validateAnnotations } from "./tools/enforcement/validate-annotations.js";
+import { validateProgress } from "./tools/enforcement/validate-progress.js";
+import { validateSchemaExamples } from "./tools/enforcement/validate-schema-examples.js";
 import { guidelinesValidator } from "./tools/guidelines-validator.js";
 import { iterativeCoverageEnhancer } from "./tools/iterative-coverage-enhancer.js";
 import { memoryContextOptimizer } from "./tools/memory-context-optimizer.js";
@@ -2706,6 +2710,130 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 				title: "Design Session Assistant",
 			},
 		},
+		{
+			name: "validate-progress",
+			description:
+				"Validate progress.md files in plan directories against task specifications. BEST FOR: Enforcing task completion tracking, verifying phase progress, checking consistency between tasks.md and progress.md. OUTPUTS: Validation report with per-phase completion rates and issues.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					planDir: {
+						type: "string",
+						description:
+							"Path to the plan directory containing progress.md files",
+					},
+					phaseFilter: {
+						type: "string",
+						description: "Optional phase ID to filter results",
+					},
+					strictMode: {
+						type: "boolean",
+						description: "If true, treat warnings as errors",
+						default: false,
+					},
+				},
+				required: ["planDir"],
+			},
+			annotations: {
+				readOnlyHint: true,
+				destructiveHint: false,
+				idempotentHint: true,
+				openWorldHint: false,
+				title: "Validate Progress",
+			},
+		},
+		{
+			name: "enforce-planning",
+			description:
+				"Validate Spec-Kit artifacts before allowing code generation. Implements HITL enforcement: blocks code gen without approved spec.md and plan.md. BEST FOR: Pre-flight checks, SpecKit compliance. OUTPUTS: allowed/blocked decision with reasons.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					projectPath: {
+						type: "string",
+						description: "Path to project root to validate",
+					},
+					planningDir: {
+						type: "string",
+						description:
+							"Subdirectory containing spec.md and plan.md (relative to projectPath)",
+					},
+					requireApproval: {
+						type: "boolean",
+						description: "Whether to require approval markers in spec.md",
+						default: true,
+					},
+					requirePhases: {
+						type: "boolean",
+						description: "Whether to require phase definitions in plan.md",
+						default: true,
+					},
+				},
+				required: ["projectPath"],
+			},
+			annotations: {
+				readOnlyHint: true,
+				destructiveHint: false,
+				idempotentHint: true,
+				openWorldHint: false,
+				title: "Enforce Planning",
+			},
+		},
+		{
+			name: "validate-annotations",
+			description:
+				"Validate all registered MCP tools have proper ToolAnnotations in src/index.ts. BEST FOR: Pre-release quality checks, CI annotation coverage validation. OUTPUTS: Coverage report with per-tool annotation status.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					indexPath: {
+						type: "string",
+						description:
+							"Path to src/index.ts (defaults to src/index.ts relative to cwd)",
+					},
+					strict: {
+						type: "boolean",
+						description:
+							"If true, throw error when any tool is missing annotations",
+						default: false,
+					},
+				},
+			},
+			annotations: {
+				readOnlyHint: true,
+				destructiveHint: false,
+				idempotentHint: true,
+				openWorldHint: false,
+				title: "Validate Annotations",
+			},
+		},
+		{
+			name: "validate-schema-examples",
+			description:
+				"Audit Zod schemas across src/ to verify .describe() coverage meets threshold. BEST FOR: Schema documentation quality checks, CI schema coverage gates. OUTPUTS: Per-file coverage stats with overall pass/fail.",
+			inputSchema: {
+				type: "object",
+				properties: {
+					sourceDir: {
+						type: "string",
+						description: "Source directory to scan (defaults to src/)",
+					},
+					targetPercent: {
+						type: "number",
+						description:
+							"Minimum percentage of fields requiring .describe() calls",
+						default: 80,
+					},
+				},
+			},
+			annotations: {
+				readOnlyHint: true,
+				destructiveHint: false,
+				idempotentHint: true,
+				openWorldHint: false,
+				title: "Validate Schema Examples",
+			},
+		},
 	];
 
 	// Apply mode-aware filtering if enabled
@@ -2816,6 +2944,34 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 							text: JSON.stringify(result, null, 2),
 						},
 					],
+				};
+			}
+			case "validate-progress":
+				return validateProgress(
+					args as unknown as Parameters<typeof validateProgress>[0],
+				);
+			case "enforce-planning": {
+				const result = enforceP(
+					args as unknown as Parameters<typeof enforceP>[0],
+				);
+				return {
+					content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+				};
+			}
+			case "validate-annotations": {
+				const result = validateAnnotations(
+					args as unknown as Parameters<typeof validateAnnotations>[0],
+				);
+				return {
+					content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+				};
+			}
+			case "validate-schema-examples": {
+				const result = validateSchemaExamples(
+					args as unknown as Parameters<typeof validateSchemaExamples>[0],
+				);
+				return {
+					content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
 				};
 			}
 			default:

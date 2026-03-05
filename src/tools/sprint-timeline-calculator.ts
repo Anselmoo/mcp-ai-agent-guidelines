@@ -4,23 +4,36 @@ import { logger } from "./shared/logger.js";
 import { buildFurtherReadingSection } from "./shared/prompt-utils.js";
 
 const SprintTimelineSchema = z.object({
-	tasks: z.array(
-		z.object({
-			name: z.string(),
-			estimate: z.number(),
-			priority: z.string().optional(),
-			dependencies: z.array(z.string()).optional(),
-		}),
-	),
-	teamSize: z.number(),
-	sprintLength: z.number().optional(),
-	velocity: z.number().optional(),
+	tasks: z
+		.array(
+			z.object({
+				name: z.string().describe("Task name or title"),
+				estimate: z.number().describe("Estimated story points for the task"),
+				priority: z.string().describe("Task priority level").optional(),
+				dependencies: z
+					.array(z.string())
+					.describe("Names of tasks this task depends on")
+					.optional(),
+			}),
+		)
+		.describe("List of tasks with estimates and optional dependencies"),
+	teamSize: z.number().describe("Number of team members"),
+	sprintLength: z.number().describe("Sprint length in days").optional(),
+	velocity: z
+		.number()
+		.describe("Team velocity in story points per sprint")
+		.optional(),
 	optimizationStrategy: z
 		.enum(["greedy", "linear-programming"])
+		.describe("Optimization strategy for sprint assignment")
 		.optional()
 		.default("greedy"),
-	includeMetadata: z.boolean().optional().default(true),
-	inputFile: z.string().optional(),
+	includeMetadata: z
+		.boolean()
+		.describe("Whether to include metadata section")
+		.optional()
+		.default(true),
+	inputFile: z.string().describe("Input file path for reference").optional(),
 });
 
 type SprintTimelineInput = z.infer<typeof SprintTimelineSchema>;

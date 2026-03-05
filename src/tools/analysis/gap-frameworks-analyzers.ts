@@ -35,21 +35,50 @@ const GapFrameworkSchema = z.object({
 				],
 			),
 		)
+		.describe("Gap analysis framework types to apply")
 		.min(1, "At least one framework must be specified"),
 	// Current and desired states
-	currentState: z.string(),
-	desiredState: z.string(),
+	currentState: z
+		.string()
+		.describe("Description of the current state or baseline"),
+	desiredState: z
+		.string()
+		.describe("Description of the desired future state or target"),
 	// Context inputs
-	context: z.string(),
-	objectives: z.array(z.string()).optional(),
-	timeframe: z.string().optional(),
-	stakeholders: z.array(z.string()).optional(),
-	constraints: z.array(z.string()).optional(),
+	context: z.string().describe("Analysis context or background information"),
+	objectives: z
+		.array(z.string())
+		.describe("Strategic objectives guiding the gap analysis")
+		.optional(),
+	timeframe: z
+		.string()
+		.describe("Expected timeframe for closing the gap")
+		.optional(),
+	stakeholders: z
+		.array(z.string())
+		.describe("Key stakeholders involved in the analysis")
+		.optional(),
+	constraints: z
+		.array(z.string())
+		.describe("Constraints or limitations to consider")
+		.optional(),
 	// Output controls
-	includeReferences: z.boolean().optional().default(true),
-	includeMetadata: z.boolean().optional().default(true),
-	includeActionPlan: z.boolean().optional().default(true),
-	inputFile: z.string().optional(),
+	includeReferences: z
+		.boolean()
+		.describe("Include external reference links")
+		.optional()
+		.default(true),
+	includeMetadata: z
+		.boolean()
+		.describe("Include metadata section")
+		.optional()
+		.default(true),
+	includeActionPlan: z
+		.boolean()
+		.describe("Include a prioritized action plan for closing the gap")
+		.optional()
+		.default(true),
+	inputFile: z.string().describe("Input file path for reference").optional(),
 });
 
 export async function gapFrameworksAnalyzers(args: unknown) {

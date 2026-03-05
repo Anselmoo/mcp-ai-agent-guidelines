@@ -286,4 +286,40 @@ describe("Iterative Coverage Enhancer", () => {
 		expect(result.content[0].text).toContain("98.0%");
 		expect(result.content[0].text).toContain("Executive Summary");
 	});
+
+	it("should omit sections when detectDeadCode and adaptThresholds are false", async () => {
+		const result = await iterativeCoverageEnhancer({
+			language: "typescript",
+			analyzeCoverageGaps: true,
+			detectDeadCode: false,
+			generateTestSuggestions: true,
+			adaptThresholds: false,
+			generateCIActions: true,
+			currentCoverage: {
+				statements: 70,
+				functions: 60,
+				lines: 70,
+				branches: 65,
+			},
+		});
+		const text = result.content[0].text;
+		expect(text).not.toContain("🗑️ Dead Code Detection");
+		expect(text).not.toContain("Adaptive Threshold Recommendations");
+		expect(text).toContain("Coverage Gaps Analysis");
+		expect(text).toContain("Test Generation Suggestions");
+	});
+
+	it("should show N/A for missing targetCoverage metrics", async () => {
+		const result = await iterativeCoverageEnhancer({
+			currentCoverage: {
+				statements: 50,
+				functions: 40,
+				lines: 50,
+				branches: 45,
+			},
+			targetCoverage: {},
+		});
+		const text = result.content[0].text;
+		expect(text).toContain("N/A");
+	});
 });

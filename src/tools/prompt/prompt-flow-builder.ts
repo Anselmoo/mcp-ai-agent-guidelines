@@ -25,18 +25,19 @@ import {
  * - transform: Apply data transformation to flow state
  */
 const FlowNodeSchema = z.object({
-	id: z.string(),
-	type: z.enum([
-		"prompt",
-		"condition",
-		"loop",
-		"parallel",
-		"merge",
-		"transform",
-	]),
-	name: z.string(),
-	description: z.string().optional(),
-	config: z.record(z.any()).optional(),
+	id: z.string().describe("Unique identifier for the node"),
+	type: z
+		.enum(["prompt", "condition", "loop", "parallel", "merge", "transform"])
+		.describe("Node type determining its execution behavior"),
+	name: z.string().describe("Human-readable name for the node"),
+	description: z
+		.string()
+		.describe("Optional description of the node's purpose")
+		.optional(),
+	config: z
+		.record(z.any())
+		.describe("Node-type-specific configuration properties")
+		.optional(),
 });
 
 /**
@@ -44,10 +45,16 @@ const FlowNodeSchema = z.object({
  * Edges create the control flow graph that determines execution order.
  */
 const FlowEdgeSchema = z.object({
-	from: z.string(),
-	to: z.string(),
-	condition: z.string().optional(), // Boolean expression for conditional edges
-	label: z.string().optional(), // Human-readable label for visualization
+	from: z.string().describe("Source node id"),
+	to: z.string().describe("Target node id"),
+	condition: z
+		.string()
+		.describe("Boolean expression for conditional edges")
+		.optional(),
+	label: z
+		.string()
+		.describe("Human-readable label for visualization")
+		.optional(),
 });
 
 /**
@@ -61,17 +68,47 @@ const FlowEdgeSchema = z.object({
  * - Built-in validation and error handling
  */
 const PromptFlowSchema = z.object({
-	flowName: z.string(),
-	description: z.string().optional(),
-	nodes: z.array(FlowNodeSchema).min(1),
-	edges: z.array(FlowEdgeSchema).optional().default([]),
-	entryPoint: z.string().optional(), // If not specified, uses first node
-	variables: z.record(z.string()).optional().default({}), // Flow-level variables
-	includeMetadata: z.boolean().optional().default(true),
-	includeReferences: z.boolean().optional().default(true),
-	includeExecutionGuide: z.boolean().optional().default(true),
+	flowName: z.string().describe("Name of the prompt flow"),
+	description: z
+		.string()
+		.describe("Description of the flow purpose")
+		.optional(),
+	nodes: z
+		.array(FlowNodeSchema)
+		.describe("Flow nodes representing processing steps")
+		.min(1),
+	edges: z
+		.array(FlowEdgeSchema)
+		.describe("Flow edges defining connections between nodes")
+		.optional()
+		.default([]),
+	entryPoint: z
+		.string()
+		.describe("ID of the starting node; defaults to first node if omitted")
+		.optional(),
+	variables: z
+		.record(z.string())
+		.describe("Flow-level variables accessible to all nodes")
+		.optional()
+		.default({}),
+	includeMetadata: z
+		.boolean()
+		.describe("Whether to include metadata section")
+		.optional()
+		.default(true),
+	includeReferences: z
+		.boolean()
+		.describe("Whether to include reference links")
+		.optional()
+		.default(true),
+	includeExecutionGuide: z
+		.boolean()
+		.describe("Whether to include an execution guide")
+		.optional()
+		.default(true),
 	outputFormat: z
 		.enum(["markdown", "mermaid", "both"])
+		.describe("Output format preference")
 		.optional()
 		.default("both"),
 });

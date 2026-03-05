@@ -20,17 +20,40 @@ const CategoryEnum = z.enum([
 ]);
 
 const QuickDeveloperPromptsSchema = z.object({
-	category: CategoryEnum.optional().default("all"),
-	mode: ModeEnum.optional().default("tool"),
-	model: z.string().optional().default(DEFAULT_MODEL),
+	category: CategoryEnum.describe(
+		"Category of prompts to generate; 'all' returns all 25 prompts",
+	)
+		.optional()
+		.default("all"),
+	mode: ModeEnum.describe("Execution mode for the generated prompt")
+		.optional()
+		.default("tool"),
+	model: z
+		.string()
+		.describe("AI model identifier to use for generation")
+		.optional()
+		.default(DEFAULT_MODEL),
 	tools: z
 		.array(z.string())
+		.describe("List of tools available to the agent")
 		.optional()
 		.default(["codebase", "githubRepo", "editFiles"]),
-	includeFrontmatter: z.boolean().optional().default(true),
-	includeMetadata: z.boolean().optional().default(true),
-	inputFile: z.string().optional(),
-	forcePromptMdStyle: z.boolean().optional().default(true),
+	includeFrontmatter: z
+		.boolean()
+		.describe("Whether to include YAML frontmatter in output")
+		.optional()
+		.default(true),
+	includeMetadata: z
+		.boolean()
+		.describe("Whether to include metadata section")
+		.optional()
+		.default(true),
+	inputFile: z.string().describe("Input file path for reference").optional(),
+	forcePromptMdStyle: z
+		.boolean()
+		.describe("Force *.prompt.md file style with frontmatter")
+		.optional()
+		.default(true),
 });
 
 type QuickDeveloperPromptsInput = z.infer<typeof QuickDeveloperPromptsSchema>;

@@ -1,131 +1,31 @@
-import fs from "node:fs";
-import path from "node:path";
-import * as ts from "typescript";
+#!/usr/bin/env node
+/**
+ * Export tool descriptions to CSV for documentation and LLM discoverability audits.
+ * Usage: npx tsx scripts/export-descriptions.ts
+ */
 
-type ToolRecord = {
-	name: string;
-	description: string;
-};
+import { readFileSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const indexPath = path.resolve("src/index.ts");
-const sourceText = fs.readFileSync(indexPath, "utf8");
-const sourceFile = ts.createSourceFile(
-	indexPath,
-	sourceText,
-	ts.ScriptTarget.ESNext,
-	true,
-);
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const root = join(__dirname, "..");
+const indexPath = join(root, "src", "index.ts");
 
-const toolMap = new Map<string, string>();
-const getFirstFiveWords = (text: string) =>
-	text.trim().split(/\s+/).slice(0, 5).join(" ");
+const source = readFileSync(indexPath, "utf8");
 
-const getPropertyName = (name: ts.PropertyName): string | undefined => {
-	if (ts.isIdentifier(name) || ts.isStringLiteral(name)) {
-		return name.text;
-	}
+// Extract tool name + description pairs
+const toolPattern = /name:\s*"([^"]+)"[\s\S]*?description:\s*"([^"]+)"/g;
+const rows: string[] = ["tool_name,description"];
 
-	return undefined;
-};
-
-const getStringInitializer = (
-	objectLiteral: ts.ObjectLiteralExpression,
-	key: string,
-): string | undefined => {
-	const property = objectLiteral.properties.find((prop) => {
-		return (
-			ts.isPropertyAssignment(prop) &&
-			getPropertyName(prop.name) === key &&
-			ts.isStringLiteralLike(prop.initializer)
-		);
-	});
-
-	if (
-		property &&
-		ts.isPropertyAssignment(property) &&
-		ts.isStringLiteralLike(property.initializer)
-	) {
-		return property.initializer.text;
-	}
-
-	return undefined;
-};
-
-const extractToolsFromArray = (arrayLiteral: ts.ArrayLiteralExpression) => {
-	arrayLiteral.elements.forEach((element) => {
-		if (!ts.isObjectLiteralExpression(element)) {
-			return;
-		}
-
-		const name = getStringInitializer(element, "name");
-		const description = getStringInitializer(element, "description");
-
-		if (!name || !description) {
-			return;
-		}
-
-		if (toolMap.has(name)) {
-			console.warn(`Duplicate tool name encountered: ${name}`);
-			return;
-		}
-
-		toolMap.set(name, description);
-	});
-};
-
-const visit = (node: ts.Node) => {
-	if (
-		ts.isPropertyAssignment(node) &&
-		getPropertyName(node.name) === "tools" &&
-		ts.isArrayLiteralExpression(node.initializer)
-	) {
-		extractToolsFromArray(node.initializer);
-	}
-
-	ts.forEachChild(node, visit);
-};
-
-visit(sourceFile);
-
-if (toolMap.size === 0) {
-	throw new Error(
-		"No tools extracted from src/index.ts. Verify the ListTools handler contains a tools array.",
-	);
+let match = toolPattern.exec(source);
+while (match !== null) {
+	const name = match[1];
+	const description = match[2].replace(/"/g, '""'); // escape CSV
+	rows.push(`"${name}","${description}"`);
+	match = toolPattern.exec(source);
 }
 
-const records: Array<
-	ToolRecord & { charCount: number; firstFiveWords: string }
-> = Array.from(toolMap.entries()).map(([name, description]) => {
-	return {
-		name,
-		description,
-		charCount: description.length,
-		firstFiveWords: getFirstFiveWords(description),
-	};
-});
-
-const artifactsDir = path.resolve("artifacts");
-fs.mkdirSync(artifactsDir, { recursive: true });
-
-// Lightweight CSV formatter to avoid adding extra dependencies for a simple export.
-const formatCsvValue = (value: string) => {
-	const normalized = value.replace(/\r?\n|\r/g, " ").trim();
-	return `"${normalized.replace(/"/g, '""')}"`;
-};
-
-const header = "Tool Name,Current Description,Character Count,First 5 Words\n";
-const rows = records
-	.map((record) =>
-		[
-			formatCsvValue(record.name),
-			formatCsvValue(record.description),
-			record.charCount,
-			formatCsvValue(record.firstFiveWords),
-		].join(","),
-	)
-	.join("\n");
-
-const outputPath = path.join(artifactsDir, "tool-descriptions.csv");
-fs.writeFileSync(outputPath, `${header}${rows}\n`);
-
-console.log(`Wrote ${records.length} tool descriptions to ${outputPath}`);
+const csvPath = join(root, "artifacts", "tool-descriptions.csv");
+writeFileSync(csvPath, `${rows.join("\n")}\n`, "utf8");
+console.log(`Exported ${rows.length - 1} tools to ${csvPath}`);

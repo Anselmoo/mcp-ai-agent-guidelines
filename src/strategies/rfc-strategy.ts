@@ -10,12 +10,10 @@
 
 import type { SessionState } from "../domain/design/types.js";
 import type { PromptResult } from "../domain/prompting/types.js";
-import type {
-	OutputArtifacts,
-	OutputStrategy,
-	RenderOptions,
-} from "./output-strategy.js";
+import type { OutputArtifacts, RenderOptions } from "./output-strategy.js";
 import { OutputApproach } from "./output-strategy.js";
+import { BaseStrategy } from "./shared/base-strategy.js";
+import type { ValidationResult } from "./shared/types.js";
 
 /**
  * RFCStrategy implements the RFC (Request for Comments) document format.
@@ -24,33 +22,54 @@ import { OutputApproach } from "./output-strategy.js";
  * - PromptResult: Convert prompt analysis to RFC proposal
  * - SessionState: Convert design session to RFC document
  *
- * @implements {OutputStrategy<PromptResult | SessionState>}
+ * @extends {BaseStrategy<PromptResult | SessionState, OutputArtifacts>}
  */
-export class RFCStrategy
-	implements OutputStrategy<PromptResult | SessionState>
-{
+export class RFCStrategy extends BaseStrategy<
+	PromptResult | SessionState,
+	OutputArtifacts
+> {
+	protected readonly name = "rfc";
+	protected readonly version = "2.0.0";
+
 	/** The output approach this strategy implements */
 	readonly approach = OutputApproach.RFC;
 
 	/**
-	 * Render a domain result to RFC format.
+	 * Validate that the input is a PromptResult or SessionState.
 	 *
-	 * @param result - The domain result to render (PromptResult or SessionState)
-	 * @param options - Optional rendering options
-	 * @returns Output artifacts with primary RFC document
-	 * @throws {Error} If result type is not supported
+	 * @param input - Input to validate
+	 * @returns Validation result
 	 */
-	render(
-		result: PromptResult | SessionState,
+	validate(input: PromptResult | SessionState): ValidationResult {
+		if (this.isPromptResult(input) || this.isSessionState(input)) {
+			return { valid: true, errors: [], warnings: [] };
+		}
+		return {
+			valid: false,
+			errors: [
+				{
+					code: "UNSUPPORTED_TYPE",
+					message: "Input must be a PromptResult or SessionState",
+				},
+			],
+			warnings: [],
+		};
+	}
+
+	/**
+	 * Execute the RFC rendering strategy.
+	 *
+	 * @param input - The domain result to render (PromptResult or SessionState)
+	 * @returns Output artifacts with primary RFC document
+	 */
+	async execute(
+		input: PromptResult | SessionState,
 		options?: Partial<RenderOptions>,
-	): OutputArtifacts {
-		if (this.isPromptResult(result)) {
-			return this.renderPromptAsRFC(result, options);
+	): Promise<OutputArtifacts> {
+		if (this.isPromptResult(input)) {
+			return this.renderPromptAsRFC(input, options);
 		}
-		if (this.isSessionState(result)) {
-			return this.renderSessionAsRFC(result, options);
-		}
-		throw new Error("Unsupported domain result type");
+		return this.renderSessionAsRFC(input as SessionState);
 	}
 
 	/**
@@ -112,10 +131,15 @@ ${this.extractAlternatives(result)}
 
 ${this.extractConclusion(result)}`;
 
+		let content = this.formatRFCContent(baseContent);
+		if (options?.includeMetadata) {
+			content += `\n\n---\n*RFC generated: ${new Date().toISOString()}*`;
+		}
+
 		return {
 			primary: {
 				name: "RFC.md",
-				content: this.formatRFCContent(baseContent, options),
+				content,
 				format: "markdown",
 			},
 		};
@@ -125,13 +149,12 @@ ${this.extractConclusion(result)}`;
 	 * Render a SessionState to RFC format.
 	 *
 	 * @param result - The session state to render
-	 * @param options - Optional rendering options
 	 * @returns Output artifacts with RFC document
 	 * @private
 	 */
 	private renderSessionAsRFC(
 		result: SessionState,
-		options?: Partial<RenderOptions>,
+		_options?: Partial<RenderOptions>,
 	): OutputArtifacts {
 		const title = this.extractSessionTitle(result);
 		const baseContent = `# RFC: ${title}
@@ -177,7 +200,7 @@ ${this.extractSessionConclusion(result)}`;
 		return {
 			primary: {
 				name: "RFC.md",
-				content: this.formatRFCContent(baseContent, options),
+				content: this.formatRFCContent(baseContent),
 				format: "markdown",
 			},
 		};
@@ -492,12 +515,8 @@ ${this.extractSessionConclusion(result)}`;
 	 */
 	private formatRFCContent(
 		baseContent: string,
-		options?: Partial<RenderOptions>,
+		_options?: Partial<RenderOptions>,
 	): string {
-		// Only include metadata if explicitly requested (aligning with ChatStrategy)
-		if (options?.includeMetadata === true) {
-			return `${baseContent}\n\n---\n*RFC generated: ${new Date().toISOString()}*`;
-		}
 		return baseContent;
 	}
 

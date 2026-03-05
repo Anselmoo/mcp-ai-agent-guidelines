@@ -19,12 +19,28 @@ import {
  * Inspired by claude-flow's sequential processing patterns.
  */
 const ChainStepSchema = z.object({
-	name: z.string(),
-	description: z.string().optional(),
-	prompt: z.string(),
-	outputKey: z.string().optional(), // Key for storing/accessing this step's output
-	dependencies: z.array(z.string()).optional().default([]), // Step names or output keys this step depends on
-	errorHandling: z.enum(["skip", "retry", "abort"]).optional().default("abort"),
+	name: z.string().describe("Unique name for the chain step"),
+	description: z
+		.string()
+		.describe("Description of what this step accomplishes")
+		.optional(),
+	prompt: z.string().describe("The prompt to execute for this step"),
+	outputKey: z
+		.string()
+		.describe(
+			"Key for storing and referencing this step's output in subsequent steps",
+		)
+		.optional(),
+	dependencies: z
+		.array(z.string())
+		.describe("Step names or output keys this step depends on")
+		.optional()
+		.default([]),
+	errorHandling: z
+		.enum(["skip", "retry", "abort"])
+		.describe("Strategy for handling errors in this step")
+		.optional()
+		.default("abort"),
 });
 
 /**
@@ -39,16 +55,42 @@ const ChainStepSchema = z.object({
  * Best for: Progressive refinement, multi-phase analysis, complex transformations
  */
 const PromptChainingSchema = z.object({
-	chainName: z.string(),
-	description: z.string().optional(),
-	steps: z.array(ChainStepSchema).min(1),
-	context: z.string().optional(), // Shared context for all steps
-	globalVariables: z.record(z.string()).optional().default({}), // Variables accessible to all steps
-	includeMetadata: z.boolean().optional().default(true),
-	includeReferences: z.boolean().optional().default(true),
-	includeVisualization: z.boolean().optional().default(true),
+	chainName: z.string().describe("Name of the prompt chain"),
+	description: z
+		.string()
+		.describe("Description of what the chain accomplishes")
+		.optional(),
+	steps: z
+		.array(ChainStepSchema)
+		.describe("Ordered list of steps in the chain")
+		.min(1),
+	context: z
+		.string()
+		.describe("Shared context provided to all steps in the chain")
+		.optional(),
+	globalVariables: z
+		.record(z.string())
+		.describe("Variables accessible to all steps in the chain")
+		.optional()
+		.default({}),
+	includeMetadata: z
+		.boolean()
+		.describe("Whether to include metadata section")
+		.optional()
+		.default(true),
+	includeReferences: z
+		.boolean()
+		.describe("Whether to include reference links")
+		.optional()
+		.default(true),
+	includeVisualization: z
+		.boolean()
+		.describe("Whether to include a chain visualization diagram")
+		.optional()
+		.default(true),
 	executionStrategy: z
 		.enum(["sequential", "parallel-where-possible"])
+		.describe("Execution strategy for the chain steps")
 		.optional()
 		.default("sequential"),
 });

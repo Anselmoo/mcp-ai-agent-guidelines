@@ -19,7 +19,7 @@
 		"validate:demo-coverage": "node scripts/validate-demo-coverage.js",
 		"test:all": "npm run build && npm run test:unit && npm run test:integration && npm run test:demo && npm run test:mcp",
 		"test:coverage:unit": "npm run build && c8 -r text-summary -r lcov -r html -o coverage node tests/unit/run-unit-tests.js",
-		"test:vitest": "vitest",
+		"test:vitest": "vitest run",
 		"test:coverage:vitest": "vitest run --coverage",
 		"coverage:patch": "node ./scripts/coverage-patch.mjs --lcov coverage/lcov.info --base main --head HEAD --output artifacts/coverage-patch.json",
 		"coverage:low": "npm run test:coverage:vitest && node ./scripts/generate-low-coverage.cjs",
@@ -53,6 +53,8 @@
 		"docs:fix-svg:dry-run": "node scripts/fix-svg-visibility.js --dry-run",
 		"docs:update-svg-bg": "node scripts/update-svg-background.js",
 		"docs:update-svg-bg:dry-run": "node scripts/update-svg-background.js --dry-run",
+		"export:descriptions": "npx tsx scripts/export-descriptions.ts",
+		"audit:schemas": "npx tsx scripts/audit-schema-descriptions.ts",
 		"links:check:all": "find . -name '*.md' -not -path './node_modules/*' -not -path './dist/*' -not -path './coverage/*' -exec npx markdown-link-check --config .mlc_config.json {} \\;",
 		"links:extract": "node scripts/extract-external-links.js",
 		"links:extract:json": "node scripts/extract-external-links.js --format=json",
@@ -123,7 +125,7 @@
 		"chevrotain": "^11.1.1",
 		"express": "^5.1.0",
 		"js-yaml": "^4.1.0",
-		"mermaid": "^10.9.5",
+		"mermaid": "^11.4.0",
 		"zod": "^3.25.76"
 	}
 }

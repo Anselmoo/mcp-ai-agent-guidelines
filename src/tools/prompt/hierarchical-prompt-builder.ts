@@ -27,48 +27,131 @@ import { applyTechniques } from "./technique-applicator.js";
 const ModeEnum = z.enum(["agent", "tool", "workflow"]);
 
 const HierarchicalPromptSchema = z.object({
-	context: z.string(),
-	goal: z.string(),
-	requirements: z.array(z.string()).optional(),
-	constraints: z.array(z.string()).optional(),
-	outputFormat: z.string().optional(),
-	audience: z.string().optional(),
+	context: z.string().describe("The broad context or domain for the prompt"),
+	goal: z.string().describe("The specific goal or objective to achieve"),
+	requirements: z
+		.array(z.string())
+		.describe("Detailed requirements and constraints as a list")
+		.optional(),
+	constraints: z
+		.array(z.string())
+		.describe("Constraints or limitations to consider")
+		.optional(),
+	outputFormat: z
+		.string()
+		.describe("Desired output format description")
+		.optional(),
+	audience: z
+		.string()
+		.describe("Target audience or expertise level")
+		.optional(),
 	// YAML prompt frontmatter (experimental prompt file support)
-	mode: ModeEnum.optional().default("agent"),
-	model: z.string().optional().default(DEFAULT_MODEL),
+	mode: ModeEnum.describe("Execution mode: agent, tool, or workflow")
+		.optional()
+		.default("agent"),
+	model: z
+		.string()
+		.describe("AI model identifier to use for generation")
+		.optional()
+		.default(DEFAULT_MODEL),
 	tools: z
 		.array(z.string())
+		.describe("List of tools available to the agent")
 		.optional()
 		.default(["githubRepo", "codebase", "editFiles"]),
-	description: z.string().optional(),
-	includeFrontmatter: z.boolean().optional().default(true),
-	includeDisclaimer: z.boolean().optional().default(true),
-	includeReferences: z.boolean().optional().default(false),
-	issues: z.array(z.string()).optional(),
-	includeExplanation: z.boolean().optional().default(false),
-	includeMetadata: z.boolean().optional().default(true),
-	inputFile: z.string().optional(),
+	description: z
+		.string()
+		.describe("Optional description for the prompt file frontmatter")
+		.optional(),
+	includeFrontmatter: z
+		.boolean()
+		.describe("Whether to include YAML frontmatter in output")
+		.optional()
+		.default(true),
+	includeDisclaimer: z
+		.boolean()
+		.describe("Whether to include a disclaimer section")
+		.optional()
+		.default(true),
+	includeReferences: z
+		.boolean()
+		.describe("Whether to include reference links")
+		.optional()
+		.default(false),
+	issues: z
+		.array(z.string())
+		.describe("Related GitHub issue numbers")
+		.optional(),
+	includeExplanation: z
+		.boolean()
+		.describe("Whether to include technique explanations")
+		.optional()
+		.default(false),
+	includeMetadata: z
+		.boolean()
+		.describe("Whether to include metadata section")
+		.optional()
+		.default(true),
+	inputFile: z.string().describe("Input file path for reference").optional(),
 	// Enforce *.prompt.md file style (frontmatter + markdown prompt body)
-	forcePromptMdStyle: z.boolean().optional().default(true),
+	forcePromptMdStyle: z
+		.boolean()
+		.describe("Force *.prompt.md file style with frontmatter")
+		.optional()
+		.default(true),
 
 	// 2025 Prompting Techniques integration (optional hints)
 	// Support both single string and array of strings, coerce to array
 	techniques: z.preprocess((val) => {
 		if (typeof val === "string") return [val];
 		return val;
-	}, z.array(TechniqueEnum).optional()),
-	includeTechniqueHints: z.boolean().optional().default(true),
-	includePitfalls: z.boolean().optional().default(true),
-	autoSelectTechniques: z.boolean().optional().default(false),
-	provider: ProviderEnum.optional().default(DEFAULT_MODEL_SLUG),
-	style: StyleEnum.optional(),
+	}, z
+		.array(TechniqueEnum)
+		.describe("Prompting techniques to apply (e.g., chain-of-thought)")
+		.optional()),
+	includeTechniqueHints: z
+		.boolean()
+		.describe("Whether to include technique hint annotations")
+		.optional()
+		.default(true),
+	includePitfalls: z
+		.boolean()
+		.describe("Whether to include common pitfalls section")
+		.optional()
+		.default(true),
+	autoSelectTechniques: z
+		.boolean()
+		.describe("Automatically select appropriate techniques based on context")
+		.optional()
+		.default(false),
+	provider: ProviderEnum.describe("AI provider family for tailored tips")
+		.optional()
+		.default(DEFAULT_MODEL_SLUG),
+	style: StyleEnum.describe("Preferred prompt formatting style").optional(),
 
 	// Export format options (NEW)
-	exportFormat: ExportFormatEnum.optional().default("markdown"),
-	includeHeaders: z.boolean().optional().default(true),
-	documentTitle: z.string().optional(),
-	documentAuthor: z.string().optional(),
-	documentDate: z.string().optional(),
+	exportFormat: ExportFormatEnum.describe(
+		"Export format for the output (markdown, json, yaml)",
+	)
+		.optional()
+		.default("markdown"),
+	includeHeaders: z
+		.boolean()
+		.describe("Whether to include section headers in output")
+		.optional()
+		.default(true),
+	documentTitle: z
+		.string()
+		.describe("Document title for export formats")
+		.optional(),
+	documentAuthor: z
+		.string()
+		.describe("Document author for export formats")
+		.optional(),
+	documentDate: z
+		.string()
+		.describe("Document date for export formats")
+		.optional(),
 });
 
 type HierarchicalPromptInput = z.infer<typeof HierarchicalPromptSchema>;

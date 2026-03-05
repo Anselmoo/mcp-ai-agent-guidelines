@@ -23,7 +23,11 @@ import { applyTechniques } from "./technique-applicator.js";
 
 const SecurityHardeningSchema = z.object({
 	// Core context
-	codeContext: z.string(),
+	codeContext: z
+		.string()
+		.describe(
+			"The code context, snippet, or description to analyze for security",
+		),
 	securityFocus: z
 		.enum([
 			"vulnerability-analysis",
@@ -32,11 +36,15 @@ const SecurityHardeningSchema = z.object({
 			"threat-modeling",
 			"penetration-testing",
 		])
+		.describe("Primary security analysis focus")
 		.optional()
 		.default("security-hardening"),
 
 	// Security requirements
-	securityRequirements: z.array(z.string()).optional(),
+	securityRequirements: z
+		.array(z.string())
+		.describe("Specific security requirements to check")
+		.optional(),
 	complianceStandards: z
 		.array(
 			z.enum([
@@ -49,12 +57,24 @@ const SecurityHardeningSchema = z.object({
 				"PCI-DSS",
 			]),
 		)
+		.describe("Compliance standards to evaluate against")
 		.optional(),
 
 	// Technical parameters
-	language: z.string().optional().default("auto-detect"),
-	framework: z.string().optional(),
-	riskTolerance: z.enum(["low", "medium", "high"]).optional().default("medium"),
+	language: z
+		.string()
+		.describe("Programming language of the code")
+		.optional()
+		.default("auto-detect"),
+	framework: z
+		.string()
+		.describe("Framework or technology stack used")
+		.optional(),
+	riskTolerance: z
+		.enum(["low", "medium", "high"])
+		.describe("Risk tolerance level for security assessment")
+		.optional()
+		.default("medium"),
 
 	// Analysis scope
 	analysisScope: z
@@ -72,40 +92,107 @@ const SecurityHardeningSchema = z.object({
 				"api-security",
 			]),
 		)
+		.describe("Specific security areas to focus analysis on")
 		.optional(),
 
 	// Output preferences
-	includeCodeExamples: z.boolean().optional().default(true),
-	includeMitigations: z.boolean().optional().default(true),
-	includeTestCases: z.boolean().optional().default(false),
-	prioritizeFindings: z.boolean().optional().default(true),
+	includeCodeExamples: z
+		.boolean()
+		.describe("Include secure code examples in output")
+		.optional()
+		.default(true),
+	includeMitigations: z
+		.boolean()
+		.describe("Include specific mitigation recommendations")
+		.optional()
+		.default(true),
+	includeTestCases: z
+		.boolean()
+		.describe("Include security test cases")
+		.optional()
+		.default(false),
+	prioritizeFindings: z
+		.boolean()
+		.describe("Prioritize findings by severity")
+		.optional()
+		.default(true),
 	outputFormat: z
 		.enum(["detailed", "checklist", "annotated-code"])
+		.describe("Preferred output format for security assessment")
 		.optional()
 		.default("detailed"),
 
 	// YAML prompt frontmatter
-	mode: z.string().optional().default("agent"),
-	model: z.string().optional().default(DEFAULT_MODEL),
+	mode: z
+		.string()
+		.describe("Execution mode for the generated prompt")
+		.optional()
+		.default("agent"),
+	model: z
+		.string()
+		.describe("AI model identifier to use for generation")
+		.optional()
+		.default(DEFAULT_MODEL),
 	tools: z
 		.array(z.string())
+		.describe("List of tools available to the agent")
 		.optional()
 		.default(["codebase", "security-scanner", "editFiles"]),
-	description: z.string().optional(),
-	includeFrontmatter: z.boolean().optional().default(true),
-	includeDisclaimer: z.boolean().optional().default(true),
-	includeReferences: z.boolean().optional().default(true),
-	includeMetadata: z.boolean().optional().default(true),
-	inputFile: z.string().optional(),
-	forcePromptMdStyle: z.boolean().optional().default(true),
+	description: z
+		.string()
+		.describe("Optional description for the prompt file frontmatter")
+		.optional(),
+	includeFrontmatter: z
+		.boolean()
+		.describe("Whether to include YAML frontmatter in output")
+		.optional()
+		.default(true),
+	includeDisclaimer: z
+		.boolean()
+		.describe("Whether to include a disclaimer section")
+		.optional()
+		.default(true),
+	includeReferences: z
+		.boolean()
+		.describe("Whether to include reference links")
+		.optional()
+		.default(true),
+	includeMetadata: z
+		.boolean()
+		.describe("Whether to include metadata section")
+		.optional()
+		.default(true),
+	inputFile: z.string().describe("Input file path for reference").optional(),
+	forcePromptMdStyle: z
+		.boolean()
+		.describe("Force *.prompt.md file style with frontmatter")
+		.optional()
+		.default(true),
 
 	// 2025 Prompting Techniques integration
-	techniques: z.array(TechniqueEnum).optional(),
-	includeTechniqueHints: z.boolean().optional().default(true),
-	includePitfalls: z.boolean().optional().default(true),
-	autoSelectTechniques: z.boolean().optional().default(true),
-	provider: ProviderEnum.optional().default(DEFAULT_MODEL_SLUG),
-	style: StyleEnum.optional(),
+	techniques: z
+		.array(TechniqueEnum)
+		.describe("Prompting techniques to apply")
+		.optional(),
+	includeTechniqueHints: z
+		.boolean()
+		.describe("Whether to include technique hint annotations")
+		.optional()
+		.default(true),
+	includePitfalls: z
+		.boolean()
+		.describe("Whether to include common pitfalls section")
+		.optional()
+		.default(true),
+	autoSelectTechniques: z
+		.boolean()
+		.describe("Automatically select appropriate techniques based on context")
+		.optional()
+		.default(true),
+	provider: ProviderEnum.describe("AI provider family for tailored tips")
+		.optional()
+		.default(DEFAULT_MODEL_SLUG),
+	style: StyleEnum.describe("Preferred prompt formatting style").optional(),
 });
 
 type SecurityHardeningInput = z.infer<typeof SecurityHardeningSchema>;

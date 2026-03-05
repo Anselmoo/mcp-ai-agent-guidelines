@@ -12,12 +12,12 @@ import { SDDStrategy } from "../../../src/strategies/sdd-strategy.js";
 
 describe("SDDStrategy", () => {
 	describe("constructor and properties", () => {
-		it("should have SDD approach", () => {
+		it("should have SDD approach", async () => {
 			const strategy = new SDDStrategy();
 			expect(strategy.approach).toBe(OutputApproach.SDD);
 		});
 
-		it("should have readonly approach property", () => {
+		it("should have readonly approach property", async () => {
 			const strategy = new SDDStrategy();
 			// TypeScript readonly is compile-time only, verify it's set correctly
 			expect(strategy.approach).toBe(OutputApproach.SDD);
@@ -25,17 +25,17 @@ describe("SDDStrategy", () => {
 	});
 
 	describe("supports() method", () => {
-		it("should support SessionState", () => {
+		it("should support SessionState", async () => {
 			const strategy = new SDDStrategy();
 			expect(strategy.supports("SessionState")).toBe(true);
 		});
 
-		it("should support PromptResult", () => {
+		it("should support PromptResult", async () => {
 			const strategy = new SDDStrategy();
 			expect(strategy.supports("PromptResult")).toBe(true);
 		});
 
-		it("should not support unsupported types", () => {
+		it("should not support unsupported types", async () => {
 			const strategy = new SDDStrategy();
 			expect(strategy.supports("ScoringResult")).toBe(false);
 			expect(strategy.supports("UnknownType")).toBe(false);
@@ -44,7 +44,7 @@ describe("SDDStrategy", () => {
 	});
 
 	describe("render() - SessionState", () => {
-		it("should render SessionState with all three documents", () => {
+		it("should render SessionState with all three documents", async () => {
 			const strategy = new SDDStrategy();
 			const result: SessionState = {
 				id: "test-session",
@@ -59,7 +59,9 @@ describe("SDDStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.name).toBe("spec.md");
 			expect(artifacts.primary.format).toBe("markdown");
@@ -68,7 +70,7 @@ describe("SDDStrategy", () => {
 			expect(artifacts.secondary?.[1].name).toBe("tasks.md");
 		});
 
-		it("should generate spec.md with proper structure", () => {
+		it("should generate spec.md with proper structure", async () => {
 			const strategy = new SDDStrategy();
 			const result: SessionState = {
 				id: "test-session",
@@ -87,7 +89,9 @@ describe("SDDStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain(
 				"# Specification: Implement authentication system",
@@ -108,7 +112,7 @@ describe("SDDStrategy", () => {
 			expect(artifacts.primary.content).toContain("- [ ] 100% test coverage");
 		});
 
-		it("should generate plan.md with phases", () => {
+		it("should generate plan.md with phases", async () => {
 			const strategy = new SDDStrategy();
 			const result: SessionState = {
 				id: "test-session",
@@ -126,7 +130,9 @@ describe("SDDStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 			const plan = artifacts.secondary?.[0];
 
 			expect(plan?.name).toBe("plan.md");
@@ -142,7 +148,7 @@ describe("SDDStrategy", () => {
 			expect(plan?.content).toContain("- Third-party API downtime");
 		});
 
-		it("should generate tasks.md with Mermaid diagram", () => {
+		it("should generate tasks.md with Mermaid diagram", async () => {
 			const strategy = new SDDStrategy();
 			const result: SessionState = {
 				id: "test-session",
@@ -167,7 +173,9 @@ describe("SDDStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 			const tasks = artifacts.secondary?.[1];
 
 			expect(tasks?.name).toBe("tasks.md");
@@ -184,7 +192,7 @@ describe("SDDStrategy", () => {
 			expect(tasks?.content).toContain("T2 --> T3");
 		});
 
-		it("should handle minimal SessionState with defaults", () => {
+		it("should handle minimal SessionState with defaults", async () => {
 			const strategy = new SDDStrategy();
 			const result: SessionState = {
 				id: "minimal-session",
@@ -193,7 +201,9 @@ describe("SDDStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("# Specification: Feature");
 			expect(artifacts.primary.content).toContain("To be defined");
@@ -204,7 +214,7 @@ describe("SDDStrategy", () => {
 			);
 		});
 
-		it("should extract title from config.goal", () => {
+		it("should extract title from config.goal", async () => {
 			const strategy = new SDDStrategy();
 			const result: SessionState = {
 				id: "test-session",
@@ -218,14 +228,16 @@ describe("SDDStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain(
 				"# Specification: Implement user management",
 			);
 		});
 
-		it("should extract title from context.title", () => {
+		it("should extract title from context.title", async () => {
 			const strategy = new SDDStrategy();
 			const result: SessionState = {
 				id: "test-session",
@@ -236,14 +248,16 @@ describe("SDDStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain(
 				"# Specification: Payment Integration",
 			);
 		});
 
-		it("should extract phases from history if phases not defined", () => {
+		it("should extract phases from history if phases not defined", async () => {
 			const strategy = new SDDStrategy();
 			const result: SessionState = {
 				id: "test-session",
@@ -268,7 +282,9 @@ describe("SDDStrategy", () => {
 				],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 			const plan = artifacts.secondary?.[0];
 
 			expect(plan?.content).toContain("### Phase 1: requirements");
@@ -276,7 +292,7 @@ describe("SDDStrategy", () => {
 			expect(plan?.content).toContain("### Phase 3: architecture");
 		});
 
-		it("should extract timeline from history timestamps", () => {
+		it("should extract timeline from history timestamps", async () => {
 			const strategy = new SDDStrategy();
 			const result: SessionState = {
 				id: "test-session",
@@ -296,14 +312,16 @@ describe("SDDStrategy", () => {
 				],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 			const plan = artifacts.secondary?.[0];
 
 			expect(plan?.content).toContain("2026-01-01T10:00:00Z");
 			expect(plan?.content).toContain("Transitioned to requirements");
 		});
 
-		it("should handle tasks without dependencies", () => {
+		it("should handle tasks without dependencies", async () => {
 			const strategy = new SDDStrategy();
 			const result: SessionState = {
 				id: "test-session",
@@ -317,7 +335,9 @@ describe("SDDStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 			const tasks = artifacts.secondary?.[1];
 
 			expect(tasks?.content).toContain("- [ ] Setup environment");
@@ -328,7 +348,7 @@ describe("SDDStrategy", () => {
 	});
 
 	describe("render() - PromptResult", () => {
-		it("should render PromptResult to SDD format", () => {
+		it("should render PromptResult to SDD format", async () => {
 			const strategy = new SDDStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -353,7 +373,9 @@ describe("SDDStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.name).toBe("spec.md");
 			expect(artifacts.primary.format).toBe("markdown");
@@ -362,7 +384,7 @@ describe("SDDStrategy", () => {
 			expect(artifacts.secondary?.[1].name).toBe("tasks.md");
 		});
 
-		it("should extract overview from first section", () => {
+		it("should extract overview from first section", async () => {
 			const strategy = new SDDStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -382,7 +404,9 @@ describe("SDDStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("## Overview");
 			expect(artifacts.primary.content).toContain(
@@ -390,7 +414,7 @@ describe("SDDStrategy", () => {
 			);
 		});
 
-		it("should extract requirements from sections", () => {
+		it("should extract requirements from sections", async () => {
 			const strategy = new SDDStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -420,7 +444,9 @@ describe("SDDStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("## Requirements");
 			expect(artifacts.primary.content).toContain(
@@ -429,7 +455,7 @@ describe("SDDStrategy", () => {
 			expect(artifacts.primary.content).toContain("2. PCI DSS compliance");
 		});
 
-		it("should generate default plan.md for PromptResult", () => {
+		it("should generate default plan.md for PromptResult", async () => {
 			const strategy = new SDDStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -449,7 +475,9 @@ describe("SDDStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 			const plan = artifacts.secondary?.[0];
 
 			expect(plan?.content).toContain("# Implementation Plan");
@@ -459,7 +487,7 @@ describe("SDDStrategy", () => {
 			expect(plan?.content).toContain("To be assessed");
 		});
 
-		it("should generate default tasks.md for PromptResult", () => {
+		it("should generate default tasks.md for PromptResult", async () => {
 			const strategy = new SDDStrategy();
 			const result: PromptResult = {
 				sections: [
@@ -479,7 +507,9 @@ describe("SDDStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 			const tasks = artifacts.secondary?.[1];
 
 			expect(tasks?.content).toContain("# Tasks");
@@ -490,7 +520,7 @@ describe("SDDStrategy", () => {
 			expect(tasks?.content).toContain("A[Define Requirements]");
 		});
 
-		it("should handle empty PromptResult sections", () => {
+		it("should handle empty PromptResult sections", async () => {
 			const strategy = new SDDStrategy();
 			const result: PromptResult = {
 				sections: [],
@@ -504,7 +534,9 @@ describe("SDDStrategy", () => {
 				},
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content).toContain("# Specification: Feature");
 			expect(artifacts.primary.content).toContain("To be defined");
@@ -512,36 +544,39 @@ describe("SDDStrategy", () => {
 	});
 
 	describe("render() - error handling", () => {
-		it("should throw error for unsupported result type", () => {
+		it("should throw error for unsupported result type", async () => {
 			const strategy = new SDDStrategy();
 			const invalidResult = {
 				someField: "value",
 			};
 
-			expect(() =>
-				strategy.render(invalidResult as SessionState | PromptResult),
-			).toThrow("Unsupported domain result type");
+			const errResult = await strategy.run(
+				invalidResult as SessionState | PromptResult,
+			);
+			expect(errResult.success).toBe(false);
 		});
 
-		it("should throw error for null result", () => {
+		it("should throw error for null result", async () => {
 			const strategy = new SDDStrategy();
 
-			expect(() =>
-				strategy.render(null as unknown as SessionState | PromptResult),
-			).toThrow("Unsupported domain result type");
+			const errResult = await strategy.run(
+				null as unknown as SessionState | PromptResult,
+			);
+			expect(errResult.success).toBe(false);
 		});
 
-		it("should throw error for undefined result", () => {
+		it("should throw error for undefined result", async () => {
 			const strategy = new SDDStrategy();
 
-			expect(() =>
-				strategy.render(undefined as unknown as SessionState | PromptResult),
-			).toThrow("Unsupported domain result type");
+			const errResult = await strategy.run(
+				undefined as unknown as SessionState | PromptResult,
+			);
+			expect(errResult.success).toBe(false);
 		});
 	});
 
 	describe("output artifacts structure", () => {
-		it("should return OutputArtifacts with primary and secondary documents", () => {
+		it("should return OutputArtifacts with primary and secondary documents", async () => {
 			const strategy = new SDDStrategy();
 			const result: SessionState = {
 				id: "test-session",
@@ -550,7 +585,9 @@ describe("SDDStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary).toBeDefined();
 			expect(artifacts.primary.name).toBe("spec.md");
@@ -560,7 +597,7 @@ describe("SDDStrategy", () => {
 			expect(artifacts.crossCutting).toBeUndefined();
 		});
 
-		it("should have correct document formats for all outputs", () => {
+		it("should have correct document formats for all outputs", async () => {
 			const strategy = new SDDStrategy();
 			const result: SessionState = {
 				id: "test-session",
@@ -569,14 +606,16 @@ describe("SDDStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.format).toBe("markdown");
 			expect(artifacts.secondary?.[0].format).toBe("markdown");
 			expect(artifacts.secondary?.[1].format).toBe("markdown");
 		});
 
-		it("should have all three documents with correct names", () => {
+		it("should have all three documents with correct names", async () => {
 			const strategy = new SDDStrategy();
 			const result: SessionState = {
 				id: "test-session",
@@ -585,14 +624,16 @@ describe("SDDStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.name).toBe("spec.md");
 			expect(artifacts.secondary?.[0].name).toBe("plan.md");
 			expect(artifacts.secondary?.[1].name).toBe("tasks.md");
 		});
 
-		it("should have all three documents with non-empty content", () => {
+		it("should have all three documents with non-empty content", async () => {
 			const strategy = new SDDStrategy();
 			const result: SessionState = {
 				id: "test-session",
@@ -601,7 +642,9 @@ describe("SDDStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts.primary.content.length).toBeGreaterThan(0);
 			expect(artifacts.secondary?.[0].content.length).toBeGreaterThan(0);
@@ -610,7 +653,7 @@ describe("SDDStrategy", () => {
 	});
 
 	describe("integration with RenderOptions", () => {
-		it("should accept partial RenderOptions", () => {
+		it("should accept partial RenderOptions", async () => {
 			const strategy = new SDDStrategy();
 			const result: SessionState = {
 				id: "test-session",
@@ -619,16 +662,18 @@ describe("SDDStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result, {
+			const stratResult = await strategy.run(result, {
 				includeMetadata: true,
 				verbosity: "verbose",
 			});
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts).toBeDefined();
 			expect(artifacts.primary).toBeDefined();
 		});
 
-		it("should work without options parameter", () => {
+		it("should work without options parameter", async () => {
 			const strategy = new SDDStrategy();
 			const result: SessionState = {
 				id: "test-session",
@@ -637,7 +682,9 @@ describe("SDDStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			expect(artifacts).toBeDefined();
 			expect(artifacts.primary).toBeDefined();
@@ -645,7 +692,7 @@ describe("SDDStrategy", () => {
 	});
 
 	describe("cross-references and interconnections", () => {
-		it("should maintain consistency across all three documents", () => {
+		it("should maintain consistency across all three documents", async () => {
 			const strategy = new SDDStrategy();
 			const result: SessionState = {
 				id: "test-session",
@@ -659,7 +706,9 @@ describe("SDDStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 
 			// Title should appear in spec
 			expect(artifacts.primary.content).toContain("User Authentication");
@@ -669,7 +718,7 @@ describe("SDDStrategy", () => {
 			expect(artifacts.secondary).toHaveLength(2);
 		});
 
-		it("should extract phase information consistently", () => {
+		it("should extract phase information consistently", async () => {
 			const strategy = new SDDStrategy();
 			const result: SessionState = {
 				id: "test-session",
@@ -683,7 +732,9 @@ describe("SDDStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 			const plan = artifacts.secondary?.[0];
 
 			expect(plan?.content).toContain("### Phase 1: discovery");
@@ -693,7 +744,7 @@ describe("SDDStrategy", () => {
 	});
 
 	describe("Mermaid diagram generation", () => {
-		it("should generate valid Mermaid syntax", () => {
+		it("should generate valid Mermaid syntax", async () => {
 			const strategy = new SDDStrategy();
 			const result: SessionState = {
 				id: "test-session",
@@ -707,7 +758,9 @@ describe("SDDStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 			const tasks = artifacts.secondary?.[1];
 
 			expect(tasks?.content).toContain("```mermaid");
@@ -715,7 +768,7 @@ describe("SDDStrategy", () => {
 			expect(tasks?.content).toContain("```");
 		});
 
-		it("should generate default graph when no tasks defined", () => {
+		it("should generate default graph when no tasks defined", async () => {
 			const strategy = new SDDStrategy();
 			const result: SessionState = {
 				id: "test-session",
@@ -724,7 +777,9 @@ describe("SDDStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 			const tasks = artifacts.secondary?.[1];
 
 			expect(tasks?.content).toContain("```mermaid");
@@ -737,7 +792,7 @@ describe("SDDStrategy", () => {
 			expect(tasks?.content).toContain("B --> C[Break Down Tasks]");
 		});
 
-		it("should handle complex dependency graphs", () => {
+		it("should handle complex dependency graphs", async () => {
 			const strategy = new SDDStrategy();
 			const result: SessionState = {
 				id: "test-session",
@@ -753,7 +808,9 @@ describe("SDDStrategy", () => {
 				history: [],
 			};
 
-			const artifacts = strategy.render(result);
+			const stratResult = await strategy.run(result);
+			expect(stratResult.success).toBe(true);
+			const artifacts = stratResult.data as OutputArtifacts;
 			const tasks = artifacts.secondary?.[1];
 
 			expect(tasks?.content).toContain("T1[Foundation]");

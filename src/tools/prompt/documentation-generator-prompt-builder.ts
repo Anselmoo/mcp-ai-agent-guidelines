@@ -23,17 +23,42 @@ const DocumentationGeneratorPromptSchema = z.object({
 		.default("")
 		.describe("Any existing content to build upon"),
 	// Optional frontmatter controls
-	mode: z.enum(["agent", "tool", "workflow"]).optional().default("agent"),
-	model: z.string().optional().default(DEFAULT_MODEL),
+	mode: z
+		.enum(["agent", "tool", "workflow"])
+		.describe("Execution mode for the generated prompt")
+		.optional()
+		.default("agent"),
+	model: z
+		.string()
+		.describe("AI model identifier to use for generation")
+		.optional()
+		.default(DEFAULT_MODEL),
 	tools: z
 		.array(z.string())
+		.describe("List of tools available to the agent")
 		.optional()
 		.default(["codebase", "editFiles", "documentation"]),
-	includeFrontmatter: z.boolean().optional().default(true),
-	includeReferences: z.boolean().optional().default(false),
-	includeMetadata: z.boolean().optional().default(true),
-	inputFile: z.string().optional(),
-	forcePromptMdStyle: z.boolean().optional().default(true),
+	includeFrontmatter: z
+		.boolean()
+		.describe("Whether to include YAML frontmatter in output")
+		.optional()
+		.default(true),
+	includeReferences: z
+		.boolean()
+		.describe("Whether to include reference links")
+		.optional()
+		.default(false),
+	includeMetadata: z
+		.boolean()
+		.describe("Whether to include metadata section")
+		.optional()
+		.default(true),
+	inputFile: z.string().describe("Input file path for reference").optional(),
+	forcePromptMdStyle: z
+		.boolean()
+		.describe("Force *.prompt.md file style with frontmatter")
+		.optional()
+		.default(true),
 });
 
 type DocumentationGeneratorPromptInput = z.infer<
