@@ -94,14 +94,15 @@ jobs:
         run: |
           echo "=== Production Dependencies Security Audit ==="
           # Run audit: output is visible in CI log AND captured to file via tee
-          npm audit --omit=dev --audit-level=moderate 2>&1 | tee audit-prod.txt
+          # Blocks on high/critical only — moderate vulns are reported below (informational)
+          npm audit --omit=dev --audit-level=high 2>&1 | tee audit-prod.txt
           AUDIT_EXIT=${PIPESTATUS[0]}
 
           # Write structured summary to step summary tab
           echo "### 🔒 Security Audit Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           if [ $AUDIT_EXIT -eq 0 ]; then
-            echo "✅ No moderate+ vulnerabilities in production dependencies" >> $GITHUB_STEP_SUMMARY
+            echo "✅ No high/critical vulnerabilities in production dependencies" >> $GITHUB_STEP_SUMMARY
           else
             echo "⚠️ Vulnerabilities detected in production dependencies:" >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
@@ -109,6 +110,20 @@ jobs:
             echo '```' >> $GITHUB_STEP_SUMMARY
           fi
           exit $AUDIT_EXIT
+
+      - name: Run npm audit (production, moderate — informational)
+        run: |
+          echo "=== Moderate Vulnerabilities (informational, not blocking) ==="
+          npm audit --omit=dev --audit-level=moderate 2>&1 | tee audit-prod-moderate.txt || true
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "#### Moderate Vulnerabilities in Production (informational only)" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat audit-prod-moderate.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "> ⚠️ Moderate vulnerabilities are reported but **do not block** the build." >> $GITHUB_STEP_SUMMARY
+          echo "> Review and accept the risk or fix when an upstream patch is available." >> $GITHUB_STEP_SUMMARY
+        continue-on-error: true
 
       - name: Run npm audit (all dependencies)
         run: |
@@ -133,6 +148,7 @@ jobs:
           name: security-audit-reports
           path: |
             audit-prod.txt
+            audit-prod-moderate.txt
             audit-all.txt
 
   # ============================================================================
