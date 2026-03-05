@@ -33,6 +33,7 @@ pre-commit:
     yaml-lint:
       tags: [format, lint, validate]
       glob: "*.{yml,yaml}"
+      exclude: '\.serena/project\.yml'
       run: |
         if command -v yamllint >/dev/null 2>&1; then
           yamllint {staged_files}
