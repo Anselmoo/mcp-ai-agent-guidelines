@@ -164,7 +164,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: ['18', '20', '22', '24']  # Test LTS versions (18=EOL, 20/22=active LTS, 24=current)
+        node-version: ['20', '22', '24']  # Test LTS versions (18=EOL, 20/22=active LTS, 24=current)
 
     steps:
       - name: Checkout code
