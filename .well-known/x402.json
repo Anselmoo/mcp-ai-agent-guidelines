@@ -1,0 +1,12 @@
+{
+  "name": "Anselmoo/mcp-ai-agent-guidelines",
+  "description": "A Model Context Protocol (MCP) server offering professional tools and templates for hierarchical prompting, code hygiene, visualization, memory optimization, and agile planning.",
+  "accepts": [
+    {
+      "network": "eip155:8453",
+      "asset": "USDC",
+      "address": "YOUR_WALLET_ADDRESS"
+    }
+  ],
+  "resources": []
+}
