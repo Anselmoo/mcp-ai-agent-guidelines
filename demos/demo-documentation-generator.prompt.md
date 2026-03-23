@@ -8,7 +8,7 @@ description: 'API documentation documentation for Backend developers integrating
 ## 📚 Documentation Generator Prompt
 
 ### Metadata
-- Updated: 2026-01-07
+- Updated: 2026-03-23
 - Source tool: mcp_ai-agent-guid_documentation-generator-prompt-builder
 - Suggested filename: documentation-api-documentation.prompt.md
 
