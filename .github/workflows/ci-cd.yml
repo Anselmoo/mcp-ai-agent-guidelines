@@ -418,7 +418,7 @@ jobs:
           echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
       - name: Sign artifacts with Sigstore
-        uses: sigstore/gh-action-sigstore-python@v3.2.0
+        uses: sigstore/gh-action-sigstore-python@v3.3.0
         with:
           inputs: >-
             ./dist/*.tgz
