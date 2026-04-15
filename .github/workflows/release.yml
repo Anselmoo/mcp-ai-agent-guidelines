@@ -112,6 +112,15 @@ jobs:
           done
           cosign sign --yes ${images}
 
+      - name: Scan image for vulnerabilities (Trivy)
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
+        with:
+          image-ref: ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
+          format: table
+          exit-code: "1"
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+
   # ── 3. Create GitHub Release ──────────────────────────────────────────────────
   github-release:
     name: Create GitHub Release
@@ -136,6 +145,9 @@ jobs:
 
       - name: Build & pack NPM tarball
         run: npm run build && npm pack
+
+      - name: Generate SBOM
+        run: npm sbom --sbom-format cyclonedx --package-lock-only --omit dev > sbom.json
 
       - name: Sign tarball with Sigstore
         uses: sigstore/gh-action-sigstore-python@v3.3.0
@@ -176,4 +188,4 @@ jobs:
       - name: Upload signed tarball to release
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        run: gh release upload '${{ steps.ver.outputs.tag }}' *.tgz *.sigstore.json --repo '${{ github.repository }}'
+        run: gh release upload '${{ steps.ver.outputs.tag }}' *.tgz *.sigstore.json sbom.json --repo '${{ github.repository }}'
