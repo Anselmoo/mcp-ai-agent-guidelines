@@ -7,12 +7,12 @@ on:
   push:
     branches: [main]
     paths:
-      - "**.md"
+      - "**/*.md"
       - ".github/workflows/link-checker.yml"
   pull_request:
     branches: [main]
     paths:
-      - "**.md"
+      - "**/*.md"
   schedule:
     # Weekly Monday 08:00 UTC — catches links that rot over time
     - cron: "0 8 * * 1"
@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
-      issues: write
+      contents: read
 
     steps:
       - uses: actions/checkout@v4
@@ -49,10 +49,7 @@ jobs:
             --scheme http
             --scheme file
             --scheme mailto
-            --exclude 'https://img\.shields\.io'
-            --exclude 'https://insiders\.vscode\.dev'
-            --exclude 'http://localhost'
-            '**.md'
+            '**/*.md'
           fail: true
 
       - name: Save lychee cache
