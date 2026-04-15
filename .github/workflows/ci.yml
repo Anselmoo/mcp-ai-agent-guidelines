@@ -22,6 +22,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Gitleaks needs the base commit for PR diff scans
 
       - uses: actions/setup-node@v4
         with:
