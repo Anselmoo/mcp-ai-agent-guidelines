@@ -87,8 +87,8 @@ describe("resolveModelId", () => {
 		expect(resolveModelId("strong")).toBe("gpt-5-4");
 	});
 
-	it("returns claude-sonnet-4-5 for reviewer tier via synthesis fallback", () => {
-		expect(resolveModelId("reviewer")).toBe("claude-sonnet-4-5");
+	it("returns claude-sonnet-4-6 for reviewer tier via synthesis fallback", () => {
+		expect(resolveModelId("reviewer")).toBe("claude-sonnet-4-6");
 	});
 });
 

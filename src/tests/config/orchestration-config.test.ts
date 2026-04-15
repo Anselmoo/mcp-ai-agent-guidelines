@@ -92,7 +92,6 @@ describe("orchestration-config: capability-driven resolver", () => {
 	});
 
 	it("resolves implement profile via intersection of requires", () => {
-		// Current workspace config resolves the free secondary lane first.
 		const modelId = resolveProfile("implement");
 		expect(modelId).toBe("gpt-4-1");
 	});

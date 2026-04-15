@@ -139,7 +139,17 @@ export async function resolveOrCreatePersistentSecret(options: {
 	} catch (error) {
 		const errorWithCode = error as NodeJS.ErrnoException;
 		if (errorWithCode?.code !== "EEXIST") {
-			throw error;
+			if (errorWithCode?.code !== "ENOENT") {
+				throw error;
+			}
+
+			await mkdir(dirname(secretPath), { recursive: true });
+			await writeFile(secretPath, `${generatedSecret}\n`, {
+				encoding: "utf8",
+				flag: "wx",
+				mode: 0o600,
+			});
+			return generatedSecret;
 		}
 
 		// Another process wrote the file concurrently. On fast I/O (e.g. CI),
