@@ -15,11 +15,33 @@ env:
   NODE_VERSION: "22"
 
 jobs:
+  # ── 0. Lint & code quality — Lefthook pre-commit hooks ──────────────────────
+  lint:
+    name: Lint & Code Quality (Lefthook)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Lefthook (biome-check)
+        run: npx lefthook run pre-commit --command biome-check --no-tty
+
   # ── 1. Quality gate — fast fail ──────────────────────────────────────────────
   quality:
     name: Quality Gate
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    needs: lint
     steps:
       - uses: actions/checkout@v4
         with:
