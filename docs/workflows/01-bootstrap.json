@@ -1,0 +1,90 @@
+{
+  "id": "01-bootstrap",
+  "title": "Bootstrap Workflow",
+  "triggeredBy": "meta-routing when a user request is greenfield or has an unclear scope",
+  "intent": "Force a formal requirement extraction and ambiguity elimination phase before any code is written",
+  "resourcePool": [
+    "bootstrap",
+    "elicitation"
+  ],
+  "inputSchema": {
+    "rawInput": "string",
+    "constraints": "string[]?"
+  },
+  "throwbacks": [
+    "user: clarify conflicting requirements"
+  ],
+  "chainTo": [
+    "design",
+    "implement",
+    "research",
+    "review",
+    "plan",
+    "debug",
+    "refactor",
+    "testing",
+    "orchestrate",
+    "govern",
+    "enterprise",
+    "physics-analysis"
+  ],
+  "skillTree": {
+    "root": "raw-intake",
+    "nodes": [
+      {
+        "id": "raw-intake",
+        "skill": "req-analysis",
+        "type": "primary",
+        "profile": "elicitation",
+        "description": "Extract and structure requirements from vague or incomplete user input",
+        "next": [
+          {
+            "target": "scope-bounding"
+          }
+        ]
+      },
+      {
+        "id": "scope-bounding",
+        "skill": "req-scope",
+        "type": "gate",
+        "profile": "elicitation",
+        "description": "Explicitly bound the work: must-haves vs nice-to-haves, in-scope vs out-of-scope",
+        "next": [
+          {
+            "target": "ambiguity-scan",
+            "condition": "scope boundary identified"
+          },
+          {
+            "target": "raw-intake",
+            "condition": "scope too wide — iterate"
+          }
+        ]
+      },
+      {
+        "id": "ambiguity-scan",
+        "skill": "req-ambiguity-detection",
+        "type": "primary",
+        "profile": "elicitation",
+        "description": "Identify underspecified or conflicting requirements before any implementation begins",
+        "next": [
+          {
+            "target": "acceptance-criteria",
+            "condition": "all ambiguities resolved"
+          },
+          {
+            "target": "scope-bounding",
+            "condition": "new ambiguities discovered"
+          }
+        ]
+      },
+      {
+        "id": "acceptance-criteria",
+        "skill": "req-acceptance-criteria",
+        "type": "synthesis",
+        "profile": "elicitation",
+        "description": "Generate clear, testable, eval-ready acceptance criteria from the verified requirements",
+        "next": []
+      }
+    ]
+  }
+}

@@ -1,0 +1,57 @@
+---
+title: policy-govern
+description: Govern — safety, compliance, data guardrails, and policy enforcement for AI workflows.
+sidebar:
+  label: policy-govern
+  badge:
+    text: "Advanced"
+    variant: "danger"
+---
+
+import { Badge } from "@astrojs/starlight/components";
+import ToolIcon from "../../../components/ToolIcon.astro";
+
+<div class="tool-header-icon"><ToolIcon icon="ShieldCheck" size={28} aria-hidden="true" /><span><Badge text="Advanced" variant="danger" /> <Badge text="workflow" variant="note" /></span></div>
+
+## Mission
+
+Audit → enforce → monitor → remediate. Zero tolerance for undetected compliance violations.
+
+## When to Use
+
+Use when auditing AI workflows for policy compliance, enforcing data guardrails, validating model governance, hardening against prompt injection, designing regulated workflows, monitoring compliance drift, or remediating security and governance issues.
+
+**Triggers**: "compliance check", "safety audit", "policy validation", "data guardrails", "prompt injection hardening", "regulated workflow", "governance review", "model version policy"
+
+## Skills Invoked
+
+Two-pass pattern (`GPT-5.4` first-pass, `Claude Sonnet 4.6` final judgment):
+- `gov-prompt-injection-hardening` — injection vector detection and mitigation
+- `gov-policy-validation` — validate against defined policy spec
+- `gov-data-guardrails` — PII detection, scrubbing, purpose limitation
+- `gov-model-governance` — approved model audit
+- `gov-model-compatibility` — model roster compatibility check
+- `gov-regulated-workflow-design` — HIPAA/GDPR/SOC 2 workflow design
+- `gov-workflow-compliance` — end-to-end compliance check
+
+## Chain-To
+
+- `code-review` — address code-level issues found in governance audit
+- `fault-resilience` — add structural fault tolerance recommended by governance
+- `docs-generate` — generate compliance documentation
+
+## Strict Mode
+
+When `ENABLE_GOVERNANCE_STRICT=true`:
+- Human-in-the-loop checkpoint inserted before results are returned
+- All `gov-*` skills require approval before proceeding
+
+## Example
+
+```json
+{
+  "request": "Audit our customer data processing pipeline for GDPR compliance"
+}
+```
+
+**Output**: Compliance gap table, data flow map with PII exposure points, remediation priority list, and a compliance certificate once all gaps are resolved.

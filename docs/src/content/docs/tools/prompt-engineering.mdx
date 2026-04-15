@@ -1,0 +1,58 @@
+---
+title: prompt-engineering
+description: Prompt Engineering — build, evaluate, and optimize prompts as versioned, tested artifacts.
+sidebar:
+  label: prompt-engineering
+  badge:
+    text: "Efficient"
+    variant: "caution"
+---
+
+import { Badge } from "@astrojs/starlight/components";
+import ToolIcon from "../../../components/ToolIcon.astro";
+
+<div class="tool-header-icon"><ToolIcon icon="WandSparkles" size={28} aria-hidden="true" /><span><Badge text="Efficient" variant="caution" /> <Badge text="workflow" variant="note" /></span></div>
+
+## Mission
+
+Structure → test → refine → version. Every prompt is a versioned, tested artifact.
+
+## When to Use
+
+Use when writing a new system prompt, building a prompt template, improving an existing prompt that is failing or hallucinating, versioning prompts, chaining prompts into pipelines, calibrating agent autonomy levels, or evaluating prompt quality.
+
+**Triggers**: "write a system prompt", "improve this prompt", "prompt is hallucinating", "prompt template", "chain these prompts", "calibrate autonomy", "prompt version"
+
+## Skills Invoked
+
+- `prompt-engineering` — design from scratch
+- `prompt-chaining` — multi-step prompt chains
+- `prompt-refinement` — iterative improvement from eval feedback
+- `prompt-hierarchy` — system → instruction → user layer design
+- `eval-prompt` — score generated prompts
+
+## Chain-To
+
+- `quality-evaluate` — benchmark the new prompt against baseline
+- `policy-govern` — enforce governance layers in the prompt hierarchy
+
+## Refinement Loop
+
+```
+prompt → eval-prompt score
+   ↓ (below threshold)
+prompt-refinement
+   ↓
+modified prompt → re-score
+   ↓ (repeat)
+```
+
+## Example
+
+```json
+{
+  "request": "The code generation prompt keeps producing code with `any` types. Fix it."
+}
+```
+
+**Output**: Diagnosis of failure mode, refined system message with explicit TypeScript constraints, version tag, and eval score comparison.

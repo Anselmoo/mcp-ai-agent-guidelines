@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img"
+    aria-label="MCP AI Agent Guidelines — 20 tools, 102 skills, 18 domains">
+    <title>MCP AI Agent Guidelines — Open Graph Preview</title>
+    <defs>
+        <!-- Outer glow on hub -->
+        <radialGradient id="hub-glow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#00d4cc" stop-opacity="0.35" />
+            <stop offset="100%" stop-color="#00d4cc" stop-opacity="0" />
+        </radialGradient>
+        <!-- Hub fill -->
+        <radialGradient id="hub-fill" cx="40%" cy="35%" r="65%">
+            <stop offset="0%" stop-color="#3b9cf6" />
+            <stop offset="100%" stop-color="#1a5cbf" />
+        </radialGradient>
+        <!-- Background gradient -->
+        <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#100f20" />
+            <stop offset="100%" stop-color="#141425" />
+        </linearGradient>
+        <!-- Subtle dot grid -->
+        <pattern id="dots" width="28" height="28" patternUnits="userSpaceOnUse">
+            <circle cx="14" cy="14" r="0.9" fill="#00d4cc" opacity="0.08" />
+        </pattern>
+    </defs>
+
+    <!-- Background -->
+    <rect width="1200" height="630" fill="url(#bg)" />
+    <rect width="1200" height="630" fill="url(#dots)" />
+
+    <!-- ─── Network Visualization (center-left at 320, 315) ─── -->
+
+    <!-- Ambient hub glow -->
+    <circle cx="320" cy="315" r="110" fill="url(#hub-glow)" />
+
+    <!-- Background orbit rings -->
+    <circle cx="320" cy="315" r="145" fill="none" stroke="#00d4cc" stroke-width="0.6" opacity="0.10" />
+    <circle cx="320" cy="315" r="248" fill="none" stroke="#00d4cc" stroke-width="0.5" opacity="0.07" />
+
+    <!-- Spokes: hub → 8 inner instruction nodes -->
+    <line x1="320" y1="315" x2="320" y2="170" stroke="#00d4cc" stroke-width="1.1" opacity="0.40" />
+    <line x1="320" y1="315" x2="423" y2="212" stroke="#00d4cc" stroke-width="1.1" opacity="0.40" />
+    <line x1="320" y1="315" x2="465" y2="315" stroke="#00d4cc" stroke-width="1.1" opacity="0.40" />
+    <line x1="320" y1="315" x2="423" y2="418" stroke="#00d4cc" stroke-width="1.1" opacity="0.40" />
+    <line x1="320" y1="315" x2="320" y2="460" stroke="#00d4cc" stroke-width="1.1" opacity="0.40" />
+    <line x1="320" y1="315" x2="217" y2="418" stroke="#00d4cc" stroke-width="1.1" opacity="0.40" />
+    <line x1="320" y1="315" x2="175" y2="315" stroke="#00d4cc" stroke-width="1.1" opacity="0.40" />
+    <line x1="320" y1="315" x2="217" y2="212" stroke="#00d4cc" stroke-width="1.1" opacity="0.40" />
+
+    <!-- Dashed lines: inner nodes → outer domain nodes -->
+    <line x1="320" y1="170" x2="320" y2="67" stroke="#00d4cc" stroke-width="0.8" stroke-dasharray="4,3"
+        opacity="0.25" />
+    <line x1="423" y1="212" x2="501" y2="109" stroke="#00d4cc" stroke-width="0.8" stroke-dasharray="4,3"
+        opacity="0.25" />
+    <line x1="423" y1="212" x2="567" y2="175" stroke="#00d4cc" stroke-width="0.8" stroke-dasharray="4,3"
+        opacity="0.25" />
+    <line x1="465" y1="315" x2="568" y2="315" stroke="#00d4cc" stroke-width="0.8" stroke-dasharray="4,3"
+        opacity="0.25" />
+    <line x1="423" y1="418" x2="567" y2="455" stroke="#00d4cc" stroke-width="0.8" stroke-dasharray="4,3"
+        opacity="0.25" />
+    <line x1="423" y1="418" x2="501" y2="521" stroke="#00d4cc" stroke-width="0.8" stroke-dasharray="4,3"
+        opacity="0.25" />
+    <line x1="320" y1="460" x2="320" y2="563" stroke="#00d4cc" stroke-width="0.8" stroke-dasharray="4,3"
+        opacity="0.25" />
+    <line x1="217" y1="418" x2="139" y2="521" stroke="#00d4cc" stroke-width="0.8" stroke-dasharray="4,3"
+        opacity="0.25" />
+    <line x1="217" y1="418" x2="73" y2="455" stroke="#00d4cc" stroke-width="0.8" stroke-dasharray="4,3"
+        opacity="0.25" />
+    <line x1="175" y1="315" x2="72" y2="315" stroke="#00d4cc" stroke-width="0.8" stroke-dasharray="4,3"
+        opacity="0.25" />
+    <line x1="217" y1="212" x2="73" y2="175" stroke="#00d4cc" stroke-width="0.8" stroke-dasharray="4,3"
+        opacity="0.25" />
+    <line x1="217" y1="212" x2="139" y2="109" stroke="#00d4cc" stroke-width="0.8" stroke-dasharray="4,3"
+        opacity="0.25" />
+
+    <!-- Outer domain nodes (12) -->
+    <circle cx="320" cy="67" r="5.5" fill="#00d4cc" fill-opacity="0.22" stroke="#00d4cc" stroke-width="1.2" />
+    <circle cx="501" cy="109" r="5.5" fill="#00d4cc" fill-opacity="0.22" stroke="#00d4cc" stroke-width="1.2" />
+    <circle cx="567" cy="175" r="5.5" fill="#00d4cc" fill-opacity="0.22" stroke="#00d4cc" stroke-width="1.2" />
+    <circle cx="568" cy="315" r="5.5" fill="#00d4cc" fill-opacity="0.22" stroke="#00d4cc" stroke-width="1.2" />
+    <circle cx="567" cy="455" r="5.5" fill="#00d4cc" fill-opacity="0.22" stroke="#00d4cc" stroke-width="1.2" />
+    <circle cx="501" cy="521" r="5.5" fill="#00d4cc" fill-opacity="0.22" stroke="#00d4cc" stroke-width="1.2" />
+    <circle cx="320" cy="563" r="5.5" fill="#00d4cc" fill-opacity="0.22" stroke="#00d4cc" stroke-width="1.2" />
+    <circle cx="139" cy="521" r="5.5" fill="#00d4cc" fill-opacity="0.22" stroke="#00d4cc" stroke-width="1.2" />
+    <circle cx="73" cy="455" r="5.5" fill="#00d4cc" fill-opacity="0.22" stroke="#00d4cc" stroke-width="1.2" />
+    <circle cx="72" cy="315" r="5.5" fill="#00d4cc" fill-opacity="0.22" stroke="#00d4cc" stroke-width="1.2" />
+    <circle cx="73" cy="175" r="5.5" fill="#00d4cc" fill-opacity="0.22" stroke="#00d4cc" stroke-width="1.2" />
+    <circle cx="139" cy="109" r="5.5" fill="#00d4cc" fill-opacity="0.22" stroke="#00d4cc" stroke-width="1.2" />
+
+    <!-- Inner instruction tool nodes (8) -->
+    <circle cx="320" cy="170" r="12" fill="#00d4cc" fill-opacity="0.16" stroke="#00d4cc" stroke-width="1.5" />
+    <circle cx="423" cy="212" r="12" fill="#00d4cc" fill-opacity="0.16" stroke="#00d4cc" stroke-width="1.5" />
+    <circle cx="465" cy="315" r="12" fill="#00d4cc" fill-opacity="0.16" stroke="#00d4cc" stroke-width="1.5" />
+    <circle cx="423" cy="418" r="12" fill="#00d4cc" fill-opacity="0.16" stroke="#00d4cc" stroke-width="1.5" />
+    <circle cx="320" cy="460" r="12" fill="#00d4cc" fill-opacity="0.16" stroke="#00d4cc" stroke-width="1.5" />
+    <circle cx="217" cy="418" r="12" fill="#00d4cc" fill-opacity="0.16" stroke="#00d4cc" stroke-width="1.5" />
+    <circle cx="175" cy="315" r="12" fill="#00d4cc" fill-opacity="0.16" stroke="#00d4cc" stroke-width="1.5" />
+    <circle cx="217" cy="212" r="12" fill="#00d4cc" fill-opacity="0.16" stroke="#00d4cc" stroke-width="1.5" />
+
+    <!-- Hub -->
+    <circle cx="320" cy="315" r="52" fill="url(#hub-fill)" />
+    <circle cx="320" cy="315" r="52" fill="none" stroke="white" stroke-width="1.2" opacity="0.25" />
+    <text x="320" y="309" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="15"
+        font-weight="700" fill="white" opacity="0.95" letter-spacing="1.5">MCP</text>
+    <text x="320" y="328" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="9.5"
+        fill="white" opacity="0.65" letter-spacing="1">SERVER</text>
+
+    <!-- ─── Divider ─── -->
+    <line x1="620" y1="80" x2="620" y2="550" stroke="#00d4cc" stroke-width="0.5" opacity="0.15" />
+
+    <!-- ─── Text Content (right half: x 660..1150) ─── -->
+
+    <!-- Top eyebrow label -->
+    <text x="660" y="160" font-family="ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,sans-serif"
+        font-size="16" font-weight="400" fill="#00d4cc" letter-spacing="2.5" opacity="0.75">TYPESCRIPT · ESM · MCP
+        SERVER</text>
+
+    <!-- Main title line 1 -->
+    <text x="660" y="248" font-family="ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,sans-serif"
+        font-size="66" font-weight="800" fill="#f1f5f9" letter-spacing="-1">MCP AI Agent</text>
+
+    <!-- Main title line 2 (accent) -->
+    <text x="660" y="330" font-family="ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,sans-serif"
+        font-size="66" font-weight="800" fill="#00d4cc" letter-spacing="-1">Guidelines</text>
+
+    <!-- Tagline -->
+    <text x="660" y="398" font-family="ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,sans-serif"
+        font-size="22" font-weight="400" fill="#64748b" letter-spacing="0.5">20 Tools · 102 Skills · 18 Domains</text>
+
+    <!-- Thin separator -->
+    <line x1="660" y1="432" x2="1100" y2="432" stroke="#334155" stroke-width="1" />
+
+    <!-- Footer: description -->
+    <text x="660" y="468" font-family="ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,sans-serif"
+        font-size="16" fill="#475569" letter-spacing="0.3">Physics-inspired AI workflows with governance-first
+        design</text>
+
+    <!-- Footer: URL -->
+    <text x="660" y="510" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="14" fill="#334155"
+        letter-spacing="0.2">github.com/Anselmoo/mcp-ai-agent-guidelines-insiders</text>
+</svg>

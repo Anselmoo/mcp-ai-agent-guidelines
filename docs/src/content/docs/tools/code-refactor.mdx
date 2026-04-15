@@ -1,0 +1,57 @@
+---
+title: code-refactor
+description: Refactor — improve existing code safely without breaking working behavior.
+sidebar:
+  label: code-refactor
+  badge:
+    text: "Efficient"
+    variant: "caution"
+---
+
+import { Badge } from "@astrojs/starlight/components";
+import ToolIcon from "../../../components/ToolIcon.astro";
+
+<div class="tool-header-icon"><ToolIcon icon="Wrench" size={28} aria-hidden="true" /><span><Badge text="Efficient" variant="caution" /> <Badge text="workflow" variant="note" /></span></div>
+
+## Mission
+
+Improve existing code: measure → prioritize → transform → verify. Never break working behavior.
+
+## When to Use
+
+Use when improving existing code quality, reducing technical debt, eliminating coupling, splitting oversized modules, improving performance, or hardening security of existing code.
+
+**Triggers**: "refactor this", "reduce tech debt", "clean up", "improve code quality", "split this module", "too complex"
+
+## Skills Invoked
+
+- `qual-refactoring-priority` — ranks candidates by risk, impact, debt score
+- `qual-code-analysis` — static analysis to identify targets
+- `gr-geodesic-refactor` (gated) — optimal refactoring path
+- `gr-escape-velocity-calculator` (gated) — effort to escape debt well
+
+## Chain-To
+
+- `test-verify` — verify refactored code still passes all tests
+- `code-review` — review the refactoring for unintended consequences
+- `physics-analysis` — escalate to GR-based debt analysis
+
+## Execution Pattern
+
+| Scope | Pattern |
+|-------|---------|
+| Single-file refactor | GPT-4.1 only (Zero-Cost) |
+| Cross-module refactor | GPT-4.1 draft → Claude Sonnet 4.6 boundary review |
+| Batch refactor | 3× GPT-4.1 parallel → single Claude Sonnet 4.6 diff-review |
+
+Never use a free model as final reviewer for refactors touching `gov-*`, `qm-*`, `gr-*`, or security primitives.
+
+## Example
+
+```json
+{
+  "request": "The UserService class is 800 lines. Refactor it into cohesive modules."
+}
+```
+
+**Output**: Refactoring plan, module boundary proposal, extracted code files, and a test compatibility check.

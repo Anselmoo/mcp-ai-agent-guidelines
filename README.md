@@ -1,339 +1,79 @@
-<!-- HEADER:START -->
-![Header](docs/.frames-static/09-header.svg)
-<!-- HEADER:END -->
+# mcp-ai-agent-guidelines
 
-# MCP AI Agent Guidelines Server
+[![npm version](https://img.shields.io/npm/v/mcp-ai-agent-guidelines)](https://www.npmjs.com/package/mcp-ai-agent-guidelines)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Node ≥22.7.5](https://img.shields.io/badge/node-%3E%3D22.7.5-brightgreen)](https://nodejs.org)
+[![CI](https://github.com/Anselmoo/mcp-ai-agent-guidelines/actions/workflows/ci.yml/badge.svg)](https://github.com/Anselmoo/mcp-ai-agent-guidelines/actions/workflows/ci.yml)
 
 > [!CAUTION]
-> **Disclaimer -- Experimental / Early Stage:** This _research demonstrator_ project references third‑party models, tools, pricing, and docs that evolve quickly. Treat outputs as recommendations and verify against official docs and your own benchmarks before production use.
+> **Experimental / Early Stage:** This _research demonstrator_ project references third‑party models, tools, pricing, and docs that evolve quickly. Treat outputs as recommendations and verify against official docs and your own benchmarks before production use.
 
-[![CI/CD Pipeline](https://img.shields.io/github/actions/workflow/status/Anselmoo/mcp-ai-agent-guidelines/ci-cd.yml?branch=main&label=CI%2FCD&logo=github-actions&logoColor=white)](https://github.com/Anselmoo/mcp-ai-agent-guidelines/actions/workflows/ci-cd.yml)
-[![Auto-Regenerate Demos](https://img.shields.io/github/actions/workflow/status/Anselmoo/mcp-ai-agent-guidelines/auto-regenerate-demos.yml?label=demos&logo=github-actions&logoColor=white)](https://github.com/Anselmoo/mcp-ai-agent-guidelines/actions/workflows/auto-regenerate-demos.yml)
-[![Link Checker](https://img.shields.io/github/actions/workflow/status/Anselmoo/mcp-ai-agent-guidelines/link-checker.yml?branch=main&label=links&logo=link&logoColor=white)](https://github.com/Anselmoo/mcp-ai-agent-guidelines/actions/workflows/link-checker.yml)
-[![Coverage Status](https://img.shields.io/codecov/c/github/Anselmoo/mcp-ai-agent-guidelines/main?label=coverage&logo=codecov&logoColor=white)](https://codecov.io/gh/Anselmoo/mcp-ai-agent-guidelines)
-[![Node.js Version](https://img.shields.io/node/v/mcp-ai-agent-guidelines?label=node&logo=node.js&logoColor=white&color=green)](https://nodejs.org/en/download/)
-[![Docker](https://img.shields.io/badge/docker-available-blue?logo=docker&logoColor=white)](https://github.com/Anselmoo/mcp-ai-agent-guidelines/pkgs/container/mcp-ai-agent-guidelines)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?logo=opensourceinitiative&logoColor=white)](./LICENSE)
+A TypeScript ESM **MCP server** exposing **20 public instruction tools** and **7 utility tools**, backed by **102 internal skills** across 18 domain families — from requirements discovery and code quality through governance, resilience, and physics-inspired analysis.
 
-[![GitHub Stars](https://img.shields.io/github/stars/Anselmoo/mcp-ai-agent-guidelines?style=social)](https://github.com/Anselmoo/mcp-ai-agent-guidelines/stargazers)
-[![GitHub Forks](https://img.shields.io/github/forks/Anselmoo/mcp-ai-agent-guidelines?style=social)](https://github.com/Anselmoo/mcp-ai-agent-guidelines/network/members)
-[![GitHub Issues](https://img.shields.io/github/issues/Anselmoo/mcp-ai-agent-guidelines?label=issues&logo=github&logoColor=white)](https://github.com/Anselmoo/mcp-ai-agent-guidelines/issues)
-[![GitHub Last Commit](https://img.shields.io/github/last-commit/Anselmoo/mcp-ai-agent-guidelines?logo=github&logoColor=white)](https://github.com/Anselmoo/mcp-ai-agent-guidelines/commits/main)
+📖 **[Full documentation on GitHub Pages](https://anselmoo.github.io/mcp-ai-agent-guidelines/)**
 
-A Model Context Protocol (MCP) server offering advanced tools and templates for hierarchical prompting, code hygiene, visualization, memory optimization, and agile planning.
+---
 
-## 📚 Table of Contents
+## Table of Contents
 
+- [Requirements](#requirements)
 - [Installation](#installation)
-- [Documentation](#documentation)
-- [Demos](#demos)
+- [VS Code Integration (One-Click)](#vs-code-integration-one-click)
+- [MCP Server Configuration](#mcp-server-configuration)
+- [CLI Usage](#cli-usage)
 - [Features](#features)
-- [VS Code Integration](#vs-code-integration-one-click)
-- [Agent-Relative Calls](#agent-relative-calls)
-- [Configuration](#configuration)
+- [Instruction Workflows](#instruction-workflows)
+- [Skill Taxonomy](#skill-taxonomy)
+- [Configuration](#configuration-files)
 - [Development](#development)
+- [Environment Variables](#environment-variables)
 - [Contributing](#contributing)
-- [Changelog](./CHANGELOG.md)
 - [License](#license)
+
+---
+
+## Requirements
+
+| Runtime | Version |
+|---------|---------|
+| Node.js | ≥ 22.7.5 |
+| npm | ≥ 10.0.0 |
+
+---
 
 ## Installation
 
+### npx (zero-install, recommended for MCP config)
+
 ```bash
-# NPX (recommended)
 npx mcp-ai-agent-guidelines
+```
 
-# NPM global
+### Global install
+
+```bash
 npm install -g mcp-ai-agent-guidelines
-
-# From source
-git clone https://github.com/Anselmoo/mcp-ai-agent-guidelines.git
-cd mcp-ai-agent-guidelines
-npm ci && npm run build && npm start
+mcp-ai-agent-guidelines
 ```
 
-### Scripts
+### Local install (monorepo / project dependency)
 
 ```bash
-npm run build      # TypeScript build
-npm run start      # Build and start server
-npm run test:all   # Unit + integration + demos + MCP smoke
-npm run test:coverage:unit # Unit test coverage (c8) -> coverage/ + summary
-npm run quality    # Type-check + Biome checks
-npm run links:check # Check links in main markdown files
-npm run links:check:all # Check links in all markdown files (slow)
+npm install mcp-ai-agent-guidelines
 ```
-
-### Local Link Checking
-
-The project includes automated link checking via GitHub Actions. To check links locally before committing:
-
-```bash
-# Quick check (README, CONTRIBUTING, DISCLAIMER)
-npm run links:check
-
-# Comprehensive check (all markdown files)
-npm run links:check:all
-
-# Or use npx directly
-npx markdown-link-check --config .mlc_config.json README.md
-```
-
-Configuration is in `.mlc_config.json`. Ignored patterns and retries are configured there.
-
-## Documentation
-
-## Documentation
-
-**[📖 Complete Documentation Index](./docs/README.md)** - Full guide to all tools and features
-
-### Getting Started Guides
-
-- **[🎯 AI Interaction Tips](./docs/tips/ai-interaction-tips.md)** - Learn to ask targeted questions for better results
-- **[📊 Prompting Hierarchy](./docs/tips/prompting-hierarchy.md)** - Understanding prompt levels and evaluation
-- **[🔗 Agent-Relative Call Patterns](./docs/tips/agent-relative-calls.md)** - Invoking tools in workflows
-
-### Advanced Features
-
-- **[🌊 Flow-Based Prompting](./docs/tips/flow-prompting-examples.md)** - Multi-step prompt workflows
-- **[🔗 Agent-to-Agent (A2A) Orchestration](./docs/tips/a2a-orchestration-guide.md)** - Tool-to-tool chaining with context propagation
-- **[📋 A2A Practical Examples](./docs/tips/a2a-examples.md)** - Real-world A2A workflow patterns
-- **[🎨 Mermaid Diagram Generation](./docs/tips/mermaid-diagram-examples.md)** - Create flowcharts, sequences, ER diagrams
-- **[🔍 Code Quality Analysis](./docs/tips/code-quality-improvements.md)** - Hygiene scoring and best practices
-- **[⚡ Sprint Planning](./docs/tips/sprint-planning-reliability.md)** - Dependency-aware timeline calculation
-
-### Integration & Reference
-
-- **[🏗️ Bridge Connectors](./docs/tips/bridge-connectors.md)** - Integration patterns for external systems
-- **[🔄 Serena Integration](./docs/tips/serena-strategies.md)** - Semantic analysis strategies
-- **[📚 Complete Reference](./docs/tips/references.md)** - Credits, research papers, and citations
-
-See **[docs/README.md](./docs/README.md)** for the complete documentation index.
-
-### Quick Links
-
-#### For Users
-
-- **[🎯 AI Interaction Tips](./docs/tips/ai-interaction-tips.md)** - Learn to ask targeted questions for better results
-- **[📊 Prompting Hierarchy](./docs/tips/prompting-hierarchy.md)** - Understanding prompt levels and evaluation
-- **[🔗 Agent-Relative Call Patterns](./docs/tips/agent-relative-calls.md)** - Invoking tools in workflows
-- **[🌊 Flow-Based Prompting](./docs/tips/flow-prompting-examples.md)** - Advanced chaining strategies
-- **[🎨 Mermaid Diagrams](./docs/tips/mermaid-diagram-examples.md)** - Visual diagram generation
-
-#### For Developers
-
-- **[🤝 Contributing Guidelines](./CONTRIBUTING.md)** - How to contribute
-- **[✨ Clean Code Initiative](./docs/tips/clean-code-initiative.md)** - Quality standards (100/100 scoring)
-- **[🔧 Technical Improvements](./docs/tips/technical-improvements.md)** - Refactoring and enhancements
-- **[⚠️ Error Handling](./docs/tips/error-handling.md)** - Best practices
-- **[🏗️ Bridge Connectors](./docs/tips/bridge-connectors.md)** - Integration patterns
-
-#### For Maintainers
-
-- **[📦 Export Formats Guide](./docs/export-formats.md)** - LaTeX, CSV, JSON export options and chat integration
-- **[🤖 Model Management Guide](./docs/model-management.md)** - Managing AI model definitions in YAML
-
-See the **[complete documentation](./docs/README.md)** for the full list of guides organized by topic.
-
-## Demos
-
-Explore real-world examples showing the tools in action. All demos are auto-generated and kept in sync with the codebase.
-
-**[📖 Complete Demo Index](./demos/README.md)** - Full list of all demos with descriptions
-
-### Featured Examples
-
-**Code Analysis & Quality:**
-
-- [Code Hygiene Report](./demos/demo-code-analysis.hygiene.md) - Pattern detection and best practices
-- [Guidelines Validation](./demos/demo-code-analysis.guidelines.md) - AI agent development standards
-- [Clean Code Scoring](./demos/demo-clean-code-score.md) - Comprehensive quality metrics (0-100)
-
-**Prompt Engineering:**
-
-- [Hierarchical Prompt](./demos/demo-code-analysis.hierarchical.prompt.md) - Structured refactoring plan
-- [Domain-Neutral Prompt](./demos/demo-code-analysis.domain-neutral.prompt.md) - Generic template
-- [Security Hardening Prompt](./demos/demo-code-analysis.security-hardening.prompt.md) - OWASP-focused analysis
-- [Flow-Based Prompting](./demos/demo-design-session.md) - Multi-step workflows
-
-**Visualization & Planning:**
-
-- [Architecture Diagram](./demos/demo-code-analysis.diagram.md) - Mermaid system diagrams
-- [Sprint Planning](./demos/demo-code-analysis.sprint.md) - Dependency-aware timeline
-- [Model Compatibility](./demos/demo-code-analysis.model-compat.md) - AI model selection
-
-**Advanced Features:**
-
-- [Memory Context Optimization](./demos/demo-code-analysis.memory.md) - Token efficiency
-- [Strategy Frameworks](./demos/demo-strategy-frameworks.md) - SWOT, BCG, Porter's Five Forces
-- [Gap Analysis](./demos/demo-gap-analysis.md) - Current vs. desired state
-
-### Running Demos Locally
-
-```bash
-npm run build
-node demos/demo-tools.js  # Generate sample tool outputs
-```
-
-Demos are automatically regenerated when tool code changes via GitHub Actions.
-
-## Features & Tools
-
-**32 professional tools** (31 active + 1 unified tool) for AI-powered development workflows. Each tool is rated by complexity:
-
-**⭐ Complexity Ratings:**
-
-- ⭐ **Simple** - Single input, immediate output (5-10 min to master)
-- ⭐⭐ **Moderate** - Multiple parameters, straightforward usage (15-30 min)
-- ⭐⭐⭐ **Advanced** - Complex inputs, requires understanding of domain (1-2 hours)
-- ⭐⭐⭐⭐ **Expert** - Multi-phase workflows, deep domain knowledge (half day)
-- ⭐⭐⭐⭐⭐ **Master** - Enterprise-scale, comprehensive orchestration (1-2 days)
-
-**📖 [Complete Tools Reference](./docs/tips/tools-reference.md)** - Detailed documentation with examples
-
----
-
-### 🎨 Prompt Builders (10 tools)
-
-Build structured, effective prompts for various use cases.
-
-> **⚠️ Deprecation Notice**: Six individual prompt tools (`hierarchical-prompt-builder`, `prompting-hierarchy-evaluator`, `hierarchy-level-selector`, `prompt-chaining-builder`, `prompt-flow-builder`, `quick-developer-prompts-builder`) are deprecated as of v0.14.0 and will be removed in v0.15.0. Use `prompt-hierarchy` instead. See [Migration Guide](./docs/migration.md) for details.
-
-| Tool                                          | Purpose                                                                                     | Complexity | Learn More                                                           |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------- | ---------- | -------------------------------------------------------------------- |
-| `prompt-hierarchy` ⭐ **NEW**                  | Unified prompt API with 6 modes: build, evaluate, select-level, chain, flow, quick         | ⭐⭐⭐     | [Guide](./docs/api/prompt-hierarchy.md)                              |
-| `hierarchical-prompt-builder` 🔻              | ⚠️ **Deprecated** - Use `prompt-hierarchy` mode=`build` instead                             | ⭐⭐       | [Guide](./docs/tools/hierarchical-prompt-builder.md)                 |
-| `code-analysis-prompt-builder`                | Code review prompts (security, performance, maintainability)                                | ⭐⭐       | [Guide](./docs/tools/code-analysis-prompt-builder.md)                |
-| `architecture-design-prompt-builder`          | Architecture design with scale-appropriate guidance                                         | ⭐⭐⭐     | [Guide](./docs/tools/architecture-design-prompt-builder.md)          |
-| `digital-enterprise-architect-prompt-builder` | Enterprise architecture with mentor perspectives & research                                 | ⭐⭐⭐⭐   | [Guide](./docs/tools/digital-enterprise-architect-prompt-builder.md) |
-| `debugging-assistant-prompt-builder`          | Systematic debugging prompts with structured analysis                                       | ⭐⭐       | [Guide](./docs/tools/debugging-assistant-prompt-builder.md)          |
-| `l9-distinguished-engineer-prompt-builder`    | L9 (Distinguished Engineer) high-level technical design                                     | ⭐⭐⭐⭐⭐ | [Guide](./docs/tools/l9-distinguished-engineer-prompt-builder.md)    |
-| `documentation-generator-prompt-builder`      | Technical docs tailored to audience (API, user guide, spec)                                 | ⭐⭐       | [Guide](./docs/tools/documentation-generator-prompt-builder.md)      |
-| `domain-neutral-prompt-builder`               | Generic templates with objectives and workflows                                             | ⭐⭐⭐     | [Guide](./docs/tools/domain-neutral-prompt-builder.md)               |
-| `security-hardening-prompt-builder`           | Security analysis with OWASP/compliance focus                                               | ⭐⭐⭐     | [Guide](./docs/tools/security-hardening-prompt-builder.md)           |
-
-### 🔍 Code Analysis & Quality (7 tools)
-
-Analyze and improve code quality with automated insights.
-
-| Tool                          | Purpose                                                            | Complexity | Learn More                                           |
-| ----------------------------- | ------------------------------------------------------------------ | ---------- | ---------------------------------------------------- |
-| `clean-code-scorer`           | Comprehensive 0-100 quality score with metric breakdown            | ⭐⭐⭐     | [Guide](./docs/tools/clean-code-scorer.md)           |
-| `code-hygiene-analyzer`       | Detect outdated patterns, unused dependencies, code smells         | ⭐⭐       | [Guide](./docs/tools/code-hygiene-analyzer.md)       |
-| `dependency-auditor`          | Audit package.json for security, deprecation, ESM compatibility    | ⭐         | [Guide](./docs/tools/dependency-auditor.md)          |
-| `iterative-coverage-enhancer` | Analyze coverage gaps, generate test suggestions, adapt thresholds | ⭐⭐⭐     | [Guide](./docs/tools/iterative-coverage-enhancer.md) |
-| `semantic-code-analyzer`      | Identify symbols, structure, dependencies, patterns (LSP-based)    | ⭐⭐       | [Guide](./docs/tools/semantic-code-analyzer.md)      |
-| `guidelines-validator`        | Validate practices against AI agent development guidelines         | ⭐         | [Guide](./docs/tools/guidelines-validator.md)        |
-| `mermaid-diagram-generator`   | Generate visual diagrams (flowchart, sequence, ER, class, etc.)    | ⭐⭐       | [Guide](./docs/tools/mermaid-diagram-generator.md)   |
-
-### 📊 Strategy & Planning (5 tools)
-
-Business strategy analysis and agile project planning.
-
-| Tool                          | Purpose                                                               | Complexity | Learn More                                           |
-| ----------------------------- | --------------------------------------------------------------------- | ---------- | ---------------------------------------------------- |
-| `strategy-frameworks-builder` | SWOT, BSC, VRIO, Porter's Five Forces, market analysis                | ⭐⭐⭐     | [Guide](./docs/tools/strategy-frameworks-builder.md) |
-| `gap-frameworks-analyzers`    | Capability, technology, maturity, skills gap analysis                 | ⭐⭐⭐     | [Guide](./docs/tools/gap-frameworks-analyzers.md)    |
-| `sprint-timeline-calculator`  | Dependency-aware sprint planning with bin-packing optimization        | ⭐⭐       | [Guide](./docs/tools/sprint-timeline-calculator.md)  |
-| `model-compatibility-checker` | Recommend best AI models for task requirements and budget             | ⭐         | [Guide](./docs/tools/model-compatibility-checker.md) |
-| `project-onboarding`          | Comprehensive project structure analysis and documentation generation | ⭐⭐       | [Guide](./docs/tools/project-onboarding.md)          |
-
-### 🎨 Design Workflow (1 tool)
-
-Multi-phase design orchestration with constraint enforcement.
-
-| Tool               | Purpose                                                                            | Complexity | Learn More                                |
-| ------------------ | ---------------------------------------------------------------------------------- | ---------- | ----------------------------------------- |
-| `design-assistant` | Constraint-driven design sessions with artifact generation (ADRs, specs, roadmaps) | ⭐⭐⭐⭐   | [Guide](./docs/tools/design-assistant.md) |
-
-### 📝 Specification Tools (3 tools)
-
-Generate and manage project specifications using Spec-Kit methodology.
-
-| Tool                | Purpose                                                                      | Complexity | Learn More                        |
-| ------------------- | ---------------------------------------------------------------------------- | ---------- | --------------------------------- |
-| `speckit-generator` | Generate complete Spec-Kit artifacts (7 files) with constitutional validation | ⭐⭐⭐     | [Guide](./docs/speckit/README.md) |
-| `validate-spec`     | Validate spec.md against constitutional constraints for compliance           | ⭐⭐       | [Usage](./docs/speckit/usage.md)  |
-| `update-progress`   | Track progress.md updates with completed tasks and metrics                   | ⭐⭐       | [Usage](./docs/speckit/usage.md)  |
-
-**📖 [Spec-Kit Documentation](./docs/speckit/README.md)** - Complete guide to specification-driven development
-
-### 🛠️ Utilities (3 tools)
-
-Supporting tools for workflow optimization.
-
-| Tool                       | Purpose                                                         | Complexity | Learn More                                        |
-| -------------------------- | --------------------------------------------------------------- | ---------- | ------------------------------------------------- |
-| `memory-context-optimizer` | Optimize prompt caching and context window usage                | ⭐⭐       | [Guide](./docs/tools/memory-context-optimizer.md) |
-| `mode-switcher`            | Switch between agent operation modes (planning, debugging, etc.) | ⭐         | [Guide](./docs/tools/mode-switcher.md)            |
-| `spark-prompt-builder`     | Build UI/UX product prompts with structured inputs              | ⭐⭐⭐     | [Guide](./docs/tools/spark-prompt-builder.md)     |
-
-**Deprecated Utilities** (use `prompt-hierarchy` instead):
-
-| Tool                            | Replacement                           | Status                    |
-| ------------------------------- | ------------------------------------- | ------------------------- |
-| `prompting-hierarchy-evaluator` | `prompt-hierarchy` mode=`evaluate`    | ⚠️ Deprecated in v0.14.0  |
-| `hierarchy-level-selector`      | `prompt-hierarchy` mode=`select-level` | ⚠️ Deprecated in v0.14.0  |
-| `quick-developer-prompts-builder` | `prompt-hierarchy` mode=`quick`      | ⚠️ Deprecated in v0.14.0  |
-| `prompt-chaining-builder`       | `prompt-hierarchy` mode=`chain`       | ⚠️ Deprecated in v0.14.0  |
-| `prompt-flow-builder`           | `prompt-hierarchy` mode=`flow`        | ⚠️ Deprecated in v0.14.0  |
-
-**💡 Pro Tip**: Start with ⭐ tools to learn the basics, then progress to ⭐⭐⭐+ tools for advanced workflows.
-
----
-
-## Output Strategies
-
-MCP AI Agent Guidelines supports **7 output strategies** for different documentation needs, allowing you to format the same analysis in multiple ways. Additionally, **6 cross-cutting capabilities** can be added to any output format for automation and visualization.
-
-### Available Output Approaches
-
-| Strategy | Best For | Documentation |
-|----------|----------|---------------|
-| **Chat** (Default) | Quick responses, interactive sessions | Simple markdown for LLM chat |
-| **RFC** | Feature proposals, team alignment | Request for Comments format |
-| **ADR** | Architectural decisions, design rationale | Architecture Decision Records |
-| **SDD** | Agile workflows, sprint planning | Spec-Driven Development (spec.md, plan.md, tasks.md) |
-| **SpecKit** | Complex projects, GitHub workflows | Premium `.specify/` directory structure |
-| **TOGAF** | Enterprise architecture, governance | TOGAF ADM deliverables |
-| **Enterprise** | Executive presentations, compliance | Traditional docs (TDD, HLD, LLD) |
-
-### Cross-Cutting Capabilities
-
-Add these to **any** output strategy:
-
-- **workflow** - CI/CD pipeline definitions (GitHub Actions, GitLab CI)
-- **diagram** - Visual documentation (Mermaid, PlantUML)
-- **shell-script** - Automation scripts (Bash, PowerShell)
-- **config** - Configuration files (JSON, YAML)
-- **issues** - GitHub issue templates
-- **pr-template** - Pull request templates
-
-### Usage Example
-
-```typescript
-// Generate SpecKit with workflows and diagrams
-const result = await server.callTool('design-assistant', {
-  action: 'generate-artifacts',
-  sessionId: 'my-session',
-  outputFormat: 'speckit',
-  crossCutting: ['workflow', 'diagram', 'config'],
-});
-```
-
-**📖 [Complete Output Strategies Guide](./docs/output-strategies.md)** - Detailed documentation with examples for all 7 strategies
 
 ---
 
 ## VS Code Integration (One-Click)
 
-Use buttons below to add this MCP server to VS Code (User Settings → mcp.servers):
+Click a badge below to add this MCP server directly to VS Code (User Settings → `mcp.servers`):
 
 [![Install with NPX in VS Code](https://img.shields.io/badge/VS_Code-NPX-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=ai-agent-guidelines&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22mcp-ai-agent-guidelines%3Alatest%22%5D%7D)
 [![Install with NPX in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-NPX-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=ai-agent-guidelines&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22mcp-ai-agent-guidelines%3Alatest%22%5D%7D&quality=insiders)
 [![Install with Docker in VS Code](https://img.shields.io/badge/VS_Code-Docker-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=ai-agent-guidelines&config=%7B%22command%22%3A%22docker%22%2C%22args%22%3A%5B%22run%22%2C%22--rm%22%2C%22-i%22%2C%22ghcr.io%2Fanselmoo%2Fmcp-ai-agent-guidelines%3Alatest%22%5D%7D)
 [![Install with Docker in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Docker-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=ai-agent-guidelines&config=%7B%22command%22%3A%22docker%22%2C%22args%22%3A%5B%22run%22%2C%22--rm%22%2C%22-i%22%2C%22ghcr.io%2Fanselmoo%2Fmcp-ai-agent-guidelines%3Alatest%22%5D%7D&quality=insiders)
 
-Manual settings (User Settings JSON):
+Or add manually to User Settings JSON:
 
 ```json
 {
@@ -341,7 +81,7 @@ Manual settings (User Settings JSON):
     "servers": {
       "ai-agent-guidelines": {
         "command": "npx",
-        "args": ["-y", "mcp-ai-agent-guidelines"]
+        "args": ["-y", "mcp-ai-agent-guidelines:latest"]
       }
     }
   }
@@ -356,668 +96,273 @@ Using Docker:
     "servers": {
       "ai-agent-guidelines": {
         "command": "docker",
-        "args": [
-          "run",
-          "--rm",
-          "-i",
-          "ghcr.io/anselmoo/mcp-ai-agent-guidelines:latest"
-        ]
+        "args": ["run", "--rm", "-i", "ghcr.io/anselmoo/mcp-ai-agent-guidelines:latest"]
       }
     }
   }
 }
 ```
-
-## Use tools from a chat window (VS Code/Cline)
-
-After adding the server, open your chat client (e.g., Cline in VS Code). The tools appear under the server name. You can:
-
-- Run a tool directly by name:
-  - `hierarchical-prompt-builder` — Provide context, goal, and optional requirements.
-  - `clean-code-scorer` — Calculate comprehensive Clean Code score (0-100) with coverage metrics.
-  - `code-hygiene-analyzer` — Paste code or point to a file and set language.
-  - `mermaid-diagram-generator` — Describe the system and select a diagram type.
-- Ask in natural language and pick the suggested tool.
-
-Example prompts:
-
-- "Use hierarchical-prompt-builder to create a refactor plan for src/index.ts with outputFormat markdown."
-- "Use clean-code-scorer to analyze my project with current coverage metrics and get a quality score."
-- "Analyze this Python file with code-hygiene-analyzer; highlight security issues."
-- "Generate a Mermaid sequence diagram showing: User sends request to API, API queries Database, Database returns data, API responds to User."
-- "Create an ER diagram for: Customer has Orders, Order contains LineItems, Product referenced in LineItems."
-- "Build a user journey map for our checkout flow using mermaid-diagram-generator."
-
-Tip: Most clients can pass file content automatically when you select a file and invoke a tool.
-
-GitHub Chat (VS Code): In the chat, type your request and pick a tool suggestion, or explicitly reference a tool by name (e.g., “Use mermaid-diagram-generator to draw a flowchart for our pipeline”).
-
-## Agent-Relative Calls
-
-This MCP server fully supports **agent-relative calls**, the MCP standard pattern for enabling AI agents to discover and invoke tools contextually. Following the [GitHub MCP documentation](https://docs.github.com/en/copilot/tutorials/enhance-agent-mode-with-mcp), agents can use natural language patterns to orchestrate complex multi-tool workflows.
-
-### What Are Agent-Relative Calls?
-
-Agent-relative calls are natural language patterns like:
-
-```markdown
-Use the [tool-name] MCP to [action] with [parameters/context]
-```
-
-### Quick Examples
-
-**Single Tool Invocation:**
-
-```markdown
-Use the hierarchical-prompt-builder MCP to create a code review prompt for our authentication module focusing on security best practices and OAuth2 implementation.
-```
-
-**Multi-Tool Workflow:**
-
-```markdown
-1. Use the clean-code-scorer MCP to establish baseline quality metrics
-2. Use the code-hygiene-analyzer MCP to identify specific technical debt
-3. Use the security-hardening-prompt-builder MCP to create a remediation plan
-4. Use the sprint-timeline-calculator MCP to estimate implementation timeline
-```
-
-**Integration with Other MCP Servers:**
-
-```markdown
-# Accessibility Compliance Workflow
-
-Use the Figma MCP to analyze design specifications for WCAG 2.1 AA compliance.
-Use the security-hardening-prompt-builder MCP from AI Agent Guidelines to create accessibility security audit prompts.
-Use the GitHub MCP to categorize open accessibility issues.
-Use the iterative-coverage-enhancer MCP from AI Agent Guidelines to plan accessibility test coverage.
-Use the Playwright MCP to create and run automated accessibility tests.
-```
-
-### Comprehensive Guide
-
-For complete documentation with 20+ detailed examples, workflow patterns, and best practices, see:
-
-📘 **[Agent-Relative Call Patterns Guide](./docs/tips/agent-relative-calls.md)**
-
-This guide covers:
-
-- Core prompt patterns (single tool, chains, parallel, conditional)
-- Tool categories with complete usage examples
-- Multi-MCP server integration workflows
-- Best practices for agent-driven development
-- Performance optimization techniques
-- Troubleshooting common issues
-
-### Available Resources
-
-Access agent-relative call guidance via MCP resources:
-
-```markdown
-Use the resource guidelines://agent-relative-calls to get comprehensive patterns and examples
-```
-
-Or access programmatically:
-
-```typescript
-// MCP ReadResource request
-{
-  uri: "guidelines://agent-relative-calls";
-}
-```
-
-## Features
-
-<details>
-<summary><strong>🔗 Prompt Chaining Builder</strong> — Multi-step prompts with output passing</summary>
-
-Usage: `prompt-chaining-builder`
-
-| Parameter           | Required | Description                        |
-| ------------------- | -------- | ---------------------------------- |
-| `chainName`         | ✅       | Name of the prompt chain           |
-| `steps`             | ✅       | Array of chain steps with prompts  |
-| `description`       | ❌       | Description of chain purpose       |
-| `context`           | ❌       | Global context for the chain       |
-| `globalVariables`   | ❌       | Variables accessible to all steps  |
-| `executionStrategy` | ❌       | sequential/parallel-where-possible |
-
-Build sophisticated multi-step prompt workflows where each step can depend on outputs from previous steps. Supports error handling strategies (skip/retry/abort) and automatic Mermaid visualization.
-
-**Example:**
-
-```typescript
-{
-  chainName: "Security Analysis Pipeline",
-  steps: [
-    {
-      name: "Scan",
-      prompt: "Scan for vulnerabilities",
-      outputKey: "vulns"
-    },
-    {
-      name: "Assess",
-      prompt: "Assess severity of {{vulns}}",
-      dependencies: ["vulns"],
-      errorHandling: "retry"
-    }
-  ]
-}
-```
-
-</details>
-
-<details>
-<summary><strong>🌊 Prompt Flow Builder</strong> — Declarative flows with branching/loops</summary>
-
-Usage: `prompt-flow-builder`
-
-| Parameter      | Required | Description                                                 |
-| -------------- | -------- | ----------------------------------------------------------- |
-| `flowName`     | ✅       | Name of the prompt flow                                     |
-| `nodes`        | ✅       | Flow nodes (prompt/condition/loop/parallel/merge/transform) |
-| `edges`        | ❌       | Connections between nodes with conditions                   |
-| `entryPoint`   | ❌       | Starting node ID                                            |
-| `variables`    | ❌       | Flow-level variables                                        |
-| `outputFormat` | ❌       | markdown/mermaid/both                                       |
-
-Create complex adaptive prompt flows with conditional branching, loops, parallel execution, and merge points. Automatically generates Mermaid flowcharts and execution guides.
-
-**Example:**
-
-```typescript
-{
-  flowName: "Adaptive Code Review",
-  nodes: [
-    { id: "analyze", type: "prompt", name: "Analyze" },
-    { id: "check", type: "condition", name: "Complex?",
-      config: { expression: "complexity > 10" } },
-    { id: "deep", type: "prompt", name: "Deep Review" },
-    { id: "quick", type: "prompt", name: "Quick Check" }
-  ],
-  edges: [
-    { from: "analyze", to: "check" },
-    { from: "check", to: "deep", condition: "true" },
-    { from: "check", to: "quick", condition: "false" }
-  ]
-}
-```
-
-</details>
-
-<details>
-<summary><strong>🔍 Semantic Code Analyzer</strong> — Symbol-based code understanding</summary>
-
-Usage: `semantic-code-analyzer`
-
-| Parameter      | Required | Description                                 |
-| -------------- | -------- | ------------------------------------------- |
-| `codeContent`  | ✅       | Code content to analyze                     |
-| `language`     | ❌       | Programming language (auto-detected)        |
-| `analysisType` | ❌       | symbols/structure/dependencies/patterns/all |
-
-Performs semantic analysis to identify symbols, dependencies, patterns, and structure. Inspired by Serena's language server approach.
-
-</details>
-
-<details>
-<summary><strong>🚀 Project Onboarding</strong> — Comprehensive project familiarization</summary>
-
-Usage: `project-onboarding`
-
-| Parameter         | Required | Description                               |
-| ----------------- | -------- | ----------------------------------------- |
-| `projectPath`     | ✅       | Path to project directory                 |
-| `projectName`     | ❌       | Name of the project                       |
-| `projectType`     | ❌       | library/application/service/tool/other    |
-| `analysisDepth`   | ❌       | quick/standard/deep                       |
-| `includeMemories` | ❌       | Generate project memories (default: true) |
-
-Analyzes project structure, detects technologies, and generates memories for context retention. Based on Serena's onboarding system.
-
-</details>
-
-<details>
-<summary><strong>🔄 Mode Switcher</strong> — Flexible agent operation modes</summary>
-
-Usage: `mode-switcher`
-
-| Parameter     | Required | Description                                        |
-| ------------- | -------- | -------------------------------------------------- |
-| `targetMode`  | ✅       | Mode to switch to (planning/editing/analysis/etc.) |
-| `currentMode` | ❌       | Current active mode                                |
-| `context`     | ❌       | Operating context (desktop-app/ide-assistant/etc.) |
-| `reason`      | ❌       | Reason for mode switch                             |
-
-Switches between operation modes with optimized tool sets and prompting strategies. Modes include: planning, editing, analysis, interactive, one-shot, debugging, refactoring, documentation.
-
-</details>
-
-<details>
-<summary><strong>Hierarchical Prompt Builder</strong> — Build structured prompts with clear hierarchies</summary>
-
-Usage: `hierarchical-prompt-builder`
-
-| Parameter      | Required | Description                           |
-| -------------- | -------- | ------------------------------------- |
-| `context`      | ✅       | The broad context or domain           |
-| `goal`         | ✅       | The specific goal or objective        |
-| `requirements` | ❌       | Detailed requirements and constraints |
-| `outputFormat` | ❌       | Desired output format                 |
-| `audience`     | ❌       | Target audience or expertise level    |
-
-</details>
-
-<details>
-<summary><strong>Code Hygiene Analyzer</strong> — Analyze codebase for outdated patterns and hygiene issues</summary>
-
-Usage: `code-hygiene-analyzer`
-
-| Parameter     | Required | Description                   |
-| ------------- | -------- | ----------------------------- |
-| `codeContent` | ✅       | Code content to analyze       |
-| `language`    | ✅       | Programming language          |
-| `framework`   | ❌       | Framework or technology stack |
-
-</details>
-
-<details>
-<summary><strong>Security Hardening Prompt Builder</strong> — Build specialized security analysis and vulnerability assessment prompts</summary>
-
-Usage: `security-hardening-prompt-builder`
-
-| Parameter              | Required | Description                                                                                                                  |
-| ---------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `codeContext`          | ✅       | Code context or description to analyze for security                                                                          |
-| `securityFocus`        | ❌       | Security analysis focus (vulnerability-analysis, security-hardening, compliance-check, threat-modeling, penetration-testing) |
-| `securityRequirements` | ❌       | Specific security requirements to check                                                                                      |
-| `complianceStandards`  | ❌       | Compliance standards (OWASP-Top-10, NIST-Cybersecurity-Framework, ISO-27001, SOC-2, GDPR, HIPAA, PCI-DSS)                    |
-| `language`             | ❌       | Programming language of the code                                                                                             |
-| `riskTolerance`        | ❌       | Risk tolerance level (low, medium, high)                                                                                     |
-| `analysisScope`        | ❌       | Security areas to focus on (input-validation, authentication, authorization, etc.)                                           |
-| `outputFormat`         | ❌       | Output format (detailed, checklist, annotated-code)                                                                          |
-
-**Security Focus Areas:**
-
-- 🔍 Vulnerability analysis with OWASP Top 10 coverage
-- 🛡️ Security hardening recommendations
-- 📋 Compliance checking against industry standards
-- ⚠️ Threat modeling and risk assessment
-- 🧪 Penetration testing guidance
-
-**Compliance Standards:** OWASP Top 10, NIST Cybersecurity Framework, ISO 27001, SOC 2, GDPR, HIPAA, PCI-DSS
-
-</details>
-
-<details>
-<summary><strong>Mermaid Diagram Generator</strong> — Generate professional diagrams from text descriptions</summary>
-
-Usage: `mermaid-diagram-generator`
-
-Generates Mermaid diagrams with intelligent parsing of descriptions for rich, customizable visualizations.
-
-| Parameter          | Required | Description                                                                                                                      |
-| ------------------ | -------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `description`      | ✅       | Description of the system or process to diagram. Be detailed and specific for better diagram generation.                         |
-| `diagramType`      | ✅       | Type: `flowchart`, `sequence`, `class`, `state`, `gantt`, `pie`, `er`, `journey`, `quadrant`, `git-graph`, `mindmap`, `timeline` |
-| `theme`            | ❌       | Visual theme: `default`, `dark`, `forest`, `neutral`                                                                             |
-| `direction`        | ❌       | Flowchart direction: `TD`/`TB` (top-down), `BT` (bottom-top), `LR` (left-right), `RL` (right-left)                               |
-| `strict`           | ❌       | If true, never emit invalid diagram; use fallback if needed (default: true)                                                      |
-| `repair`           | ❌       | Attempt auto-repair on validation failure (default: true)                                                                        |
-| `accTitle`         | ❌       | Accessibility title (added as Mermaid comment)                                                                                   |
-| `accDescr`         | ❌       | Accessibility description (added as Mermaid comment)                                                                             |
-| `customStyles`     | ❌       | Custom CSS/styling directives for advanced customization                                                                         |
-| `advancedFeatures` | ❌       | Type-specific advanced features (e.g., `{autonumber: true}` for sequence diagrams)                                               |
-
-**Enhanced Features:**
-
-- **Intelligent Description Parsing**: All diagram types now parse descriptions to extract relevant entities, relationships, and structures
-- **New Diagram Types**:
-  - `er` - Entity Relationship diagrams for database schemas
-  - `journey` - User journey maps for UX workflows
-  - `quadrant` - Quadrant/priority charts for decision matrices
-  - `git-graph` - Git commit history visualization
-  - `mindmap` - Hierarchical concept maps
-  - `timeline` - Event timelines and roadmaps
-- **Advanced Customization**: Direction control, themes, custom styles, and type-specific features
-- **Smart Fallbacks**: Generates sensible default diagrams when description parsing is ambiguous
-
-**Examples:**
-
-```bash
-# Sequence diagram with participants auto-detected from description
-{
-  "description": "User sends login request to API. API queries Database for credentials. Database returns user data. API responds to User with token.",
-  "diagramType": "sequence",
-  "advancedFeatures": {"autonumber": true}
-}
-
-# Class diagram with relationships extracted
-{
-  "description": "User has id and email. Order contains Product items. User places Order. Product has price and name.",
-  "diagramType": "class"
-}
-
-# ER diagram for database schema
-{
-  "description": "Customer places Order. Order contains LineItem. Product is referenced in LineItem.",
-  "diagramType": "er"
-}
-
-# User journey map
-{
-  "description": "Shopping Journey. Section Discovery: User finds product. User reads reviews. Section Purchase: User adds to cart. User completes checkout.",
-  "diagramType": "journey"
-}
-
-# Gantt chart with tasks from description
-{
-  "description": "Project: Feature Development. Phase Planning: Research requirements. Design architecture. Phase Development: Implement backend. Create frontend. Phase Testing: QA validation.",
-  "diagramType": "gantt"
-}
-
-# Flowchart with custom direction
-{
-  "description": "Receive request. Validate input. Process data. Return response.",
-  "diagramType": "flowchart",
-  "direction": "LR"
-}
-```
-
-</details>
-
-<details>
-<summary><strong>Memory Context Optimizer</strong> — Optimize prompt caching and context window usage</summary>
-
-Usage: `memory-context-optimizer`
-
-| Parameter        | Required | Description                                        |
-| ---------------- | -------- | -------------------------------------------------- |
-| `contextContent` | ✅       | Context content to optimize                        |
-| `maxTokens`      | ❌       | Maximum token limit                                |
-| `cacheStrategy`  | ❌       | Strategy: `aggressive`, `conservative`, `balanced` |
-
-</details>
-
-<details>
-<summary><strong>Sprint Timeline Calculator</strong> — Calculate optimal development cycles and sprint timelines</summary>
-
-Usage: `sprint-timeline-calculator`
-
-| Parameter      | Required | Description                             |
-| -------------- | -------- | --------------------------------------- |
-| `tasks`        | ✅       | List of tasks with estimates            |
-| `teamSize`     | ✅       | Number of team members                  |
-| `sprintLength` | ❌       | Sprint length in days                   |
-| `velocity`     | ❌       | Team velocity (story points per sprint) |
-
-</details>
-
-<details>
-<summary><strong>Model Compatibility Checker</strong> — Recommend best AI models for specific tasks</summary>
-
-Usage: `model-compatibility-checker`
-
-| Parameter         | Required | Description                                              |
-| ----------------- | -------- | -------------------------------------------------------- |
-| `taskDescription` | ✅       | Description of the task                                  |
-| `requirements`    | ❌       | Specific requirements (context length, multimodal, etc.) |
-| `budget`          | ❌       | Budget constraints: `low`, `medium`, `high`              |
-
-</details>
-
-<details>
-<summary><strong>Guidelines Validator</strong> — Validate development practices against established guidelines</summary>
-
-Usage: `guidelines-validator`
-
-| Parameter             | Required | Description                                                                                     |
-| --------------------- | -------- | ----------------------------------------------------------------------------------------------- |
-| `practiceDescription` | ✅       | Description of the development practice                                                         |
-| `category`            | ✅       | Category: `prompting`, `code-management`, `architecture`, `visualization`, `memory`, `workflow` |
-
-</details>
-
-## Configuration
-
-- Node.js 20+ required (see `engines` in `package.json`).
-- Tools are exposed by the MCP server and discoverable via client schemas.
-- Mermaid diagrams render client-side (Markdown preview). No server rendering.
-
-## Versioning
-
-- Package version: `0.7.0` (matches internal resource versions).
-- Tags `vX.Y.Z` trigger CI for NPM and Docker releases.
-- Pin exact versions for production stability.
-
-### Release Setup
-
-Use the [Release Setup Issue Form](.github/ISSUE_TEMPLATE/release-setup.yml) to streamline the release process:
-
-- **Automated version management**: Update version numbers across the codebase
-- **GitHub Copilot compatible**: Structured form enables bot automation
-- **Quality gates**: Pre-release checklist ensures reliability
-- **CI/CD integration**: Supports existing NPM and Docker publishing workflow
-
-To create a new release, [open a release setup issue](https://github.com/Anselmoo/mcp-ai-agent-guidelines/issues/new?template=release-setup.yml) with the target version and release details.
-
-## Development
-
-Prerequisites:
-
-- Node.js 20+
-- npm 10+
-
-Setup:
-
-```bash
-git clone https://github.com/Anselmoo/mcp-ai-agent-guidelines.git
-cd mcp-ai-agent-guidelines
-npm install
-npm run build    # ⚠️ Required: Generates types from models.yaml
-npm start
-```
-
-**Important**: The build step generates TypeScript types from `src/tools/config/models.yaml`. These generated files are **not committed to version control** (gitignored) and must be generated locally. See [ADR-0001](docs/adr/ADR-0001-build-time-model-type-generation.md) for the architectural decision.
-
-Project structure:
-
-```
-/src      - TypeScript source (tools, resources, server)
-/tests    - Test files and utilities
-/scripts  - Shell scripts and helpers
-/demos    - Demo scripts and generated artifacts
-/.github  - CI and community health files
-```
-
-Testing and quality:
-
-```bash
-npm run test:unit        # Unit tests
-npm run test:integration # Integration tests
-npm run test:demo        # Demo runner
-npm run test:mcp         # MCP smoke script
-npm run test:coverage:unit # Unit test coverage (text-summary, lcov, html)
-npm run quality          # Type-check + Biome check
-npm run audit            # Security audit (production dependencies)
-npm run audit:fix        # Auto-fix vulnerabilities
-npm run audit:production # Audit production dependencies only
-```
-
-### Automated Demo Regeneration 🔄
-
-Demo files are automatically regenerated when tools change via GitHub Actions:
-
-- **Trigger**: Any changes to `src/tools/**/*.ts` in a pull request
-- **Action**: Automatically runs `npm run test:demo` to regenerate demos
-- **Result**: Updated demo files are committed to the PR automatically
-
-**Benefits**:
-
-- ✅ Documentation always stays in sync with code
-- ✅ No manual steps to remember
-- ✅ Reviewers can see demo changes alongside code changes
-
-**Workflow**: [`.github/workflows/auto-regenerate-demos.yml`](./.github/workflows/auto-regenerate-demos.yml)
-
-**Manual regeneration** (if needed):
-
-```bash
-npm run build
-npm run test:demo
-```
-
-### Git Hooks with Lefthook 🪝
-
-This project uses [Lefthook](https://github.com/evilmartians/lefthook) for fast, reliable Git hooks that enforce code quality and security standards.
-
-**Mandatory for GitHub Copilot Agent**: All quality gates must pass before commits and pushes.
-
-Setup (automatic via `npm install`):
-
-```bash
-npm run hooks:install    # Install lefthook git hooks
-npm run hooks:uninstall  # Remove lefthook git hooks
-npx lefthook run pre-commit  # Run pre-commit checks manually
-npx lefthook run pre-push    # Run pre-push checks manually
-```
-
-**Pre-commit hooks** (fast, parallel execution):
-
-- 🔒 **Security**: Gitleaks secret detection
-- 🟨 **Code Quality**: Biome formatting & linting
-- 🔷 **Type Safety**: TypeScript type checking
-- 🧹 **Code Hygiene**: Trailing whitespace & EOF fixes
-
-**Pre-push hooks** (comprehensive validation):
-
-- 🔒 **Security Audit**: Dependency vulnerability scanning (moderate+ level)
-- 🧪 **Testing**: Full test suite (unit, integration, demo, MCP)
-- ⚡ **Quality**: Type checking + Biome validation
-
-**Why Lefthook?**
-
-- ⚡ **Fast**: Written in Go, parallel execution
-- 🔄 **Reliable**: Better error handling than pre-commit
-- 🤖 **CI Integration**: Mandatory quality gates for GitHub Copilot Agent
-- 📝 **Simple**: Single YAML configuration file
-
-Configuration: [`lefthook.yml`](./lefthook.yml)
-
-### Coverage reporting
-
-- CI publishes a coverage summary in the job’s Summary and uploads `coverage/` as an artifact.
-- Coverage is also uploaded to Codecov on Node 22 runs; see the badge above for status.
-
-## Docker
-
-```bash
-# Run with Docker
-docker run -p 3000:3000 ghcr.io/anselmoo/mcp-ai-agent-guidelines:latest
-
-# Build locally
-docker build -t mcp-ai-agent-guidelines .
-docker run -p 3000:3000 mcp-ai-agent-guidelines
-```
-
-VS Code + Docker settings:
-
-```json
-{
-  "mcp": {
-    "servers": {
-      "mcp-ai-agent-guidelines": {
-        "command": "docker",
-        "args": [
-          "run",
-          "--rm",
-          "-i",
-          "ghcr.io/anselmoo/mcp-ai-agent-guidelines:latest"
-        ]
-      }
-    }
-  }
-}
-```
-
-## Security
-
-- **Dependency Scanning**: Automated vulnerability scanning runs on every PR and push to main
-  - Production dependencies: fails on moderate+ vulnerabilities
-  - All dependencies: audited and reported (dev dependencies don't block builds)
-  - Local audit: `npm run audit` or `npm audit --audit-level=moderate`
-  - Auto-fix: `npm run audit:fix` to automatically fix vulnerabilities when possible
-  - Pre-push hook: automatically checks for vulnerabilities before pushing code
-- **Secrets Protection**: No secrets committed; releases use provenance where supported
-- **Supply Chain Security**: Docker images are signed (Cosign); artifacts signed via Sigstore
-- **Vulnerability Reporting**: Report security issues via [GitHub Security tab](https://github.com/Anselmoo/mcp-ai-agent-guidelines/security) or Issues
-
-### Remediation Steps for Maintainers
-
-When vulnerabilities are detected:
-
-1. **Review the vulnerability**: `npm audit` provides details about affected packages
-2. **Update dependencies**: `npm run audit:fix` to apply automatic fixes
-3. **Manual updates**: If auto-fix doesn't work, update package.json manually:
-   ```bash
-   npm update <package-name>
-   # or for major version updates
-   npm install <package-name>@latest
-   ```
-4. **Test changes**: Run `npm run test:all` to ensure updates don't break functionality
-5. **Override if needed**: For false positives or accepted risks, document in security policy
-
-## Documentation
-
-- MCP Specification: https://modelcontextprotocol.io/
-- Tools implementation: see `src/tools/` in this repo.
-- Generated examples: see `demos/` and links above.
-
-## Disclaimer
-
-This project references third-party tools, frameworks, APIs, and services for informational purposes. See [DISCLAIMER.md](./DISCLAIMER.md) for important information about external references, trademarks, and limitations of liability.
-
-## Contributing
-
-Contributions welcome! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
-
-### Developer Resources
-
-- **[Complete Documentation](./docs/README.md)** - Full documentation index
-- **[Clean Code Standards](./docs/tips/clean-code-initiative.md)** - Quality requirements and scoring
-- **[Error Handling Patterns](./docs/tips/error-handling.md)** - Best practices for error handling
-- **[Architecture Guide](./docs/tips/bridge-connectors.md)** - System architecture and integration patterns
-- **[Type System Organization](./docs/tips/type-organization-extension.md)** - TypeScript conventions
-
-### Quality Standards
-
-- **TypeScript strict mode** - All code must pass type checking
-- **100% test coverage goal** - See [Clean Code Initiative](./docs/tips/clean-code-initiative.md)
-- **Biome linting** - Code must pass `npm run quality`
-- **Git hooks** - Automated checks via Lefthook (see [lefthook.yml](./lefthook.yml))
-
-Keep changes typed, linted, and include tests when behavior changes.
-
-## License
-
-MIT © Anselmoo — see [LICENSE](./LICENSE).
-
-## References & Acknowledgments
-
-For a comprehensive list of references, research papers, and detailed attribution, see **[docs/tips/references.md](./docs/tips/references.md)**.
-
-### Key Acknowledgments
 
 ---
 
-- **Model Context Protocol team** for the specification
-- **Anthropic** for prompt caching research
-- **Mermaid community** for diagram tooling
-- **[@ruvnet/claude-flow](https://github.com/ruvnet/claude-flow)** - Inspired flow-based prompting features
-- **[@oraios/serena](https://github.com/oraios/serena)** - Influenced semantic analysis and mode switching
-- **All open-source contributors** whose work has shaped this project
+## MCP Server Configuration
 
-See [docs/tips/references.md](./docs/tips/references.md) for the complete list of research papers, projects, and inspirations.
+Add the server to your MCP host config. The entry-point is `dist/index.js` and communicates over **stdin/stdout**.
 
-<!-- FOOTER:START -->
-![Footer](docs/.frames-static/09-footer.svg)
-<!-- FOOTER:END -->
+### Claude Desktop (`~/Library/Application Support/Claude/claude_desktop_config.json`)
+
+```json
+{
+  "mcpServers": {
+    "ai-agent-guidelines": {
+      "command": "npx",
+      "args": ["mcp-ai-agent-guidelines"]
+    }
+  }
+}
+```
+
+### VS Code (`.vscode/mcp.json` or user settings)
+
+```json
+{
+  "servers": {
+    "ai-agent-guidelines": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["mcp-ai-agent-guidelines"]
+    }
+  }
+}
+```
+
+### From local build
+
+```json
+{
+  "mcpServers": {
+    "ai-agent-guidelines": {
+      "command": "node",
+      "args": ["/path/to/repo/dist/index.js"]
+    }
+  }
+}
+```
+
+---
+
+## CLI Usage
+
+An interactive CLI wizard is included for standalone use outside an MCP host.
+
+```bash
+# Project onboarding
+mcp-cli onboard init
+
+# Re-open the orchestration editor
+mcp-cli orchestration edit
+
+# Quick re-entry for environment + model fleet only
+mcp-cli orchestration edit --quick
+
+# Direct skill invocation
+mcp-cli --skill core-prompt-engineering --request "Write a system prompt for a coding assistant"
+```
+
+Instruction-tool input schema — the public instruction workflows share this shape:
+
+```typescript
+{
+  request: string;        // required — the task description
+  context?: string;       // optional — background context
+  options?: object;       // optional — skill-specific overrides
+}
+```
+
+---
+
+## Configuration Files
+
+- `.mcp-ai-agent-guidelines/config/orchestration.toml` — primary orchestration authority (local, not tracked in git)
+- `src/config/orchestration-defaults.ts` — builtin fallback defaults; strict mode fails fast when workspace config is absent
+
+Run `mcp-cli onboard init` for first-time setup or `mcp-cli orchestration edit` to reopen the interactive editor.
+
+---
+
+## Features
+
+- **20 public instruction tools** exposed through the MCP instruction surface
+- **7 public utility tools** for workspace, memory, session, snapshot, orchestration, model-discovery, and visualization operations (before any `HIDDEN_TOOLS` filtering)
+- **102 internal skills** across 18 domain prefixes — see [Skill Taxonomy](#skill-taxonomy)
+- **Physics-inspired analysis**: 15 quantum-mechanics (`qm-*`) + 15 general-relativity (`gr-*`) skills
+- **Bio-inspired adaptive routing**: ACO, Hebbian, Slime-mould, Quorum, Homeostatic, Clone-Mutate, Replay
+- **Governance layer**: prompt-injection hardening, PII guardrails, policy validation, regulated-workflow design
+- **Model orchestration guidance**: 5 multi-model patterns (parallel critique, draft-review, majority vote, cascade, free triple)
+- **Zero runtime LLM calls** — advisory outputs; wire a concrete executor to enable real LLM dispatch
+- **xstate v5** state-machine orchestration built-in
+- **graphology** graph routing for topological skill sequencing
+
+---
+
+## Public MCP Surface
+
+`ListTools` currently exposes **27 tools** total:
+
+| Category | Count | Tools |
+|----------|-------|-------|
+| Instruction (workflow) | 17 | `meta-routing`, `bootstrap`, `implement`, `refactor`, `debug`, `testing`, `design`, `review`, `research`, `orchestrate`, `adapt`, `resilience`, `evaluate`, `prompt-engineering`, `plan`, `document`, `govern` |
+| Instruction (discovery) | 3 | `enterprise`, `physics-analysis`, `onboard_project` |
+| Utility | 7 | `agent-workspace`, `agent-memory`, `agent-session`, `agent-snapshot`, `orchestration-config`, `model-discover`, `graph-visualize` |
+
+The 102 skill definitions are internal workflow assets — not individually exposed as MCP tools. See [docs](https://anselmoo.github.io/mcp-ai-agent-guidelines/) for full tool reference.
+
+---
+
+## Skill Taxonomy
+
+Skills are organised under 18 domain-specific prefixes:
+
+| Prefix | Domain | Count |
+|--------|--------|-------|
+| `req-` | Requirements Discovery | 4 |
+| `orch-` | Orchestration | 4 |
+| `doc-` | Documentation | 4 |
+| `qual-` | Code Analysis & Quality | 5 |
+| `synth-` | Research & Synthesis | 4 |
+| `flow-` | Workflow | 3 |
+| `eval-` | Evaluation & Benchmarking | 5 |
+| `debug-` | Debugging | 4 |
+| `strat-` | Strategy & Decision Making | 4 |
+| `arch-` | Architecture Design | 4 |
+| `prompt-` | Prompting | 4 |
+| `adapt-` | Bio-inspired Adaptive Routing | 5 |
+| `bench-` | Advanced Evals | 3 |
+| `lead-` | Leadership & Enterprise | 7 |
+| `resil-` | Resilience & Self-repair | 5 |
+| `gov-` | Safety & Governance | 7 |
+| `qm-` | Quantum Mechanics metaphors | 15 |
+| `gr-` | General Relativity metaphors | 15 |
+
+> Physics skills (`qm-*`, `gr-*`) require explicit justification before invocation. Route through the `physics-analysis` instruction first.
+
+Full taxonomy details: [`docs/architecture/03-skill-graph.md`](docs/architecture/03-skill-graph.md).
+
+---
+
+## Instruction Workflows
+
+20 mission-driven instruction workflows orchestrate internal skills into complete task flows:
+
+| Instruction | Purpose |
+|-------------|---------|
+| `meta-routing` | Master routing — choose which instruction to invoke |
+| `bootstrap` | Scope clarification and requirements extraction |
+| `implement` | Build new features end-to-end |
+| `refactor` | Improve existing code safely |
+| `debug` | Diagnose and fix problems |
+| `testing` | Write, run, and verify tests |
+| `design` | Architecture and system design |
+| `review` | Code quality and security review |
+| `research` | Synthesis, comparison, recommendations |
+| `orchestrate` | Compose multi-agent workflows |
+| `adapt` | Bio-inspired adaptive routing |
+| `resilience` | Self-healing and fault tolerance |
+| `evaluate` | Benchmark and assess AI quality |
+| `prompt-engineering` | Build, evaluate, optimise prompts |
+| `plan` | Strategy, roadmap, sprint planning |
+| `document` | Generate documentation artifacts |
+| `govern` | Safety, compliance, guardrails |
+| `enterprise` | Leadership and enterprise-scale AI strategy |
+| `physics-analysis` | QM + GR physics-inspired codebase analysis |
+| `onboard_project` | Session-start project orientation |
+
+---
+
+## Architecture
+
+See [`docs/architecture/`](docs/architecture/) for ADRs and full module layout. The entry-point is `src/index.ts`; instructions live in `src/instructions/`, skills in `src/skills/`, and generated tool definitions in `src/generated/` (do not edit by hand).
+
+---
+
+## Development
+
+```bash
+# Install dependencies
+npm install
+
+# Type-check
+npm run type-check
+
+# Build (tsc → dist/)
+npm run build
+
+# Watch mode
+npm run dev
+
+# Run MCP server
+node dist/index.js
+```
+
+### Code Quality
+
+```bash
+npm run check          # biome check (lint + format)
+npm run check:fix      # auto-fix
+npm run quality        # full suite: verify_matrix + type-check + workflow-docs + biome
+```
+
+### Regenerate generated tool definitions after editing canonical registries or workflow specs
+
+```bash
+python3 scripts/generate-tool-definitions.py
+npm run build
+```
+
+### Verify skill/instruction coverage matrix (zero orphans required)
+
+```bash
+python3 scripts/verify_matrix.py
+```
+
+---
+
+## Testing
+
+```bash
+npm test                  # vitest run
+npm run test:coverage     # vitest + v8 coverage (80% threshold)
+```
+
+Tests live both co-located with source (`src/**/*.test.ts`) and in `src/tests/`.
+
+Published package note: the npm package ships `dist/`, `README.md`, and `LICENSE`. Repository-only source assets such as `docs/`, `.github/`, and `scripts/` are development references, not package runtime files.
+
+---
+
+## Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `HIDDEN_TOOLS` | `""` | Comma-separated list of tool names to exclude from ListTools |
+| `LOG_LEVEL` | `"info"` | Observability log level (`debug`, `info`, `warn`, `error`) |
+| `ALLOW_GOVERNANCE_SKILLS` | unset / `"false"` | Must be `true` to allow `gov-*` skills through `criticalSkillGuard` |
+| `ENABLE_ADAPTIVE_ROUTING` | unset / `"false"` | Must be `true` to allow `adapt-*` skills through `criticalSkillGuard` |
+| `ALLOW_INTENSIVE_SKILLS` | unset / `"false"` | Must be `true` to allow resource-intensive skills such as `bench-eval-suite`, `eval-prompt-bench`, `qm-path-integral-historian`, and `gr-spacetime-debt-metric` |
+| `ENABLE_PHYSICS_SKILLS` | unset / `"false"` | Required by input validation when physics skills are not otherwise authorized; physics skills also require conventional-evidence schema validation |
+
+### Skill gates
+
+Skill execution is gated by environment variables above. Physics skills (`qm-*`, `gr-*`) additionally require `ENABLE_PHYSICS_SKILLS=true` and conventional-evidence input. Model availability is derived from `.mcp-ai-agent-guidelines/config/orchestration.toml`; `strict_mode = false` allows warnings-only, `strict_mode = true` blocks on missing models.
+
+---
+
+## Contributing
+
+Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines, code standards, and the skill/instruction development workflow.
+
+---
+
+## License
+
+[MIT](LICENSE) © 2025 Anselmoo

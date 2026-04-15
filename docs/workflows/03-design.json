@@ -1,0 +1,128 @@
+{
+  "id": "03-design",
+  "title": "Design / Architecture Workflow",
+  "triggeredBy": "bootstrap or user requesting system architecture, data models, or tradeoff analysis",
+  "intent": "Formulate structural guarantees and generate L9-level system blueprints without rushing to implementation",
+  "resourcePool": [
+    "design"
+  ],
+  "inputSchema": {
+    "verifiedScope": "string",
+    "targetScale": "local|enterprise|global"
+  },
+  "throwbacks": [
+    "tradeoff-matrix: re-evaluate if security flags critical vulnerabilities"
+  ],
+  "chainTo": [
+    "implement",
+    "govern"
+  ],
+  "skillTree": {
+    "root": "system-blueprint",
+    "nodes": [
+      {
+        "id": "system-blueprint",
+        "skill": "arch-system",
+        "type": "primary",
+        "profile": "design",
+        "description": "Draft the foundational system design: agent layers, memory, retrieval, observability",
+        "next": [
+          {
+            "target": "security-design"
+          },
+          {
+            "target": "scalability-review"
+          },
+          {
+            "target": "tradeoff-matrix"
+          }
+        ]
+      },
+      {
+        "id": "security-design",
+        "skill": "arch-security",
+        "type": "parallel",
+        "profile": "design",
+        "description": "Design the system to resist prompt injection, tool misuse, and data leakage at the architectural level",
+        "next": [
+          {
+            "target": "l9-synthesis"
+          }
+        ]
+      },
+      {
+        "id": "scalability-review",
+        "skill": "arch-scalability",
+        "type": "parallel",
+        "profile": "design",
+        "description": "Validate inference-heavy scalability, latency budgets, and cost efficiency",
+        "next": [
+          {
+            "target": "l9-synthesis"
+          }
+        ]
+      },
+      {
+        "id": "tradeoff-matrix",
+        "skill": "strat-tradeoff",
+        "type": "parallel",
+        "profile": "strategy",
+        "description": "Compare architectural, model, and workflow alternatives across explicit tradeoff axes (build-vs-buy, RAG-vs-fine-tune)",
+        "next": [
+          {
+            "target": "build-vs-buy-research"
+          }
+        ]
+      },
+      {
+        "id": "build-vs-buy-research",
+        "skill": "synth-comparative",
+        "type": "primary",
+        "profile": "research",
+        "description": "Compare tools, models, frameworks across explicit evaluation axes to inform the tradeoff decision",
+        "next": [
+          {
+            "target": "l9-synthesis"
+          }
+        ]
+      },
+      {
+        "id": "l9-synthesis",
+        "skill": "lead-l9-engineer",
+        "type": "synthesis",
+        "profile": "enterprise",
+        "description": "Apply distinguished-engineer-level judgment to produce the final architectural decision",
+        "next": [
+          {
+            "target": "evangelist-check"
+          }
+        ]
+      },
+      {
+        "id": "evangelist-check",
+        "skill": "lead-digital-architect",
+        "type": "gate",
+        "profile": "enterprise",
+        "description": "Validate the blueprint against enterprise-wide platform strategy and design contracts",
+        "next": [
+          {
+            "target": "blueprint-approved",
+            "condition": "blueprint passes L9 and enterprise contracts"
+          },
+          {
+            "target": "tradeoff-matrix",
+            "condition": "critical vulnerability found — re-evaluate"
+          }
+        ]
+      },
+      {
+        "id": "blueprint-approved",
+        "skill": "lead-software-evangelist",
+        "type": "gate",
+        "profile": "enterprise",
+        "description": "Final sign-off: reject any strategy that retains legacy duck-tape patterns",
+        "next": []
+      }
+    ]
+  }
+}

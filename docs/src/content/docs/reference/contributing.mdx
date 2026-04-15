@@ -1,0 +1,102 @@
+---
+title: Contributing
+description: How to contribute skills, tests, documentation, and tooling to mcp-ai-agent-guidelines.
+sidebar:
+  label: Contributing
+  order: 5
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Contributions are welcome — skills, tests, documentation, and tooling. This page covers the mechanics.
+
+---
+
+## Setup
+
+```bash
+git clone https://github.com/Anselmoo/mcp-ai-agent-guidelines
+cd mcp-ai-agent-guidelines
+npm install
+npm run build
+npm run test
+```
+
+**Node.js ≥ 22** is required (ESM modules, `"type": "module"` in `package.json`).
+
+---
+
+## Quality gates
+
+All contributions must pass before merging:
+
+```bash
+npm run quality   # type-check + Biome lint/format
+npm run test      # Vitest full run
+```
+
+`lefthook` runs `npm run quality` automatically on pre-commit.
+
+---
+
+## Adding a new skill
+
+1. **Add the entry** in `src/skills/skill-specs.ts` (canonical skill catalog)
+2. **Write the implementation** at `src/skills/<domain>/<skill-id>.ts`
+3. **Add workflow coverage** in `src/workflows/workflow-spec.ts` (zero-orphan rule enforced by `scripts/verify_matrix.py`)
+4. **Regenerate** tool definitions:
+   ```bash
+   python3 scripts/generate-tool-definitions.py
+   ```
+5. **Rebuild**:
+   ```bash
+   npm run build
+   ```
+6. **Write tests** in `src/tests/skills/<domain>/` mirroring the source subtree
+
+<Aside type="caution">
+**Never edit `src/generated/` directly.** Files there are fully overwritten by the generator. Edit canonical sources and re-run.
+</Aside>
+
+---
+
+## Code conventions
+
+- **TypeScript ESM** — `"type": "module"`, `"moduleResolution": "nodenext"`. Import paths **must** use `.js` extension even for `.ts` sources.
+- **Biome** for lint + format — tabs (not spaces), double quotes. Run `npm run check:fix` to auto-fix.
+- **Tests in `src/tests/`** — do not colocate `*.test.ts` files next to source modules. Mirror the source subtree inside `src/tests/`.
+- All 20 public instruction tools share the same input schema: `{ context?: string; request: string; options?: object }`. `request` is the only required field.
+- Return types for MCP tool handlers must include `[x: string]: unknown` to satisfy the SDK's `ServerResult` union.
+
+---
+
+## Documentation
+
+The documentation site lives in `docs/` (Starlight / Astro). To run it locally:
+
+```bash
+npm run docs:dev
+```
+
+To add or update a page, edit or create a Markdown/MDX file under `docs/src/content/docs/`. Pages auto-appear in the sidebar based on the `autogenerate` config in `docs/astro.config.mjs`.
+
+---
+
+## Commit messages
+
+Follow [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+feat(skills): add adv-neural-plasticity skill
+fix(router): correct cascade fallback ordering
+docs(reference): add env-variables page
+```
+
+---
+
+## Pull requests
+
+- Keep PRs focused — one feature or fix per PR
+- Include tests for new skills
+- Run `npm run quality && npm run test` before opening the PR
+- Reference the relevant issue or workflow if applicable

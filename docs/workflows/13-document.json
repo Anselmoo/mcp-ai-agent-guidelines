@@ -1,0 +1,106 @@
+{
+  "id": "13-document",
+  "title": "Document Workflow",
+  "triggeredBy": "Request to auto-document code, generate APIs, or write runbooks",
+  "intent": "Ensure deep technical documentation stays in sync with the actual codebase",
+  "resourcePool": [
+    "documentation"
+  ],
+  "inputSchema": {
+    "sourcePaths": "string[]",
+    "docType": "api|runbook|readme"
+  },
+  "throwbacks": [
+    "implement: API docs fail schema-validation"
+  ],
+  "chainTo": [
+    "review",
+    "enterprise"
+  ],
+  "skillTree": {
+    "root": "doc-type-routing",
+    "nodes": [
+      {
+        "id": "doc-type-routing",
+        "skill": "lead-software-evangelist",
+        "type": "gate",
+        "profile": "enterprise",
+        "description": "Gate: documentation must be a first-class artifact, not an afterthought; route by doc type",
+        "next": [
+          {
+            "target": "api-doc",
+            "condition": "docType = api"
+          },
+          {
+            "target": "readme-gen",
+            "condition": "docType = readme"
+          },
+          {
+            "target": "runbook-gen",
+            "condition": "docType = runbook"
+          },
+          {
+            "target": "full-doc-gen",
+            "condition": "docType = auto-detect"
+          }
+        ]
+      },
+      {
+        "id": "api-doc",
+        "skill": "doc-api",
+        "type": "primary",
+        "profile": "documentation",
+        "description": "Generate schema-driven API reference documentation with examples and contracts",
+        "next": [
+          {
+            "target": "doc-synthesis"
+          }
+        ]
+      },
+      {
+        "id": "readme-gen",
+        "skill": "doc-readme",
+        "type": "primary",
+        "profile": "documentation",
+        "description": "Generate clear README files optimized for developer onboarding and first successful use",
+        "next": [
+          {
+            "target": "doc-synthesis"
+          }
+        ]
+      },
+      {
+        "id": "runbook-gen",
+        "skill": "doc-runbook",
+        "type": "primary",
+        "profile": "documentation",
+        "description": "Create operational runbooks covering incidents, rollbacks, and degraded-mode procedures",
+        "next": [
+          {
+            "target": "doc-synthesis"
+          }
+        ]
+      },
+      {
+        "id": "full-doc-gen",
+        "skill": "doc-generator",
+        "type": "primary",
+        "profile": "documentation",
+        "description": "Generate structured, audience-targeted technical documentation from code or specs",
+        "next": [
+          {
+            "target": "doc-synthesis"
+          }
+        ]
+      },
+      {
+        "id": "doc-synthesis",
+        "skill": "doc-generator",
+        "type": "synthesis",
+        "profile": "documentation",
+        "description": "Validate generated docs against the live codebase schema; flag drift",
+        "next": []
+      }
+    ]
+  }
+}

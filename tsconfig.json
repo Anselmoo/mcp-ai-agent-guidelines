@@ -1,22 +1,30 @@
 {
-	"compilerOptions": {
-		"target": "ES2023",
-		"module": "ESNext",
-		"moduleResolution": "node",
-		"resolveJsonModule": true,
-		"outDir": "./dist",
-		"rootDir": "./src",
-		"strict": true,
-		"esModuleInterop": true,
-		"skipLibCheck": true,
-		"forceConsistentCasingInFileNames": true,
-		"declaration": true,
-		"declarationMap": true,
-		"sourceMap": true,
-		"allowSyntheticDefaultImports": true,
-		"isolatedModules": true,
-		"moduleDetection": "force"
-	},
-	"include": ["src/**/*"],
-	"exclude": ["node_modules", "dist"]
+    "compilerOptions": {
+        "target": "ES2023",
+        "module": "nodenext",
+        "moduleResolution": "nodenext",
+        "resolveJsonModule": true,
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "strict": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "declaration": true,
+        "declarationMap": true,
+        "sourceMap": true,
+        "allowSyntheticDefaultImports": true,
+        "isolatedModules": true,
+        "moduleDetection": "force",
+        "types": [
+            "node"
+        ]
+    },
+    "include": [
+        "src/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
 }

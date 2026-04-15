@@ -1,0 +1,111 @@
+{
+  "id": "19-resilience",
+  "title": "Resilience Workflow",
+  "triggeredBy": "Workflow flakiness, hallucination reports, or requirements for high availability",
+  "intent": "Structural fault tolerance for AI pipelines: retry, vote, heal, and monitor",
+  "resourcePool": [
+    "resilience"
+  ],
+  "inputSchema": {
+    "targetWorkflowId": "string",
+    "setpoints": "any"
+  },
+  "throwbacks": [
+    "bootstrap: fails permanently after retry budget exhausted"
+  ],
+  "chainTo": [
+    "govern",
+    "evaluate"
+  ],
+  "skillTree": {
+    "root": "homeostatic-monitor",
+    "nodes": [
+      {
+        "id": "homeostatic-monitor",
+        "skill": "resil-homeostatic",
+        "type": "primary",
+        "profile": "resilience",
+        "description": "PID-controller: maintain target quality/speed/cost setpoints, compensate when metrics drift",
+        "next": [
+          {
+            "target": "redundant-voter"
+          },
+          {
+            "target": "membrane-isolation"
+          }
+        ]
+      },
+      {
+        "id": "redundant-voter",
+        "skill": "resil-redundant-voter",
+        "type": "parallel",
+        "profile": "resilience",
+        "description": "N-modular redundancy: run node N times, majority-vote the output to reduce hallucinations",
+        "next": [
+          {
+            "target": "fault-recovery"
+          }
+        ]
+      },
+      {
+        "id": "membrane-isolation",
+        "skill": "resil-membrane",
+        "type": "parallel",
+        "profile": "resilience",
+        "description": "Isolate failures behind strict data boundaries to prevent cascade propagation",
+        "next": [
+          {
+            "target": "fault-recovery"
+          }
+        ]
+      },
+      {
+        "id": "fault-recovery",
+        "skill": "resil-clone-mutate",
+        "type": "primary",
+        "profile": "resilience",
+        "description": "Clone and mutate failing prompts/agents until a working variant emerges (immune-system self-repair)",
+        "next": [
+          {
+            "target": "replay-learning"
+          },
+          {
+            "target": "reliability-architecture"
+          }
+        ]
+      },
+      {
+        "id": "replay-learning",
+        "skill": "resil-replay",
+        "type": "primary",
+        "profile": "resilience",
+        "description": "Consolidate past run experience to prevent the same failure pattern from recurring",
+        "next": [
+          {
+            "target": "postmortem-synthesis"
+          }
+        ]
+      },
+      {
+        "id": "reliability-architecture",
+        "skill": "arch-reliability",
+        "type": "parallel",
+        "profile": "design",
+        "description": "Redesign the workflow for consistency: retry logic, fallbacks, and hardened quality gates",
+        "next": [
+          {
+            "target": "postmortem-synthesis"
+          }
+        ]
+      },
+      {
+        "id": "postmortem-synthesis",
+        "skill": "debug-postmortem",
+        "type": "synthesis",
+        "profile": "debugging",
+        "description": "Generate structured postmortem to close the incident loop and update runbooks",
+        "next": []
+      }
+    ]
+  }
+}

@@ -1,0 +1,60 @@
+---
+import { Atom } from "lucide-astro";
+import { Brain } from "lucide-astro";
+import { Bug } from "lucide-astro";
+import { Code } from "lucide-astro";
+import { Compass } from "lucide-astro";
+import { Database } from "lucide-astro";
+import { Eye } from "lucide-astro";
+import { FileText } from "lucide-astro";
+import { FlaskConical } from "lucide-astro";
+import { GitBranch } from "lucide-astro";
+import { GitGraph } from "lucide-astro";
+import { Layers } from "lucide-astro";
+import { Microscope } from "lucide-astro";
+import { RefreshCcw } from "lucide-astro";
+import { Route } from "lucide-astro";
+import { Scale } from "lucide-astro";
+import { ShieldCheck } from "lucide-astro";
+import { Telescope } from "lucide-astro";
+import { WandSparkles } from "lucide-astro";
+import { Workflow } from "lucide-astro";
+import { Wrench } from "lucide-astro";
+import { Zap } from "lucide-astro";
+
+const ICON_MAP = {
+  Atom,
+  Brain,
+  Bug,
+  Code,
+  Compass,
+  Database,
+  Eye,
+  FileText,
+  FlaskConical,
+  GitBranch,
+  GitGraph,
+  Layers,
+  Microscope,
+  RefreshCcw,
+  Route,
+  Scale,
+  ShieldCheck,
+  Telescope,
+  WandSparkles,
+  Workflow,
+  Wrench,
+  Zap,
+} as const;
+
+interface Props {
+  icon: keyof typeof ICON_MAP;
+  size?: number;
+  "aria-hidden"?: "true" | boolean;
+}
+
+const { icon, size = 28, "aria-hidden": ariaHidden = true } = Astro.props;
+const Component = ICON_MAP[icon];
+---
+
+{Component && <Component size={size} aria-hidden={ariaHidden} />}

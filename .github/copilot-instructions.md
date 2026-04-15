@@ -1,445 +1,272 @@
-# Copilot Project Instructions
+# mcp-ai-agent-guidelines
 
-A TypeScript-based MCP (Model Context Protocol) server delivering advanced tools for hierarchical prompting, code hygiene analysis, design workflows, security hardening, and agile planning. This is an **experimental/research project** referencing evolving third-party models and docs. Please follow these guidelines when contributing:
+TypeScript ESM MCP server exposing **20 public instruction tools** backed by **102 underlying skills** across 18 domain families (see [README.md](../README.md) and [`docs/architecture/03-skill-graph.md`](../docs/architecture/03-skill-graph.md)).
 
-## Using These Instructions
+## Build & Test
 
-These instructions help GitHub Copilot and other AI coding assistants understand the project structure, conventions, and workflows. When working on tasks:
+```sh
+npm run build          # tsc → dist/
+npm run quality        # type-check + biome check (run before committing)
+npm run test           # vitest run
+npm run test:coverage  # vitest + v8 coverage
+node dist/index.js     # run the MCP server (stdin/stdout transport)
+```
 
-- **Well-suited for AI assistance**:
-  - Bug fixes
-  - Test coverage improvements
-  - Documentation updates
-  - Refactoring for clarity
-  - Adding new tools following existing patterns
-  - Updating dependencies
-- **Requires human expertise**:
-  - Major architectural changes
-  - Complex business logic
-  - Security-critical features
-  - Ambiguous requirements
-- **Always verify**: Lint, build, and test your changes early and often. Use `npm run quality` before committing.
+To regenerate tool definitions after editing the canonical registries or workflow spec:
 
-## 1. Overview & Architecture
+```sh
+python3 scripts/generate-tool-definitions.py
+```
 
-**Core Data Flow**: `src/index.ts` → tool handlers → business logic in `src/tools/` organized by domain.
-
-### Key Service Layers
-
-**Design Assistant Ecosystem** (`src/tools/design/`): The most complex subsystem, a **facade orchestrator** managing deterministic design workflows.
-
-- **Coordinator**: `design-assistant.ts` routes actions to specialized services (session management, phase management, artifact generation, consistency enforcement)
-- **Constraint System**: `constraint-manager.ts` loads YAML-based design constraints (phases, coverage rules, mandatory requirements)
-- **Session State**: Manages multi-phase design sessions (start → advance phases → enforce coverage → generate artifacts)
-- **Consistency Enforcers**: `cross-session-consistency-enforcer.ts` + `constraint-consistency-enforcer.ts` validate outputs against design rules
-- **Services Layer** (`services/`): Handles session state, artifacts, phase transitions, consistency checks, and additional operations
-
-**Prompt Builders** (`src/tools/prompt/`): Independent tools that generate structured prompts for AI agents
-
-- **Hierarchical**: `hierarchical-prompt-builder.ts` — multi-level specificity prompts (independent → modeling → scaffolding)
-- **Flow-based**: `prompt-flow-builder.ts`, `prompt-chaining-builder.ts` — sequential or parallel execution chains
-- **Security**: `security-hardening-prompt-builder.ts` — OWASP/compliance-focused prompts with threat modeling
-- **Domain-specific**: `domain-neutral-prompt-builder.ts` (objectives/workflow), `spark-prompt-builder.ts` (UI/UX cards)
-- **Evaluation**: `prompting-hierarchy-evaluator.ts`, `hierarchy-level-selector.ts` — assess & recommend prompt levels
-- **Analysis**: `code-analysis-prompt-builder.ts`, `architecture-design-prompt-builder.ts`, `debugging-assistant-prompt-builder.ts`
-- All use shared utilities (`shared/prompt-utils.ts`, `shared/prompt-sections.ts`) for consistent structure
-- Emit structured markdown/JSON outputs via `logger.ts`
-
-**Analysis Tools** (`src/tools/analysis/`, `src/tools/semantic-code-analyzer.ts`): Code inspection and strategy frameworks
-
-- **Code Quality**: `clean-code-scorer.ts` (0-100 score), `code-hygiene-analyzer.ts` (patterns/dependencies)
-- **Coverage**: `iterative-coverage-enhancer.ts` — gap detection & adaptive thresholds
-- **Strategy**: `strategy-frameworks-builder.ts` (SWOT/BSC/VRIO), `gap-frameworks-analyzers.ts` (capability/performance)
-- **Planning**: `sprint-timeline-calculator.ts`, `model-compatibility-checker.ts`, `project-onboarding.ts`
-- Bridge services for semantic analysis (`bridge/semantic-analyzer-bridge.ts`) and project onboarding
-
-### Repository Structure
+## Architecture
 
 ```
 src/
-  index.ts                          # MCP server entry, tool registration
+  index.ts                         # MCP Server — ListTools + CallTool handlers
+  instructions/
+    instruction-specs.ts           # Canonical public instruction registry + surface categories
+  generated/                       # ⚠ AUTO-GENERATED — do not edit manually
+    registry/public-tools.ts       # Public tool definitions emitted from src registries
+  skills/
+    skill-specs.ts                 # Canonical skill catalog + legacy alias bridge
+    <domain>/<skill-id>.ts         # Handwritten skill implementations
   tools/
-    design/                         # Design workflow orchestrator + services
-      design-assistant.ts           # Facade coordinating all design operations
-      constraint-manager.ts         # Constraint loading & validation (singleton)
-      cross-session-consistency-enforcer.ts  # Multi-session validation (singleton)
-      constraint-consistency-enforcer.ts     # Phase/constraint validation
-      services/                     # Session, phase, artifact, consistency services
-      types/                        # TypeScript domain types
-      config/design-constraints.yaml # YAML-based phase/constraint config
-    prompt/                         # Prompt builders (hierarchical, flow, security, etc.)
-    analysis/                       # Strategy frameworks, gap analysis
-    shared/                         # Shared utilities, error handling, logging
-      errors.ts                     # Typed error classes (ValidationError, etc.)
-      logger.ts                     # Structured logging
-      prompt-utils.ts               # Prompt building utilities
-    config/                         # Model and guidelines configuration
-    bridge/                         # Bridge to external services (semantic analyzer, project onboarding)
-  prompts/                          # Prompt definitions (aggregate via index.ts)
-  resources/                        # Static resources (aggregate via index.ts)
-  schemas/                          # Zod + MCP request schemas
-tests/
-  vitest/                           # Primary test suite (mirrors src/ structure)
-  unit/                             # Legacy unit tests
-demos/                              # Demo scripts (*.js) + generated reports (*.md)
-scripts/                            # Build, test, and utility scripts
-.github/                            # CI workflows, issue templates, and this instructions file
-dist/                               # Compiled JavaScript output (generated by `npm run build`)
-coverage/                           # Test coverage reports (generated by coverage commands)
+    skill-handler.ts               # Generic dispatch: routes by skill name prefix
+    shared/
+      annotation-presets.ts        # Tool annotation constants by tier
+      error-handler.ts             # Shared MCP error formatting
+      tool-surface-manifest.ts     # HIDDEN_TOOLS env-var filtering
+  workflows/
+    workflow-spec.ts               # Authoritative instruction → skill coverage graph
+
+scripts/
+  generate-tool-definitions.py     # Reads src registries/workflow spec → regenerates src/generated/
+  verify_matrix.py                 # Validates every skill appears in at least one instruction
+  package_skills.py / .js          # Skill packaging utilities
+  README.md                        # Script usage guide
 ```
 
-## 2. Coding Conventions & Patterns
+## Code Conventions
 
-### ESM & TypeScript
+- **TypeScript ESM** — `"type": "module"`, `"moduleResolution": "nodenext"`. Import paths **must** use `.js` extension even for `.ts` sources (e.g. `import { foo } from "./bar.js"`).
+- **Biome** for lint + format — tabs (not spaces), double quotes. Run `npm run check:fix` to auto-fix.
+- **Tests live under `src/tests/`** — do not colocate committed `*.test.ts` files under source modules. Mirror the source subtree inside `src/tests/` when structure helps (for example `src/tests/skills/qm/` or `src/tests/workflows/`).
+- All 20 public instruction tools share the same input schema: `{ context?: string; request: string; options?: object }`. `request` is the only required field.
+- Skill prefix determines dispatch tier in `skill-handler.ts`: `qm-` and `gr-` → physics, `gov-` → governance, `adv-` → advanced/bio-inspired, everything else → core.
 
-- **Strict Mode Enforced** (`tsconfig.json`): `strict: true`, `isolatedModules: true`
-- **ESM Imports**: All relative imports **must** end with `.js` (e.g., `import { a } from './b.js';`). Build outputs `.js` extensions.
-- **No `any`**: Prefer precise types. Define interfaces in `types/` directories.
 
-### Input Validation & Error Handling
+## Model Orchestration Guidance
 
-- **Zod Schemas**: All tool inputs validated with zod (e.g., `z.object({ action: z.enum([...]) })`). Validation errors → `ValidationError` in `shared/errors.ts`.
-- **Typed Errors**: Use domain-specific error classes (`ConfigurationError`, `ValidationError`, `OperationError`). All have `code`, `context`, `timestamp`.
-- **Logging**: Use `shared/logger.ts` for structured logs. Never use `console.log`.
+- This section covers **parallel coding sessions, sub-agent orchestration, and multi-model implementation workflows** used during repository development.
+- Do **not** read it as a claim that the product runtime already executes all of these combined-model patterns today.
+- **Model IDs are dynamic** — always discover current models via `mcp_ai-agent-guid_model-discover` or read `orchestration.toml`. Never hardcode model display names in code; use role classes (`free`, `cheap`, `strong`, `reviewer`) from `src/models/model-router.ts`.
+- `src/models/model-router.ts` derives default class fallbacks from `orchestration.toml` capability/class ordering. The policy below is the **target orchestration strategy** — treat it as the implementation contract for coding sessions and future router work.
+- Available models are defined in `.copilot-models`. The minimal viable set below uses **only free and cheap tiers** for drafting, reserving strong models for synthesis/judgment only.
 
-### Singleton State Management
-
-**Critical**: These are app-wide singletons. Reuse, don't recreate.
-
-- `constraintManager` (from `design/constraint-manager.ts`): Loads & caches YAML constraints. Used by design-assistant.
-- `crossSessionConsistencyEnforcer` (from `design/cross-session-consistency-enforcer.ts`): Validates cross-session consistency.
-- Model/guidelines config managers in `tools/config/`.
-- **Bridge services** integrate external systems without creating dependencies (e.g., semantic analyzer, project onboarding).
-
-### Immutability & Purity
-
-- Prefer functional transforms. Avoid mutating input parameters.
-- Design workflow functions return new state objects, not mutations.
-- Services in `design/services/` should be pure where possible.
-
-## 3. Build, Test, and Quality Workflow
-
-### Critical Path: Pre-Commit Quality Gates
-
-1. **Before committing**, run: `npm run quality` (type-check + Biome linting)
-2. **Before pushing**, run: `npx lefthook run pre-push` (full test + lint suite)
-3. Lefthook enforces these automatically; skipping breaks CI.
-
-### Development Workflow
-
-```bash
-npm ci                    # Install exact dependencies
-npm run build             # TypeScript → dist/ (required before running code)
-npm run dev               # Watch mode (tsc --watch)
-npm start                 # Build + start MCP server
-```
-
-### Testing Strategy
-
-- **Primary Suite**: `npm run test:vitest` (Vitest, mirrors `src/` in `tests/vitest/`)
-- **Coverage Reports**: `npm run test:coverage:vitest` (outputs to `coverage/`)
-- **All Tests**: `npm run test:all` (unit + integration + demo + MCP smoke)
-- **Individual Commands**:
-  - `npm run test:unit` — Legacy unit tests
-  - `npm run test:integration` — Integration tests (test-server.js)
-  - `npm run test:demo` — Demo scripts (regression tests)
-  - `npm run test:mcp` — MCP server smoke test
-
-### Quality Checks (Biome + TypeScript)
-
-```bash
-npm run check              # Biome check (lint + format)
-npm run check:fix          # Auto-fix Biome issues
-npm run type-check         # TypeScript without emit
-npm run lint               # Biome lint only
-npm run lint:fix           # Auto-fix lint issues
-```
-
-### Demo Workflow
-
-- **Demo scripts** in `demos/` are regression tests. Update them when changing tool output.
-- `node demos/demo-tools.js` regenerates sample tool calls.
-- Generated `.md` files document tool capabilities; commit these if updated.
-
-### Git Hooks (Lefthook)
-
-The project uses `lefthook` (configured in `lefthook.yml`) to enforce quality gates:
-
-- **`pre-commit`**: Runs fast checks like formatting (Biome) and type-checking (`tsc --noEmit`)
-- **`pre-push`**: Runs the full quality and test pipeline (`npm run quality` and `npm run test:all`)
-- **Your changes must pass these hooks to be committed and pushed**
-- Run manually: `npx lefthook run pre-commit` or `npx lefthook run pre-push`
-
-## 4. Testing Patterns
-
-### Architecture: Mirrored Structure
+### Cost Hierarchy (from `.copilot-models`)
 
 ```
-src/tools/design/design-assistant.ts          → tests/vitest/tools/design/design-assistant.spec.ts
-src/tools/prompt/hierarchical-prompt-builder.ts → tests/vitest/tools/prompt/hierarchical-prompt-builder.spec.ts
+████████████████████  GPT-4.1           free  (0x, 128K)  ── saturate first, run as many lanes as needed
+████████████████████  GPT-5 mini        free  (0x, 192K)  ── broad drafting, triage, template fill
+░░░░░░░░░░░░░░░░░░░░  Claude Haiku 4.5  cheap (0.33x, 160K) ── aggregation, fast classification, merge
+░░░░░░░░░░░░░░░░░░░░  Claude Sonnet 4.6 strong (1x, 160K) ── synthesis, physics, security, final judgment
+░░░░░░░░░░░░░░░░░░░░  GPT-5.4           strong (1x, 400K) ── independent critique, adversarial review
+▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓  Gemini 2.5 Pro    reviewer (1x, 173K) ── cross-model audit only
 ```
 
-### Testing Best Practices
+**Core rule:** saturate the free tier first. Pay exactly once for the synthesis or review step. Never run a strong model end-to-end on a task where free lanes can cover drafting, voting, triage, or preprocessing.
 
-1. **Test Public APIs Only**: Test exported functions/classes, not internal implementation. Example: `tests/vitest/unit/design-*.spec.ts`.
-2. **Minimal Fixtures**: Inline small test data. Don't create large shared fixture files.
-3. **Spies Over Mocks**: Use `vi.spyOn()` to observe function calls and verify behavior. See `tests/vitest/design-assistant-consistency-integration.test.ts` for patterns.
-4. **Explicit Assertions**: Avoid snapshots. Use clear, specific assertions (e.g., `expect(result.coverage).toBe(0.85)`).
-5. **Integration Tests**: Use integration tests to verify service composition (e.g., design-assistant with constraint-manager).
+### Why Both Strong Models Are Needed
 
-### Running & Coverage
+`Claude Sonnet 4.6` and `GPT-5.4` are peers — not primary/backup. They have distinct, complementary profiles:
 
-- `npm run test:vitest` — Full Vitest suite
-- `npm run test:coverage:vitest` — Generate coverage (default threshold: 90%)
-- `npm run check:coverage-threshold --threshold=<n>` — Verify coverage meets threshold
+| Dimension | `Claude Sonnet 4.6` | `GPT-5.4` |
+|-----------|--------------------|-----------| 
+| Long-context coherence | ✅ Excellent | ✅ Excellent |
+| Multi-step causal reasoning | ✅ Strong | ✅ Strong |
+| Independent adversarial critique | ⚠️ May confirm own prior plan | ✅ Preferred — lower self-agreement bias |
+| Physics / math symbolic reasoning | ✅ Strong | ✅ Strong — preferred for `qm-*` back-translation |
+| Security threat modeling | ✅ Strong | ✅ Preferred as first-pass `gov-*` reviewer |
+| Code generation throughput | ✅ Fast | ⚠️ Slightly slower on large files |
+| Tie-breaking escalation target | ✅ Final call | ✅ First escalation before Sonnet |
 
-## 5. Extending the Project
+**Rule:** whenever `Claude Sonnet 4.6` produces a plan, `GPT-5.4` is the critique lane — not optional. The value is in the disagreement surface between two strong models. When `GPT-5.4` generates the first-pass critique, `Claude Sonnet 4.6` sees both plan and critique before giving the final synthesis.
 
-### Adding a New Tool
+**When to use `GPT-5.4` as primary (not just critic):**
+- Independent risk audit of a plan already produced by `Claude Sonnet 4.6` — always run `GPT-5.4` first so it has no prior context
+- `gov-*` first-pass policy checking — `GPT-5.4` checks, `Claude Sonnet 4.6` judges
+- `qm-*` back-translation — converting physics-metaphor output into plain engineering language
+- Tie-breaking escalation — on split free-lane vote, escalate to `GPT-5.4` before `Claude Sonnet 4.6`
+- Pre-wave critique — run `GPT-5.4` on the wave plan independently before `Claude Sonnet 4.6` synthesizes
 
-1. **Create file** in appropriate category: `src/tools/{category}/my-tool.ts`
-2. **Export from barrel**: Add to `src/tools/{category}/index.ts`
-3. **Register in server**: Add handler to `src/index.ts` (import + add to `tools` map)
-4. **Add tests**: Create `tests/vitest/tools/{category}/my-tool.spec.ts` (mirror src/ structure)
-5. **Update demos** (if applicable): Add to `demos/demo-tools.js`
+---
 
-### Adding Prompts or Resources
+### Pattern 1 — Parallel Critique → Synthesis
+**Use for:** architecture decisions, wave gating, high-risk design, HMAC session MAC contract, `xstate` FSM, QM token embedding pipeline.
 
-1. **Create file**: `src/prompts/my-prompt.ts` or `src/resources/my-resource.ts`
-2. **Update aggregator**: Add to appropriate `index.ts` (exports via barrel)
-3. Aggregators pull from these exports to build the MCP manifest
+| Step | Model | Role |
+|------|-------|------|
+| 1 | `Claude Sonnet 4.6` | Generate primary plan |
+| 2 | `GPT-5.4` | Independent critique — no prior context from step 1 |
+| 3 | `Claude Sonnet 4.6` | Reconcile plan + critique → final synthesis |
 
-### Key Files to Know
+The disagreement delta between steps 1 and 2 is itself signal — review it before step 3.
 
-- **`src/index.ts`** — Tool registration & MCP server setup (650+ lines, declarative)
-- **`src/tools/design/constraint-manager.ts`** — Loads YAML constraints; core singleton
-- **`src/tools/shared/errors.ts`** — Domain-specific error classes
-- **`src/tools/design/services/`** — Pure, focused session/phase/artifact handlers
+---
 
-### Barrel File Pattern
+### Pattern 2 — Draft → Review Chain
+**Use for:** code generation, mechanical implementation, `injection-guard.ts`, session MAC, `token-embedder.ts`. Cuts strong-model token cost by ~60% since `Claude Sonnet 4.6` only reviews, never generates.
 
-Every module directory has `index.ts` that exports its public API:
+| Step | Model | Role |
+|------|-------|------|
+| 1 | `GPT-4.1` | Fast mechanical first draft |
+| 2 | `Claude Sonnet 4.6` | Correctness and security review |
+| 3 | `GPT-4.1` | Apply review notes, finalize |
 
-```typescript
-// src/tools/design/index.ts
-export { designAssistant } from "./design-assistant.js";
-export type { DesignAssistantRequest } from "./design-assistant.js";
+**2a. Refactoring variant** — use the same chain for mechanical refactors; escalate to strong only when the refactor crosses a module boundary or touches a security/governance surface:
+- Single-file refactor → `GPT-4.1` only
+- Cross-module refactor → `GPT-4.1` draft → `Claude Sonnet 4.6` boundary review
+- Batch refactor (e.g. all `resil-*` handlers) → 3× `GPT-4.1` lanes in parallel (one file per lane) → single `Claude Sonnet 4.6` diff-review across all outputs before committing
+- Never use a free model as final reviewer when the refactor touches `gov-*`, `qm-*`, `gr-*`, or any security primitive
+
+---
+
+### Pattern 3 — Majority Vote for Classification
+**Use for:** `eval-*`, `bench-*`, `eval_prompt_module`, `bench_blind_comparison_module`, `eval_variance_module`. Strong model activates as tiebreaker only — stays in cheap lane ~80% of the time.
+
+| Step | Model | Role |
+|------|-------|------|
+| 1 | `Claude Haiku 4.5` | Fast baseline vote |
+| 2 | `GPT-5 mini` | Independent second vote |
+| 3 | `GPT-4.1` | Third vote |
+| 4 (split only) | `GPT-5.4` | First escalation tiebreak |
+| 5 (still split) | `Claude Sonnet 4.6` | Final arbitration via `resil_redundant_voter` pattern |
+
+---
+
+### Pattern 4 — Cascade with Fallback
+**Use for:** resilience-oriented dispatch. Directly implements `resil_homeostatic_module`'s PID setpoint concept — cascade down until quality threshold is met, escalate only on failure.
+
+| Condition | First try | Fallback | Emergency |
+|-----------|-----------|----------|-----------|
+| Simple skill dispatch | `Claude Haiku 4.5` | `GPT-5 mini` | `GPT-4.1` |
+| Complex skill dispatch | `GPT-4.1` | `Claude Sonnet 4.6` | — |
+| Physics skills (`qm-*`, `gr-*`) | `Claude Sonnet 4.6` | `GPT-5.4` back-translation | — |
+| Governance (`gov-*`) | `GPT-5.4` first-pass | `Claude Sonnet 4.6` final judgment | — |
+
+---
+
+### Pattern 5 — Free Triple Parallel + Single Strong Synthesis
+**Use for:** research, synthesis, roadmap generation, any domain where 3× free lanes can run simultaneously at zero marginal cost.
+
+```
+Request
+  ├── GPT-5 mini        → perspective A  (speed-optimized, broad)
+  ├── GPT-4.1           → perspective B  (analysis-optimized, thorough)
+  └── GPT-4.1           → perspective C  (alternative temperature / prompt framing)
+          │
+          └── orch_result_synthesis ← Claude Sonnet 4.6  (only paid call)
 ```
 
-## 6. Common Workflows & Patterns
+Wire via `p-queue` with `concurrency: 3`. Cost model: 3 free calls + 1 Sonnet synthesis pass on 300–500 tokens ≈ 80% cheaper than running `Claude Sonnet 4.6` end-to-end.
 
-### Design Assistant Workflow
+**5b. Dual-strong research synthesis** — use only for highest-stakes research (`strat-tradeoff`, `core-tradeoff-analysis`, `lead_transformation_roadmap`):
+1. Fan-out: 2× `GPT-4.1` + 1× `GPT-5 mini` (free, parallel)
+2. First synthesis: `GPT-5.4` (consolidate free-lane outputs)
+3. Second synthesis: `Claude Sonnet 4.6` (final judgment pass on `GPT-5.4` output)
 
-1. **Session Start**: `design-assistant.ts` routes "start-session" → `sessionManagementService`
-2. **Phase Advancement**: Calls `phaseManagementService` → validates against `constraintManager`
-3. **Coverage Check**: `coverageEnforcer` validates phase outputs meet thresholds
-4. **Consistency Enforcement**: `consistencyService` validates cross-phase dependencies
-5. **Artifact Generation**: `artifactGenerationService` produces ADRs/specs/roadmaps
+---
 
-### Prompt Builder Pattern
+### Free Parallel Domain Map
 
-- All prompt builders follow similar structure: input config → validation → section building → output
-- Use `shared/prompt-utils.ts` and `shared/prompt-sections.ts` for consistency
-- Return structured markdown or JSON; emit via `logger.ts` for tracing
+| Domain | Skills | Strategy |
+|--------|--------|----------|
+| `synth-*` | comparative, research, engine, recommendation | 3× free → `Claude Sonnet 4.6` synthesis |
+| `eval-*` | prompt, output_grading, variance, prompt_bench | 3× free vote → `Claude Sonnet 4.6` tiebreak |
+| `bench-*` | analyzer, blind_comparison, eval_suite | 3× free → `Claude Haiku 4.5` aggregation |
+| `req-*` | analysis, scope, ambiguity_detection, acceptance_criteria | 2× free → `Claude Haiku 4.5` merge |
+| `doc-*` | generator, readme, api, runbook | 3× free draft → `Claude Sonnet 4.6` edit |
+| `strat-*` | advisor, roadmap, prioritization, tradeoff | 2× free → `Claude Sonnet 4.6` decide |
+| `debug-*` | assistant, reproduction, root_cause, postmortem | 3× free triage → `Claude Haiku 4.5` |
+| `qual-*` | code_analysis, review, performance, refactoring_priority, security | 3× free scan → `Claude Sonnet 4.6` judgment |
+| `lead-*` | capability_mapping, transformation_roadmap | 2× free → `Claude Sonnet 4.6` for exec-briefing/L9 only |
+| `prompt-*` | chaining, refinement, hierarchy, engineering | 2× free draft → 1× `Claude Sonnet 4.6` review |
 
-### Bridge Service Pattern
+**Never free-parallel (strong primary required):** `qm-*`, `gr-*`, `gov-*`, `adapt-*`, `resil-*`, `orch-agent-orchestrator`
 
-**Bridge services** in `tools/bridge/` integrate external system capabilities without tight coupling:
+---
 
-- `semantic-analyzer-bridge.ts` — Integrates semantic code analysis (inspect symbols, find references, analyze patterns)
-- `project-onboarding-bridge.ts` — Integrates project structure scanning and initialization
-- **Pattern**: Services export a single factory function that returns methods, ensuring lazy initialization and single instances
-- **Usage**: Called by higher-level tools (e.g., `project-onboarding.ts` calls bridge for codebase inspection)
-- **Benefit**: Easy to mock or swap implementations without changing tool interfaces
+### Decision Matrix
 
-### Error Handling Pattern
+| Signal | Single model default | Combined pattern |
+|--------|---------------------|-----------------|
+| "Is this design correct?" | `Claude Sonnet 4.6` | Pattern 1: + `GPT-5.4` critique → re-synthesis |
+| "Is there a flaw in this plan?" | `GPT-5.4` | Pattern 1: + `Claude Sonnet 4.6` for final call |
+| "Generate 20 more like this" | `GPT-4.1` | — |
+| "Fill in this template" | `GPT-5 mini` | — |
+| "Score / evaluate this output" | `Claude Haiku 4.5` | Pattern 3: 3-way vote → `GPT-5.4` → `Claude Sonnet 4.6` tiebreak |
+| "Research and synthesize" | `Claude Sonnet 4.6` | Pattern 5: 3× free parallel → `Claude Sonnet 4.6` synthesis |
+| "Refactor this file" | `GPT-4.1` | Pattern 2a: single-file free-only; cross-module add `Claude Sonnet 4.6` boundary review |
+| "Physics skill execution" | `Claude Sonnet 4.6` | + `GPT-5.4` back-translation lane |
+| "Governance policy check" | `GPT-5.4` first | + `Claude Sonnet 4.6` final judgment |
+| "High-risk migration wave" | `GPT-5.4` pre-review | → `Claude Sonnet 4.6` synthesis after seeing critique |
+| "What should we do next?" | `Claude Sonnet 4.6` + `GPT-5.4` in parallel | Pattern 1 |
 
-```typescript
-import { ValidationError, ConfigurationError } from "../shared/errors.js";
+---
 
-try {
-  // operation
-} catch (error) {
-  if (error instanceof ValidationError) {
-    // handle validation
-  } else if (error instanceof ConfigurationError) {
-    // handle config
-  }
-}
-```
+### `ModelRouter` Follow-on Targets
 
-## 7. Key Guidelines
+- **Model IDs are dynamic**: always call `mcp_ai-agent-guid_model-discover` at session start or read `orchestration.toml` — never hardcode display names in source code. Use role classes (`free`, `cheap`, `strong`, `reviewer`) in code; let the router resolve the actual model at runtime.
+- Add `chooseFreeParallelLanes(): [ModelProfile, ModelProfile, ModelProfile]` returning `[GPT-5 mini, GPT-4.1, GPT-4.1]` — `GPT-4.1` is registered as `free` but currently never selected by `profileForClass`.
+- Add `chooseSynthesisModel(): ModelProfile` always returning `Claude Sonnet 4.6` (resolved from role `strong_primary` in `orchestration.toml`).
+- Prefer bounded parallelism via `p-queue` with `concurrency: 3` for speculative and voting workflows.
+- Keep redundant-voter / tie-break escalation explicit: `GPT-5.4` is the first escalation; `Claude Sonnet 4.6` arbitrates only when `GPT-5.4` cannot break the tie.
+- Use a single strong synthesis/review pass after free/cheap fan-out — never run strong models on every lane.
 
-1. **Follow TypeScript best practices** and maintain strict type safety
-2. **Use ESM imports** with `.js` extensions for all relative imports
-3. **Maintain existing code structure** and organization patterns
-4. **Write tests for new functionality** - prefer Vitest, mirror `src/` structure in `tests/vitest/`
-5. **Document public APIs** and complex logic with clear comments
-6. **Run quality checks before committing** - `npm run quality` or `npx lefthook run pre-commit`
-7. **Update demos when modifying tools** - regenerate with `node demos/demo-tools.js`
-8. **Keep barrel files updated** - export new modules from appropriate `index.ts` files
-9. **Use zod for input validation** - ensure robust schema definitions for all tool inputs
-10. **Reuse singleton instances** - don't create new instances of shared services
 
-## 8. Plan Mode Guidance
+## ⚠ Critical Pitfalls
 
-When responding to [[PLAN]] requests, use the regular plan mode workflow and tools only. Do not use serena tools in plan mode.
+- **Never edit files under `src/generated/` directly.** They are fully overwritten by `scripts/generate-tool-definitions.py`. Edit `src/instructions/instruction-specs.ts`, `src/skills/skill-specs.ts`, `src/workflows/workflow-spec.ts`, and any matching handwritten `src/skills/<domain>/<skill-id>.ts` implementation, then re-run the generator.
+- Adding a new skill requires: (1) add/update the entry in `src/skills/skill-specs.ts`, (2) add the implementation under `src/skills/<domain>/<skill-id>.ts` when runtime behavior is needed, (3) ensure coverage in `src/workflows/workflow-spec.ts`, (4) run the generator, (5) rebuild.
+- `scripts/verify_matrix.py` enforces zero orphan skills — every skill must appear in at least one workflow in `src/workflows/workflow-spec.ts`.
+- Return types for MCP tool handlers must include `[x: string]: unknown` (index signature) to satisfy the SDK's `ServerResult` union — see `ToolErrorResult` and `SkillToolResult` for the pattern.
 
-## 9. GitHub Copilot Coding Agent
 
-This section provides guidance specific to the autonomous Copilot Coding Agent running on GitHub.com.
+## Tools and MCP
 
-### Custom Agents
+- Use MCP-Serena for file and pattern search
+- Support yourself with the language server for TS types and auto-imports
+- Look via GitHub code search and Context7 for examples of how to use a specific tool or implement a specific pattern.
 
-Specialized agents are available in `.github/agents/`. Invoke with `@agent-name`:
+## Agent Memory Bootstrap
 
-**Core Development:**
-- `@mcp-tool-builder` - Primary development agent for creating and enhancing MCP tools
-- `@tdd-workflow` - Test-driven development with Red-Green-Refactor cycle
-- `@code-reviewer` - Quality review using clean-code-scorer patterns
+At the start of any non-trivial work session, bootstrap prior context in this order:
 
-**Quality & Security:**
-- `@security-auditor` - OWASP compliance and security hardening checks
-- `@documentation-generator` - API documentation and README updates
-- `@architecture-advisor` - Design pattern recommendations and ADR generation
-- `@debugging-assistant` - Root cause analysis and troubleshooting
+1. Call `mcp_ai-agent-guid_agent-memory` with `command=list` — surface all stored artifacts and their IDs
+2. Call `mcp_ai-agent-guid_agent-memory` with `command=find, tags=["{domain}"]` matching the current task (e.g. `["docs-generate"]`, `["review"]`, `["implement"]`)
+3. Call `mcp_ai-agent-guid_agent-snapshot` with `command=read, selector=latest` — confirms current skill/instruction counts and lists modified files since last snapshot
+4. Read any artifact that its summary indicates is relevant using `command=read, artifactId="{id}"`
 
-**Automation:**
-- `@dependency-guardian` - Monitor dependencies and security vulnerabilities
-- `@changelog-curator` - Maintain CHANGELOG.md in Keep a Changelog format
-- `@ci-fixer` - Debug and repair CI/CD workflows
-- `@performance-optimizer` - Performance analysis and bundle optimization
-- `@prompt-architect` - Prompt engineering and optimization
+**Tag conventions (post 2026-04-12):** artifacts carry `[toolName, "topic:toolName", sessionId]` — search by `toolName` (e.g. `docs-generate`) or `topic:docs-generate`.
 
-### Multi-Agent Delegation
+**Important:** `/memories/repo/decisions-log.md` is auto-injected into Copilot context and contains the highest-value cross-session facts. Read it before calling memory tools. The `.toon` files in `.mcp-ai-agent-guidelines/memory/` are NOT auto-injected — they require explicit tool calls to retrieve.
 
-Use the `custom-agent` tool to delegate work between agents (NOT `handoffs` - that's IDE-only). Always provide:
 
-1. **Context**: Summary of completed work
-2. **Files**: List of modified files
-3. **Focus**: Specific task for receiving agent
+## Context7 Enrichment Workflow
 
-**Example delegation pattern:**
-```markdown
-When implementation complete and tests pass:
-1. Use `custom-agent` to invoke `@code-reviewer` for quality analysis
-2. After review passes, use `custom-agent` to invoke `@documentation-generator`
-```
+When a tool response contains a "📚 Memory enrichment available" footer:
 
-### When to Use Specialized Agents
+1. Extract the `Artifact ID` and `Libraries` listed in the footer
+2. For each library name, call `mcp_context7_resolve-library-id` with the library name to get the Context7-compatible library ID
+3. For each resolved ID, call `mcp_context7_get-library-docs` with the user's original request as the `topic` query
+4. Combine all returned documentation excerpts into a single string
+5. Call `mcp_ai-agent-guid_agent-memory` with `command=enrich`, `artifactId=<id from footer>`, and `libraryContext=<combined docs>`
 
-**IMPORTANT**: When working as the default agent, you SHOULD delegate to specialized agents for better results. Use `custom-agent` to invoke the appropriate agent:
+This anchors the memory artifact to current API documentation, replacing generic heuristic advice with verified library facts. The raw `details` blob of the artifact is never mutated — `libraryContext` is stored in a separate field.
 
-| Task Type | Delegate To | When |
-|-----------|-------------|------|
-| **Code implementation** | `@mcp-tool-builder` | New tools, features, bug fixes |
-| **Writing tests** | `@tdd-workflow` | Test creation, TDD workflow |
-| **Code quality review** | `@code-reviewer` | After implementation, before merge |
-| **Security concerns** | `@security-auditor` | Dependencies, vulnerabilities, OWASP |
-| **Documentation** | `@documentation-generator` | API docs, README updates |
-| **Architecture decisions** | `@architecture-advisor` | Design patterns, ADRs |
-| **Debugging issues** | `@debugging-assistant` | Root cause analysis |
-| **Dependency updates** | `@dependency-guardian` | Renovate PRs, vulnerabilities |
-| **CHANGELOG updates** | `@changelog-curator` | Version updates, releases |
-| **CI/CD issues** | `@ci-fixer` | Workflow failures, build issues |
-| **Performance** | `@performance-optimizer` | Bundle size, runtime optimization |
-| **Prompt design** | `@prompt-architect` | Prompt engineering, optimization |
 
-**Delegation triggers - ALWAYS delegate when:**
-- User asks for code review → `@code-reviewer`
-- User mentions tests or coverage → `@tdd-workflow`
-- User mentions security or OWASP → `@security-auditor`
-- User asks about documentation → `@documentation-generator`
-- User asks about architecture or patterns → `@architecture-advisor`
-- User reports a bug to debug → `@debugging-assistant`
-- User mentions dependencies or Renovate → `@dependency-guardian`
-- User asks about CHANGELOG → `@changelog-curator`
-- User reports CI/CD failure → `@ci-fixer`
-- User asks about performance → `@performance-optimizer`
-- User asks about prompts → `@prompt-architect`
-
-### MCP Servers Available
-
-This repository has **8 MCP servers** configured for enhanced capabilities:
-
-**Core Development:**
-- **fetch** - Web content retrieval (`mcp_fetch_fetch`)
-- **serena** - Semantic code analysis (find/replace symbols, pattern search)
-- **ai-agent-guidelines** - This project's 30+ tools (prompt builders, code analyzers, design assistant)
-
-**AI & Reasoning:**
-- **sequentialthinking** - Advanced chain-of-thought reasoning and problem-solving
-- **deepwiki** - Knowledge base search and retrieval (HTTP)
-- **context7** - Library documentation resolver (HTTP)
-
-**Browser Automation:**
-- **playwright** - Automated browser testing and web scraping
-- **chrome-devtools** - Chrome DevTools protocol integration for debugging
-
-#### Key Tools by Server
-
-**fetch:**
-- `mcp_fetch_fetch` - Retrieve web content, check library versions
-
-**serena:**
-- `mcp_serena_find_symbol` - Find symbols by name path
-- `mcp_serena_get_symbols_overview` - Overview of file symbols
-- `mcp_serena_replace_symbol_body` - Replace symbol implementations
-- `mcp_serena_find_referencing_symbols` - Find all symbol usages
-- `mcp_serena_rename_symbol` - Rename symbols across codebase
-- `mcp_serena_search_for_pattern` - Pattern-based code search
-
-**ai-agent-guidelines:**
-- `hierarchical_prompt_builder` - Generate structured prompts
-- `clean_code_scorer` - Calculate code quality score (0-100)
-- `design_assistant` - Multi-phase design workflow orchestration
-- `security_hardening_prompt_builder` - OWASP compliance prompts
-- Plus 26+ additional tools (see project README)
-
-**sequentialthinking:**
-- Advanced reasoning with hypothesis generation and verification
-- Multi-step problem solving with branching logic
-
-**context7:**
-- `resolve_library_id` - Convert package names to Context7 library IDs
-- `get_library_docs` - Fetch up-to-date library documentation
-
-**playwright:**
-- Browser automation (navigate, click, type, screenshot)
-- Form filling and UI testing
-- Network request monitoring
-
-**chrome-devtools:**
-- Performance profiling
-- Network analysis
-- Advanced debugging capabilities
-
-### Tool Aliases
-
-The Coding Agent supports these aliases:
-- `shell` → `bash` (execute shell commands)
-- `read` → `view` (read file contents)
-- `edit` → `str_replace` (edit files)
-- `search` → `search` (search files)
-- `custom-agent` → agent invocation (key for multi-agent delegation)
-
-### Environment Notes
-
-The Coding Agent runs on GitHub.com in ephemeral GitHub Actions environments:
-- **OS**: Ubuntu x64
-- **Node.js**: 22.x
-- **Python**: 3.12
-- **Pre-built**: Project compiled via `.github/copilot-setup-steps.yml`
-- **MCP Servers**: Pre-cached during setup for faster tool access
-
-### Workflow Example
-
-Typical multi-agent workflow:
-1. `@mcp-tool-builder` implements feature
-2. `@tdd-workflow` ensures 90% test coverage
-3. `@code-reviewer` validates code quality
-4. `@security-auditor` checks for vulnerabilities
-5. `@documentation-generator` updates documentation
-6. `@changelog-curator` records changes
-
-_If any of these instructions are unclear or seem incomplete, please ask for clarification!_
+## Self-Correction & Iteration
+- The above guidance is based on the current understanding of model capabilities and cost profiles. As we gather more data from implementation and testing, we may need to adjust the orchestration patterns or model assignments
+- Updat your copilot instructions as you discover new best practices or anti-patterns during implementation. 
+- If the developer opbjective and planning is not matching the actual copilot instructions or even blocking you from doing the right thing, please update the instructions to reflect the best practices and the actual implementation plan.
+- The instructions should be a living document that evolves with our understanding and implementation of the MCP server and its skills.

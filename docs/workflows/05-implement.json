@@ -1,0 +1,92 @@
+{
+  "id": "05-implement",
+  "title": "Implementation Workflow",
+  "triggeredBy": "design or meta-routing when a clear specification is present",
+  "intent": "Write deterministic, dependency-aware code with immediate test-driven guardrails",
+  "resourcePool": [
+    "implement"
+  ],
+  "inputSchema": {
+    "specification": "string",
+    "constraints": "string[]"
+  },
+  "throwbacks": [
+    "resilient-adapt: after 3 failed auto-fix loops",
+    "review: on test suite completion"
+  ],
+  "chainTo": [
+    "testing",
+    "review"
+  ],
+  "skillTree": {
+    "root": "spec-ingestion",
+    "nodes": [
+      {
+        "id": "spec-ingestion",
+        "skill": "req-analysis",
+        "type": "primary",
+        "profile": "elicitation",
+        "description": "Re-read and structure the specification to extract implementation constraints",
+        "next": [
+          {
+            "target": "code-draft"
+          }
+        ]
+      },
+      {
+        "id": "code-draft",
+        "skill": "arch-system",
+        "type": "primary",
+        "profile": "design",
+        "description": "Generate the initial implementation following system design contracts",
+        "next": [
+          {
+            "target": "static-analysis"
+          }
+        ]
+      },
+      {
+        "id": "static-analysis",
+        "skill": "qual-code-analysis",
+        "type": "gate",
+        "profile": "code_review",
+        "description": "Analyze code structure, coupling, complexity, and maintainability",
+        "next": [
+          {
+            "target": "context-hand-off",
+            "condition": "analysis clean — pass to review"
+          },
+          {
+            "target": "homeostatic-loop",
+            "condition": "quality issues detected"
+          }
+        ]
+      },
+      {
+        "id": "homeostatic-loop",
+        "skill": "resil-homeostatic",
+        "type": "fallback",
+        "profile": "resilience",
+        "description": "PID-controller retry: auto-correct within quality setpoints before failing out (max 3 iterations)",
+        "next": [
+          {
+            "target": "static-analysis",
+            "condition": "retry: iteration < 3"
+          },
+          {
+            "target": "context-hand-off",
+            "condition": "quality within bounds after correction"
+          }
+        ]
+      },
+      {
+        "id": "context-hand-off",
+        "skill": "flow-context-handoff",
+        "type": "synthesis",
+        "profile": "orchestration",
+        "description": "Package the verified implementation with full context for the downstream review workflow",
+        "next": []
+      }
+    ]
+  }
+}

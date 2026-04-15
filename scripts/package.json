@@ -1,0 +1,13 @@
+{
+  "name": "skill-packager",
+  "version": "1.0.0",
+  "description": "Skill packager for canonical src/skills modules and legacy skill folders",
+  "main": "package-skills.js",
+  "type": "commonjs",
+  "bin": {
+    "package-skills": "package-skills.js"
+  },
+  "dependencies": {
+    "archiver": "^6.0.0"
+  }
+}

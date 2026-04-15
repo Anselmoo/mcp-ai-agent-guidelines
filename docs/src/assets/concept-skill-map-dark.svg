@@ -1,0 +1,190 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 250" role="img"
+    aria-label="18 skill domains arranged in a grid: physics, governance, quality, orchestration, strategy, and process groups">
+    <title>Skill Domain Coverage Map — 18 domains, 102 skills</title>
+
+    <!-- ══ ROW 0 ══ -->
+
+    <!-- qm  (0,0) -->
+    <rect x="8" y="8" width="80" height="70" rx="5" fill="#8b5cf6" fill-opacity="0.14" stroke="#8b5cf6" stroke-width="1"
+        stroke-opacity="0.50" />
+    <text x="48" y="38" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
+        font-size="17" font-weight="700" fill="#a78bfa">qm</text>
+    <text x="48" y="53" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" fill="#94a3b8">Quantum Mech.</text>
+    <text x="48" y="65" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" font-weight="600" fill="#a78bfa">15 skills</text>
+
+    <!-- gr  (0,1) -->
+    <rect x="100" y="8" width="80" height="70" rx="5" fill="#8b5cf6" fill-opacity="0.14" stroke="#8b5cf6"
+        stroke-width="1" stroke-opacity="0.50" />
+    <text x="140" y="38" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
+        font-size="17" font-weight="700" fill="#a78bfa">gr</text>
+    <text x="140" y="53" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" fill="#94a3b8">Gen. Relativity</text>
+    <text x="140" y="65" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" font-weight="600" fill="#a78bfa">15 skills</text>
+
+    <!-- gov  (0,2) -->
+    <rect x="192" y="8" width="80" height="70" rx="5" fill="#dc2626" fill-opacity="0.14" stroke="#dc2626"
+        stroke-width="1" stroke-opacity="0.50" />
+    <text x="232" y="38" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
+        font-size="17" font-weight="700" fill="#f87171">gov</text>
+    <text x="232" y="53" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" fill="#94a3b8">Governance</text>
+    <text x="232" y="65" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" font-weight="600" fill="#f87171">7 skills</text>
+
+    <!-- lead  (0,3) -->
+    <rect x="284" y="8" width="80" height="70" rx="5" fill="#d97706" fill-opacity="0.14" stroke="#d97706"
+        stroke-width="1" stroke-opacity="0.50" />
+    <text x="324" y="38" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
+        font-size="17" font-weight="700" fill="#fbbf24">lead</text>
+    <text x="324" y="53" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" fill="#94a3b8">Leadership</text>
+    <text x="324" y="65" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" font-weight="600" fill="#fbbf24">7 skills</text>
+
+    <!-- qual  (0,4) -->
+    <rect x="376" y="8" width="80" height="70" rx="5" fill="#2563eb" fill-opacity="0.14" stroke="#2563eb"
+        stroke-width="1" stroke-opacity="0.50" />
+    <text x="416" y="38" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
+        font-size="17" font-weight="700" fill="#60a5fa">qual</text>
+    <text x="416" y="53" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" fill="#94a3b8">Quality</text>
+    <text x="416" y="65" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" font-weight="600" fill="#60a5fa">5 skills</text>
+
+    <!-- arch  (0,5) -->
+    <rect x="468" y="8" width="80" height="70" rx="5" fill="#2563eb" fill-opacity="0.14" stroke="#2563eb"
+        stroke-width="1" stroke-opacity="0.50" />
+    <text x="508" y="38" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
+        font-size="17" font-weight="700" fill="#60a5fa">arch</text>
+    <text x="508" y="53" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" fill="#94a3b8">Architecture</text>
+    <text x="508" y="65" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" font-weight="600" fill="#60a5fa">4 skills</text>
+
+    <!-- ══ ROW 1 ══ -->
+
+    <!-- orch  (1,0) -->
+    <rect x="8" y="90" width="80" height="70" rx="5" fill="#ea580c" fill-opacity="0.14" stroke="#ea580c"
+        stroke-width="1" stroke-opacity="0.50" />
+    <text x="48" y="120" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
+        font-size="17" font-weight="700" fill="#fb923c">orch</text>
+    <text x="48" y="135" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" fill="#94a3b8">Orchestration</text>
+    <text x="48" y="147" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" font-weight="600" fill="#fb923c">4 skills</text>
+
+    <!-- adapt  (1,1) -->
+    <rect x="100" y="90" width="80" height="70" rx="5" fill="#ea580c" fill-opacity="0.14" stroke="#ea580c"
+        stroke-width="1" stroke-opacity="0.50" />
+    <text x="140" y="120" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
+        font-size="17" font-weight="700" fill="#fb923c">adpt</text>
+    <text x="140" y="135" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" fill="#94a3b8">Adaptation</text>
+    <text x="140" y="147" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" font-weight="600" fill="#fb923c">5 skills</text>
+
+    <!-- resil  (1,2) -->
+    <rect x="192" y="90" width="80" height="70" rx="5" fill="#ea580c" fill-opacity="0.14" stroke="#ea580c"
+        stroke-width="1" stroke-opacity="0.50" />
+    <text x="232" y="120" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
+        font-size="17" font-weight="700" fill="#fb923c">rsl</text>
+    <text x="232" y="135" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" fill="#94a3b8">Resilience</text>
+    <text x="232" y="147" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" font-weight="600" fill="#fb923c">5 skills</text>
+
+    <!-- eval  (1,3) -->
+    <rect x="284" y="90" width="80" height="70" rx="5" fill="#2563eb" fill-opacity="0.14" stroke="#2563eb"
+        stroke-width="1" stroke-opacity="0.50" />
+    <text x="324" y="120" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
+        font-size="17" font-weight="700" fill="#60a5fa">eval</text>
+    <text x="324" y="135" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" fill="#94a3b8">Evaluation</text>
+    <text x="324" y="147" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" font-weight="600" fill="#60a5fa">5 skills</text>
+
+    <!-- debug  (1,4) -->
+    <rect x="376" y="90" width="80" height="70" rx="5" fill="#2563eb" fill-opacity="0.14" stroke="#2563eb"
+        stroke-width="1" stroke-opacity="0.50" />
+    <text x="416" y="120" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
+        font-size="17" font-weight="700" fill="#60a5fa">dbg</text>
+    <text x="416" y="135" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" fill="#94a3b8">Debugging</text>
+    <text x="416" y="147" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" font-weight="600" fill="#60a5fa">4 skills</text>
+
+    <!-- strat  (1,5) -->
+    <rect x="468" y="90" width="80" height="70" rx="5" fill="#16a34a" fill-opacity="0.14" stroke="#16a34a"
+        stroke-width="1" stroke-opacity="0.50" />
+    <text x="508" y="120" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
+        font-size="17" font-weight="700" fill="#4ade80">strat</text>
+    <text x="508" y="135" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" fill="#94a3b8">Strategy</text>
+    <text x="508" y="147" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" font-weight="600" fill="#4ade80">4 skills</text>
+
+    <!-- ══ ROW 2 ══ -->
+
+    <!-- synth  (2,0) -->
+    <rect x="8" y="172" width="80" height="70" rx="5" fill="#16a34a" fill-opacity="0.14" stroke="#16a34a"
+        stroke-width="1" stroke-opacity="0.50" />
+    <text x="48" y="202" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
+        font-size="17" font-weight="700" fill="#4ade80">syn</text>
+    <text x="48" y="217" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" fill="#94a3b8">Synthesis</text>
+    <text x="48" y="229" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" font-weight="600" fill="#4ade80">4 skills</text>
+
+    <!-- prompt  (2,1) -->
+    <rect x="100" y="172" width="80" height="70" rx="5" fill="#16a34a" fill-opacity="0.14" stroke="#16a34a"
+        stroke-width="1" stroke-opacity="0.50" />
+    <text x="140" y="202" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
+        font-size="17" font-weight="700" fill="#4ade80">pmt</text>
+    <text x="140" y="217" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" fill="#94a3b8">Prompt Eng.</text>
+    <text x="140" y="229" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" font-weight="600" fill="#4ade80">4 skills</text>
+
+    <!-- req  (2,2) -->
+    <rect x="192" y="172" width="80" height="70" rx="5" fill="#64748b" fill-opacity="0.14" stroke="#64748b"
+        stroke-width="1" stroke-opacity="0.50" />
+    <text x="232" y="202" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
+        font-size="17" font-weight="700" fill="#94a3b8">req</text>
+    <text x="232" y="217" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" fill="#94a3b8">Requirements</text>
+    <text x="232" y="229" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" font-weight="600" fill="#94a3b8">4 skills</text>
+
+    <!-- doc  (2,3) -->
+    <rect x="284" y="172" width="80" height="70" rx="5" fill="#64748b" fill-opacity="0.14" stroke="#64748b"
+        stroke-width="1" stroke-opacity="0.50" />
+    <text x="324" y="202" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
+        font-size="17" font-weight="700" fill="#94a3b8">doc</text>
+    <text x="324" y="217" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" fill="#94a3b8">Documentation</text>
+    <text x="324" y="229" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" font-weight="600" fill="#94a3b8">4 skills</text>
+
+    <!-- flow  (2,4) -->
+    <rect x="376" y="172" width="80" height="70" rx="5" fill="#64748b" fill-opacity="0.14" stroke="#64748b"
+        stroke-width="1" stroke-opacity="0.50" />
+    <text x="416" y="202" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
+        font-size="17" font-weight="700" fill="#94a3b8">flow</text>
+    <text x="416" y="217" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" fill="#94a3b8">Workflow</text>
+    <text x="416" y="229" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" font-weight="600" fill="#94a3b8">3 skills</text>
+
+    <!-- bench  (2,5) -->
+    <rect x="468" y="172" width="80" height="70" rx="5" fill="#64748b" fill-opacity="0.14" stroke="#64748b"
+        stroke-width="1" stroke-opacity="0.50" />
+    <text x="508" y="202" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
+        font-size="17" font-weight="700" fill="#94a3b8">bnc</text>
+    <text x="508" y="217" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" fill="#94a3b8">Benchmarking</text>
+    <text x="508" y="229" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif"
+        font-size="6" font-weight="600" fill="#94a3b8">3 skills</text>
+</svg>

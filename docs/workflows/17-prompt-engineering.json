@@ -1,0 +1,111 @@
+{
+  "id": "17-prompt-engineering",
+  "title": "Prompt Engineering Workflow",
+  "triggeredBy": "Prompt hallucination reports from eval or requests to tune or build prompt templates",
+  "intent": "Versioned, eval-driven prompt iteration until the new prompt scores strictly higher than baseline",
+  "resourcePool": [
+    "prompt_engineering"
+  ],
+  "inputSchema": {
+    "baseTemplate": "string",
+    "evalRubric": "string"
+  },
+  "throwbacks": [
+    "evaluate: re-run evals after each refinement round"
+  ],
+  "chainTo": [
+    "evaluate",
+    "govern"
+  ],
+  "skillTree": {
+    "root": "prompt-scaffold",
+    "nodes": [
+      {
+        "id": "prompt-scaffold",
+        "skill": "prompt-engineering",
+        "type": "primary",
+        "profile": "prompt_engineering",
+        "description": "Create, template, and version prompt assets; establish the initial prompt contract",
+        "next": [
+          {
+            "target": "hierarchy-calibration"
+          }
+        ]
+      },
+      {
+        "id": "hierarchy-calibration",
+        "skill": "prompt-hierarchy",
+        "type": "primary",
+        "profile": "prompt_engineering",
+        "description": "Calibrate AI agent autonomy levels and control surfaces within the prompt",
+        "next": [
+          {
+            "target": "chain-construction"
+          }
+        ]
+      },
+      {
+        "id": "chain-construction",
+        "skill": "prompt-chaining",
+        "type": "primary",
+        "profile": "prompt_engineering",
+        "description": "Sequence multiple prompts; pass output from one step into the next pipeline stage",
+        "next": [
+          {
+            "target": "eval-run"
+          }
+        ]
+      },
+      {
+        "id": "eval-run",
+        "skill": "eval-prompt",
+        "type": "gate",
+        "profile": "evaluation",
+        "description": "Score the prompt chain against benchmark datasets and golden test sets",
+        "next": [
+          {
+            "target": "bench-regression",
+            "condition": "initial score obtained"
+          }
+        ]
+      },
+      {
+        "id": "bench-regression",
+        "skill": "eval-prompt-bench",
+        "type": "gate",
+        "profile": "evaluation",
+        "description": "Compare against baseline; detect regressions before accepting the new version",
+        "next": [
+          {
+            "target": "refinement-loop",
+            "condition": "score did not improve"
+          },
+          {
+            "target": "certified",
+            "condition": "score strictly higher than baseline"
+          }
+        ]
+      },
+      {
+        "id": "refinement-loop",
+        "skill": "prompt-refinement",
+        "type": "primary",
+        "profile": "prompt_engineering",
+        "description": "Iteratively improve the prompt based on measured failures and eval results",
+        "next": [
+          {
+            "target": "eval-run"
+          }
+        ]
+      },
+      {
+        "id": "certified",
+        "skill": "prompt-engineering",
+        "type": "synthesis",
+        "profile": "prompt_engineering",
+        "description": "Archive the certified prompt version; update the prompt registry",
+        "next": []
+      }
+    ]
+  }
+}

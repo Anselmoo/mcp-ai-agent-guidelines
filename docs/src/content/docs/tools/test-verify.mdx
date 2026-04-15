@@ -1,0 +1,57 @@
+---
+title: test-verify
+description: Testing — write, run, and verify tests to prove correctness and prevent regressions.
+sidebar:
+  label: test-verify
+  badge:
+    text: "Efficient"
+    variant: "caution"
+---
+
+import { Badge } from "@astrojs/starlight/components";
+import ToolIcon from "../../../components/ToolIcon.astro";
+
+<div class="tool-header-icon"><ToolIcon icon="FlaskConical" size={28} aria-hidden="true" /><span><Badge text="Efficient" variant="caution" /> <Badge text="workflow" variant="note" /></span></div>
+
+## Mission
+
+Write, run, and verify tests: define what to prove → choose strategy → implement → measure coverage → close gaps → prevent regression.
+
+## When to Use
+
+Use when writing unit tests, integration tests, or eval test cases; measuring test coverage; closing coverage gaps; verifying correctness of AI outputs; preventing regressions; or setting up testing infrastructure.
+
+**Triggers**: "write tests", "add tests", "test coverage", "regression tests", "eval test cases", "test this", "verify this works"
+
+## Skills Invoked
+
+- `qual-code-analysis` — identifies under-tested code paths
+- `qual-review` — reviews existing test quality
+- `bench-eval-suite` — constructs reusable eval test suites
+- `eval-variance` — measures test result stability
+
+## Chain-To
+
+- `code-review` — review test quality and coverage
+- `issue-debug` — debug failing tests
+- `quality-evaluate` — benchmark test suite effectiveness
+
+## Example
+
+```json
+{
+  "request": "Write unit tests for the JWT authentication middleware, targeting 90% coverage"
+}
+```
+
+**Output**: Test file with unit + edge-case tests, coverage report, gaps identified, and CI integration snippet.
+
+## Test Strategy Matrix
+
+| Code Type | Recommended Strategy |
+|-----------|---------------------|
+| Pure functions | Unit tests (Vitest/Jest) |
+| HTTP handlers | Integration tests (supertest) |
+| AI outputs | Eval suites (bench-eval-suite) |
+| Multi-step workflows | E2E tests with fixtures |
+| Prompt templates | eval-variance stability tests |

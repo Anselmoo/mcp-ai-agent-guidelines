@@ -1,0 +1,204 @@
+---
+title: Skills Overview
+description: All 102 skills across 18 domains with the full instruction–skill coverage graph.
+sidebar:
+  label: Skills Overview
+  order: 1
+---
+
+import { Badge, Aside, CardGrid, LinkCard, Icon, Tabs, TabItem } from "@astrojs/starlight/components";
+
+## What Are Skills?
+
+Skills are the internal workflow assets beneath the 20 public instruction tools. Consumers never call skills directly — they invoke an instruction tool which internally orchestrates the right skills.
+
+**102 skills · 18 domains · 0 orphans** (verified by `scripts/verify_matrix.py`)
+
+<Aside type="note" title="Model class glossary">
+  Every skill carries a model-class hint. These describe **task complexity**, not pricing — the class tells the orchestrator what tier of model can handle this task well:
+
+  | Badge | Internal key | What it means |
+  |-------|-------------|---------------|
+  | <Badge text="Zero-Cost" variant="success" /> | `free` | Solved by zero-cost models — [GPT-4.1](https://platform.openai.com/docs/models/gpt-4.1), [GPT-5 mini](https://platform.openai.com/docs/models/gpt-5-mini) |
+  | <Badge text="Efficient" variant="caution" /> | `cheap` | Low-cost models — [Claude Haiku 4.5](https://www.anthropic.com/claude/haiku), [GPT-5.4 mini](https://developers.openai.com/api/docs/models/gpt-5.4-mini) |
+  | <Badge text="Advanced" variant="danger" /> | `strong` | Full-capability models — [Claude Sonnet 4.6](https://www.anthropic.com/claude/sonnet), [Claude Opus 4.6](https://www.anthropic.com/claude/opus), [GPT-5.4](https://developers.openai.com/api/docs/models/gpt-5.4), [GPT-5.3-Codex](https://developers.openai.com/api/docs/models/gpt-5.3-codex) |
+  | <Badge text="Cross-Model" variant="note" /> | `reviewer` | Independent cross-model review — [Gemini 3.1 Pro](https://ai.google.dev/gemini-api/docs/models), [Claude Opus 4.6](https://www.anthropic.com/claude/opus) |
+
+  See [Model Routing](/mcp-ai-agent-guidelines/concepts/model-routing/) for the full class resolution logic · [Artificial Analysis](https://artificialanalysis.ai)
+</Aside>
+
+## Skill Domains
+
+<Tabs>
+  <TabItem label="Core domains" icon="approve-check-circle">
+    <CardGrid>
+      <LinkCard title="Requirements (4)" href="/mcp-ai-agent-guidelines/skills/requirements/" description="req-* — Analysis, scope, ambiguity detection, acceptance criteria" />
+      <LinkCard title="Architecture (4)" href="/mcp-ai-agent-guidelines/skills/architecture/" description="arch-* — System, reliability, scalability, security design" />
+      <LinkCard title="Quality (5)" href="/mcp-ai-agent-guidelines/skills/quality/" description="qual-* — Code analysis, review, performance, security, refactoring priority" />
+      <LinkCard title="Debugging (4)" href="/mcp-ai-agent-guidelines/skills/debugging/" description="debug-* — Assistant, root cause, reproduction, postmortem" />
+      <LinkCard title="Documentation (4)" href="/mcp-ai-agent-guidelines/skills/documentation/" description="doc-* — Generator, README, API reference, runbook" />
+      <LinkCard title="Evaluation (5)" href="/mcp-ai-agent-guidelines/skills/evaluation/" description="eval-* — Prompt, output grading, variance, design, benchmark" />
+      <LinkCard title="Benchmarking (3)" href="/mcp-ai-agent-guidelines/skills/benchmarking/" description="bench-* — Analyzer, blind comparison, eval suite" />
+      <LinkCard title="Workflows (3)" href="/mcp-ai-agent-guidelines/skills/workflows/" description="flow-* — Orchestrator, context handoff, mode switching" />
+      <LinkCard title="Governance (7)" href="/mcp-ai-agent-guidelines/skills/governance/" description="gov-* — Policy, compliance, guardrails, prompt-injection hardening" />
+      <LinkCard title="Orchestration (4)" href="/mcp-ai-agent-guidelines/skills/orchestration/" description="orch-* — Agent orchestrator, delegation, multi-agent, synthesis" />
+      <LinkCard title="Prompting (4)" href="/mcp-ai-agent-guidelines/skills/prompting/" description="prompt-* — Engineering, chaining, refinement, hierarchy" />
+      <LinkCard title="Research (4)" href="/mcp-ai-agent-guidelines/skills/research/" description="synth-* — Comparative, research, recommendation, engine" />
+      <LinkCard title="Strategy (4)" href="/mcp-ai-agent-guidelines/skills/strategy/" description="strat-* — Advisor, roadmap, prioritization, tradeoff" />
+      <LinkCard title="Resilience (5)" href="/mcp-ai-agent-guidelines/skills/resilience/" description="resil-* — Homeostatic, membrane, voter, replay, clone-mutate" />
+      <LinkCard title="Leadership (7)" href="/mcp-ai-agent-guidelines/skills/leadership/" description="lead-* — Capability mapping, roadmap, exec briefing, mentoring" />
+    </CardGrid>
+  </TabItem>
+  <TabItem label="Feature-gated domains" icon="warning">
+    <Aside type="caution" title="Feature gates required">
+      The domains below must be explicitly enabled via environment variables. They are off by default to prevent non-deterministic behavior in production.
+    </Aside>
+    <CardGrid>
+      <LinkCard title="Adaptive (5)" href="/mcp-ai-agent-guidelines/skills/adaptive/" description="adapt-* — ACO router, annealing, Hebbian, Physarum, quorum. Requires ENABLE_ADAPTIVE_ROUTING=true" />
+      <LinkCard title="Quantum Mechanics (15)" href="/mcp-ai-agent-guidelines/skills/physics-qm/" description="qm-* — Physics-metaphor code analysis using QM principles. Requires ENABLE_PHYSICS_SKILLS=true" />
+      <LinkCard title="General Relativity (15)" href="/mcp-ai-agent-guidelines/skills/physics-gr/" description="gr-* — Physics-metaphor code analysis using GR principles. Requires ENABLE_PHYSICS_SKILLS=true" />
+    </CardGrid>
+  </TabItem>
+</Tabs>
+
+## Instruction–Skill Coverage Graph
+
+The graph below shows which instructions invoke which skill domains. Auto-generated from `src/workflows/workflow-spec.ts`.
+
+```mermaid
+flowchart LR
+
+    subgraph INSTRUCTIONS["Instructions"]
+        adapt["adapt"]
+        bootstrap["bootstrap"]
+        debug["debug"]
+        design["design"]
+        document["document"]
+        enterprise["enterprise"]
+        evaluate["evaluate"]
+        govern["govern"]
+        implement["implement"]
+        meta_routing["meta-routing"]
+        orchestrate["orchestrate"]
+        physics_analysis["physics-analysis"]
+        plan["plan"]
+        prompt_engineering["prompt-engineering"]
+        refactor["refactor"]
+        research["research"]
+        resilience["resilience"]
+        review["review"]
+        testing["testing"]
+    end
+
+    subgraph D_req["Requirements"]
+        req_analysis["req-analysis"]
+        req_scope["req-scope"]
+        req_ambiguity["req-ambiguity-detection"]
+        req_acceptance["req-acceptance-criteria"]
+    end
+
+    subgraph D_arch["Architecture"]
+        arch_system["arch-system"]
+        arch_reliability["arch-reliability"]
+        arch_scalability["arch-scalability"]
+        arch_security["arch-security"]
+    end
+
+    subgraph D_qual["Quality"]
+        qual_review["qual-review"]
+        qual_code["qual-code-analysis"]
+        qual_perf["qual-performance"]
+        qual_security["qual-security"]
+        qual_refactor["qual-refactoring-priority"]
+    end
+
+    subgraph D_debug["Debug"]
+        debug_assistant["debug-assistant"]
+        debug_root["debug-root-cause"]
+        debug_repro["debug-reproduction"]
+        debug_post["debug-postmortem"]
+    end
+
+    subgraph D_gov["Governance"]
+        gov_injection["gov-prompt-injection-hardening"]
+        gov_policy["gov-policy-validation"]
+        gov_data["gov-data-guardrails"]
+        gov_model["gov-model-governance"]
+        gov_compat["gov-model-compatibility"]
+        gov_regulated["gov-regulated-workflow-design"]
+        gov_compliance["gov-workflow-compliance"]
+    end
+
+    subgraph D_orch["Orchestration"]
+        orch_agent["orch-agent-orchestrator"]
+        orch_delegation["orch-delegation"]
+        orch_multi["orch-multi-agent"]
+        orch_synthesis["orch-result-synthesis"]
+    end
+
+    subgraph D_resil["Resilience"]
+        resil_homeostatic["resil-homeostatic"]
+        resil_membrane["resil-membrane"]
+        resil_voter["resil-redundant-voter"]
+        resil_replay["resil-replay"]
+        resil_clone["resil-clone-mutate"]
+    end
+
+    subgraph D_adapt["Adaptive (gated)"]
+        adapt_aco["adapt-aco-router"]
+        adapt_anneal["adapt-annealing"]
+        adapt_hebbian["adapt-hebbian-router"]
+        adapt_physarum["adapt-physarum-router"]
+        adapt_quorum["adapt-quorum"]
+    end
+
+    subgraph D_qm["Quantum Mechanics (gated)"]
+        qm_super["qm-superposition-generator"]
+        qm_entangle["qm-entanglement-mapper"]
+        qm_collapse["qm-measurement-collapse"]
+        qm_tunnel["qm-tunneling-breakthrough"]
+        qm_wave["qm-wavefunction-coverage"]
+        qm_more["... +10 more qm-* skills"]
+    end
+
+    subgraph D_gr["General Relativity (gated)"]
+        gr_debt["gr-spacetime-debt-metric"]
+        gr_horizon["gr-event-horizon-detector"]
+        gr_geodesic["gr-geodesic-refactor"]
+        gr_lens["gr-gravitational-lensing-tracer"]
+        gr_more["... +11 more gr-* skills"]
+    end
+
+    design --> D_req
+    design --> D_arch
+    implement --> D_req
+    implement --> D_arch
+    research --> D_qual
+    review --> D_qual
+    review --> D_gov
+    govern --> D_gov
+    resilience --> D_resil
+    orchestrate --> D_orch
+    adapt --> D_adapt
+    physics_analysis --> D_qm
+    physics_analysis --> D_gr
+    refactor --> D_qual
+    debug --> D_debug
+    bootstrap --> D_req
+    plan --> D_arch
+    evaluate --> D_qual
+    enterprise --> D_gov
+    testing --> D_qual
+    prompt_engineering --> D_qual
+```
+
+## How Skills Are Invoked
+
+Skills are dispatched by tier in `src/tools/skill-handler.ts`:
+
+- **Physics tier** (`qm-*`, `gr-*`): Requires `ENABLE_PHYSICS_SKILLS=true`
+- **Governance tier** (`gov-*`): Optional human-in-the-loop via `ENABLE_GOVERNANCE_STRICT`
+- **Adaptive tier** (`adapt-*`): Requires `ENABLE_ADAPTIVE_ROUTING=true`
+- **Core tier**: Everything else, always available
+
+See [The Skill System](/mcp-ai-agent-guidelines/concepts/skill-system/) for the full architecture.

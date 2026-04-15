@@ -1,0 +1,322 @@
+---
+title: MCP AI Agent Guidelines
+description: A TypeScript MCP server exposing 20 instruction tools backed by 102 skills — instruction-first architecture with physics-inspired analysis, bio-inspired routing, and governance-first AI workflows.
+template: splash
+hero:
+  tagline: "20 tools. 102 skills. 18 domains. Physics-inspired AI workflows."
+  image:
+    light: ../../assets/hero-light.svg
+    dark: ../../assets/hero-dark.svg
+    alt: Architecture diagram showing the MCP hub connected to instruction tools and skill domains
+  actions:
+    - text: Get started
+      link: /mcp-ai-agent-guidelines/getting-started/installation/
+      icon: right-arrow
+      variant: primary
+    - text: Browse tools
+      link: /mcp-ai-agent-guidelines/tools/
+      icon: puzzle
+      variant: secondary
+    - text: Browse skills
+      link: /mcp-ai-agent-guidelines/skills/
+      icon: open-book
+      variant: secondary
+    - text: GitHub
+      link: https://github.com/Anselmoo/mcp-ai-agent-guidelines
+      icon: github
+      variant: minimal
+---
+
+import { CardGrid, Card, LinkCard, Badge, Aside, Tabs, TabItem, Icon } from "@astrojs/starlight/components";
+
+## What is this?
+
+**MCP AI Agent Guidelines** is a [Model Context Protocol](https://modelcontextprotocol.io) server whose public surface is built from **20 instruction tools** — high-level mission verbs (*design, implement, review, debug, govern…*) — each backed by richly orchestrated skill pipelines underneath. You invoke one tool; the server orchestrates dozens of skills internally.
+
+```json
+// Claude Desktop / VS Code — add to your MCP config
+{
+  "mcp": {
+    "servers": {
+      "ai-agent-guidelines": {
+        "command": "npx",
+        "args": ["-y", "mcp-ai-agent-guidelines@latest"]
+      }
+    }
+  }
+}
+```
+
+---
+
+## Six Pillars
+
+<CardGrid>
+  <Card title="Instruction-First Architecture" icon="puzzle">
+    20 public tools act as mission verbs. Each instruction orchestrates
+    multiple internal skills — consumers never call skills directly.
+    [Learn more →](/mcp-ai-agent-guidelines/concepts/skill-system/)
+  </Card>
+  <Card title="Physics-Inspired Analysis" icon="star">
+    30 QM + GR skills provide bias-free code analysis through
+    quantum-mechanics and general-relativity metaphors. Coupling, entropy,
+    gravitational debt — all objectively measurable.
+    [Learn more →](/mcp-ai-agent-guidelines/skills/physics-qm/)
+  </Card>
+  <Card title="Bio-Inspired Routing" icon="random">
+    5 `adapt-*` skills — Ant Colony Optimization, Hebbian reinforcement,
+    Physarum network pruning, quorum sensing, simulated annealing — make
+    multi-agent workflows self-optimizing over time.
+    [Learn more →](/mcp-ai-agent-guidelines/skills/adaptive/)
+  </Card>
+  <Card title="Governance-First" icon="warning">
+    7 `gov-*` skills, `criticalSkillGuard` env-var gating, HMAC session
+    integrity, and prompt-injection hardening are built-in — not optional add-ons.
+    [Learn more →](/mcp-ai-agent-guidelines/skills/governance/)
+  </Card>
+  <Card title="Model-Agnostic Orchestration" icon="setting">
+    Role-class routing resolved from `orchestration.toml` at runtime.
+    Physical model IDs are never hardcoded. 5 orchestration patterns documented.
+    [Learn more →](/mcp-ai-agent-guidelines/concepts/model-routing/)
+  </Card>
+  <Card title="Zero Runtime LLM Calls" icon="approve-check">
+    Advisory outputs only — this is a routing and orchestration layer, not
+    an LLM executor. Works with any MCP-compatible host.
+    [Architecture →](/mcp-ai-agent-guidelines/concepts/philosophy/)
+  </Card>
+</CardGrid>
+
+---
+
+## Instruction Tools
+
+<Aside type="tip" title="Model classes explained">
+  Each tool carries a model-class hint that guides the orchestrator on which model tier to use — it describes **complexity**, not price:
+
+  | Class | What it means | Recommended models |
+  |-------|--------------|-------------------|
+  | <Badge text="Zero-Cost" variant="success" /> | Solved by zero-cost models — drafts, triage, templates | [GPT-4.1](https://platform.openai.com/docs/models/gpt-4.1), [GPT-5 mini](https://platform.openai.com/docs/models/gpt-5-mini) |
+  | <Badge text="Efficient" variant="caution" /> | Low-cost models — routing, aggregation, fast classification | [Claude Haiku 4.5](https://www.anthropic.com/claude/haiku), [GPT-5.4 mini](https://developers.openai.com/api/docs/models/gpt-5.4-mini) |
+  | <Badge text="Advanced" variant="danger" /> | Full-capability models — synthesis, security, judgment | [Claude Sonnet 4.6](https://www.anthropic.com/claude/sonnet), [Claude Opus 4.6](https://www.anthropic.com/claude/opus), [GPT-5.4](https://developers.openai.com/api/docs/models/gpt-5.4), [GPT-5.3-Codex](https://developers.openai.com/api/docs/models/gpt-5.3-codex) |
+  | <Badge text="Cross-Model" variant="note" /> | Independent cross-model review lane |  [Gemini 3.1 Pro](https://ai.google.dev/gemini-api/docs/models), [Claude Opus 4.6](https://www.anthropic.com/claude/opus) |
+
+  See the [GitHub model comparison →](https://docs.github.com/en/copilot/reference/ai-models/model-comparison) · [Artificial Analysis →](https://artificialanalysis.ai)
+</Aside>
+
+<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:"1rem",margin:"1.5rem 0",alignItems:"stretch"}}>
+  <div style={{border:"1px solid var(--sl-color-hairline)",borderRadius:".5rem",padding:"1rem",background:"var(--sl-color-bg-nav)"}}>
+    <div style={{display:"flex",alignItems:"center",gap:".5rem",marginBottom:".75rem"}}>
+      <Badge text="Zero-Cost" variant="success" /><code style={{fontSize:".72rem",opacity:.7}}>free</code>
+    </div>
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:".75rem",borderTop:"1px solid var(--sl-color-hairline)",paddingTop:".75rem"}}>
+      <div>
+        <div style={{fontSize:".6rem",letterSpacing:".1em",textTransform:"uppercase",opacity:.5,marginBottom:".3rem"}}>REASONING</div>
+        <div style={{height:"4px",borderRadius:"2px",background:"var(--sl-color-hairline)"}}><div style={{height:"100%",borderRadius:"2px",background:"#16a34a",width:"20%"}}></div></div>
+        <div style={{fontSize:".72rem",marginTop:".3rem",opacity:.75}}>Basic</div>
+      </div>
+      <div>
+        <div style={{fontSize:".6rem",letterSpacing:".1em",textTransform:"uppercase",opacity:.5,marginBottom:".3rem"}}>SPEED</div>
+        <div style={{height:"4px",borderRadius:"2px",background:"var(--sl-color-hairline)"}}><div style={{height:"100%",borderRadius:"2px",background:"#16a34a",width:"100%"}}></div></div>
+        <div style={{fontSize:".72rem",marginTop:".3rem",opacity:.75}}>Fastest</div>
+      </div>
+      <div>
+        <div style={{fontSize:".6rem",letterSpacing:".1em",textTransform:"uppercase",opacity:.5,marginBottom:".25rem"}}>PRICE</div>
+        <div style={{fontWeight:700}}>Free</div>
+        <div style={{fontSize:".72rem",opacity:.75}}>$0 / 1M tokens</div>
+      </div>
+      <div>
+        <div style={{fontSize:".6rem",letterSpacing:".1em",textTransform:"uppercase",opacity:.5,marginBottom:".25rem"}}>CONTEXT</div>
+        <div style={{fontWeight:700}}>128–192K</div>
+        <div style={{fontSize:".72rem",opacity:.75}}>prompt window</div>
+      </div>
+    </div>
+  </div>
+  <div style={{border:"1px solid var(--sl-color-hairline)",borderRadius:".5rem",padding:"1rem",background:"var(--sl-color-bg-nav)",marginTop:0}}>
+    <div style={{display:"flex",alignItems:"center",gap:".5rem",marginBottom:".75rem"}}>
+      <Badge text="Efficient" variant="caution" /><code style={{fontSize:".72rem",opacity:.7}}>cheap</code>
+    </div>
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:".75rem",borderTop:"1px solid var(--sl-color-hairline)",paddingTop:".75rem"}}>
+      <div>
+        <div style={{fontSize:".6rem",letterSpacing:".1em",textTransform:"uppercase",opacity:.5,marginBottom:".3rem"}}>REASONING</div>
+        <div style={{height:"4px",borderRadius:"2px",background:"var(--sl-color-hairline)"}}><div style={{height:"100%",borderRadius:"2px",background:"#d97706",width:"60%"}}></div></div>
+        <div style={{fontSize:".72rem",marginTop:".3rem",opacity:.75}}>Moderate</div>
+      </div>
+      <div>
+        <div style={{fontSize:".6rem",letterSpacing:".1em",textTransform:"uppercase",opacity:.5,marginBottom:".3rem"}}>SPEED</div>
+        <div style={{height:"4px",borderRadius:"2px",background:"var(--sl-color-hairline)"}}><div style={{height:"100%",borderRadius:"2px",background:"#d97706",width:"80%"}}></div></div>
+        <div style={{fontSize:".72rem",marginTop:".3rem",opacity:.75}}>Fast</div>
+      </div>
+      <div>
+        <div style={{fontSize:".6rem",letterSpacing:".1em",textTransform:"uppercase",opacity:.5,marginBottom:".25rem"}}>PRICE</div>
+        <div style={{fontWeight:700}}>~$0.30</div>
+        <div style={{fontSize:".72rem",opacity:.75}}>per 1M tokens</div>
+      </div>
+      <div>
+        <div style={{fontSize:".6rem",letterSpacing:".1em",textTransform:"uppercase",opacity:.5,marginBottom:".25rem"}}>CONTEXT</div>
+        <div style={{fontWeight:700}}>~160K</div>
+        <div style={{fontSize:".72rem",opacity:.75}}>prompt window</div>
+      </div>
+    </div>
+  </div>
+  <div style={{border:"1px solid var(--sl-color-hairline)",borderRadius:".5rem",padding:"1rem",background:"var(--sl-color-bg-nav)",marginTop:0}}>
+    <div style={{display:"flex",alignItems:"center",gap:".5rem",marginBottom:".75rem"}}>
+      <Badge text="Advanced" variant="danger" /><code style={{fontSize:".72rem",opacity:.7}}>strong</code>
+    </div>
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:".75rem",borderTop:"1px solid var(--sl-color-hairline)",paddingTop:".75rem"}}>
+      <div>
+        <div style={{fontSize:".6rem",letterSpacing:".1em",textTransform:"uppercase",opacity:.5,marginBottom:".3rem"}}>REASONING</div>
+        <div style={{height:"4px",borderRadius:"2px",background:"var(--sl-color-hairline)"}}><div style={{height:"100%",borderRadius:"2px",background:"#dc2626",width:"100%"}}></div></div>
+        <div style={{fontSize:".72rem",marginTop:".3rem",opacity:.75}}>Highest</div>
+      </div>
+      <div>
+        <div style={{fontSize:".6rem",letterSpacing:".1em",textTransform:"uppercase",opacity:.5,marginBottom:".3rem"}}>SPEED</div>
+        <div style={{height:"4px",borderRadius:"2px",background:"var(--sl-color-hairline)"}}><div style={{height:"100%",borderRadius:"2px",background:"#dc2626",width:"40%"}}></div></div>
+        <div style={{fontSize:".72rem",marginTop:".3rem",opacity:.75}}>Medium</div>
+      </div>
+      <div>
+        <div style={{fontSize:".6rem",letterSpacing:".1em",textTransform:"uppercase",opacity:.5,marginBottom:".25rem"}}>PRICE</div>
+        <div style={{fontWeight:700,whiteSpace:"nowrap"}}>{"$2.5–$15"}</div>
+        <div style={{fontSize:".72rem",opacity:.75}}>per 1M tokens</div>
+      </div>
+      <div>
+        <div style={{fontSize:".6rem",letterSpacing:".1em",textTransform:"uppercase",opacity:.5,marginBottom:".25rem"}}>CONTEXT</div>
+        <div style={{fontWeight:700}}>160–400K</div>
+        <div style={{fontSize:".72rem",opacity:.75}}>prompt window</div>
+      </div>
+    </div>
+  </div>
+  <div style={{border:"1px solid var(--sl-color-hairline)",borderRadius:".5rem",padding:"1rem",background:"var(--sl-color-bg-nav)",marginTop:0}}>
+    <div style={{display:"flex",alignItems:"center",gap:".5rem",marginBottom:".75rem"}}>
+      <Badge text="Cross-Model" variant="note" /><code style={{fontSize:".72rem",opacity:.7}}>reviewer</code>
+    </div>
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:".75rem",borderTop:"1px solid var(--sl-color-hairline)",paddingTop:".75rem"}}>
+      <div>
+        <div style={{fontSize:".6rem",letterSpacing:".1em",textTransform:"uppercase",opacity:.5,marginBottom:".3rem"}}>REASONING</div>
+        <div style={{height:"4px",borderRadius:"2px",background:"var(--sl-color-hairline)"}}><div style={{height:"100%",borderRadius:"2px",background:"#2563eb",width:"100%"}}></div></div>
+        <div style={{fontSize:".72rem",marginTop:".3rem",opacity:.75}}>Highest</div>
+      </div>
+      <div>
+        <div style={{fontSize:".6rem",letterSpacing:".1em",textTransform:"uppercase",opacity:.5,marginBottom:".3rem"}}>SPEED</div>
+        <div style={{height:"4px",borderRadius:"2px",background:"var(--sl-color-hairline)"}}><div style={{height:"100%",borderRadius:"2px",background:"#2563eb",width:"20%"}}></div></div>
+        <div style={{fontSize:".72rem",marginTop:".3rem",opacity:.75}}>Sequential</div>
+      </div>
+      <div>
+        <div style={{fontSize:".6rem",letterSpacing:".1em",textTransform:"uppercase",opacity:.5,marginBottom:".25rem"}}>PRICE</div>
+        <div style={{fontWeight:700,whiteSpace:"nowrap"}}>{"$1–$15"}</div>
+        <div style={{fontSize:".72rem",opacity:.75}}>per 1M tokens</div>
+      </div>
+      <div>
+        <div style={{fontSize:".6rem",letterSpacing:".1em",textTransform:"uppercase",opacity:.5,marginBottom:".25rem"}}>CONTEXT</div>
+        <div style={{fontWeight:700}}>173K+</div>
+        <div style={{fontSize:".72rem",opacity:.75}}>prompt window</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<Tabs>
+  <TabItem label="Workflow Tools" icon="rocket">
+    <CardGrid>
+      <LinkCard title="system-design" href="/mcp-ai-agent-guidelines/tools/system-design/" description="Architecture and system design — Advanced" />
+      <LinkCard title="feature-implement" href="/mcp-ai-agent-guidelines/tools/feature-implement/" description="Build new features or tools — Advanced" />
+      <LinkCard title="evidence-research" href="/mcp-ai-agent-guidelines/tools/evidence-research/" description="Synthesis, comparison, recommendations — Advanced" />
+      <LinkCard title="code-review" href="/mcp-ai-agent-guidelines/tools/code-review/" description="Code, quality, and security review — Cross-Model" />
+      <LinkCard title="strategy-plan" href="/mcp-ai-agent-guidelines/tools/strategy-plan/" description="Strategy, roadmap, and sprint planning — Advanced" />
+      <LinkCard title="issue-debug" href="/mcp-ai-agent-guidelines/tools/issue-debug/" description="Diagnose and fix problems — Efficient" />
+      <LinkCard title="code-refactor" href="/mcp-ai-agent-guidelines/tools/code-refactor/" description="Improve existing code safely — Efficient" />
+      <LinkCard title="test-verify" href="/mcp-ai-agent-guidelines/tools/test-verify/" description="Write, run, and verify tests — Efficient" />
+      <LinkCard title="docs-generate" href="/mcp-ai-agent-guidelines/tools/docs-generate/" description="Generate documentation artifacts — Efficient" />
+      <LinkCard title="quality-evaluate" href="/mcp-ai-agent-guidelines/tools/quality-evaluate/" description="Benchmark and assess quality — Cross-Model" />
+      <LinkCard title="prompt-engineering" href="/mcp-ai-agent-guidelines/tools/prompt-engineering/" description="Build, evaluate, and optimize prompts — Efficient" />
+      <LinkCard title="agent-orchestrate" href="/mcp-ai-agent-guidelines/tools/agent-orchestrate/" description="Compose multi-agent workflows — Advanced" />
+      <LinkCard title="enterprise-strategy" href="/mcp-ai-agent-guidelines/tools/enterprise-strategy/" description="Leadership and enterprise scale — Advanced" />
+      <LinkCard title="policy-govern" href="/mcp-ai-agent-guidelines/tools/policy-govern/" description="Safety, compliance, and guardrails — Advanced" />
+      <LinkCard title="fault-resilience" href="/mcp-ai-agent-guidelines/tools/fault-resilience/" description="Self-healing and fault tolerance — Advanced" />
+      <LinkCard title="routing-adapt" href="/mcp-ai-agent-guidelines/tools/routing-adapt/" description="Bio-inspired adaptive routing — Advanced" />
+      <LinkCard title="physics-analysis" href="/mcp-ai-agent-guidelines/tools/physics-analysis/" description="QM and GR code metaphors — Advanced" />
+    </CardGrid>
+  </TabItem>
+  <TabItem label="Discovery Tools" icon="magnifier">
+    <CardGrid>
+      <LinkCard title="task-bootstrap" href="/mcp-ai-agent-guidelines/tools/task-bootstrap/" description="Session orientation and first contact — Zero-Cost" />
+      <LinkCard title="meta-routing" href="/mcp-ai-agent-guidelines/tools/meta-routing/" description="Task dispatcher — routes to the right tool — Efficient" />
+      <LinkCard title="project-onboard" href="/mcp-ai-agent-guidelines/tools/project-onboard/" description="Project familiarization session — Zero-Cost" />
+    </CardGrid>
+  </TabItem>
+  <TabItem label="Workspace Tools" icon="document">
+    <CardGrid>
+      <LinkCard title="agent-memory" href="/mcp-ai-agent-guidelines/tools/agent-memory/" description="Persistent cross-session TOON artifact store" />
+      <LinkCard title="graph-visualize" href="/mcp-ai-agent-guidelines/tools/graph-visualize/" description="Generate Mermaid diagrams for skill and chain graphs" />
+    </CardGrid>
+  </TabItem>
+</Tabs>
+
+---
+
+## Skill Domains
+
+<CardGrid>
+  <LinkCard title="Requirements (4)" href="/mcp-ai-agent-guidelines/skills/requirements/" description="req-* — Analysis, scope, ambiguity detection, acceptance criteria" />
+  <LinkCard title="Architecture (4)" href="/mcp-ai-agent-guidelines/skills/architecture/" description="arch-* — System, reliability, scalability, security design" />
+  <LinkCard title="Quality (5)" href="/mcp-ai-agent-guidelines/skills/quality/" description="qual-* — Code analysis, review, performance, security, refactoring priority" />
+  <LinkCard title="Debugging (4)" href="/mcp-ai-agent-guidelines/skills/debugging/" description="debug-* — Assistant, root cause, reproduction, postmortem" />
+  <LinkCard title="Documentation (4)" href="/mcp-ai-agent-guidelines/skills/documentation/" description="doc-* — Generator, README, API reference, runbook" />
+  <LinkCard title="Evaluation (5)" href="/mcp-ai-agent-guidelines/skills/evaluation/" description="eval-* — Prompt, output grading, variance, design, benchmark" />
+  <LinkCard title="Benchmarking (3)" href="/mcp-ai-agent-guidelines/skills/benchmarking/" description="bench-* — Analyzer, blind comparison, eval suite" />
+  <LinkCard title="Workflows (3)" href="/mcp-ai-agent-guidelines/skills/workflows/" description="flow-* — Orchestrator, context handoff, mode switching" />
+  <LinkCard title="Governance (7)" href="/mcp-ai-agent-guidelines/skills/governance/" description="gov-* — Policy, compliance, guardrails, prompt-injection hardening" />
+  <LinkCard title="Orchestration (4)" href="/mcp-ai-agent-guidelines/skills/orchestration/" description="orch-* — Agent orchestrator, delegation, multi-agent, synthesis" />
+  <LinkCard title="Prompting (4)" href="/mcp-ai-agent-guidelines/skills/prompting/" description="prompt-* — Engineering, chaining, refinement, hierarchy" />
+  <LinkCard title="Research (4)" href="/mcp-ai-agent-guidelines/skills/research/" description="synth-* — Comparative, research, recommendation, engine" />
+  <LinkCard title="Strategy (4)" href="/mcp-ai-agent-guidelines/skills/strategy/" description="strat-* — Advisor, roadmap, prioritization, tradeoff" />
+  <LinkCard title="Resilience (5)" href="/mcp-ai-agent-guidelines/skills/resilience/" description="resil-* — Homeostatic, membrane, voter, replay, clone-mutate" />
+  <LinkCard title="Adaptive (5)" href="/mcp-ai-agent-guidelines/skills/adaptive/" description="adapt-* — ACO router, annealing, Hebbian, Physarum, quorum" />
+  <LinkCard title="Leadership (7)" href="/mcp-ai-agent-guidelines/skills/leadership/" description="lead-* — Capability mapping, roadmap, exec briefing, mentoring" />
+  <LinkCard title="Quantum Mechanics (15)" href="/mcp-ai-agent-guidelines/skills/physics-qm/" description="qm-* — Physics-metaphor code analysis using QM principles" />
+  <LinkCard title="General Relativity (15)" href="/mcp-ai-agent-guidelines/skills/physics-gr/" description="gr-* — Physics-metaphor code analysis using GR principles" />
+</CardGrid>
+
+---
+
+## Orchestration Patterns
+
+<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:"1rem",margin:"1.5rem 0"}}>
+  <div style={{border:"1px solid var(--sl-color-hairline)",borderRadius:".5rem",padding:"1.25rem 1rem",background:"var(--sl-color-bg-nav)",display:"flex",flexDirection:"column",gap:".5rem"}}>
+    <div style={{display:"flex",alignItems:"center",gap:".75rem",marginBottom:".25rem"}}>
+      <span style={{display:"inline-flex",alignItems:"center",justifyContent:"center",width:"2.25rem",height:"2.25rem",minWidth:"2.25rem",borderRadius:".25rem",background:"var(--sl-color-accent-low)",color:"var(--sl-color-accent)"}}><Icon name="right-arrow" size="1.1rem" /></span>
+      <strong style={{fontSize:"1rem",lineHeight:"1.3"}}>Parallel Critique → Synthesis</strong>
+    </div>
+    <p style={{flex:1,margin:0,fontSize:".9rem",lineHeight:"1.6"}}>Advanced model generates plan → independent critic reviews → model reconciles. Used for architecture decisions and high-risk design.</p>
+    <a href="/mcp-ai-agent-guidelines/concepts/orchestration/" style={{fontSize:".85rem",color:"var(--sl-color-accent)",textDecoration:"none"}}>Read more →</a>
+  </div>
+  <div style={{border:"1px solid var(--sl-color-hairline)",borderRadius:".5rem",padding:"1.25rem 1rem",background:"var(--sl-color-bg-nav)",display:"flex",flexDirection:"column",gap:".5rem",marginTop:0}}>
+    <div style={{display:"flex",alignItems:"center",gap:".75rem",marginBottom:".25rem"}}>
+      <span style={{display:"inline-flex",alignItems:"center",justifyContent:"center",width:"2.25rem",height:"2.25rem",minWidth:"2.25rem",borderRadius:".25rem",background:"var(--sl-color-accent-low)",color:"var(--sl-color-accent)"}}><Icon name="open-book" size="1.1rem" /></span>
+      <strong style={{fontSize:"1rem",lineHeight:"1.3"}}>Draft → Review Chain</strong>
+    </div>
+    <p style={{flex:1,margin:0,fontSize:".9rem",lineHeight:"1.6"}}>Zero-cost model drafts → advanced model reviews → zero-cost model applies notes. Cuts advanced-model token cost ~60%.</p>
+  </div>
+  <div style={{border:"1px solid var(--sl-color-hairline)",borderRadius:".5rem",padding:"1.25rem 1rem",background:"var(--sl-color-bg-nav)",display:"flex",flexDirection:"column",gap:".5rem",marginTop:0}}>
+    <div style={{display:"flex",alignItems:"center",gap:".75rem",marginBottom:".25rem"}}>
+      <span style={{display:"inline-flex",alignItems:"center",justifyContent:"center",width:"2.25rem",height:"2.25rem",minWidth:"2.25rem",borderRadius:".25rem",background:"var(--sl-color-accent-low)",color:"var(--sl-color-accent)"}}><Icon name="list-format" size="1.1rem" /></span>
+      <strong style={{fontSize:"1rem",lineHeight:"1.3"}}>Majority Vote</strong>
+    </div>
+    <p style={{flex:1,margin:0,fontSize:".9rem",lineHeight:"1.6"}}>3 zero-cost/efficient lanes vote → tiebreak escalation → final arbitration. Used for evaluation and classification tasks.</p>
+  </div>
+  <div style={{border:"1px solid var(--sl-color-hairline)",borderRadius:".5rem",padding:"1.25rem 1rem",background:"var(--sl-color-bg-nav)",display:"flex",flexDirection:"column",gap:".5rem",marginTop:0}}>
+    <div style={{display:"flex",alignItems:"center",gap:".75rem",marginBottom:".25rem"}}>
+      <span style={{display:"inline-flex",alignItems:"center",justifyContent:"center",width:"2.25rem",height:"2.25rem",minWidth:"2.25rem",borderRadius:".25rem",background:"var(--sl-color-accent-low)",color:"var(--sl-color-accent)"}}><Icon name="down-arrow" size="1.1rem" /></span>
+      <strong style={{fontSize:"1rem",lineHeight:"1.3"}}>Cascade with Fallback</strong>
+    </div>
+    <p style={{flex:1,margin:0,fontSize:".9rem",lineHeight:"1.6"}}>Try efficient → fallback to advanced → emergency escalation. Implements homeostatic PID setpoint concept.</p>
+  </div>
+  <div style={{border:"1px solid var(--sl-color-hairline)",borderRadius:".5rem",padding:"1.25rem 1rem",background:"var(--sl-color-bg-nav)",display:"flex",flexDirection:"column",gap:".5rem",marginTop:0}}>
+    <div style={{display:"flex",alignItems:"center",gap:".75rem",marginBottom:".25rem"}}>
+      <span style={{display:"inline-flex",alignItems:"center",justifyContent:"center",width:"2.25rem",height:"2.25rem",minWidth:"2.25rem",borderRadius:".25rem",background:"var(--sl-color-accent-low)",color:"var(--sl-color-accent)"}}><Icon name="rocket" size="1.1rem" /></span>
+      <strong style={{fontSize:"1rem",lineHeight:"1.3"}}>Free Triple Parallel + Synthesis</strong>
+    </div>
+    <p style={{flex:1,margin:0,fontSize:".9rem",lineHeight:"1.6"}}>3 zero-cost lanes run concurrently → single advanced synthesis pass. ~80% cheaper than running advanced end-to-end.</p>
+  </div>
+</div>
+
+[Read full orchestration docs →](/mcp-ai-agent-guidelines/concepts/orchestration/)

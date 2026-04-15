@@ -1,0 +1,52 @@
+---
+title: system-design
+description: Design — architecture and system design, evaluating options, and documenting decisions before coding begins.
+sidebar:
+  label: system-design
+  badge:
+    text: "Advanced"
+    variant: "danger"
+---
+
+import { Badge } from "@astrojs/starlight/components";
+import ToolIcon from "../../../components/ToolIcon.astro";
+
+<div class="tool-header-icon"><ToolIcon icon="Layers" size={28} aria-hidden="true" /><span><Badge text="Advanced" variant="danger" /> <Badge text="workflow" variant="note" /></span></div>
+
+## Mission
+
+Understand constraints → explore options → decide → document. Produces a decision-backed architecture.
+
+## When to Use
+
+Use when designing a new system, service, agent architecture, data pipeline, or infrastructure component; evaluating architectural options; making build-vs-buy decisions; or establishing constraints and tradeoffs before coding begins.
+
+**Triggers**: "design this system", "architecture for", "how should we structure", "system design", "greenfield", "architectural decision"
+
+## Skills Invoked
+
+- `arch-system` — full component and boundary design
+- `arch-security` — threat modelling (STRIDE)
+- `arch-reliability` — SLA/SLO and failure modes
+- `arch-scalability` — load model and scaling strategy
+- `req-analysis` — requirements clarity pass
+- `req-scope` — boundary definition
+
+## Chain-To
+
+- `feature-implement` — proceed to implementation
+- `policy-govern` — governance review of architecture
+
+## Example
+
+```json
+{
+  "request": "Design a multi-tenant SaaS authentication service with SSO and MFA support"
+}
+```
+
+**Output**: Component diagram, API contracts, security threat table, SLA model, scaling recommendation, ADR log, and a handoff note for `feature-implement`.
+
+## Companion Tools
+
+Use `graph-visualize` with `chain-graph` or `skill-graph` to inspect the instruction chain and skill topology.

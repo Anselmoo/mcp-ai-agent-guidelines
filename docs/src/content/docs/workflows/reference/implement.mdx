@@ -1,0 +1,99 @@
+---
+title: Implementation
+description: Deterministic, dependency-aware code generation with immediate test-driven guardrails — activated when a clear specification is present.
+sidebar:
+  label: Implement
+  order: 5
+---
+
+import { Badge, Aside } from '@astrojs/starlight/components';
+
+<Badge text="Tool: feature-implement" variant="tip" /> <Badge text="Model: Advanced" variant="note" />
+
+## Trigger & Intent
+
+**Triggered by:** `design` or `meta-routing` when a clear specification is present.
+
+**Intent:** Writes deterministic, dependency-aware code with immediate test-driven guardrails.
+
+## Resource Pooling
+
+Capability profile: `implement` — requires `code_analysis` + `structured_output`, prefers `cost_sensitive`, `fast_draft` fallback, fan-out 2.
+
+## Required Skills
+
+| Skill | Role |
+|-------|------|
+| `req-analysis` | Requirements decomposition |
+| `qual-code-analysis` | Static analysis and code quality gates |
+| `arch-system` | Architecture compliance verification |
+
+## Input Schema
+
+```typescript
+{
+  specification: string;
+  constraints: string[];
+}
+```
+
+## Decisions & Throw-Backs
+
+Drafts code, generates an AST-level test suite.
+
+- If tests pass → push to **Review**
+- If tests fail → silent auto-loop (throw-back) 3× before failing and invoking `Resilient-Adapt`
+
+## Success Chains
+
+On successful completion chains to: **testing** · **review**
+
+## FSM — Institutionalization of innovation
+
+```mermaid
+stateDiagram-v2
+    [*] --> CodeDraft
+    CodeDraft --> TestDrivenExperimentation
+    TestDrivenExperimentation --> CIPassLocal
+    CIPassLocal --> ReplicationAcrossSuite
+
+    ReplicationAcrossSuite --> TestVariation
+    TestVariation --> NaturalSelection
+    NaturalSelection --> PatternStandardization
+    PatternStandardization --> ArchitectureEmbedding
+    ArchitectureEmbedding --> ShippedFeature
+
+    ShippedFeature --> DependencyRigidity
+    DependencyRigidity --> RefactorPressure
+    RefactorPressure --> CodeDraft
+
+    ShippedFeature --> [*]: feature stabilized in codebase
+```
+
+## Execution Sequence
+
+```mermaid
+sequenceDiagram
+    participant Orchestrator
+    participant Pool (Analytical)
+    participant Pool (Mechanical)
+    participant Tool (Context)
+
+    Orchestrator->>Pool (Analytical): Allocate Capability Profile
+    activate Pool (Analytical)
+    Pool (Analytical)->>Tool (Context): Issue Tool Calls (Parallel)
+    Tool (Context)-->>Pool (Analytical): Return Data
+
+    alt Shallow Loop
+        Pool (Analytical)->>Pool (Analytical): Auto-correct Schema
+    else Medium Loop
+        Pool (Analytical)->>Pool (Mechanical): Delegate Fixes
+    end
+
+    Pool (Analytical)-->>Orchestrator: Synthesis Gate
+    deactivate Pool (Analytical)
+
+    opt Deep Loop
+        Orchestrator->>Orchestrator: Complete Throw-back to Prior Stage
+    end
+```

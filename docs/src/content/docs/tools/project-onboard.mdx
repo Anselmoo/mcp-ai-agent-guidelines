@@ -1,0 +1,49 @@
+---
+title: project-onboard
+description: Onboard — project familiarization, skill navigation, and orientation for new sessions.
+sidebar:
+  label: project-onboard
+  badge:
+    text: "Zero-Cost"
+    variant: "success"
+---
+
+import { Badge } from "@astrojs/starlight/components";
+import ToolIcon from "../../../components/ToolIcon.astro";
+
+<div class="tool-header-icon"><ToolIcon icon="Compass" size={28} aria-hidden="true" /><span><Badge text="Zero-Cost" variant="success" /> <Badge text="discovery" variant="note" /></span></div>
+
+## Mission
+
+Get oriented in the codebase, understand the skill taxonomy, and load the instruction index for a new work session.
+
+## When to Use
+
+Use when starting a new work session, exploring what this codebase does, understanding the skill taxonomy, or getting oriented in `mcp-ai-agent-guidelines` for the first time.
+
+**Triggers**: "what does this project do", "explore the codebase", "orient me", "what skills are available", "first time here"
+
+## What It Does
+
+1. Loads project structure overview
+2. Presents the instruction index (all 20 tools with descriptions)
+3. Explains the skill taxonomy (18 domains, 102 skills)
+4. Shows verification workflow (`verify_matrix.py`)
+5. Highlights gated skills and their feature flags
+
+## Companion Tools
+
+- `graph-visualize` with `skill-graph` / `chain-graph` — explore skill topology
+- `agent-workspace` with `list` — browse source files
+- `agent-session` with `list` or `fetch` — inspect session artifacts
+- `agent-snapshot` with `status` — confirm codebase baseline
+
+## Example
+
+```json
+{
+  "request": "I'm new to this project. Give me an overview."
+}
+```
+
+**Output**: Structured orientation document covering project purpose, available tools, skill domains, build commands, and suggested first steps.

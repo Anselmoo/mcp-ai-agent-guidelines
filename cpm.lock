@@ -1,0 +1,45 @@
+version = 1
+generated = "2026-04-01T21:12:49.226352Z"
+
+[[plugin]]
+name = "typescript-mcp-development"
+rev = "1.0.0"
+resolved = "2026-04-01T14:31:56.796723Z"
+hash = "sha256:985f57625147e3842a48be8b07e7ce4d38c2b5c93effd362ecbdb4fc72c4b6fd"
+scope = "global"
+groups = ["mcp"]
+url = "https://github.com/github/awesome-copilot/tree/main/plugins/typescript-mcp-development"
+plugin_registry = ""
+plugin_version = "1.0.0"
+plugin_source_url = "github"
+plugin_json_hash = "sha256:985f57625147e3842a48be8b07e7ce4d38c2b5c93effd362ecbdb4fc72c4b6fd"
+
+[[skill]]
+name = "skill-creator"
+rev = "98669c11ca63e9c81c11501e1437e5c47b556621"
+resolved = "2026-04-01T21:13:58.301909Z"
+hash = "sha256:c5ca39c7900de19e2a0cc1f03f724e98a0d40623535b1e65e4d2725a6af54f73"
+scope = "global"
+groups = ["default"]
+git_owner = "anthropics"
+git_repo = "skills"
+git_ref = "98669c11ca63e9c81c11501e1437e5c47b556621"
+git_path = "skills/skill-creator"
+git_mode = "tree"
+url = "https://github.com/anthropics/skills/tree/main/skills/skill-creator"
+files = [{ path = "skill-creator/LICENSE.txt", sha256 = "58d1e17ffe5109a7ae296caafcadfdbe6a7d176f0bc4ab01e12a689b0499d8bd" }, { path = "skill-creator/SKILL.md", sha256 = "dcd4803e61e913e6fc27294184cd3a71f09f5e924ff20c8a9a20173e7b3c2bcf" }, { path = "skill-creator/agents/analyzer.md", sha256 = "bf68f4cac5a56c673a928c2e6d619586c5b93ea364026ab37547772cb45a663a" }, { path = "skill-creator/agents/comparator.md", sha256 = "fe1fc9787c495d864c5d6eada47396478572325fde1b33a96d78bf4b849b7a3e" }, { path = "skill-creator/agents/grader.md", sha256 = "57134da0c1a4eea33fbd74a1c9c44aa814f07d6bc64de303edb586f941e5d21a" }, { path = "skill-creator/assets/eval_review.html", sha256 = "ce477dcc74dc1c0d1d3352646a79167b5a63634e936b1019160025065974e452" }, { path = "skill-creator/eval-viewer/generate_review.py", sha256 = "fc9d1b9243fe5ab6012ebd579bd76d0035de1b79fd3b969de114defab26478fb" }, { path = "skill-creator/eval-viewer/viewer.html", sha256 = "a53213426ee1100441d701a3a0d49cda7a842f992d2c36463f4d3cc0258575fa" }, { path = "skill-creator/references/schemas.md", sha256 = "8e8876180a8989b406a4d3edddf875b04cdfd5805cc8616686d552b11ce4455f" }, { path = "skill-creator/scripts/__init__.py", sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" }, { path = "skill-creator/scripts/aggregate_benchmark.py", sha256 = "123ef128ea5ccc01a4b1ac212ef5567f21e9c13d3d240609780beeb3200c49aa" }, { path = "skill-creator/scripts/generate_report.py", sha256 = "13df7118a3c50c83c4c3250a606d5f2b20b25a3d44cbc392b3d669ec75281453" }, { path = "skill-creator/scripts/improve_description.py", sha256 = "87d864570220b699fac52da309d2d6efdb060647bfebc74f768128e646accf80" }, { path = "skill-creator/scripts/package_skill.py", sha256 = "1a33059b0db1ef73375d46d513e5ea81369d2e8838c970597b0d52ddef8d1c0f" }, { path = "skill-creator/scripts/quick_validate.py", sha256 = "67cf5703402013936c8fb75ad6a1afecd8841d45cc5e606b634eb05825fde365" }, { path = "skill-creator/scripts/run_eval.py", sha256 = "43e3b8f80dbf69c343967ba77e268fae991d9fa3ed68b32a0ff02532cd48657f" }, { path = "skill-creator/scripts/run_loop.py", sha256 = "7bd6f674203168520517eec94c55f493c0d154339b061b4d7c0f0dad187d0f21" }, { path = "skill-creator/scripts/utils.py", sha256 = "3af8ae62c40c73ab712207436a0d9a981e845f25c5a7040229eb189cc8e45bb1" },
+]
+
+[skill.license]
+spdx = "UNKNOWN"
+verified = false
+
+[[mcp]]
+name = "serena-agent"
+rev = "1.0.0"
+resolved = "2026-04-03T20:50:53.481455Z"
+hash = "sha256:349759c7b81ec89a447b8155c119cde20b4365ac95a57673ce0859b8bc7e1994"
+scope = "global"
+groups = ["default"]
+transport = "uvx"
+package = "serena-agent"

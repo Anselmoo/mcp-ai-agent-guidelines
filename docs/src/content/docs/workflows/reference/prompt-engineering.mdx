@@ -1,0 +1,103 @@
+---
+title: Prompt Engineering
+description: Iterative prompt refinement using feedback systems — stabilizes outputs through variance detection and hierarchy design.
+sidebar:
+  label: Prompt Engineering
+  order: 17
+---
+
+import { Badge } from '@astrojs/starlight/components';
+
+<Badge text="Tool: prompt-engineering" variant="tip" /> <Badge text="Model: Efficient" variant="note" />
+
+## Trigger & Intent
+
+**Triggered by:** Requests to improve, chain, or systematize prompts at scale.
+
+**Intent:** Iterative prompt refinement using feedback systems with stable and unstable regimes. Detects variance, applies hierarchy, and stabilizes outputs through reinforced chains.
+
+## Resource Pooling
+
+Capability profile: `prompting` — requires `iterative_refinement`, prefers `cost_sensitive`, fan-out 2.
+
+## Required Skills
+
+| Skill | Role |
+|-------|------|
+| `prompt-chaining` | Sequential prompt dependency design |
+| `prompt-engineering` | Core prompt construction methodology |
+| `prompt-hierarchy` | Multi-level prompt organization |
+| `prompt-refinement` | Feedback-driven prompt improvement |
+
+## Input Schema
+
+```typescript
+{
+  rawPrompts: string[];
+  targetBehavior: string;
+}
+```
+
+## Decisions & Throw-Backs
+
+If variance remains above threshold after 3 refinement cycles → escalates to `govern` for policy-level review of prompt language.
+
+## Success Chains
+
+On successful completion chains to: **evaluate** · **govern**
+
+## FSM — Feedback system with stable and unstable regimes
+
+```mermaid
+stateDiagram-v2
+    [*] --> InitialPrompt
+    InitialPrompt --> FeedbackLoop
+
+    FeedbackLoop --> OutputSampling
+    OutputSampling --> VarianceDetection
+
+    VarianceDetection --> StableRegime: variance below threshold
+    VarianceDetection --> UnstableRegime: variance above threshold
+
+    StableRegime --> PromptStore
+    PromptStore --> [*]
+
+    UnstableRegime --> Bifurcation
+    Bifurcation --> RefinementA
+    Bifurcation --> RefinementB
+
+    RefinementA --> Convergence
+    RefinementB --> Convergence
+    Convergence --> StabilityCheck
+
+    StabilityCheck --> StableRegime: convergence achieved
+    StabilityCheck --> FeedbackLoop: more cycles needed
+```
+
+## Execution Sequence
+
+```mermaid
+sequenceDiagram
+    participant Orchestrator
+    participant Pool (Analytical)
+    participant Pool (Mechanical)
+    participant Tool (Context)
+
+    Orchestrator->>Pool (Analytical): Allocate Capability Profile
+    activate Pool (Analytical)
+    Pool (Analytical)->>Tool (Context): Issue Tool Calls (Parallel)
+    Tool (Context)-->>Pool (Analytical): Return Data
+
+    alt Shallow Loop
+        Pool (Analytical)->>Pool (Analytical): Auto-correct Schema
+    else Medium Loop
+        Pool (Analytical)->>Pool (Mechanical): Delegate Fixes
+    end
+
+    Pool (Analytical)-->>Orchestrator: Synthesis Gate
+    deactivate Pool (Analytical)
+
+    opt Deep Loop
+        Orchestrator->>Orchestrator: Complete Throw-back to Prior Stage
+    end
+```

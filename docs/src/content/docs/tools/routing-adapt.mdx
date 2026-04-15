@@ -1,0 +1,61 @@
+---
+title: routing-adapt
+description: Adapt — bio-inspired adaptive routing using ant colony, simulated annealing, Hebbian learning, Physarum, and quorum sensing.
+sidebar:
+  label: routing-adapt
+  badge:
+    text: "Advanced"
+    variant: "danger"
+---
+
+import { Badge, Aside } from "@astrojs/starlight/components";
+import ToolIcon from "../../../components/ToolIcon.astro";
+
+<div class="tool-header-icon"><ToolIcon icon="GitBranch" size={28} aria-hidden="true" /><span><Badge text="Advanced" variant="danger" /> <Badge text="workflow" variant="note" /></span></div>
+
+<Aside type="caution" title="Feature Gate">
+Requires `ENABLE_ADAPTIVE_ROUTING=true`. Off by default to prevent non-deterministic routing in production.
+</Aside>
+
+## Mission
+
+Deploy → observe → reinforce → prune → converge. Workflows that get smarter over time.
+
+## When to Use
+
+**ONLY** use when an existing multi-agent workflow needs autonomous bio-inspired route optimization based on historical performance.
+
+**Do NOT use** for: general research, design, review, debugging, planning, implementation, code quality, or documentation. If unsure, use the specific domain tool instead.
+
+**Triggers**: "bio-inspired routing", "adaptive workflow", "reinforce good routes", "optimize routing history", "ant colony", "Hebbian learning"
+
+## Skills Invoked
+
+- `adapt-aco-router` — ant colony pheromone trail reinforcement
+- `adapt-annealing` — simulated annealing to escape local optima
+- `adapt-hebbian-router` — Hebbian learning for co-skill chain optimization
+- `adapt-physarum-router` — slime mould efficient path finding
+- `adapt-quorum` — quorum-threshold-triggered escalation
+
+## Chain-To
+
+- `agent-orchestrate` — integrate adaptive routing into orchestration
+- `quality-evaluate` — measure routing quality improvement over time
+
+## Safety Requirements
+
+Always pair with:
+1. `resil-membrane` isolation between routing stages
+2. `gov-policy-validation` gate before production deployment
+3. Monitoring via `qm-observable-extractor` if `ENABLE_PHYSICS_SKILLS=true`
+
+## Example
+
+```json
+{
+  "request": "Optimize routing in our 5-agent code review pipeline using historical success data",
+  "options": { "algorithm": "hebbian", "sessions": 50 }
+}
+```
+
+**Output**: Learned routing weights, pruned low-performing paths, recommended configuration update for `orchestration.toml`.

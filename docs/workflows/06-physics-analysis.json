@@ -1,0 +1,381 @@
+{
+  "id": "06-physics-analysis",
+  "title": "Tech Debt & Physics Analysis Workflow",
+  "triggeredBy": "qual-review loop when cyclomatic complexity > 80 or coupling metrics breached",
+  "intent": "Use QM/GR metaphors to diagnose unmaintainable dependency webs without bias",
+  "resourcePool": [
+    "physics_analysis"
+  ],
+  "inputSchema": {
+    "targetPath": "string",
+    "baselineAST": "any"
+  },
+  "throwbacks": [
+    "strategy: if refactor cost too high — prioritize in roadmap instead"
+  ],
+  "chainTo": [],
+  "skillTree": {
+    "root": "event-horizon-scan",
+    "nodes": [
+      {
+        "id": "event-horizon-scan",
+        "skill": "gr-event-horizon-detector",
+        "type": "primary",
+        "profile": "physics_analysis",
+        "description": "Detect modules that have crossed their coupling event horizon — changes guaranteed to cascade",
+        "next": [
+          {
+            "target": "entanglement-map"
+          },
+          {
+            "target": "spacetime-debt"
+          }
+        ]
+      },
+      {
+        "id": "entanglement-map",
+        "skill": "qm-entanglement-mapper",
+        "type": "parallel",
+        "profile": "physics_analysis",
+        "description": "Detect hidden coupling between files via co-change entropy (Von Neumann entropy S(ρ_A))",
+        "next": [
+          {
+            "target": "heisenberg-drift"
+          }
+        ]
+      },
+      {
+        "id": "heisenberg-drift",
+        "skill": "qm-heisenberg-picture",
+        "type": "primary",
+        "profile": "physics_analysis",
+        "description": "Analyze how code quality metrics drift over time and identify competing (non-commuting) metrics",
+        "next": [
+          {
+            "target": "hamiltonian-rank"
+          }
+        ]
+      },
+      {
+        "id": "hamiltonian-rank",
+        "skill": "qm-hamiltonian-descent",
+        "type": "primary",
+        "profile": "physics_analysis",
+        "description": "Build quality Hamiltonian and sort eigenvalues to find the optimal fix order",
+        "next": [
+          {
+            "target": "wavefunction-coverage"
+          }
+        ]
+      },
+      {
+        "id": "wavefunction-coverage",
+        "skill": "qm-wavefunction-coverage",
+        "type": "primary",
+        "profile": "physics_analysis",
+        "description": "Compute Born-rule coverage probability: P(covers bug) = |⟨ψ_test|ψ_bug⟩|²",
+        "next": [
+          {
+            "target": "decoherence-flakiness"
+          }
+        ]
+      },
+      {
+        "id": "decoherence-flakiness",
+        "skill": "qm-decoherence-sentinel",
+        "type": "primary",
+        "profile": "physics_analysis",
+        "description": "Classify flaky tests by decoherence channels and compute coherence time T₂",
+        "next": [
+          {
+            "target": "bloch-style-interpolation"
+          }
+        ]
+      },
+      {
+        "id": "bloch-style-interpolation",
+        "skill": "qm-bloch-interpolator",
+        "type": "primary",
+        "profile": "physics_analysis",
+        "description": "Interpolate between two coding styles to visualise intermediate architectural states",
+        "next": [
+          {
+            "target": "superposition-selection"
+          }
+        ]
+      },
+      {
+        "id": "superposition-selection",
+        "skill": "qm-superposition-generator",
+        "type": "primary",
+        "profile": "physics_analysis",
+        "description": "Rank candidate implementations using Born-rule probability and collapse to the winner",
+        "next": [
+          {
+            "target": "double-slit-interference"
+          }
+        ]
+      },
+      {
+        "id": "double-slit-interference",
+        "skill": "qm-double-slit-interference",
+        "type": "primary",
+        "profile": "physics_analysis",
+        "description": "Determine whether two competing implementations interfere constructively or destructively",
+        "next": [
+          {
+            "target": "measurement-collapse-review"
+          }
+        ]
+      },
+      {
+        "id": "measurement-collapse-review",
+        "skill": "qm-measurement-collapse",
+        "type": "primary",
+        "profile": "physics_analysis",
+        "description": "Model the backaction of a code review decision on adjacent modules",
+        "next": [
+          {
+            "target": "dirac-overlap-matrix"
+          }
+        ]
+      },
+      {
+        "id": "dirac-overlap-matrix",
+        "skill": "qm-dirac-notation-mapper",
+        "type": "primary",
+        "profile": "physics_analysis",
+        "description": "Compute all pairwise file overlap integrals ⟨i|j⟩ and rank files by centrality",
+        "next": [
+          {
+            "target": "schrodinger-forecast"
+          }
+        ]
+      },
+      {
+        "id": "schrodinger-forecast",
+        "skill": "qm-schrodinger-picture",
+        "type": "primary",
+        "profile": "physics_analysis",
+        "description": "Predict how the codebase will evolve using time-evolution operator from historical snapshots",
+        "next": [
+          {
+            "target": "path-integral-history"
+          }
+        ]
+      },
+      {
+        "id": "path-integral-history",
+        "skill": "qm-path-integral-historian",
+        "type": "primary",
+        "profile": "physics_analysis",
+        "description": "Analyse git history as quantum trajectory; find inflection commits via exp(−action/T) weighting",
+        "next": [
+          {
+            "target": "phase-kickback-dominant"
+          }
+        ]
+      },
+      {
+        "id": "phase-kickback-dominant",
+        "skill": "qm-phase-kickback-reviewer",
+        "type": "primary",
+        "profile": "physics_analysis",
+        "description": "Extract dominant architectural phase of the codebase in O(n·d) via cosine probe embeddings",
+        "next": [
+          {
+            "target": "tunneling-viability"
+          }
+        ]
+      },
+      {
+        "id": "tunneling-viability",
+        "skill": "qm-tunneling-breakthrough",
+        "type": "gate",
+        "profile": "physics_analysis",
+        "description": "Assess WKB tunnelling T=exp(−2·width·max(0,height−energy)) to judge refactoring viability",
+        "next": [
+          {
+            "target": "uncertainty-coupling"
+          }
+        ]
+      },
+      {
+        "id": "uncertainty-coupling",
+        "skill": "qm-uncertainty-tradeoff",
+        "type": "primary",
+        "profile": "physics_analysis",
+        "description": "Identify modules violating the coupling-cohesion uncertainty principle (Heisenberg analogue)",
+        "next": [
+          {
+            "target": "spacetime-debt"
+          }
+        ]
+      },
+      {
+        "id": "spacetime-debt",
+        "skill": "gr-spacetime-debt-metric",
+        "type": "primary",
+        "profile": "physics_analysis",
+        "description": "Quantify tech debt as local spacetime curvature via Einstein field equation analogues",
+        "next": [
+          {
+            "target": "schwarzschild-gravity"
+          }
+        ]
+      },
+      {
+        "id": "schwarzschild-gravity",
+        "skill": "gr-schwarzschild-classifier",
+        "type": "primary",
+        "profile": "physics_analysis",
+        "description": "Classify modules by position relative to Schwarzschild radius; measure velocity penalty near singularities",
+        "next": [
+          {
+            "target": "tidal-split-analysis"
+          }
+        ]
+      },
+      {
+        "id": "tidal-split-analysis",
+        "skill": "gr-tidal-force-analyzer",
+        "type": "primary",
+        "profile": "physics_analysis",
+        "description": "Detect differential coupling forces pulling a module apart — split candidates identified",
+        "next": [
+          {
+            "target": "neutron-star-density"
+          }
+        ]
+      },
+      {
+        "id": "neutron-star-density",
+        "skill": "gr-neutron-star-compactor",
+        "type": "primary",
+        "profile": "physics_analysis",
+        "description": "Assess information density vs Chandrasekhar limit; identify files approaching collapse",
+        "next": [
+          {
+            "target": "gravitational-lensing"
+          }
+        ]
+      },
+      {
+        "id": "gravitational-lensing",
+        "skill": "gr-gravitational-lensing-tracer",
+        "type": "primary",
+        "profile": "physics_analysis",
+        "description": "Trace hidden load-bearing modules that bend all call-graph paths around them",
+        "next": [
+          {
+            "target": "frame-dragging"
+          }
+        ]
+      },
+      {
+        "id": "frame-dragging",
+        "skill": "gr-frame-dragging-detector",
+        "type": "primary",
+        "profile": "physics_analysis",
+        "description": "Detect high-churn modules dragging unrelated modules into changes (Lense-Thirring analogue)",
+        "next": [
+          {
+            "target": "hawking-api-entropy"
+          }
+        ]
+      },
+      {
+        "id": "hawking-api-entropy",
+        "skill": "gr-hawking-entropy-auditor",
+        "type": "primary",
+        "profile": "physics_analysis",
+        "description": "Audit API surface entropy using Bekenstein-Hawking formula; flag exports exceeding Hawking bound",
+        "next": [
+          {
+            "target": "dark-energy-expansion"
+          }
+        ]
+      },
+      {
+        "id": "dark-energy-expansion",
+        "skill": "gr-dark-energy-forecaster",
+        "type": "primary",
+        "profile": "physics_analysis",
+        "description": "Quantify invisible convention-driven complexity expansion in modules",
+        "next": [
+          {
+            "target": "inflation-growth"
+          }
+        ]
+      },
+      {
+        "id": "inflation-growth",
+        "skill": "gr-inflation-detector",
+        "type": "primary",
+        "profile": "physics_analysis",
+        "description": "Detect exponential module growth without proportional value increase (cosmic inflation analogue)",
+        "next": [
+          {
+            "target": "equivalence-principle"
+          }
+        ]
+      },
+      {
+        "id": "equivalence-principle",
+        "skill": "gr-equivalence-principle-checker",
+        "type": "primary",
+        "profile": "physics_analysis",
+        "description": "Verify module's local interface consistency is compatible with global architectural conventions",
+        "next": [
+          {
+            "target": "gravitational-waves"
+          }
+        ]
+      },
+      {
+        "id": "gravitational-waves",
+        "skill": "gr-gravitational-wave-detector",
+        "type": "primary",
+        "profile": "physics_analysis",
+        "description": "Detect ripples in coupling structure caused by a large merge or refactor event",
+        "next": [
+          {
+            "target": "penrose-causal-map"
+          }
+        ]
+      },
+      {
+        "id": "penrose-causal-map",
+        "skill": "gr-penrose-diagram-mapper",
+        "type": "primary",
+        "profile": "physics_analysis",
+        "description": "Map architectural history to a Penrose-style causal diagram; classify module pairs by causal separation",
+        "next": [
+          {
+            "target": "redshift-abstraction"
+          }
+        ]
+      },
+      {
+        "id": "redshift-abstraction",
+        "skill": "gr-redshift-velocity-mapper",
+        "type": "primary",
+        "profile": "physics_analysis",
+        "description": "Measure how module API contracts are redshifted as they travel through abstraction layers",
+        "next": [
+          {
+            "target": "geodesic-path"
+          }
+        ]
+      },
+      {
+        "id": "geodesic-path",
+        "skill": "gr-geodesic-refactor",
+        "type": "synthesis",
+        "profile": "physics_analysis",
+        "description": "Find the shortest refactoring path through module-space minimising total metric distance",
+        "next": []
+      }
+    ]
+  }
+}

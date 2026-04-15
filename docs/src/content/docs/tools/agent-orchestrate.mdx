@@ -1,0 +1,53 @@
+---
+title: agent-orchestrate
+description: Orchestrate — compose multi-agent workflows, coordinate parallel agents, and synthesize unified results.
+sidebar:
+  label: agent-orchestrate
+  badge:
+    text: "Advanced"
+    variant: "danger"
+---
+
+import { Badge } from "@astrojs/starlight/components";
+import ToolIcon from "../../../components/ToolIcon.astro";
+
+<div class="tool-header-icon"><ToolIcon icon="Workflow" size={28} aria-hidden="true" /><span><Badge text="Advanced" variant="danger" /> <Badge text="workflow" variant="note" /></span></div>
+
+## Mission
+
+Decompose → assign → coordinate → synthesize results. Every orchestration produces a coherent unified output.
+
+## When to Use
+
+**ONLY** use when explicitly coordinating multiple specialized agents on a shared task, designing multi-agent pipelines, routing tasks between agents, synthesizing results from parallel agents, or managing agent handoffs and context flow.
+
+**Do NOT use** for single-task requests — use `system-design`, `evidence-research`, `code-review`, or `feature-implement` instead.
+
+**Triggers**: "coordinate agents", "multi-agent workflow", "agent pipeline", "assign tasks to agents", "parallel agents", "orchestrate this workflow"
+
+## Skills Invoked
+
+- `orch-agent-orchestrator` — decompose request into skill execution plan
+- `orch-delegation` — assign skills to agents/models
+- `orch-multi-agent` — manage concurrent execution, state, partial failures
+- `orch-result-synthesis` — merge parallel outputs, surface contradictions
+
+## Chain-To
+
+- `quality-evaluate` — evaluate the orchestration output quality
+- `fault-resilience` — add fault tolerance to the orchestration
+
+## Companion Tools
+
+- `orchestration-config` (read/write) — inspect or patch orchestration configuration
+- `model-discover` — list available models and capabilities
+
+## Example
+
+```json
+{
+  "request": "Run architecture review, security audit, and performance analysis on the new payment service in parallel"
+}
+```
+
+**Output**: Coordinated results from three parallel agent tasks, contradiction surface, and unified synthesis.

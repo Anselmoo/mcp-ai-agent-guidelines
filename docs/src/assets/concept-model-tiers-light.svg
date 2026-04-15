@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 340" role="img"
+    aria-label="Model cost tier routing: free → cheap → strong → reviewer cascade">
+    <title>Model Cost Tier Routing</title>
+
+    <!-- Background -->
+    <rect width="600" height="340" rx="8" fill="#f5f3ff" />
+
+    <!-- ═══ ZERO-COST / FREE  y=12..82 ═══ -->
+    <rect x="12" y="12" width="576" height="70" rx="6" fill="#00d4cc" fill-opacity="0.08" stroke="#00d4cc"
+        stroke-width="0.9" stroke-opacity="0.40" />
+    <rect x="12" y="16" width="4" height="62" rx="2" fill="#00d4cc" />
+    <text x="26" y="31" font-family="ui-sans-serif,system-ui,sans-serif" font-size="9.5" font-weight="700"
+        fill="#00a89e" letter-spacing="0.8">ZERO-COST</text>
+    <rect x="554" y="18" width="30" height="16" rx="8" fill="#00d4cc" fill-opacity="0.20" />
+    <text x="569" y="30" font-family="ui-sans-serif,system-ui,sans-serif" font-size="8.5" fill="#00a89e"
+        text-anchor="middle" font-weight="700">0×</text>
+    <text x="26" y="49" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="7.5" fill="#334155"
+        letter-spacing="0.2">GPT-4.1 · GPT-5 mini</text>
+    <text x="26" y="65" font-family="ui-sans-serif,system-ui,sans-serif" font-size="7" fill="#475569"
+        letter-spacing="0.1">Saturate first — drafting, triage, template fill, parallel lanes</text>
+
+    <!-- Cascade arrow 1 -->
+    <line x1="300" y1="83" x2="300" y2="96" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3,2.5" />
+    <polygon points="296,94 304,94 300,100" fill="#94a3b8" />
+
+    <!-- ═══ CHEAP  y=101..171 ═══ -->
+    <rect x="12" y="101" width="576" height="70" rx="6" fill="#ffa659" fill-opacity="0.08" stroke="#ffa659"
+        stroke-width="0.9" stroke-opacity="0.40" />
+    <rect x="12" y="105" width="4" height="62" rx="2" fill="#ffa659" />
+    <text x="26" y="120" font-family="ui-sans-serif,system-ui,sans-serif" font-size="9.5" font-weight="700"
+        fill="#ca7a3a" letter-spacing="0.8">CHEAP</text>
+    <rect x="554" y="107" width="30" height="16" rx="8" fill="#ffa659" fill-opacity="0.20" />
+    <text x="569" y="119" font-family="ui-sans-serif,system-ui,sans-serif" font-size="8.5" fill="#ca7a3a"
+        text-anchor="middle" font-weight="700">0.33×</text>
+    <text x="26" y="138" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="7.5" fill="#334155"
+        letter-spacing="0.2">Claude Haiku 4.5</text>
+    <text x="26" y="154" font-family="ui-sans-serif,system-ui,sans-serif" font-size="7" fill="#475569"
+        letter-spacing="0.1">Aggregation, fast classification, merge passes</text>
+
+    <!-- Cascade arrow 2 -->
+    <line x1="300" y1="172" x2="300" y2="185" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3,2.5" />
+    <polygon points="296,183 304,183 300,189" fill="#94a3b8" />
+
+    <!-- ═══ STRONG  y=190..260 ═══ -->
+    <rect x="12" y="190" width="576" height="70" rx="6" fill="#3b9cf6" fill-opacity="0.08" stroke="#3b9cf6"
+        stroke-width="0.9" stroke-opacity="0.40" />
+    <rect x="12" y="194" width="4" height="62" rx="2" fill="#3b9cf6" />
+    <text x="26" y="209" font-family="ui-sans-serif,system-ui,sans-serif" font-size="9.5" font-weight="700"
+        fill="#2a78e0" letter-spacing="0.8">STRONG</text>
+    <rect x="548" y="196" width="36" height="16" rx="8" fill="#3b9cf6" fill-opacity="0.20" />
+    <text x="566" y="208" font-family="ui-sans-serif,system-ui,sans-serif" font-size="8.5" fill="#2a78e0"
+        text-anchor="middle" font-weight="700">1×</text>
+    <text x="26" y="227" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="7.5" fill="#334155"
+        letter-spacing="0.2">Claude Sonnet 4.6 · GPT-5.4</text>
+    <text x="26" y="243" font-family="ui-sans-serif,system-ui,sans-serif" font-size="7" fill="#475569"
+        letter-spacing="0.1">Synthesis, physics/security skills, final judgment — pay once per fan-out</text>
+
+    <!-- Cascade arrow 3 -->
+    <line x1="300" y1="261" x2="300" y2="274" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3,2.5" />
+    <polygon points="296,272 304,272 300,278" fill="#94a3b8" />
+
+    <!-- ═══ REVIEWER  y=279..329 ═══ -->
+    <rect x="12" y="279" width="576" height="50" rx="6" fill="#dc2626" fill-opacity="0.06" stroke="#dc2626"
+        stroke-width="0.9" stroke-opacity="0.35" />
+    <rect x="12" y="283" width="4" height="42" rx="2" fill="#dc2626" />
+    <text x="26" y="298" font-family="ui-sans-serif,system-ui,sans-serif" font-size="9.5" font-weight="700"
+        fill="#b91c1c" letter-spacing="0.8">REVIEWER</text>
+    <rect x="548" y="285" width="36" height="16" rx="8" fill="#dc2626" fill-opacity="0.15" />
+    <text x="566" y="297" font-family="ui-sans-serif,system-ui,sans-serif" font-size="8.5" fill="#b91c1c"
+        text-anchor="middle" font-weight="700">1×</text>
+    <text x="26" y="315" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="7.5" fill="#334155"
+        letter-spacing="0.2">Gemini 2.5 Pro — cross-model audit only · escalation gated</text>
+</svg>

@@ -1,0 +1,121 @@
+{
+  "id": "14-enterprise",
+  "title": "Enterprise Workflow",
+  "triggeredBy": "Exec briefings, staff-level mentoring, or capability mappings at organizational scale",
+  "intent": "Provide L9-level strategic AI guidance, capability gap analysis, and transformation roadmaps",
+  "resourcePool": [
+    "enterprise"
+  ],
+  "inputSchema": {
+    "orgData": "any",
+    "scale": "string"
+  },
+  "throwbacks": [
+    "design: if strategy retains legacy AI"
+  ],
+  "chainTo": [
+    "govern",
+    "design",
+    "plan"
+  ],
+  "skillTree": {
+    "root": "capability-mapping",
+    "nodes": [
+      {
+        "id": "capability-mapping",
+        "skill": "lead-capability-mapping",
+        "type": "primary",
+        "profile": "enterprise",
+        "description": "Map current and target AI capabilities across the organisation to identify gaps and priorities",
+        "next": [
+          {
+            "target": "digital-architect-review"
+          },
+          {
+            "target": "transformation-roadmap"
+          }
+        ]
+      },
+      {
+        "id": "digital-architect-review",
+        "skill": "lead-digital-architect",
+        "type": "parallel",
+        "profile": "enterprise",
+        "description": "Design enterprise-wide AI platform strategy, capability maps, and governance frameworks",
+        "next": [
+          {
+            "target": "l9-recommendation"
+          }
+        ]
+      },
+      {
+        "id": "transformation-roadmap",
+        "skill": "lead-transformation-roadmap",
+        "type": "parallel",
+        "profile": "enterprise",
+        "description": "Phase the enterprise AI transformation across maturity waves with measurable checkpoints",
+        "next": [
+          {
+            "target": "l9-recommendation"
+          }
+        ]
+      },
+      {
+        "id": "l9-recommendation",
+        "skill": "lead-l9-engineer",
+        "type": "synthesis",
+        "profile": "enterprise",
+        "description": "Distinguished-engineer-level validation of the strategy before executive presentation",
+        "next": [
+          {
+            "target": "strategy-advisory"
+          }
+        ]
+      },
+      {
+        "id": "strategy-advisory",
+        "skill": "strat-advisor",
+        "type": "primary",
+        "profile": "strategy",
+        "description": "Frame the technical strategy in business terms with explicit ROI and risk tradeoffs",
+        "next": [
+          {
+            "target": "roadmap-finalize"
+          }
+        ]
+      },
+      {
+        "id": "roadmap-finalize",
+        "skill": "strat-roadmap",
+        "type": "primary",
+        "profile": "strategy",
+        "description": "Finalize the phased adoption roadmap with ownership, milestones, and success metrics",
+        "next": [
+          {
+            "target": "recommendation-synthesis"
+          }
+        ]
+      },
+      {
+        "id": "recommendation-synthesis",
+        "skill": "synth-recommendation",
+        "type": "primary",
+        "profile": "research",
+        "description": "Frame the evidence-based recommendation with rationale, tradeoffs, and confidence levels",
+        "next": [
+          {
+            "target": "exec-briefing"
+          }
+        ]
+      },
+      {
+        "id": "exec-briefing",
+        "skill": "lead-exec-briefing",
+        "type": "synthesis",
+        "profile": "enterprise",
+        "description": "Prepare C-suite AI presentation that translates the strategy into business terms",
+        "next": []
+      }
+    ]
+  }
+}

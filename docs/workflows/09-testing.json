@@ -1,0 +1,78 @@
+{
+  "id": "09-testing",
+  "title": "Testing Workflow",
+  "triggeredBy": "Completing implement or a request to shore up a module's test suite",
+  "intent": "Ensure every new path through the code is covered and regressions are caught before production",
+  "resourcePool": [
+    "testing"
+  ],
+  "inputSchema": {
+    "targetFiles": "string[]",
+    "testFramework": "string"
+  },
+  "throwbacks": [
+    "refactor: logic is untestable"
+  ],
+  "chainTo": [
+    "review",
+    "debug",
+    "evaluate"
+  ],
+  "skillTree": {
+    "root": "test-suite-design",
+    "nodes": [
+      {
+        "id": "test-suite-design",
+        "skill": "eval-design",
+        "type": "primary",
+        "profile": "evaluation",
+        "description": "Design high-quality test datasets with edge cases, hard negatives, and discriminative assertions",
+        "next": [
+          {
+            "target": "reproduction-case"
+          },
+          {
+            "target": "coverage-check"
+          }
+        ]
+      },
+      {
+        "id": "reproduction-case",
+        "skill": "debug-reproduction",
+        "type": "primary",
+        "profile": "debugging",
+        "description": "Plan minimal reproduction steps to turn every known bug into a pinned regression test",
+        "next": [
+          {
+            "target": "coverage-check"
+          }
+        ]
+      },
+      {
+        "id": "coverage-check",
+        "skill": "qual-code-analysis",
+        "type": "gate",
+        "profile": "code_review",
+        "description": "Measure coverage; identify untested branches and dead paths",
+        "next": [
+          {
+            "target": "reliability-design",
+            "condition": "coverage meets threshold"
+          },
+          {
+            "target": "test-suite-design",
+            "condition": "coverage gap detected — expand suite"
+          }
+        ]
+      },
+      {
+        "id": "reliability-design",
+        "skill": "arch-reliability",
+        "type": "synthesis",
+        "profile": "design",
+        "description": "Design the test harness for workflow consistency, retry logic, and quality gates",
+        "next": []
+      }
+    ]
+  }
+}

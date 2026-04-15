@@ -1,0 +1,114 @@
+{
+  "id": "08-review",
+  "title": "Review Workflow",
+  "triggeredBy": "Pull request, completed implement step, or explicit request to audit existing code",
+  "intent": "Enforce L9-level quality, security, and performance gates before merging",
+  "resourcePool": [
+    "code_review"
+  ],
+  "inputSchema": {
+    "targetFiles": "string[]",
+    "reviewDepth": "standard|deep|adversarial"
+  },
+  "throwbacks": [
+    "implement: security failure",
+    "implement: performance regression"
+  ],
+  "chainTo": [
+    "govern",
+    "refactor",
+    "testing"
+  ],
+  "skillTree": {
+    "root": "parallel-review-fan-out",
+    "nodes": [
+      {
+        "id": "parallel-review-fan-out",
+        "skill": "qual-code-analysis",
+        "type": "primary",
+        "profile": "code_review",
+        "description": "Analyse code structure, coupling, and complexity as the first-pass review gate",
+        "next": [
+          {
+            "target": "quality-review"
+          },
+          {
+            "target": "security-review"
+          },
+          {
+            "target": "performance-review"
+          }
+        ]
+      },
+      {
+        "id": "quality-review",
+        "skill": "qual-review",
+        "type": "parallel",
+        "profile": "code_review",
+        "description": "Review for readability, maintainability, and adherence to quality standards",
+        "next": [
+          {
+            "target": "final-judgment"
+          }
+        ]
+      },
+      {
+        "id": "security-review",
+        "skill": "qual-security",
+        "type": "parallel",
+        "profile": "code_review",
+        "description": "Review for security vulnerabilities, secret exposure, OWASP Top 10, and unsafe patterns",
+        "next": [
+          {
+            "target": "final-judgment"
+          }
+        ]
+      },
+      {
+        "id": "performance-review",
+        "skill": "qual-performance",
+        "type": "parallel",
+        "profile": "code_review",
+        "description": "Review for performance hotspots, token efficiency, inference cost, and latency regressions",
+        "next": [
+          {
+            "target": "final-judgment"
+          }
+        ]
+      },
+      {
+        "id": "final-judgment",
+        "skill": "qual-refactoring-priority",
+        "type": "synthesis",
+        "profile": "code_review",
+        "description": "Rank refactoring work using churn, coupling, and business impact signals; gate merge approval",
+        "next": [
+          {
+            "target": "approved",
+            "condition": "all gates pass"
+          },
+          {
+            "target": "rejected",
+            "condition": "critical issue detected"
+          }
+        ]
+      },
+      {
+        "id": "approved",
+        "skill": "qual-review",
+        "type": "gate",
+        "profile": "code_review",
+        "description": "Approve the PR with L9-level sign-off",
+        "next": []
+      },
+      {
+        "id": "rejected",
+        "skill": "qual-code-analysis",
+        "type": "fallback",
+        "profile": "code_review",
+        "description": "Reject and annotate: route back to implement with specific fix instructions",
+        "next": []
+      }
+    ]
+  }
+}

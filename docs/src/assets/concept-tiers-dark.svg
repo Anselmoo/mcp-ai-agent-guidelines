@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 270" role="img"
+    aria-label="Instruction tool tiers: discovery routes to workflow (11 tools), specialist (3), and gated (3) tiers">
+    <title>Instruction Tool Tiers</title>
+
+    <!-- ═══ DISCOVERY TIER  y=8..56 ═══ -->
+    <rect x="8" y="8" width="544" height="48" rx="6" fill="#64748b" fill-opacity="0.12" stroke="#64748b"
+        stroke-width="0.8" stroke-opacity="0.45" />
+    <rect x="8" y="12" width="3.5" height="40" rx="1.5" fill="#94a3b8" />
+    <text x="20" y="25" font-family="ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,sans-serif" font-size="9"
+        font-weight="700" fill="#94a3b8" letter-spacing="0.9">DISCOVERY</text>
+    <rect x="524" y="15" width="24" height="14" rx="7" fill="#64748b" fill-opacity="0.30" />
+    <text x="536" y="26" font-family="ui-sans-serif,system-ui,sans-serif" font-size="8" fill="#94a3b8"
+        text-anchor="middle" font-weight="600">×3</text>
+    <text x="20" y="43" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="7.5"
+        fill="#94a3b8" letter-spacing="0.2">bootstrap · meta-routing · onboard-project</text>
+
+    <!-- Routing arrow  discovery → tiers below -->
+    <line x1="280" y1="57" x2="280" y2="68" stroke="#475569" stroke-width="1.5" stroke-dasharray="3,2" />
+    <polygon points="276,66 284,66 280,72" fill="#475569" />
+
+    <!-- ═══ WORKFLOW TIER  y=73..150 ═══ -->
+    <rect x="8" y="73" width="544" height="78" rx="6" fill="#3b9cf6" fill-opacity="0.12" stroke="#3b9cf6"
+        stroke-width="0.8" stroke-opacity="0.42" />
+    <rect x="8" y="77" width="3.5" height="70" rx="1.5" fill="#3b9cf6" />
+    <text x="20" y="90" font-family="ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,sans-serif" font-size="9"
+        font-weight="700" fill="#3b9cf6" letter-spacing="0.9">WORKFLOW</text>
+    <rect x="521" y="80" width="27" height="14" rx="7" fill="#3b9cf6" fill-opacity="0.30" />
+    <text x="534" y="91" font-family="ui-sans-serif,system-ui,sans-serif" font-size="8" fill="#3b9cf6"
+        text-anchor="middle" font-weight="600">×11</text>
+    <text x="20" y="109" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="7.5"
+        fill="#cbd5e1" letter-spacing="0.2">design · implement · research · review · plan · debug</text>
+    <text x="20" y="128" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="7.5"
+        fill="#cbd5e1" letter-spacing="0.2">refactor · testing · document · evaluate · prompt-engineering</text>
+
+    <!-- ═══ SPECIALIST TIER  y=162..210 ═══ -->
+    <rect x="8" y="162" width="544" height="48" rx="6" fill="#ea580c" fill-opacity="0.12" stroke="#ea580c"
+        stroke-width="0.8" stroke-opacity="0.42" />
+    <rect x="8" y="166" width="3.5" height="40" rx="1.5" fill="#fb923c" />
+    <text x="20" y="179" font-family="ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,sans-serif" font-size="9"
+        font-weight="700" fill="#fb923c" letter-spacing="0.9">SPECIALIST</text>
+    <rect x="524" y="169" width="24" height="14" rx="7" fill="#ea580c" fill-opacity="0.30" />
+    <text x="536" y="180" font-family="ui-sans-serif,system-ui,sans-serif" font-size="8" fill="#fb923c"
+        text-anchor="middle" font-weight="600">×3</text>
+    <text x="20" y="197" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="7.5"
+        fill="#cbd5e1" letter-spacing="0.2">orchestrate · enterprise · govern</text>
+
+    <!-- ═══ GATED TIER  y=222..270 ═══ -->
+    <rect x="8" y="222" width="544" height="48" rx="6" fill="#dc2626" fill-opacity="0.12" stroke="#dc2626"
+        stroke-width="0.8" stroke-opacity="0.42" />
+    <rect x="8" y="226" width="3.5" height="40" rx="1.5" fill="#f87171" />
+    <text x="20" y="239" font-family="ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,sans-serif" font-size="9"
+        font-weight="700" fill="#f87171" letter-spacing="0.9">GATED</text>
+    <rect x="524" y="229" width="24" height="14" rx="7" fill="#dc2626" fill-opacity="0.30" />
+    <text x="536" y="240" font-family="ui-sans-serif,system-ui,sans-serif" font-size="8" fill="#f87171"
+        text-anchor="middle" font-weight="600">×3</text>
+    <text x="20" y="257" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="7.5"
+        fill="#cbd5e1" letter-spacing="0.2">resilience · adapt · physics-analysis</text>
+</svg>

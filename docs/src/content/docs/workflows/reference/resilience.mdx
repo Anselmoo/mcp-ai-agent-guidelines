@@ -1,0 +1,110 @@
+---
+title: Fault Resilience
+description: Homeostatic fault tolerance using cascade fallbacks, voter consensus, and PID-controlled recovery — systems that heal.
+sidebar:
+  label: Resilience
+  order: 19
+---
+
+import { Badge } from '@astrojs/starlight/components';
+
+<Badge text="Tool: fault-resilience" variant="tip" /> <Badge text="Model: Advanced" variant="note" />
+
+## Trigger & Intent
+
+**Triggered by:** Any workflow that requires fault-tolerance, adaptive fallback, or homeostatic recovery mechanisms.
+
+**Intent:** Builds systems that self-heal through cascade fallbacks, voter consensus arbitration, and PID-controlled setpoints. Never relies on static retry logic.
+
+## Resource Pooling
+
+Capability profile: `resilience` — requires `homeostatic` + `voter_consensus`, prefers `adaptive_routing`, cascade fallback mandatory.
+
+## Required Skills
+
+| Skill | Role |
+|-------|------|
+| `resil-homeostatic-module` | PID setpoint homeostatic control |
+| `resil-redundant-voter` | Multi-model consensus voting |
+| `resil-circuit-breaker` | Circuit breaker pattern implementation |
+| `resil-graceful-degradation` | Graceful capability degradation |
+| `resil-context-recovery` | Context state recovery on failure |
+| `resil-rollback-planner` | Safe rollback plan generation |
+
+## Input Schema
+
+```typescript
+{
+  targetService: string;
+  faultMode: "cascade" | "voter" | "homeostatic";
+}
+```
+
+## Decisions & Throw-Backs
+
+If circuit breaker trips 3× without recovery → escalates to `govern` to check policy constraints on retry behavior. Homeostatic drift over setpoint triggers immediate throw-back.
+
+## Success Chains
+
+On successful completion chains to: **govern** · **evaluate**
+
+## FSM — Adaptive identity through repeated contradiction
+
+```mermaid
+stateDiagram-v2
+    [*] --> NominalOperation
+
+    NominalOperation --> FaultDetected
+    FaultDetected --> SeverityAssessment
+
+    SeverityAssessment --> ShallowCorrection: minor fault
+    SeverityAssessment --> CascadeFallback: major fault
+    SeverityAssessment --> CircuitBreaker: repeated fault
+
+    ShallowCorrection --> NominalOperation
+
+    CascadeFallback --> VoterConsensus
+    VoterConsensus --> MajorityAgreement
+    VoterConsensus --> SplitVote
+
+    MajorityAgreement --> RecoveredState
+    RecoveredState --> NominalOperation
+
+    SplitVote --> Escalation
+    Escalation --> HomeostaticRebalance
+    HomeostaticRebalance --> NominalOperation
+
+    CircuitBreaker --> PolicyCheck
+    PolicyCheck --> RollbackPlan
+    RollbackPlan --> RecoveredState
+
+    RecoveredState --> [*]
+```
+
+## Execution Sequence
+
+```mermaid
+sequenceDiagram
+    participant Orchestrator
+    participant Pool (Analytical)
+    participant Pool (Mechanical)
+    participant Tool (Context)
+
+    Orchestrator->>Pool (Analytical): Allocate Capability Profile
+    activate Pool (Analytical)
+    Pool (Analytical)->>Tool (Context): Issue Tool Calls (Parallel)
+    Tool (Context)-->>Pool (Analytical): Return Data
+
+    alt Shallow Loop
+        Pool (Analytical)->>Pool (Analytical): Auto-correct Schema
+    else Medium Loop
+        Pool (Analytical)->>Pool (Mechanical): Delegate Fixes
+    end
+
+    Pool (Analytical)-->>Orchestrator: Synthesis Gate
+    deactivate Pool (Analytical)
+
+    opt Deep Loop — Circuit Breaker
+        Orchestrator->>Orchestrator: Complete Throw-back to govern
+    end
+```

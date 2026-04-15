@@ -1,0 +1,111 @@
+{
+  "id": "16-orchestrate",
+  "title": "Orchestrate Workflow",
+  "triggeredBy": "Designing multi-agent coordination — not task-execution, but a framework designer",
+  "intent": "Replace single-threaded chains with advanced routing like Quorum or Membrane layouts",
+  "resourcePool": [
+    "orchestration"
+  ],
+  "inputSchema": {
+    "agents": "string[]",
+    "sharedState": "any"
+  },
+  "throwbacks": [
+    "delegation-strategy: context window leakage between unrelated agents"
+  ],
+  "chainTo": [
+    "evaluate",
+    "resilience"
+  ],
+  "skillTree": {
+    "root": "multi-agent-architecture",
+    "nodes": [
+      {
+        "id": "multi-agent-architecture",
+        "skill": "orch-multi-agent",
+        "type": "primary",
+        "profile": "orchestration",
+        "description": "Design the architecture and roles of the multi-agent system: specialist domains and responsibilities",
+        "next": [
+          {
+            "target": "delegation-strategy"
+          },
+          {
+            "target": "membrane-encapsulation"
+          }
+        ]
+      },
+      {
+        "id": "delegation-strategy",
+        "skill": "orch-delegation",
+        "type": "primary",
+        "profile": "orchestration",
+        "description": "Define how and when tasks are delegated to specialist subagents by capability boundary",
+        "next": [
+          {
+            "target": "agent-orchestration"
+          }
+        ]
+      },
+      {
+        "id": "membrane-encapsulation",
+        "skill": "resil-membrane",
+        "type": "parallel",
+        "profile": "resilience",
+        "description": "Enforce strict data boundaries and access controls between workflow stages (membrane computing)",
+        "next": [
+          {
+            "target": "agent-orchestration"
+          }
+        ]
+      },
+      {
+        "id": "agent-orchestration",
+        "skill": "orch-agent-orchestrator",
+        "type": "primary",
+        "profile": "orchestration",
+        "description": "Coordinate multiple specialized agents on a shared task with explicit routing and control",
+        "next": [
+          {
+            "target": "mode-switching"
+          },
+          {
+            "target": "context-handoff"
+          }
+        ]
+      },
+      {
+        "id": "mode-switching",
+        "skill": "flow-mode-switching",
+        "type": "primary",
+        "profile": "orchestration",
+        "description": "Manage transitions between operating modes (plan, code, debug, review) during agent coordination",
+        "next": [
+          {
+            "target": "result-assembly"
+          }
+        ]
+      },
+      {
+        "id": "context-handoff",
+        "skill": "flow-context-handoff",
+        "type": "parallel",
+        "profile": "orchestration",
+        "description": "Structure and transfer relevant context between workflow steps and agents without leakage",
+        "next": [
+          {
+            "target": "result-assembly"
+          }
+        ]
+      },
+      {
+        "id": "result-assembly",
+        "skill": "orch-result-synthesis",
+        "type": "synthesis",
+        "profile": "orchestration",
+        "description": "Aggregate and reconcile outputs from multiple agents into one coherent result",
+        "next": []
+      }
+    ]
+  }
+}

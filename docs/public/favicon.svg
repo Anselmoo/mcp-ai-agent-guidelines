@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" aria-hidden="true">
+    <defs>
+        <linearGradient id="hub-grad" x1="16" y1="4" x2="16" y2="28" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#3b9cf6" />
+            <stop offset="100%" stop-color="#1a5cbf" />
+        </linearGradient>
+    </defs>
+    <!-- Network edges -->
+    <line x1="16" y1="7" x2="5" y2="24" stroke="#2a78e0" stroke-width="1.8" stroke-linecap="round" opacity="0.55" />
+    <line x1="16" y1="7" x2="27" y2="24" stroke="#2a78e0" stroke-width="1.8" stroke-linecap="round" opacity="0.55" />
+    <line x1="5" y1="24" x2="27" y2="24" stroke="#2a78e0" stroke-width="1.8" stroke-linecap="round" opacity="0.55" />
+    <!-- Hub node — top -->
+    <circle cx="16" cy="7" r="5.5" fill="url(#hub-grad)" />
+    <circle cx="16" cy="7" r="2" fill="white" opacity="0.85" />
+    <!-- Skill nodes — bottom-left and bottom-right -->
+    <circle cx="5" cy="24" r="4.5" fill="#2a78e0" />
+    <circle cx="5" cy="24" r="1.6" fill="white" opacity="0.8" />
+    <circle cx="27" cy="24" r="4.5" fill="#2a78e0" />
+    <circle cx="27" cy="24" r="1.6" fill="white" opacity="0.8" />
+</svg>

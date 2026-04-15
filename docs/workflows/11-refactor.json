@@ -1,0 +1,110 @@
+{
+  "id": "11-refactor",
+  "title": "Refactor Workflow",
+  "triggeredBy": "physics-analysis or a user request to clean up technical debt",
+  "intent": "Reduce complexity without breaking existing contracts using GR-guided geodesic paths",
+  "resourcePool": [
+    "refactor"
+  ],
+  "inputSchema": {
+    "targetModules": "string[]",
+    "complexityTarget": "number?"
+  },
+  "throwbacks": [
+    "review: after each refactor wave",
+    "testing: validate no regressions"
+  ],
+  "chainTo": [
+    "testing",
+    "review"
+  ],
+  "skillTree": {
+    "root": "debt-triage",
+    "nodes": [
+      {
+        "id": "debt-triage",
+        "skill": "qual-refactoring-priority",
+        "type": "primary",
+        "profile": "code_review",
+        "description": "Rank refactoring work by churn, coupling, and business impact; compute priority order",
+        "next": [
+          {
+            "target": "tradeoff-gate"
+          },
+          {
+            "target": "code-quality-baseline"
+          }
+        ]
+      },
+      {
+        "id": "code-quality-baseline",
+        "skill": "qual-code-analysis",
+        "type": "parallel",
+        "profile": "code_review",
+        "description": "Snapshot current coupling, complexity, and maintainability as baseline for comparison",
+        "next": [
+          {
+            "target": "spacetime-metric"
+          }
+        ]
+      },
+      {
+        "id": "spacetime-metric",
+        "skill": "gr-spacetime-debt-metric",
+        "type": "primary",
+        "profile": "physics_analysis",
+        "description": "Quantify technical debt as local spacetime curvature to compute exact refactoring cost",
+        "next": [
+          {
+            "target": "geodesic-path"
+          }
+        ]
+      },
+      {
+        "id": "geodesic-path",
+        "skill": "gr-geodesic-refactor",
+        "type": "synthesis",
+        "profile": "physics_analysis",
+        "description": "Find the shortest refactoring path through module-space minimising total coupling disruption",
+        "next": [
+          {
+            "target": "tradeoff-gate"
+          }
+        ]
+      },
+      {
+        "id": "tradeoff-gate",
+        "skill": "strat-tradeoff",
+        "type": "gate",
+        "profile": "strategy",
+        "description": "Compare the cost of refactor now vs deferring to roadmap; gate execution on viability",
+        "next": [
+          {
+            "target": "arch-rebuild",
+            "condition": "refactor is viable and cost-bounded"
+          },
+          {
+            "target": "defer-to-strategy",
+            "condition": "cost exceeds threshold — add to roadmap"
+          }
+        ]
+      },
+      {
+        "id": "arch-rebuild",
+        "skill": "arch-system",
+        "type": "primary",
+        "profile": "design",
+        "description": "Execute the refactor following the geodesic path and system design contracts",
+        "next": []
+      },
+      {
+        "id": "defer-to-strategy",
+        "skill": "strat-tradeoff",
+        "type": "fallback",
+        "profile": "strategy",
+        "description": "Document deferred refactor as technical debt item for the next planning cycle",
+        "next": []
+      }
+    ]
+  }
+}

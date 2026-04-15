@@ -1,0 +1,98 @@
+---
+title: Testing
+description: Write regression-safe test suites that enforce coverage thresholds — if logic is untestable, throws to refactor rather than accepting gaps.
+sidebar:
+  label: Testing
+  order: 9
+---
+
+import { Badge } from '@astrojs/starlight/components';
+
+<Badge text="Tool: test-verify" variant="tip" /> <Badge text="Model: Efficient" variant="note" />
+
+## Trigger & Intent
+
+**Triggered by:** Completing `implement` or a request to shore up a module's tests.
+
+**Intent:** Ensures every new piece of work is regression-safe, building reliable infrastructure.
+
+## Resource Pooling
+
+Capability profile: `testing` — requires `code_analysis` + `structured_output`, prefers `cost_sensitive`, `fast_draft` fallback.
+
+## Required Skills
+
+| Skill | Role |
+|-------|------|
+| `eval-design` | Test design and coverage planning |
+| `arch-reliability` | Reliability architecture patterns |
+
+## Input Schema
+
+```typescript
+{
+  targetFiles: string[];
+  testFramework: string;
+}
+```
+
+## Decisions & Throw-Backs
+
+- If tests cannot cover logic → throws to `refactor` (logic is untestable)
+- Output must reach the configured coverage threshold before proceeding
+
+## Success Chains
+
+On successful completion chains to: **review** · **debug** · **evaluate**
+
+## FSM — Threshold crossing and bifurcation
+
+```mermaid
+stateDiagram-v2
+    [*] --> CoverageAccumulation
+    CoverageAccumulation --> TestPressureBuild
+    TestPressureBuild --> CoverageThresholdCheck
+
+    CoverageThresholdCheck --> Persistence: below coverage target
+    Persistence --> CoverageAccumulation
+
+    CoverageThresholdCheck --> CoverageBifurcation: threshold crossed
+    CoverageBifurcation --> SuiteReorganization
+    CoverageBifurcation --> RegressionCollapse
+    CoverageBifurcation --> CoverageEmergence
+
+    RegressionCollapse --> RecoveryAttempt
+    RecoveryAttempt --> CoverageAccumulation
+
+    SuiteReorganization --> StableTestOrder
+    CoverageEmergence --> StableTestOrder
+    StableTestOrder --> [*]
+```
+
+## Execution Sequence
+
+```mermaid
+sequenceDiagram
+    participant Orchestrator
+    participant Pool (Analytical)
+    participant Pool (Mechanical)
+    participant Tool (Context)
+
+    Orchestrator->>Pool (Analytical): Allocate Capability Profile
+    activate Pool (Analytical)
+    Pool (Analytical)->>Tool (Context): Issue Tool Calls (Parallel)
+    Tool (Context)-->>Pool (Analytical): Return Data
+
+    alt Shallow Loop
+        Pool (Analytical)->>Pool (Analytical): Auto-correct Schema
+    else Medium Loop
+        Pool (Analytical)->>Pool (Mechanical): Delegate Fixes
+    end
+
+    Pool (Analytical)-->>Orchestrator: Synthesis Gate
+    deactivate Pool (Analytical)
+
+    opt Deep Loop
+        Orchestrator->>Orchestrator: Complete Throw-back to Prior Stage
+    end
+```

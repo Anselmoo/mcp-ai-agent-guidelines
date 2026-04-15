@@ -1,0 +1,105 @@
+---
+title: Code Review
+description: L9-level quality, security, and performance gates enforced before merging — adversarial depth available for high-risk changes.
+sidebar:
+  label: Review
+  order: 8
+---
+
+import { Badge } from '@astrojs/starlight/components';
+
+<Badge text="Tool: code-review" variant="tip" /> <Badge text="Model: Cross-Model" variant="note" />
+
+## Trigger & Intent
+
+**Triggered by:** A pull request, a completed `implement` step, or an explicit request to audit existing code.
+
+**Intent:** Enforce L9-level quality, security, and performance gates before merging.
+
+## Resource Pooling
+
+Capability profile: `code_review` — requires `code_analysis`, prefers `structured_output`, `fast_draft` fallback. Stronger review models selected by availability rules when needed.
+
+## Required Skills
+
+| Skill | Role |
+|-------|------|
+| `qual-review` | General code quality review |
+| `qual-security` | Security vulnerability detection |
+| `qual-performance` | Performance regression analysis |
+
+## Input Schema
+
+```typescript
+{
+  targetFiles: string[];
+  reviewDepth: "standard" | "deep" | "adversarial";
+}
+```
+
+## Decisions & Throw-Backs
+
+- Security review failure → immediately rejects the PR/draft and throws back to `implement`
+- Performance degradation → throws back
+- All gates pass → advances to `govern`, `refactor`, or `testing`
+
+## Success Chains
+
+On successful completion chains to: **govern** · **refactor** · **testing**
+
+## FSM — Ethical deliberation under conflicting goods
+
+```mermaid
+stateDiagram-v2
+    [*] --> CodeSubmission
+    CodeSubmission --> ValueRecognition
+
+    ValueRecognition --> SecurityCompliance
+    ValueRecognition --> Maintainability
+    ValueRecognition --> TeamConventions
+    ValueRecognition --> PerformanceTradeoff
+
+    SecurityCompliance --> ReviewConflict
+    Maintainability --> ReviewConflict
+    TeamConventions --> ReviewConflict
+    PerformanceTradeoff --> ReviewConflict
+
+    ReviewConflict --> Prioritization
+    Prioritization --> ReviewDecision
+    ReviewDecision --> ConsequenceInspection
+
+    ConsequenceInspection --> ReviewRegret: defect or risk detected
+    ConsequenceInspection --> ApprovedMerge: all values sufficiently honored
+
+    ReviewRegret --> CriteriaReweighting
+    CriteriaReweighting --> Prioritization
+    ApprovedMerge --> [*]
+```
+
+## Execution Sequence
+
+```mermaid
+sequenceDiagram
+    participant Orchestrator
+    participant Pool (Analytical)
+    participant Pool (Mechanical)
+    participant Tool (Context)
+
+    Orchestrator->>Pool (Analytical): Allocate Capability Profile
+    activate Pool (Analytical)
+    Pool (Analytical)->>Tool (Context): Issue Tool Calls (Parallel)
+    Tool (Context)-->>Pool (Analytical): Return Data
+
+    alt Shallow Loop
+        Pool (Analytical)->>Pool (Analytical): Auto-correct Schema
+    else Medium Loop
+        Pool (Analytical)->>Pool (Mechanical): Delegate Fixes
+    end
+
+    Pool (Analytical)-->>Orchestrator: Synthesis Gate
+    deactivate Pool (Analytical)
+
+    opt Deep Loop
+        Orchestrator->>Orchestrator: Complete Throw-back to Prior Stage
+    end
+```

@@ -1,0 +1,130 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CI: true
+  NODE_VERSION: "22"
+
+jobs:
+  # ── 1. Quality gate — fast fail ──────────────────────────────────────────────
+  quality:
+    name: Quality Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Secret scan (Gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Policy checks (branch · commit · changelog)
+        uses: Anselmoo/repo-release-tools@v0.1.7
+        with:
+          check-dirty-tree: "false"
+
+      - name: Type-check
+        run: npx tsc --noEmit
+
+      - name: Quality gate (matrix · python tests · type-check · biome · dep-audit)
+        run: npm run quality
+
+  # ── 2. Test matrix ────────────────────────────────────────────────────────────
+  test:
+    name: Test (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: quality
+    permissions:
+      contents: read
+      id-token: write  # Codecov OIDC
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ["20", "22", "24"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # helps Codecov infer base commit
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Run tests with coverage
+        run: npx vitest run --coverage
+
+      - name: Upload coverage to Codecov
+        if: matrix.node-version == '22' && github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: codecov/codecov-action@v5
+        with:
+          use_oidc: true
+          files: coverage/lcov.info
+          flags: unittests
+          slug: Anselmoo/mcp-ai-agent-guidelines
+          fail_ci_if_error: false
+
+  # ── 3. Drift check ───────────────────────────────────────────────────────────
+  drift:
+    name: Generated-file drift
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Regenerate TypeScript tool definitions
+        run: python3 scripts/generate-tool-definitions.py
+
+      - name: Check generated TypeScript drift (src/generated/)
+        run: git diff --exit-code src/generated/
+
+      - name: Regenerate skill graph
+        run: python3 scripts/visualize_skill_graph.py
+
+      - name: Check skill graph drift (docs/architecture/03-skill-graph.md)
+        run: git diff --exit-code docs/architecture/03-skill-graph.md

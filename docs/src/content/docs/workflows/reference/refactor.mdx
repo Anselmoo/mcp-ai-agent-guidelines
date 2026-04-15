@@ -1,0 +1,98 @@
+---
+title: Refactor
+description: Complexity-reducing refactoring using GR spacetime-debt metrics to find the cheapest cross-module path — never changes observable behaviour.
+sidebar:
+  label: Refactor
+  order: 11
+---
+
+import { Badge } from '@astrojs/starlight/components';
+
+<Badge text="Tool: code-refactor" variant="tip" /> <Badge text="Model: Efficient" variant="note" />
+
+## Trigger & Intent
+
+**Triggered by:** `physics-analysis` output or a user request to clean up technical debt.
+
+**Intent:** Reduces complexity without changing observable functionality. Modifies AST safely.
+
+## Resource Pooling
+
+Capability profile: `refactor` — requires `code_analysis`, prefers `structured_output`, `fast_draft` fallback.
+
+## Required Skills
+
+| Skill | Role |
+|-------|------|
+| `qual-refactoring-priority` | Prioritize refactoring targets by impact/cost |
+| `gr-geodesic-refactor` | Compute the minimum-path refactoring through module graph |
+| `gr-spacetime-debt-metric` | Measure accumulated structural debt |
+
+## Input Schema
+
+```typescript
+{
+  targetModules: string[];
+  complexityTarget?: number;
+}
+```
+
+## Decisions & Throw-Backs
+
+Uses GR spacetime-debt metrics to compute the cheapest cross-module refactoring path. Once written, throws to `testing` for regression validation.
+
+## Success Chains
+
+On successful completion chains to: **testing** · **review**
+
+## FSM — Crisis, collapse, and adaptive reassembly
+
+```mermaid
+stateDiagram-v2
+    [*] --> LegacyCodeOrder
+    LegacyCodeOrder --> TechDebtAccumulation
+    TechDebtAccumulation --> ComplexityExposure
+    ComplexityExposure --> CouplingCrisis
+
+    CouplingCrisis --> DefensivePatch
+    CouplingCrisis --> ModuleBreakdown
+
+    DefensivePatch --> TemporaryStabilization
+    TemporaryStabilization --> TechDebtAccumulation
+
+    ModuleBreakdown --> Fragmentation
+    Fragmentation --> DependencySearch
+    DependencySearch --> ModuleRecombination
+    ModuleRecombination --> AdaptiveArchitecture
+    AdaptiveArchitecture --> RefactorMonitoring
+    RefactorMonitoring --> LegacyCodeOrder
+    RefactorMonitoring --> [*]
+```
+
+## Execution Sequence
+
+```mermaid
+sequenceDiagram
+    participant Orchestrator
+    participant Pool (Analytical)
+    participant Pool (Mechanical)
+    participant Tool (Context)
+
+    Orchestrator->>Pool (Analytical): Allocate Capability Profile
+    activate Pool (Analytical)
+    Pool (Analytical)->>Tool (Context): Issue Tool Calls (Parallel)
+    Tool (Context)-->>Pool (Analytical): Return Data
+
+    alt Shallow Loop
+        Pool (Analytical)->>Pool (Analytical): Auto-correct Schema
+    else Medium Loop
+        Pool (Analytical)->>Pool (Mechanical): Delegate Fixes
+    end
+
+    Pool (Analytical)-->>Orchestrator: Synthesis Gate
+    deactivate Pool (Analytical)
+
+    opt Deep Loop
+        Orchestrator->>Orchestrator: Complete Throw-back to Prior Stage
+    end
+```
