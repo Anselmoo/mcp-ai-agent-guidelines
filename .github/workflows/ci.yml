@@ -36,12 +36,12 @@ jobs:
         run: npm ci
 
       - name: Secret scan (Gitleaks)
-        uses: gitleaks/gitleaks-action@v2
+        uses: gitleaks/gitleaks-action@dcedce43c6f43de0b836d1fe38946645c9c638dc # v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Policy checks (branch · commit · changelog)
-        uses: Anselmoo/repo-release-tools@v0.1.7
+        uses: Anselmoo/repo-release-tools@73998b6e469a0b14465dcb3f8147d47bcbb1b8d2 # v0.1.7
         with:
           check-dirty-tree: "false"
 
@@ -79,6 +79,11 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Bootstrap orchestration config for CI
+        run: |
+          mkdir -p .mcp-ai-agent-guidelines/config
+          cp src/tests/fixtures/orchestration.toml .mcp-ai-agent-guidelines/config/orchestration.toml
 
       - name: Run tests with coverage
         run: npx vitest run --coverage
