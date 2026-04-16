@@ -9,4 +9,15 @@ pre-commit:
 commit-msg:
   commands:
     rrt-commit-subject:
+      # Validates commit message format only (conventional commits).
+      # Changelog presence is enforced at pre-push (once per push, not per commit)
+      # to avoid blocking every micro-commit in a squash-merge workflow.
       run: uvx --from repo-release-tools rrt-hooks commit-msg {1}
+
+pre-push:
+  commands:
+    rrt-changelog:
+      # Enforces that CHANGELOG.md is updated before code reaches the remote.
+      # Running here (not commit-msg) allows iterative local commits without
+      # requiring a changelog entry for every micro-fix.
+      run: uvx --from repo-release-tools rrt-hooks check-changelog --subject "$(git log -1 --pretty=%s)" --ref HEAD

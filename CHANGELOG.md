@@ -91,6 +91,10 @@ complete model-routing layer, governance surface, and observability pipeline.
 - `src/tests/fixtures/orchestration.toml` fixture added — mirrors production
   `orchestration.toml` with `strict_mode = false` so test runs on CI and
   fresh clones never throw the "strict mode forbids fallback" error
+- `tool-call-handler.test.ts` — `returns structured snapshot status payloads`
+  now mocks `loadFingerprintSnapshot` so the handler enters the `present`
+  branch (which includes `snapshotId`); previously failed in CI where no
+  snapshot file was on disk
 
 ### CI
 
