@@ -5,6 +5,12 @@ export default defineConfig({
 		globalSetup: ["src/tests/globalSetup.ts"],
 		environment: "node",
 		pool: "vmThreads",
+		poolMatchGlobs: [
+			// zx assigns to global.AbortController which is non-writable in
+			// Node 20 VM contexts — run CLI tests in a real child process instead.
+			["src/tests/cli/**", "forks"],
+			["src/tests/cli-script-runner.test.ts", "forks"],
+		],
 		maxWorkers: 4,
 		testTimeout: 10000,
 		teardownTimeout: 5000,
