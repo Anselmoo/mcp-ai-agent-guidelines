@@ -1,0 +1,126 @@
+---
+title: Quickstart
+description: Your first task with MCP AI Agent Guidelines — from install to first tool call in under 5 minutes.
+sidebar:
+  order: 2
+---
+
+import { Steps, Aside } from "@astrojs/starlight/components";
+
+## Overview
+
+The server exposes **20 instruction tools** as mission verbs. You invoke one tool with a natural-language `request`; the server internally orchestrates the right skills, selects models based on workload profiles, and returns structured advisory output.
+
+All tools share the same input schema:
+
+```typescript
+{
+  request: string;      // required — describe what you want
+  context?: string;     // optional — additional background
+  options?: object;     // optional — tool-specific overrides
+}
+```
+
+## Your First Task
+
+<Steps>
+1. **Start a new session with Bootstrap**
+   
+   The `task-bootstrap` tool orients the agent, loads codebase context, and auto-chains to the right downstream tool:
+   
+   ```
+   Use task-bootstrap to start a new task: I want to add HMAC signing to the
+   session token issuer in src/infrastructure/session-manager.ts
+   ```
+
+2. **Let Bootstrap route you**
+   
+   Bootstrap analyzes the request and auto-chains to `feature-implement` (new capability on existing code = implement). No manual tool selection needed.
+
+3. **Design first (optional but recommended)**
+   
+   For non-trivial features, run `system-design` before `feature-implement`:
+   
+   ```
+   Use system-design to design the HMAC signing approach for session tokens.
+   Constraints: must be compatible with existing SessionManager interface,
+   use @noble/hashes, zero new dependencies.
+   ```
+
+4. **Implement**
+   
+   ```
+   Use feature-implement to implement HMAC session token signing.
+   Context: design decision: use HMAC-SHA256 with a 32-byte secret from
+   env SESSION_HMAC_SECRET. Sign the session ID + expiry timestamp.
+   ```
+
+5. **Verify**
+   
+   The tool auto-chains to `test-verify` and `code-review` on completion.
+</Steps>
+
+## Common Workflows
+
+### Debugging a failing test
+
+```
+Use issue-debug to find why this test is failing:
+Error: Expected 200, got 401 in POST /api/session/refresh
+Stack trace: [paste here]
+```
+
+`issue-debug` uses `cheap` model class, auto-chains to `test-verify` → `code-refactor` → `policy-govern`.
+
+### Reviewing for security
+
+```
+Use code-review to audit src/tools/skill-handler.ts for security issues,
+focusing on input validation and prompt injection vectors.
+```
+
+`code-review` uses `reviewer` model class, chains to `policy-govern` → `physics-analysis`.
+
+### Architecture decision
+
+```
+Use system-design to decide between xstate v4 and v5 for the workflow
+state machine. Constraints: ESM only, TypeScript strict, no runtime LLM calls.
+```
+
+### Governance audit
+
+```
+Use policy-govern to audit the session management layer for OWASP Top-10
+compliance. Focus on: injection, broken authentication, insecure design.
+```
+
+### Physics analysis (advanced)
+
+<Aside type="caution">
+Physics skills require `ENABLE_PHYSICS_SKILLS=true` in your environment.
+Only arrive here from `code-refactor`, `code-review`, `quality-evaluate`, or `evidence-research` — never as a first call.
+</Aside>
+
+```
+Use physics-analysis to apply quantum measurement collapse analysis to
+the skill-handler dispatch path. Evaluate coupling as superposition collapse.
+```
+
+## Meta-Routing for Complex Tasks
+
+When you have a compound task that spans multiple tools, use `meta-routing`:
+
+```
+Use meta-routing to decide how to handle: I need to add a new `graph-export`
+tool that writes the skill graph as JSON, add tests, review security, and
+document it. What is the right sequence of tools?
+```
+
+`meta-routing` emits a sequenced call plan — you then execute each step.
+
+## Next Steps
+
+- [MCP Configuration](/mcp-ai-agent-guidelines/getting-started/mcp-config/) — environment variables and orchestration config
+- [Tool Reference](/mcp-ai-agent-guidelines/tools/) — all 20 tools with triggers and chain graphs
+- [Skill System Explained](/mcp-ai-agent-guidelines/concepts/skill-system/) — how skills work beneath the tools

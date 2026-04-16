@@ -1,0 +1,109 @@
+---
+title: agent-memory
+description: Workspace tool — persistent long-term TOON memory artifact store for cross-session knowledge retention.
+sidebar:
+  label: agent-memory
+  badge:
+    text: "Zero-Cost"
+    variant: "success"
+  order: 23
+---
+
+import { Badge } from "@astrojs/starlight/components";
+import ToolIcon from "../../../components/ToolIcon.astro";
+
+<div class="tool-header-icon"><ToolIcon icon="Database" size={28} aria-hidden="true" /><span><Badge text="workspace" variant="note" /> <Badge text="persistent" variant="danger" /></span></div>
+
+## Purpose
+
+Long-term TOON memory artifacts backed by `.mcp-ai-agent-guidelines/memory/*.toon` files. Use `agent-memory` for _persistent cross-session artifacts_, `agent-session` for session-scoped state, and `agent-snapshot` for codebase baselines.
+
+The memory system stores rich structured artifacts (summaries, details, context, tags, relevance scores) and supports semantic search via the `find` command.
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `status` | Show long-term artifact summary — total count, storage size |
+| `list` | Enumerate all stored memory artifacts with IDs and summaries |
+| `read` | Read one memory artifact by `artifactId` |
+| `find` | Search artifacts — optionally filter by `tags` and `minRelevance` |
+| `write` | Persist a new memory artifact (requires `summary`) |
+| `enrich` | Append Context7 library documentation to an existing artifact |
+| `delete` | Delete a memory artifact by `artifactId` |
+
+## Parameters
+
+| Parameter | Type | Commands | Description |
+|-----------|------|----------|-------------|
+| `command` | `string` | all | One of the commands above |
+| `artifactId` | `string` | `read`, `enrich`, `delete` | Target artifact ID (format: `{toolName}-{sessionId}`) |
+| `tags` | `string[]` | `find` | Filter to artifacts matching ANY of the given tags |
+| `minRelevance` | `string` | `find` | Minimum relevance threshold 0–1 as decimal string (default: `"0"`) |
+| `summary` | `string` | `write` | Short summary text — required when writing |
+| `details` | `string` | `write` | Extended detail text stored as `content.details` |
+| `artifactContext` | `string` | `write` | Request context string stored as `content.context` |
+| `relevance` | `string` | `write` | Relevance score 0–1 as decimal string |
+| `libraryContext` | `string` | `enrich` | Context7 documentation to append — does not mutate raw `details` |
+
+## Tag Conventions
+
+Artifacts use a three-part tag structure: `[toolName, "topic:toolName", sessionId]`
+
+| Pattern | Example | Use |
+|---------|---------|-----|
+| Tool name | `docs-generate` | Find all artifacts from docs-generate sessions |
+| Topic prefix | `topic:docs-generate` | Same — preferred post-2026-04-12 |
+| Session ID | `session-gMxSsE2nGw0T` | Find all artifacts from a specific session |
+
+## Workflow: Bootstrap Prior Context
+
+```json
+{ "command": "list" }
+```
+
+Then find relevant artifacts by tool name:
+
+```json
+{ "command": "find", "tags": ["docs-generate"] }
+```
+
+Then read a specific artifact:
+
+```json
+{ "command": "read", "artifactId": "docs-generate-session-gMxSsE2nGw0T" }
+```
+
+## Workflow: Write a New Artifact
+
+```json
+{
+  "command": "write",
+  "summary": "Added lucide-astro icon headers to all 20 tool pages",
+  "details": "Converted .md → .mdx, injected icon imports, added .tool-header-icon CSS class",
+  "artifactContext": "Phase 3 icon enhancement session",
+  "relevance": "0.9"
+}
+```
+
+## Workflow: Enrich with Context7 Docs
+
+```json
+{
+  "command": "enrich",
+  "artifactId": "docs-generate-session-gMxSsE2nGw0T",
+  "libraryContext": "... fetched Context7 docs for astro-mermaid ..."
+}
+```
+
+## Comparison: Memory vs. Session vs. Snapshot
+
+| Tool | Scope | Format | Use |
+|------|-------|--------|-----|
+| `agent-memory` | Cross-session persistent | `.toon` (TOON binary) | Long-term knowledge artifacts, session summaries |
+| `agent-session` | Current session only | `.toon` / JSON | In-progress state, intermediate outputs |
+| `agent-snapshot` | Codebase baseline | JSON + fingerprint | File change tracking, codebase diffs |
+
+## Storage Location
+
+Artifacts are stored in `.mcp-ai-agent-guidelines/memory/` as `.toon` files. These files are **not** auto-injected into context — you must call `list` then `read` explicitly to retrieve them.

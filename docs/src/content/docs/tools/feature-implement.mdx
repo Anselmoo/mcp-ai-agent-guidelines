@@ -1,0 +1,53 @@
+---
+title: feature-implement
+description: Implement — build new features or tools end-to-end from requirements through documentation.
+sidebar:
+  label: feature-implement
+  badge:
+    text: "Advanced"
+    variant: "danger"
+---
+
+import { Badge } from "@astrojs/starlight/components";
+import ToolIcon from "../../../components/ToolIcon.astro";
+
+<div class="tool-header-icon"><ToolIcon icon="Code" size={28} aria-hidden="true" /><span><Badge text="Advanced" variant="danger" /> <Badge text="workflow" variant="note" /></span></div>
+
+## Mission
+
+Build new tools or features end-to-end: requirements → design → code → tests → docs.
+
+## When to Use
+
+Use when building a new tool, feature, endpoint, agent, workflow component, or capability from scratch. Covers the full lifecycle: requirements gathering, design decisions, code structure, tests, governance checks, and documentation.
+
+**Triggers**: "build this", "add a new", "create a tool", "implement feature", "new functionality"
+
+## Skills Invoked
+
+- `req-analysis` + `req-acceptance-criteria` — requirements clarification
+- `arch-system` — structural design decision
+- `doc-generator` — inline documentation
+- `qual-code-analysis` — post-implementation quality check
+
+## Chain-To
+
+- `test-verify` — write and run tests for the new feature
+- `code-review` — quality and security review
+
+## Example
+
+```json
+{
+  "request": "Add a rate-limiting middleware to the Express API with Redis backing"
+}
+```
+
+**Output**: Implementation plan, code files with inline docs, unit tests, and a chain recommendation to `test-verify`.
+
+## Pattern Note
+
+`feature-implement` follows **Pattern 2 — Draft → Review Chain**:
+1. GPT-4.1 — fast mechanical first draft
+2. Claude Sonnet 4.6 — correctness and security review
+3. GPT-4.1 — apply review notes, finalize

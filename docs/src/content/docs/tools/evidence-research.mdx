@@ -1,0 +1,49 @@
+---
+title: evidence-research
+description: Research — synthesis, comparison, and structured recommendations from multiple sources.
+sidebar:
+  label: evidence-research
+  badge:
+    text: "Advanced"
+    variant: "danger"
+---
+
+import { Badge } from "@astrojs/starlight/components";
+import ToolIcon from "../../../components/ToolIcon.astro";
+
+<div class="tool-header-icon"><ToolIcon icon="Microscope" size={28} aria-hidden="true" /><span><Badge text="Advanced" variant="danger" /> <Badge text="workflow" variant="note" /></span></div>
+
+## Mission
+
+Gather → compare → synthesize → frame. Every research output ends with a structured recommendation.
+
+## When to Use
+
+Use when gathering information from multiple sources, comparing tools or approaches, synthesizing evidence into a structured summary, framing a recommendation with clear rationale, or answering questions that require surveying a landscape before deciding.
+
+**Triggers**: "research this", "compare these options", "what should we use", "gather evidence", "synthesize findings", "recommendation on"
+
+## Skills Invoked
+
+Pattern 5 — Free Triple Parallel + Single Strong Synthesis:
+- `synth-research` (×3 free lanes, parallel) — broad, thorough, alt-framing
+- `synth-engine` (Claude Sonnet 4.6) — unified synthesis
+- `synth-recommendation` — final decision recommendation
+- `synth-comparative` — structured comparison table
+
+## Chain-To
+
+- `strategy-plan` — feed research into planning
+- `system-design` — feed research into architecture decisions
+- `enterprise-strategy` — feed research into transformation planning
+- `physics-analysis` — escalate to physics-inspired analysis
+
+## Example
+
+```json
+{
+  "request": "Compare Kafka, RabbitMQ, and AWS SQS for our event-driven microservices architecture"
+}
+```
+
+**Output**: Structured comparison table across 8 dimensions, synthesis of trade-offs, and a recommendation with rationale.

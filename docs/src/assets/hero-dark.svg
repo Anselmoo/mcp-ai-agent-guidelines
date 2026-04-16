@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 320" role="img"
+    aria-label="Architecture diagram showing MCP hub connected to instruction tools and skill domains">
+    <title>MCP AI Agent Guidelines Architecture</title>
+
+    <!-- Background rings -->
+    <circle cx="200" cy="155" r="72" fill="none" stroke="#00d4cc" stroke-width="0.5" opacity="0.18" />
+    <circle cx="200" cy="155" r="130" fill="none" stroke="#00d4cc" stroke-width="0.5" opacity="0.12" />
+
+    <!-- Radial spokes: hub → inner instruction nodes -->
+    <line x1="200" y1="155" x2="200" y2="83" stroke="#00d4cc" stroke-width="1" opacity="0.5" stroke-linecap="round" />
+    <line x1="200" y1="155" x2="251" y2="104" stroke="#00d4cc" stroke-width="1" opacity="0.5" stroke-linecap="round" />
+    <line x1="200" y1="155" x2="272" y2="155" stroke="#00d4cc" stroke-width="1" opacity="0.5" stroke-linecap="round" />
+    <line x1="200" y1="155" x2="251" y2="206" stroke="#00d4cc" stroke-width="1" opacity="0.5" stroke-linecap="round" />
+    <line x1="200" y1="155" x2="200" y2="227" stroke="#00d4cc" stroke-width="1" opacity="0.5" stroke-linecap="round" />
+    <line x1="200" y1="155" x2="149" y2="206" stroke="#00d4cc" stroke-width="1" opacity="0.5" stroke-linecap="round" />
+    <line x1="200" y1="155" x2="128" y2="155" stroke="#00d4cc" stroke-width="1" opacity="0.5" stroke-linecap="round" />
+    <line x1="200" y1="155" x2="149" y2="104" stroke="#00d4cc" stroke-width="1" opacity="0.5" stroke-linecap="round" />
+
+    <!-- Dashed lines: inner nodes → outer domain nodes -->
+    <line x1="200" y1="83" x2="200" y2="25" stroke="#00d4cc" stroke-width="0.8" stroke-dasharray="3,3" opacity="0.38" />
+    <line x1="251" y1="104" x2="265" y2="42" stroke="#00d4cc" stroke-width="0.8" stroke-dasharray="3,3"
+        opacity="0.38" />
+    <line x1="251" y1="104" x2="313" y2="90" stroke="#00d4cc" stroke-width="0.8" stroke-dasharray="3,3"
+        opacity="0.38" />
+    <line x1="272" y1="155" x2="330" y2="155" stroke="#00d4cc" stroke-width="0.8" stroke-dasharray="3,3"
+        opacity="0.38" />
+    <line x1="251" y1="206" x2="313" y2="220" stroke="#00d4cc" stroke-width="0.8" stroke-dasharray="3,3"
+        opacity="0.38" />
+    <line x1="251" y1="206" x2="265" y2="268" stroke="#00d4cc" stroke-width="0.8" stroke-dasharray="3,3"
+        opacity="0.38" />
+    <line x1="200" y1="227" x2="200" y2="285" stroke="#00d4cc" stroke-width="0.8" stroke-dasharray="3,3"
+        opacity="0.38" />
+    <line x1="149" y1="206" x2="135" y2="268" stroke="#00d4cc" stroke-width="0.8" stroke-dasharray="3,3"
+        opacity="0.38" />
+    <line x1="149" y1="206" x2="87" y2="220" stroke="#00d4cc" stroke-width="0.8" stroke-dasharray="3,3"
+        opacity="0.38" />
+    <line x1="128" y1="155" x2="70" y2="155" stroke="#00d4cc" stroke-width="0.8" stroke-dasharray="3,3"
+        opacity="0.38" />
+    <line x1="149" y1="104" x2="87" y2="90" stroke="#00d4cc" stroke-width="0.8" stroke-dasharray="3,3" opacity="0.38" />
+    <line x1="149" y1="104" x2="135" y2="42" stroke="#00d4cc" stroke-width="0.8" stroke-dasharray="3,3"
+        opacity="0.38" />
+
+    <!-- Outer domain nodes (12, r=4) -->
+    <circle cx="200" cy="25" r="4" fill="#00d4cc" fill-opacity="0.22" stroke="#00d4cc" stroke-width="1" />
+    <circle cx="265" cy="42" r="4" fill="#00d4cc" fill-opacity="0.22" stroke="#00d4cc" stroke-width="1" />
+    <circle cx="313" cy="90" r="4" fill="#00d4cc" fill-opacity="0.22" stroke="#00d4cc" stroke-width="1" />
+    <circle cx="330" cy="155" r="4" fill="#00d4cc" fill-opacity="0.22" stroke="#00d4cc" stroke-width="1" />
+    <circle cx="313" cy="220" r="4" fill="#00d4cc" fill-opacity="0.22" stroke="#00d4cc" stroke-width="1" />
+    <circle cx="265" cy="268" r="4" fill="#00d4cc" fill-opacity="0.22" stroke="#00d4cc" stroke-width="1" />
+    <circle cx="200" cy="285" r="4" fill="#00d4cc" fill-opacity="0.22" stroke="#00d4cc" stroke-width="1" />
+    <circle cx="135" cy="268" r="4" fill="#00d4cc" fill-opacity="0.22" stroke="#00d4cc" stroke-width="1" />
+    <circle cx="87" cy="220" r="4" fill="#00d4cc" fill-opacity="0.22" stroke="#00d4cc" stroke-width="1" />
+    <circle cx="70" cy="155" r="4" fill="#00d4cc" fill-opacity="0.22" stroke="#00d4cc" stroke-width="1" />
+    <circle cx="87" cy="90" r="4" fill="#00d4cc" fill-opacity="0.22" stroke="#00d4cc" stroke-width="1" />
+    <circle cx="135" cy="42" r="4" fill="#00d4cc" fill-opacity="0.22" stroke="#00d4cc" stroke-width="1" />
+
+    <!-- Inner instruction tool nodes (8, r=7.5) -->
+    <circle cx="200" cy="83" r="7.5" fill="#00d4cc" fill-opacity="0.2" stroke="#00d4cc" stroke-width="1.5" />
+    <circle cx="251" cy="104" r="7.5" fill="#00d4cc" fill-opacity="0.2" stroke="#00d4cc" stroke-width="1.5" />
+    <circle cx="272" cy="155" r="7.5" fill="#00d4cc" fill-opacity="0.2" stroke="#00d4cc" stroke-width="1.5" />
+    <circle cx="251" cy="206" r="7.5" fill="#00d4cc" fill-opacity="0.2" stroke="#00d4cc" stroke-width="1.5" />
+    <circle cx="200" cy="227" r="7.5" fill="#00d4cc" fill-opacity="0.2" stroke="#00d4cc" stroke-width="1.5" />
+    <circle cx="149" cy="206" r="7.5" fill="#00d4cc" fill-opacity="0.2" stroke="#00d4cc" stroke-width="1.5" />
+    <circle cx="128" cy="155" r="7.5" fill="#00d4cc" fill-opacity="0.2" stroke="#00d4cc" stroke-width="1.5" />
+    <circle cx="149" cy="104" r="7.5" fill="#00d4cc" fill-opacity="0.2" stroke="#00d4cc" stroke-width="1.5" />
+
+    <!-- Hub (center circle) -->
+    <circle cx="200" cy="155" r="26" fill="#00d4cc" />
+    <circle cx="200" cy="155" r="26" fill="none" stroke="#0a1628" stroke-width="1" opacity="0.2" />
+    <text x="200" y="151" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="8.5"
+        font-weight="700" fill="#0a1628" opacity="0.9">MCP</text>
+    <text x="200" y="163" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="5.5"
+        fill="#0a1628" opacity="0.65" letter-spacing="0.5">SERVER</text>
+</svg>

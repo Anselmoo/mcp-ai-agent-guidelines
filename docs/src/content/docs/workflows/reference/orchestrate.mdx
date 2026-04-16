@@ -1,0 +1,116 @@
+---
+title: Agent Orchestration
+description: Multi-agent coordination using membranes, FSMs, and homeostatic loops — never flat tool-call chains.
+sidebar:
+  label: Orchestrate
+  order: 16
+---
+
+import { Badge, Aside } from '@astrojs/starlight/components';
+
+<Badge text="Tool: agent-orchestrate" variant="tip" /> <Badge text="Model: Advanced" variant="note" />
+
+## Trigger & Intent
+
+**Triggered by:** Multi-agent coordination, FSM design, or homeostatic control loop requirements.
+
+**Intent:** Builds membrane-based multi-agent architectures with parallel inner faculties, context handoff, and contradiction resolution. Never produces flat tool-call chains.
+
+<Aside type="tip">
+This workflow activates the `adv-*` (advanced/bio-inspired) tier. All competing agent pools are governed by adaptive routing with PID setpoints.
+</Aside>
+
+## Resource Pooling
+
+Capability profile: `orchestration` — requires `multi_agent` + `fsm`, requires `adaptive_routing`, prefers `deep_reasoning`.
+
+## Required Skills
+
+| Skill | Role |
+|-------|------|
+| `adv-membrane-orchestrator` | Membrane boundary enforcement |
+| `core-agent-orchestrator` | Core multi-agent coordination |
+| `core-context-handoff` | Context state transfer between agents |
+| `core-multi-agent-prompt` | Prompt design for agent ensembles |
+| `core-session-management` | Agent session and state lifecycle |
+| `resil-homeostatic-module` | PID setpoint homeostatic control |
+| `resil-redundant-voter` | Consensus voting across agent outputs |
+
+## Input Schema
+
+```typescript
+{
+  agentGraph: unknown;
+  coordinationMode: "parallel" | "sequential" | "membrane";
+}
+```
+
+## Decisions & Throw-Backs
+
+If agent graph produces cyclic deadlock or unconstrained fan-out → throws back to `design` to add FSM constraints or membrane limits.
+
+## Success Chains
+
+On successful completion chains to: **evaluate** · **resilience**
+
+## FSM — Parallel inner faculties competing for control
+
+```mermaid
+stateDiagram-v2
+    [*] --> OrchestrationTrigger
+
+    OrchestrationTrigger --> AnalyticalAgent
+    OrchestrationTrigger --> MechanicalAgent
+    OrchestrationTrigger --> LateralAgent
+
+    AnalyticalAgent --> ConflictDetection
+    MechanicalAgent --> ConflictDetection
+    LateralAgent --> ConflictDetection
+
+    ConflictDetection --> Inhibition
+    ConflictDetection --> Suppression
+
+    Inhibition --> OrchestrationGate
+    Suppression --> OrchestrationGate
+
+    OrchestrationGate --> MembraneEnforcement
+    MembraneEnforcement --> ContextHandoff
+    ContextHandoff --> ExecutionStream
+    ExecutionStream --> HomeostaticMonitor
+
+    HomeostaticMonitor --> StableState: PID within setpoint
+    HomeostaticMonitor --> CorrectionLoop: drift detected
+    CorrectionLoop --> OrchestrationTrigger
+    StableState --> [*]
+```
+
+## Execution Sequence
+
+```mermaid
+sequenceDiagram
+    participant Orchestrator
+    participant Pool (Analytical)
+    participant Pool (Mechanical)
+    participant Tool (Context)
+
+    Orchestrator->>Pool (Analytical): Allocate Capability Profile (membrane-based)
+    activate Pool (Analytical)
+    Orchestrator->>Pool (Mechanical): Parallel Lateral Agent Init
+    activate Pool (Mechanical)
+
+    Pool (Analytical)->>Tool (Context): Issue Tool Calls (Parallel)
+    Pool (Mechanical)->>Tool (Context): Issue Tool Calls (Parallel)
+    Tool (Context)-->>Pool (Analytical): Return Data
+    Tool (Context)-->>Pool (Mechanical): Return Data
+
+    Pool (Analytical)-->>Orchestrator: Analytical Gate
+    Pool (Mechanical)-->>Orchestrator: Mechanical Gate
+    deactivate Pool (Analytical)
+    deactivate Pool (Mechanical)
+
+    Orchestrator->>Orchestrator: Homeostatic Monitor + PID Check
+
+    opt Correction Loop
+        Orchestrator->>Orchestrator: Throw-back to OrchestrationTrigger
+    end
+```

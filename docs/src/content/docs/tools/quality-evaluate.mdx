@@ -1,0 +1,51 @@
+---
+title: quality-evaluate
+description: Evaluate — benchmark and assess output quality, consistency, and regression.
+sidebar:
+  label: quality-evaluate
+  badge:
+    text: "Cross-Model"
+    variant: "note"
+---
+
+import { Badge } from "@astrojs/starlight/components";
+import ToolIcon from "../../../components/ToolIcon.astro";
+
+<div class="tool-header-icon"><ToolIcon icon="Scale" size={28} aria-hidden="true" /><span><Badge text="Cross-Model" variant="note" /> <Badge text="workflow" variant="note" /></span></div>
+
+## Mission
+
+Define metrics → measure → compare → report → act. Every evaluation produces a decision or action.
+
+## When to Use
+
+Use when benchmarking AI system quality, measuring output consistency, running eval suites, comparing model versions, detecting quality regressions, grading outputs against rubrics, or generating evaluation reports.
+
+**Triggers**: "benchmark this", "run evals", "measure quality", "compare model outputs", "quality gate", "detect regression", "grade these outputs", "eval suite"
+
+## Skills Invoked
+
+3-way majority vote:
+- `eval-output-grading` (×3 vote: Haiku, GPT-5 mini, GPT-4.1)
+- `eval-variance` — stability measurement
+- `eval-prompt-bench` — prompt variant comparison
+- `eval-adversarial` (Advanced) — injection/jailbreak resistance
+- `bench-blind-comparison` — side-by-side blind evaluation
+- `bench-eval-suite` — reusable test suite construction
+
+## Chain-To
+
+- `prompt-engineering` — optimize prompts that score poorly
+- `code-refactor` — fix code quality issues found in eval
+- `policy-govern` — escalate safety/governance failures
+- `physics-analysis` — deeper analysis via QM/GR metaphors
+
+## Example
+
+```json
+{
+  "request": "Run a quality evaluation on the new code generation prompt against the v1 baseline"
+}
+```
+
+**Output**: Score comparison table (v1 vs v2 across 5 dimensions), variance analysis, adversarial test results, and a recommendation (promote / iterate / revert).

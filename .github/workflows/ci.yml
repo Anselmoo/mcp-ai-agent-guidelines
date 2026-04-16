@@ -1,0 +1,162 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CI: true
+  NODE_VERSION: "22"
+
+jobs:
+  # ── 0. Lint & code quality — Lefthook pre-commit hooks ──────────────────────
+  lint:
+    name: Lint & Code Quality (Lefthook)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Lefthook (biome-check)
+        run: npx lefthook run pre-commit --command biome-check --no-tty
+
+  # ── 1. Quality gate — fast fail ──────────────────────────────────────────────
+  quality:
+    name: Quality Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Gitleaks needs the base commit for PR diff scans
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Dependency audit
+        run: npm audit --production --audit-level=high
+
+      - name: Secret scan (Gitleaks)
+        uses: gitleaks/gitleaks-action@dcedce43c6f43de0b836d1fe38946645c9c638dc # v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Policy checks (branch · commit · changelog)
+        uses: Anselmoo/repo-release-tools@73998b6e469a0b14465dcb3f8147d47bcbb1b8d2 # v0.1.7
+        with:
+          check-dirty-tree: "false"
+
+      - name: Type-check
+        run: npx tsc --noEmit
+
+      - name: Quality gate (matrix · python tests · type-check · biome · dep-audit)
+        run: npm run quality
+
+  # ── 2. Test matrix ────────────────────────────────────────────────────────────
+  test:
+    name: Test (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: quality
+    permissions:
+      contents: read
+      id-token: write  # Codecov OIDC
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ["22", "24", "latest"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # helps Codecov infer base commit
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Bootstrap orchestration config for CI
+        run: |
+          mkdir -p .mcp-ai-agent-guidelines/config
+          cp src/tests/fixtures/orchestration.toml .mcp-ai-agent-guidelines/config/orchestration.toml
+
+      - name: Run tests with coverage
+        run: npx vitest run --coverage
+
+      - name: Upload coverage to Codecov
+        if: matrix.node-version == '22' && github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: codecov/codecov-action@v5
+        with:
+          use_oidc: true
+          files: coverage/lcov.info
+          flags: unittests
+          slug: Anselmoo/mcp-ai-agent-guidelines
+          fail_ci_if_error: false
+
+  # ── 3. Drift check ───────────────────────────────────────────────────────────
+  drift:
+    name: Generated-file drift
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Regenerate TypeScript tool definitions
+        run: python3 scripts/generate-tool-definitions.py
+
+      - name: Check generated TypeScript drift (src/generated/)
+        run: git diff --exit-code src/generated/
+
+      - name: Regenerate skill graph
+        run: python3 scripts/visualize_skill_graph.py
+
+      - name: Check skill graph drift (docs/architecture/03-skill-graph.md)
+        run: git diff --exit-code docs/architecture/03-skill-graph.md

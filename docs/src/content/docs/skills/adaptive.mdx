@@ -1,0 +1,54 @@
+---
+title: Adaptive Skills
+description: Bio-inspired adaptive routing skills including ant colony optimization, simulated annealing, Hebbian learning, Physarum routing, and quorum sensing.
+sidebar:
+  label: Adaptive
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+<Aside type="caution" title="Feature Gate">
+Adaptive skills require `ENABLE_ADAPTIVE_ROUTING=true` in your environment. They are **off by default** to prevent non-deterministic routing in production systems.
+</Aside>
+
+The `adapt-*` family applies bio-inspired algorithms to dynamic skill routing and load balancing. Instead of static dispatch rules, these skills learn from execution history and optimize routing in real time.
+
+## Skills
+
+| Skill ID | Description | Model Class |
+|----------|-------------|-------------|
+| `adapt-aco-router` | Ant Colony Optimization: pheromone trails reinforce routes that produce high-quality outputs | `strong` |
+| `adapt-annealing` | Simulated Annealing: explores the skill-routing search space by accepting worse solutions with decreasing probability | `strong` |
+| `adapt-hebbian-router` | Hebbian learning: "neurons that fire together, wire together" — co-occurring successful skills become preferred chains | `cheap` |
+| `adapt-physarum-router` | Physarum polycephalum (slime mould) algorithm: finds shortest efficient paths through skill networks | `cheap` |
+| `adapt-quorum` | Quorum sensing: activates a skill upgrade only when a threshold of evidence or votes is reached | `cheap` |
+
+## Biological Analogies
+
+| Algorithm | Biological Model | Application |
+|-----------|-----------------|-------------|
+| ACO | Ant pheromone trails | Long-term route reinforcement |
+| Annealing | Metal cooling | Escaping local optima in routing |
+| Hebbian | Neural plasticity | Co-skill chain learning |
+| Physarum | Slime mould growth | Efficient network path finding |
+| Quorum | Bacterial sensing | Threshold-triggered escalation |
+
+## When to Use
+
+| Situation | Skill(s) |
+|-----------|----------|
+| Routing patterns need to evolve over sessions | `adapt-hebbian-router` |
+| Current routing is stuck in a suboptimal pattern | `adapt-annealing` |
+| Need to discover optimal skill sequences | `adapt-aco-router` |
+| Routing through large skill graphs | `adapt-physarum-router` |
+| Only escalate when enough signals agree | `adapt-quorum` |
+
+## Instructions That Invoke These Skills
+
+- **adapt** — primary consumer; all five coordinated
+- **orchestrate** — optionally uses `adapt-quorum` for escalation decisions
+- **resilience** — uses `adapt-annealing` to escape failure plateaus
+
+## Safety Note
+
+Adaptive routing introduces non-determinism. Always pair with `resil-membrane` isolation and ensure `gov-policy-validation` gates are in place before enabling in production.

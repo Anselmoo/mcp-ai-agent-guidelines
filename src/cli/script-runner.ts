@@ -1,0 +1,120 @@
+import { confirm, input, select } from "@inquirer/prompts";
+import { execa, execaCommand } from "execa";
+import ora from "ora";
+import { $ } from "zx";
+
+export async function runCommand(
+	cmd: string,
+	args?: string[],
+): Promise<{ stdout: string; stderr: string; exitCode: number }> {
+	try {
+		const result = await execa(cmd, args ?? []);
+		return {
+			stdout: result.stdout,
+			stderr: result.stderr,
+			exitCode: typeof result.exitCode === "number" ? result.exitCode : 0,
+		};
+	} catch (err: unknown) {
+		const e = err as { stdout?: string; stderr?: string; exitCode?: number };
+		return {
+			stdout: e.stdout ?? "",
+			stderr: e.stderr ?? "",
+			exitCode: typeof e.exitCode === "number" ? e.exitCode : 1,
+		};
+	}
+}
+
+export async function runShellScript(script: string): Promise<string> {
+	const result = await execaCommand(script);
+	return result.stdout;
+}
+
+export async function withSpinner<T>(
+	message: string,
+	task: () => Promise<T>,
+): Promise<T> {
+	let spinner: ReturnType<typeof ora> | null = null;
+	try {
+		spinner = ora(message).start();
+	} catch {
+		// non-TTY environment — continue without spinner
+	}
+	try {
+		const result = await task();
+		spinner?.succeed();
+		return result;
+	} catch (err) {
+		spinner?.fail();
+		throw err;
+	}
+}
+
+export async function promptForInput(
+	message: string,
+	defaultValue?: string,
+): Promise<string> {
+	try {
+		return await input({ message, default: defaultValue });
+	} catch {
+		return defaultValue ?? "";
+	}
+}
+
+export async function promptForSelection<T extends string>(
+	message: string,
+	choices: T[],
+): Promise<T> {
+	try {
+		return await select<T>({
+			message,
+			choices: choices.map((c) => ({ value: c })),
+		});
+	} catch {
+		return choices[0];
+	}
+}
+
+export async function promptForConfirmation(message: string): Promise<boolean> {
+	try {
+		return await confirm({ message });
+	} catch {
+		return false;
+	}
+}
+
+export class ScriptRunner {
+	readonly zxShell = $;
+
+	async runCommand(
+		cmd: string,
+		args?: string[],
+	): Promise<{ stdout: string; stderr: string; exitCode: number }> {
+		return runCommand(cmd, args);
+	}
+
+	async runShellScript(script: string): Promise<string> {
+		return runShellScript(script);
+	}
+
+	async withSpinner<T>(message: string, task: () => Promise<T>): Promise<T> {
+		return withSpinner(message, task);
+	}
+
+	async promptForInput(
+		message: string,
+		defaultValue?: string,
+	): Promise<string> {
+		return promptForInput(message, defaultValue);
+	}
+
+	async promptForSelection<T extends string>(
+		message: string,
+		choices: T[],
+	): Promise<T> {
+		return promptForSelection(message, choices);
+	}
+
+	async promptForConfirmation(message: string): Promise<boolean> {
+		return promptForConfirmation(message);
+	}
+}

@@ -1,0 +1,107 @@
+{
+  "id": "00-meta-routing",
+  "title": "Meta-Routing Workflow",
+  "triggeredBy": "Absolute entry-point for any user interaction in the ecosystem",
+  "intent": "Triage ambiguous, generic queries into the 20 structured master instructions without human input",
+  "resourcePool": [
+    "meta_routing"
+  ],
+  "inputSchema": {
+    "request": "string",
+    "context": "string?",
+    "taskType": "string?",
+    "currentPhase": "string?"
+  },
+  "throwbacks": [],
+  "chainTo": [],
+  "routes": [
+    "bootstrap",
+    "design",
+    "plan",
+    "implement",
+    "physics-analysis",
+    "evaluate",
+    "review",
+    "testing",
+    "debug",
+    "refactor",
+    "adapt",
+    "document",
+    "enterprise",
+    "govern",
+    "orchestrate",
+    "prompt-engineering",
+    "research",
+    "resilience",
+    "onboard_project"
+  ],
+  "skillTree": {
+    "root": "scope-classification",
+    "nodes": [
+      {
+        "id": "scope-classification",
+        "skill": "req-scope",
+        "type": "gate",
+        "profile": "elicitation",
+        "description": "Detect whether the raw prompt carries enough scope signal to route directly",
+        "next": [
+          {
+            "target": "ambiguity-probe",
+            "condition": "scope signal absent or contradictory"
+          },
+          {
+            "target": "mode-dispatch",
+            "condition": "scope signal clear"
+          }
+        ]
+      },
+      {
+        "id": "ambiguity-probe",
+        "skill": "req-ambiguity-detection",
+        "type": "primary",
+        "profile": "elicitation",
+        "description": "Identify missing constraints, conflicting intents, or under-specified inputs",
+        "next": [
+          {
+            "target": "mode-dispatch",
+            "condition": "ambiguity resolved"
+          }
+        ]
+      },
+      {
+        "id": "mode-dispatch",
+        "skill": "flow-mode-switching",
+        "type": "primary",
+        "profile": "orchestration",
+        "description": "Switch the agent into the correct operating mode (plan, code, review, debug, etc.)",
+        "next": [
+          {
+            "target": "orchestration-gate",
+            "condition": "mode selected"
+          }
+        ]
+      },
+      {
+        "id": "orchestration-gate",
+        "skill": "flow-orchestrator",
+        "type": "gate",
+        "profile": "orchestration",
+        "description": "Dispatch to the appropriate downstream workflow; act as the task router",
+        "next": [
+          {
+            "target": "result-merge",
+            "condition": "multi-workflow fan-out completed"
+          }
+        ]
+      },
+      {
+        "id": "result-merge",
+        "skill": "orch-result-synthesis",
+        "type": "synthesis",
+        "profile": "orchestration",
+        "description": "Reconcile outputs when multiple candidate workflows were scored in parallel",
+        "next": []
+      }
+    ]
+  }
+}

@@ -1,0 +1,102 @@
+---
+title: Plan / Roadmap
+description: Sprint planning, roadmap generation, and prioritization — produces structured work blocks with explicit milestones before any execution begins.
+sidebar:
+  label: Plan
+  order: 4
+---
+
+import { Badge, Aside } from '@astrojs/starlight/components';
+
+<Badge text="Tool: strategy-plan" variant="tip" /> <Badge text="Model: Advanced" variant="note" />
+
+## Trigger & Intent
+
+**Triggered by:** User asking for a sprint plan, roadmap, prioritization matrix, or organizational setup.
+
+**Intent:** Produces a structured sequence of work blocks with explicit milestones. Prevents jumping into execution without a strategy.
+
+## Resource Pooling
+
+Capability profile: `strategy` — requires `large_context` + `structured_output`, prefers `cost_sensitive`, fan-out 1.
+
+## Required Skills
+
+| Skill | Role |
+|-------|------|
+| `strat-advisor` | Strategic framing and option analysis |
+| `strat-prioritization` | Weighted backlog ordering |
+| `strat-roadmap` | Milestone and horizon structuring |
+
+## Input Schema
+
+```typescript
+{
+  goal: string;
+  constraints?: string[];
+  horizon: "sprint" | "quarter" | "year";
+}
+```
+
+## Decisions & Throw-Backs
+
+If work exceeds the capability matrix, flags constraints. Throws to user if the prioritized list is out of budget.
+
+## Success Chains
+
+On successful completion chains to: **implement** · **enterprise** · **research**
+
+## FSM — Commitment under uncertainty with delayed consequence
+
+```mermaid
+stateDiagram-v2
+    [*] --> BacklogSpace
+    BacklogSpace --> PrioritizationDeliberation
+    PrioritizationDeliberation --> MilestoneCommitment
+    MilestoneCommitment --> SprintExecution
+    SprintExecution --> VelocityDelay
+    VelocityDelay --> SprintSignalReception
+
+    SprintSignalReception --> PositiveVelocity
+    SprintSignalReception --> AmbiguousVelocity
+    SprintSignalReception --> NegativeVelocity
+
+    PositiveVelocity --> RoadmapReinforcement
+    RoadmapReinforcement --> MilestoneCommitment
+
+    AmbiguousVelocity --> ScopeDoubt
+    ScopeDoubt --> BacklogReinterpretation
+    BacklogReinterpretation --> MilestoneCommitment
+    BacklogReinterpretation --> RoadmapWithdrawal
+
+    NegativeVelocity --> RoadmapWithdrawal
+    RoadmapWithdrawal --> [*]
+```
+
+## Execution Sequence
+
+```mermaid
+sequenceDiagram
+    participant Orchestrator
+    participant Pool (Analytical)
+    participant Pool (Mechanical)
+    participant Tool (Context)
+
+    Orchestrator->>Pool (Analytical): Allocate Capability Profile
+    activate Pool (Analytical)
+    Pool (Analytical)->>Tool (Context): Issue Tool Calls (Parallel)
+    Tool (Context)-->>Pool (Analytical): Return Data
+
+    alt Shallow Loop
+        Pool (Analytical)->>Pool (Analytical): Auto-correct Schema
+    else Medium Loop
+        Pool (Analytical)->>Pool (Mechanical): Delegate Fixes
+    end
+
+    Pool (Analytical)-->>Orchestrator: Synthesis Gate
+    deactivate Pool (Analytical)
+
+    opt Deep Loop
+        Orchestrator->>Orchestrator: Complete Throw-back to Prior Stage
+    end
+```

@@ -1,0 +1,95 @@
+{
+  "id": "20-onboard_project",
+  "title": "Onboard Project Workflow",
+  "triggeredBy": "Start of a new session or encountering this architecture for the first time",
+  "intent": "Auto-discover project structure, skill taxonomy, and routing policy without human guidance",
+  "resourcePool": [
+    "default"
+  ],
+  "inputSchema": {
+    "initialContext": "string",
+    "environment": "string"
+  },
+  "throwbacks": [
+    "bootstrap: orchestration.toml schema missing or invalid"
+  ],
+  "chainTo": [],
+  "skillTree": {
+    "root": "project-research",
+    "nodes": [
+      {
+        "id": "project-research",
+        "skill": "synth-research",
+        "type": "primary",
+        "profile": "research",
+        "description": "Gather and structure information about the project from codebase, docs, and config",
+        "next": [
+          {
+            "target": "scope-discovery"
+          }
+        ]
+      },
+      {
+        "id": "scope-discovery",
+        "skill": "req-scope",
+        "type": "primary",
+        "profile": "elicitation",
+        "description": "Identify the project's bounded work scope, language, framework, and key dependencies",
+        "next": [
+          {
+            "target": "requirement-parsing"
+          }
+        ]
+      },
+      {
+        "id": "requirement-parsing",
+        "skill": "req-analysis",
+        "type": "primary",
+        "profile": "elicitation",
+        "description": "Extract structural requirements from existing code, README, and config files",
+        "next": [
+          {
+            "target": "orchestration-planning"
+          }
+        ]
+      },
+      {
+        "id": "orchestration-planning",
+        "skill": "flow-orchestrator",
+        "type": "gate",
+        "profile": "orchestration",
+        "description": "Build the initial routing map: which workflows apply to this project's domain",
+        "next": [
+          {
+            "target": "mentor-orientation",
+            "condition": "first session for this developer"
+          },
+          {
+            "target": "session-complete",
+            "condition": "returning session — orientation cached"
+          }
+        ]
+      },
+      {
+        "id": "mentor-orientation",
+        "skill": "lead-staff-mentor",
+        "type": "primary",
+        "profile": "enterprise",
+        "description": "Provide staff-engineer-level orientation: architecture patterns, skill domains, and contribution paths",
+        "next": [
+          {
+            "target": "session-complete"
+          }
+        ]
+      },
+      {
+        "id": "session-complete",
+        "skill": "req-analysis",
+        "type": "synthesis",
+        "profile": "elicitation",
+        "description": "Confirm project model is established; hand off to the appropriate entry workflow",
+        "next": []
+      }
+    ]
+  }
+}

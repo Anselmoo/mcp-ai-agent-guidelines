@@ -1,0 +1,72 @@
+---
+title: Quantum Mechanics Skills
+description: 15 quantum-mechanics-inspired skills for superposition, entanglement, measurement, tunneling, and more.
+sidebar:
+  label: QM Physics
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+<Aside type="caution" title="Feature Gate">
+QM skills require `ENABLE_PHYSICS_SKILLS=true`. They are off by default. Set in your `.env` or MCP config environment variables.
+</Aside>
+
+## Why Quantum Mechanics?
+
+Quantum mechanical concepts map surprisingly well to challenges in AI orchestration:
+
+| QM Concept | AI Orchestration Analogue |
+|------------|--------------------------|
+| Superposition | Multiple competing solution candidates held simultaneously |
+| Entanglement | Tightly coupled decisions that must be jointly optimised |
+| Measurement / Collapse | Selecting a single output from a probability distribution |
+| Tunneling | Breaking through apparent local optima barriers |
+| Wave function | Coverage distribution across test or solution space |
+| Uncertainty principle | Fundamental tradeoff between precision and recall |
+| Decoherence | Context pollution degrading decision quality over time |
+| Interference | Constructive/destructive merging of parallel agent outputs |
+
+These are **architectural metaphors** — precise analogies, not claims about quantum computing. The skills use the mathematics of QM (probability amplitudes, basis decomposition, etc.) as algorithmic primitives.
+
+## Skills
+
+| Skill ID | Description | Model Class |
+|----------|-------------|-------------|
+| `qm-superposition-generator` | Holds N candidate solutions in superposition; maintains amplitude (probability weight) for each | `strong` |
+| `qm-entanglement-mapper` | Identifies inter-dependent decisions that must be made jointly; prevents inconsistent collapse | `strong` |
+| `qm-measurement-collapse` | Selects a single outcome by collapsing the superposition state; respect measurement context | `strong` |
+| `qm-tunneling-breakthrough` | Breaks through apparent impossibility barriers by finding non-obvious path through solution space | `strong` |
+| `qm-wavefunction-coverage` | Models test/solution coverage as a wave function; identifies under-covered regions | `strong` |
+| `qm-uncertainty-principle` | Analyses precision–recall tradeoffs as a Heisenberg duality; recommends operating point | `strong` |
+| `qm-interference-pattern` | Merges parallel agent outputs using constructive/destructive interference logic | `strong` |
+| `qm-decoherence-shield` | Detects and filters context pollution that degrades decision quality over long chains | `strong` |
+| `qm-basis-decomposition` | Decomposes a complex problem into orthogonal sub-problems (basis vectors) | `strong` |
+| `qm-hamiltonian-optimizer` | Formulates an optimization problem as a Hamiltonian; finds energy-minimizing solution | `strong` |
+| `qm-path-integral` | Evaluates all paths through a decision space weighted by their amplitude | `strong` |
+| `qm-density-matrix` | Represents mixed states (uncertainty about problem formulation) as a density matrix | `strong` |
+| `qm-observable-extractor` | Defines measurable observables (KPIs) that correspond to the quantum state of a workflow | `strong` |
+| `qm-phase-kickback` | Uses phase relationships between sub-solutions to accelerate convergence | `strong` |
+| `qm-amplitude-amplifier` | Amplifies high-quality solution candidates (Grover-inspired) for faster selection | `strong` |
+
+## Orchestration Pattern for Physics Skills
+
+```
+qm-* request
+  1. Claude Sonnet 4.6   → primary physics analysis
+  2. GPT-5.4             → back-translation to plain engineering language
+```
+
+`GPT-5.4` translates the physics-metaphor output into actionable engineering guidance that non-specialist consumers can act on.
+
+## When to Use
+
+QM skills are best suited for problems with:
+- Many competing valid approaches (`qm-superposition-generator`)
+- Tightly coupled interdependent decisions (`qm-entanglement-mapper`)
+- Local optima traps (`qm-tunneling-breakthrough`, `qm-amplitude-amplifier`)
+- Noisy or conflicting parallel agent outputs (`qm-interference-pattern`)
+- Long context chains with degrading coherence (`qm-decoherence-shield`)
+
+## Instructions That Invoke These Skills
+
+- **physics-analysis** — primary consumer; selects appropriate QM skills based on the problem structure

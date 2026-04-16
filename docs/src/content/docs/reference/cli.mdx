@@ -1,0 +1,137 @@
+---
+title: CLI Reference
+description: Command-line interface for onboarding, memory management, session history, and configuration.
+sidebar:
+  label: CLI
+  order: 3
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+The `mcp-ai-agent-guidelines` CLI provides commands for project onboarding, session lifecycle management, memory inspection, and observability reporting.
+
+```bash
+# Run via npx (no install required)
+npx mcp-ai-agent-guidelines [command]
+
+# Or after local install
+node dist/cli-main.js [command]
+```
+
+---
+
+## Global Options
+
+| Option | Description |
+|--------|-------------|
+| `-v, --verbose` | Enable verbose output |
+| `--version` | Print version |
+| `--help` | Show help |
+
+---
+
+## `onboard` — Project Setup
+
+### `onboard init`
+
+Run the interactive onboarding wizard. Guides you through model configuration, skill surface selection, and MCP client setup. Skips automatically if configuration already exists.
+
+```bash
+mcp-ai-agent-guidelines onboard init
+```
+
+### `onboard status`
+
+Show the current onboarding status and active configuration.
+
+```bash
+mcp-ai-agent-guidelines onboard status
+```
+
+### `onboard reset`
+
+Reset configuration. Removes session and memory state and re-runs the wizard.
+
+```bash
+mcp-ai-agent-guidelines onboard reset
+```
+
+<Aside type="caution">
+`onboard reset` deletes existing session history and memory artifacts in `.mcp-ai-agent-guidelines/sessions/` and `.mcp-ai-agent-guidelines/memory/`.
+</Aside>
+
+---
+
+## `orchestration` — Model Configuration
+
+Manage model routing via `orchestration.toml` without editing the file directly.
+
+### `orchestration config read`
+
+Print the current `orchestration.toml` as JSON.
+
+```bash
+mcp-ai-agent-guidelines orchestration config read
+```
+
+### `orchestration config write`
+
+Update a specific role in `orchestration.toml`.
+
+```bash
+mcp-ai-agent-guidelines orchestration config write --role strong_primary --model claude-sonnet-4-5
+```
+
+---
+
+## `memory` — TOON Context
+
+### `memory list`
+
+List all memory artifacts and TOON snapshots.
+
+```bash
+mcp-ai-agent-guidelines memory list
+```
+
+### `memory show <id>`
+
+Print a specific memory artifact by ID.
+
+```bash
+mcp-ai-agent-guidelines memory show <session-id>
+```
+
+---
+
+## `status` — Server Info
+
+Print version, loaded skills, active flags, and model router state.
+
+```bash
+mcp-ai-agent-guidelines status
+```
+
+---
+
+## `docs:*` — Documentation Scripts
+
+These npm scripts delegate to the `docs/` Starlight site.
+
+```bash
+npm run docs:dev      # Start dev server at localhost:4321
+npm run docs:build    # Build static site to docs/dist/
+npm run docs:preview  # Preview built site locally
+```
+
+---
+
+## MCP Server Entry Point
+
+The MCP server itself (not the CLI) is started with:
+
+```bash
+node dist/index.js
+```
+
+This speaks MCP over `stdin/stdout` and is what your MCP client (Copilot, Claude Desktop, etc.) invokes.

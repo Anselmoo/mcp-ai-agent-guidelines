@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 580 320" role="img"
+    aria-label="Six design pillars: No Anti-Bodies, Autonomous Loops, Unbiased Review, Zero Legacy Debt, Implementation over Intuition, Physics-Driven">
+    <title>Six Design Pillars</title>
+
+    <!-- Background -->
+    <rect width="580" height="320" rx="8" fill="#100f20" />
+
+    <!-- Caligo-teal edge connectors -->
+    <line x1="134" y1="80" x2="256" y2="80" stroke="#00d4cc" stroke-width="0.8" stroke-opacity="0.30"
+        stroke-dasharray="3,4" />
+    <line x1="324" y1="80" x2="446" y2="80" stroke="#00d4cc" stroke-width="0.8" stroke-opacity="0.30"
+        stroke-dasharray="3,4" />
+    <line x1="134" y1="240" x2="256" y2="240" stroke="#00d4cc" stroke-width="0.8" stroke-opacity="0.30"
+        stroke-dasharray="3,4" />
+    <line x1="324" y1="240" x2="446" y2="240" stroke="#00d4cc" stroke-width="0.8" stroke-opacity="0.30"
+        stroke-dasharray="3,4" />
+    <line x1="100" y1="122" x2="100" y2="202" stroke="#00d4cc" stroke-width="0.8" stroke-opacity="0.30"
+        stroke-dasharray="3,4" />
+    <line x1="290" y1="122" x2="290" y2="202" stroke="#00d4cc" stroke-width="0.8" stroke-opacity="0.30"
+        stroke-dasharray="3,4" />
+    <line x1="480" y1="122" x2="480" y2="202" stroke="#00d4cc" stroke-width="0.8" stroke-opacity="0.30"
+        stroke-dasharray="3,4" />
+
+    <!-- ══ Pillar 1: No Anti-Bodies ══ -->
+    <polygon points="100,42 134,62 134,102 100,122 66,102 66,62" fill="#00d4cc" fill-opacity="0.10" stroke="#00d4cc"
+        stroke-width="1.2" stroke-opacity="0.65" />
+    <text x="100" y="77" font-family="ui-sans-serif,system-ui,sans-serif" font-size="8" font-weight="700" fill="#00d4cc"
+        text-anchor="middle">No</text>
+    <text x="100" y="90" font-family="ui-sans-serif,system-ui,sans-serif" font-size="8" font-weight="700" fill="#00d4cc"
+        text-anchor="middle">Anti-Bodies</text>
+    <text x="100" y="107" font-family="ui-sans-serif,system-ui,sans-serif" font-size="6.5" fill="#64748b"
+        text-anchor="middle">zero-trust defaults</text>
+
+    <!-- ══ Pillar 2: Autonomous Loops ══ -->
+    <polygon points="290,42 324,62 324,102 290,122 256,102 256,62" fill="#00d4cc" fill-opacity="0.10" stroke="#00d4cc"
+        stroke-width="1.2" stroke-opacity="0.65" />
+    <text x="290" y="77" font-family="ui-sans-serif,system-ui,sans-serif" font-size="8" font-weight="700" fill="#00d4cc"
+        text-anchor="middle">Autonomous</text>
+    <text x="290" y="90" font-family="ui-sans-serif,system-ui,sans-serif" font-size="8" font-weight="700" fill="#00d4cc"
+        text-anchor="middle">Loops</text>
+    <text x="290" y="107" font-family="ui-sans-serif,system-ui,sans-serif" font-size="6.5" fill="#64748b"
+        text-anchor="middle">self-directed iteration</text>
+
+    <!-- ══ Pillar 3: Unbiased Review ══ -->
+    <polygon points="480,42 514,62 514,102 480,122 446,102 446,62" fill="#3b9cf6" fill-opacity="0.10" stroke="#3b9cf6"
+        stroke-width="1.2" stroke-opacity="0.65" />
+    <text x="480" y="77" font-family="ui-sans-serif,system-ui,sans-serif" font-size="8" font-weight="700" fill="#3b9cf6"
+        text-anchor="middle">Unbiased</text>
+    <text x="480" y="90" font-family="ui-sans-serif,system-ui,sans-serif" font-size="8" font-weight="700" fill="#3b9cf6"
+        text-anchor="middle">Review</text>
+    <text x="480" y="107" font-family="ui-sans-serif,system-ui,sans-serif" font-size="6.5" fill="#64748b"
+        text-anchor="middle">cross-model critique</text>
+
+    <!-- ══ Pillar 4: Zero Legacy Debt ══ -->
+    <polygon points="100,202 134,222 134,262 100,282 66,262 66,222" fill="#ffa659" fill-opacity="0.10" stroke="#ffa659"
+        stroke-width="1.2" stroke-opacity="0.65" />
+    <text x="100" y="237" font-family="ui-sans-serif,system-ui,sans-serif" font-size="8" font-weight="700"
+        fill="#ffa659" text-anchor="middle">Zero</text>
+    <text x="100" y="250" font-family="ui-sans-serif,system-ui,sans-serif" font-size="8" font-weight="700"
+        fill="#ffa659" text-anchor="middle">Legacy Debt</text>
+    <text x="100" y="267" font-family="ui-sans-serif,system-ui,sans-serif" font-size="6.5" fill="#64748b"
+        text-anchor="middle">no untested carry-over</text>
+
+    <!-- ══ Pillar 5: Implementation over Intuition ══ -->
+    <polygon points="290,202 324,222 324,262 290,282 256,262 256,222" fill="#ffa659" fill-opacity="0.10"
+        stroke="#ffa659" stroke-width="1.2" stroke-opacity="0.65" />
+    <text x="290" y="233" font-family="ui-sans-serif,system-ui,sans-serif" font-size="8" font-weight="700"
+        fill="#ffa659" text-anchor="middle">Implementation</text>
+    <text x="290" y="246" font-family="ui-sans-serif,system-ui,sans-serif" font-size="8" font-weight="700"
+        fill="#ffa659" text-anchor="middle">over Intuition</text>
+    <text x="290" y="263" font-family="ui-sans-serif,system-ui,sans-serif" font-size="6.5" fill="#64748b"
+        text-anchor="middle">empirical over heuristic</text>
+
+    <!-- ══ Pillar 6: Physics-Driven ══ -->
+    <polygon points="480,202 514,222 514,262 480,282 446,262 446,222" fill="#d8d94b" fill-opacity="0.10"
+        stroke="#d8d94b" stroke-width="1.2" stroke-opacity="0.65" />
+    <text x="480" y="237" font-family="ui-sans-serif,system-ui,sans-serif" font-size="8" font-weight="700"
+        fill="#d8d94b" text-anchor="middle">Physics-</text>
+    <text x="480" y="250" font-family="ui-sans-serif,system-ui,sans-serif" font-size="8" font-weight="700"
+        fill="#d8d94b" text-anchor="middle">Driven</text>
+    <text x="480" y="267" font-family="ui-sans-serif,system-ui,sans-serif" font-size="6.5" fill="#64748b"
+        text-anchor="middle">qm-* + gr-* skill axes</text>
+</svg>

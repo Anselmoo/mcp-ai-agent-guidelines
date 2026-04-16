@@ -1,0 +1,99 @@
+---
+title: Documentation Generation
+description: Auto-document code, generate API references, and write runbooks — code dictates docs, never the other way around.
+sidebar:
+  label: Document
+  order: 13
+---
+
+import { Badge } from '@astrojs/starlight/components';
+
+<Badge text="Tool: docs-generate" variant="tip" /> <Badge text="Model: Efficient" variant="note" />
+
+## Trigger & Intent
+
+**Triggered by:** A request to auto-document code, generate APIs, or write runbooks.
+
+**Intent:** Exposes deep technical context for humans in predictable schemas without subjective fluff. Code dictates docs.
+
+## Resource Pooling
+
+Capability profile: `documentation` — requires `fast_draft`, prefers `cost_sensitive`, fan-out 3.
+
+## Required Skills
+
+| Skill | Role |
+|-------|------|
+| `doc-api` | API reference documentation |
+| `doc-generator` | General documentation generation |
+| `doc-readme` | README and project overview generation |
+| `doc-runbook` | Operational runbook authoring |
+
+## Input Schema
+
+```typescript
+{
+  sourcePaths: string[];
+  docType: "api" | "runbook" | "readme";
+}
+```
+
+## Decisions & Throw-Backs
+
+If API docs fail schema-validation tests, throws back to `implement` to fix the underlying API. Code dictates docs — never the reverse.
+
+## Success Chains
+
+On successful completion chains to: **review** · **enterprise**
+
+## FSM — Narrative identity through memory reconstruction
+
+```mermaid
+stateDiagram-v2
+    [*] --> LiveCodebase
+    LiveCodebase --> SymbolExtraction
+    SymbolExtraction --> DocStore
+    DocStore --> RetrievalCue
+    RetrievalCue --> NarrativeReconstruction
+
+    NarrativeReconstruction --> DocNarrativeFit
+    NarrativeReconstruction --> DocNarrativeConflict
+
+    DocNarrativeFit --> IdentitySupport
+    IdentitySupport --> DocStore
+
+    DocNarrativeConflict --> RevisionPressure
+    RevisionPressure --> Reauthoring
+    Reauthoring --> NarrativeShift
+    NarrativeShift --> DocStore
+
+    NarrativeShift --> [*]
+```
+
+## Execution Sequence
+
+```mermaid
+sequenceDiagram
+    participant Orchestrator
+    participant Pool (Analytical)
+    participant Pool (Mechanical)
+    participant Tool (Context)
+
+    Orchestrator->>Pool (Analytical): Allocate Capability Profile
+    activate Pool (Analytical)
+    Pool (Analytical)->>Tool (Context): Issue Tool Calls (Parallel)
+    Tool (Context)-->>Pool (Analytical): Return Data
+
+    alt Shallow Loop
+        Pool (Analytical)->>Pool (Analytical): Auto-correct Schema
+    else Medium Loop
+        Pool (Analytical)->>Pool (Mechanical): Delegate Fixes
+    end
+
+    Pool (Analytical)-->>Orchestrator: Synthesis Gate
+    deactivate Pool (Analytical)
+
+    opt Deep Loop
+        Orchestrator->>Orchestrator: Complete Throw-back to Prior Stage
+    end
+```

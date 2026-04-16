@@ -1,0 +1,143 @@
+{
+  "id": "07-evaluate",
+  "title": "Evaluate / Benchmark Workflow",
+  "triggeredBy": "implement workflow or a direct eval request against prompt templates",
+  "intent": "Quantify AI system quality: prompt scoring, variance analysis, and regression detection",
+  "resourcePool": [
+    "evaluation",
+    "benchmarking"
+  ],
+  "inputSchema": {
+    "evalSuiteId": "string",
+    "targetModel": "string"
+  },
+  "throwbacks": [
+    "prompt-engineering: performance degrades",
+    "implement: score drops below baseline"
+  ],
+  "chainTo": [
+    "prompt-engineering",
+    "refactor",
+    "govern"
+  ],
+  "skillTree": {
+    "root": "eval-suite-design",
+    "nodes": [
+      {
+        "id": "eval-suite-design",
+        "skill": "eval-design",
+        "type": "primary",
+        "profile": "evaluation",
+        "description": "Design high-quality eval datasets with realistic prompts, hard negatives, and discriminative assertions",
+        "next": [
+          {
+            "target": "prompt-eval"
+          },
+          {
+            "target": "variance-run"
+          },
+          {
+            "target": "benchmark-suite"
+          }
+        ]
+      },
+      {
+        "id": "prompt-eval",
+        "skill": "eval-prompt",
+        "type": "parallel",
+        "profile": "evaluation",
+        "description": "Score and grade prompts against benchmark datasets and golden test sets",
+        "next": [
+          {
+            "target": "output-grading"
+          }
+        ]
+      },
+      {
+        "id": "variance-run",
+        "skill": "eval-variance",
+        "type": "parallel",
+        "profile": "evaluation",
+        "description": "Measure output variance and flakiness across multiple runs to assess model consistency",
+        "next": [
+          {
+            "target": "output-grading"
+          }
+        ]
+      },
+      {
+        "id": "benchmark-suite",
+        "skill": "bench-eval-suite",
+        "type": "parallel",
+        "profile": "benchmarking",
+        "description": "Run comprehensive evaluation suite covering multiple quality dimensions",
+        "next": [
+          {
+            "target": "benchmark-analysis"
+          }
+        ]
+      },
+      {
+        "id": "benchmark-analysis",
+        "skill": "bench-analyzer",
+        "type": "primary",
+        "profile": "benchmarking",
+        "description": "Analyze benchmark results to identify quality trends, regressions, and performance signals",
+        "next": [
+          {
+            "target": "blind-comparison"
+          }
+        ]
+      },
+      {
+        "id": "blind-comparison",
+        "skill": "bench-blind-comparison",
+        "type": "primary",
+        "profile": "benchmarking",
+        "description": "Run blind pairwise comparisons between AI outputs to remove evaluation bias",
+        "next": [
+          {
+            "target": "output-grading"
+          }
+        ]
+      },
+      {
+        "id": "output-grading",
+        "skill": "eval-output-grading",
+        "type": "primary",
+        "profile": "evaluation",
+        "description": "Grade AI outputs using rubrics, schema validation, pairwise comparison, and judge models",
+        "next": [
+          {
+            "target": "prompt-bench-regression"
+          }
+        ]
+      },
+      {
+        "id": "prompt-bench-regression",
+        "skill": "eval-prompt-bench",
+        "type": "gate",
+        "profile": "evaluation",
+        "description": "Run benchmarks to score prompts, compare versions, and detect regressions against baseline",
+        "next": [
+          {
+            "target": "eval-complete",
+            "condition": "no regressions detected"
+          },
+          {
+            "target": "eval-suite-design",
+            "condition": "regression found — re-run with adjusted rubric"
+          }
+        ]
+      },
+      {
+        "id": "eval-complete",
+        "skill": "eval-design",
+        "type": "synthesis",
+        "profile": "evaluation",
+        "description": "Archive eval results and update the eval suite with new hard cases from this run",
+        "next": []
+      }
+    ]
+  }
+}

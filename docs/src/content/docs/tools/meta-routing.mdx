@@ -1,0 +1,57 @@
+---
+title: meta-routing
+description: Task Router — decides which instruction(s) to invoke, in what order, and how to chain them for compound tasks.
+sidebar:
+  label: meta-routing
+  badge:
+    text: "Efficient"
+    variant: "caution"
+---
+
+import { Badge } from "@astrojs/starlight/components";
+import ToolIcon from "../../../components/ToolIcon.astro";
+
+<div class="tool-header-icon"><ToolIcon icon="Route" size={28} aria-hidden="true" /><span><Badge text="Efficient" variant="caution" /> <Badge text="discovery" variant="note" /></span></div>
+
+## Mission
+
+Decide which instruction(s) to invoke, in what order, and how to chain them for compound tasks.
+
+## When to Use
+
+Use when you need to choose which instruction to invoke, when a task spans multiple domains, when instructions should run serially vs in parallel, or when escalation or cross-instruction chaining is needed.
+
+**Triggers**: "not sure which tool", "compound task", "what instruction do I use", "route this", "which tools should I chain"
+
+## Routing Logic
+
+`meta-routing` consults the full instruction registry and workflow specification to determine:
+
+1. **Domain classification** — Which domain(s) does the request span?
+2. **Serial vs parallel** — Can instructions run in parallel or must they be sequential?
+3. **Escalation route** — Which model class is appropriate given the complexity?
+4. **Chain recommendation** — Which instructions to invoke next and in what order
+
+## Reactivation Policy
+
+`on-context-drift` — re-invoked whenever the embedding-cosine context drift detector fires, preventing routing collapse on long sessions.
+
+## Example
+
+```json
+{
+  "request": "We need to design a new service, implement it, and make sure it passes governance review"
+}
+```
+
+**Output**:
+```
+Step 1: system-design (Advanced) — architecture and constraints
+Step 2: feature-implement (Advanced) — parallel with step 3
+Step 3: policy-govern (Advanced) — governance pre-check
+Step 4: code-review (Cross-Model) — final quality gate
+```
+
+## Companion Tools
+
+Use `graph-visualize` with `chain-graph` to inspect instruction chains and routing topology visually.

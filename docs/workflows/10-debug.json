@@ -1,0 +1,96 @@
+{
+  "id": "10-debug",
+  "title": "Debug Workflow",
+  "triggeredBy": "Explicit stack traces, failing CI/CD runs, or execution failures in implement",
+  "intent": "Perform rigorous Root Cause Analysis instead of blindly guessing fixes",
+  "resourcePool": [
+    "debugging"
+  ],
+  "inputSchema": {
+    "stackTrace": "string?",
+    "observedBehavior": "string",
+    "expectedBehavior": "string"
+  },
+  "throwbacks": [
+    "user: request more environment context if bug cannot be reproduced"
+  ],
+  "chainTo": [
+    "testing",
+    "refactor",
+    "govern"
+  ],
+  "skillTree": {
+    "root": "triage",
+    "nodes": [
+      {
+        "id": "triage",
+        "skill": "debug-assistant",
+        "type": "primary",
+        "profile": "debugging",
+        "description": "Structured triage and diagnosis: categorize error type, narrow the failure surface",
+        "next": [
+          {
+            "target": "reproduction-plan"
+          },
+          {
+            "target": "root-cause"
+          }
+        ]
+      },
+      {
+        "id": "reproduction-plan",
+        "skill": "debug-reproduction",
+        "type": "primary",
+        "profile": "debugging",
+        "description": "Plan minimal reproduction steps: create the smallest failing test case",
+        "next": [
+          {
+            "target": "root-cause",
+            "condition": "bug reproduced"
+          },
+          {
+            "target": "triage",
+            "condition": "cannot reproduce — gather more context"
+          }
+        ]
+      },
+      {
+        "id": "root-cause",
+        "skill": "debug-root-cause",
+        "type": "primary",
+        "profile": "debugging",
+        "description": "5-whys causal chain analysis to trace the bug to its structural root cause",
+        "next": [
+          {
+            "target": "postmortem",
+            "condition": "production incident"
+          },
+          {
+            "target": "fix-dispatched",
+            "condition": "root cause isolated"
+          }
+        ]
+      },
+      {
+        "id": "postmortem",
+        "skill": "debug-postmortem",
+        "type": "synthesis",
+        "profile": "debugging",
+        "description": "Generate structured postmortem: timeline, root cause, impact, and action items",
+        "next": [
+          {
+            "target": "fix-dispatched"
+          }
+        ]
+      },
+      {
+        "id": "fix-dispatched",
+        "skill": "debug-assistant",
+        "type": "gate",
+        "profile": "debugging",
+        "description": "Route verified root cause to implement with specific reproduction test included",
+        "next": []
+      }
+    ]
+  }
+}

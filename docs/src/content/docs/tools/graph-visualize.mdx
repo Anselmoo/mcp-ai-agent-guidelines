@@ -1,0 +1,108 @@
+---
+title: graph-visualize
+description: Workspace tool — generate Mermaid diagrams for instruction chain graphs, skill graphs, and domain-focused views.
+sidebar:
+  label: graph-visualize
+  badge:
+    text: "Zero-Cost"
+    variant: "success"
+  order: 22
+---
+
+import { Badge } from "@astrojs/starlight/components";
+import ToolIcon from "../../../components/ToolIcon.astro";
+
+<div class="tool-header-icon"><ToolIcon icon="GitGraph" size={28} aria-hidden="true" /><span><Badge text="workspace" variant="note" /> <Badge text="read-only" variant="tip" /></span></div>
+
+## Purpose
+
+Generate Mermaid diagrams of instruction chain graphs, skill graphs, or domain-focused views. Returns Mermaid syntax that renders in GitHub, VS Code, and most MCP clients without requiring any external rendering service.
+
+## Views
+
+| View | Description |
+|------|-------------|
+| `chain-graph` | Color-coded instruction chainTo routing graph — shows all 20 tools and their chain-to relationships |
+| `skill-graph` | All 102 skills grouped by domain |
+| `instruction-chain` | Linear sequence of workflow instruction tools |
+| `domain-focus` | Skills filtered to a single domain (requires `domain` parameter) |
+
+## Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `view` | `string` | required | One of `chain-graph`, `skill-graph`, `instruction-chain`, `domain-focus` |
+| `domain` | `string` | Only for `domain-focus` | Domain prefix to focus on (e.g. `"qm"`, `"gov"`, `"adapt"`) |
+
+## Examples
+
+### Full chain graph
+
+```json
+{
+  "view": "chain-graph"
+}
+```
+
+**Output**: Mermaid `graph TD` diagram with color-coded nodes (workflow = blue, specialist = orange, gated = red, terminal = grey) and directed chain-to edges.
+
+### Domain-focused skill graph
+
+```json
+{
+  "view": "domain-focus",
+  "domain": "qm"
+}
+```
+
+**Output**: Mermaid diagram showing all 15 quantum-mechanics skills and their relationships.
+
+### Skill graph overview
+
+```json
+{
+  "view": "skill-graph"
+}
+```
+
+**Output**: All 102 skills clustered into 18 domain subgraphs.
+
+## Available Domains
+
+| Prefix | Domain |
+|--------|--------|
+| `adapt` | Adaptive (bio-inspired) |
+| `arch` | Architecture |
+| `bench` | Benchmarking |
+| `debug` | Debugging |
+| `doc` | Documentation |
+| `eval` | Evaluation |
+| `flow` | Workflows |
+| `gov` | Governance |
+| `gr` | General Relativity |
+| `lead` | Leadership |
+| `orch` | Orchestration |
+| `prompt` | Prompting |
+| `qm` | Quantum Mechanics |
+| `qual` | Quality |
+| `req` | Requirements |
+| `resil` | Resilience |
+| `strat` | Strategy |
+| `synth` | Research/Synthesis |
+
+## Rendering the Output
+
+The returned Mermaid syntax renders in:
+- **GitHub** — fenced code blocks with ` ```mermaid `
+- **VS Code** — with Mermaid Preview extension
+- **Most MCP clients** — Mermaid blocks are auto-rendered
+- **Starlight docs** — via the `astro-mermaid` integration
+
+## Tool Annotations
+
+| Property | Value |
+|----------|-------|
+| `readOnlyHint` | `true` |
+| `destructiveHint` | `false` |
+| `idempotentHint` | `true` |
+| `openWorldHint` | `false` |

@@ -1,0 +1,63 @@
+---
+title: physics-analysis
+description: Physics Analysis — QM and GR code metaphors for coupling, coverage, technical debt, and refactoring paths.
+sidebar:
+  label: physics-analysis
+  badge:
+    text: "Advanced"
+    variant: "danger"
+---
+
+import { Badge, Aside } from "@astrojs/starlight/components";
+import ToolIcon from "../../../components/ToolIcon.astro";
+
+<div class="tool-header-icon"><ToolIcon icon="Atom" size={28} aria-hidden="true" /><span><Badge text="Advanced" variant="danger" /> <Badge text="workflow" variant="note" /></span></div>
+
+<Aside type="caution" title="Feature Gate">
+Requires `ENABLE_PHYSICS_SKILLS=true`. Off by default. All 30 QM+GR skills are gated behind this flag.
+</Aside>
+
+## Mission
+
+Apply QM/GR analogies with explicit translation, confidence tiers, and conventional fallbacks. Home base for all 30 physics skills.
+
+## When to Use
+
+Use when conventional code analysis tools are insufficient. Physics-inspired metaphors are appropriate for:
+- Quantum mechanics analogies: coupling, coverage, and style analysis
+- General relativity analogies: technical debt, module gravitational mass, and refactoring paths
+
+**NOT an entry point** — always arrive here from another instruction (refactor, design, review, evaluate, research, debug).
+
+**Triggers**: "QM/GR analysis", "apply physics metaphors", "spacetime debt", "superposition of solutions", "event horizon", "arriving from refactor/design/review"
+
+## Skills Invoked
+
+**QM skills** (15 total):
+`qm-superposition-generator`, `qm-entanglement-mapper`, `qm-measurement-collapse`, `qm-tunneling-breakthrough`, `qm-wavefunction-coverage`, `qm-uncertainty-principle`, `qm-interference-pattern`, `qm-decoherence-shield`, `qm-basis-decomposition`, `qm-hamiltonian-optimizer`, `qm-path-integral`, `qm-density-matrix`, `qm-observable-extractor`, `qm-phase-kickback`, `qm-amplitude-amplifier`
+
+**GR skills** (15 total):
+`gr-spacetime-debt-metric`, `gr-event-horizon-detector`, `gr-geodesic-refactor`, `gr-gravitational-lensing-tracer`, `gr-gravitational-wave-propagator`, `gr-frame-dragging-correction`, `gr-escape-velocity-calculator`, `gr-singularity-detector`, `gr-black-hole-evaporator`, `gr-metric-tensor`, `gr-redshift-analyser`, `gr-tidal-force-splitter`, `gr-wormhole-linker`, `gr-penrose-process`, `gr-hawking-decomposer`
+
+## Orchestration Pattern
+
+```
+physics-analysis request
+  1. Claude Sonnet 4.6   → primary physics analysis (selects relevant QM/GR skills)
+  2. GPT-5.4             → back-translation to plain engineering language
+```
+
+## Chain-To
+
+- `code-review` — review code informed by physics analysis
+- `feature-implement` — implement based on physics-guided design
+
+## Example
+
+```json
+{
+  "request": "Arriving from refactor. The payment service shows signs of extreme coupling. Apply GR analysis."
+}
+```
+
+**Output**: `gr-spacetime-debt-metric` score per module, `gr-event-horizon-detector` risk flags, `gr-geodesic-refactor` recommended path, and GPT-5.4 back-translation to actionable refactoring steps.

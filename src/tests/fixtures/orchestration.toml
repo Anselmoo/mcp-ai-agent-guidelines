@@ -1,0 +1,321 @@
+# MCP AI Agent Guidelines — test fixture configuration
+# Mirrors the production layout with strict_mode = false so tests never throw
+# when the live .mcp-ai-agent-guidelines/ directory is absent (e.g. CI, fresh clone).
+
+[environment]
+strict_mode = false
+default_max_context = 128000
+enable_cost_tracking = true
+tool_surface_validation = true
+orchestration_schema_validation = true
+
+[models.free_primary]
+id = "gpt-4.1"
+provider = "openai"
+available = true
+context_window = 128000
+cost_per_1k_input = 0.075
+cost_per_1k_output = 0.3
+
+[models.free_secondary]
+id = "gpt-5-mini"
+provider = "openai"
+available = true
+context_window = 128000
+cost_per_1k_input = 0.075
+cost_per_1k_output = 0.3
+
+[models.cheap_primary]
+id = "claude-haiku-4-5"
+provider = "anthropic"
+available = true
+context_window = 160000
+cost_per_1k_input = 0.8
+cost_per_1k_output = 4
+
+[models.cheap_secondary]
+id = "gpt-5-4-mini"
+provider = "openai"
+available = true
+context_window = 400_000
+cost_per_1k_input = 0.15
+cost_per_1k_output = 0.6
+
+[models.strong_primary]
+id = "claude-sonnet-4-6"
+provider = "anthropic"
+available = true
+context_window = 160_000
+cost_per_1k_input = 3
+cost_per_1k_output = 15
+
+[models.strong_secondary]
+id = "gpt-5-4"
+provider = "openai"
+available = true
+context_window = 400_000
+cost_per_1k_input = 0.5
+cost_per_1k_output = 2
+
+[capabilities]
+fast_draft = [ "free_primary", "free_secondary", "cheap_primary", "cheap_secondary" ]
+deep_reasoning = [ "strong_primary", "strong_secondary" ]
+large_context = [ "free_secondary", "cheap_primary", "cheap_secondary", "strong_secondary" ]
+adversarial = [ "strong_secondary", "strong_primary" ]
+classification = [ "free_primary", "cheap_primary" ]
+cost_sensitive = [ "free_primary", "free_secondary", "cheap_primary", "cheap_secondary" ]
+structured_output = [ "free_primary", "free_secondary", "strong_primary" ]
+code_analysis = [ "free_secondary", "strong_primary" ]
+security_audit = [ "strong_secondary", "strong_primary" ]
+synthesis = [ "strong_primary", "strong_secondary" ]
+math_physics = [ "strong_primary", "strong_secondary" ]
+low_latency = [ "free_primary", "cheap_primary" ]
+
+[profiles.bootstrap]
+requires = [ "structured_output" ]
+prefer = "cost_sensitive"
+fallback = [ "fast_draft" ]
+fan_out = 1
+
+[profiles.implement]
+requires = [ "code_analysis", "structured_output" ]
+prefer = "cost_sensitive"
+fallback = [ "fast_draft" ]
+fan_out = 2
+
+[profiles.refactor]
+requires = [ "code_analysis" ]
+prefer = "structured_output"
+fallback = [ "fast_draft" ]
+fan_out = 1
+
+[profiles.debugging]
+requires = [ "code_analysis" ]
+prefer = "cost_sensitive"
+fallback = [ "fast_draft" ]
+fan_out = 1
+
+[profiles.testing]
+requires = [ "code_analysis", "structured_output" ]
+prefer = "cost_sensitive"
+fallback = [ "fast_draft" ]
+fan_out = 1
+
+[profiles.design]
+requires = [ "large_context", "code_analysis" ]
+prefer = "synthesis"
+fallback = [ "cost_sensitive" ]
+fan_out = 1
+
+[profiles.code_review]
+requires = [ "code_analysis" ]
+prefer = "structured_output"
+fallback = [ "fast_draft" ]
+fan_out = 1
+
+[profiles.research]
+requires = [ "large_context" ]
+prefer = "cost_sensitive"
+fallback = [ "fast_draft" ]
+fan_out = 3
+
+[profiles.orchestration]
+requires = [ "structured_output", "large_context" ]
+prefer = "cost_sensitive"
+fallback = [ "fast_draft" ]
+fan_out = 1
+
+[profiles.adaptive_routing]
+requires = [ "structured_output" ]
+prefer = "cost_sensitive"
+fallback = [ "fast_draft" ]
+fan_out = 1
+
+[profiles.resilience]
+requires = [ "structured_output" ]
+prefer = "cost_sensitive"
+fallback = [ "fast_draft" ]
+fan_out = 1
+
+[profiles.evaluation]
+requires = [ "structured_output", "classification" ]
+prefer = "cost_sensitive"
+fallback = [ "fast_draft" ]
+fan_out = 3
+
+[profiles.prompt_engineering]
+requires = [ "structured_output" ]
+prefer = "cost_sensitive"
+fallback = [ "fast_draft" ]
+fan_out = 2
+
+[profiles.strategy]
+requires = [ "large_context", "structured_output" ]
+prefer = "cost_sensitive"
+fallback = [ "fast_draft" ]
+fan_out = 1
+
+[profiles.documentation]
+requires = [ "fast_draft" ]
+prefer = "cost_sensitive"
+fallback = []
+fan_out = 3
+
+[profiles.governance]
+requires = [ "security_audit", "adversarial" ]
+prefer = "deep_reasoning"
+fallback = []
+fan_out = 1
+require_human_in_loop = true
+
+[profiles.enterprise]
+requires = [ "large_context", "synthesis" ]
+prefer = "deep_reasoning"
+fallback = [ "cost_sensitive" ]
+fan_out = 1
+
+[profiles.physics_analysis]
+requires = [ "math_physics", "deep_reasoning" ]
+prefer = "large_context"
+fallback = []
+fan_out = 1
+
+[profiles.meta_routing]
+requires = [ "classification" ]
+prefer = "low_latency"
+fallback = [ "fast_draft" ]
+fan_out = 1
+
+[profiles.elicitation]
+requires = [ "structured_output" ]
+prefer = "cost_sensitive"
+fallback = [ "fast_draft" ]
+fan_out = 1
+
+[profiles.benchmarking]
+requires = [ "structured_output", "classification" ]
+prefer = "cost_sensitive"
+fallback = [ "fast_draft" ]
+fan_out = 3
+
+[profiles.default]
+requires = [ "structured_output" ]
+prefer = "cost_sensitive"
+fallback = [ "fast_draft" ]
+fan_out = 1
+
+[routing.domains."req-*"]
+profile = "elicitation"
+max_retries = 2
+
+[routing.domains."doc-*"]
+profile = "documentation"
+max_retries = 1
+
+[routing.domains."qual-*"]
+profile = "code_review"
+max_retries = 2
+
+[routing.domains."synth-*"]
+profile = "research"
+max_retries = 2
+
+[routing.domains."eval-*"]
+profile = "evaluation"
+max_retries = 3
+
+[routing.domains."debug-*"]
+profile = "debugging"
+max_retries = 3
+
+[routing.domains."strat-*"]
+profile = "strategy"
+max_retries = 2
+
+[routing.domains."arch-*"]
+profile = "design"
+max_retries = 2
+
+[routing.domains."prompt-*"]
+profile = "prompt_engineering"
+max_retries = 2
+
+[routing.domains."adapt-*"]
+profile = "adaptive_routing"
+max_retries = 2
+
+[routing.domains."bench-*"]
+profile = "benchmarking"
+max_retries = 3
+
+[routing.domains."lead-*"]
+profile = "enterprise"
+max_retries = 1
+
+[routing.domains."resil-*"]
+profile = "resilience"
+max_retries = 3
+
+[routing.domains."gov-*"]
+profile = "governance"
+max_retries = 1
+require_human_in_loop = true
+
+[routing.domains."qm-*"]
+profile = "physics_analysis"
+max_retries = 1
+enforce_schema = true
+
+[routing.domains."gr-*"]
+profile = "physics_analysis"
+max_retries = 1
+enforce_schema = true
+
+[routing.domains."orch-*"]
+profile = "orchestration"
+max_retries = 2
+
+[routing.domains."flow-*"]
+profile = "orchestration"
+max_retries = 2
+
+[orchestration.patterns.triple_parallel_synthesis]
+description = "Fan-out 3 free lanes, reduce with one strong synthesis pass"
+draft_profile = "research"
+synthesis_profile = "enterprise"
+fan_out = 3
+
+[orchestration.patterns.adversarial_critique]
+description = "Plan with strong model, critique independently with secondary, final synthesis"
+synthesis_profile = "enterprise"
+plan_profile = "enterprise"
+critique_profile = "governance"
+
+[orchestration.patterns.draft_review_chain]
+description = "Free model drafts, strong model reviews, free model finalizes"
+draft_profile = "implement"
+finalize_profile = "implement"
+review_profile = "code_review"
+
+[orchestration.patterns.majority_vote]
+description = "3 free/cheap models vote; escalate to strong on split"
+vote_profile = "evaluation"
+tiebreak_profile = "enterprise"
+vote_count = 3
+
+[orchestration.patterns.cascade_fallback]
+description = "Cascade cheap then analytical then strong until quality threshold met"
+cascade_chain = [ "elicitation", "code_review", "enterprise" ]
+
+[resilience]
+rate_limit_backoff_ms = 2000
+auto_escalate_on_consecutive_failures = 2
+max_escalation_depth = 3
+
+[cache]
+default_ttl_seconds = 300
+
+[cache.profile_overrides]
+physics_analysis = 3600
+governance = 0
+enterprise = 1800

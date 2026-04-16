@@ -1,0 +1,118 @@
+---
+title: Environment Variables
+description: Complete reference for all environment variables that control skill gating, tool visibility, and model routing.
+sidebar:
+  label: Env Variables
+  order: 2
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+All environment variables are read at startup. Set them in your shell, `.env` file, or MCP client configuration.
+
+---
+
+## Skill Gating
+
+These variables unlock optional skill domains that are off by default.
+
+### `ENABLE_PHYSICS_SKILLS`
+
+| Default | Values |
+|---------|--------|
+| `false` | `true` / `false` |
+
+Enables the `qm-*` (Quantum Mechanics) and `gr-*` (General Relativity) skill prefixes. Without this flag, any attempt to invoke physics skills returns an authorization error.
+
+```bash
+ENABLE_PHYSICS_SKILLS=true node dist/index.js
+```
+
+### `ALLOW_GOVERNANCE_SKILLS`
+
+| Default | Values |
+|---------|--------|
+| `false` | `true` / `false` |
+
+Enables the `gov-*` governance and compliance skill prefix. The `govern` workflow and `policy-govern` tool require this flag. Designed for regulated environments where governance tooling must be explicitly opted-in.
+
+```bash
+ALLOW_GOVERNANCE_SKILLS=true node dist/index.js
+```
+
+### `ENABLE_ADAPTIVE_ROUTING`
+
+| Default | Values |
+|---------|--------|
+| `false` | `true` / `false` |
+
+Enables the `adapt-*` bio-inspired routing skill prefix and the `routing-adapt` MCP tool. Also un-hides the `routing-adapt` tool from the public surface (see `HIDDEN_TOOLS`). Required for Hebbian reinforcement, ACO pheromone routing, Physarum pruning, and simulated annealing workflows.
+
+```bash
+ENABLE_ADAPTIVE_ROUTING=true node dist/index.js
+```
+
+### `ALLOW_INTENSIVE_SKILLS`
+
+| Default | Values |
+|---------|--------|
+| `false` | `true` / `false` |
+
+Enables long-horizon, compute-intensive skill variants that may exceed standard token budgets or incur higher cost. Consult skill documentation before enabling in production.
+
+---
+
+## Tool Surface Control
+
+### `HIDDEN_TOOLS`
+
+| Default | Values |
+|---------|--------|
+| `""` | Comma-separated tool names |
+
+Removes specific tools from the `tools/list` response. Useful for restricting the tool surface in shared or embedded configurations.
+
+```bash
+# Hide physics and governance tools from the tool surface
+HIDDEN_TOOLS="physics-analysis,enterprise,govern" node dist/index.js
+```
+
+<Aside type="note">
+`routing-adapt` is automatically hidden unless `ENABLE_ADAPTIVE_ROUTING=true`, regardless of `HIDDEN_TOOLS`.
+</Aside>
+
+---
+
+## Runtime & Debug
+
+### `NODE_ENV`
+
+| Default | Values |
+|---------|--------|
+| `development` | `development` / `production` / `test` |
+
+Controls environment-specific behaviour including observability verbosity and validation strictness. Set to `production` for deployed servers.
+
+### `VITEST`
+
+| Default | Values |
+|---------|--------|
+| `false` | `true` / `false` |
+
+Automatically set by the test runner. Enables test-safe model availability stubs and skips live network checks.
+
+### `VALIDATION_MODE`
+
+| Default | Values |
+|---------|--------|
+| `strict` | `strict` / `advisory` |
+
+In `advisory` mode, input validation failures are logged as warnings rather than rejected errors. Useful for local development and prompt iteration.
+
+---
+
+## Model Router
+
+Model router variables are managed via `orchestration.toml` and the `orchestration-model-discover` MCP tool. Avoid hardcoding model display names — use role classes (`free`, `cheap`, `strong`, `reviewer`) in code and let the router resolve actual model IDs at runtime.
+
+See [Model Routing](../concepts/model-routing) for the full role hierarchy and discovery workflow.

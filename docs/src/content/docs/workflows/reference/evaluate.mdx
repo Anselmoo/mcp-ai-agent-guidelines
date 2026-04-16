@@ -1,0 +1,94 @@
+---
+title: Continuous Evaluation
+description: Quantify variance and accuracy of agent pipelines without human intervention — benchmarks are repeatable and mathematically grounded.
+sidebar:
+  label: Evaluate
+  order: 7
+---
+
+import { Badge } from '@astrojs/starlight/components';
+
+<Badge text="Tool: quality-evaluate" variant="tip" /> <Badge text="Model: Cross-Model" variant="note" />
+
+## Trigger & Intent
+
+**Triggered by:** The `implement` workflow or a direct `eval` request against prompt templates.
+
+**Intent:** Quantify variance and accuracy of agent pipelines without human intervention. Benchmarks must be repeatable.
+
+## Resource Pooling
+
+Capability profile: `evaluation` — requires `structured_output` + `classification`, prefers `cost_sensitive`, `fast_draft` fallback, fan-out 3. Tie-break/synthesis escalation handled by configured orchestration patterns.
+
+## Required Skills
+
+| Skill | Role |
+|-------|------|
+| `eval-prompt` | Prompt template evaluation |
+| `eval-variance` | Statistical variance analysis |
+| `bench-blind-comparison` | A/B pairwise comparison |
+
+## Input Schema
+
+```typescript
+{
+  evalSuiteId: string;
+  targetModel: string;
+}
+```
+
+## Decisions & Throw-Backs
+
+If performance degrades (variance increases or score drops), throws an exception and routes back to `prompt-engineering` to refine templates. Evaluates output quality using randomly generated A/B pairwise comparisons.
+
+## Success Chains
+
+On successful completion chains to: **prompt-engineering** · **refactor** · **govern**
+
+## FSM — Double-loop learning with assumption revision
+
+```mermaid
+stateDiagram-v2
+    [*] --> RunEvalSuite
+    RunEvalSuite --> EvalOutput
+    EvalOutput --> QualityAssessment
+
+    QualityAssessment --> PromptFix: method-level failure
+    PromptFix --> RunEvalSuite
+
+    QualityAssessment --> MetricAudit: repeated systemic mismatch
+    MetricAudit --> RubricReconsideration
+    RubricReconsideration --> BenchmarkRedefinition
+    BenchmarkRedefinition --> RunEvalSuite
+
+    QualityAssessment --> RetainEvalModel: acceptable quality fit
+    RetainEvalModel --> [*]
+```
+
+## Execution Sequence
+
+```mermaid
+sequenceDiagram
+    participant Orchestrator
+    participant Pool (Analytical)
+    participant Pool (Mechanical)
+    participant Tool (Context)
+
+    Orchestrator->>Pool (Analytical): Allocate Capability Profile
+    activate Pool (Analytical)
+    Pool (Analytical)->>Tool (Context): Issue Tool Calls (Parallel)
+    Tool (Context)-->>Pool (Analytical): Return Data
+
+    alt Shallow Loop
+        Pool (Analytical)->>Pool (Analytical): Auto-correct Schema
+    else Medium Loop
+        Pool (Analytical)->>Pool (Mechanical): Delegate Fixes
+    end
+
+    Pool (Analytical)-->>Orchestrator: Synthesis Gate
+    deactivate Pool (Analytical)
+
+    opt Deep Loop
+        Orchestrator->>Orchestrator: Complete Throw-back to Prior Stage
+    end
+```

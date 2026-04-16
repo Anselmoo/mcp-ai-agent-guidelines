@@ -1,0 +1,123 @@
+{
+  "id": "15-govern",
+  "title": "Govern Workflow",
+  "triggeredBy": "Compliance checks, prompt injection hardening, and safety validation for regulated workflows",
+  "intent": "Strictly validate outputs against policy controls before interacting with sensitive systems",
+  "resourcePool": [
+    "governance"
+  ],
+  "inputSchema": {
+    "targetPipeline": "string",
+    "policySchema": "string"
+  },
+  "throwbacks": [
+    "design: critical violation found",
+    "implement: PII or injection vulnerability detected"
+  ],
+  "chainTo": [
+    "review",
+    "resilience",
+    "document"
+  ],
+  "skillTree": {
+    "root": "injection-hardening",
+    "nodes": [
+      {
+        "id": "injection-hardening",
+        "skill": "gov-prompt-injection-hardening",
+        "type": "primary",
+        "profile": "governance",
+        "description": "Harden AI workflows against prompt injection, indirect injection, and instruction hijacking",
+        "next": [
+          {
+            "target": "data-guardrails"
+          },
+          {
+            "target": "policy-validation"
+          }
+        ]
+      },
+      {
+        "id": "data-guardrails",
+        "skill": "gov-data-guardrails",
+        "type": "parallel",
+        "profile": "governance",
+        "description": "Implement PII protection, secret masking, and data minimisation guardrails",
+        "next": [
+          {
+            "target": "compliance-gate"
+          }
+        ]
+      },
+      {
+        "id": "policy-validation",
+        "skill": "gov-policy-validation",
+        "type": "parallel",
+        "profile": "governance",
+        "description": "Validate AI workflows and prompts against organisational, regulatory, and compliance policies",
+        "next": [
+          {
+            "target": "compliance-gate"
+          }
+        ]
+      },
+      {
+        "id": "compliance-gate",
+        "skill": "gov-workflow-compliance",
+        "type": "gate",
+        "profile": "governance",
+        "description": "Validate the entire workflow against policy, compliance, and governance requirements",
+        "next": [
+          {
+            "target": "model-governance",
+            "condition": "workflow compliant"
+          },
+          {
+            "target": "violation-throwback",
+            "condition": "violation found"
+          }
+        ]
+      },
+      {
+        "id": "model-governance",
+        "skill": "gov-model-governance",
+        "type": "primary",
+        "profile": "governance",
+        "description": "Govern model selection, version pinning, lifecycle management, and deployment policy",
+        "next": [
+          {
+            "target": "model-compatibility"
+          }
+        ]
+      },
+      {
+        "id": "model-compatibility",
+        "skill": "gov-model-compatibility",
+        "type": "primary",
+        "profile": "governance",
+        "description": "Assess compatibility between AI models and existing workflows when upgrading or switching models",
+        "next": [
+          {
+            "target": "regulated-design"
+          }
+        ]
+      },
+      {
+        "id": "regulated-design",
+        "skill": "gov-regulated-workflow-design",
+        "type": "synthesis",
+        "profile": "governance",
+        "description": "Design AI workflows for regulated industries with auditability, approval gates, and compliance trails",
+        "next": []
+      },
+      {
+        "id": "violation-throwback",
+        "skill": "gov-policy-validation",
+        "type": "fallback",
+        "profile": "governance",
+        "description": "Collect all violations, annotate the pipeline, and throw loudly back to design or implement",
+        "next": []
+      }
+    ]
+  }
+}

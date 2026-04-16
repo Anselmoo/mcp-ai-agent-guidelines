@@ -1,0 +1,49 @@
+---
+title: fault-resilience
+description: Resilience — self-healing workflows, fault isolation, N-version redundancy, and structural fault tolerance.
+sidebar:
+  label: fault-resilience
+  badge:
+    text: "Advanced"
+    variant: "danger"
+---
+
+import { Badge } from "@astrojs/starlight/components";
+import ToolIcon from "../../../components/ToolIcon.astro";
+
+<div class="tool-header-icon"><ToolIcon icon="RefreshCcw" size={28} aria-hidden="true" /><span><Badge text="Advanced" variant="danger" /> <Badge text="workflow" variant="note" /></span></div>
+
+## Mission
+
+Monitor → detect → isolate → repair → validate. Workflows that recover themselves.
+
+## When to Use
+
+**ONLY** use when adding structural fault tolerance to an AI workflow, designing retry/fallback strategies, isolating failures from cascading, running N-version redundancy for reliability, or implementing self-healing prompts.
+
+**Do NOT use** for debugging individual errors (use `issue-debug`), code quality issues (use `code-review`), or general fault-finding.
+
+**Triggers**: "make this more reliable", "add fault tolerance", "self-healing", "reduce hallucinations structurally", "N-version redundancy", "retry strategy", "fallback design"
+
+## Skills Invoked
+
+- `resil-homeostatic` — PID-controller drift correction
+- `resil-membrane` — fault isolation between skill boundaries
+- `resil-redundant-voter` — majority vote across N model instances
+- `resil-replay` — transient error recovery via context-modified replay
+- `resil-clone-mutate` — solution space exploration around local optima
+
+## Chain-To
+
+- `policy-govern` — governance layer for resilience controls
+- `quality-evaluate` — measure reliability improvement
+
+## Example
+
+```json
+{
+  "request": "The code generation step keeps producing inconsistent results. Add structural fault tolerance."
+}
+```
+
+**Output**: Resilience architecture with membrane boundaries, voter configuration (3 instances, majority vote), replay policy (max 2 retries with context modification), and homeostatic drift threshold.

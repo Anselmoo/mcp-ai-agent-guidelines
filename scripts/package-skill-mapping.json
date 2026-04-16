@@ -1,0 +1,262 @@
+{
+  "version": 1,
+  "_meta": {
+    "statuses": ["used-now", "planned", "questionable"],
+    "sections": ["dependencies", "devDependencies"],
+    "note": "owners map packages to skill domains or repo layers; allowedPaths constrain where package imports or references should land."
+  },
+  "packages": {
+    "@modelcontextprotocol/sdk": {
+      "section": "dependencies",
+      "status": "used-now",
+      "layer": "runtime",
+      "owners": ["runtime"],
+      "allowedPaths": ["src/index.ts", "src/skills/runtime/**"],
+      "evidence": ["package.json", "src/index.ts"],
+      "notes": "Core MCP server/runtime package."
+    },
+    "@toon-format/toon": {
+      "section": "dependencies",
+      "status": "questionable",
+      "layer": "runtime",
+      "owners": ["prompt", "flow", "orch", "shared"],
+      "allowedPaths": [
+        "src/skills/prompt/**",
+        "src/skills/flow/**",
+        "src/skills/orch/**",
+        "src/skills/shared/**"
+      ],
+      "evidence": [
+        "package.json",
+        ".github/skills/core-prompt-chaining/SKILL.md",
+        "src/skills/flow/flow-context-handoff.ts",
+        "src/skills/orch/orch-result-synthesis.ts"
+      ],
+      "notes": "Candidate for structured exchange/output formatting if plain text becomes too fragile."
+    },
+    "@biomejs/biome": {
+      "section": "devDependencies",
+      "status": "used-now",
+      "layer": "tooling",
+      "owners": ["tooling"],
+      "allowedPaths": ["biome.json", "package.json"],
+      "evidence": ["package.json", "biome.json"],
+      "notes": "Formatting and linting."
+    },
+    "@types/node": {
+      "section": "devDependencies",
+      "status": "used-now",
+      "layer": "build",
+      "owners": ["build"],
+      "allowedPaths": ["package.json", "tsconfig.json", "src/**/*.ts", "scripts/**/*.py"],
+      "evidence": ["package.json", "tsconfig.json"],
+      "notes": "Node type declarations for TypeScript compilation."
+    },
+    "@vitest/coverage-v8": {
+      "section": "devDependencies",
+      "status": "used-now",
+      "layer": "testing",
+      "owners": ["testing"],
+      "allowedPaths": ["package.json", "vitest.config.ts"],
+      "evidence": ["package.json", "vitest.config.ts"],
+      "notes": "Coverage provider for Vitest."
+    },
+    "fast-glob": {
+      "section": "dependencies",
+      "status": "planned",
+      "layer": "runtime",
+      "owners": ["qual", "runtime", "scripts"],
+      "allowedPaths": [
+        "src/skills/qual/**",
+        "src/skills/runtime/**",
+        "src/tools/**",
+        "scripts/**"
+      ],
+      "evidence": [
+        "package.json",
+        "src/tools/workspace-tools.ts",
+        "src/skills/qual/qual-code-analysis.ts"
+      ],
+      "notes": "Candidate for recursive workspace and codebase scans."
+    },
+    "graphology": {
+      "section": "dependencies",
+      "status": "planned",
+      "layer": "runtime",
+      "owners": ["flow", "orch", "adapt"],
+      "allowedPaths": [
+        "src/generated/graph/**",
+        "src/skills/flow/**",
+        "src/skills/orch/**",
+        "src/skills/adapt/**"
+      ],
+      "evidence": [
+        "package.json",
+        "src/generated/graph/instruction-skill-edges.ts",
+        ".github/skills/adv-aco-router/SKILL.md",
+        ".github/skills/core-agent-orchestrator/SKILL.md"
+      ],
+      "notes": "Topology and routing graph support; not active yet."
+    },
+    "gray-matter": {
+      "section": "dependencies",
+      "status": "planned",
+      "layer": "scripts",
+      "owners": ["scripts", "doc", "prompt"],
+      "allowedPaths": ["scripts/**", "src/skills/doc/**", "src/skills/prompt/**"],
+      "evidence": [
+        "package.json",
+        "scripts/generate-tool-definitions.py",
+        ".github/skills/core-prompt-engineering/SKILL.md"
+      ],
+      "notes": "Candidate for Node-side Markdown/frontmatter ingestion."
+    },
+    "mathjs": {
+      "section": "dependencies",
+      "status": "used-now",
+      "layer": "runtime",
+      "owners": ["gr", "qm"],
+      "allowedPaths": ["src/skills/gr/**", "src/skills/qm/**"],
+      "evidence": [
+        "package.json",
+        "src/skills/gr/gr-physics-helpers.ts",
+        "src/skills/qm/qm-math-helpers.ts"
+      ],
+      "notes": "Primary numeric engine for the active QM/GR handwritten helper layers."
+    },
+    "mermaid": {
+      "section": "dependencies",
+      "status": "planned",
+      "layer": "documentation",
+      "owners": ["doc", "arch", "scripts"],
+      "allowedPaths": ["src/skills/doc/**", "src/skills/arch/**", "scripts/**"],
+      "evidence": [
+        "package.json",
+        ".github/skills/core-documentation-generator/SKILL.md",
+        ".github/skills/core-system-design/SKILL.md"
+      ],
+      "notes": "Diagram generation candidate for docs and audit/reporting."
+    },
+    "p-queue": {
+      "section": "dependencies",
+      "status": "planned",
+      "layer": "workflow",
+      "owners": ["orch", "adapt", "resil", "runtime"],
+      "allowedPaths": [
+        "src/workflows/**",
+        "src/skills/orch/**",
+        "src/skills/adapt/**",
+        "src/skills/resil/**"
+      ],
+      "evidence": [
+        "package.json",
+        "src/workflows/workflow-engine.ts",
+        ".github/skills/adv-quorum-coordinator/SKILL.md"
+      ],
+      "notes": "Concurrency-limited orchestration and backpressure."
+    },
+    "remark-parse": {
+      "section": "dependencies",
+      "status": "planned",
+      "layer": "documentation",
+      "owners": ["doc", "prompt", "scripts"],
+      "allowedPaths": ["src/skills/doc/**", "src/skills/prompt/**", "scripts/**"],
+      "evidence": [
+        "package.json",
+        ".github/skills/core-documentation-generator/SKILL.md",
+        ".github/skills/core-prompt-engineering/SKILL.md"
+      ],
+      "notes": "Markdown AST parsing companion to unified."
+    },
+    "typescript": {
+      "section": "devDependencies",
+      "status": "used-now",
+      "layer": "build",
+      "owners": ["build"],
+      "allowedPaths": ["package.json", "tsconfig.json"],
+      "evidence": ["package.json", "tsconfig.json"],
+      "notes": "TypeScript compiler."
+    },
+    "unified": {
+      "section": "dependencies",
+      "status": "planned",
+      "layer": "documentation",
+      "owners": ["doc", "prompt", "scripts"],
+      "allowedPaths": ["src/skills/doc/**", "src/skills/prompt/**", "scripts/**"],
+      "evidence": [
+        "package.json",
+        ".github/skills/core-documentation-generator/SKILL.md",
+        ".github/skills/core-prompt-chaining/SKILL.md"
+      ],
+      "notes": "Markdown/content pipeline candidate."
+    },
+    "vitest": {
+      "section": "devDependencies",
+      "status": "used-now",
+      "layer": "testing",
+      "owners": ["testing"],
+      "allowedPaths": ["package.json", "vitest.config.ts", "src/tests/**"],
+      "evidence": ["package.json", "vitest.config.ts"],
+      "notes": "Primary test runner."
+    },
+    "yaml": {
+      "section": "dependencies",
+      "status": "planned",
+      "layer": "scripts",
+      "owners": ["scripts", "gov", "doc"],
+      "allowedPaths": ["scripts/**", "src/skills/gov/**", "src/skills/doc/**"],
+      "evidence": [
+        "package.json",
+        "scripts/generate-tool-definitions.py",
+        ".github/skills/gov-policy-validation/SKILL.md"
+      ],
+      "notes": "Structured config and frontmatter support for scripts/governance."
+    },
+    "zod": {
+      "section": "dependencies",
+      "status": "used-now",
+      "layer": "schema",
+      "owners": [
+        "shared",
+        "runtime",
+        "flow",
+        "orch",
+        "strat",
+        "synth",
+        "prompt",
+        "bench",
+        "debug",
+        "qual"
+      ],
+      "allowedPaths": ["src/skills/**", "src/schemas/**", "src/generated/validators/**"],
+      "evidence": [
+        "package.json",
+        "src/skills/shared/input-schema.ts",
+        "src/schemas/zod-validator-builder.ts"
+      ],
+      "notes": "Current runtime schema system."
+    },
+    "zod-to-json-schema": {
+      "section": "dependencies",
+      "status": "planned",
+      "layer": "schema",
+      "owners": ["schema", "runtime", "scripts"],
+      "allowedPaths": ["src/schemas/**", "src/tools/**", "scripts/**"],
+      "evidence": [
+        "package.json",
+        "src/schemas/zod-validator-builder.ts",
+        "scripts/generate-tool-definitions.py"
+      ],
+      "notes": "Candidate for deriving MCP/JSON schemas from Zod."
+    }
+  },
+  "likelyMissingPackages": [
+    {
+      "package": "simple-git",
+      "status": "candidate",
+      "owners": ["qm"],
+      "targetSkills": ["qm-path-integral-historian"],
+      "notes": "Useful if git-history traversal becomes a real runtime implementation."
+    }
+  ]
+}

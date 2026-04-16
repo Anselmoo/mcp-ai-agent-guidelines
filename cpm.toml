@@ -1,0 +1,17 @@
+[plugins]
+typescript-mcp-development = { url = "https://github.com/github/awesome-copilot/tree/main/plugins/typescript-mcp-development", groups = ["mcp"], scope = "global" }
+
+[skills]
+skill-creator = { url = "https://github.com/anthropics/skills/tree/main/skills/skill-creator", rev = "98669c11ca63e9c81c11501e1437e5c47b556621", scope = "global" }
+
+[agents]
+
+[mcps]
+serena-agent = { scope = "global", type = "stdio", runner = "uvx", package = "serena-agent" }
+
+[hooks]
+
+[workflows]
+
+[instructions]
+

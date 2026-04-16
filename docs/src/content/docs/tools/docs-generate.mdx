@@ -1,0 +1,71 @@
+---
+title: docs-generate
+description: Document — generate API references, READMEs, runbooks, and other documentation artifacts.
+sidebar:
+  label: docs-generate
+  badge:
+    text: "Efficient"
+    variant: "caution"
+---
+
+import { Badge, Aside, Steps, Tabs, TabItem } from "@astrojs/starlight/components";
+import ToolIcon from "../../../components/ToolIcon.astro";
+
+<div class="tool-header-icon"><ToolIcon icon="FileText" size={28} aria-hidden="true" /><span><Badge text="Efficient" variant="caution" /> <Badge text="workflow" variant="note" /></span></div>
+
+## Mission
+
+Identify audience → choose format → generate content → publish. Every doc is audience-targeted.
+
+## When to Use
+
+Use when generating API reference documentation, README files, operational runbooks, postmortems, technical guides, or any other documentation artifact.
+
+**Triggers**: "write documentation", "generate docs", "create a README", "document this API", "write a runbook", "document this module", "postmortem for", "technical guide"
+
+## Orchestration Flow
+
+<Steps>
+1. **3× Zero-Cost draft lanes** — `doc-generator`, `doc-readme`, `doc-api` run in parallel (GPT-4.1 / GPT-5 mini)
+2. **Efficient pass** — `doc-runbook` (Claude Haiku 4.5) merges draft outputs and adds operational context
+3. **Advanced edit** — Claude Sonnet 4.6 reviews for accuracy, tone, and audience fit
+4. **Deliver** — audience-targeted markdown artifacts ready for commit
+</Steps>
+
+## Skills Invoked
+
+- `doc-generator` <Badge text="Zero-Cost" variant="success" /> — inline JSDoc/TSDoc
+- `doc-readme` <Badge text="Zero-Cost" variant="success" /> — structured README
+- `doc-api` <Badge text="Zero-Cost" variant="success" /> — OpenAPI / Markdown API reference
+- `doc-runbook` <Badge text="Efficient" variant="caution" /> — operational runbook
+
+<Aside type="tip" title="Chain-to recommendations">
+  - **`code-review`** — review documentation quality after generation
+  - **`enterprise-strategy`** — add generated docs to an enterprise documentation library
+</Aside>
+
+## Example
+
+<Tabs>
+  <TabItem label="Request">
+    ```json
+    {
+      "request": "Generate complete documentation for the payment-service: README, API reference, and operational runbook"
+    }
+    ```
+  </TabItem>
+  <TabItem label="Output">
+    - `README.md` — contributor and integration guide
+    - `docs/api.md` — OpenAPI-compatible reference
+    - `docs/runbook/payment-service.md` — startup, shutdown, alert, and escalation sections
+  </TabItem>
+</Tabs>
+
+## Audience Targeting
+
+| Audience | Preferred Skills |
+|----------|-----------------|
+| Developers integrating the API | `doc-api` |
+| Operators running the service | `doc-runbook` |
+| New contributors | `doc-readme` |
+| Code reviewers | `doc-generator` |

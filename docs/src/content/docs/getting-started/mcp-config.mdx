@@ -1,0 +1,152 @@
+---
+title: MCP Configuration
+description: Configure MCP AI Agent Guidelines with environment variables, orchestration.toml, and skill gates.
+sidebar:
+  order: 3
+---
+
+import { Aside, FileTree } from "@astrojs/starlight/components";
+
+## Configuration Files
+
+The server reads configuration from two sources, in priority order:
+
+1. **`orchestration.toml`** — workload profiles, model class mappings, fan-out settings
+2. **Environment variables** — skill gates, debug flags, secrets
+
+### orchestration.toml Location
+
+The server looks for `orchestration.toml` at:
+
+```
+.mcp-ai-agent-guidelines/config/orchestration.toml
+```
+
+relative to the working directory. If not found, built-in defaults from `src/config/orchestration-defaults.ts` are used (strict mode fails fast if the primary file cannot be loaded).
+
+### Minimal orchestration.toml
+
+```toml
+[profiles.default]
+requires = ["fast_draft"]
+fan_out = 1
+
+[profiles.research]
+requires = ["cost_sensitive"]
+fan_out = 3
+
+[profiles.governance]
+requires = ["security_audit", "adversarial"]
+human_in_loop = true
+```
+
+See [Orchestration Concepts](/mcp-ai-agent-guidelines/concepts/orchestration/) for the full profile reference.
+
+## Environment Variables
+
+### Skill Gates
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `ENABLE_PHYSICS_SKILLS` | `false` | Unlock all 30 QM + GR physics skills (`qm-*`, `gr-*`) |
+| `ENABLE_ADAPTIVE_ROUTING` | `false` | Unlock 5 `adapt-*` bio-inspired routing skills |
+| `ENABLE_GOVERNANCE_STRICT` | `false` | Require human-in-the-loop for all `gov-*` skill calls |
+
+```bash
+# Enable physics skills
+ENABLE_PHYSICS_SKILLS=true npx mcp-ai-agent-guidelines
+```
+
+### Session Security
+
+| Variable | Purpose |
+|----------|---------|
+| `SESSION_HMAC_SECRET` | 32-byte hex secret for HMAC session integrity signing |
+| `SESSION_EXPIRY_SECONDS` | Session token TTL (default: `86400`) |
+
+<Aside type="caution">
+Set `SESSION_HMAC_SECRET` from a secret manager — never hardcode in config files. If unset, the server falls back to an ephemeral random secret per process restart.
+</Aside>
+
+### Logging
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `LOG_LEVEL` | `info` | Pino log level: `trace`, `debug`, `info`, `warn`, `error` |
+| `LOG_PRETTY` | `false` | Enable pino-pretty human-readable output |
+| `LOG_MCP_CALLS` | `false` | Log each MCP tool call and its routing decision |
+
+### Debug
+
+| Variable | Purpose |
+|----------|---------|
+| `DEBUG_SKILL_DISPATCH` | Log which skills each instruction invokes |
+| `DEBUG_MODEL_SELECTION` | Log model role resolution from orchestration.toml |
+
+## Claude Desktop (macOS)
+
+Config file: `~/Library/Application Support/Claude/claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "ai-agent-guidelines": {
+      "command": "npx",
+      "args": ["-y", "mcp-ai-agent-guidelines@latest"],
+      "env": {
+        "ENABLE_PHYSICS_SKILLS": "true",
+        "LOG_LEVEL": "warn"
+      }
+    }
+  }
+}
+```
+
+## VS Code (User Settings JSON)
+
+```json
+{
+  "mcp": {
+    "servers": {
+      "ai-agent-guidelines": {
+        "command": "npx",
+        "args": ["-y", "mcp-ai-agent-guidelines@latest"],
+        "env": {
+          "ENABLE_PHYSICS_SKILLS": "true",
+          "SESSION_HMAC_SECRET": "${env:MCP_SESSION_HMAC_SECRET}"
+        }
+      }
+    }
+  }
+}
+```
+
+## Local Development (from source)
+
+<FileTree>
+- mcp-ai-agent-guidelines/
+  - .mcp-ai-agent-guidelines/
+    - config/
+      - orchestration.toml
+  - dist/
+    - index.js
+  - src/
+</FileTree>
+
+```bash
+# Build
+npm run build
+
+# Run with custom config
+cd /path/to/your/project
+ENABLE_PHYSICS_SKILLS=true LOG_LEVEL=debug node /path/to/dist/index.js
+```
+
+## Multi-Session vs Single-Session
+
+| Mode | When | Configuration |
+|------|------|--------------|
+| Single session | CLI / one-shot tools | Default |
+| Continuous agent | VS Code Copilot, Cline | `task-bootstrap` auto-chains; periodic reactivation via `reactivationPolicy: "periodic"` |
+
+The `task-bootstrap` tool triggers `agent-snapshot`, `agent-session`, and `agent-memory` as preconditions before scope analysis — this loads the codebase baseline and session artifacts automatically.

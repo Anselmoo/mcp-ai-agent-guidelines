@@ -1,0 +1,81 @@
+---
+title: Instruction Tools
+description: All 20 public MCP instruction tools — trigger phrases, missions, model classes, and chain graphs.
+sidebar:
+  label: Tools Overview
+  order: 1
+---
+
+import { Badge, Aside, CardGrid, LinkCard, Tabs, TabItem } from "@astrojs/starlight/components";
+
+The 20 instruction tools are the public surface of the server. Each tool accepts a `{ request: string; context?: string; options?: object }` payload and internally orchestrates skills.
+
+<Aside type="note" title="Model class glossary">
+  Model class badges describe **task complexity**, not cost to users — the class tells the orchestrator what tier of model can handle this task well:
+
+  | Badge | Meaning | Recommended models |
+  |-------|---------|-------------------|
+  | <Badge text="Zero-Cost" variant="success" /> | Solved by zero-cost models — drafts, triage, templates | [GPT-4.1](https://platform.openai.com/docs/models/gpt-4.1), [GPT-5 mini](https://platform.openai.com/docs/models/gpt-5-mini) |
+  | <Badge text="Efficient" variant="caution" /> | Low-cost models — routing, aggregation, fast classification | [Claude Haiku 4.5](https://www.anthropic.com/claude/haiku), [GPT-5.4 mini](https://developers.openai.com/api/docs/models/gpt-5.4-mini) |
+  | <Badge text="Advanced" variant="danger" /> | Full-capability models — synthesis, security, judgment | [Claude Sonnet 4.6](https://www.anthropic.com/claude/sonnet), [Claude Opus 4.6](https://www.anthropic.com/claude/opus), [GPT-5.4](https://developers.openai.com/api/docs/models/gpt-5.4), [GPT-5.3-Codex](https://developers.openai.com/api/docs/models/gpt-5.3-codex) |
+  | <Badge text="Cross-Model" variant="note" /> | Independent cross-model review lane | [Gemini 3.1 Pro](https://ai.google.dev/gemini-api/docs/models), [Claude Opus 4.6](https://www.anthropic.com/claude/opus) |
+
+  → [GitHub model comparison](https://docs.github.com/en/copilot/reference/ai-models/model-comparison) · [Artificial Analysis](https://artificialanalysis.ai)
+</Aside>
+
+## Tool Registry
+
+<Tabs>
+  <TabItem label="Discovery tools" icon="magnifier">
+    Start here at the beginning of a new session. These tools orient the model to the project and route subsequent requests.
+
+    <CardGrid>
+      <LinkCard title="task-bootstrap" href="/mcp-ai-agent-guidelines/tools/task-bootstrap/" description="Bootstrap: First Contact — Zero-Cost. Onboards the model to a new session and project context." />
+      <LinkCard title="meta-routing" href="/mcp-ai-agent-guidelines/tools/meta-routing/" description="Meta-Routing: Task Router — Efficient. Routes any ad-hoc request to the right specialized tool." />
+      <LinkCard title="project-onboard" href="/mcp-ai-agent-guidelines/tools/project-onboard/" description="Onboard: Project Familiarization — Zero-Cost. Deep-reads codebase structure, conventions, and history." />
+    </CardGrid>
+  </TabItem>
+  <TabItem label="Workflow tools" icon="seti:pipeline">
+    General-purpose and specialist task tools. Start with one of the high-frequency entries.
+
+    <CardGrid>
+      <LinkCard title="system-design" href="/mcp-ai-agent-guidelines/tools/system-design/" description="Design: Architecture and System Design — Advanced" />
+      <LinkCard title="feature-implement" href="/mcp-ai-agent-guidelines/tools/feature-implement/" description="Implement: Build New Feature or Tool — Advanced" />
+      <LinkCard title="evidence-research" href="/mcp-ai-agent-guidelines/tools/evidence-research/" description="Research: Synthesis, Comparison, Recommendations — Advanced" />
+      <LinkCard title="code-review" href="/mcp-ai-agent-guidelines/tools/code-review/" description="Review: Code, Quality, and Security Review — Cross-Model" />
+      <LinkCard title="strategy-plan" href="/mcp-ai-agent-guidelines/tools/strategy-plan/" description="Plan: Strategy, Roadmap, and Sprint Planning — Advanced" />
+      <LinkCard title="issue-debug" href="/mcp-ai-agent-guidelines/tools/issue-debug/" description="Debug: Diagnose and Fix Problems — Efficient" />
+      <LinkCard title="code-refactor" href="/mcp-ai-agent-guidelines/tools/code-refactor/" description="Refactor: Improve Existing Code Safely — Efficient" />
+      <LinkCard title="test-verify" href="/mcp-ai-agent-guidelines/tools/test-verify/" description="Testing: Write, Run, and Verify Tests — Efficient" />
+      <LinkCard title="docs-generate" href="/mcp-ai-agent-guidelines/tools/docs-generate/" description="Document: Generate Documentation Artifacts — Efficient" />
+      <LinkCard title="quality-evaluate" href="/mcp-ai-agent-guidelines/tools/quality-evaluate/" description="Evaluate: Benchmark and Assess Quality — Cross-Model" />
+      <LinkCard title="prompt-engineering" href="/mcp-ai-agent-guidelines/tools/prompt-engineering/" description="Prompt Engineering: Build, Evaluate, and Optimize — Efficient" />
+      <LinkCard title="agent-orchestrate" href="/mcp-ai-agent-guidelines/tools/agent-orchestrate/" description="Orchestrate: Compose Multi-Agent Workflows — Advanced" />
+      <LinkCard title="enterprise-strategy" href="/mcp-ai-agent-guidelines/tools/enterprise-strategy/" description="Enterprise: Leadership and Enterprise Scale — Advanced" />
+      <LinkCard title="policy-govern" href="/mcp-ai-agent-guidelines/tools/policy-govern/" description="Govern: Safety, Compliance, and Guardrails — Advanced" />
+      <LinkCard title="fault-resilience" href="/mcp-ai-agent-guidelines/tools/fault-resilience/" description="Resilience: Self-Healing and Fault Tolerance — Advanced" />
+      <LinkCard title="routing-adapt" href="/mcp-ai-agent-guidelines/tools/routing-adapt/" description="Adapt: Bio-Inspired Adaptive Routing — Advanced" />
+      <LinkCard title="physics-analysis" href="/mcp-ai-agent-guidelines/tools/physics-analysis/" description="Physics Analysis: QM and GR Code Metaphors — Advanced" />
+    </CardGrid>
+  </TabItem>
+  <TabItem label="Workspace tools" icon="setting">
+    Read-only introspection tools that operate on the MCP server's internal state rather than producing advisory outputs.
+
+    <CardGrid>
+      <LinkCard title="agent-memory" href="/mcp-ai-agent-guidelines/tools/agent-memory/" description="Persistent cross-session TOON artifact store — list, read, find, write, enrich, delete" />
+      <LinkCard title="graph-visualize" href="/mcp-ai-agent-guidelines/tools/graph-visualize/" description="Generate Mermaid diagrams for chain graphs, skill graphs, and domain views" />
+    </CardGrid>
+  </TabItem>
+</Tabs>
+
+## Input Schema
+
+All tools share the same input schema:
+
+```json
+{
+  "request": "string (required)",
+  "context": "string (optional)",
+  "options": "object (optional, tool-specific)"
+}
+```

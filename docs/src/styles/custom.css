@@ -1,0 +1,226 @@
+/* Custom styles for mcp-ai-agent-guidelines docs */
+
+:root {
+	/* ── Caligo Deep Sable — light-mode tint ── */
+	--sl-color-accent-low: #1a1030;
+	--sl-color-accent: #3b9cf6;
+	--sl-color-accent-high: #00d4cc;
+	--sl-color-bg: #f5f3ff;
+	--sl-color-bg-sidebar: #f1eeff;
+
+	/* Tighter code font for skill/tool tables */
+	--sl-text-code: 0.8em;
+
+	/* Model tier badge palette — Caligo tokens */
+	--badge-zero-cost-bg: #00d4cc;
+	--badge-zero-cost-text: #100f20;
+	--badge-efficient-bg: #ffa659;
+	--badge-efficient-text: #100f20;
+	--badge-advanced-bg: #dc2626;
+	--badge-advanced-text: #fff;
+	--badge-cross-model-bg: #3b9cf6;
+	--badge-cross-model-text: #100f20;
+}
+
+[data-theme="dark"] {
+	/* ── Caligo Deep Sable — dark mode ── */
+	--sl-color-accent-low: #100f20;
+	--sl-color-accent: #3b9cf6;
+	--sl-color-accent-high: #00d4cc;
+	--sl-color-bg: #100f20;
+	--sl-color-bg-sidebar: #0f0e1e;
+	--sl-color-text: #cecfe4;
+
+	--badge-zero-cost-bg: #00b8b0;
+	--badge-efficient-bg: #e5953e;
+	--badge-advanced-bg: #b91c1c;
+	--badge-cross-model-bg: #2a78e0;
+}
+
+/* Domain badge colors — Caligo palette */
+.badge-qm {
+	--sl-badge-color: #00d4cc;
+}
+.badge-gr {
+	--sl-badge-color: #3b9cf6;
+}
+.badge-gov {
+	--sl-badge-color: #b91c1c;
+}
+
+/* Wider table layout for skill/tool reference tables */
+.sl-markdown-content table {
+	display: table;
+	width: 100%;
+	font-size: 0.875rem;
+}
+
+/* Skill domain card grid */
+.domain-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+	gap: 1rem;
+	margin: 1.5rem 0;
+}
+
+.domain-card {
+	border: 1px solid var(--sl-color-gray-5);
+	border-radius: 0.5rem;
+	padding: 1rem;
+	transition: border-color 0.15s ease;
+}
+
+.domain-card:hover {
+	border-color: var(--sl-color-accent);
+}
+
+.domain-card .domain-icon {
+	font-size: 1.5rem;
+	margin-bottom: 0.25rem;
+}
+
+.domain-card .domain-count {
+	font-size: 0.75rem;
+	color: var(--sl-color-gray-3);
+}
+
+/* Physics section callout */
+.physics-callout {
+	border-left: 3px solid var(--sl-color-accent);
+	padding-left: 1rem;
+	margin: 1.5rem 0;
+	font-style: italic;
+}
+
+/* Chain graph arrows in tool pages */
+.chain-to {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin: 0.5rem 0;
+}
+
+/* Tool header icon layout */
+.tool-header-icon {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	margin-bottom: 1.5rem;
+}
+
+/* Steps component: tighten line height for step descriptions */
+.sl-steps > li > :first-child {
+	margin-top: 0;
+}
+
+/* ── Hero illustration ─────────────────────────────────────── */
+
+/* Logo in nav — subtle hover lift (lower specificity — must stay before hero img rules) */
+:where(.site-title) img {
+	transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+:where(.site-title):hover img {
+	transform: translateY(-1px) scale(1.06);
+	filter: drop-shadow(0 2px 6px color-mix(in srgb, var(--sl-color-accent) 40%, transparent));
+}
+
+/* Entrance fade-in */
+@keyframes hero-enter {
+	from { opacity: 0; transform: scale(0.94); }
+	to   { opacity: 1; transform: scale(1); }
+}
+
+/* Slow ambient pulse on the whole diagram */
+@keyframes hero-pulse {
+	0%, 100% { filter: drop-shadow(0 0  6px color-mix(in srgb, var(--sl-color-accent) 25%, transparent)); }
+	50%       { filter: drop-shadow(0 0 18px color-mix(in srgb, var(--sl-color-accent) 55%, transparent)); }
+}
+
+.hero .hero-html img,
+.hero img[src*="hero-"] {
+	animation:
+		hero-enter 0.7s cubic-bezier(0.22, 1, 0.36, 1) both,
+		hero-pulse 5s ease-in-out 1s infinite;
+	max-width: 440px;
+	width: 100%;
+}
+
+/* ── end Hero illustration ─────────────────────────────────── */
+
+/* ── Concept-page theme-aware illustrations ─────────────────── */
+/* Usage in MDX:
+   <div class="concept-img-light">![alt](path-light.svg)</div>
+   <div class="concept-img-dark">![alt](path-dark.svg)</div>
+*/
+.concept-img-light,
+.concept-img-dark {
+	margin: 1.5rem 0;
+}
+
+.concept-img-light img,
+.concept-img-dark img {
+	width: 100%;
+	max-width: 560px;
+	height: auto;
+	border-radius: 0.5rem;
+}
+
+/* Dark theme: hide light variant, show dark variant */
+[data-theme="dark"] .concept-img-light { display: none; }
+:not([data-theme="dark"]) .concept-img-dark { display: none; }
+/* ── end Concept-page theme-aware illustrations ──────────────── */
+
+
+.chain-to a {
+	font-size: 0.8rem;
+	padding: 0.2rem 0.6rem;
+	border-radius: 9999px;
+	background: var(--sl-color-accent-low);
+	color: var(--sl-color-accent-high);
+	text-decoration: none;
+	border: 1px solid var(--sl-color-accent);
+}
+
+.chain-to a:hover {
+	background: var(--sl-color-accent);
+	color: white;
+}
+
+/* Tool page icon header */
+.tool-header-icon {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	margin-bottom: 1.25rem;
+	padding: 0.75rem 1rem;
+	border-radius: 0.5rem;
+	background: var(--sl-color-bg-nav);
+	border: 1px solid var(--sl-color-gray-5);
+}
+
+.tool-header-icon svg {
+	flex-shrink: 0;
+	color: var(--sl-color-accent);
+	stroke: var(--sl-color-accent);
+}
+
+/* ── Caligo inline code tint ──────────────────────────────── */
+.sl-markdown-content :not(pre) > code {
+	background: color-mix(in srgb, var(--sl-color-accent) 8%, var(--sl-color-bg));
+	border-radius: 0.25rem;
+	padding: 0.1em 0.35em;
+}
+
+/* ── Caligo teal blockquote glow ──────────────────────────── */
+.sl-markdown-content blockquote {
+	border-left-color: var(--sl-color-accent-high);
+}
+/* ── end Caligo tweaks ────────────────────────────────────── */
+
+.tool-header-icon span {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.4rem;
+}

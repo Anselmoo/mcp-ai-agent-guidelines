@@ -1,0 +1,122 @@
+---
+title: Installation
+description: Install the MCP AI Agent Guidelines server via npx, npm global, or from source.
+sidebar:
+  order: 1
+---
+
+import { Tabs, TabItem, Code } from "@astrojs/starlight/components";
+
+## Requirements
+
+- **Node.js** `>=22.7.5`
+- **npm** `>=10.0.0`
+- A MCP-compatible host: Claude Desktop, VS Code (Copilot Chat), Cline, or any MCP client
+
+## Install Methods
+
+<Tabs>
+  <TabItem label="npx (recommended)">
+    No installation needed — npx downloads and runs the latest version on demand.
+
+    ```json
+    {
+      "mcp": {
+        "servers": {
+          "ai-agent-guidelines": {
+            "command": "npx",
+            "args": ["-y", "mcp-ai-agent-guidelines@latest"]
+          }
+        }
+      }
+    }
+    ```
+  </TabItem>
+
+  <TabItem label="Global install">
+    ```bash
+    npm install -g mcp-ai-agent-guidelines
+    ```
+    Then configure your MCP host with `command: "mcp-ai-agent-guidelines"` and `args: []`.
+  </TabItem>
+
+  <TabItem label="Docker">
+    ```bash
+    docker pull ghcr.io/anselmoo/mcp-ai-agent-guidelines:latest
+    ```
+
+    MCP config:
+    ```json
+    {
+      "mcp": {
+        "servers": {
+          "ai-agent-guidelines": {
+            "command": "docker",
+            "args": ["run", "--rm", "-i",
+              "ghcr.io/anselmoo/mcp-ai-agent-guidelines:latest"]
+          }
+        }
+      }
+    }
+    ```
+  </TabItem>
+
+  <TabItem label="From source">
+    ```bash
+    git clone https://github.com/Anselmoo/mcp-ai-agent-guidelines.git
+    cd mcp-ai-agent-guidelines
+    npm ci
+    npm run build
+    ```
+    Then configure your MCP host with:
+    ```json
+    {
+      "mcp": {
+        "servers": {
+          "ai-agent-guidelines": {
+            "command": "node",
+            "args": ["/path/to/mcp-ai-agent-guidelines/dist/index.js"]
+          }
+        }
+      }
+    }
+    ```
+  </TabItem>
+</Tabs>
+
+## VS Code One-Click Install
+
+Click the button to install directly into VS Code via the MCP redirect:
+
+[![Install with NPX in VS Code](https://img.shields.io/badge/VS%20Code-Install%20with%20NPX-blue?logo=visualstudiocode)](https://insiders.vscode.dev/redirect/mcp/install?name=ai-agent-guidelines&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22mcp-ai-agent-guidelines%40latest%22%5D%7D)
+
+Or add manually in **VS Code User Settings (JSON)**:
+
+```json
+{
+  "mcp": {
+    "servers": {
+      "ai-agent-guidelines": {
+        "command": "npx",
+        "args": ["-y", "mcp-ai-agent-guidelines@latest"]
+      }
+    }
+  }
+}
+```
+
+## Verify Installation
+
+After adding the server to your MCP host, verify the tools are listed:
+
+```bash
+# Using MCP Inspector CLI
+npx -y @modelcontextprotocol/inspector --cli node dist/index.js --method tools/list
+```
+
+You should see 20+ tools including `system-design`, `feature-implement`, `task-bootstrap`, etc.
+
+## Next Steps
+
+- [Quickstart](/mcp-ai-agent-guidelines/getting-started/quickstart/) — your first task with the server
+- [MCP Configuration](/mcp-ai-agent-guidelines/getting-started/mcp-config/) — environment variables, physics skill gating, orchestration config

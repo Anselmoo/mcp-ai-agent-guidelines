@@ -1,0 +1,48 @@
+---
+title: strategy-plan
+description: Plan — strategy, roadmap, sprint planning, and backlog prioritization with concrete next actions.
+sidebar:
+  label: strategy-plan
+  badge:
+    text: "Advanced"
+    variant: "danger"
+---
+
+import { Badge } from "@astrojs/starlight/components";
+import ToolIcon from "../../../components/ToolIcon.astro";
+
+<div class="tool-header-icon"><ToolIcon icon="Telescope" size={28} aria-hidden="true" /><span><Badge text="Advanced" variant="danger" /> <Badge text="workflow" variant="note" /></span></div>
+
+## Mission
+
+Prioritize → sequence → estimate → commit. Every plan produces concrete next actions.
+
+## When to Use
+
+Use when creating a project roadmap, running sprint planning, prioritizing a backlog, mapping capability gaps, sequencing technical investments, estimating effort, or framing strategic recommendations for leadership.
+
+**Triggers**: "plan this sprint", "roadmap for", "prioritize the backlog", "strategy for", "capability map", "what do we do next", "sequence this work"
+
+## Skills Invoked
+
+- `strat-roadmap` — phased delivery roadmap with milestones
+- `strat-prioritisation` — backlog ranking by impact/effort/risk
+- `strat-tradeoff` — tradeoff analysis for competing approaches
+- `strat-advisor` — strategic recommendations
+- `req-scope` — scope boundary for the plan
+
+## Chain-To
+
+- `feature-implement` — execute the top-priority item
+- `enterprise-strategy` — escalate to enterprise transformation planning
+- `evidence-research` — gather evidence for uncertain decisions
+
+## Example
+
+```json
+{
+  "request": "Prioritize our Q2 technical backlog: auth refactor, monitoring upgrade, API v2 migration, and database index optimization"
+}
+```
+
+**Output**: Ranked backlog with scores, phased roadmap, risk flags, and a recommended sprint 1 scope.

@@ -1,0 +1,49 @@
+---
+title: code-review
+description: Review — code quality, security, correctness, and compliance review with actionable findings.
+sidebar:
+  label: code-review
+  badge:
+    text: "Cross-Model"
+    variant: "note"
+---
+
+import { Badge } from "@astrojs/starlight/components";
+import ToolIcon from "../../../components/ToolIcon.astro";
+
+<div class="tool-header-icon"><ToolIcon icon="Eye" size={28} aria-hidden="true" /><span><Badge text="Cross-Model" variant="note" /> <Badge text="workflow" variant="note" /></span></div>
+
+## Mission
+
+Inspect → grade → recommend → close the loop. Every review produces actionable findings.
+
+## When to Use
+
+Use when reviewing existing code for quality, security vulnerabilities, correctness, maintainability, API surface hygiene, or compliance adherence.
+
+**Triggers**: "review this code", "code review", "check for security issues", "quality review", "audit this", "grade this output", "inspect this PR"
+
+## Skills Invoked
+
+3× free parallel scan → `strong` synthesis:
+- `qual-review` (Zero-Cost) — style and correctness
+- `qual-code-analysis` (Zero-Cost) — static metrics
+- `qual-performance` (Efficient) — performance audit
+- `qual-security` (strong, independent) — OWASP Top 10, injection, auth
+- `qual-refactoring-priority` (Efficient) — debt ranking
+
+## Chain-To
+
+- `policy-govern` — escalate governance issues
+- `code-refactor` — proceed with refactoring recommendations
+- `test-verify` — add tests for coverage gaps
+
+## Example
+
+```json
+{
+  "request": "Review the new payment processor integration for security and correctness"
+}
+```
+
+**Output**: Finding table ordered by severity (`critical` → `low`), each with file path + line, description, and suggested fix. Security findings are always separated into their own section.

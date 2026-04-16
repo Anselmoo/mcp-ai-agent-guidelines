@@ -1,0 +1,48 @@
+---
+title: issue-debug
+description: Debug — diagnose and fix problems by tracing failures to their root cause.
+sidebar:
+  label: issue-debug
+  badge:
+    text: "Efficient"
+    variant: "caution"
+---
+
+import { Badge } from "@astrojs/starlight/components";
+import ToolIcon from "../../../components/ToolIcon.astro";
+
+<div class="tool-header-icon"><ToolIcon icon="Bug" size={28} aria-hidden="true" /><span><Badge text="Efficient" variant="caution" /> <Badge text="workflow" variant="note" /></span></div>
+
+## Mission
+
+Diagnose and fix problems: reproduce → locate → understand → fix → prevent recurrence.
+
+## When to Use
+
+Use when something is broken, producing wrong output, crashing, behaving unexpectedly, or when you need to trace a failure to its root cause.
+
+**Triggers**: "something is broken", "this is failing", "why does this crash", "unexpected output", "trace this error", "find the bug"
+
+## Skills Invoked
+
+Sequential debug workflow:
+1. `debug-assistant` (Zero-Cost) — symptom triage, top-3 hypotheses
+2. `debug-root-cause` (Advanced) — causal chain analysis
+3. `debug-reproduction` (Efficient) — minimal reproducible example
+4. `debug-postmortem` (Efficient) — post-incident report with prevention measures
+
+## Chain-To
+
+- `test-verify` — add regression tests to prevent recurrence
+- `code-refactor` — structural fix if root cause is design-level
+- `policy-govern` — escalate if root cause is a security issue
+
+## Example
+
+```json
+{
+  "request": "The checkout service is throwing 500 errors intermittently when processing Stripe webhooks"
+}
+```
+
+**Output**: Triage hypothesis list, root cause finding, minimal reproduction script, and a postmortem with three action items.

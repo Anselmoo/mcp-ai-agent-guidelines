@@ -1,0 +1,87 @@
+{
+  "id": "04-plan",
+  "title": "Plan / Roadmap Workflow",
+  "triggeredBy": "User requesting a sprint plan, roadmap, prioritization matrix, or organizational setup",
+  "intent": "Translate verified scope into a phased, capability-aware roadmap with milestone commitments",
+  "resourcePool": [
+    "strategy"
+  ],
+  "inputSchema": {
+    "goal": "string",
+    "constraints": "string[]?",
+    "horizon": "sprint|quarter|year"
+  },
+  "throwbacks": [
+    "user: out-of-bounds prioritized list",
+    "bootstrap: capability gaps exceed scope"
+  ],
+  "chainTo": [
+    "implement",
+    "enterprise",
+    "research"
+  ],
+  "skillTree": {
+    "root": "strategy-framing",
+    "nodes": [
+      {
+        "id": "strategy-framing",
+        "skill": "strat-advisor",
+        "type": "primary",
+        "profile": "strategy",
+        "description": "Frame the technical strategy for AI adoption, platform design, and operating model decisions",
+        "next": [
+          {
+            "target": "prioritization-matrix"
+          }
+        ]
+      },
+      {
+        "id": "prioritization-matrix",
+        "skill": "strat-prioritization",
+        "type": "primary",
+        "profile": "strategy",
+        "description": "Rank AI use cases, features, and technical investments by value, feasibility, and risk",
+        "next": [
+          {
+            "target": "roadmap-generation"
+          }
+        ]
+      },
+      {
+        "id": "roadmap-generation",
+        "skill": "strat-roadmap",
+        "type": "primary",
+        "profile": "strategy",
+        "description": "Create phased AI adoption roadmap with milestones, maturity models, and capability targets",
+        "next": [
+          {
+            "target": "transformation-framing"
+          },
+          {
+            "target": "acceptance-output"
+          }
+        ]
+      },
+      {
+        "id": "transformation-framing",
+        "skill": "lead-transformation-roadmap",
+        "type": "parallel",
+        "profile": "enterprise",
+        "description": "Phase the enterprise AI transformation across maturity waves",
+        "next": [
+          {
+            "target": "acceptance-output"
+          }
+        ]
+      },
+      {
+        "id": "acceptance-output",
+        "skill": "req-acceptance-criteria",
+        "type": "synthesis",
+        "profile": "elicitation",
+        "description": "Produce testable milestone success criteria for each roadmap phase",
+        "next": []
+      }
+    ]
+  }
+}

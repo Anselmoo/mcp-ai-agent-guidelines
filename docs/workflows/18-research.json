@@ -1,0 +1,103 @@
+{
+  "id": "18-research",
+  "title": "Research Workflow",
+  "triggeredBy": "Need to compare approaches, run a trade study, or synthesize scattered evidence",
+  "intent": "Fan-out evidence collection then strong-synthesis consolidation before a design or strategy decision",
+  "resourcePool": [
+    "research",
+    "enterprise"
+  ],
+  "inputSchema": {
+    "topic": "string",
+    "constraints": "string[]"
+  },
+  "throwbacks": [
+    "halt: hallucination or source conflict among mechanical inputs"
+  ],
+  "chainTo": [
+    "plan",
+    "design",
+    "enterprise"
+  ],
+  "skillTree": {
+    "root": "evidence-collection",
+    "nodes": [
+      {
+        "id": "evidence-collection",
+        "skill": "synth-research",
+        "type": "primary",
+        "profile": "research",
+        "description": "Gather and structure information from multiple sources into organized research material",
+        "next": [
+          {
+            "target": "comparative-analysis"
+          },
+          {
+            "target": "deep-synthesis"
+          }
+        ]
+      },
+      {
+        "id": "comparative-analysis",
+        "skill": "synth-comparative",
+        "type": "parallel",
+        "profile": "research",
+        "description": "Compare tools, models, frameworks, or approaches across explicit evaluation axes",
+        "next": [
+          {
+            "target": "synthesis-engine"
+          }
+        ]
+      },
+      {
+        "id": "deep-synthesis",
+        "skill": "synth-engine",
+        "type": "parallel",
+        "profile": "research",
+        "description": "Synthesise scattered evidence and research material into structured summaries and key insights",
+        "next": [
+          {
+            "target": "synthesis-engine"
+          }
+        ]
+      },
+      {
+        "id": "synthesis-engine",
+        "skill": "synth-engine",
+        "type": "synthesis",
+        "profile": "research",
+        "description": "Detect hallucinations or source conflicts; if clean, distil into consolidated findings",
+        "next": [
+          {
+            "target": "recommendation",
+            "condition": "sources consistent"
+          },
+          {
+            "target": "evidence-collection",
+            "condition": "source conflict detected — re-collect"
+          }
+        ]
+      },
+      {
+        "id": "recommendation",
+        "skill": "synth-recommendation",
+        "type": "synthesis",
+        "profile": "research",
+        "description": "Frame evidence-based recommendation with rationale, tradeoffs, and explicit confidence level",
+        "next": [
+          {
+            "target": "strategy-framing"
+          }
+        ]
+      },
+      {
+        "id": "strategy-framing",
+        "skill": "strat-advisor",
+        "type": "synthesis",
+        "profile": "strategy",
+        "description": "Wrap conclusion in technical strategy framing for design or planning consumption",
+        "next": []
+      }
+    ]
+  }
+}

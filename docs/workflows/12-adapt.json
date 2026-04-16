@@ -1,0 +1,120 @@
+{
+  "id": "12-adapt",
+  "title": "Adapt Workflow",
+  "triggeredBy": "Workflow efficiency degrading or request to self-optimize routing and prune unused agent paths",
+  "intent": "Bio-inspired self-optimization: routing converges on high-performance paths and prunes dead ones",
+  "resourcePool": [
+    "adaptive_routing"
+  ],
+  "inputSchema": {
+    "executionLogs": "any[]",
+    "targetMetric": "string"
+  },
+  "throwbacks": [
+    "orchestrate: after topology update — validate new layout"
+  ],
+  "chainTo": [],
+  "preconditions": {
+    "env": "ENABLE_ADAPTIVE_ROUTING=true"
+  },
+  "skillTree": {
+    "root": "pheromone-routing",
+    "nodes": [
+      {
+        "id": "pheromone-routing",
+        "skill": "adapt-aco-router",
+        "type": "primary",
+        "profile": "adaptive_routing",
+        "description": "Ant Colony Optimization: evolve routing weights based on historical path performance",
+        "next": [
+          {
+            "target": "annealing-topology"
+          },
+          {
+            "target": "pheromone-pruning"
+          }
+        ]
+      },
+      {
+        "id": "annealing-topology",
+        "skill": "adapt-annealing",
+        "type": "parallel",
+        "profile": "adaptive_routing",
+        "description": "Simulated annealing: discover optimal workflow configuration exploring agent count, model selection, chain depth",
+        "next": [
+          {
+            "target": "hebbian-agent-pairing"
+          }
+        ]
+      },
+      {
+        "id": "hebbian-agent-pairing",
+        "skill": "adapt-hebbian-router",
+        "type": "primary",
+        "profile": "adaptive_routing",
+        "description": "Strengthen agent pairings that produce the best historical results (neurons that fire together, wire together)",
+        "next": [
+          {
+            "target": "topology-apply"
+          }
+        ]
+      },
+      {
+        "id": "pheromone-pruning",
+        "skill": "adapt-physarum-router",
+        "type": "parallel",
+        "profile": "adaptive_routing",
+        "description": "Slime-mould optimization: self-prune underperforming paths; reinforce high-throughput routes",
+        "next": [
+          {
+            "target": "quorum-coordination"
+          }
+        ]
+      },
+      {
+        "id": "quorum-coordination",
+        "skill": "adapt-quorum",
+        "type": "primary",
+        "profile": "adaptive_routing",
+        "description": "Emergent task assignment from agent availability signals; eliminate central dispatch bottleneck",
+        "next": [
+          {
+            "target": "topology-apply"
+          }
+        ]
+      },
+      {
+        "id": "clone-mutate-repair",
+        "skill": "resil-clone-mutate",
+        "type": "fallback",
+        "profile": "resilience",
+        "description": "Immune-system self-healing: clone, mutate, and compete prompts when a node degrades",
+        "next": [
+          {
+            "target": "topology-apply"
+          }
+        ]
+      },
+      {
+        "id": "replay-consolidation",
+        "skill": "resil-replay",
+        "type": "primary",
+        "profile": "resilience",
+        "description": "Hippocampal replay: consolidate past run experience to improve routing strategy over time",
+        "next": [
+          {
+            "target": "topology-apply"
+          }
+        ]
+      },
+      {
+        "id": "topology-apply",
+        "skill": "adapt-aco-router",
+        "type": "synthesis",
+        "profile": "adaptive_routing",
+        "description": "Apply the new discovered topology; test against the target metric before committing",
+        "next": []
+      }
+    ]
+  }
+}
