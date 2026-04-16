@@ -249,14 +249,31 @@ describe("tool-call-handler", () => {
 	});
 
 	it("returns structured snapshot status payloads", async () => {
-		const result = await dispatchToolCall(
-			"agent-snapshot",
-			{ command: "status" },
-			createRuntime(),
-		);
+		const snapshotSpy = vi
+			.spyOn(memoryInterface, "loadFingerprintSnapshot")
+			.mockResolvedValue({
+				meta: { version: "1", capturedAt: "2026-04-11T00:00:00.000Z" },
+				fingerprint: {
+					capturedAt: "2026-04-11T00:00:00.000Z",
+					skillIds: [],
+					instructionNames: [],
+					codePaths: [],
+					srcPaths: [],
+				},
+			});
 
-		expect(result.isError ?? false).toBe(false);
-		expect(result.content[0]?.text).toContain('"snapshotId"');
+		try {
+			const result = await dispatchToolCall(
+				"agent-snapshot",
+				{ command: "status" },
+				createRuntime(),
+			);
+
+			expect(result.isError ?? false).toBe(false);
+			expect(result.content[0]?.text).toContain('"snapshotId"');
+		} finally {
+			snapshotSpy.mockRestore();
+		}
 	});
 
 	it("rejects retired workspace aliases after the hard-cut rename", async () => {
