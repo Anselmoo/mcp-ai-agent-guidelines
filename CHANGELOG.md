@@ -101,8 +101,9 @@ complete model-routing layer, governance surface, and observability pipeline.
   running `vitest` to ensure a clean, hermetic environment on all matrix nodes
 - `quality` job now depends on the `lint` job for a serial fast-fail chain:
   `lint → quality → test → drift`
-- CI test matrix updated from `[20, 22, 24]` to `[22, 24, 26]` — Node 20
-  reached end-of-life and is dropped; Node 26 added
+- CI test matrix updated from `[20, 22, 24]` to `[22, 24, latest]` — Node 20
+  reached end-of-life and is dropped; `latest` added to track the current
+  stable release automatically
 
 ---
 
