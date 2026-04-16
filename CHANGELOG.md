@@ -88,6 +88,19 @@ complete model-routing layer, governance surface, and observability pipeline.
 - **1 915 tests** across **262 test files** — all passing
 - Global setup guard (`src/tests/globalSetup.ts`) prevents TOML state leaks
   between interactive sessions and clean CI runs
+- `src/tests/fixtures/orchestration.toml` fixture added — mirrors production
+  `orchestration.toml` with `strict_mode = false` so test runs on CI and
+  fresh clones never throw the "strict mode forbids fallback" error
+
+### CI
+
+- Added `Lint & Code Quality (Lefthook)` job to `ci.yml` that runs
+  `lefthook run pre-commit --command biome-check` — satisfies the required
+  GitHub status check gate before the Quality Gate job
+- `test` job bootstraps `orchestration.toml` from the test fixture before
+  running `vitest` to ensure a clean, hermetic environment on all matrix nodes
+- `quality` job now depends on the `lint` job for a serial fast-fail chain:
+  `lint → quality → test → drift`
 
 ---
 
