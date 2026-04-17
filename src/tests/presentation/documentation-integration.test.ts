@@ -1,7 +1,7 @@
-import { existsSync, mkdtempSync, readFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import type { GraphAnalysis } from "../../contracts/graph-types.js";
 import {
 	DocumentationIntegrationEngine,
@@ -9,8 +9,22 @@ import {
 } from "../../presentation/documentation-integration.js";
 
 describe("presentation/documentation-integration", () => {
+	const tempDirs: string[] = [];
+
+	afterEach(() => {
+		for (const dir of tempDirs.splice(0)) {
+			rmSync(dir, { recursive: true, force: true });
+		}
+	});
+
+	function makeTempDir(prefix: string): string {
+		const dir = mkdtempSync(join(tmpdir(), prefix));
+		tempDirs.push(dir);
+		return dir;
+	}
+
 	it("generates data-driven documentation artifacts without internal wave language", async () => {
-		const outputDirectory = mkdtempSync(join(tmpdir(), "docs-integration-"));
+		const outputDirectory = makeTempDir("docs-integration-");
 		const engine = new DocumentationIntegrationEngine({
 			outputDirectory,
 			includeVisualizations: true,
@@ -115,7 +129,7 @@ describe("presentation/documentation-integration", () => {
 	});
 
 	it("creates dynamic interaction and performance maps from the supplied data", async () => {
-		const outputDirectory = mkdtempSync(join(tmpdir(), "docs-visuals-"));
+		const outputDirectory = makeTempDir("docs-visuals-");
 		const engine = new DocumentationIntegrationEngine({
 			outputDirectory,
 			includePerformanceData: true,
@@ -172,7 +186,7 @@ describe("presentation/documentation-integration", () => {
 	});
 
 	it("generates API documentation directory with per-skill and overview files", async () => {
-		const outputDirectory = mkdtempSync(join(tmpdir(), "docs-api-"));
+		const outputDirectory = makeTempDir("docs-api-");
 		const engine = new DocumentationIntegrationEngine({ outputDirectory });
 
 		const skillDocs = [
@@ -212,7 +226,7 @@ describe("presentation/documentation-integration", () => {
 	});
 
 	it("updates documentation for changed skills only", async () => {
-		const outputDirectory = mkdtempSync(join(tmpdir(), "docs-update-"));
+		const outputDirectory = makeTempDir("docs-update-");
 		const engine = new DocumentationIntegrationEngine({ outputDirectory });
 
 		const skillDocs = [
@@ -248,7 +262,7 @@ describe("presentation/documentation-integration", () => {
 	});
 
 	it("updateDocumentationFromSkillChanges skips skills not found in skillDocs", async () => {
-		const outputDirectory = mkdtempSync(join(tmpdir(), "docs-skip-"));
+		const outputDirectory = makeTempDir("docs-skip-");
 		const engine = new DocumentationIntegrationEngine({ outputDirectory });
 
 		const skillDocs = [
@@ -275,7 +289,7 @@ describe("presentation/documentation-integration", () => {
 	});
 
 	it("generateArchitectureDocumentation covers default-config else-paths and same-domain skills", async () => {
-		const outputDirectory = mkdtempSync(join(tmpdir(), "docs-defaults-"));
+		const outputDirectory = makeTempDir("docs-defaults-");
 		// Default config: includeVisualizations=false, includePerformanceData=false, includeCodeExamples=true
 		const engine = new DocumentationIntegrationEngine({ outputDirectory });
 
@@ -329,7 +343,7 @@ describe("presentation/documentation-integration", () => {
 	});
 
 	it("generateSkillInteractionMaps covers no-metrics path and edge-case recommendation branches", async () => {
-		const outputDirectory = mkdtempSync(join(tmpdir(), "docs-maps-edge-"));
+		const outputDirectory = makeTempDir("docs-maps-edge-");
 		const engine = new DocumentationIntegrationEngine({
 			outputDirectory,
 			includePerformanceData: true,
@@ -416,7 +430,7 @@ describe("presentation/documentation-integration", () => {
 	});
 
 	it("generateApiDocumentation includes performance profile and code examples when configs are enabled", async () => {
-		const outputDirectory = mkdtempSync(join(tmpdir(), "docs-api-full-"));
+		const outputDirectory = makeTempDir("docs-api-full-");
 		const engine = new DocumentationIntegrationEngine({
 			outputDirectory,
 			includePerformanceData: true,
@@ -458,7 +472,7 @@ describe("presentation/documentation-integration", () => {
 	});
 
 	it("generateArchitectureDocumentation with null graphData fields covers defensive-branch fallbacks", async () => {
-		const outputDirectory = mkdtempSync(join(tmpdir(), "docs-null-"));
+		const outputDirectory = makeTempDir("docs-null-");
 		const engine = new DocumentationIntegrationEngine({ outputDirectory });
 
 		await engine.generateArchitectureDocumentation(
@@ -480,9 +494,7 @@ describe("presentation/documentation-integration", () => {
 	});
 
 	it("generateArchitectureDocumentation renders long interaction sections and visualization fallbacks", async () => {
-		const outputDirectory = mkdtempSync(
-			join(tmpdir(), "docs-visual-fallbacks-"),
-		);
+		const outputDirectory = makeTempDir("docs-visual-fallbacks-");
 		const engine = new DocumentationIntegrationEngine({
 			outputDirectory,
 			includeVisualizations: true,
@@ -563,7 +575,7 @@ describe("presentation/documentation-integration", () => {
 	});
 
 	it("generateSkillInteractionMaps renders empty-state summaries when no skills are supplied", async () => {
-		const outputDirectory = mkdtempSync(join(tmpdir(), "docs-empty-maps-"));
+		const outputDirectory = makeTempDir("docs-empty-maps-");
 		const engine = new DocumentationIntegrationEngine({
 			outputDirectory,
 			includePerformanceData: true,

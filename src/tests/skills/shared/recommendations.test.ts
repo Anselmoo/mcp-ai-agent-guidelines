@@ -576,8 +576,8 @@ describe("recommendations", () => {
 
 	it("sortRecommendationsByGrounding handles items without groundingScope (fallback manifest)", () => {
 		const result = sortRecommendationsByGrounding([
-			{ title: "A", detail: "detail" }, // no groundingScope
-			{ title: "B", detail: "detail", groundingScope: "evidence" },
+			{ title: "A", detail: "detail", modelClass: "cheap" as const }, // no groundingScope
+			{ title: "B", detail: "detail", groundingScope: "evidence", modelClass: "cheap" as const },
 		]);
 		expect(result.length).toBe(2);
 	});
@@ -585,8 +585,8 @@ describe("recommendations", () => {
 	it("sortRecommendationsByGrounding handles items without evidenceAnchors or sourceRefs", () => {
 		// When both sides have same scope but missing evidenceAnchors/sourceRefs
 		const result = sortRecommendationsByGrounding([
-			{ title: "A", detail: "d1", groundingScope: "context" }, // no evidenceAnchors, no sourceRefs
-			{ title: "B", detail: "d2", groundingScope: "context" }, // same
+			{ title: "A", detail: "d1", groundingScope: "context" as const, modelClass: "cheap" as const }, // no evidenceAnchors, no sourceRefs
+			{ title: "B", detail: "d2", groundingScope: "context" as const, modelClass: "cheap" as const }, // same
 		]);
 		expect(result.length).toBe(2);
 		// order preserved by insertion when all secondary keys are equal
@@ -662,7 +662,7 @@ describe("recommendations", () => {
 	it("summarizeRecommendationGrounding returns null when no items have groundingScope", () => {
 		expect(
 			summarizeRecommendationGrounding([
-				{ title: "A", detail: "d" }, // no groundingScope
+				{ title: "A", detail: "d", modelClass: "cheap" as const }, // no groundingScope
 			]),
 		).toBeNull();
 	});

@@ -289,22 +289,9 @@ describe("tools/memory-tools", () => {
 
 	it("enriches an artifact with library context", async () => {
 		const enrichMock = vi.fn().mockResolvedValue(true);
-		vi.doMock("../../memory/toon-interface.js", () => ({
-			ToonMemoryInterface: class {
-				deleteMemoryArtifact = deleteMemoryArtifactMock;
-				findMemoryArtifacts = findMemoryArtifactsMock;
-				loadFingerprintSnapshot = loadFingerprintSnapshotMock;
-				loadMemoryArtifact = loadMemoryArtifactMock;
-				saveMemoryArtifact = saveMemoryArtifactMock;
-				enrichMemoryArtifact = enrichMock;
-			},
-		}));
 
-		// Direct approach: import the module fresh to get the enrichMemoryArtifact
-		// Since memory-tools re-uses sharedToonMemoryInterface, we need to set it on the interface
-		// Instead, just test via the existing mock that reports the correct outcome
+		// Attach enrichMock to the already-imported shared interface
 		const { memoryInterface: mi } = await import("../../tools/memory-tools.js");
-		// Attach enrichMock to the existing interface
 		(mi as unknown as Record<string, unknown>).enrichMemoryArtifact =
 			enrichMock;
 

@@ -100,8 +100,11 @@ describe("saveCache + loadCache round-trip", () => {
 	});
 
 	it("creates parent directories if they don't exist", async () => {
-		// saveCache operates on a flat tmp file + rename in same directory —
-		// nested subdirectory creation is out of scope, covered by round-trip tests above.
+		// saveCache calls mkdirSync with { recursive: true }, so nested paths succeed.
+		const filePath = join(tempDir, "missing-parent", "nested.json");
+		expect(() => saveCache(filePath, 1, { value: "nested" })).not.toThrow();
+		const loaded = loadCache(filePath, 1, SimpleSchema);
+		expect(loaded).toEqual({ value: "nested" });
 	});
 
 	it("overwrites existing file on save", async () => {

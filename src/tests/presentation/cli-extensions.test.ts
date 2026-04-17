@@ -1,4 +1,4 @@
-import { existsSync, mkdtempSync, readdirSync, readFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { Command } from "commander";
@@ -8,9 +8,20 @@ import { modelAvailabilityService } from "../../models/model-availability.js";
 import { ReportingCliCommands } from "../../presentation/cli-extensions.js";
 
 describe("presentation/cli-extensions", () => {
+	const tempDirs: string[] = [];
+
 	afterEach(() => {
 		vi.restoreAllMocks();
+		for (const dir of tempDirs.splice(0)) {
+			rmSync(dir, { recursive: true, force: true });
+		}
 	});
+
+	function makeTempDir(prefix: string): string {
+		const dir = mkdtempSync(join(tmpdir(), prefix));
+		tempDirs.push(dir);
+		return dir;
+	}
 
 	function createProgram(outputDirectory?: string): Command {
 		const program = new Command();
@@ -40,7 +51,7 @@ describe("presentation/cli-extensions", () => {
 	});
 
 	it("runs the documentation workflow without placeholder output", async () => {
-		const outputDirectory = mkdtempSync(join(tmpdir(), "cli-docs-"));
+		const outputDirectory = makeTempDir("cli-docs-");
 		const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 		const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 		const program = createProgram(outputDirectory);
@@ -73,7 +84,7 @@ describe("presentation/cli-extensions", () => {
 	});
 
 	it("runs report and export workflows with real generated artifacts", async () => {
-		const outputDirectory = mkdtempSync(join(tmpdir(), "cli-report-"));
+		const outputDirectory = makeTempDir("cli-report-");
 		vi.spyOn(console, "log").mockImplementation(() => {});
 		const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
@@ -146,7 +157,7 @@ describe("presentation/cli-extensions", () => {
 	});
 
 	it("runs individual report subcommands", async () => {
-		const outputDirectory = mkdtempSync(join(tmpdir(), "cli-subreport-"));
+		const outputDirectory = makeTempDir("cli-subreport-");
 		vi.spyOn(console, "log").mockImplementation(() => {});
 		const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
@@ -172,7 +183,7 @@ describe("presentation/cli-extensions", () => {
 	});
 
 	it("runs export dependencies and topology as svg", async () => {
-		const outputDirectory = mkdtempSync(join(tmpdir(), "cli-export-"));
+		const outputDirectory = makeTempDir("cli-export-");
 		vi.spyOn(console, "log").mockImplementation(() => {});
 		vi.spyOn(console, "error").mockImplementation(() => {});
 
@@ -218,7 +229,7 @@ describe("presentation/cli-extensions", () => {
 	});
 
 	it("runs docs api command", async () => {
-		const outputDirectory = mkdtempSync(join(tmpdir(), "cli-docs-api-"));
+		const outputDirectory = makeTempDir("cli-docs-api-");
 		vi.spyOn(console, "log").mockImplementation(() => {});
 		vi.spyOn(console, "error").mockImplementation(() => {});
 
@@ -227,7 +238,7 @@ describe("presentation/cli-extensions", () => {
 	});
 
 	it("runs export metrics as json", async () => {
-		const outputDirectory = mkdtempSync(join(tmpdir(), "cli-metrics-json-"));
+		const outputDirectory = makeTempDir("cli-metrics-json-");
 		vi.spyOn(console, "log").mockImplementation(() => {});
 		vi.spyOn(console, "error").mockImplementation(() => {});
 
@@ -244,7 +255,7 @@ describe("presentation/cli-extensions", () => {
 	});
 
 	it("runs report performance with time-window option", async () => {
-		const outputDirectory = mkdtempSync(join(tmpdir(), "cli-perf-"));
+		const outputDirectory = makeTempDir("cli-perf-");
 		vi.spyOn(console, "log").mockImplementation(() => {});
 		vi.spyOn(console, "error").mockImplementation(() => {});
 
@@ -262,7 +273,7 @@ describe("presentation/cli-extensions", () => {
 	});
 
 	it("runs export dependencies as json", async () => {
-		const outputDirectory = mkdtempSync(join(tmpdir(), "cli-dep-json-"));
+		const outputDirectory = makeTempDir("cli-dep-json-");
 		vi.spyOn(console, "log").mockImplementation(() => {});
 		vi.spyOn(console, "error").mockImplementation(() => {});
 
@@ -278,7 +289,7 @@ describe("presentation/cli-extensions", () => {
 	});
 
 	it("runs report performance with 1w and 1m time windows", async () => {
-		const outputDirectory = mkdtempSync(join(tmpdir(), "cli-perf-tw-"));
+		const outputDirectory = makeTempDir("cli-perf-tw-");
 		vi.spyOn(console, "log").mockImplementation(() => {});
 		vi.spyOn(console, "error").mockImplementation(() => {});
 
@@ -298,7 +309,7 @@ describe("presentation/cli-extensions", () => {
 	});
 
 	it("runs report all with dark theme and json format", async () => {
-		const outputDirectory = mkdtempSync(join(tmpdir(), "cli-all-dark-"));
+		const outputDirectory = makeTempDir("cli-all-dark-");
 		vi.spyOn(console, "log").mockImplementation(() => {});
 		vi.spyOn(console, "error").mockImplementation(() => {});
 
@@ -318,7 +329,7 @@ describe("presentation/cli-extensions", () => {
 	});
 
 	it("runs report all with markdown and pdf formats", async () => {
-		const outputDirectory = mkdtempSync(join(tmpdir(), "cli-all-fmt-"));
+		const outputDirectory = makeTempDir("cli-all-fmt-");
 		vi.spyOn(console, "log").mockImplementation(() => {});
 		vi.spyOn(console, "error").mockImplementation(() => {});
 
@@ -338,7 +349,7 @@ describe("presentation/cli-extensions", () => {
 	});
 
 	it("runs report orchestration with include-bottlenecks", async () => {
-		const outputDirectory = mkdtempSync(join(tmpdir(), "cli-orch-"));
+		const outputDirectory = makeTempDir("cli-orch-");
 		vi.spyOn(console, "log").mockImplementation(() => {});
 		vi.spyOn(console, "error").mockImplementation(() => {});
 
@@ -355,7 +366,7 @@ describe("presentation/cli-extensions", () => {
 	});
 
 	it("runs report models with include-failovers", async () => {
-		const outputDirectory = mkdtempSync(join(tmpdir(), "cli-models-fo-"));
+		const outputDirectory = makeTempDir("cli-models-fo-");
 		vi.spyOn(console, "log").mockImplementation(() => {});
 		vi.spyOn(console, "error").mockImplementation(() => {});
 
@@ -372,7 +383,7 @@ describe("presentation/cli-extensions", () => {
 	});
 
 	it("runs report skills with custom top and threshold", async () => {
-		const outputDirectory = mkdtempSync(join(tmpdir(), "cli-skills-opts-"));
+		const outputDirectory = makeTempDir("cli-skills-opts-");
 		vi.spyOn(console, "log").mockImplementation(() => {});
 		vi.spyOn(console, "error").mockImplementation(() => {});
 
@@ -392,7 +403,7 @@ describe("presentation/cli-extensions", () => {
 	});
 
 	it("runs report all with no-visualizations flag", async () => {
-		const outputDirectory = mkdtempSync(join(tmpdir(), "cli-novis-"));
+		const outputDirectory = makeTempDir("cli-novis-");
 		vi.spyOn(console, "log").mockImplementation(() => {});
 		vi.spyOn(console, "error").mockImplementation(() => {});
 
@@ -490,7 +501,7 @@ describe("presentation/cli-extensions", () => {
 	});
 
 	it("runs docs api with include-examples flag", async () => {
-		const outputDirectory = mkdtempSync(join(tmpdir(), "cli-api-ex-"));
+		const outputDirectory = makeTempDir("cli-api-ex-");
 		vi.spyOn(console, "log").mockImplementation(() => {});
 		vi.spyOn(console, "error").mockImplementation(() => {});
 
@@ -526,7 +537,7 @@ describe("presentation/cli-extensions", () => {
 	});
 
 	it("runs report docs architecture with include-code-examples", async () => {
-		const outputDirectory = mkdtempSync(join(tmpdir(), "cli-arch-code-"));
+		const outputDirectory = makeTempDir("cli-arch-code-");
 		vi.spyOn(console, "log").mockImplementation(() => {});
 		vi.spyOn(console, "error").mockImplementation(() => {});
 
@@ -637,7 +648,7 @@ describe("presentation/cli-extensions", () => {
 	});
 
 	it("report models with mocked availability covers failover branches", async () => {
-		const outputDirectory = mkdtempSync(join(tmpdir(), "cli-models-failover-"));
+		const outputDirectory = makeTempDir("cli-models-failover-");
 		vi.spyOn(console, "log").mockImplementation(() => {});
 		vi.spyOn(console, "error").mockImplementation(() => {});
 

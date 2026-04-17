@@ -398,19 +398,14 @@ describe("orchestration-config: capability-driven resolver", () => {
 		}
 	});
 
-	it("resolveProfile throws in strict mode when no fallback and requires empty", () => {
-		const config = createDefaultOrchestrationConfig();
-		config.environment.strict_mode = true;
-		config.profiles["no-fallback-profile"] = {
-			requires: ["nonexistent-capability"],
-			fallback: [],
-			fan_out: 1,
-		};
-		config.capabilities["nonexistent-capability"] = [];
-		vi.spyOn({ load: () => config }, "load");
-		// Can't easily test without mocking loadOrchestrationConfig, so verify fallback path instead
+	it("resolveProfile returns a string for the default profile regardless of strict mode", () => {
+		// Tests that resolveProfile works with the live config for a known profile.
+		// Strict-mode enforcement for unknown profiles with empty fallbacks requires
+		// module-level config replacement which is not feasible here; this test
+		// verifies the fallback path of resolveProfile instead.
 		const model = resolveProfile("default");
 		expect(typeof model).toBe("string");
+		expect(model.length).toBeGreaterThan(0);
 	});
 
 	it("resolveProfile with prefer tag sorts preferred models first", () => {
