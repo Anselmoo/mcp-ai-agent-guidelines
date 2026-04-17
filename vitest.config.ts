@@ -4,15 +4,16 @@ export default defineConfig({
 	test: {
 		globalSetup: ["src/tests/globalSetup.ts"],
 		environment: "node",
-		pool: "vmThreads",
+		pool: "threads",
 		maxWorkers: 4,
+		fileParallelism: false,
 		testTimeout: 10000,
 		teardownTimeout: 5000,
 		include: ["src/**/*.{test,spec}.{ts,tsx}"],
 		exclude: ["**/node_modules/**", "**/.git/**", "dist/**"],
 		coverage: {
 			provider: "v8",
-			reporter: ["text-summary", "lcov", "html"],
+			reporter: ["text-summary", "lcov", "html", "json-summary"],
 			reportsDirectory: "coverage",
 			include: ["src/**/*.{ts,tsx}"],
 			exclude: [

@@ -3,7 +3,10 @@
  * src/snapshots/symbol-change-tracker.ts.
  */
 
-import { describe, expect, it } from "vitest";
+import { mkdir, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
 	computeFileHash,
 	diffSymbols,
@@ -275,18 +278,199 @@ describe("SymbolChangeTracker", () => {
 		// Should not throw
 	});
 
-	it("diffSymbols logic works for identical snapshots", () => {
-		const sym = {
-			name: "Foo",
-			kind: "class" as const,
-			exported: true,
+	it("watch() returns a stop function that can be called without error", () => {
+		const tracker = new SymbolChangeTracker({ repositoryRoot: "/tmp" });
+		const stop = tracker.watch([], 100_000);
+		expect(typeof stop).toBe("function");
+		stop(); // should not throw
+	});
+});
+
+// ─── SymbolChangeTracker: filesystem integration ──────────────────────────────
+
+describe("SymbolChangeTracker — filesystem", () => {
+	let tempDir: string;
+
+	beforeEach(async () => {
+		tempDir = join(
+			tmpdir(),
+			`sct-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+		);
+		await mkdir(tempDir, { recursive: true });
+	});
+
+	afterEach(async () => {
+		await rm(tempDir, { recursive: true, force: true });
+	});
+
+	it("snapshot() reads files and returns TrackedSymbol[]", async () => {
+		await writeFile(
+			join(tempDir, "mod.ts"),
+			"export function hello() {}\nexport class World {}\n",
+		);
+		const tracker = new SymbolChangeTracker({ repositoryRoot: tempDir });
+		const snaps = await tracker.snapshot(["mod.ts"]);
+		expect(snaps).toHaveLength(1);
+		const names = snaps[0]?.symbols.map((s) => s.name) ?? [];
+		expect(names).toContain("hello");
+		expect(names).toContain("World");
+	});
+
+	it("snapshot() silently skips unreadable files", async () => {
+		const tracker = new SymbolChangeTracker({ repositoryRoot: tempDir });
+		const snaps = await tracker.snapshot(["nonexistent.ts"]);
+		expect(snaps).toHaveLength(0);
+	});
+
+	it("diff() reports unchanged when content hash matches", async () => {
+		await writeFile(join(tempDir, "a.ts"), "export const X = 1;\n");
+		const tracker = new SymbolChangeTracker({ repositoryRoot: tempDir });
+		const baseline = await tracker.snapshot(["a.ts"]);
+		const report = await tracker.diff(baseline, ["a.ts"]);
+		expect(report.unchangedFiles).toBe(1);
+		expect(report.changedFiles).toBe(0);
+	});
+
+	it("diff() reports added symbols when file content changes", async () => {
+		const path = join(tempDir, "b.ts");
+		await writeFile(path, "export const X = 1;\n");
+		const tracker = new SymbolChangeTracker({ repositoryRoot: tempDir });
+		const baseline = await tracker.snapshot(["b.ts"]);
+		// Modify file
+		await writeFile(path, "export const X = 1;\nexport const Y = 2;\n");
+		const report = await tracker.diff(baseline, ["b.ts"]);
+		expect(report.addedSymbols).toBeGreaterThan(0);
+	});
+
+	it("diff() emits 'change' event for changed files", async () => {
+		const path = join(tempDir, "c.ts");
+		await writeFile(path, "export const A = 1;\n");
+		const tracker = new SymbolChangeTracker({ repositoryRoot: tempDir });
+		const baseline = await tracker.snapshot(["c.ts"]);
+		await writeFile(path, "export const A = 1;\nexport const B = 2;\n");
+
+		const changes: unknown[] = [];
+		tracker.on("change", (d) => changes.push(d));
+		await tracker.diff(baseline, ["c.ts"]);
+		expect(changes.length).toBeGreaterThan(0);
+	});
+
+	it("diff() reports all symbols removed when baseline file is deleted from paths", async () => {
+		const path = join(tempDir, "d.ts");
+		await writeFile(path, "export const X = 1;\n");
+		const tracker = new SymbolChangeTracker({ repositoryRoot: tempDir });
+		const baseline = await tracker.snapshot(["d.ts"]);
+		// Do NOT include "d.ts" in the current paths → simulates deletion
+		const report = await tracker.diff(baseline, []);
+		expect(report.removedSymbols).toBeGreaterThan(0);
+		expect(report.stalePaths).toContain("d.ts");
+	});
+});
+
+describe("extractSymbolsFromSource — class properties", () => {
+	it("extracts typed class properties with access modifiers (includeMembers=true)", () => {
+		const src = `
+export class Config {
+  public readonly version: string = "1";
+  private secret: string = "x";
+  protected name: string;
+  static count: number = 0;
+}
+`;
+		const symbols = extractSymbolsFromSource(src, false, true);
+		const propNames = symbols
+			.filter((s) => s.kind === "property")
+			.map((s) => s.name);
+		// "version", "count" (non-private public/static) should appear; private/protected skipped when includePrivate=false
+		expect(propNames).toContain("version");
+	});
+
+	it("includes private class properties when includePrivate=true", () => {
+		const src = `
+export class Auth {
+  private _token: string = "";
+  public userId: string = "";
+}
+`;
+		const symbols = extractSymbolsFromSource(src, true, true);
+		const propNames = symbols
+			.filter((s) => s.kind === "property")
+			.map((s) => s.name);
+		expect(propNames).toContain("_token");
+		expect(propNames).toContain("userId");
+	});
+});
+
+describe("formatSymbolChangeReport — edge cases", () => {
+	it("skips diffs where all change arrays are empty", () => {
+		const report: SymbolChangeReport = {
+			capturedAt: new Date().toISOString(),
+			totalFilesScanned: 2,
+			changedFiles: 0,
+			unchangedFiles: 2,
+			addedSymbols: 0,
+			removedSymbols: 0,
+			kindChanges: 0,
+			exportChanges: 0,
+			stalePaths: [],
+			diffs: [
+				{
+					relativePath: "src/clean.ts",
+					added: [],
+					removed: [],
+					kindChanged: [],
+					exportChanged: [],
+				},
+			],
+		};
+		const formatted = formatSymbolChangeReport(report);
+		// The empty diff should be skipped — "src/clean.ts" should NOT appear in output
+		expect(formatted).not.toContain("src/clean.ts");
+	});
+
+	it("includes kind-changed and export-changed lines", () => {
+		const sym = (
+			name: string,
+			kind: "function" | "class" | "interface" = "function",
+			exported = true,
+		) => ({
+			name,
+			kind,
+			exported,
 			isDefault: false,
 			isAbstract: false,
-			isPublic: true,
+			isPublic: exported,
 			line: 1,
+		});
+		const report: SymbolChangeReport = {
+			capturedAt: new Date().toISOString(),
+			totalFilesScanned: 1,
+			changedFiles: 1,
+			unchangedFiles: 0,
+			addedSymbols: 0,
+			removedSymbols: 0,
+			kindChanges: 1,
+			exportChanges: 1,
+			stalePaths: [],
+			diffs: [
+				{
+					relativePath: "src/changed.ts",
+					added: [],
+					removed: [],
+					kindChanged: [
+						{ before: sym("Foo", "function"), after: sym("Foo", "class") },
+					],
+					exportChanged: [
+						{
+							before: sym("bar", "function", false),
+							after: sym("bar", "function", true),
+						},
+					],
+				},
+			],
 		};
-		const diff = diffSymbols("foo.ts", [sym], [sym]);
-		expect(diff.added).toHaveLength(0);
-		expect(diff.removed).toHaveLength(0);
+		const formatted = formatSymbolChangeReport(report);
+		expect(formatted).toContain("function→class");
+		expect(formatted).toContain("private→public");
 	});
 });

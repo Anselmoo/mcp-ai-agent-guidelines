@@ -247,4 +247,150 @@ describe("input-guards", () => {
 			expect(explodingOutput.error.message).toContain("summary exploded");
 		}
 	});
+
+	it("rejects non-object input (non-record path)", async () => {
+		const result = await validateSkillInput(
+			"not-an-object" as unknown as Record<string, unknown>,
+			z.object({ request: z.string() }),
+			{ skillId: "debug-root-cause" },
+		);
+		expect(result.success).toBe(false);
+		expect(result.errors[0]).toContain("must be an object");
+	});
+
+	it("rejects input with missing request field", async () => {
+		const result = await validateSkillInput(
+			{ context: "no request here" } as unknown as Record<string, unknown>,
+			z.object({ request: z.string(), context: z.string().optional() }),
+			{ skillId: "debug-root-cause" },
+		);
+		expect(result.success).toBe(false);
+		expect(result.errors[0]).toContain("'request' field");
+	});
+
+	it("skips sanitization when sanitize:false is passed", async () => {
+		const result = await validateSkillInput(
+			{ request: "<tag>test content</tag>" },
+			z.object({ request: z.string() }),
+			{ skillId: "req-analysis" },
+			{ sanitize: false },
+		);
+		// No sanitization => request is unchanged
+		expect(result.success).toBe(true);
+		expect(result.sanitized).toBe(false);
+		expect((result.data as { request: string }).request).toBe(
+			"<tag>test content</tag>",
+		);
+	});
+
+	it("non-strict sanitization error produces warning instead of failure", async () => {
+		const result = await validateSkillInput(
+			{ request: "look at this file", filePath: "src/index.ts" },
+			z.object({ request: z.string(), filePath: z.string().optional() }),
+			{ skillId: "debug-root-cause" },
+			{ strict: false, allowFileOperations: false },
+		);
+		// Non-strict mode: sanitization failure becomes a warning
+		expect(
+			result.warnings.some((w) => w.includes("Sanitization warning")),
+		).toBe(true);
+	});
+
+	it("physics skill in strict mode fails on missing justification", async () => {
+		const result = await validateSkillInput(
+			{ request: "investigate anomaly" },
+			z.object({ request: z.string() }),
+			{ skillId: "qm-entanglement-mapper" },
+			{ allowPhysicsSkills: true, strict: true },
+		);
+		expect(result.success).toBe(false);
+		expect(
+			result.errors.some((e) => e.includes("Physics skill validation failed")),
+		).toBe(true);
+	});
+
+	it("physics skill in non-strict mode warns and continues on missing justification", async () => {
+		const result = await validateSkillInput(
+			{ request: "investigate anomaly in detail now" },
+			z.object({ request: z.string() }),
+			{ skillId: "qm-entanglement-mapper" },
+			{ allowPhysicsSkills: true, strict: false },
+		);
+		// Non-strict: physics warning added but not failing
+		expect(
+			result.warnings.some((w) => w.includes("Physics skill missing")),
+		).toBe(true);
+	});
+
+	it("gr- prefixed skill is also gated by allowPhysicsSkills", async () => {
+		const result = await validateSkillInput(
+			{ request: "analyze spacetime curvature patterns" },
+			z.object({ request: z.string() }),
+			{ skillId: "gr-spacetime-debt-metric" },
+			{ allowPhysicsSkills: false },
+		);
+		expect(result.success).toBe(false);
+		expect(result.errors[0]).toContain("Physics skills are disabled");
+	});
+
+	it("governance skill is allowed when env var is set", async () => {
+		process.env.ALLOW_GOVERNANCE_SKILLS = "true";
+		const result = await criticalSkillGuard(
+			"gov-policy-validation",
+			{ request: "audit policy" },
+			{ timestamp: new Date().toISOString() },
+		);
+		expect(result.allowed).toBe(true);
+	});
+
+	it("validateSkillOutput returns failure for empty string", () => {
+		const result = validateSkillOutput("   ", "debug-root-cause");
+		expect(result.success).toBe(false);
+		if (!result.success) {
+			expect(result.error.code).toBe("empty_output");
+		}
+	});
+
+	it("validateSkillOutput returns success for non-empty string", () => {
+		const result = validateSkillOutput("Here is the analysis.", "req-analysis");
+		expect(result.success).toBe(true);
+	});
+
+	it("validateSkillOutput returns failure for null/number output", () => {
+		const result = validateSkillOutput(42, "req-analysis");
+		expect(result.success).toBe(false);
+		if (!result.success) {
+			expect(result.error.code).toBe("invalid_output_structure");
+		}
+	});
+
+	it("sanitizeInputObject passes non-string/non-array/non-object values through unchanged", async () => {
+		const result = await sanitizeInputObject(
+			{ count: 5, active: true, nothing: null },
+			{
+				maxInputLength: 200,
+				allowFileOperations: false,
+				allowNetworkAccess: false,
+			},
+		);
+		expect(result.count).toBe(5);
+		expect(result.active).toBe(true);
+		expect(result.nothing).toBeNull();
+	});
+
+	it("sanitizeInputObject handles array items that are records", async () => {
+		const result = await sanitizeInputObject(
+			{ items: [{ note: "<hello>" }, 42, "plain"] },
+			{
+				maxInputLength: 200,
+				allowFileOperations: false,
+				allowNetworkAccess: false,
+			},
+		);
+		expect((result.items as Array<{ note: string }>)[0].note).toBe(
+			"&lt;hello&gt;",
+		);
+		expect((result.items as number[])[1]).toBe(42);
+		expect((result.items as string[])[2]).toBe("plain");
+	});
 });

@@ -1,9 +1,11 @@
 import { afterEach, describe, expect, it } from "vitest";
 import {
 	computeEffectiveHiddenTools,
+	computeExternalToolDiagnostics,
 	filterHiddenTools,
 	getHiddenToolNames,
 	isToolHidden,
+	validateExternalToolSurface,
 } from "../../../tools/shared/tool-surface-manifest.js";
 
 const TOOLS = [
@@ -133,5 +135,77 @@ describe("computeEffectiveHiddenTools", () => {
 		process.env.ENABLE_ADAPTIVE_ROUTING = "true";
 		const result = computeEffectiveHiddenTools();
 		expect(result).toBe("enterprise");
+	});
+});
+
+describe("validateExternalToolSurface", () => {
+	it("returns empty array when no allowlist is configured", () => {
+		const result = validateExternalToolSurface(["unknown-tool"], {});
+		expect(result).toEqual([]);
+	});
+
+	it("returns empty array when all tools match the allowlist", () => {
+		const result = validateExternalToolSurface(
+			["github-pull-request_create", "memory_read"],
+			{ EXPECTED_EXTERNAL_TOOLS: "github-pull-request_,memory_" },
+		);
+		expect(result).toEqual([]);
+	});
+
+	it("returns warnings for unrecognised tools", () => {
+		const result = validateExternalToolSurface(
+			["unknown-tool", "github-pull-request_create"],
+			{
+				EXPECTED_EXTERNAL_TOOLS: "github-pull-request_",
+			},
+		);
+		expect(result).toHaveLength(1);
+		expect(result[0]).toContain("unknown-tool");
+	});
+
+	it("matches exact names as well as prefixes", () => {
+		const result = validateExternalToolSurface(["memory"], {
+			EXPECTED_EXTERNAL_TOOLS: "memory",
+		});
+		expect(result).toEqual([]);
+	});
+
+	it("throws on first warning when STRICT_TOOL_SURFACE is true", () => {
+		expect(() =>
+			validateExternalToolSurface(["rogue-tool"], {
+				EXPECTED_EXTERNAL_TOOLS: "github-pull-request_",
+				STRICT_TOOL_SURFACE: "true",
+			}),
+		).toThrow("rogue-tool");
+	});
+});
+
+describe("computeExternalToolDiagnostics", () => {
+	it("reports allowlistConfigured=false when no EXPECTED_EXTERNAL_TOOLS env", () => {
+		const diag = computeExternalToolDiagnostics(["tool-a"], {});
+		expect(diag.allowlistConfigured).toBe(false);
+		expect(diag.unrecognised).toEqual([]);
+		expect(diag.totalExternal).toBe(1);
+		expect(diag.strictMode).toBe(false);
+	});
+
+	it("reports unrecognised tools when allowlist is set", () => {
+		const diag = computeExternalToolDiagnostics(
+			["rogue", "github-pull-request_foo"],
+			{
+				EXPECTED_EXTERNAL_TOOLS: "github-pull-request_",
+			},
+		);
+		expect(diag.allowlistConfigured).toBe(true);
+		expect(diag.unrecognised).toContain("rogue");
+		expect(diag.unrecognised).not.toContain("github-pull-request_foo");
+	});
+
+	it("reports strictMode=true when STRICT_TOOL_SURFACE is set", () => {
+		const diag = computeExternalToolDiagnostics([], {
+			EXPECTED_EXTERNAL_TOOLS: "foo_",
+			STRICT_TOOL_SURFACE: "true",
+		});
+		expect(diag.strictMode).toBe(true);
 	});
 });

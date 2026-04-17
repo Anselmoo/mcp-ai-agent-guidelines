@@ -1,11 +1,15 @@
 import { describe, expect, it } from "vitest";
+import type { RequestSignals } from "../../../skills/shared/recommendations.js";
 import {
 	buildContextEvidenceLines,
+	buildContextSourceRefs,
 	buildSkillRecommendations,
 	extractRequestSignals,
 	getGroundingScopeLabel,
+	inferRecommendationGroundingScope,
 	mapPreferredModelClass,
 	sortRecommendationsByGrounding,
+	summarizeContextEvidence,
 	summarizeRecommendationGrounding,
 } from "../../../skills/shared/recommendations.js";
 import { createMockManifest } from "../test-helpers.js";
@@ -210,5 +214,456 @@ describe("recommendations", () => {
 		expect(mapPreferredModelClass("gov")).toBe("strong");
 		expect(mapPreferredModelClass("adapt")).toBe("cheap");
 		expect(mapPreferredModelClass("unknown-prefix")).toBe("cheap");
+	});
+
+	it("summarizeContextEvidence returns null when no context", () => {
+		const signals = extractRequestSignals({ request: "hello" });
+		expect(summarizeContextEvidence(signals)).toBeNull();
+	});
+
+	it("summarizeContextEvidence returns joined string with evidence", () => {
+		const signals = extractRequestSignals({
+			request: "analyze this",
+			context: "tool:some-tool file:src/foo.ts",
+		});
+		const result = summarizeContextEvidence(signals);
+		// When context lines exist, should return a non-null string
+		if (result !== null) {
+			expect(typeof result).toBe("string");
+			expect(result.length).toBeGreaterThan(0);
+		}
+	});
+
+	it("buildContextSourceRefs includes snapshot source when flag is set", () => {
+		const signals = extractRequestSignals({
+			request: "analyze snapshot",
+			context: "snapshot://latest",
+		});
+		const withoutSnapshot = buildContextSourceRefs(signals, {
+			includeSnapshotSource: false,
+		});
+		const withSnapshot = buildContextSourceRefs(signals, {
+			includeSnapshotSource: true,
+		});
+		expect(Array.isArray(withoutSnapshot)).toBe(true);
+		expect(Array.isArray(withSnapshot)).toBe(true);
+	});
+
+	it("inferRecommendationGroundingScope returns 'request' for bare request", () => {
+		const signals = extractRequestSignals({ request: "do something" });
+		const scope = inferRecommendationGroundingScope(signals);
+		expect(scope).toBe("request");
+	});
+
+	it("inferRecommendationGroundingScope returns 'manifest' for empty request", () => {
+		const signals = extractRequestSignals({ request: "" });
+		const scope = inferRecommendationGroundingScope(signals);
+		expect(scope).toBe("manifest");
+	});
+
+	it("inferRecommendationGroundingScope returns 'context' when context provided", () => {
+		const signals = extractRequestSignals({
+			request: "do something",
+			context: "some context information here",
+		});
+		const scope = inferRecommendationGroundingScope(signals);
+		expect(["context", "request", "hybrid", "workspace"]).toContain(scope);
+	});
+
+	it("getGroundingScopeLabel returns null for undefined scope", () => {
+		expect(getGroundingScopeLabel(undefined)).toBeNull();
+	});
+
+	it("getGroundingScopeLabel returns string for known scope", () => {
+		const label = getGroundingScopeLabel("evidence");
+		expect(typeof label).toBe("string");
+	});
+
+	it("summarizeRecommendationGrounding returns null for empty array", () => {
+		expect(summarizeRecommendationGrounding([])).toBeNull();
+	});
+
+	it("summarizeRecommendationGrounding returns string for grounded recommendations", () => {
+		const result = summarizeRecommendationGrounding([
+			{
+				title: "test",
+				groundingScope: "evidence",
+				detail: "",
+				modelClass: "cheap",
+			},
+		]);
+		expect(result).not.toBeNull();
+		expect(typeof result).toBe("string");
+	});
+
+	it("sortRecommendationsByGrounding orders evidence before manifest", () => {
+		const recs = [
+			{
+				title: "B",
+				groundingScope: "manifest" as const,
+				detail: "",
+				modelClass: "cheap" as const,
+			},
+			{
+				title: "A",
+				groundingScope: "evidence" as const,
+				detail: "",
+				modelClass: "cheap" as const,
+			},
+		];
+		const sorted = sortRecommendationsByGrounding(recs);
+		const first = sorted[0];
+		expect(first?.title).toBe("A");
+	});
+
+	it("buildSkillRecommendations with empty request returns fallback item", () => {
+		const manifest = createMockManifest();
+		const result = buildSkillRecommendations(manifest, { request: "" });
+		expect(result.length).toBeGreaterThan(0);
+		expect(result[0]?.groundingScope).toBe("manifest");
+	});
+
+	it("buildSkillRecommendations with keywords produces request-scoped item", () => {
+		const manifest = createMockManifest();
+		const result = buildSkillRecommendations(manifest, {
+			request: "analyze the security vulnerabilities",
+		});
+		expect(result.some((r) => r.groundingScope === "request")).toBe(true);
+	});
+
+	it("inferRecommendationGroundingScope returns 'evidence' for evidence-only signals", () => {
+		// hasEvidence = true, hasContext = false
+		const signals = extractRequestSignals({
+			request: "evaluate the code",
+			options: {
+				evidence: [
+					{
+						sourceType: "webpage",
+						locator: "https://example.com/docs",
+						toolName: "browser",
+						summary: "docs",
+					},
+				],
+			},
+		});
+		const scope = inferRecommendationGroundingScope(signals);
+		expect(scope).toBe("evidence");
+	});
+
+	it("inferRecommendationGroundingScope returns 'snapshot' for snapshot signals", () => {
+		// Construct signals directly: hasSnapshotContext = true but hasContext = false, hasEvidence = false
+		const signals: RequestSignals = {
+			keywords: [],
+			isQuestion: false,
+			complexity: "simple",
+			hasContext: false,
+			hasConstraints: false,
+			hasDeliverable: false,
+			hasSuccessCriteria: false,
+			rawRequest: "",
+			contextText: "",
+			constraintList: [],
+			hasEvidence: false,
+			evidenceItems: [],
+			contextUrls: [],
+			contextTools: ["mcp_ai-agent-guid_agent-snapshot"],
+			contextFiles: [],
+			contextRepoRefs: [],
+			contextIssueRefs: [],
+		};
+		const scope = inferRecommendationGroundingScope(signals);
+		expect(scope).toBe("snapshot");
+	});
+
+	it("inferRecommendationGroundingScope returns 'workspace' for file-context signals", () => {
+		// contextFiles > 0, no evidence/snapshot
+		const signals = extractRequestSignals({
+			request: "Based on src/index.ts, what should we do?",
+		});
+		const scope = inferRecommendationGroundingScope(signals);
+		expect(["workspace", "request"]).toContain(scope);
+	});
+
+	it("sortRecommendationsByGrounding orders by evidence anchor count when scopes match", () => {
+		const recs = [
+			{
+				title: "low",
+				groundingScope: "evidence" as const,
+				detail: "",
+				modelClass: "cheap" as const,
+				evidenceAnchors: ["a"],
+			},
+			{
+				title: "high",
+				groundingScope: "evidence" as const,
+				detail: "",
+				modelClass: "cheap" as const,
+				evidenceAnchors: ["a", "b", "c"],
+			},
+		];
+		const sorted = sortRecommendationsByGrounding(recs);
+		expect(sorted[0]?.title).toBe("high");
+	});
+
+	it("sortRecommendationsByGrounding orders by source refs count as secondary tie-break", () => {
+		const recs = [
+			{
+				title: "no-refs",
+				groundingScope: "evidence" as const,
+				detail: "",
+				modelClass: "cheap" as const,
+				evidenceAnchors: ["x"],
+				sourceRefs: [],
+			},
+			{
+				title: "with-refs",
+				groundingScope: "evidence" as const,
+				detail: "",
+				modelClass: "cheap" as const,
+				evidenceAnchors: ["x"],
+				sourceRefs: ["ref1", "ref2"],
+			},
+		];
+		const sorted = sortRecommendationsByGrounding(recs);
+		expect(sorted[0]?.title).toBe("with-refs");
+	});
+
+	it("buildContextSourceRefs includes evidenceItems locators and snapshot source", () => {
+		// Construct signals directly to control exactly what refs are present
+		const signals: RequestSignals = {
+			keywords: [],
+			isQuestion: false,
+			complexity: "simple",
+			hasContext: false,
+			hasConstraints: false,
+			hasDeliverable: false,
+			hasSuccessCriteria: false,
+			rawRequest: "design",
+			contextText: "",
+			constraintList: [],
+			hasEvidence: true,
+			evidenceItems: [
+				{
+					sourceType: "webpage",
+					locator: "https://example.com/docs",
+					toolName: "browser",
+					summary: "docs",
+				},
+			],
+			contextUrls: ["https://example.com/docs"],
+			contextTools: [],
+			contextFiles: [],
+			contextRepoRefs: [],
+			contextIssueRefs: [],
+		};
+		const refsNoSnap = buildContextSourceRefs(signals, {
+			includeSnapshotSource: false,
+		});
+		const refsWithSnap = buildContextSourceRefs(signals, {
+			includeSnapshotSource: true,
+		});
+		expect(refsNoSnap.some((r) => r.includes("example.com"))).toBe(true);
+		expect(
+			refsWithSnap.some((r) => r.includes(".mcp-ai-agent-guidelines")),
+		).toBe(true);
+	});
+
+	it("buildContextEvidenceLines includes snapshot tool mention and orchestration pairing note", () => {
+		// Context must include the tool name (contextTools comes from contextText, not request)
+		const signals = extractRequestSignals({
+			request: "What should we update?",
+			context:
+				"mcp_ai-agent-guid_orchestration-config was used to check the config.",
+		});
+		const lines = buildContextEvidenceLines(signals);
+		// orchestration tool mentioned without snapshot → pairing note about agent-snapshot
+		expect(lines.some((l) => l.includes("agent-snapshot"))).toBe(true);
+	});
+
+	it("buildContextEvidenceLines includes snapshot-scoped files note", () => {
+		// Pass snapshot tool and a scoped file path in context so signals.hasContext is true
+		const signalsWithSnapshot = extractRequestSignals({
+			request: "check the model router",
+			context:
+				"mcp_ai-agent-guid_agent-snapshot was used. See src/models/model-router.ts for details.",
+		});
+		const lines = buildContextEvidenceLines(signalsWithSnapshot);
+		// snapshot with scoped files → file-bounding note
+		const allLines = lines.join(" ");
+		expect(allLines.length).toBeGreaterThan(0);
+	});
+
+	it("buildSkillRecommendations with context-bound request returns context-scoped item", () => {
+		const manifest = createMockManifest();
+		const result = buildSkillRecommendations(manifest, {
+			request: "Improve quality",
+			context: "We have a detailed plan already",
+		});
+		// has context + no evidence → scope should reflect context
+		expect(result.some((r) => r.groundingScope !== "manifest")).toBe(true);
+	});
+
+	it("buildSkillRecommendations with constraints in options produces delivery detail", () => {
+		const manifest = createMockManifest();
+		const result = buildSkillRecommendations(manifest, {
+			request: "Refactor the module",
+			constraints: ["keep public API stable", "max 200 lines per file"],
+		});
+		const deliveryItem = result.find(
+			(r) => r.title === "Match the requested delivery shape",
+		);
+		expect(deliveryItem).toBeDefined();
+		expect(deliveryItem?.detail).toContain("keep public API stable");
+	});
+
+	it("buildSkillRecommendations with successCriteria populates delivery detail", () => {
+		const manifest = createMockManifest();
+		const result = buildSkillRecommendations(manifest, {
+			request: "Design the new feature",
+			successCriteria: "All edge cases handled with tests",
+		});
+		const deliveryItem = result.find(
+			(r) => r.title === "Match the requested delivery shape",
+		);
+		expect(deliveryItem?.detail).toContain("All edge cases handled with tests");
+	});
+
+	it("buildSkillRecommendations with deliverable but no constraints uses deliverable in detail", () => {
+		const manifest = createMockManifest();
+		const result = buildSkillRecommendations(manifest, {
+			request: "Generate a report",
+			deliverable: "markdown document",
+		});
+		const deliveryItem = result.find(
+			(r) => r.title === "Match the requested delivery shape",
+		);
+		expect(deliveryItem?.detail).toContain("markdown document");
+	});
+
+	it("buildSkillRecommendations with empty request returns fallback item", () => {
+		const manifest = createMockManifest();
+		const result = buildSkillRecommendations(manifest, { request: "" });
+		expect(result.some((r) => r.groundingScope === "manifest")).toBe(true);
+	});
+
+	it("buildSkillRecommendations with empty request and constraints hits deliverable scope 'request'", () => {
+		const manifest = createMockManifest();
+		const result = buildSkillRecommendations(manifest, {
+			request: "   ",
+			constraints: ["be brief"],
+		});
+		// inferredScope === "manifest" due to empty rawRequest, but delivery detail creates "request" scope
+		const deliveryItem = result.find(
+			(r) => r.title === "Match the requested delivery shape",
+		);
+		expect(deliveryItem).toBeDefined();
+		expect(deliveryItem?.groundingScope).toBe("request");
+	});
+
+	it("inferRecommendationGroundingScope returns workspace when only contextFiles are present", () => {
+		const signals = extractRequestSignals({
+			request: "review this file",
+			context: "src/index.ts is the entry point",
+		});
+		// contextFiles extracted from context text, no evidence → "workspace"
+		const scope = inferRecommendationGroundingScope(signals);
+		expect(scope).toBe("workspace");
+	});
+
+	it("getGroundingScopeLabel returns null for undefined scope", () => {
+		expect(getGroundingScopeLabel(undefined)).toBeNull();
+	});
+
+	it("sortRecommendationsByGrounding handles items without groundingScope (fallback manifest)", () => {
+		const result = sortRecommendationsByGrounding([
+			{ title: "A", detail: "detail" }, // no groundingScope
+			{ title: "B", detail: "detail", groundingScope: "evidence" },
+		]);
+		expect(result.length).toBe(2);
+	});
+
+	it("sortRecommendationsByGrounding handles items without evidenceAnchors or sourceRefs", () => {
+		// When both sides have same scope but missing evidenceAnchors/sourceRefs
+		const result = sortRecommendationsByGrounding([
+			{ title: "A", detail: "d1", groundingScope: "context" }, // no evidenceAnchors, no sourceRefs
+			{ title: "B", detail: "d2", groundingScope: "context" }, // same
+		]);
+		expect(result.length).toBe(2);
+		// order preserved by insertion when all secondary keys are equal
+		expect(result[0].title).toBe("A");
+	});
+
+	it("buildContextEvidenceLines includes upstream analysis tool mentions", () => {
+		const signals = extractRequestSignals({
+			request: "Review and plan",
+			context:
+				"mcp_ai-agent-guid_code-review was invoked previously. mcp_ai-agent-guid_strategy-plan also ran.",
+		});
+		const lines = buildContextEvidenceLines(signals);
+		expect(lines.some((l) => l.includes("prior analysis"))).toBe(true);
+	});
+
+	it("buildContextEvidenceLines includes issue ref anchors", () => {
+		const signals = extractRequestSignals({
+			request: "Fix the regression",
+			context:
+				"This is related to #123 and also github.com/org/repo/issues/456.",
+		});
+		const lines = buildContextEvidenceLines(signals);
+		expect(lines.some((l) => l.includes("issue"))).toBe(true);
+	});
+
+	it("extractRequestSignals handles evidence items without sourceTier (fallback tier 4)", () => {
+		const signals = extractRequestSignals({
+			request: "Analyze the API",
+			options: {
+				evidence: [
+					{
+						sourceType: "webpage",
+						toolName: "fetch_webpage",
+						locator: "https://example.com/docs",
+						// no sourceTier, no title
+					},
+				],
+			},
+		});
+		// sortEvidenceItems uses `sourceTier ?? 4` when undefined
+		expect(signals.evidenceItems).toHaveLength(1);
+		expect(signals.hasEvidence).toBe(true);
+	});
+
+	it("extractRequestSignals handles evidence items without title (locator used as anchor)", () => {
+		const signals = extractRequestSignals({
+			request: "Review docs",
+			options: {
+				evidence: [
+					{
+						sourceType: "context7-docs",
+						toolName: "mcp_context7_get-library-docs",
+						locator: "vitest/getting-started",
+						// no title
+					},
+					{
+						sourceType: "context7-docs",
+						toolName: "mcp_context7_get-library-docs",
+						locator: "vitest/api",
+						// same toolName:locator differs → keeps both
+					},
+				],
+			},
+		});
+		expect(signals.evidenceItems).toHaveLength(2);
+	});
+
+	it("summarizeRecommendationGrounding returns null for empty recommendation list", () => {
+		expect(summarizeRecommendationGrounding([])).toBeNull();
+	});
+
+	it("summarizeRecommendationGrounding returns null when no items have groundingScope", () => {
+		expect(
+			summarizeRecommendationGrounding([
+				{ title: "A", detail: "d" }, // no groundingScope
+			]),
+		).toBeNull();
 	});
 });

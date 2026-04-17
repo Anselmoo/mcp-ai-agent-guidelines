@@ -68,6 +68,52 @@ describe("parallel-runner", () => {
 		});
 	});
 
+	it("includes failure summary when a step rejects", async () => {
+		const steps: WorkflowStep[] = [
+			{ kind: "invokeSkill", label: "ok-step", skillId: "ok" },
+			{ kind: "invokeSkill", label: "bad-step", skillId: "bad" },
+		];
+		const executeStep = vi.fn(async (step: WorkflowStep) => {
+			if (step.label === "bad-step") throw new Error("boom");
+			return { label: step.label, kind: step.kind, summary: "ok" };
+		});
+
+		const result = await runParallelSteps(
+			"fail-batch",
+			steps,
+			input,
+			executeStep,
+			runtime,
+		);
+
+		expect(result.summary).toContain("Failures:");
+		expect(result.summary).toContain("bad-step");
+		expect(result.children).toHaveLength(2);
+	});
+
+	it("applies stepTimeoutMs when provided", async () => {
+		const step: WorkflowStep = {
+			kind: "invokeSkill",
+			label: "slow",
+			skillId: "slow",
+		};
+		const executeStep = vi.fn(async () => {
+			await new Promise((r) => setTimeout(r, 50));
+			return { label: "slow", kind: "invokeSkill" as const, summary: "done" };
+		});
+
+		const result = await runParallelSteps(
+			"timeout-batch",
+			[step],
+			input,
+			executeStep,
+			runtime,
+			{ stepTimeoutMs: 5 },
+		);
+		// Should record a failure due to timeout
+		expect(result.summary).toContain("Failures:");
+	});
+
 	it("returns an empty parallel record when there are no child steps", async () => {
 		const executeStep = vi.fn();
 

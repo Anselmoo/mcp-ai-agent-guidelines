@@ -66,6 +66,18 @@ function restoreStateDirEnvVar(): void {
 	process.env.MCP_AI_AGENT_GUIDELINES_STATE_DIR = ORIGINAL_STATE_DIR;
 }
 
+type WizardInternals = {
+	extractPackageName: () => Promise<string>;
+	promptModelDiscovery: () => Promise<Record<string, unknown>>;
+	createInitialSession: (
+		config: ReturnType<typeof createOnboardingConfig>,
+	) => Promise<string>;
+};
+
+type OnboardingArtifactRecord = NonNullable<
+	Awaited<ReturnType<typeof ToonMemoryInterface.prototype.loadMemoryArtifact>>
+>;
+
 describe("onboarding/wizard", () => {
 	afterEach(() => {
 		vi.restoreAllMocks();
@@ -447,7 +459,502 @@ describe("onboarding/wizard", () => {
 		}
 	});
 
-	it("shows setup attention when onboarding falls back to defaults", async () => {
+	it("checkExistingSetup returns true when workspace config exists", async () => {
+		const wizard = new OnboardingWizard();
+		vi.spyOn(
+			orchestrationConfigService,
+			"getOrchestrationConfigSummary",
+		).mockResolvedValue({
+			paths: {
+				workspaceRoot: "/workspace",
+				configDirectory: "/workspace/.mcp-ai-agent-guidelines/config",
+				orchestrationPath:
+					"/workspace/.mcp-ai-agent-guidelines/config/orchestration.toml",
+			},
+			orchestrationExists: true,
+			configSource: "workspace",
+			usingFallbackDefaults: false,
+			warning: undefined,
+			modelCount: 1,
+			availableModelCount: 1,
+			profileCount: 1,
+			routingCount: 1,
+			patternCount: 1,
+		});
+
+		const result = await wizard.checkExistingSetup();
+
+		expect(result).toBe(true);
+	});
+
+	it("checkExistingSetup returns false when config source is fallback-defaults", async () => {
+		const wizard = new OnboardingWizard();
+		vi.spyOn(
+			orchestrationConfigService,
+			"getOrchestrationConfigSummary",
+		).mockResolvedValue({
+			paths: {
+				workspaceRoot: "/workspace",
+				configDirectory: "/workspace/.mcp-ai-agent-guidelines/config",
+				orchestrationPath:
+					"/workspace/.mcp-ai-agent-guidelines/config/orchestration.toml",
+			},
+			orchestrationExists: false,
+			configSource: "fallback-defaults",
+			usingFallbackDefaults: true,
+			warning: undefined,
+			modelCount: 0,
+			availableModelCount: 0,
+			profileCount: 0,
+			routingCount: 0,
+			patternCount: 0,
+		});
+
+		const result = await wizard.checkExistingSetup();
+
+		expect(result).toBe(false);
+	});
+
+	it("editOrchestrationConfiguration saves and confirms the config", async () => {
+		const wizard = new OnboardingWizard() as any;
+		const config = createDefaultOrchestrationConfig();
+		const edit = vi.fn(async (c: typeof config) => c);
+		wizard.orchestrationEditor = { edit };
+
+		vi.spyOn(console, "log").mockImplementation(() => {});
+		vi.spyOn(
+			orchestrationConfigService,
+			"loadOrchestrationConfigForWorkspace",
+		).mockResolvedValue({
+			config,
+			exists: true,
+			paths: {
+				workspaceRoot: "/workspace",
+				configDirectory: "/workspace/.mcp-ai-agent-guidelines/config",
+				orchestrationPath:
+					"/workspace/.mcp-ai-agent-guidelines/config/orchestration.toml",
+			},
+			source: "workspace",
+			warning: undefined,
+		});
+		vi.spyOn(
+			orchestrationConfigService,
+			"saveOrchestrationConfig",
+		).mockResolvedValue({
+			workspaceRoot: "/workspace",
+			configDirectory: "/workspace/.mcp-ai-agent-guidelines/config",
+			orchestrationPath:
+				"/workspace/.mcp-ai-agent-guidelines/config/orchestration.toml",
+		});
+
+		const result = await wizard.editOrchestrationConfiguration("quick");
+
+		expect(edit).toHaveBeenCalledWith(config, {
+			title: "Edit orchestration.toml",
+			mode: "quick",
+		});
+		expect(result).toBe(config);
+	});
+
+	it("promptModelDiscovery returns empty when user skips", async () => {
+		const wizard = new OnboardingWizard() as any;
+		vi.spyOn(console, "log").mockImplementation(() => {});
+		vi.mocked(confirm).mockResolvedValueOnce(false);
+
+		const models = await wizard.promptModelDiscovery();
+
+		expect(models).toEqual({});
+	});
+
+	it("promptModelDiscovery returns empty when all roles are skipped", async () => {
+		const wizard = new OnboardingWizard() as any;
+		vi.spyOn(console, "log").mockImplementation(() => {});
+		vi.mocked(confirm).mockResolvedValueOnce(true);
+		// All role inputs return blank
+		vi.mocked(input).mockResolvedValue("");
+
+		const models = await wizard.promptModelDiscovery();
+
+		expect(models).toEqual({});
+	});
+
+	it("promptModelDiscovery registers models with correct provider", async () => {
+		const wizard = new OnboardingWizard() as any;
+		vi.spyOn(console, "log").mockImplementation(() => {});
+		vi.mocked(confirm).mockResolvedValueOnce(true);
+		// Return claude model for first role, skip rest
+		vi.mocked(input)
+			.mockResolvedValueOnce("claude-sonnet-4-6")
+			.mockResolvedValue("");
+		vi.mocked(select).mockResolvedValueOnce("anthropic");
+
+		const models = await wizard.promptModelDiscovery();
+
+		expect(Object.keys(models).length).toBeGreaterThan(0);
+	});
+
+	it("promptOrchestrationConfig passes pre-discovered models to initial config", async () => {
+		const wizard = new OnboardingWizard() as any;
+		const config = createDefaultOrchestrationConfig();
+		const preDiscoveredModels = {
+			"claude-sonnet-4-6": {
+				id: "claude-sonnet-4-6",
+				provider: "anthropic" as const,
+				available: true,
+				reason: "Available",
+				context_window: 160000,
+			},
+		};
+		const edit = vi.fn(async (c: typeof config) => c);
+		wizard.orchestrationEditor = { edit };
+
+		vi.spyOn(console, "log").mockImplementation(() => {});
+		vi.spyOn(
+			orchestrationConfigService,
+			"loadOrchestrationConfigForWorkspace",
+		).mockResolvedValue({
+			config,
+			exists: true,
+			paths: {
+				workspaceRoot: "/workspace",
+				configDirectory: "/workspace/.mcp-ai-agent-guidelines/config",
+				orchestrationPath:
+					"/workspace/.mcp-ai-agent-guidelines/config/orchestration.toml",
+			},
+			source: "workspace",
+			warning: "minor issue",
+		});
+		vi.mocked(select).mockResolvedValue("quick");
+
+		await wizard.promptOrchestrationConfig(false, preDiscoveredModels);
+
+		expect(edit).toHaveBeenCalledWith(
+			expect.objectContaining({
+				models: expect.objectContaining({
+					"claude-sonnet-4-6": expect.any(Object),
+				}),
+			}),
+			expect.any(Object),
+		);
+	});
+
+	it("saveConfiguration outputs glyph progress when useGlyphs is false", async () => {
+		const stateDir = mkdtempSync(join(tmpdir(), "onboarding-noglyphs-"));
+		process.env.MCP_AI_AGENT_GUIDELINES_STATE_DIR = stateDir;
+		const wizard = new OnboardingWizard(createWizardFileSystem()) as any;
+		const config = {
+			...createOnboardingConfig(),
+			preferences: { useGlyphs: false, advisoryMode: true },
+		};
+
+		vi.spyOn(
+			orchestrationConfigService,
+			"saveOrchestrationConfig",
+		).mockResolvedValue({
+			workspaceRoot: "/workspace",
+			configDirectory: "/workspace/.mcp-ai-agent-guidelines/config",
+			orchestrationPath:
+				"/workspace/.mcp-ai-agent-guidelines/config/orchestration.toml",
+		});
+		const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+		try {
+			await wizard.saveConfiguration(config);
+			const output = consoleSpy.mock.calls.flat().join("\n");
+			expect(output).toContain("Configuration saved successfully");
+			expect(output).not.toContain("Glyph mode enabled");
+		} finally {
+			restoreStateDirEnvVar();
+			rmSync(stateDir, { recursive: true, force: true });
+		}
+	});
+
+	it("createInitialSession warns when many models are unavailable", async () => {
+		const stateDir = mkdtempSync(join(tmpdir(), "onboarding-manymodels-"));
+		process.env.MCP_AI_AGENT_GUIDELINES_STATE_DIR = stateDir;
+		const wizard = new OnboardingWizard() as any;
+		const config = createOnboardingConfig();
+
+		// Add 6 unavailable models to trigger the warning
+		for (let i = 0; i < 6; i++) {
+			config.orchestration.models[`unavailable-model-${i}`] = {
+				id: `unavailable-model-${i}`,
+				provider: "openai" as const,
+				available: false,
+				reason: "Not subscribed",
+				context_window: 8000,
+			};
+		}
+
+		const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+		try {
+			const sessionId = await wizard.createInitialSession(config);
+			const memoryInterface = new ToonMemoryInterface(stateDir);
+			const sessionContext =
+				await memoryInterface.loadSessionContext(sessionId);
+
+			expect(sessionContext?.memory.warnings).toContain(
+				"Many models unavailable - consider upgrading API access",
+			);
+		} finally {
+			consoleSpy.mockRestore();
+			restoreStateDirEnvVar();
+			rmSync(stateDir, { recursive: true, force: true });
+		}
+	});
+
+	it("showStatus exits early when no session is linked to the artifact", async () => {
+		const wizard = new OnboardingWizard();
+		const config = createDefaultOrchestrationConfig();
+		const consoleLogSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+		vi.spyOn(
+			orchestrationConfigService,
+			"getOrchestrationConfigSummary",
+		).mockResolvedValue({
+			paths: {
+				workspaceRoot: "/workspace",
+				configDirectory: "/workspace/.mcp-ai-agent-guidelines/config",
+				orchestrationPath:
+					"/workspace/.mcp-ai-agent-guidelines/config/orchestration.toml",
+			},
+			orchestrationExists: true,
+			configSource: "workspace",
+			usingFallbackDefaults: false,
+			warning: undefined,
+			modelCount: 1,
+			availableModelCount: 1,
+			profileCount: 1,
+			routingCount: 1,
+			patternCount: 1,
+		});
+		vi.spyOn(
+			orchestrationConfigService,
+			"loadOrchestrationConfigForWorkspace",
+		).mockResolvedValue({
+			config,
+			exists: true,
+			paths: {
+				workspaceRoot: "/workspace",
+				configDirectory: "/workspace/.mcp-ai-agent-guidelines/config",
+				orchestrationPath:
+					"/workspace/.mcp-ai-agent-guidelines/config/orchestration.toml",
+			},
+			source: "workspace",
+			warning: undefined,
+		});
+		vi.spyOn(
+			ToonMemoryInterface.prototype,
+			"loadMemoryArtifact",
+		).mockResolvedValue({
+			meta: {
+				id: "onboarding-config",
+				created: "2026-04-07T00:00:00.000Z",
+				updated: "2026-04-07T00:00:00.000Z",
+				tags: ["onboarding"],
+				relevance: 10,
+			},
+			content: {
+				summary: "Onboarding config",
+				details: JSON.stringify({
+					projectName: "test-project",
+					projectType: "mcp-server",
+					setup: {
+						timestamp: "2026-04-07T00:00:00.000Z",
+						version: PACKAGE_VERSION,
+					},
+				}),
+				context: "Project type: mcp-server",
+				actionable: false,
+			},
+			links: {
+				relatedSessions: [],
+				relatedMemories: [],
+				sources: ["onboarding-wizard"],
+			},
+		} as Parameters<
+			typeof ToonMemoryInterface.prototype.loadMemoryArtifact
+		>[0] extends never
+			? never
+			: NonNullable<
+					Awaited<
+						ReturnType<typeof ToonMemoryInterface.prototype.loadMemoryArtifact>
+					>
+				>);
+
+		await wizard.showStatus();
+
+		const loggedOutput = consoleLogSpy.mock.calls.flat().join("\n");
+		expect(loggedOutput).toContain("Initial session: not linked");
+		expect(loggedOutput).toContain("Project: test-project");
+		expect(loggedOutput).toContain("Type: mcp-server");
+	});
+
+	it("showStatus shows session history count when records exist", async () => {
+		const stateDir = mkdtempSync(join(tmpdir(), "onboarding-histcount-"));
+		process.env.MCP_AI_AGENT_GUIDELINES_STATE_DIR = stateDir;
+		const wizard = new OnboardingWizard(createWizardFileSystem());
+		const config = createOnboardingConfig();
+		const consoleLogSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+		vi.spyOn(
+			orchestrationConfigService,
+			"saveOrchestrationConfig",
+		).mockResolvedValue({
+			workspaceRoot: "/workspace",
+			configDirectory: "/workspace/.mcp-ai-agent-guidelines/config",
+			orchestrationPath:
+				"/workspace/.mcp-ai-agent-guidelines/config/orchestration.toml",
+		});
+		vi.spyOn(
+			orchestrationConfigService,
+			"getOrchestrationConfigSummary",
+		).mockResolvedValue({
+			paths: {
+				workspaceRoot: "/workspace",
+				configDirectory: "/workspace/.mcp-ai-agent-guidelines/config",
+				orchestrationPath:
+					"/workspace/.mcp-ai-agent-guidelines/config/orchestration.toml",
+			},
+			orchestrationExists: true,
+			configSource: "workspace",
+			usingFallbackDefaults: false,
+			warning: undefined,
+			modelCount: 1,
+			availableModelCount: 1,
+			profileCount: 1,
+			routingCount: 1,
+			patternCount: 1,
+		});
+		vi.spyOn(
+			orchestrationConfigService,
+			"loadOrchestrationConfigForWorkspace",
+		).mockResolvedValue({
+			config: config.orchestration,
+			exists: true,
+			paths: {
+				workspaceRoot: "/workspace",
+				configDirectory: "/workspace/.mcp-ai-agent-guidelines/config",
+				orchestrationPath:
+					"/workspace/.mcp-ai-agent-guidelines/config/orchestration.toml",
+			},
+			source: "workspace",
+			warning: undefined,
+		});
+
+		try {
+			await wizard.saveConfiguration(config);
+
+			// Read the saved artifact to get the session ID, then write history
+			const memoryInterface = new ToonMemoryInterface(stateDir);
+			const artifact =
+				await memoryInterface.loadMemoryArtifact("onboarding-config");
+			const linkedSessionId = artifact?.links.relatedSessions[0];
+			if (!linkedSessionId) throw new Error("No session linked");
+
+			// Write one session history record so sessionHistory.length > 0
+			const { SecureFileSessionStore } = await import(
+				"../../runtime/secure-session-store.js"
+			);
+			const sessionStore = new SecureFileSessionStore();
+			await sessionStore.writeSessionHistory(linkedSessionId, [
+				{ stepLabel: "test-step", kind: "completed", summary: "done" },
+			]);
+
+			await wizard.showStatus();
+
+			const loggedOutput = consoleLogSpy.mock.calls.flat().join("\n");
+			expect(loggedOutput).toContain("Session history: 1 records");
+		} finally {
+			restoreStateDirEnvVar();
+			rmSync(stateDir, { recursive: true, force: true });
+		}
+	});
+
+	it("showStatus handles error reading onboarding persistence gracefully", async () => {
+		const wizard = new OnboardingWizard();
+		const config = createDefaultOrchestrationConfig();
+		const consoleLogSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+		vi.spyOn(
+			orchestrationConfigService,
+			"getOrchestrationConfigSummary",
+		).mockResolvedValue({
+			paths: {
+				workspaceRoot: "/workspace",
+				configDirectory: "/workspace/.mcp-ai-agent-guidelines/config",
+				orchestrationPath:
+					"/workspace/.mcp-ai-agent-guidelines/config/orchestration.toml",
+			},
+			orchestrationExists: true,
+			configSource: "workspace",
+			usingFallbackDefaults: false,
+			warning: undefined,
+			modelCount: 1,
+			availableModelCount: 1,
+			profileCount: 1,
+			routingCount: 1,
+			patternCount: 1,
+		});
+		vi.spyOn(
+			orchestrationConfigService,
+			"loadOrchestrationConfigForWorkspace",
+		).mockResolvedValue({
+			config,
+			exists: true,
+			paths: {
+				workspaceRoot: "/workspace",
+				configDirectory: "/workspace/.mcp-ai-agent-guidelines/config",
+				orchestrationPath:
+					"/workspace/.mcp-ai-agent-guidelines/config/orchestration.toml",
+			},
+			source: "workspace",
+			warning: undefined,
+		});
+		vi.spyOn(
+			ToonMemoryInterface.prototype,
+			"loadMemoryArtifact",
+		).mockRejectedValue(new Error("disk read error"));
+
+		await wizard.showStatus();
+
+		const loggedOutput = consoleLogSpy.mock.calls.flat().join("\n");
+		expect(loggedOutput).toContain("Error reading onboarding persistence");
+	});
+
+	it("showStatus exits early when orchestration does not exist", async () => {
+		const wizard = new OnboardingWizard();
+		const consoleLogSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+		vi.spyOn(
+			orchestrationConfigService,
+			"getOrchestrationConfigSummary",
+		).mockResolvedValue({
+			paths: {
+				workspaceRoot: "/workspace",
+				configDirectory: "/workspace/.mcp-ai-agent-guidelines/config",
+				orchestrationPath:
+					"/workspace/.mcp-ai-agent-guidelines/config/orchestration.toml",
+			},
+			orchestrationExists: false,
+			configSource: "fallback-defaults",
+			usingFallbackDefaults: true,
+			warning: undefined,
+			modelCount: 0,
+			availableModelCount: 0,
+			profileCount: 0,
+			routingCount: 0,
+			patternCount: 0,
+		});
+
+		await wizard.showStatus();
+
+		const loggedOutput = consoleLogSpy.mock.calls.flat().join("\n");
+		expect(loggedOutput).toContain("No existing setup found");
+	});
+
+	it("showStatus shows setup attention when onboarding falls back to defaults", async () => {
 		const wizard = new OnboardingWizard();
 		const consoleLogSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 		const config = createDefaultOrchestrationConfig();
@@ -501,5 +1008,497 @@ describe("onboarding/wizard", () => {
 		expect(loggedOutput).toContain("fallback defaults");
 		expect(loggedOutput).toContain("Onboarding Persistence:");
 		expect(loggedOutput).toContain("Artifact: not found");
+	});
+
+	it("promptProjectConfig builds name+type from discovery", async () => {
+		const wizard = new OnboardingWizard() as any;
+		vi.mocked(input).mockResolvedValueOnce("test-project");
+		vi.mocked(select).mockResolvedValueOnce("ai-workflow");
+
+		const result = await wizard.promptProjectConfig({
+			hasPackageJson: false,
+			hasCargoToml: false,
+			hasPyprojectToml: false,
+			hasGitRepo: false,
+			hasExistingMcpConfig: false,
+			suggestedProjectType: "general",
+			detectedFrameworks: [],
+		});
+
+		expect(result.projectName).toBe("test-project");
+		expect(result.projectType).toBe("ai-workflow");
+	});
+
+	it("promptProjectConfig defaults name to package name when hasPackageJson", async () => {
+		const wizard = new OnboardingWizard(
+			createWizardFileSystem({
+				readFile: vi.fn(async () => JSON.stringify({ name: "my-pkg" })),
+			}),
+		) as any;
+		vi.mocked(input).mockResolvedValueOnce("my-pkg");
+		vi.mocked(select).mockResolvedValueOnce("mcp-server");
+
+		const result = await wizard.promptProjectConfig({
+			hasPackageJson: true,
+			hasCargoToml: false,
+			hasPyprojectToml: false,
+			hasGitRepo: false,
+			hasExistingMcpConfig: false,
+			suggestedProjectType: "mcp-server",
+			detectedFrameworks: ["Node.js"],
+		});
+
+		expect(result.projectName).toBe("my-pkg");
+	});
+
+	it("promptPreferences returns glyph and advisory mode selections", async () => {
+		const wizard = new OnboardingWizard() as any;
+		vi.mocked(confirm)
+			.mockResolvedValueOnce(false) // useGlyphs
+			.mockResolvedValueOnce(false); // advisoryMode
+
+		const result = await wizard.promptPreferences();
+
+		expect(result.useGlyphs).toBe(false);
+		expect(result.advisoryMode).toBe(false);
+	});
+
+	it("discoverProject detects existing mcp config directory", async () => {
+		const wizard = new OnboardingWizard(
+			createWizardFileSystem({
+				access: vi.fn(async (path: string) => {
+					if (path === ".mcp-ai-agent-guidelines") return;
+					const err = Object.assign(new Error("ENOENT"), { code: "ENOENT" });
+					throw err;
+				}),
+			}),
+		);
+
+		const result = await wizard.discoverProject();
+
+		expect(result.hasExistingMcpConfig).toBe(true);
+		expect(result.hasPackageJson).toBe(false);
+	});
+
+	it("discoverProject suggests ai-workflow for openai/langchain packages", async () => {
+		const pkgJson = JSON.stringify({
+			name: "my-ai-app",
+			dependencies: { openai: "^4.0.0" },
+		});
+		const wizard = new OnboardingWizard(
+			createWizardFileSystem({
+				readFile: vi.fn(async () => pkgJson),
+			}),
+		);
+
+		const result = await wizard.discoverProject();
+
+		expect(result.suggestedProjectType).toBe("ai-workflow");
+	});
+
+	it("promptModelDiscovery registers gemini model with google provider", async () => {
+		const wizard = new OnboardingWizard() as any;
+		vi.spyOn(console, "log").mockImplementation(() => {});
+		vi.mocked(confirm).mockResolvedValueOnce(true);
+		vi.mocked(input)
+			.mockResolvedValueOnce("gemini-3.1-pro")
+			.mockResolvedValue("");
+		vi.mocked(select).mockResolvedValueOnce("google");
+
+		const models = await wizard.promptModelDiscovery();
+
+		expect(Object.keys(models).length).toBeGreaterThan(0);
+	});
+
+	it("promptModelDiscovery registers grok model with xai provider default", async () => {
+		const wizard = new OnboardingWizard() as any;
+		vi.spyOn(console, "log").mockImplementation(() => {});
+		vi.mocked(confirm).mockResolvedValueOnce(true);
+		vi.mocked(input)
+			.mockResolvedValueOnce("grok-code-fast-1")
+			.mockResolvedValue("");
+		vi.mocked(select).mockResolvedValueOnce("xai");
+
+		const models = await wizard.promptModelDiscovery();
+
+		expect(Object.keys(models).length).toBeGreaterThan(0);
+	});
+
+	it("promptModelDiscovery registers mistral model with mistral provider", async () => {
+		const wizard = new OnboardingWizard() as any;
+		vi.spyOn(console, "log").mockImplementation(() => {});
+		vi.mocked(confirm).mockResolvedValueOnce(true);
+		vi.mocked(input)
+			.mockResolvedValueOnce("mistral-large")
+			.mockResolvedValue("");
+		vi.mocked(select).mockResolvedValueOnce("mistral");
+
+		const models = await wizard.promptModelDiscovery();
+
+		expect(Object.keys(models).length).toBeGreaterThan(0);
+	});
+
+	it("displayDiscoveryResults shows existing MCP config warning", async () => {
+		const wizard = new OnboardingWizard() as any;
+		const consoleLogSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+		wizard.displayDiscoveryResults({
+			hasPackageJson: false,
+			hasCargoToml: false,
+			hasPyprojectToml: false,
+			hasGitRepo: false,
+			hasExistingMcpConfig: true,
+			suggestedProjectType: "general",
+			detectedFrameworks: [],
+		});
+
+		const output = consoleLogSpy.mock.calls.flat().join("\n");
+		expect(output).toContain("Existing MCP configuration found");
+	});
+
+	it("discoverProject detects Rust and Python projects", async () => {
+		const wizard = new OnboardingWizard(
+			createWizardFileSystem({
+				access: vi.fn(async (path: string) => {
+					if (path === "Cargo.toml" || path === "pyproject.toml") return;
+					const err = Object.assign(new Error("ENOENT"), { code: "ENOENT" });
+					throw err;
+				}),
+			}),
+		);
+
+		const result = await wizard.discoverProject();
+
+		expect(result.hasCargoToml).toBe(true);
+		expect(result.hasPyprojectToml).toBe(true);
+		expect(result.detectedFrameworks).toContain("Rust");
+		expect(result.detectedFrameworks).toContain("Python");
+	});
+
+	it("discoverProject suggests mcp-server when package has MCP SDK", async () => {
+		const pkgJson = JSON.stringify({
+			name: "my-server",
+			dependencies: { "@modelcontextprotocol/sdk": "^1.0.0" },
+		});
+		const wizard = new OnboardingWizard(
+			createWizardFileSystem({
+				readFile: vi.fn(async () => pkgJson),
+			}),
+		);
+
+		const result = await wizard.discoverProject();
+
+		expect(result.suggestedProjectType).toBe("mcp-server");
+	});
+
+	it("discoverProject suggests mcp-server when package name includes mcp", async () => {
+		const pkgJson = JSON.stringify({ name: "my-mcp-tool" });
+		const wizard = new OnboardingWizard(
+			createWizardFileSystem({
+				readFile: vi.fn(async () => pkgJson),
+			}),
+		);
+
+		const result = await wizard.discoverProject();
+
+		expect(result.suggestedProjectType).toBe("mcp-server");
+	});
+
+	it("extractPackageName falls back when JSON is invalid", async () => {
+		const wizard = new OnboardingWizard(
+			createWizardFileSystem({
+				readFile: vi.fn(async () => "not-valid-json{{"),
+			}),
+		) as any;
+
+		const name = await wizard.extractPackageName();
+
+		expect(name).toBe("my-project");
+	});
+
+	it("promptModelDiscovery uses codestral prefix for mistral provider", async () => {
+		const wizard = new OnboardingWizard() as any;
+		vi.spyOn(console, "log").mockImplementation(() => {});
+		vi.mocked(confirm).mockResolvedValueOnce(true);
+		vi.mocked(input)
+			.mockResolvedValueOnce("codestral-latest")
+			.mockResolvedValue("");
+		vi.mocked(select).mockResolvedValueOnce("mistral");
+
+		const models = await wizard.promptModelDiscovery();
+
+		expect(Object.keys(models).length).toBeGreaterThan(0);
+	});
+
+	it("rethrows unexpected filesystem probe errors for later discovery checks", async () => {
+		const targets = [
+			"Cargo.toml",
+			"pyproject.toml",
+			".git",
+			".mcp-ai-agent-guidelines",
+		] as const;
+
+		for (const target of targets) {
+			const wizard = new OnboardingWizard(
+				createWizardFileSystem({
+					access: vi.fn(async (path: string) => {
+						if (path === "package.json") {
+							const enoent = Object.assign(new Error("ENOENT"), {
+								code: "ENOENT",
+							});
+							throw enoent;
+						}
+						if (path === target) {
+							const eacces = Object.assign(new Error(`boom-${target}`), {
+								code: "EACCES",
+							});
+							throw eacces;
+						}
+						const enoent = Object.assign(new Error("ENOENT"), {
+							code: "ENOENT",
+						});
+						throw enoent;
+					}),
+				}),
+			);
+
+			await expect(wizard.discoverProject()).rejects.toMatchObject({
+				code: "EACCES",
+			});
+		}
+	});
+
+	it("discovers ai-workflow projects from multiple independent package signals", async () => {
+		const cases = [
+			JSON.stringify({
+				name: "anthropic-app",
+				dependencies: { "@anthropic-ai/sdk": "^1.0.0" },
+			}),
+			JSON.stringify({
+				name: "langchain-app",
+				dependencies: { langchain: "^1.0.0" },
+			}),
+			JSON.stringify({ name: "plain-app", description: "contains ai wording" }),
+			JSON.stringify({
+				name: "plain-app",
+				description: "contains llm wording",
+			}),
+		];
+
+		for (const pkgJson of cases) {
+			const wizard = new OnboardingWizard(
+				createWizardFileSystem({
+					readFile: vi.fn(async () => pkgJson),
+				}),
+			);
+
+			const result = await wizard.discoverProject();
+			expect(result.suggestedProjectType).toBe("ai-workflow");
+		}
+	});
+
+	it("extractPackageName falls back when package name is missing", async () => {
+		const wizard = new OnboardingWizard(
+			createWizardFileSystem({
+				readFile: vi.fn(async () => JSON.stringify({ private: true })),
+			}),
+		) as unknown as WizardInternals;
+
+		await expect(wizard.extractPackageName()).resolves.toBe("my-project");
+	});
+
+	it("promptModelDiscovery defaults unknown model prefixes to openai", async () => {
+		const wizard = new OnboardingWizard() as unknown as WizardInternals;
+		vi.spyOn(console, "log").mockImplementation(() => {});
+		vi.mocked(confirm).mockResolvedValueOnce(true);
+		vi.mocked(input)
+			.mockResolvedValueOnce("custom-model")
+			.mockResolvedValue("");
+		vi.mocked(select).mockResolvedValueOnce("openai");
+
+		await wizard.promptModelDiscovery();
+
+		expect(vi.mocked(select)).toHaveBeenCalledWith(
+			expect.objectContaining({
+				default: "openai",
+			}),
+		);
+	});
+
+	it("createInitialSession records disabled strict mode when orchestration is not strict", async () => {
+		const stateDir = mkdtempSync(join(tmpdir(), "onboarding-strict-disabled-"));
+		process.env.MCP_AI_AGENT_GUIDELINES_STATE_DIR = stateDir;
+		const wizard = new OnboardingWizard() as unknown as WizardInternals;
+		const config = createOnboardingConfig();
+		config.orchestration.environment.strict_mode = false;
+
+		try {
+			const sessionId = await wizard.createInitialSession(config);
+			const memoryInterface = new ToonMemoryInterface(stateDir);
+			const sessionContext =
+				await memoryInterface.loadSessionContext(sessionId);
+
+			expect(sessionContext?.memory.keyInsights).toContain(
+				"Strict orchestration mode: disabled",
+			);
+		} finally {
+			restoreStateDirEnvVar();
+			rmSync(stateDir, { recursive: true, force: true });
+		}
+	});
+
+	it("showStatus renders partial onboarding context from project type only and reports missing session context", async () => {
+		const wizard = new OnboardingWizard();
+		const config = createDefaultOrchestrationConfig();
+		const consoleLogSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+		vi.spyOn(
+			orchestrationConfigService,
+			"getOrchestrationConfigSummary",
+		).mockResolvedValue({
+			paths: {
+				workspaceRoot: "/workspace",
+				configDirectory: "/workspace/.mcp-ai-agent-guidelines/config",
+				orchestrationPath:
+					"/workspace/.mcp-ai-agent-guidelines/config/orchestration.toml",
+			},
+			orchestrationExists: true,
+			configSource: "workspace",
+			usingFallbackDefaults: false,
+			warning: undefined,
+			modelCount: 1,
+			availableModelCount: 1,
+			profileCount: 1,
+			routingCount: 1,
+			patternCount: 1,
+		});
+		vi.spyOn(
+			orchestrationConfigService,
+			"loadOrchestrationConfigForWorkspace",
+		).mockResolvedValue({
+			config,
+			exists: true,
+			paths: {
+				workspaceRoot: "/workspace",
+				configDirectory: "/workspace/.mcp-ai-agent-guidelines/config",
+				orchestrationPath:
+					"/workspace/.mcp-ai-agent-guidelines/config/orchestration.toml",
+			},
+			source: "workspace",
+			warning: undefined,
+		});
+		vi.spyOn(
+			ToonMemoryInterface.prototype,
+			"loadMemoryArtifact",
+		).mockResolvedValue({
+			meta: {
+				id: "onboarding-config",
+				created: "2026-04-07T00:00:00.000Z",
+				updated: "2026-04-07T00:00:00.000Z",
+				tags: ["onboarding"],
+				relevance: 10,
+			},
+			content: {
+				summary: "Onboarding config",
+				details: JSON.stringify({ projectType: "mcp-server" }),
+				context: "Project type only",
+				actionable: false,
+			},
+			links: {
+				relatedSessions: ["session-demo"],
+				relatedMemories: [],
+				sources: ["onboarding-wizard"],
+			},
+		} as OnboardingArtifactRecord);
+		vi.spyOn(
+			SecureFileSessionStore.prototype,
+			"readSessionHistory",
+		).mockResolvedValue([]);
+		vi.spyOn(
+			ToonMemoryInterface.prototype,
+			"loadSessionContext",
+		).mockResolvedValue(null);
+
+		await wizard.showStatus();
+
+		const loggedOutput = consoleLogSpy.mock.calls.flat().join("\n");
+		expect(loggedOutput).toContain("Type: mcp-server");
+		expect(loggedOutput).not.toContain("Project:");
+		expect(loggedOutput).toContain("Session context: missing");
+	});
+
+	it("showStatus renders onboarding context from setup timestamp only", async () => {
+		const wizard = new OnboardingWizard();
+		const config = createDefaultOrchestrationConfig();
+		const consoleLogSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+		vi.spyOn(
+			orchestrationConfigService,
+			"getOrchestrationConfigSummary",
+		).mockResolvedValue({
+			paths: {
+				workspaceRoot: "/workspace",
+				configDirectory: "/workspace/.mcp-ai-agent-guidelines/config",
+				orchestrationPath:
+					"/workspace/.mcp-ai-agent-guidelines/config/orchestration.toml",
+			},
+			orchestrationExists: true,
+			configSource: "workspace",
+			usingFallbackDefaults: false,
+			warning: undefined,
+			modelCount: 1,
+			availableModelCount: 1,
+			profileCount: 1,
+			routingCount: 1,
+			patternCount: 1,
+		});
+		vi.spyOn(
+			orchestrationConfigService,
+			"loadOrchestrationConfigForWorkspace",
+		).mockResolvedValue({
+			config,
+			exists: true,
+			paths: {
+				workspaceRoot: "/workspace",
+				configDirectory: "/workspace/.mcp-ai-agent-guidelines/config",
+				orchestrationPath:
+					"/workspace/.mcp-ai-agent-guidelines/config/orchestration.toml",
+			},
+			source: "workspace",
+			warning: undefined,
+		});
+		vi.spyOn(
+			ToonMemoryInterface.prototype,
+			"loadMemoryArtifact",
+		).mockResolvedValue({
+			meta: {
+				id: "onboarding-config",
+				created: "2026-04-07T00:00:00.000Z",
+				updated: "2026-04-07T00:00:00.000Z",
+				tags: ["onboarding"],
+				relevance: 10,
+			},
+			content: {
+				summary: "Onboarding config",
+				details: JSON.stringify({
+					setup: { timestamp: "2026-04-07T00:00:00.000Z" },
+				}),
+				context: "Timestamp only",
+				actionable: false,
+			},
+			links: {
+				relatedSessions: [],
+				relatedMemories: [],
+				sources: ["onboarding-wizard"],
+			},
+		} as OnboardingArtifactRecord);
+
+		await wizard.showStatus();
+
+		const loggedOutput = consoleLogSpy.mock.calls.flat().join("\n");
+		expect(loggedOutput).toContain("Setup:");
+		expect(loggedOutput).not.toContain("Project:");
+		expect(loggedOutput).not.toContain("Type:");
+		expect(loggedOutput).not.toContain("Version:");
 	});
 });

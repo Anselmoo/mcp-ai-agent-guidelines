@@ -71,6 +71,54 @@ describe("serial-runner", () => {
 		});
 	});
 
+	it("collects failures without aborting when abortOnFailure is false", async () => {
+		const steps: WorkflowStep[] = [
+			{ kind: "invokeSkill", label: "step-a", skillId: "a" },
+			{ kind: "invokeSkill", label: "step-b", skillId: "b" },
+			{ kind: "invokeSkill", label: "step-c", skillId: "c" },
+		];
+		const executeStep = vi.fn(async (step: WorkflowStep) => {
+			if (step.label === "step-b") throw new Error("b-fail");
+			return {
+				label: step.label,
+				kind: step.kind,
+				summary: `${step.label} done`,
+			};
+		});
+
+		const result = await runSerialSteps(
+			"no-abort",
+			steps,
+			input,
+			executeStep,
+			runtime,
+			{ abortOnFailure: false },
+		);
+
+		expect(executeStep).toHaveBeenCalledTimes(3);
+		expect(result.children).toHaveLength(3);
+		expect(result.summary).toContain("2/3");
+		expect(result.summary).toContain("step-b");
+	});
+
+	it("applies stepTimeoutMs when provided", async () => {
+		const step: WorkflowStep = {
+			kind: "invokeSkill",
+			label: "slow",
+			skillId: "slow",
+		};
+		const executeStep = vi.fn(async () => {
+			await new Promise((r) => setTimeout(r, 50));
+			return { label: "slow", kind: "invokeSkill" as const, summary: "done" };
+		});
+
+		await expect(
+			runSerialSteps("timeout-test", [step], input, executeStep, runtime, {
+				stepTimeoutMs: 5,
+			}),
+		).rejects.toThrow();
+	});
+
 	it("stops executing remaining steps after a failure", async () => {
 		const steps: WorkflowStep[] = [
 			{
