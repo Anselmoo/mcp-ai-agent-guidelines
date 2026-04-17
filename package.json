@@ -92,6 +92,9 @@
         "node": ">=22.7.5",
         "npm": ">=10.0.0"
     },
+    "overrides": {
+        "picomatch": "^4.0.4"
+    },
     "devDependencies": {
         "@astrojs/starlight": "^0.34.0",
         "@biomejs/biome": "2.4.9",
