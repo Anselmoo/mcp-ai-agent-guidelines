@@ -10,7 +10,7 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
-- Remove unused `canvas` devDependency that caused Docker builds to fail on
+- Removed unused `canvas` devDependency that caused Docker builds to fail on
   `node:24-alpine` due to missing native system libraries (cairo, pango, etc.)
   required by node-gyp during `npm ci`.
 
