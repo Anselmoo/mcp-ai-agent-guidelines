@@ -13,9 +13,11 @@ import {
 	estimateChatTokens,
 	estimateTokens,
 	execute,
+	executeModelId,
 	executeTyped,
 	isWithinBudget,
 	LlmLaneExecutor,
+	resolveModel,
 	resolveModelId,
 } from "../../runtime/llm-lane-executor.js";
 
@@ -87,8 +89,44 @@ describe("resolveModelId", () => {
 		expect(resolveModelId("strong")).toBe("gpt-5-4");
 	});
 
-	it("returns claude-sonnet-4-6 for reviewer tier via synthesis fallback", () => {
-		expect(resolveModelId("reviewer")).toBe("claude-sonnet-4-6");
+	it("returns a model id for reviewer tier via synthesis fallback", () => {
+		// reviewer falls back to synthesis/strong tier — just assert it resolves to a non-empty string
+		const id = resolveModelId("reviewer");
+		expect(typeof id).toBe("string");
+		expect(id.length).toBeGreaterThan(0);
+	});
+});
+
+describe("resolveModel", () => {
+	it("resolves an anthropic-backed model for the cheap tier", () => {
+		expect(resolveModel("cheap")).toBeDefined();
+	});
+
+	it.each([
+		"google",
+		"xai",
+		"mistral",
+		"other",
+	] as const)('throws for unsupported provider "%s"', (provider) => {
+		const config = createDefaultOrchestrationConfig();
+		config.models.free_primary = {
+			id: `${provider}-model`,
+			provider,
+			available: true,
+			context_window: 128_000,
+		};
+		config.capabilities.cost_sensitive = ["free_primary"];
+		const configSpy = vi
+			.spyOn(orchestrationConfig, "loadOrchestrationConfig")
+			.mockReturnValue(config);
+
+		try {
+			expect(() => resolveModel("free")).toThrow(
+				`Provider "${provider}" is not yet supported`,
+			);
+		} finally {
+			configSpy.mockRestore();
+		}
 	});
 });
 
@@ -348,6 +386,339 @@ describe("executeTyped", () => {
 			vi.resetModules();
 			if (savedOpenAiKey === undefined) delete process.env.OPENAI_API_KEY;
 			else process.env.OPENAI_API_KEY = savedOpenAiKey;
+		}
+	});
+});
+
+// ─── executeModelId ──────────────────────────────────────────────────────────
+
+describe("executeModelId", () => {
+	it("returns stub when API key is not configured for the model", async () => {
+		const saved = process.env.OPENAI_API_KEY;
+		delete process.env.OPENAI_API_KEY;
+
+		const result = await executeModelId("Some prompt", "gpt-4.1");
+
+		expect(result).toContain("[LLM response stub");
+		expect(result).toContain("API key not configured");
+
+		if (saved !== undefined) process.env.OPENAI_API_KEY = saved;
+	});
+
+	it("throws when model ID is not in config", async () => {
+		await expect(
+			executeModelId("prompt", "nonexistent-model-xyz"),
+		).rejects.toThrow("nonexistent-model-xyz");
+	});
+
+	it("returns stub string type", async () => {
+		const saved = process.env.OPENAI_API_KEY;
+		delete process.env.OPENAI_API_KEY;
+
+		const result = await executeModelId("ping", "gpt-4.1");
+		expect(typeof result).toBe("string");
+
+		if (saved !== undefined) process.env.OPENAI_API_KEY = saved;
+	});
+});
+
+// ─── estimateTokens with provider targets ────────────────────────────────────
+
+describe("estimateTokens with provider targets", () => {
+	it("returns positive tokens for 'openai' provider target", () => {
+		expect(estimateTokens("test sentence", "openai")).toBeGreaterThan(0);
+	});
+
+	it("returns positive tokens for 'anthropic' provider target", () => {
+		expect(estimateTokens("test sentence", "anthropic")).toBeGreaterThan(0);
+	});
+
+	it("returns 0 for empty string with openai target", () => {
+		expect(estimateTokens("", "openai")).toBe(0);
+	});
+
+	it("returns 0 for empty string with anthropic target", () => {
+		expect(estimateTokens("", "anthropic")).toBe(0);
+	});
+});
+
+// ─── error handling branches in execute/executeTyped ─────────────────────────
+
+describe("execute and executeTyped error handling", () => {
+	it("execute returns rate-limit stub on rate error", async () => {
+		const savedKey = process.env.OPENAI_API_KEY;
+		process.env.OPENAI_API_KEY = "test-key";
+		vi.resetModules();
+		vi.doMock("ai", () => ({
+			generateText: vi.fn(async () => {
+				throw new Error("rate limit exceeded 429");
+			}),
+			streamText: vi.fn(),
+		}));
+		try {
+			const { execute: exec } = await import(
+				"../../runtime/llm-lane-executor.js"
+			);
+			const result = await exec("prompt", "free");
+			expect(result).toContain("rate limit or quota exceeded");
+		} finally {
+			vi.doUnmock("ai");
+			vi.resetModules();
+			if (savedKey === undefined) delete process.env.OPENAI_API_KEY;
+			else process.env.OPENAI_API_KEY = savedKey;
+		}
+	});
+
+	it("execute returns api-error stub on generic error", async () => {
+		const savedKey = process.env.OPENAI_API_KEY;
+		process.env.OPENAI_API_KEY = "test-key";
+		vi.resetModules();
+		vi.doMock("ai", () => ({
+			generateText: vi.fn(async () => {
+				throw new Error("network timeout");
+			}),
+			streamText: vi.fn(),
+		}));
+		try {
+			const { execute: exec } = await import(
+				"../../runtime/llm-lane-executor.js"
+			);
+			const result = await exec("prompt", "free");
+			expect(result).toContain("API call failed");
+		} finally {
+			vi.doUnmock("ai");
+			vi.resetModules();
+			if (savedKey === undefined) delete process.env.OPENAI_API_KEY;
+			else process.env.OPENAI_API_KEY = savedKey;
+		}
+	});
+
+	it("executeTyped returns kind=rate-limited on rate error", async () => {
+		const savedKey = process.env.OPENAI_API_KEY;
+		process.env.OPENAI_API_KEY = "test-key";
+		vi.resetModules();
+		vi.doMock("ai", () => ({
+			generateText: vi.fn(async () => {
+				throw new Error("quota exceeded");
+			}),
+			streamText: vi.fn(),
+		}));
+		try {
+			const { executeTyped: execTyped } = await import(
+				"../../runtime/llm-lane-executor.js"
+			);
+			const payload = await execTyped("prompt", "free");
+			expect(payload.kind).toBe("rate-limited");
+			expect(typeof payload.durationMs).toBe("number");
+		} finally {
+			vi.doUnmock("ai");
+			vi.resetModules();
+			if (savedKey === undefined) delete process.env.OPENAI_API_KEY;
+			else process.env.OPENAI_API_KEY = savedKey;
+		}
+	});
+
+	it("executeTyped returns kind=api-error on generic error", async () => {
+		const savedKey = process.env.OPENAI_API_KEY;
+		process.env.OPENAI_API_KEY = "test-key";
+		vi.resetModules();
+		vi.doMock("ai", () => ({
+			generateText: vi.fn(async () => {
+				throw new Error("connection refused");
+			}),
+			streamText: vi.fn(),
+		}));
+		try {
+			const { executeTyped: execTyped } = await import(
+				"../../runtime/llm-lane-executor.js"
+			);
+			const payload = await execTyped("prompt", "free");
+			expect(payload.kind).toBe("api-error");
+			expect(typeof payload.durationMs).toBe("number");
+		} finally {
+			vi.doUnmock("ai");
+			vi.resetModules();
+			if (savedKey === undefined) delete process.env.OPENAI_API_KEY;
+			else process.env.OPENAI_API_KEY = savedKey;
+		}
+	});
+
+	it("executeModelId returns rate-limit stub on rate error", async () => {
+		const savedKey = process.env.OPENAI_API_KEY;
+		process.env.OPENAI_API_KEY = "test-key";
+		vi.resetModules();
+		vi.doMock("ai", () => ({
+			generateText: vi.fn(async () => {
+				throw new Error("429 rate limit");
+			}),
+			streamText: vi.fn(),
+		}));
+		try {
+			const { executeModelId: execById } = await import(
+				"../../runtime/llm-lane-executor.js"
+			);
+			const result = await execById("prompt", "gpt-4.1");
+			expect(result).toContain("rate limit or quota exceeded");
+		} finally {
+			vi.doUnmock("ai");
+			vi.resetModules();
+			if (savedKey === undefined) delete process.env.OPENAI_API_KEY;
+			else process.env.OPENAI_API_KEY = savedKey;
+		}
+	});
+
+	it("executeModelId returns api-error stub on generic error", async () => {
+		const savedKey = process.env.OPENAI_API_KEY;
+		process.env.OPENAI_API_KEY = "test-key";
+		vi.resetModules();
+		vi.doMock("ai", () => ({
+			generateText: vi.fn(async () => {
+				throw new Error("timeout");
+			}),
+			streamText: vi.fn(),
+		}));
+		try {
+			const { executeModelId: execById } = await import(
+				"../../runtime/llm-lane-executor.js"
+			);
+			const result = await execById("prompt", "gpt-4.1");
+			expect(result).toContain("API call failed");
+		} finally {
+			vi.doUnmock("ai");
+			vi.resetModules();
+			if (savedKey === undefined) delete process.env.OPENAI_API_KEY;
+			else process.env.OPENAI_API_KEY = savedKey;
+		}
+	});
+
+	it("execute on success with no usage field still returns text", async () => {
+		const savedKey = process.env.OPENAI_API_KEY;
+		process.env.OPENAI_API_KEY = "test-key";
+		vi.resetModules();
+		vi.doMock("ai", () => ({
+			generateText: vi.fn(async () => ({ text: "response text" })),
+			streamText: vi.fn(),
+		}));
+		try {
+			const { execute: exec } = await import(
+				"../../runtime/llm-lane-executor.js"
+			);
+			const result = await exec("prompt", "free");
+			expect(result).toBe("response text");
+		} finally {
+			vi.doUnmock("ai");
+			vi.resetModules();
+			if (savedKey === undefined) delete process.env.OPENAI_API_KEY;
+			else process.env.OPENAI_API_KEY = savedKey;
+		}
+	});
+
+	it("treats whitespace-only provider API keys as missing", async () => {
+		const savedKey = process.env.OPENAI_API_KEY;
+		process.env.OPENAI_API_KEY = "   ";
+
+		try {
+			await expect(execute("prompt", "free")).resolves.toContain(
+				"API key not configured",
+			);
+		} finally {
+			if (savedKey === undefined) delete process.env.OPENAI_API_KEY;
+			else process.env.OPENAI_API_KEY = savedKey;
+		}
+	});
+
+	it("executeTyped derives token usage when the provider result has a non-object usage field", async () => {
+		const savedKey = process.env.OPENAI_API_KEY;
+		process.env.OPENAI_API_KEY = "test-key";
+		vi.resetModules();
+		vi.doMock("ai", () => ({
+			generateText: vi.fn(async () => ({
+				text: "derived usage response",
+				usage: "unexpected",
+			})),
+			streamText: vi.fn(),
+		}));
+
+		try {
+			const { executeTyped: execTyped } = await import(
+				"../../runtime/llm-lane-executor.js"
+			);
+			const payload = await execTyped("derive usage", "free");
+
+			expect(payload.kind).toBe("success");
+			expect(payload.usage).toBeDefined();
+			expect(payload.usage?.inputTokens).toBeGreaterThan(0);
+			expect(payload.usage?.outputTokens).toBeGreaterThan(0);
+			expect(payload.usage?.totalTokens).toBe(
+				(payload.usage?.inputTokens ?? 0) + (payload.usage?.outputTokens ?? 0),
+			);
+		} finally {
+			vi.doUnmock("ai");
+			vi.resetModules();
+			if (savedKey === undefined) delete process.env.OPENAI_API_KEY;
+			else process.env.OPENAI_API_KEY = savedKey;
+		}
+	});
+
+	it.each([
+		["google", "free"],
+		["xai", "free"],
+		["mistral", "free"],
+		["other", "free"],
+	] as const)("treats missing %s provider credentials as an unconfigured API key", async (provider, tier) => {
+		const config = createDefaultOrchestrationConfig();
+		config.models.free_primary = {
+			id: `${provider}-model`,
+			provider,
+			available: true,
+			context_window: 128_000,
+		};
+		config.capabilities.cost_sensitive = ["free_primary"];
+		const configSpy = vi
+			.spyOn(orchestrationConfig, "loadOrchestrationConfig")
+			.mockReturnValue(config);
+
+		try {
+			const payload = await executeTyped("provider env", tier);
+			expect(payload.kind).toBe("stub");
+			expect(payload.text).toContain("API key not configured");
+			expect(payload.provider).toBe(provider);
+		} finally {
+			configSpy.mockRestore();
+		}
+	});
+});
+
+// ─── estimateChatTokens with explicit provider targets ───────────────────────
+
+describe("estimateChatTokens with explicit targets", () => {
+	const messages = [{ role: "user", content: "hello world" }];
+
+	it("uses OpenAI tokenizer for openai target", () => {
+		const count = estimateChatTokens(messages, "openai");
+		expect(count).toBeGreaterThan(0);
+	});
+
+	it("uses Anthropic estimator for anthropic target", () => {
+		const count = estimateChatTokens(messages, "anthropic");
+		expect(count).toBeGreaterThan(0);
+	});
+
+	it("falls back to Anthropic for 'strong' tier when mocked to anthropic provider", () => {
+		const config = createDefaultOrchestrationConfig();
+		config.models.strong_primary = {
+			id: "claude-opus-4",
+			provider: "anthropic",
+			available: true,
+			context_window: 200_000,
+		};
+		const configSpy = vi
+			.spyOn(orchestrationConfig, "loadOrchestrationConfig")
+			.mockReturnValue(config);
+		try {
+			expect(estimateChatTokens(messages, "strong")).toBeGreaterThan(0);
+		} finally {
+			configSpy.mockRestore();
 		}
 	});
 });

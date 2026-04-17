@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { workflowSpecToMermaid } from "../../workflows/mermaid-bridge.js";
+import {
+	workflowRuntimeToMermaid,
+	workflowSpecToMermaid,
+} from "../../workflows/mermaid-bridge.js";
 import {
 	adaptWorkflow,
 	debugWorkflow,
@@ -285,5 +288,201 @@ describe("workflowSpecToMermaid", () => {
 				spec.transitions,
 			);
 		}
+	});
+});
+
+// ─── workflowRuntimeToMermaid ─────────────────────────────────────────────────
+
+import type { WorkflowSpec } from "../../workflows/workflow-spec.js";
+
+describe("workflowRuntimeToMermaid", () => {
+	it("returns null when spec has no runtime", () => {
+		const spec = {
+			key: "test",
+			name: "Test",
+			transitions: [],
+			runtime: undefined,
+		} as unknown as WorkflowSpec;
+		expect(workflowRuntimeToMermaid(spec)).toBeNull();
+	});
+
+	it("renders flowchart TD header for a runtime with a single invokeSkill step", () => {
+		const spec = {
+			key: "test",
+			name: "Test",
+			transitions: [],
+			runtime: {
+				steps: [
+					{
+						kind: "invokeSkill" as const,
+						label: "do-skill",
+						skillId: "my-skill",
+					},
+				],
+			},
+		} as unknown as WorkflowSpec;
+		const result = workflowRuntimeToMermaid(spec);
+		expect(result).toContain("flowchart TD");
+		expect(result).toContain("my-skill");
+	});
+
+	it("renders invokeInstruction step", () => {
+		const spec = {
+			key: "test",
+			name: "Test",
+			transitions: [],
+			runtime: {
+				steps: [
+					{
+						kind: "invokeInstruction" as const,
+						label: "instr-step",
+						instructionId: "my-instr",
+					},
+				],
+			},
+		} as unknown as WorkflowSpec;
+		const result = workflowRuntimeToMermaid(spec);
+		expect(result).toContain("my-instr");
+	});
+
+	it("renders gate step with ifTrue branch", () => {
+		const spec = {
+			key: "test",
+			name: "Test",
+			transitions: [],
+			runtime: {
+				steps: [
+					{
+						kind: "gate" as const,
+						label: "gate-step",
+						condition: "is-valid",
+						ifTrue: [
+							{ kind: "invokeSkill" as const, label: "on-true", skillId: "s1" },
+						],
+						ifFalse: [],
+					},
+				],
+			},
+		} as unknown as WorkflowSpec;
+		const result = workflowRuntimeToMermaid(spec);
+		expect(result).toContain("is-valid");
+		expect(result).toContain("true");
+	});
+
+	it("renders gate step with ifFalse branch", () => {
+		const spec = {
+			key: "test",
+			name: "Test",
+			transitions: [],
+			runtime: {
+				steps: [
+					{
+						kind: "gate" as const,
+						label: "gate-step",
+						condition: "check",
+						ifTrue: [
+							{ kind: "invokeSkill" as const, label: "t", skillId: "s1" },
+						],
+						ifFalse: [
+							{ kind: "invokeSkill" as const, label: "f", skillId: "s2" },
+						],
+					},
+				],
+			},
+		} as unknown as WorkflowSpec;
+		const result = workflowRuntimeToMermaid(spec);
+		expect(result).toContain("false");
+		expect(result).toContain("s2");
+	});
+
+	it("renders finalize step", () => {
+		const spec = {
+			key: "test",
+			name: "Test",
+			transitions: [],
+			runtime: {
+				steps: [{ kind: "finalize" as const, label: "done" }],
+			},
+		} as unknown as WorkflowSpec;
+		const result = workflowRuntimeToMermaid(spec);
+		expect(result).toContain("finalize");
+	});
+
+	it("renders note step", () => {
+		const spec = {
+			key: "test",
+			name: "Test",
+			transitions: [],
+			runtime: {
+				steps: [{ kind: "note" as const, label: "a-note" }],
+			},
+		} as unknown as WorkflowSpec;
+		const result = workflowRuntimeToMermaid(spec);
+		expect(result).toContain("a-note");
+	});
+
+	it("renders serial step", () => {
+		const spec = {
+			key: "test",
+			name: "Test",
+			transitions: [],
+			runtime: {
+				steps: [
+					{
+						kind: "serial" as const,
+						label: "serial-group",
+						steps: [
+							{
+								kind: "invokeSkill" as const,
+								label: "sub",
+								skillId: "sub-skill",
+							},
+						],
+					},
+				],
+			},
+		} as unknown as WorkflowSpec;
+		const result = workflowRuntimeToMermaid(spec);
+		expect(result).toContain("serial-group");
+	});
+
+	it("renders parallel step", () => {
+		const spec = {
+			key: "test",
+			name: "Test",
+			transitions: [],
+			runtime: {
+				steps: [
+					{
+						kind: "parallel" as const,
+						label: "parallel-group",
+						steps: [
+							{ kind: "invokeSkill" as const, label: "p1", skillId: "ps1" },
+						],
+					},
+				],
+			},
+		} as unknown as WorkflowSpec;
+		const result = workflowRuntimeToMermaid(spec);
+		expect(result).toContain("parallel-group");
+	});
+
+	it("escapes double quotes in skill IDs", () => {
+		const spec = {
+			key: "test",
+			name: "Test",
+			transitions: [],
+			runtime: {
+				steps: [
+					{
+						kind: "invokeSkill" as const,
+						label: "x",
+						skillId: 'skill-"quoted"',
+					},
+				],
+			},
+		} as unknown as WorkflowSpec;
+		const result = workflowRuntimeToMermaid(spec);
+		expect(result).toContain("skill-'quoted'");
 	});
 });

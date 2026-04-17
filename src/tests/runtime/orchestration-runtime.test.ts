@@ -132,8 +132,43 @@ type OrchestrationRuntimeInternals = {
 		executionId: string,
 		context: Record<string, unknown>,
 	) => Promise<SkillExecutionResult>;
+	findReadySkills: (
+		dependencyGraph: Map<string, Set<string>>,
+		completedSkills: Set<string>,
+		failedSkills: Set<string>,
+		originalSkills: Array<{
+			skillId: string;
+			input: InstructionInput;
+			priority?: "low" | "normal" | "high" | "critical";
+		}>,
+	) => Array<{
+		skillId: string;
+		input: InstructionInput;
+		priority?: "low" | "normal" | "high" | "critical";
+	}>;
+	computeLatencyPercentile: (percentile: number) => number;
+	updateDerivedMetrics: () => void;
+	updateLatencyMetric: (latency: number) => void;
+	latencySamples: number[];
+	metrics: {
+		totalExecutions: number;
+		successRate: number;
+		cacheHitRate: number;
+		fallbackFrequency: number;
+		p99Latency: number;
+	};
 	queue: {
+		add: (
+			task: () => Promise<SkillExecutionResult>,
+			options?: { priority: number },
+		) => Promise<SkillExecutionResult>;
 		off: (event: string, listener: (...args: unknown[]) => void) => unknown;
+		removeListener?: (
+			event: string,
+			listener: (...args: unknown[]) => void,
+		) => unknown;
+		concurrency: number;
+		timeout: number;
 	};
 	queueListeners: {
 		error: (error: Error) => void;
@@ -1185,6 +1220,428 @@ describe("OrchestrationRuntime", () => {
 		expect((failure as SkillExecutionError).message).toContain(
 			"Skill 'failing-skill' not found in registry",
 		);
+	});
+
+	it("uses fallback profile resolution and tolerates a null execution plan", async () => {
+		const gate = new PlanningGateService({ advisoryFallback: false });
+		vi.spyOn(gate, "checkExecutionGate").mockResolvedValue({
+			canExecute: true,
+			prerequisites: [],
+			warnings: [],
+		});
+		vi.spyOn(gate, "createExecutionPlan").mockResolvedValue(null);
+
+		const runtime = new OrchestrationRuntime(
+			mockRegistry,
+			{
+				...mockRuntime,
+				modelRouter: {
+					...mockRuntime.modelRouter,
+					getDomainRouting: vi.fn().mockReturnValue(undefined),
+					getProfileForSkill: vi.fn().mockReturnValue(undefined),
+				},
+			},
+			{
+				maxConcurrency: 1,
+				defaultTimeout: 5000,
+				enableCaching: false,
+				enablePlanning: true,
+			},
+			{ gate },
+		);
+
+		const result = await runtime.executeSkill("test-skill", {
+			request: "fallback profile",
+		});
+
+		expect(result.skillId).toBe("test-skill");
+		await runtime.shutdown();
+	});
+
+	it("blocks execution when the planning gate disallows it", async () => {
+		const gate = new PlanningGateService({ advisoryFallback: false });
+		vi.spyOn(gate, "checkExecutionGate").mockResolvedValue({
+			canExecute: false,
+			reason: "manual approval required",
+			prerequisites: [],
+			warnings: [],
+		});
+
+		const runtime = new OrchestrationRuntime(
+			mockRegistry,
+			mockRuntime,
+			{
+				maxConcurrency: 1,
+				defaultTimeout: 5000,
+				enableCaching: false,
+				enablePlanning: true,
+			},
+			{ gate },
+		);
+
+		await expect(
+			runtime.executeSkill("test-skill", { request: "blocked" }),
+		).rejects.toThrow(/planning gate/i);
+		await runtime.shutdown();
+	});
+
+	it("marks skills blocked by failed dependencies during batch execution", async () => {
+		const registry = new SkillRegistry({
+			modules: [],
+			workspace: null,
+		});
+		const runtime = new OrchestrationRuntime(registry, mockRuntime, {
+			maxConcurrency: 1,
+			defaultTimeout: 5000,
+			enableCaching: false,
+			enablePlanning: false,
+			retry: { attempts: 0 },
+		});
+
+		const results = await runtime.executeSkillBatch([
+			{ skillId: "missing-skill", input: { request: "missing" } },
+			{
+				skillId: "blocked-skill",
+				input: { request: "blocked" },
+				dependencies: ["missing-skill"],
+			},
+		]);
+
+		expect(results.get("blocked-skill")).toBeInstanceOf(SkillExecutionError);
+		expect((results.get("blocked-skill") as Error).message).toContain(
+			"dependencies failed: missing-skill",
+		);
+		await runtime.shutdown();
+	});
+
+	it("propagates batch failures immediately when failFast is enabled", async () => {
+		const registry = new SkillRegistry({
+			modules: [],
+			workspace: null,
+		});
+		const runtime = new OrchestrationRuntime(registry, mockRuntime, {
+			maxConcurrency: 1,
+			defaultTimeout: 5000,
+			enableCaching: false,
+			enablePlanning: false,
+			retry: { attempts: 0 },
+		});
+
+		await expect(
+			runtime.executeSkillBatch(
+				[{ skillId: "missing-skill", input: { request: "fail fast" } }],
+				{ failFast: true },
+			),
+		).rejects.toBeInstanceOf(SkillExecutionError);
+		await runtime.shutdown();
+	});
+
+	it("converts non-Error retry failures into Error instances", async () => {
+		const runtime = new OrchestrationRuntime(mockRegistry, mockRuntime, {
+			maxConcurrency: 1,
+			defaultTimeout: 500,
+			enableCaching: false,
+			enablePlanning: false,
+			retry: {
+				attempts: 0,
+				backoffMs: 0,
+				maxBackoffMs: 0,
+			},
+		});
+		const runtimeInternals =
+			runtime as unknown as OrchestrationRuntimeInternals;
+		vi.spyOn(runtimeInternals, "executeSingleSkill").mockRejectedValue(
+			"plain failure",
+		);
+
+		await expect(
+			runtimeInternals.executeWithRetry("string-error", {
+				skillId: "test-skill",
+				input: { request: "string failure" },
+				timeout: 10,
+				retryCount: 0,
+				startTime: Date.now(),
+				dependencies: [],
+			}),
+		).rejects.toThrow("plain failure");
+		await runtime.shutdown();
+	});
+
+	it("throws when a skill disappears between registry lookups", async () => {
+		const registry = new SkillRegistry({
+			modules: [mockSkillModule],
+			workspace: null,
+		});
+		const runtime = new OrchestrationRuntime(registry, mockRuntime, {
+			maxConcurrency: 1,
+			defaultTimeout: 500,
+			enableCaching: false,
+			enablePlanning: false,
+		});
+		const runtimeInternals =
+			runtime as unknown as OrchestrationRuntimeInternals;
+		const getByIdSpy = vi
+			.spyOn(registry, "getById")
+			.mockReturnValueOnce(mockSkillModule)
+			.mockReturnValueOnce(undefined);
+
+		await expect(
+			runtimeInternals.executeSingleSkill({
+				skillId: "test-skill",
+				input: { request: "vanishing skill" },
+				timeout: 10,
+				startTime: Date.now(),
+				retryCount: 0,
+				dependencies: [],
+			}),
+		).rejects.toThrow("Skill test-skill not found");
+
+		getByIdSpy.mockRestore();
+		await runtime.shutdown();
+	});
+
+	it("returns advisory results for unknown skills without manifest metadata", async () => {
+		const gate = new PlanningGateService({ advisoryFallback: false });
+		vi.spyOn(gate, "checkExecutionGate").mockResolvedValue({
+			canExecute: true,
+			fallbackStrategy: "advisory",
+			reason: "manual-only",
+			prerequisites: [],
+			warnings: [],
+		});
+
+		const registry = new SkillRegistry({ modules: [], workspace: null });
+		const runtime = new OrchestrationRuntime(
+			registry,
+			mockRuntime,
+			{
+				maxConcurrency: 1,
+				defaultTimeout: 5000,
+				enableCaching: false,
+				enablePlanning: true,
+			},
+			{ gate },
+		);
+
+		const result = await runtime.executeSkill("qm-missing-skill", {
+			request: "advisory unknown skill",
+		});
+
+		expect(result.displayName).toBe("qm-missing-skill");
+		expect(result.relatedSkills).toEqual([]);
+		await runtime.shutdown();
+	});
+
+	it("wraps synchronous queue.add failures into rejected promises", async () => {
+		const runtimeInternals =
+			orchestrationRuntime as unknown as OrchestrationRuntimeInternals;
+		const queueAddSpy = vi
+			.spyOn(runtimeInternals.queue, "add")
+			.mockImplementation(() => {
+				throw new Error("queue add exploded");
+			});
+
+		await expect(
+			(
+				orchestrationRuntime as unknown as {
+					enqueueExecution: (
+						executionId: string,
+						context: Record<string, unknown>,
+						priority: "low" | "normal" | "high" | "critical",
+					) => Promise<SkillExecutionResult>;
+				}
+			).enqueueExecution(
+				"queue-error",
+				{
+					skillId: "test-skill",
+					input: { request: "queue error" },
+					timeout: 10,
+					startTime: Date.now(),
+					retryCount: 0,
+					dependencies: [],
+				},
+				"normal",
+			),
+		).rejects.toThrow("queue add exploded");
+
+		queueAddSpy.mockRestore();
+	});
+
+	it("coerces non-Error queue.add failures into Error instances", async () => {
+		const runtimeInternals =
+			orchestrationRuntime as unknown as OrchestrationRuntimeInternals;
+		const queueAddSpy = vi
+			.spyOn(runtimeInternals.queue, "add")
+			.mockImplementation(() => {
+				throw "queue string failure";
+			});
+
+		await expect(
+			(
+				orchestrationRuntime as unknown as {
+					enqueueExecution: (
+						executionId: string,
+						context: Record<string, unknown>,
+						priority: "low" | "normal" | "high" | "critical",
+					) => Promise<SkillExecutionResult>;
+				}
+			).enqueueExecution(
+				"queue-string-error",
+				{
+					skillId: "test-skill",
+					input: { request: "queue string error" },
+					timeout: 10,
+					startTime: Date.now(),
+					retryCount: 0,
+					dependencies: [],
+				},
+				"normal",
+			),
+		).rejects.toThrow("queue string failure");
+
+		queueAddSpy.mockRestore();
+	});
+
+	it("rejects newly submitted work once shutdown has started", async () => {
+		await orchestrationRuntime.shutdown();
+
+		await expect(
+			orchestrationRuntime.executeSkill("test-skill", {
+				request: "after shutdown",
+			}),
+		).rejects.toBeInstanceOf(ResourceError);
+	});
+
+	it("falls back to removeListener when queue.off is unavailable", async () => {
+		const runtime = new OrchestrationRuntime(mockRegistry, mockRuntime, {
+			maxConcurrency: 1,
+			defaultTimeout: 5000,
+			enableCaching: false,
+			enablePlanning: false,
+		});
+		const runtimeInternals =
+			runtime as unknown as OrchestrationRuntimeInternals;
+		const removeListenerSpy = vi.fn();
+		Object.defineProperty(runtimeInternals.queue, "off", {
+			value: undefined,
+			configurable: true,
+			writable: true,
+		});
+		Object.defineProperty(runtimeInternals.queue, "removeListener", {
+			value: removeListenerSpy,
+			configurable: true,
+			writable: true,
+		});
+
+		await runtime.shutdown();
+
+		expect(removeListenerSpy).toHaveBeenCalledWith(
+			"active",
+			expect.any(Function),
+		);
+		expect(removeListenerSpy).toHaveBeenCalledWith(
+			"idle",
+			expect.any(Function),
+		);
+		expect(removeListenerSpy).toHaveBeenCalledWith(
+			"error",
+			expect.any(Function),
+		);
+	});
+
+	it("skips queue teardown when no listener removal API is available", async () => {
+		const runtime = new OrchestrationRuntime(mockRegistry, mockRuntime, {
+			maxConcurrency: 1,
+			defaultTimeout: 5000,
+			enableCaching: false,
+			enablePlanning: false,
+		});
+		const runtimeInternals =
+			runtime as unknown as OrchestrationRuntimeInternals;
+		Object.defineProperty(runtimeInternals.queue, "off", {
+			value: undefined,
+			configurable: true,
+			writable: true,
+		});
+		Object.defineProperty(runtimeInternals.queue, "removeListener", {
+			value: undefined,
+			configurable: true,
+			writable: true,
+		});
+
+		await expect(runtime.shutdown()).resolves.toBeUndefined();
+	});
+
+	it("findReadySkills ignores dependency-graph entries missing from the original skill list", () => {
+		const runtimeInternals =
+			orchestrationRuntime as unknown as OrchestrationRuntimeInternals;
+
+		const ready = runtimeInternals.findReadySkills(
+			new Map([["ghost-skill", new Set<string>()]]),
+			new Set(),
+			new Set(),
+			[],
+		);
+
+		expect(ready).toEqual([]);
+	});
+
+	it("caps retained latency samples and preserves p99 when no executions are recorded", () => {
+		const runtimeInternals =
+			orchestrationRuntime as unknown as OrchestrationRuntimeInternals;
+
+		for (let index = 0; index < 205; index++) {
+			runtimeInternals.updateLatencyMetric(index + 1);
+		}
+
+		expect(runtimeInternals.latencySamples).toHaveLength(200);
+
+		runtimeInternals.metrics.totalExecutions = 0;
+		runtimeInternals.metrics.p99Latency = 321;
+		runtimeInternals.latencySamples.splice(
+			0,
+			runtimeInternals.latencySamples.length,
+			5,
+		);
+		runtimeInternals.updateDerivedMetrics();
+
+		expect(runtimeInternals.metrics.p99Latency).toBe(321);
+	});
+
+	it("returns safe defaults for empty and invalid percentile calculations", () => {
+		const runtimeInternals =
+			orchestrationRuntime as unknown as OrchestrationRuntimeInternals;
+
+		runtimeInternals.latencySamples.splice(
+			0,
+			runtimeInternals.latencySamples.length,
+		);
+		expect(runtimeInternals.computeLatencyPercentile(0.99)).toBe(0);
+
+		runtimeInternals.latencySamples.push(10, 20, 30);
+		expect(runtimeInternals.computeLatencyPercentile(Number.NaN)).toBe(0);
+	});
+
+	it("updates retry and timeout settings without changing concurrency when omitted", () => {
+		const originalConcurrency =
+			orchestrationRuntime.getRuntimeInfo().config.maxConcurrency;
+
+		orchestrationRuntime.updateConfig({
+			retry: { attempts: 4 },
+			defaultTimeout: 250,
+		});
+
+		const config = orchestrationRuntime.getConfig();
+		expect(config.retry.attempts).toBe(4);
+		expect(config.defaultTimeout).toBe(250);
+		expect(orchestrationRuntime.getRuntimeInfo().config.maxConcurrency).toBe(
+			originalConcurrency,
+		);
+	});
+
+	it("makes shutdown idempotent when metrics collection is already stopped", async () => {
+		await orchestrationRuntime.shutdown();
+		await expect(orchestrationRuntime.shutdown()).resolves.toBeUndefined();
 	});
 });
 

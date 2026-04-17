@@ -282,4 +282,232 @@ describe("tools/session-tools", () => {
 			"Deleted session session-abcdefghijklmnopqrstuvwx.",
 		);
 	});
+
+	it("returns not-found message when deleting nonexistent session", async () => {
+		deleteSessionContextMock.mockResolvedValue(false);
+
+		const result = await dispatchSessionToolCall(
+			SESSION_TOOL_NAME,
+			{
+				command: "delete",
+				sessionId: "session-abcdefghijklmnopqrstuvwx",
+			},
+			{ sessionId: "session-ABCDEFGHJKMN" },
+		);
+
+		expect(result.isError).toBe(false);
+		expect(getText(result)).toContain("did not exist");
+	});
+
+	it("returns global memory stats when status command has no sessionId", async () => {
+		getMemoryStatsMock.mockResolvedValue({
+			totalSessions: 5,
+			artifactCount: 15,
+		});
+
+		const result = await dispatchSessionToolCall(
+			SESSION_TOOL_NAME,
+			{ command: "status" },
+			{ sessionId: "session-ABCDEFGHJKMN" },
+		);
+
+		expect(result.isError).toBe(false);
+		const payload = JSON.parse(getText(result)) as Record<string, unknown>;
+		expect(payload.totalSessions).toBe(5);
+		expect(payload.artifactCount).toBe(15);
+	});
+
+	it("returns error when status for session not found", async () => {
+		getSessionStatsMock.mockResolvedValue(null);
+		loadSessionContextMock.mockResolvedValue(null);
+
+		const result = await dispatchSessionToolCall(
+			SESSION_TOOL_NAME,
+			{ command: "status", sessionId: "session-abcdefghijklmnopqrstuvwx" },
+			{ sessionId: "session-ABCDEFGHJKMN" },
+		);
+
+		expect(result.isError).toBe(true);
+		expect(getText(result)).toContain("was not found");
+	});
+
+	it("lists per-session artifacts when sessionId is provided to list command", async () => {
+		loadSessionContextMock.mockResolvedValue({
+			context: { requestScope: "x" },
+		});
+		loadWorkspaceMapMock.mockResolvedValue(null);
+		loadScanResultsMock.mockResolvedValue({ found: true });
+
+		const result = await dispatchSessionToolCall(
+			SESSION_TOOL_NAME,
+			{ command: "list", sessionId: "session-abcdefghijklmnopqrstuvwx" },
+			{ sessionId: "session-ABCDEFGHJKMN" },
+		);
+
+		expect(result.isError).toBe(false);
+		const payload = JSON.parse(getText(result)) as Record<string, unknown>;
+		expect(payload.sessionId).toBe("session-abcdefghijklmnopqrstuvwx");
+		const entries = payload.entries as Array<Record<string, unknown>>;
+		expect(entries.find((e) => e.kind === "session-context")?.present).toBe(
+			true,
+		);
+		expect(entries.find((e) => e.kind === "workspace-map")?.present).toBe(
+			false,
+		);
+		expect(entries.find((e) => e.kind === "scan-results")?.present).toBe(true);
+	});
+
+	it("reads workspace-map artifact", async () => {
+		loadWorkspaceMapMock.mockResolvedValue({
+			modules: { "src/index.ts": "entry" },
+		});
+
+		const result = await dispatchSessionToolCall(
+			SESSION_TOOL_NAME,
+			{
+				command: "read",
+				sessionId: "session-abcdefghijklmnopqrstuvwx",
+				artifact: "workspace-map",
+			},
+			{ sessionId: "session-ABCDEFGHJKMN" },
+		);
+
+		expect(result.isError).toBe(false);
+		expect(getText(result)).toContain("entry");
+	});
+
+	it("returns error when reading missing workspace-map", async () => {
+		loadWorkspaceMapMock.mockResolvedValue(null);
+
+		const result = await dispatchSessionToolCall(
+			SESSION_TOOL_NAME,
+			{
+				command: "read",
+				sessionId: "session-abcdefghijklmnopqrstuvwx",
+				artifact: "workspace-map",
+			},
+			{ sessionId: "session-ABCDEFGHJKMN" },
+		);
+
+		expect(result.isError).toBe(true);
+		expect(getText(result)).toContain("Workspace map not found");
+	});
+
+	it("reads scan-results artifact", async () => {
+		loadScanResultsMock.mockResolvedValue({ findings: ["critical-x"] });
+
+		const result = await dispatchSessionToolCall(
+			SESSION_TOOL_NAME,
+			{
+				command: "read",
+				sessionId: "session-abcdefghijklmnopqrstuvwx",
+				artifact: "scan-results",
+			},
+			{ sessionId: "session-ABCDEFGHJKMN" },
+		);
+
+		expect(result.isError).toBe(false);
+		expect(getText(result)).toContain("critical-x");
+	});
+
+	it("returns error when reading missing scan-results", async () => {
+		loadScanResultsMock.mockResolvedValue(null);
+
+		const result = await dispatchSessionToolCall(
+			SESSION_TOOL_NAME,
+			{
+				command: "read",
+				sessionId: "session-abcdefghijklmnopqrstuvwx",
+				artifact: "scan-results",
+			},
+			{ sessionId: "session-ABCDEFGHJKMN" },
+		);
+
+		expect(result.isError).toBe(true);
+		expect(getText(result)).toContain("Scan results not found");
+	});
+
+	it("writes session-context artifact", async () => {
+		saveSessionContextMock.mockResolvedValue(undefined);
+
+		const result = await dispatchSessionToolCall(
+			SESSION_TOOL_NAME,
+			{
+				command: "write",
+				target: "session-context",
+				sessionId: "session-abcdefghijklmnopqrstuvwx",
+				data: {
+					context: {
+						requestScope: "new scope",
+						phase: "plan",
+						constraints: [],
+					},
+					progress: { completed: [], inProgress: [], blocked: [], next: [] },
+					memory: {
+						keyInsights: [],
+						decisions: {},
+						patterns: [],
+						warnings: [],
+					},
+				},
+			},
+			{ sessionId: "session-ABCDEFGHJKMN" },
+		);
+
+		expect(result.isError).toBe(false);
+		expect(getText(result)).toContain("Updated session-context");
+		expect(saveSessionContextMock).toHaveBeenCalledOnce();
+	});
+
+	it("writes workspace-map artifact", async () => {
+		saveWorkspaceMapMock.mockResolvedValue(undefined);
+
+		const result = await dispatchSessionToolCall(
+			SESSION_TOOL_NAME,
+			{
+				command: "write",
+				target: "workspace-map",
+				sessionId: "session-abcdefghijklmnopqrstuvwx",
+				data: { generated: "2024-01-01T00:00:00Z", modules: {} },
+			},
+			{ sessionId: "session-ABCDEFGHJKMN" },
+		);
+
+		expect(result.isError).toBe(false);
+		expect(getText(result)).toContain("Updated workspace-map");
+		expect(saveWorkspaceMapMock).toHaveBeenCalledOnce();
+	});
+
+	it("returns error when write data is null", async () => {
+		const result = await dispatchSessionToolCall(
+			SESSION_TOOL_NAME,
+			{
+				command: "write",
+				target: "scan-results",
+				sessionId: "session-abcdefghijklmnopqrstuvwx",
+				data: null,
+			},
+			{ sessionId: "session-ABCDEFGHJKMN" },
+		);
+
+		expect(result.isError).toBe(true);
+		expect(getText(result)).toContain("Expected object, received null");
+	});
+
+	it("reads missing session-context and returns error", async () => {
+		loadSessionContextMock.mockResolvedValue(null);
+
+		const result = await dispatchSessionToolCall(
+			SESSION_TOOL_NAME,
+			{
+				command: "read",
+				sessionId: "session-abcdefghijklmnopqrstuvwx",
+				artifact: "session-context",
+			},
+			{ sessionId: "session-ABCDEFGHJKMN" },
+		);
+
+		expect(result.isError).toBe(true);
+		expect(getText(result)).toContain("Session context not found");
+	});
 });

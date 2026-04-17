@@ -10,13 +10,9 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
-- Removed unused `canvas` devDependency that caused Docker builds to fail on
-  `node:24-alpine` due to missing native system libraries (cairo, pango, etc.)
-  required by node-gyp during `npm ci`.
-
 ---
 
-## [0.15.0] — 2026-04-15
+## [0.15.0] — 2026-04-17
 
 ### First pre-release of the MCP AI Agent Guidelines server.
 
@@ -84,6 +80,12 @@ complete model-routing layer, governance surface, and observability pipeline.
   the role-name `MODEL_PROFILES` architecture
 - `LlmLaneExecutor` switch branches and `ProviderEnvironmentVariable` added
   for xAI and Mistral providers
+- Removed unused `canvas` devDependency that caused Docker builds to fail 
+  on  `node:24-alpine` due to missing native system libraries (cairo, pango, etc.)
+  required by node-gyp during `npm ci`.
+- Added targeted regression coverage for core runtime modules, including
+  `skill-cache`, `unified-orchestration`, and `llm-lane-executor`, to improve
+  branch coverage and guard against future regressions.
 
 ### Changed
 

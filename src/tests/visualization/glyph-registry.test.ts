@@ -1,9 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
 	AnalysisGlyphs,
+	ArrowGlyphs,
 	BoxGlyphs,
+	BulletGlyphs,
 	CICDGlyphs,
+	CodeGlyphs,
 	DevEmojis,
+	DiffGlyphs,
 	Emoji,
 	FileEmojis,
 	GitGlyphs,
@@ -12,8 +16,11 @@ import {
 	glyphRegistry,
 	glyphs,
 	LogLevelGlyphs,
+	MathGlyphs,
 	ProgressGlyphs,
 	StatusEmojis,
+	TreeGlyphs,
+	TypographyGlyphs,
 } from "../../visualization/glyph-registry.js";
 
 describe("GlyphRegistry", () => {
@@ -210,6 +217,11 @@ describe("ProgressGlyphs", () => {
 		expect(out).toContain("50%");
 	});
 
+	it("renderSegmented() returns a string with percentage", () => {
+		const out = progress.renderSegmented(0.75);
+		expect(out).toContain("75%");
+	});
+
 	it("spinner() yields frame strings", () => {
 		const gen = progress.spinner();
 		const frame = gen.next().value;
@@ -236,6 +248,13 @@ describe("GitGlyphs", () => {
 		const out = git.logLine("abc1234xyz", "fix bug");
 		expect(out).toContain("abc1234");
 		expect(out).not.toContain("xyz");
+	});
+
+	it("logLine() includes formatted refs when provided", () => {
+		const out = git.logLine("aabbccddeeff", "add feature", ["main", "HEAD"]);
+		expect(out).toContain("aabbccd");
+		expect(out).toContain("main");
+		expect(out).toContain("HEAD");
 	});
 });
 
@@ -275,6 +294,11 @@ describe("AnalysisGlyphs", () => {
 	it("delta() shows trend_down for negative diff", () => {
 		const out = analysis.delta(15, 10);
 		expect(out).toContain("↘");
+	});
+
+	it("delta() shows trendFlat for equal values", () => {
+		const out = analysis.delta(10, 10);
+		expect(out).toContain("→");
 	});
 
 	it("rating() includes score label", () => {
@@ -344,5 +368,236 @@ describe("GlyphRegistry groups", () => {
 describe("glyphs alias", () => {
 	it("glyphs === glyphRegistry (same singleton reference)", () => {
 		expect(glyphs).toBe(glyphRegistry);
+	});
+});
+
+describe("TreeGlyphs", () => {
+	const tree = new TreeGlyphs();
+
+	it("render() formats a flat list of entries", () => {
+		const result = tree.render([
+			["fileA.ts", false, null],
+			["fileB.ts", false, null],
+		]);
+		expect(result).toContain("fileA.ts");
+		expect(result).toContain("fileB.ts");
+	});
+
+	it("render() formats a directory entry with children", () => {
+		const result = tree.render([
+			[
+				"src",
+				true,
+				[
+					["index.ts", false, null],
+					["utils.ts", false, null],
+				],
+			],
+		]);
+		expect(result).toContain("src/");
+		expect(result).toContain("index.ts");
+		expect(result).toContain("utils.ts");
+	});
+
+	it("render() marks last entry with last connector", () => {
+		const result = tree.render([
+			["a", false, null],
+			["b", false, null],
+		]);
+		expect(result).toContain(tree.last.symbol);
+	});
+
+	it("render() returns empty string for empty input", () => {
+		expect(tree.render([])).toBe("");
+	});
+});
+
+describe("ArrowGlyphs", () => {
+	const arrows = new ArrowGlyphs();
+
+	it("right arrow is non-empty", () => {
+		expect(typeof arrows.right.symbol).toBe("string");
+		expect(arrows.right.symbol.length).toBeGreaterThan(0);
+	});
+
+	it("all basic directions have non-empty symbols", () => {
+		for (const key of ["right", "left", "up", "down", "lr"] as const) {
+			expect(arrows[key].symbol.length).toBeGreaterThan(0);
+		}
+	});
+});
+
+describe("MathGlyphs", () => {
+	const math = new MathGlyphs();
+
+	it("all math symbols are non-empty strings", () => {
+		expect(math.pi.symbol.length).toBeGreaterThan(0);
+		expect(math.sum.symbol.length).toBeGreaterThan(0);
+		expect(math.infinity.symbol.length).toBeGreaterThan(0);
+	});
+});
+
+describe("BulletGlyphs", () => {
+	const bullet = new BulletGlyphs();
+
+	it("dot bullet is non-empty", () => {
+		expect(bullet.dot.symbol.length).toBeGreaterThan(0);
+	});
+
+	it("check and cross are non-empty", () => {
+		expect(bullet.check.symbol.length).toBeGreaterThan(0);
+		expect(bullet.cross.symbol.length).toBeGreaterThan(0);
+	});
+});
+
+describe("TypographyGlyphs", () => {
+	const typo = new TypographyGlyphs();
+
+	it("ellipsis is non-empty", () => {
+		expect(typo.ellipsis.symbol.length).toBeGreaterThan(0);
+	});
+
+	it("smartQuote wraps text with quotes", () => {
+		const result = typo.smartQuote("hello");
+		expect(result).toContain("hello");
+		expect(result.length).toBeGreaterThan("hello".length);
+	});
+});
+
+describe("DiffGlyphs", () => {
+	const diff = new DiffGlyphs();
+
+	it("added and removed glyphs are non-empty", () => {
+		expect(diff.added.symbol.length).toBeGreaterThan(0);
+		expect(diff.removed.symbol.length).toBeGreaterThan(0);
+	});
+
+	it("conflict glyph is non-empty", () => {
+		expect(diff.conflict.symbol.length).toBeGreaterThan(0);
+	});
+
+	it("line() includes line number when lineno is provided", () => {
+		const out = diff.line("added", "new line content", 42);
+		expect(out).toContain("42");
+		expect(out).toContain("new line content");
+	});
+
+	it("line() falls back to unchanged glyph for unknown kind", () => {
+		const out = diff.line("unknown-kind", "some text");
+		expect(typeof out).toBe("string");
+		expect(out).toContain("some text");
+	});
+});
+
+describe("CodeGlyphs", () => {
+	const code = new CodeGlyphs();
+
+	it("lambda and function symbols are non-empty", () => {
+		expect(code.lambda_.symbol.length).toBeGreaterThan(0);
+		expect(code.function_.symbol.length).toBeGreaterThan(0);
+	});
+
+	it("class and interface symbols are non-empty", () => {
+		expect(code.class_.symbol.length).toBeGreaterThan(0);
+		expect(code.interface_.symbol.length).toBeGreaterThan(0);
+	});
+});
+
+describe("ProgressGlyphs extended", () => {
+	const progress = new ProgressGlyphs();
+
+	it("spinner() with ascii style yields strings", () => {
+		const gen = progress.spinner("ascii");
+		const frame = gen.next().value;
+		expect(typeof frame).toBe("string");
+		expect(frame.length).toBeGreaterThan(0);
+	});
+
+	it("spinner() with arrow style yields strings", () => {
+		const gen = progress.spinner("arrow");
+		const frame = gen.next().value;
+		expect(typeof frame).toBe("string");
+	});
+
+	it("spinner() with bounce style yields strings", () => {
+		const gen = progress.spinner("bounce");
+		const frame = gen.next().value;
+		expect(typeof frame).toBe("string");
+	});
+
+	it("spinner() with pulse style yields strings", () => {
+		const gen = progress.spinner("pulse");
+		const frame = gen.next().value;
+		expect(typeof frame).toBe("string");
+	});
+
+	it("spinner() with bar style yields strings", () => {
+		const gen = progress.spinner("bar");
+		const frame = gen.next().value;
+		expect(typeof frame).toBe("string");
+	});
+
+	it("spinner() with unknown style falls back to braille", () => {
+		const gen = progress.spinner("nonexistent-style");
+		const frame = gen.next().value;
+		expect(typeof frame).toBe("string");
+	});
+});
+
+describe("GitGlyphs extended", () => {
+	const git = new GitGlyphs();
+
+	it("statusLine() includes modified count when modified > 0", () => {
+		const out = git.statusLine("main", 0, 0, 3, 0);
+		expect(out).toContain("3");
+	});
+
+	it("statusLine() includes untracked count when untracked > 0", () => {
+		const out = git.statusLine("main", 0, 0, 0, 2);
+		expect(out).toContain("2");
+	});
+
+	it("statusLine() uses dirty glyph when files are modified", () => {
+		const out = git.statusLine("main", 0, 0, 1, 1);
+		const git2 = new GitGlyphs();
+		expect(out).toContain(git2.dirty.symbol);
+	});
+});
+
+describe("AnalysisGlyphs extended", () => {
+	const analysis = new AnalysisGlyphs();
+
+	it("sparkline() handles all-equal values (rng fallback to 1)", () => {
+		const out = analysis.sparkline([5, 5, 5]);
+		expect(typeof out).toBe("string");
+		expect(out.length).toBeGreaterThan(0);
+	});
+
+	it("rating() with integer score has no half star", () => {
+		const out = analysis.rating(4.0);
+		expect(out).toContain("4/5");
+	});
+
+	it("delta() returns 0-pct when oldVal is 0", () => {
+		const out = analysis.delta(0, 5);
+		expect(out).toContain("+5.00");
+		expect(out).toContain("0.0%");
+	});
+});
+
+describe("BoxGlyphs table edge cases", () => {
+	const box = new BoxGlyphs();
+
+	it("table() handles row with fewer cells than headers (missing cell shows empty)", () => {
+		// row has only 1 cell but headers has 2 — r[1] ?? "" fires
+		const out = box.table(["Name", "Value"], [["Alice"]]);
+		expect(out).toContain("Alice");
+	});
+
+	it("table() handles row with more cells than headers (colW[i] ?? 1 fires)", () => {
+		// row has 3 cells but headers only 2 — colW[2] ?? 1 fires
+		const out = box.table(["Name", "Value"], [["Alice", "100", "extra"]]);
+		expect(out).toContain("Alice");
+		expect(out).toContain("extra");
 	});
 });

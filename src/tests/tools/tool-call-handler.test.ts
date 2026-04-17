@@ -377,4 +377,79 @@ describe("tool-call-handler", () => {
 			executeInstructionSpy.mockRestore();
 		}
 	});
+
+	it("dispatches memory tool call when tool name resolves as memory tool", async () => {
+		const result = await dispatchToolCall(
+			"agent-memory",
+			{ command: "list" },
+			createRuntime(),
+		);
+		expect(result).toBeDefined();
+		expect(Array.isArray(result.content)).toBe(true);
+	});
+
+	it("dispatches session tool call when tool name resolves as session tool", async () => {
+		const result = await dispatchToolCall(
+			"agent-session",
+			{ command: "read" },
+			createRuntime(),
+		);
+		expect(result).toBeDefined();
+		expect(Array.isArray(result.content)).toBe(true);
+	});
+
+	it("handles contextReady in runtime (resolves before timeout)", async () => {
+		const runtime = {
+			...createRuntime(),
+			contextReady: Promise.resolve(),
+		};
+		const result = await dispatchToolCall(
+			"code-review",
+			{ request: "review with contextReady" },
+			runtime,
+		);
+		expect(result).toBeDefined();
+	});
+
+	it("injects topic artifacts into input context when relevant artifacts exist", async () => {
+		vi.spyOn(memoryInterface, "saveMemoryArtifact").mockResolvedValue();
+		vi.spyOn(memoryInterface, "saveSessionContext").mockResolvedValue();
+		vi.spyOn(memoryInterface, "loadFingerprintSnapshot").mockResolvedValue(
+			null,
+		);
+		const findSpy = vi
+			.spyOn(memoryInterface, "findMemoryArtifacts")
+			.mockResolvedValue([
+				{
+					meta: {
+						id: "code-review-session-123",
+						tags: ["topic:code-review"],
+						relevance: 0.9,
+						updated: new Date().toISOString(),
+						sessionId: "session-123",
+						toolName: "code-review",
+						snapshotSources: [],
+						relatedMemoryIds: [],
+					},
+					content: {
+						summary: "Prior review of runtime architecture",
+						details: "",
+					},
+					links: [],
+				} as unknown as Awaited<
+					ReturnType<typeof memoryInterface.findMemoryArtifacts>
+				>[0],
+			]);
+
+		try {
+			const result = await dispatchToolCall(
+				"code-review",
+				{ request: "review again", context: "existing context" },
+				createRuntime(),
+			);
+			expect(result).toBeDefined();
+		} finally {
+			findSpy.mockRestore();
+		}
+	});
 });

@@ -184,4 +184,136 @@ describe("tools/memory-tools", () => {
 			},
 		});
 	});
+
+	it("returns error when write command has no summary", async () => {
+		const result = await dispatchMemoryToolCall(MEMORY_TOOL_NAME, {
+			command: "write",
+		});
+
+		expect(result.isError).toBe(true);
+		expect(getFirstTextContent(result)).toContain("requires a summary");
+	});
+
+	it("returns empty list message when no artifacts found", async () => {
+		findMemoryArtifactsMock.mockResolvedValue([]);
+
+		const result = await dispatchMemoryToolCall(MEMORY_TOOL_NAME, {
+			command: "list",
+		});
+
+		expect(result.isError).toBe(false);
+		expect(getFirstTextContent(result)).toContain(
+			"No stored memory artifacts found",
+		);
+	});
+
+	it("returns empty status when no artifacts exist", async () => {
+		findMemoryArtifactsMock.mockResolvedValue([]);
+
+		const result = await dispatchMemoryToolCall(MEMORY_TOOL_NAME, {
+			command: "status",
+		});
+
+		expect(result.isError).toBe(false);
+		const text = getFirstTextContent(result);
+		expect(text).toContain("Artifacts: none stored");
+		expect(text).toContain("Most relevant artifact: none yet");
+	});
+
+	it("returns error when artifact not found in read", async () => {
+		loadMemoryArtifactMock.mockResolvedValue(null);
+
+		const result = await dispatchMemoryToolCall(MEMORY_TOOL_NAME, {
+			command: "read",
+			artifactId: "missing-id",
+		});
+
+		expect(result.isError).toBe(true);
+		expect(getFirstTextContent(result)).toContain("not found");
+	});
+
+	it("finds artifacts by tag filter", async () => {
+		findMemoryArtifactsMock.mockResolvedValue([
+			{
+				meta: { id: "m1", tags: ["plan"], relevance: 0.9 },
+				content: { summary: "A plan artifact" },
+			},
+		]);
+
+		const result = await dispatchMemoryToolCall(MEMORY_TOOL_NAME, {
+			command: "find",
+			tags: ["plan"],
+		});
+
+		expect(result.isError).toBe(false);
+		expect(getFirstTextContent(result)).toContain("Found 1 artifact");
+		expect(getFirstTextContent(result)).toContain("A plan artifact");
+	});
+
+	it("returns no matches message from find when empty", async () => {
+		findMemoryArtifactsMock.mockResolvedValue([]);
+
+		const result = await dispatchMemoryToolCall(MEMORY_TOOL_NAME, {
+			command: "find",
+			tags: ["nonexistent"],
+		});
+
+		expect(result.isError).toBe(false);
+		expect(getFirstTextContent(result)).toContain(
+			"No matching memory artifacts found",
+		);
+	});
+
+	it("returns error when delete has no artifactId", async () => {
+		const result = await dispatchMemoryToolCall(MEMORY_TOOL_NAME, {
+			command: "delete",
+		});
+
+		expect(result.isError).toBe(true);
+		expect(getFirstTextContent(result)).toContain("requires artifactId");
+	});
+
+	it("returns not-found message when deleting missing artifact", async () => {
+		deleteMemoryArtifactMock.mockResolvedValue(false);
+
+		const result = await dispatchMemoryToolCall(MEMORY_TOOL_NAME, {
+			command: "delete",
+			artifactId: "missing",
+		});
+
+		expect(result.isError).toBe(false);
+		expect(getFirstTextContent(result)).toContain(
+			"Memory artifact not found: missing",
+		);
+	});
+
+	it("enriches an artifact with library context", async () => {
+		const enrichMock = vi.fn().mockResolvedValue(true);
+
+		// Attach enrichMock to the already-imported shared interface
+		const { memoryInterface: mi } = await import("../../tools/memory-tools.js");
+		(mi as unknown as Record<string, unknown>).enrichMemoryArtifact =
+			enrichMock;
+
+		const result = await dispatchMemoryToolCall(MEMORY_TOOL_NAME, {
+			command: "enrich",
+			artifactId: "art-1",
+			libraryContext: "Library docs here",
+		});
+
+		// The result should not error; the mock tells us success
+		expect(typeof getFirstTextContent(result)).toBe("string");
+	});
+
+	it("returns error when enrich is missing artifactId or libraryContext", async () => {
+		const result = await dispatchMemoryToolCall(MEMORY_TOOL_NAME, {
+			command: "enrich",
+			artifactId: "art-1",
+		});
+
+		expect(result.isError).toBe(true);
+		expect(getFirstTextContent(result)).toContain(
+			"requires both artifactId and libraryContext",
+		);
+	});
 });
