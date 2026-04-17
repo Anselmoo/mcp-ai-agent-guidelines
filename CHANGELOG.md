@@ -6,6 +6,16 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [Unreleased]
+
+### Fixed
+
+- Removed unused `canvas` devDependency that caused Docker builds to fail on
+  `node:24-alpine` due to missing native system libraries (cairo, pango, etc.)
+  required by node-gyp during `npm ci`.
+
+---
+
 ## [0.15.0] — 2026-04-15
 
 ### First pre-release of the MCP AI Agent Guidelines server.

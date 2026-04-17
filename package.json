@@ -104,7 +104,6 @@
         "@vitest/coverage-v8": "^4.0.0",
         "astro": "^5.7.0",
         "astro-mermaid": "^2.0.1",
-        "canvas": "^3.2.3",
         "d3": "^7.9.0",
         "inquirer": "^13.3.2",
         "lefthook": "^2.1.5",
