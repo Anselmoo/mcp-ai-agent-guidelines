@@ -392,6 +392,9 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
 
+# Test housekeeping temp directories
+.test-mcp-ai-agent-guidelines-*/
+
 # MCP AI Agent Guidelines runtime state — entire directory excluded for compliance
 # (session data, memory artifacts, snapshots, and config are all runtime state)
 # Fresh onboarding regenerates orchestration.toml at runtime
