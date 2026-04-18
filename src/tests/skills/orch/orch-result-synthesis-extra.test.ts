@@ -139,9 +139,7 @@ describe("orch-result-synthesis-extra", () => {
 			},
 			createMockSkillRuntime(),
 		);
-		const detailText = result.recommendations
-			.map((r) => r.detail)
-			.join("\n");
+		const detailText = result.recommendations.map((r) => r.detail).join("\n");
 		// "none" deduplication branch emits a marker detail
 		expect(detailText).toContain("Deduplication is disabled");
 	});
@@ -159,9 +157,7 @@ describe("orch-result-synthesis-extra", () => {
 			},
 			createMockSkillRuntime(),
 		);
-		const detailText = result.recommendations
-			.map((r) => r.detail)
-			.join("\n");
+		const detailText = result.recommendations.map((r) => r.detail).join("\n");
 		expect(detailText).toContain("exact deduplication only when claim wording");
 	});
 
@@ -179,9 +175,7 @@ describe("orch-result-synthesis-extra", () => {
 			createMockSkillRuntime(),
 		);
 		expect(result.summary).toContain("confidence: disabled");
-		const detailText = result.recommendations
-			.map((r) => r.detail)
-			.join("\n");
+		const detailText = result.recommendations.map((r) => r.detail).join("\n");
 		// Confidence scoring detail should NOT be present when disabled
 		expect(detailText).not.toContain(
 			"Attach a confidence score to every synthesised claim",
@@ -202,9 +196,7 @@ describe("orch-result-synthesis-extra", () => {
 			createMockSkillRuntime(),
 		);
 		expect(result.summary).toContain("confidence: enabled");
-		const detailText = result.recommendations
-			.map((r) => r.detail)
-			.join("\n");
+		const detailText = result.recommendations.map((r) => r.detail).join("\n");
 		expect(detailText).toContain(
 			"Attach a confidence score to every synthesised claim",
 		);
@@ -236,9 +228,7 @@ describe("orch-result-synthesis-extra", () => {
 			},
 			createMockSkillRuntime(),
 		);
-		const detailText = result.recommendations
-			.map((r) => r.detail)
-			.join("\n");
+		const detailText = result.recommendations.map((r) => r.detail).join("\n");
 		expect(detailText).toContain("executive briefing packet");
 	});
 
@@ -254,9 +244,7 @@ describe("orch-result-synthesis-extra", () => {
 			},
 			createMockSkillRuntime(),
 		);
-		const detailText = result.recommendations
-			.map((r) => r.detail)
-			.join("\n");
+		const detailText = result.recommendations.map((r) => r.detail).join("\n");
 		expect(detailText).toContain("all canonical claims must include source");
 	});
 
@@ -273,9 +261,7 @@ describe("orch-result-synthesis-extra", () => {
 			},
 			createMockSkillRuntime(),
 		);
-		const detailText = result.recommendations
-			.map((r) => r.detail)
-			.join("\n");
+		const detailText = result.recommendations.map((r) => r.detail).join("\n");
 		expect(detailText).toContain("Apply the stated constraints");
 	});
 
@@ -292,9 +278,7 @@ describe("orch-result-synthesis-extra", () => {
 			},
 			createMockSkillRuntime(),
 		);
-		const detailText = result.recommendations
-			.map((r) => r.detail)
-			.join("\n");
+		const detailText = result.recommendations.map((r) => r.detail).join("\n");
 		expect(detailText).toContain("Cross-reference the synthesised claims");
 	});
 
@@ -314,7 +298,13 @@ describe("orch-result-synthesis-extra", () => {
 		);
 		const example = result.artifacts?.find(
 			(a) => a.kind === "worked-example",
-		) as { expectedOutput?: { outputSchema?: { claims?: Array<Record<string, unknown>> } } } | undefined;
+		) as
+			| {
+					expectedOutput?: {
+						outputSchema?: { claims?: Array<Record<string, unknown>> };
+					};
+			  }
+			| undefined;
 		const firstClaim = example?.expectedOutput?.outputSchema?.claims?.[0];
 		expect(firstClaim?.disposition).toContain("held for human review");
 	});
@@ -335,7 +325,15 @@ describe("orch-result-synthesis-extra", () => {
 		);
 		const example = result.artifacts?.find(
 			(a) => a.kind === "worked-example",
-		) as { expectedOutput?: { outputSchema?: { dissentingClaims?: Array<Record<string, unknown>> } } } | undefined;
+		) as
+			| {
+					expectedOutput?: {
+						outputSchema?: {
+							dissentingClaims?: Array<Record<string, unknown>>;
+						};
+					};
+			  }
+			| undefined;
 		const firstDissent =
 			example?.expectedOutput?.outputSchema?.dissentingClaims?.[0];
 		expect(firstDissent?.resolution).toContain("retained as dissent");

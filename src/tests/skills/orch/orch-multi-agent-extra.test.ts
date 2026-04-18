@@ -11,7 +11,8 @@ describe("orch-multi-agent extra branch coverage", () => {
 		await expectSkillGuidance(
 			skillModule,
 			{
-				request: "design a multi-agent system with coordinator and role boundaries",
+				request:
+					"design a multi-agent system with coordinator and role boundaries",
 			},
 			{
 				summaryIncludes: ["topology: hierarchical"],
@@ -103,7 +104,8 @@ describe("orch-multi-agent extra branch coverage", () => {
 		const result = await expectSkillGuidance(
 			skillModule,
 			{
-				request: "design a hierarchical agent system with trust and permissions",
+				request:
+					"design a hierarchical agent system with trust and permissions",
 				options: {
 					agentArchitecture: "hierarchical",
 					communicationPattern: "event-driven",
@@ -123,7 +125,8 @@ describe("orch-multi-agent extra branch coverage", () => {
 	it("emits artifacts for hierarchical topology", async () => {
 		const result = await skillModule.run(
 			{
-				request: "design a hierarchical coordinator with scale backpressure and test isolation",
+				request:
+					"design a hierarchical coordinator with scale backpressure and test isolation",
 				options: {
 					agentArchitecture: "hierarchical",
 					communicationPattern: "message-passing",
@@ -144,7 +147,8 @@ describe("orch-multi-agent extra branch coverage", () => {
 	it("emits artifacts for hub-and-spoke topology", async () => {
 		const result = await skillModule.run(
 			{
-				request: "design hub agents with monitoring observability and failure recovery",
+				request:
+					"design hub agents with monitoring observability and failure recovery",
 				options: {
 					agentArchitecture: "hub-and-spoke",
 					communicationPattern: "event-driven",

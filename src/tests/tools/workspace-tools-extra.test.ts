@@ -26,8 +26,7 @@ afterAll(() => {
 
 const makeRuntime = (
 	sessionId = "session-ABCDEFGHJKMN",
-): WorkflowExecutionRuntime =>
-	({ sessionId } as WorkflowExecutionRuntime);
+): WorkflowExecutionRuntime => ({ sessionId }) as WorkflowExecutionRuntime;
 
 describe("workspace-tools extra branch coverage", () => {
 	it("buildWorkspaceToolSurface returns array with at least one tool", () => {
@@ -92,11 +91,7 @@ describe("workspace-tools extra branch coverage", () => {
 	it("throws for unknown tool name", async () => {
 		const runtime = makeRuntime();
 		await expect(
-			dispatchWorkspaceToolCall(
-				"unknown-tool",
-				{ command: "list" },
-				runtime,
-			),
+			dispatchWorkspaceToolCall("unknown-tool", { command: "list" }, runtime),
 		).rejects.toThrow();
 	});
 

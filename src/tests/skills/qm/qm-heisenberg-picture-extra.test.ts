@@ -138,9 +138,7 @@ describe("qm-heisenberg-picture-extra", () => {
 		);
 		const detailText = result.recommendations.map((r) => r.detail).join("\n");
 		// When no HEISENBERG_RULES fire, static fallback details are added
-		expect(detailText).toContain(
-			"Collect at least three consistent snapshots",
-		);
+		expect(detailText).toContain("Collect at least three consistent snapshots");
 	});
 
 	it("includes correlation detail when correl keyword is in request (line 108 correl pattern)", async () => {
@@ -204,8 +202,7 @@ describe("qm-heisenberg-picture-extra", () => {
 	it("emits worked example with sample snapshots when no snapshots provided (line 183-185)", async () => {
 		const result = await skillModule.run(
 			{
-				request:
-					"Analyse how metric drift evolves over our snapshot history",
+				request: "Analyse how metric drift evolves over our snapshot history",
 				options: { analysisMode: "balanced" },
 			},
 			createMockSkillRuntime(),

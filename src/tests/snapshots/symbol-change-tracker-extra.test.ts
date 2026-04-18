@@ -12,11 +12,35 @@ import {
 describe("diffSymbols extra branches", () => {
 	it("detects added symbols when current has symbols not in baseline", () => {
 		const baseline = [
-			{ name: "foo", kind: "function" as const, exported: true, isDefault: false, isAbstract: false, isPublic: true, line: 1 },
+			{
+				name: "foo",
+				kind: "function" as const,
+				exported: true,
+				isDefault: false,
+				isAbstract: false,
+				isPublic: true,
+				line: 1,
+			},
 		];
 		const current = [
-			{ name: "foo", kind: "function" as const, exported: true, isDefault: false, isAbstract: false, isPublic: true, line: 1 },
-			{ name: "bar", kind: "function" as const, exported: true, isDefault: false, isAbstract: false, isPublic: true, line: 5 },
+			{
+				name: "foo",
+				kind: "function" as const,
+				exported: true,
+				isDefault: false,
+				isAbstract: false,
+				isPublic: true,
+				line: 1,
+			},
+			{
+				name: "bar",
+				kind: "function" as const,
+				exported: true,
+				isDefault: false,
+				isAbstract: false,
+				isPublic: true,
+				line: 5,
+			},
 		];
 		const diff = diffSymbols("src/test.ts", baseline, current);
 		expect(diff.added).toHaveLength(1);
@@ -26,11 +50,35 @@ describe("diffSymbols extra branches", () => {
 
 	it("detects removed symbols when baseline has symbols not in current", () => {
 		const baseline = [
-			{ name: "foo", kind: "function" as const, exported: true, isDefault: false, isAbstract: false, isPublic: true, line: 1 },
-			{ name: "baz", kind: "class" as const, exported: true, isDefault: false, isAbstract: false, isPublic: true, line: 10 },
+			{
+				name: "foo",
+				kind: "function" as const,
+				exported: true,
+				isDefault: false,
+				isAbstract: false,
+				isPublic: true,
+				line: 1,
+			},
+			{
+				name: "baz",
+				kind: "class" as const,
+				exported: true,
+				isDefault: false,
+				isAbstract: false,
+				isPublic: true,
+				line: 10,
+			},
 		];
 		const current = [
-			{ name: "foo", kind: "function" as const, exported: true, isDefault: false, isAbstract: false, isPublic: true, line: 1 },
+			{
+				name: "foo",
+				kind: "function" as const,
+				exported: true,
+				isDefault: false,
+				isAbstract: false,
+				isPublic: true,
+				line: 1,
+			},
 		];
 		const diff = diffSymbols("src/test.ts", baseline, current);
 		expect(diff.removed).toHaveLength(1);
@@ -40,10 +88,26 @@ describe("diffSymbols extra branches", () => {
 
 	it("detects kind changes (same name, different kind)", () => {
 		const baseline = [
-			{ name: "MyThing", kind: "class" as const, exported: true, isDefault: false, isAbstract: false, isPublic: true, line: 1 },
+			{
+				name: "MyThing",
+				kind: "class" as const,
+				exported: true,
+				isDefault: false,
+				isAbstract: false,
+				isPublic: true,
+				line: 1,
+			},
 		];
 		const current = [
-			{ name: "MyThing", kind: "interface" as const, exported: true, isDefault: false, isAbstract: false, isPublic: true, line: 1 },
+			{
+				name: "MyThing",
+				kind: "interface" as const,
+				exported: true,
+				isDefault: false,
+				isAbstract: false,
+				isPublic: true,
+				line: 1,
+			},
 		];
 		const diff = diffSymbols("src/test.ts", baseline, current);
 		expect(diff.kindChanged).toHaveLength(1);
@@ -55,10 +119,26 @@ describe("diffSymbols extra branches", () => {
 
 	it("detects export status changes", () => {
 		const baseline = [
-			{ name: "helper", kind: "function" as const, exported: false, isDefault: false, isAbstract: false, isPublic: false, line: 1 },
+			{
+				name: "helper",
+				kind: "function" as const,
+				exported: false,
+				isDefault: false,
+				isAbstract: false,
+				isPublic: false,
+				line: 1,
+			},
 		];
 		const current = [
-			{ name: "helper", kind: "function" as const, exported: true, isDefault: false, isAbstract: false, isPublic: true, line: 1 },
+			{
+				name: "helper",
+				kind: "function" as const,
+				exported: true,
+				isDefault: false,
+				isAbstract: false,
+				isPublic: true,
+				line: 1,
+			},
 		];
 		const diff = diffSymbols("src/test.ts", baseline, current);
 		expect(diff.exportChanged).toHaveLength(1);
@@ -68,7 +148,15 @@ describe("diffSymbols extra branches", () => {
 
 	it("returns empty diff for identical symbol sets", () => {
 		const symbols = [
-			{ name: "foo", kind: "function" as const, exported: true, isDefault: false, isAbstract: false, isPublic: true, line: 1 },
+			{
+				name: "foo",
+				kind: "function" as const,
+				exported: true,
+				isDefault: false,
+				isAbstract: false,
+				isPublic: true,
+				line: 1,
+			},
 		];
 		const diff = diffSymbols("src/test.ts", symbols, symbols);
 		expect(diff.added).toHaveLength(0);
@@ -85,7 +173,15 @@ describe("diffSymbols extra branches", () => {
 
 	it("handles empty baseline with symbols in current", () => {
 		const current = [
-			{ name: "newFn", kind: "function" as const, exported: true, isDefault: false, isAbstract: false, isPublic: true, line: 1 },
+			{
+				name: "newFn",
+				kind: "function" as const,
+				exported: true,
+				isDefault: false,
+				isAbstract: false,
+				isPublic: true,
+				line: 1,
+			},
 		];
 		const diff = diffSymbols("src/new.ts", [], current);
 		expect(diff.added).toHaveLength(1);
@@ -94,7 +190,15 @@ describe("diffSymbols extra branches", () => {
 
 	it("handles symbols in baseline but empty current (file deleted)", () => {
 		const baseline = [
-			{ name: "deletedFn", kind: "function" as const, exported: true, isDefault: false, isAbstract: false, isPublic: true, line: 1 },
+			{
+				name: "deletedFn",
+				kind: "function" as const,
+				exported: true,
+				isDefault: false,
+				isAbstract: false,
+				isPublic: true,
+				line: 1,
+			},
 		];
 		const diff = diffSymbols("src/deleted.ts", baseline, []);
 		expect(diff.removed).toHaveLength(1);

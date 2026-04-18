@@ -181,9 +181,7 @@ describe("synth-comparative-extra", () => {
 				},
 			},
 			{
-				detailIncludes: [
-					"build the evidence packet first",
-				],
+				detailIncludes: ["build the evidence packet first"],
 				recommendationCountAtLeast: 3,
 			},
 		);

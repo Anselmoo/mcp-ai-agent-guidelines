@@ -301,19 +301,19 @@ describe("aggregateTelemetry extra branches", () => {
 	});
 
 	it("computes correct p95 for multiple runs", () => {
-		const runs: WorkflowTelemetry[] = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000].map(
-			(d, i) => ({
-				instructionId: "i",
-				sessionId: `s-${i}`,
-				startedAt: "",
-				stepCount: 1,
-				succeededSteps: 1,
-				failedSteps: 0,
-				totalRetries: 0,
-				totalDurationMs: d,
-				steps: [],
-			}),
-		);
+		const runs: WorkflowTelemetry[] = [
+			100, 200, 300, 400, 500, 600, 700, 800, 900, 1000,
+		].map((d, i) => ({
+			instructionId: "i",
+			sessionId: `s-${i}`,
+			startedAt: "",
+			stepCount: 1,
+			succeededSteps: 1,
+			failedSteps: 0,
+			totalRetries: 0,
+			totalDurationMs: d,
+			steps: [],
+		}));
 		const agg = aggregateTelemetry(runs);
 		expect(agg.runCount).toBe(10);
 		expect(agg.averageDurationMs).toBe(550); // (100+...+1000)/10 = 550

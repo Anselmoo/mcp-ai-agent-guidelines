@@ -36,7 +36,8 @@ describe("qm-tunneling-breakthrough extra branches", () => {
 		await expectSkillGuidance(
 			skillModule,
 			{
-				request: "should we refactor this legacy module during our dedicated sprint",
+				request:
+					"should we refactor this legacy module during our dedicated sprint",
 				options: {
 					barrierRisk: "medium",
 					teamEnergy: "high",
@@ -53,7 +54,8 @@ describe("qm-tunneling-breakthrough extra branches", () => {
 		await expectSkillGuidance(
 			skillModule,
 			{
-				request: "should we attempt this large-scale legacy migration right now",
+				request:
+					"should we attempt this large-scale legacy migration right now",
 				options: {
 					barrierRisk: "high",
 					teamEnergy: "low",
@@ -165,7 +167,8 @@ describe("qm-tunneling-breakthrough extra branches", () => {
 		await expectSkillGuidance(
 			skillModule,
 			{
-				request: "restructure the legacy data layer module with coupling barriers",
+				request:
+					"restructure the legacy data layer module with coupling barriers",
 			},
 			{
 				recommendationCountAtLeast: 3,
@@ -212,7 +215,18 @@ describe("qm-tunneling-breakthrough extra branches", () => {
 				},
 			},
 			// use default runtime from skill module contract
-			{ modelRouter: { chooseSkillModel: () => ({ id: "test", label: "Test", modelClass: "cheap" as const, strengths: [], maxContextWindow: "medium" as const, costTier: "cheap" as const }) } },
+			{
+				modelRouter: {
+					chooseSkillModel: () => ({
+						id: "test",
+						label: "Test",
+						modelClass: "cheap" as const,
+						strengths: [],
+						maxContextWindow: "medium" as const,
+						costTier: "cheap" as const,
+					}),
+				},
+			},
 		);
 
 		const artifactKinds =

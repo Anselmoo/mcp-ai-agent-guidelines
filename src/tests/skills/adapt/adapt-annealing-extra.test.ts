@@ -14,7 +14,8 @@ describe("adapt-annealing extra branch coverage", () => {
 		await expectSkillGuidance(
 			skillModule,
 			{
-				request: "optimise workflow topology with linear temperature cooling schedule search",
+				request:
+					"optimise workflow topology with linear temperature cooling schedule search",
 				options: {
 					coolingSchedule: "linear",
 					perturbationStrategy: "single-dimension",
@@ -31,7 +32,8 @@ describe("adapt-annealing extra branch coverage", () => {
 		await expectSkillGuidance(
 			skillModule,
 			{
-				request: "anneal workflow config iterating through topology candidates with logarithmic schedule",
+				request:
+					"anneal workflow config iterating through topology candidates with logarithmic schedule",
 				options: {
 					coolingSchedule: "logarithmic",
 					perturbationStrategy: "multi-dimension",
@@ -48,7 +50,8 @@ describe("adapt-annealing extra branch coverage", () => {
 		await expectSkillGuidance(
 			skillModule,
 			{
-				request: "optimise workflow with simulated annealing single dimension search",
+				request:
+					"optimise workflow with simulated annealing single dimension search",
 				options: {
 					coolingSchedule: "geometric",
 					perturbationStrategy: "single-dimension",
@@ -65,7 +68,8 @@ describe("adapt-annealing extra branch coverage", () => {
 		await expectSkillGuidance(
 			skillModule,
 			{
-				request: "anneal workflow config with multi-dimension perturbation strategy exploration",
+				request:
+					"anneal workflow config with multi-dimension perturbation strategy exploration",
 				options: {
 					coolingSchedule: "geometric",
 					perturbationStrategy: "multi-dimension",
@@ -82,7 +86,8 @@ describe("adapt-annealing extra branch coverage", () => {
 		await expectSkillGuidance(
 			skillModule,
 			{
-				request: "optimise for latency-token_cost tradeoff objective balancing quality lambda weight",
+				request:
+					"optimise for latency-token_cost tradeoff objective balancing quality lambda weight",
 				options: {
 					coolingSchedule: "geometric",
 					perturbationStrategy: "adaptive",
@@ -98,7 +103,8 @@ describe("adapt-annealing extra branch coverage", () => {
 		await expectSkillGuidance(
 			skillModule,
 			{
-				request: "anneal topology config converge on optimal configuration by exploring search space",
+				request:
+					"anneal topology config converge on optimal configuration by exploring search space",
 				options: {
 					coolingSchedule: "geometric",
 					perturbationStrategy: "adaptive",
@@ -114,7 +120,8 @@ describe("adapt-annealing extra branch coverage", () => {
 		await expectSkillGuidance(
 			skillModule,
 			{
-				request: "anneal workflow and evaluate configuration quality metric score by iterating",
+				request:
+					"anneal workflow and evaluate configuration quality metric score by iterating",
 				options: {
 					coolingSchedule: "geometric",
 					perturbationStrategy: "adaptive",

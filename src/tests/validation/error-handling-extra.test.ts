@@ -27,7 +27,11 @@ describe("error-handling-extra", () => {
 		// @ts-expect-error intentional deletion to exercise the else branch
 		delete Error.captureStackTrace;
 		try {
-			const err = new SkillExecutionError("execution", "no stack capture", baseCtx());
+			const err = new SkillExecutionError(
+				"execution",
+				"no stack capture",
+				baseCtx(),
+			);
 			expect(err.message).toBe("no stack capture");
 			expect(err.category).toBe("execution");
 		} finally {
@@ -66,7 +70,11 @@ describe("error-handling-extra", () => {
 	// toDomainError – early return when already a SkillExecutionError (line 213)
 	// ---------------------------------------------------------------------------
 	it("toDomainError returns the error unchanged when it is already a SkillExecutionError", () => {
-		const original = new SkillExecutionError("validation", "pre-existing", baseCtx());
+		const original = new SkillExecutionError(
+			"validation",
+			"pre-existing",
+			baseCtx(),
+		);
 		const result = toDomainError(original, baseCtx());
 		expect(result).toBe(original);
 	});
@@ -103,13 +111,10 @@ describe("error-handling-extra", () => {
 	// withErrorBoundary – non-Error thrown (line 275 – details === undefined)
 	// ---------------------------------------------------------------------------
 	it("withErrorBoundary catches a thrown string and sets details to undefined", async () => {
-		const result = await withErrorBoundary(
-			async () => {
-				// eslint-disable-next-line no-throw-literal
-				throw "string-thrown";
-			},
-			{},
-		);
+		const result = await withErrorBoundary(async () => {
+			// eslint-disable-next-line no-throw-literal
+			throw "string-thrown";
+		}, {});
 		expect(result.success).toBe(false);
 		if (!result.success) {
 			expect(result.error.details).toBeUndefined();
@@ -156,9 +161,20 @@ describe("error-handling-extra", () => {
 	// withRetry – final attempt reached (line 319) + lastError is SkillExecutionError (line 348)
 	// ---------------------------------------------------------------------------
 	it("withRetry enhances lastError context when it is a SkillExecutionError", async () => {
-		const recoverable = new SkillExecutionError("execution", "flaky", baseCtx());
+		const recoverable = new SkillExecutionError(
+			"execution",
+			"flaky",
+			baseCtx(),
+		);
 		await expect(
-			withRetry(async () => { throw recoverable; }, {}, 1, 0),
+			withRetry(
+				async () => {
+					throw recoverable;
+				},
+				{},
+				1,
+				0,
+			),
 		).rejects.toBe(recoverable); // same reference
 	});
 
@@ -167,7 +183,14 @@ describe("error-handling-extra", () => {
 	// ---------------------------------------------------------------------------
 	it("withRetry wraps a plain Error in a new SkillExecutionError after max retries", async () => {
 		await expect(
-			withRetry(async () => { throw new Error("plain error"); }, {}, 1, 0),
+			withRetry(
+				async () => {
+					throw new Error("plain error");
+				},
+				{},
+				1,
+				0,
+			),
 		).rejects.toMatchObject({
 			message: expect.stringContaining("Operation failed after 1 retries"),
 			recoverable: false,
@@ -177,7 +200,14 @@ describe("error-handling-extra", () => {
 	it("withRetry wraps a thrown string in a new SkillExecutionError after max retries", async () => {
 		await expect(
 			// eslint-disable-next-line no-throw-literal
-			withRetry(async () => { throw "string failure"; }, {}, 1, 0),
+			withRetry(
+				async () => {
+					throw "string failure";
+				},
+				{},
+				1,
+				0,
+			),
 		).rejects.toMatchObject({
 			message: expect.stringContaining("string failure"),
 		});
@@ -187,9 +217,9 @@ describe("error-handling-extra", () => {
 	// InputSanitizer.sanitizeString – non-string input (line 372)
 	// ---------------------------------------------------------------------------
 	it("sanitizeString throws ValidationError for non-string input", () => {
-		expect(() => InputSanitizer.sanitizeString(42 as unknown as string)).toThrow(
-			"Input must be a string",
-		);
+		expect(() =>
+			InputSanitizer.sanitizeString(42 as unknown as string),
+		).toThrow("Input must be a string");
 	});
 
 	it("sanitizeString throws for input exceeding maxLength", () => {
@@ -199,9 +229,9 @@ describe("error-handling-extra", () => {
 	});
 
 	it("sanitizeString throws for XSS-style input", () => {
-		expect(() => InputSanitizer.sanitizeString("<script>alert(1)</script>")).toThrow(
-			"dangerous pattern",
-		);
+		expect(() =>
+			InputSanitizer.sanitizeString("<script>alert(1)</script>"),
+		).toThrow("dangerous pattern");
 	});
 
 	it("sanitizeString encodes HTML entities", () => {
@@ -209,7 +239,9 @@ describe("error-handling-extra", () => {
 		const clean = InputSanitizer.sanitizeString("hello world");
 		expect(clean).toBe("hello world");
 
-		const encoded = InputSanitizer.sanitizeString('<div class="x">it\'s</div>'.replace(/<script/gi, ""));
+		const encoded = InputSanitizer.sanitizeString(
+			'<div class="x">it\'s</div>'.replace(/<script/gi, ""),
+		);
 		// Verify encoding of angle brackets and quotes
 		expect(encoded).toContain("&lt;");
 	});

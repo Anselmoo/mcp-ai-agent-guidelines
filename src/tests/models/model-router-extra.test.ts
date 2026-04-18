@@ -184,7 +184,11 @@ describe("model-router-extra", () => {
 						label: "fanout",
 						steps: [
 							{ kind: "invokeSkill", label: "s1", skillId: "synth-research" },
-							{ kind: "invokeSkill", label: "s2", skillId: "synth-comparative" },
+							{
+								kind: "invokeSkill",
+								label: "s2",
+								skillId: "synth-comparative",
+							},
 						],
 					},
 				],
@@ -217,7 +221,11 @@ describe("model-router-extra", () => {
 								kind: "parallel",
 								label: "inner-fanout",
 								steps: [
-									{ kind: "invokeSkill", label: "s1", skillId: "qual-code-review" },
+									{
+										kind: "invokeSkill",
+										label: "s1",
+										skillId: "qual-code-review",
+									},
 								],
 							},
 						],
@@ -247,7 +255,11 @@ describe("model-router-extra", () => {
 						label: "steps",
 						steps: [
 							// qm-* skills have fan-out config in orchestration.toml
-							{ kind: "invokeSkill", label: "physics", skillId: "qm-entanglement-mapper" },
+							{
+								kind: "invokeSkill",
+								label: "physics",
+								skillId: "qm-entanglement-mapper",
+							},
 							{ kind: "note", label: "noop", note: "for coverage" },
 						],
 					},

@@ -94,12 +94,9 @@ describe("multi-model-executor extra branches", () => {
 	});
 
 	it("cascadeFallback falls through all models when quality never passes", async () => {
-		const res = await executor.cascadeFallback(
-			"test",
-			echo,
-			() => false,
-			{ modelIds: ["m1", "m2", "m3"] },
-		);
+		const res = await executor.cascadeFallback("test", echo, () => false, {
+			modelIds: ["m1", "m2", "m3"],
+		});
 		expect(res.pattern).toBe("cascadeFallback");
 		// Should return last lane's output
 		expect(res.finalOutput).toContain("response from m3");
@@ -107,12 +104,9 @@ describe("multi-model-executor extra branches", () => {
 	});
 
 	it("cascadeFallback with empty modelIds returns empty finalOutput", async () => {
-		const res = await executor.cascadeFallback(
-			"test",
-			echo,
-			() => true,
-			{ modelIds: [] },
-		);
+		const res = await executor.cascadeFallback("test", echo, () => true, {
+			modelIds: [],
+		});
 		expect(res.finalOutput).toBe("");
 		expect(res.lanes.length).toBe(0);
 	});

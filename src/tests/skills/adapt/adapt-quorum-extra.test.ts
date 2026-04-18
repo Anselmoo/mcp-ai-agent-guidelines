@@ -143,7 +143,9 @@ describe("adapt-quorum-extra", () => {
 			createMockSkillRuntime(),
 		);
 		const detailText = result.recommendations.map((r) => r.detail).join("\n");
-		expect(detailText).toContain("specialisation matching as a pre-aggregation");
+		expect(detailText).toContain(
+			"specialisation matching as a pre-aggregation",
+		);
 	});
 
 	it("includes load balancing detail when load distribution signal detected (line 323)", async () => {
@@ -207,7 +209,9 @@ describe("adapt-quorum-extra", () => {
 			createMockSkillRuntime(),
 		);
 		const detailText = result.recommendations.map((r) => r.detail).join("\n");
-		expect(detailText).toContain("Apply quorum configuration within these constraints");
+		expect(detailText).toContain(
+			"Apply quorum configuration within these constraints",
+		);
 	});
 
 	it("includes persistence detail when persist/durable signal detected (line 443)", async () => {

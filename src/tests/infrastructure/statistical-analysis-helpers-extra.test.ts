@@ -4,8 +4,8 @@ import {
 	analyzeCorrelationMetrics,
 	analyzeNumericData,
 	analyzeTrendTimeSeries,
-	calculateTrend,
 	calculatePerformanceScoreFromMetrics,
+	calculateTrend,
 	compareNumericDatasets,
 	detectAnomaliesInMetrics,
 } from "../../infrastructure/statistical-analysis-helpers.js";
@@ -30,7 +30,9 @@ describe("statistical-analysis-helpers-extra", () => {
 	// analyzeNumericData – empty array (line 40)
 	// -------------------------------------------------------------------------
 	it("analyzeNumericData throws for an empty dataset", () => {
-		expect(() => analyzeNumericData([])).toThrow("Cannot analyze empty dataset");
+		expect(() => analyzeNumericData([])).toThrow(
+			"Cannot analyze empty dataset",
+		);
 	});
 
 	it("analyzeNumericData succeeds for a single-element array", () => {
@@ -138,7 +140,9 @@ describe("statistical-analysis-helpers-extra", () => {
 	// -------------------------------------------------------------------------
 	it("calculatePerformanceScoreFromMetrics returns null when fewer than 5 metrics", () => {
 		// performanceMinSampleSize = 5
-		expect(calculatePerformanceScoreFromMetrics(makeMetrics([10, 20, 30, 40]))).toBeNull();
+		expect(
+			calculatePerformanceScoreFromMetrics(makeMetrics([10, 20, 30, 40])),
+		).toBeNull();
 		expect(calculatePerformanceScoreFromMetrics([])).toBeNull();
 	});
 

@@ -150,7 +150,10 @@ describe("tool-call-handler-extra", () => {
 	it("includes enrichment hint when the tool has library dependencies (line 400-area)", async () => {
 		const result = await dispatchToolCall(
 			"docs-generate",
-			{ request: "generate API reference documentation for the workspace module" },
+			{
+				request:
+					"generate API reference documentation for the workspace module",
+			},
 			createRuntime(),
 		);
 		expect(result.isError).toBeUndefined();

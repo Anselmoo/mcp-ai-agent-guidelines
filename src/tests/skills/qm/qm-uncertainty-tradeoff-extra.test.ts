@@ -19,7 +19,8 @@ describe("qm-uncertainty-tradeoff extra branches", () => {
 		await expectSkillGuidance(
 			skillModule,
 			{
-				request: "analyse cyclomatic complexity and test coverage tradeoffs for our modules",
+				request:
+					"analyse cyclomatic complexity and test coverage tradeoffs for our modules",
 				options: {
 					violationThreshold: "strict",
 				},
@@ -35,7 +36,8 @@ describe("qm-uncertainty-tradeoff extra branches", () => {
 		await expectSkillGuidance(
 			skillModule,
 			{
-				request: "analyse churn rate and coupling tension in frequently modified modules",
+				request:
+					"analyse churn rate and coupling tension in frequently modified modules",
 				options: {
 					violationThreshold: "lenient",
 				},
@@ -102,7 +104,8 @@ describe("qm-uncertainty-tradeoff extra branches", () => {
 		await expectSkillGuidance(
 			skillModule,
 			{
-				request: "analyse coupling cohesion tradeoffs for a high coupling module",
+				request:
+					"analyse coupling cohesion tradeoffs for a high coupling module",
 				options: {
 					metricPair: "coupling-cohesion",
 					coupling: 0.9,
@@ -120,7 +123,8 @@ describe("qm-uncertainty-tradeoff extra branches", () => {
 		await expectSkillGuidance(
 			skillModule,
 			{
-				request: "analyse coupling cohesion tension for a well-structured module",
+				request:
+					"analyse coupling cohesion tension for a well-structured module",
 				options: {
 					metricPair: "coupling-cohesion",
 					coupling: 0.1,

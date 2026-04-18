@@ -14,7 +14,8 @@ describe("resil-replay extra branch coverage", () => {
 		await expectSkillGuidance(
 			skillModule,
 			{
-				request: "replay execution traces with quality weighted buffer consolidation",
+				request:
+					"replay execution traces with quality weighted buffer consolidation",
 				options: {
 					evictionPolicy: "quality-weighted",
 					successFraction: 0.85,
@@ -35,7 +36,8 @@ describe("resil-replay extra branch coverage", () => {
 		await expectSkillGuidance(
 			skillModule,
 			{
-				request: "replay execution traces with quality weighted buffer full consolidation and recency quality injection",
+				request:
+					"replay execution traces with quality weighted buffer full consolidation and recency quality injection",
 				options: {
 					evictionPolicy: "recency-quality",
 					successFraction: 0.55,
@@ -56,7 +58,8 @@ describe("resil-replay extra branch coverage", () => {
 		await expectSkillGuidance(
 			skillModule,
 			{
-				request: "replay execution traces with buffer full consolidation and prepend injection manual trigger",
+				request:
+					"replay execution traces with buffer full consolidation and prepend injection manual trigger",
 				options: {
 					evictionPolicy: "fifo",
 					successFraction: 0.2,
@@ -77,7 +80,8 @@ describe("resil-replay extra branch coverage", () => {
 		await expectSkillGuidance(
 			skillModule,
 			{
-				request: "replay execution traces with quality weighted buffer full consolidation and replace injection",
+				request:
+					"replay execution traces with quality weighted buffer full consolidation and replace injection",
 				options: {
 					evictionPolicy: "quality-weighted",
 					successFraction: 0.5,
@@ -99,7 +103,8 @@ describe("resil-replay extra branch coverage", () => {
 		await expectSkillGuidance(
 			skillModule,
 			{
-				request: "replay execution traces buffer full trigger consolidation strategy",
+				request:
+					"replay execution traces buffer full trigger consolidation strategy",
 				options: {
 					evictionPolicy: "quality-weighted",
 					successFraction: 0.5,
@@ -119,7 +124,8 @@ describe("resil-replay extra branch coverage", () => {
 		await expectSkillGuidance(
 			skillModule,
 			{
-				request: "replay buffer quality degradation trigger full consolidation prepend injection",
+				request:
+					"replay buffer quality degradation trigger full consolidation prepend injection",
 				options: {
 					evictionPolicy: "recency-quality",
 					successFraction: 0.4,
@@ -139,7 +145,8 @@ describe("resil-replay extra branch coverage", () => {
 		await expectSkillGuidance(
 			skillModule,
 			{
-				request: "replay buffer replace injection mode buffer full consolidation",
+				request:
+					"replay buffer replace injection mode buffer full consolidation",
 				options: {
 					evictionPolicy: "recency-quality",
 					successFraction: 0.5,
@@ -159,7 +166,8 @@ describe("resil-replay extra branch coverage", () => {
 		await expectSkillGuidance(
 			skillModule,
 			{
-				request: "replay buffer append injection consolidation buffer full quality weighted",
+				request:
+					"replay buffer append injection consolidation buffer full quality weighted",
 				options: {
 					evictionPolicy: "recency-quality",
 					successFraction: 0.5,
