@@ -101,7 +101,7 @@
         "@modelcontextprotocol/inspector": "^0.21.1",
         "@types/d3": "^7.4.3",
         "@types/inquirer": "^9.0.9",
-        "@types/jsdom": "^21.1.7",
+        "@types/jsdom": "^28.0.0",
         "@types/lodash": "^4.17.24",
         "@types/node": "^25.0.2",
         "@vitest/coverage-v8": "^4.0.0",
