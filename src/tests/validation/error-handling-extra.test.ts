@@ -235,31 +235,21 @@ describe("error-handling-extra", () => {
 	});
 
 	it("sanitizeString encodes HTML entities", () => {
-		// Reset regex state by calling with a clean string first
-		const clean = InputSanitizer.sanitizeString("hello world");
-		expect(clean).toBe("hello world");
-
 		const encoded = InputSanitizer.sanitizeString(
 			'<div class="x">it\'s</div>'.replace(/<script/gi, ""),
 		);
-		// Verify encoding of angle brackets and quotes
+		// Verify encoding of angle brackets and quotes without relying on regex state.
 		expect(encoded).toContain("&lt;");
 	});
 
 	// ---------------------------------------------------------------------------
 	// InputSanitizer.sanitizeFilePath – /tmp/ check (line 398)
 	// ---------------------------------------------------------------------------
-	it("sanitizeFilePath throws when path starts with /tmp/ after regex state exhausted", () => {
-		// The DANGEROUS_PATTERNS use stateful global regexes. After the first match
-		// for /\/tmp\//g the regex lastIndex advances, so the second call to
-		// sanitizeString may not catch a fresh /tmp/ path, exposing line 398.
-		try {
-			InputSanitizer.sanitizeString("/tmp/a");
-		} catch {
-			// expected – sets lastIndex past the first occurrence
-		}
-		// Second call: regex may skip the pattern due to lastIndex, but
-		// sanitizeFilePath's own check at line 398 catches it.
+	it("sanitizeFilePath consistently throws when path starts with /tmp/", () => {
+		expect(() => InputSanitizer.sanitizeFilePath("/tmp/a")).toThrow(
+			/directory traversal|tmp directory|dangerous pattern/i,
+		);
+		// Second call must also throw — verifying no regex-state pollution
 		expect(() => InputSanitizer.sanitizeFilePath("/tmp/b")).toThrow(
 			/directory traversal|tmp directory|dangerous pattern/i,
 		);

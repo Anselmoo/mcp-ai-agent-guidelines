@@ -90,11 +90,13 @@ describe("tool-call-handler-extra", () => {
 	it("dispatches to workspace tool handler when tool name is agent-workspace (line 169)", async () => {
 		const result = await dispatchToolCall(
 			"agent-workspace",
-			{ command: "list-files", path: "." },
+			{ command: "list", path: "." },
 			createRuntime(),
 		);
+		expect(result.isError).not.toBe(true);
 		expect(result.content).toBeDefined();
 		expect(result.content[0]?.type).toBe("text");
+		expect(result.content[0]?.text).toBeDefined();
 	});
 
 	it("awaits contextReady promise before dispatch when present (line 198)", async () => {
