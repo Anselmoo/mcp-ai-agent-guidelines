@@ -1,0 +1,13 @@
+# Trivy vulnerability ignore list
+# Each entry must have a justification comment.
+
+# CVE-2026-33671 — picomatch ≤4.0.3 ReDoS (HIGH)
+# Affected path in node:24-alpine:
+#   /usr/local/lib/node_modules/npm/node_modules/tinyglobby/node_modules/picomatch
+# This is bundled inside npm's OWN internal CLI tooling (tinyglobby), not in
+# the application runtime code. The project's own picomatch is already at
+# 4.0.4 (fixed). The upstream npm@11.12.1 (latest as of 2026-04-18) still
+# bundles the older version; no fix is available in a newer npm release yet.
+# Risk: zero — the vulnerable code path is only reachable via npm CLI internals,
+# never executed by the MCP server at runtime.
+CVE-2026-33671

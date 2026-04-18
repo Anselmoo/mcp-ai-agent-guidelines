@@ -103,6 +103,7 @@ complete model-routing layer, governance surface, and observability pipeline.
 - Added targeted regression coverage for core runtime modules, including
   `skill-cache`, `unified-orchestration`, and `llm-lane-executor`, to improve
   branch coverage and guard against future regressions.
+- Added `.trivyignore` to exclude `CVE-2026-33671` from CI security scans until all dependencies are patched.
 
 ### Changed
 
