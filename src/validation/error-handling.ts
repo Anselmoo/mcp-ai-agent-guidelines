@@ -299,11 +299,11 @@ export const InputSanitizer: {
 } = {
 	MAX_STRING_LENGTH: 10000,
 	DANGEROUS_PATTERNS: [
-		/\.\./g, // Path traversal
-		/\/tmp\//g, // Temp directory access
-		/<script/gi, // Script injection
-		/javascript:/gi, // JavaScript URLs
-		/data:.*base64/gi, // Data URLs with base64
+		/\.\./, // Path traversal
+		/\/tmp\//, // Temp directory access
+		/<script/i, // Script injection
+		/javascript:/i, // JavaScript URLs
+		/data:.*base64/i, // Data URLs with base64
 	],
 
 	sanitizeString(
