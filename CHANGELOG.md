@@ -86,6 +86,7 @@ complete model-routing layer, governance surface, and observability pipeline.
 - Added targeted regression coverage for core runtime modules, including
   `skill-cache`, `unified-orchestration`, and `llm-lane-executor`, to improve
   branch coverage and guard against future regressions.
+- Fix `Dockerfile` to use `node:24-alpine` base image for smaller attack surface and faster builds, and ensure all native dependencies are properly installed for production runtime.
 
 ### Changed
 
