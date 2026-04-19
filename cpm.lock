@@ -1,10 +1,10 @@
 version = 1
-generated = "2026-04-01T21:12:49.226352Z"
+generated = "2026-04-19T06:08:26.525194Z"
 
 [[plugin]]
 name = "typescript-mcp-development"
 rev = "1.0.0"
-resolved = "2026-04-01T14:31:56.796723Z"
+resolved = "2026-04-19T06:09:32.977063Z"
 hash = "sha256:985f57625147e3842a48be8b07e7ce4d38c2b5c93effd362ecbdb4fc72c4b6fd"
 scope = "global"
 groups = ["mcp"]
@@ -17,7 +17,7 @@ plugin_json_hash = "sha256:985f57625147e3842a48be8b07e7ce4d38c2b5c93effd362ecbdb
 [[skill]]
 name = "skill-creator"
 rev = "98669c11ca63e9c81c11501e1437e5c47b556621"
-resolved = "2026-04-01T21:13:58.301909Z"
+resolved = "2026-04-19T06:08:26.525194Z"
 hash = "sha256:c5ca39c7900de19e2a0cc1f03f724e98a0d40623535b1e65e4d2725a6af54f73"
 scope = "global"
 groups = ["default"]
@@ -36,8 +36,8 @@ verified = false
 
 [[mcp]]
 name = "serena-agent"
-rev = "1.0.0"
-resolved = "2026-04-03T20:50:53.481455Z"
+rev = "1.1.2"
+resolved = "2026-04-19T06:08:26.525194Z"
 hash = "sha256:349759c7b81ec89a447b8155c119cde20b4365ac95a57673ce0859b8bc7e1994"
 scope = "global"
 groups = ["default"]

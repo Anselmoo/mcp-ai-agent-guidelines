@@ -8,11 +8,14 @@ sidebar:
 
 import { Aside } from '@astrojs/starlight/components';
 
-The `mcp-ai-agent-guidelines` CLI provides commands for project onboarding, session lifecycle management, memory inspection, and observability reporting.
+The `mcp-cli` command provides project onboarding, session lifecycle management, memory inspection, and observability reporting. The published package also exposes `mcp-ai-agent-guidelines` as the MCP stdio server entrypoint for editors and MCP hosts.
 
 ```bash
-# Run via npx (no install required)
-npx mcp-ai-agent-guidelines [command]
+# Run via npx / npm exec (no install required)
+npx --yes --package mcp-ai-agent-guidelines@latest mcp-cli [command]
+
+# Or after global install
+mcp-cli [command]
 
 # Or after local install
 node dist/cli-main.js [command]
@@ -37,7 +40,7 @@ node dist/cli-main.js [command]
 Run the interactive onboarding wizard. Guides you through model configuration, skill surface selection, and MCP client setup. Skips automatically if configuration already exists.
 
 ```bash
-mcp-ai-agent-guidelines onboard init
+mcp-cli onboard init
 ```
 
 ### `onboard status`
@@ -45,7 +48,7 @@ mcp-ai-agent-guidelines onboard init
 Show the current onboarding status and active configuration.
 
 ```bash
-mcp-ai-agent-guidelines onboard status
+mcp-cli onboard status
 ```
 
 ### `onboard reset`
@@ -53,7 +56,7 @@ mcp-ai-agent-guidelines onboard status
 Reset configuration. Removes session and memory state and re-runs the wizard.
 
 ```bash
-mcp-ai-agent-guidelines onboard reset
+mcp-cli onboard reset
 ```
 
 <Aside type="caution">
@@ -71,7 +74,7 @@ Manage model routing via `orchestration.toml` without editing the file directly.
 Print the current `orchestration.toml` as JSON.
 
 ```bash
-mcp-ai-agent-guidelines orchestration config read
+mcp-cli orchestration config read
 ```
 
 ### `orchestration config write`
@@ -79,7 +82,7 @@ mcp-ai-agent-guidelines orchestration config read
 Update a specific role in `orchestration.toml`.
 
 ```bash
-mcp-ai-agent-guidelines orchestration config write --role strong_primary --model claude-sonnet-4-5
+mcp-cli orchestration config write --role strong_primary --model claude-sonnet-4-5
 ```
 
 ---
@@ -91,7 +94,7 @@ mcp-ai-agent-guidelines orchestration config write --role strong_primary --model
 List all memory artifacts and TOON snapshots.
 
 ```bash
-mcp-ai-agent-guidelines memory list
+mcp-cli memory list
 ```
 
 ### `memory show <id>`
@@ -99,7 +102,7 @@ mcp-ai-agent-guidelines memory list
 Print a specific memory artifact by ID.
 
 ```bash
-mcp-ai-agent-guidelines memory show <session-id>
+mcp-cli memory show <session-id>
 ```
 
 ---
@@ -109,7 +112,7 @@ mcp-ai-agent-guidelines memory show <session-id>
 Print version, loaded skills, active flags, and model router state.
 
 ```bash
-mcp-ai-agent-guidelines status
+mcp-cli status
 ```
 
 ---

@@ -61,6 +61,37 @@ describe("resource-surface", () => {
 		).rejects.toThrow("Unknown resource");
 	});
 
+	it("reads alias, edge, and combined skill graph resources", async () => {
+		const sessionStore = {
+			async readSessionHistory() {
+				return [];
+			},
+		} as unknown as SessionStateStore;
+
+		const aliases = await readPublicResource(
+			"mcp-guidelines://graph/aliases",
+			"session-123",
+			sessionStore,
+		);
+		const edges = await readPublicResource(
+			"mcp-guidelines://graph/instruction-skill-edges",
+			"session-123",
+			sessionStore,
+		);
+		const skillGraph = await readPublicResource(
+			"mcp-guidelines://graph/skill-graph",
+			"session-123",
+			sessionStore,
+		);
+
+		expect(aliases.contents[0]?.text).toContain("core-prompt-engineering");
+		expect(edges.contents[0]?.text).toContain('"instructionId": "design"');
+		expect(edges.contents[0]?.text).toContain('"skillId": "req-analysis"');
+		expect(skillGraph.contents[0]?.text).toContain('"taxonomy"');
+		expect(skillGraph.contents[0]?.text).toContain('"aliases"');
+		expect(skillGraph.contents[0]?.text).toContain('"instructionSkillEdges"');
+	});
+
 	it("derives a TOON session context when no persisted context exists", async () => {
 		const sessionStore = {
 			async readSessionHistory() {
@@ -147,6 +178,42 @@ describe("resource-surface", () => {
 		);
 	});
 
+	it("rejects empty and missing memory artifact resource URIs", async () => {
+		const sessionStore = {
+			async readSessionHistory() {
+				return [];
+			},
+		} as unknown as SessionStateStore;
+		const memoryInterface = {
+			async findMemoryArtifacts() {
+				return [];
+			},
+			async loadMemoryArtifact() {
+				return null;
+			},
+			async loadSessionContext() {
+				return null;
+			},
+		} as unknown as ReadPublicResourceOptions["memoryInterface"];
+
+		await expect(
+			readPublicResource(
+				"mcp-guidelines://memory/artifacts/",
+				"session-123",
+				sessionStore,
+				{ memoryInterface },
+			),
+		).rejects.toThrow("Unknown resource");
+		await expect(
+			readPublicResource(
+				"mcp-guidelines://memory/artifacts/missing-artifact",
+				"session-123",
+				sessionStore,
+				{ memoryInterface },
+			),
+		).rejects.toThrow("Unknown resource");
+	});
+
 	it("discovers supporting assets from the explicit runtime workspace root", async () => {
 		const workspaceRoot = mkdtempSync(join(tmpdir(), "resource-surface-root-"));
 		const sessionStore = {
@@ -198,6 +265,203 @@ describe("resource-surface", () => {
 			);
 			expect(explanation.contents[0]?.text).toContain("Runtime Root Guide");
 		} finally {
+			rmSync(workspaceRoot, { recursive: true, force: true });
+		}
+	});
+
+	it("indexes supporting asset explanations and tools with sorted read-only resources", async () => {
+		const workspaceRoot = mkdtempSync(
+			join(tmpdir(), "resource-surface-assets-"),
+		);
+		const sessionStore = {
+			async readSessionHistory() {
+				return [];
+			},
+		} as unknown as SessionStateStore;
+
+		try {
+			const alphaSkillRoot = join(
+				workspaceRoot,
+				".github",
+				"skills",
+				"alpha-reference-skill",
+			);
+			const skippedSkillRoot = join(
+				workspaceRoot,
+				".github",
+				"skills",
+				"nohyphen",
+			);
+			const missingMarkdownRoot = join(
+				workspaceRoot,
+				".github",
+				"skills",
+				"beta-missing-markdown",
+			);
+			const zetaSkillRoot = join(
+				workspaceRoot,
+				".github",
+				"skills",
+				"zeta-asset-rich-skill",
+			);
+			mkdirSync(join(zetaSkillRoot, "explanation"), { recursive: true });
+			mkdirSync(join(zetaSkillRoot, "tools", "nested"), { recursive: true });
+			mkdirSync(alphaSkillRoot, { recursive: true });
+			mkdirSync(skippedSkillRoot, { recursive: true });
+			mkdirSync(missingMarkdownRoot, { recursive: true });
+
+			writeFileSync(
+				join(alphaSkillRoot, "SKILL.md"),
+				["---", "name: alpha-reference-skill", "---", "# Alpha Reference"].join(
+					"\n",
+				),
+				"utf8",
+			);
+			writeFileSync(
+				join(zetaSkillRoot, "SKILL.md"),
+				[
+					"---",
+					"name: zeta-asset-rich-skill",
+					"description: >",
+					"  rich supporting",
+					"  asset coverage",
+					"---",
+					"# Zeta Asset Rich Skill",
+				].join("\n"),
+				"utf8",
+			);
+			writeFileSync(
+				join(zetaSkillRoot, "explanation", "zebra.md"),
+				"# Zebra\n",
+				"utf8",
+			);
+			writeFileSync(
+				join(zetaSkillRoot, "explanation", "alpha.md"),
+				"# Alpha\n",
+				"utf8",
+			);
+			writeFileSync(
+				join(zetaSkillRoot, "explanation", "ignore.txt"),
+				"ignored\n",
+				"utf8",
+			);
+			writeFileSync(
+				join(zetaSkillRoot, "tools", "z-tool.ts"),
+				"export const zebra = true;\n",
+				"utf8",
+			);
+			writeFileSync(
+				join(zetaSkillRoot, "tools", "a-tool.ts"),
+				"export const alpha = true;\n",
+				"utf8",
+			);
+			writeFileSync(
+				join(zetaSkillRoot, "tools", "package.json"),
+				'{ "name": "zeta-tools" }\n',
+				"utf8",
+			);
+
+			const resources = buildPublicResources("session-123", { workspaceRoot });
+			expect(
+				resources.some(
+					(resource) =>
+						resource.uri ===
+						"mcp-guidelines://supporting-assets/skills/zeta-asset-rich-skill/tools/source/a-tool.ts",
+				),
+			).toBe(true);
+			expect(
+				resources.some(
+					(resource) =>
+						resource.uri ===
+						"mcp-guidelines://supporting-assets/skills/zeta-asset-rich-skill/tools/package.json",
+				),
+			).toBe(true);
+
+			const supportingAssetsIndex = await readPublicResource(
+				"mcp-guidelines://supporting-assets",
+				"session-123",
+				sessionStore,
+				{ workspaceRoot },
+			);
+			expect(supportingAssetsIndex.contents[0]?.text).toContain(
+				'"family": "alpha"',
+			);
+			expect(supportingAssetsIndex.contents[0]?.text).toContain(
+				'"family": "zeta"',
+			);
+			expect(
+				supportingAssetsIndex.contents[0]?.text.indexOf('"family": "alpha"'),
+			).toBeLessThan(
+				supportingAssetsIndex.contents[0]?.text.indexOf('"family": "zeta"'),
+			);
+
+			const skillIndex = await readPublicResource(
+				"mcp-guidelines://supporting-assets/skills/zeta-asset-rich-skill",
+				"session-123",
+				sessionStore,
+				{ workspaceRoot },
+			);
+			expect(skillIndex.contents[0]?.text).toContain('"fileName": "alpha.md"');
+			expect(skillIndex.contents[0]?.text).toContain('"fileName": "zebra.md"');
+			expect(skillIndex.contents[0]?.text).toContain('"fileName": "a-tool.ts"');
+			expect(skillIndex.contents[0]?.text).toContain('"fileName": "z-tool.ts"');
+			expect(skillIndex.contents[0]?.text).toContain(
+				'"description": "rich supporting asset coverage"',
+			);
+			expect(skillIndex.contents[0]?.text).not.toContain(
+				'"fileName": "ignore.txt"',
+			);
+			expect(skillIndex.contents[0]?.text).not.toContain(
+				'"fileName": "package.json"',
+			);
+			expect(skillIndex.contents[0]?.text).not.toContain("nohyphen");
+			expect(skillIndex.contents[0]?.text).not.toContain(
+				"beta-missing-markdown",
+			);
+			expect(skillIndex.contents[0]?.text).toContain(
+				'"toolPackageUri": "mcp-guidelines://supporting-assets/skills/zeta-asset-rich-skill/tools/package.json"',
+			);
+
+			const toolsIndex = await readPublicResource(
+				"mcp-guidelines://supporting-assets/skills/zeta-asset-rich-skill/tools",
+				"session-123",
+				sessionStore,
+				{ workspaceRoot },
+			);
+			expect(toolsIndex.contents[0]?.text).toContain('"packageJsonUri":');
+			expect(toolsIndex.contents[0]?.text).toContain('"fileName": "a-tool.ts"');
+			expect(toolsIndex.contents[0]?.text).toContain('"fileName": "z-tool.ts"');
+			expect(toolsIndex.contents[0]?.text).not.toContain(
+				'"fileName": "package.json"',
+			);
+
+			const explanation = await readPublicResource(
+				"mcp-guidelines://supporting-assets/skills/zeta-asset-rich-skill/explanations/alpha.md",
+				"session-123",
+				sessionStore,
+				{ workspaceRoot },
+			);
+			expect(explanation.contents[0]?.text).toContain("# Alpha");
+
+			const toolSource = await readPublicResource(
+				"mcp-guidelines://supporting-assets/skills/zeta-asset-rich-skill/tools/source/a-tool.ts",
+				"session-123",
+				sessionStore,
+				{ workspaceRoot },
+			);
+			expect(toolSource.contents[0]?.text).toContain(
+				"export const alpha = true;",
+			);
+
+			const toolPackage = await readPublicResource(
+				"mcp-guidelines://supporting-assets/skills/zeta-asset-rich-skill/tools/package.json",
+				"session-123",
+				sessionStore,
+				{ workspaceRoot },
+			);
+			expect(toolPackage.contents[0]?.text).toContain('"name": "zeta-tools"');
+		} finally {
+			clearSupportingAssetCache(workspaceRoot);
 			rmSync(workspaceRoot, { recursive: true, force: true });
 		}
 	});

@@ -2,7 +2,11 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
-import { createRequestHandlers, createRuntime } from "../../index.js";
+import {
+	createRequestHandlers,
+	createRuntime,
+	createServer,
+} from "../../index.js";
 
 let tempStateDir: string;
 
@@ -105,6 +109,126 @@ describe("mcp server request handlers", () => {
 			prompts.prompts.some((entry) => entry.name === "review-runtime"),
 		).toBe(true);
 		expect(prompt.messages[0]?.content.text).toContain("review this code");
+	});
+
+	it("routes auxiliary tool families through their dedicated handlers", async () => {
+		const handlers = createRequestHandlers(createRuntime());
+
+		const memoryResult = await handlers.callTool({
+			params: {
+				name: "agent-memory",
+				arguments: {
+					command: "status",
+				},
+			},
+		});
+		const sessionResult = await handlers.callTool({
+			params: {
+				name: "agent-session",
+				arguments: {
+					command: "status",
+				},
+			},
+		});
+		const snapshotResult = await handlers.callTool({
+			params: {
+				name: "agent-snapshot",
+				arguments: {
+					command: "status",
+				},
+			},
+		});
+		const orchestrationResult = await handlers.callTool({
+			params: {
+				name: "orchestration-config",
+				arguments: {
+					command: "read",
+				},
+			},
+		});
+		const visualizationResult = await handlers.callTool({
+			params: {
+				name: "graph-visualize",
+				arguments: {
+					view: "instruction-chain",
+					format: "mermaid",
+				},
+			},
+		});
+
+		expect("isError" in memoryResult ? memoryResult.isError : false).toBe(
+			false,
+		);
+		expect(JSON.stringify(memoryResult.content)).toContain("Artifacts:");
+		expect("isError" in sessionResult ? sessionResult.isError : false).toBe(
+			false,
+		);
+		expect(JSON.stringify(sessionResult.content)).toContain("totalSessions");
+		expect("isError" in snapshotResult ? snapshotResult.isError : false).toBe(
+			false,
+		);
+		expect(JSON.stringify(snapshotResult.content)).toContain("present");
+		expect(
+			"isError" in orchestrationResult ? orchestrationResult.isError : false,
+		).toBe(false);
+		expect(JSON.stringify(orchestrationResult.content)).toContain("summary");
+		expect(
+			"isError" in visualizationResult ? visualizationResult.isError : false,
+		).toBe(false);
+		expect(JSON.stringify(visualizationResult.content)).toContain("graph LR");
+	});
+
+	it("formats thrown session and snapshot tool validation errors", async () => {
+		const handlers = createRequestHandlers(createRuntime());
+
+		const sessionResult = await handlers.callTool({
+			params: {
+				name: "agent-session",
+				arguments: {
+					command: "bogus",
+				},
+			},
+		});
+		const snapshotResult = await handlers.callTool({
+			params: {
+				name: "agent-snapshot",
+				arguments: {
+					command: "bogus",
+				},
+			},
+		});
+
+		expect("isError" in sessionResult && sessionResult.isError).toBe(true);
+		expect(JSON.stringify(sessionResult.content)).toContain(
+			"Tool `agent-session` failed",
+		);
+		expect("isError" in snapshotResult && snapshotResult.isError).toBe(true);
+		expect(JSON.stringify(snapshotResult.content)).toContain(
+			"Tool `agent-snapshot` failed",
+		);
+	});
+
+	it("routes instruction tool calls through the default dispatcher", async () => {
+		const handlers = createRequestHandlers(createRuntime());
+		const result = await handlers.callTool({
+			params: {
+				name: "feature-implement",
+				arguments: {
+					request: "Create a small demo feature",
+				},
+			},
+		});
+
+		expect("isError" in result ? result.isError : false).toBe(false);
+		expect(JSON.stringify(result.content)).toContain("Implement");
+	});
+
+	it("creates an MCP server bound to the supplied runtime", () => {
+		const runtime = createRuntime();
+		const { server, runtime: returnedRuntime } = createServer(runtime);
+
+		expect(server).toBeDefined();
+		expect(returnedRuntime).toBe(runtime);
 	});
 
 	describe("adapt tool visibility", () => {
