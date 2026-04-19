@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type { WorkflowStep } from "../../contracts/generated.js";
 import type {
 	InstructionInput,
@@ -11,6 +11,10 @@ const runtime = {} as WorkflowExecutionRuntime;
 const input: InstructionInput = { request: "run in parallel" };
 
 describe("parallel-runner", () => {
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+
 	it("starts sibling steps before awaiting completion and preserves source order", async () => {
 		const events: string[] = [];
 		const steps: WorkflowStep[] = [
@@ -135,7 +139,7 @@ describe("parallel-runner", () => {
 	});
 
 	it("retries retryable failures when retryConfig is provided", async () => {
-		const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+		vi.spyOn(console, "warn").mockImplementation(() => {});
 		let attempts = 0;
 		const step: WorkflowStep = {
 			kind: "invokeSkill",
@@ -171,6 +175,5 @@ describe("parallel-runner", () => {
 
 		expect(executeStep).toHaveBeenCalledTimes(2);
 		expect(result.summary).toBe("1 parallel step(s) completed.");
-		warnSpy.mockRestore();
 	});
 });

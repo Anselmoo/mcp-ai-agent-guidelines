@@ -54,6 +54,12 @@ describe("orchestration-config: capability-driven resolver", () => {
 		resetConfigCache();
 		const config = loadOrchestrationConfig(resolveOrchestrationConfigPath());
 
+		expect(config.models.free_secondary).toMatchObject({
+			id: "gpt-5-mini",
+			provider: "openai",
+			available: true,
+			context_window: 128000,
+		});
 		expect(config.models.cheap_secondary).toMatchObject({
 			id: "gpt-5-4-mini",
 			provider: "openai",
@@ -94,8 +100,8 @@ describe("orchestration-config: capability-driven resolver", () => {
 	it("resolves implement profile via intersection of requires", () => {
 		const modelId = resolveProfile("implement");
 		// implement requires code_analysis ∩ structured_output = [free_secondary, strong_primary]
-		// preferred cost_sensitive narrows to free_secondary → gpt-4-1
-		expect(modelId).toBe("gpt-4-1");
+		// preferred cost_sensitive narrows to free_secondary → gpt-5-mini
+		expect(modelId).toBe("gpt-5-mini");
 	});
 
 	it("resolves governance via available strong models", () => {

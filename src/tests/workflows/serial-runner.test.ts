@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type { WorkflowStep } from "../../contracts/generated.js";
 import type {
 	InstructionInput,
@@ -11,6 +11,10 @@ const runtime = {} as WorkflowExecutionRuntime;
 const input: InstructionInput = { request: "run in order" };
 
 describe("serial-runner", () => {
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+
 	it("awaits each child step before starting the next one", async () => {
 		const events: string[] = [];
 		const steps: WorkflowStep[] = [
@@ -158,7 +162,7 @@ describe("serial-runner", () => {
 	});
 
 	it("retries retryable failures when retryConfig is provided", async () => {
-		const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+		vi.spyOn(console, "warn").mockImplementation(() => {});
 		let attempts = 0;
 		const step: WorkflowStep = {
 			kind: "invokeSkill",
@@ -194,6 +198,5 @@ describe("serial-runner", () => {
 
 		expect(executeStep).toHaveBeenCalledTimes(2);
 		expect(result.summary).toBe("1 serial step(s) executed.");
-		warnSpy.mockRestore();
 	});
 });

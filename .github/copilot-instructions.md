@@ -45,7 +45,7 @@ mcp-cli info
 - TypeScript ESM only: use `.js` import specifiers from `.ts` files because the project uses `"type": "module"` with NodeNext resolution.
 - Do **not** edit `src/generated/**` directly. Update the canonical registries/specs (`src/instructions/instruction-specs.ts`, `src/skills/skill-specs.ts`, `src/workflows/workflow-spec.ts`) and regenerate.
 - Public instruction tools share a single input shape: `{ request: string; context?: string; options?: object }`. `request` is the only required field, so keep new instruction surfaces consistent with that contract.
-- Tests live under `src/tests/**`, not next to source files. Mirror the source subtree when that makes navigation clearer (`src/tests/runtime`, `src/tests/workflows`, `src/tests/skills/qm`, etc.).
+- Tests do not live next to source files. Use `src/tests/**` for the main Vitest tree and mirror the source subtree when that makes navigation clearer (`src/tests/runtime`, `src/tests/workflows`, `src/tests/skills/qm`, etc.). Dedicated Jest smoke tests may live under `tests-jest/**` when they exercise the separate Jest harness, so keep that split explicit and minimal.
 - Skill IDs are prefix-driven and the prefixes matter operationally: `qm-*` and `gr-*` are physics-tier, `gov-*` is governance-tier, and `adapt-*`, `resil-*`, `strat-*`, and `orch-*` are treated as advanced-tier by the generic skill handler.
 - New or renamed skills must stay reachable from at least one workflow. `scripts/verify_matrix.py` is part of `npm run quality` and fails if a skill becomes orphaned.
 - Local orchestration state lives in `.mcp-ai-agent-guidelines/config/orchestration.toml`. Prefer role/class-based routing over hardcoded model IDs because the concrete model mapping is expected to change.
