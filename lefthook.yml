@@ -4,20 +4,21 @@ pre-commit:
       run: npm run check
       stage: [all]
     rrt-branch-name:
-      run: uvx --from repo-release-tools rrt-hooks check-branch-name --branch "$(git rev-parse --abbrev-ref HEAD)"
+      run: uvx --from repo-release-tools rrt-hooks pre-commit
 
 commit-msg:
   commands:
+    rrt-update-unreleased:
+      # Auto-writes a changelog bullet under ## [Unreleased] for feat/fix/refactor/perf
+      # commits. chore/ci/test/build are silently skipped.
+      run: uvx --from repo-release-tools rrt-hooks update-unreleased --message-file {1}
     rrt-commit-subject:
-      # Validates commit message format only (conventional commits).
-      # Changelog presence is enforced at pre-push (once per push, not per commit)
-      # to avoid blocking every micro-commit in a squash-merge workflow.
+      # Validates commit message format (conventional commits).
       run: uvx --from repo-release-tools rrt-hooks commit-msg {1}
 
 pre-push:
   commands:
     rrt-changelog:
-      # Enforces that CHANGELOG.md is updated before code reaches the remote.
-      # Running here (not commit-msg) allows iterative local commits without
-      # requiring a changelog entry for every micro-fix.
-      run: uvx --from repo-release-tools rrt-hooks check-changelog --subject "$(git log -1 --pretty=%s)" --ref HEAD
+      # Guards against pushes where [Unreleased] is empty (catches --no-verify bypasses).
+      # Uses the unreleased strategy: passes as long as ## [Unreleased] is non-empty.
+      run: uvx --from repo-release-tools rrt-hooks check-changelog --subject "$(git log -1 --format=%s)" --strategy unreleased

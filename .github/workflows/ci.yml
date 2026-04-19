@@ -68,9 +68,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Policy checks (branch · commit · changelog)
-        uses: Anselmoo/repo-release-tools@968f7c0c253f62124c71484a487766557b40dd99 # v0.1.9
+        uses: Anselmoo/repo-release-tools@e2c0d91e6d8a93c2a2d90d7428e924b1cd5c835f # v0.1.10
         with:
           check-dirty-tree: "false"
+          changelog-strategy: "unreleased"
 
       - name: Type-check
         run: npx tsc --noEmit
