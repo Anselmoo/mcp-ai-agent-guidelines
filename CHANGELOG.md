@@ -10,11 +10,11 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 - add Jest testing support and improve observability infrastructure
-
 - Jest test infrastructure added for orchestration config tests.
 - Lefthook integration upgraded to `repo-release-tools` v0.1.10: `rrt-update-unreleased` auto-writes changelog bullets on commit, `--strategy unreleased` pre-push guard replaces the per-commit file-diff check.
 
 ### Fixed
+- update changelog to include Jest testing support and observability improvements
 
 - Entry Point for running the MCP server was renamed from `src/index.ts` to `src/server.ts` to better reflect its purpose and avoid confusion with potential future entry points (e.g., CLI tools, worker processes).
 
