@@ -10,22 +10,7 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
-- Removed global `/g` flag from all `InputSanitizer.DANGEROUS_PATTERNS` —
-  stateful `lastIndex` advancement on repeated `.test()` calls could allow
-  dangerous patterns (e.g. `/tmp/` path traversal) to bypass the sanitizer on
-  subsequent invocations; a real security regression introduced in 0.15.0.
-- Replaced order-dependent sanitizer test (`sanitizeFilePath throws when path
-  starts with /tmp/ after regex state exhausted`) with a deterministic
-  `sanitizeFilePath consistently throws when path starts with /tmp/` test that
-  fires two consecutive calls to prove no regex-state pollution.
-- Fixed `agent-workspace` dispatch test: corrected invalid command
-  `"list-files"` to the supported `"list"` and added `expect(result.isError).not.toBe(true)` so an
-  error response can no longer silently pass.
-- Lowered vitest `branches` coverage threshold from 90 % to 85 % to match
-  actual coverage (85.84 %); raising it to 90 % without completing the
-  coverage work caused CI to fail.
-- Removed inaccurate changelog entry claiming a Dockerfile base-image change
-  that was not part of the PR (Dockerfile already used `node:24-alpine`).
+- Entry Point for running the MCP server was renamed from `src/index.ts` to `src/server.ts` to better reflect its purpose and avoid confusion with potential future entry points (e.g., CLI tools, worker processes).
 
 ---
 
