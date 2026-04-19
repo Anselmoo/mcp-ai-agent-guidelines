@@ -133,4 +133,44 @@ describe("parallel-runner", () => {
 			children: [],
 		});
 	});
+
+	it("retries retryable failures when retryConfig is provided", async () => {
+		const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+		let attempts = 0;
+		const step: WorkflowStep = {
+			kind: "invokeSkill",
+			label: "flaky-step",
+			skillId: "flaky-step",
+		};
+		const executeStep = vi.fn(async () => {
+			attempts += 1;
+			if (attempts === 1) {
+				throw new Error("transient failure");
+			}
+			return {
+				label: "flaky-step",
+				kind: "invokeSkill" as const,
+				summary: "recovered",
+			};
+		});
+
+		const result = await runParallelSteps(
+			"retry-batch",
+			[step],
+			input,
+			executeStep,
+			runtime,
+			{
+				retryConfig: {
+					maxAttempts: 2,
+					initialDelayMs: 0,
+					jitterFraction: 0,
+				},
+			},
+		);
+
+		expect(executeStep).toHaveBeenCalledTimes(2);
+		expect(result.summary).toBe("1 parallel step(s) completed.");
+		warnSpy.mockRestore();
+	});
 });

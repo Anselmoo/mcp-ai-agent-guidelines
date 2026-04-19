@@ -156,4 +156,44 @@ describe("serial-runner", () => {
 			"second-step",
 		]);
 	});
+
+	it("retries retryable failures when retryConfig is provided", async () => {
+		const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+		let attempts = 0;
+		const step: WorkflowStep = {
+			kind: "invokeSkill",
+			label: "flaky-step",
+			skillId: "flaky-step",
+		};
+		const executeStep = vi.fn(async () => {
+			attempts += 1;
+			if (attempts === 1) {
+				throw new Error("transient failure");
+			}
+			return {
+				label: "flaky-step",
+				kind: "invokeSkill" as const,
+				summary: "recovered",
+			};
+		});
+
+		const result = await runSerialSteps(
+			"retry-serial",
+			[step],
+			input,
+			executeStep,
+			runtime,
+			{
+				retryConfig: {
+					maxAttempts: 2,
+					initialDelayMs: 0,
+					jitterFraction: 0,
+				},
+			},
+		);
+
+		expect(executeStep).toHaveBeenCalledTimes(2);
+		expect(result.summary).toBe("1 serial step(s) executed.");
+		warnSpy.mockRestore();
+	});
 });
