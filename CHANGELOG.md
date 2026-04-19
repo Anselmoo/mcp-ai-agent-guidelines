@@ -14,6 +14,7 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Lefthook integration upgraded to `repo-release-tools` v0.1.10: `rrt-update-unreleased` auto-writes changelog bullets on commit, `--strategy unreleased` pre-push guard replaces the per-commit file-diff check.
 
 ### Fixed
+- enhance Jest testing support and improve orchestration config tests
 - Fixed MCP server direct-execution detection for symlinked bin invocations.
 - Clarified the published entrypoints: `mcp-ai-agent-guidelines` remains the MCP stdio server and `mcp-cli` is the interactive CLI.
 
