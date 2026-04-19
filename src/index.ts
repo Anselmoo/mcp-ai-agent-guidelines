@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
-import { pathToFileURL } from "node:url";
+import { realpathSync } from "node:fs";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
@@ -395,9 +396,22 @@ export async function main() {
 	}
 }
 
-const isDirectExecution =
-	process.argv[1] !== undefined &&
-	import.meta.url === pathToFileURL(process.argv[1]).href;
+export function isDirectExecutionEntry(
+	entryPath = process.argv[1],
+	moduleUrl = import.meta.url,
+) {
+	if (entryPath === undefined) {
+		return false;
+	}
+
+	try {
+		return realpathSync(entryPath) === realpathSync(fileURLToPath(moduleUrl));
+	} catch {
+		return moduleUrl === pathToFileURL(entryPath).href;
+	}
+}
+
+const isDirectExecution = isDirectExecutionEntry();
 
 if (isDirectExecution) {
 	main().catch((error) => {
