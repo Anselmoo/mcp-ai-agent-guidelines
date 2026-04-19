@@ -54,6 +54,12 @@ describe("orchestration-config: capability-driven resolver", () => {
 		resetConfigCache();
 		const config = loadOrchestrationConfig(resolveOrchestrationConfigPath());
 
+		expect(config.models.free_secondary).toMatchObject({
+			id: "gpt-5-mini",
+			provider: "openai",
+			available: true,
+			context_window: 128000,
+		});
 		expect(config.models.cheap_secondary).toMatchObject({
 			id: "gpt-5-4-mini",
 			provider: "openai",

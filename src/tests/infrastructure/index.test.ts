@@ -1,8 +1,14 @@
 import { describe, expect, it } from "vitest";
 import {
+	createGraphOrchestrator,
+	createObservabilityManager,
+	createStatisticalAnalyzer,
+	createUnifiedOrchestrator,
 	DEFAULT_UNIFIED_CONFIG,
 	GraphOrchestrator,
 	GraphOrchestratorFactory,
+	ObservabilityOrchestrator,
+	StatisticalAnalyzer,
 	UnifiedOrchestrator,
 	UnifiedOrchestratorFactory,
 } from "../../infrastructure/index.js";
@@ -64,5 +70,25 @@ describe("infrastructure/index — re-exports", () => {
 
 	it("exports UnifiedOrchestratorFactory", () => {
 		expect(typeof UnifiedOrchestratorFactory).toBe("function");
+	});
+
+	it("creates a unified orchestrator from the default config", () => {
+		const orchestrator = createUnifiedOrchestrator();
+		expect(orchestrator).toBeInstanceOf(UnifiedOrchestrator);
+	});
+
+	it("creates a graph orchestrator for a requested strategy", () => {
+		const orchestrator = createGraphOrchestrator("physarum");
+		expect(orchestrator).toBeInstanceOf(GraphOrchestrator);
+	});
+
+	it("creates an observability manager for the requested log level", () => {
+		const observability = createObservabilityManager("warn");
+		expect(observability).toBeInstanceOf(ObservabilityOrchestrator);
+	});
+
+	it("creates a statistical analyzer", () => {
+		const analyzer = createStatisticalAnalyzer();
+		expect(analyzer).toBeInstanceOf(StatisticalAnalyzer);
 	});
 });

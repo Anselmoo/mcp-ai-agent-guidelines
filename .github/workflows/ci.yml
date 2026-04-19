@@ -54,7 +54,7 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.14"
 
       - name: Install dependencies
         run: npm ci
@@ -68,9 +68,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Policy checks (branch · commit · changelog)
-        uses: Anselmoo/repo-release-tools@92d40ec6e10deda2cb525d31469a3e155c1ee926 # v0.1.8
+        uses: Anselmoo/repo-release-tools@e2c0d91e6d8a93c2a2d90d7428e924b1cd5c835f # v0.1.10
         with:
           check-dirty-tree: "false"
+          changelog-strategy: "unreleased"
 
       - name: Type-check
         run: npx tsc --noEmit
@@ -116,7 +117,7 @@ jobs:
         run: npx vitest run --coverage
 
       - name: Upload coverage to Codecov
-        if: matrix.node-version == '22' && github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: matrix.node-version == '22'
         uses: codecov/codecov-action@v5
         with:
           use_oidc: true
@@ -125,12 +126,35 @@ jobs:
           slug: Anselmoo/mcp-ai-agent-guidelines
           fail_ci_if_error: false
 
-  # ── 3. Drift check ───────────────────────────────────────────────────────────
+  # ── 3. Security scan (filesystem) ──────────────────────────────────────────
+  security:
+    name: Security scan (Trivy)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: quality
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Scan filesystem for vulnerabilities (Trivy)
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: table
+          exit-code: "1"
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          trivyignores: .trivyignore
+          scanners: vuln
+
+  # ── 4. Drift check ───────────────────────────────────────────────────────────
   drift:
     name: Generated-file drift
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: test
+    needs: [test, security]
     steps:
       - uses: actions/checkout@v4
 
@@ -141,7 +165,7 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.14"
 
       - name: Install dependencies
         run: npm ci

@@ -8,24 +8,16 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-### Fixed
+## [0.15.1] - 2026-04-19
+### Added
+- Added a dedicated Jest smoke-test lane for compiled ESM entrypoints alongside the main Vitest suite.
+- Expanded orchestration and workflow regression coverage around retry behavior, resolver selection, and infrastructure factories.
+- Lefthook integration upgraded to `repo-release-tools` v0.1.10: `rrt-update-unreleased` auto-writes changelog bullets on commit, `--strategy unreleased` pre-push guard replaces the per-commit file-diff check.
 
-- Removed global `/g` flag from all `InputSanitizer.DANGEROUS_PATTERNS` —
-  stateful `lastIndex` advancement on repeated `.test()` calls could allow
-  dangerous patterns (e.g. `/tmp/` path traversal) to bypass the sanitizer on
-  subsequent invocations; a real security regression introduced in 0.15.0.
-- Replaced order-dependent sanitizer test (`sanitizeFilePath throws when path
-  starts with /tmp/ after regex state exhausted`) with a deterministic
-  `sanitizeFilePath consistently throws when path starts with /tmp/` test that
-  fires two consecutive calls to prove no regex-state pollution.
-- Fixed `agent-workspace` dispatch test: corrected invalid command
-  `"list-files"` to the supported `"list"` and added `expect(result.isError).not.toBe(true)` so an
-  error response can no longer silently pass.
-- Lowered vitest `branches` coverage threshold from 90 % to 85 % to match
-  actual coverage (85.84 %); raising it to 90 % without completing the
-  coverage work caused CI to fail.
-- Removed inaccurate changelog entry claiming a Dockerfile base-image change
-  that was not part of the PR (Dockerfile already used `node:24-alpine`).
+### Fixed
+- enhance Jest testing support and improve orchestration config tests
+- Fixed MCP server direct-execution detection for symlinked bin invocations.
+- Clarified the published entrypoints: `mcp-ai-agent-guidelines` remains the MCP stdio server and `mcp-cli` is the interactive CLI.
 
 ---
 
@@ -103,6 +95,7 @@ complete model-routing layer, governance surface, and observability pipeline.
 - Added targeted regression coverage for core runtime modules, including
   `skill-cache`, `unified-orchestration`, and `llm-lane-executor`, to improve
   branch coverage and guard against future regressions.
+- Added `.trivyignore` to exclude `CVE-2026-33671` from CI security scans until all dependencies are patched.
 
 ### Changed
 

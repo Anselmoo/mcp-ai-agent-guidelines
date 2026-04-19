@@ -2,6 +2,13 @@
  * Domain tooling and observability infrastructure entry point.
  */
 
+import { ObservabilityManagerFactory } from "./observability.js";
+import { StatisticalAnalyzerFactory } from "./statistical-analysis.js";
+import {
+	GraphOrchestratorFactory,
+	UnifiedOrchestratorFactory,
+} from "./unified-orchestration.js";
+
 // Re-export types
 export type {
 	AgentNode,
@@ -54,25 +61,25 @@ export const DEFAULT_UNIFIED_CONFIG = {
 
 // Utility functions for easy integration
 export const createUnifiedOrchestrator = (config = DEFAULT_UNIFIED_CONFIG) => {
-	const { UnifiedOrchestratorFactory } = require("./unified-orchestration.js");
 	return UnifiedOrchestratorFactory.create(config);
 };
 
 export const createGraphOrchestrator = (
 	strategy: "aco" | "physarum" | "hebbian" = "aco",
 ) => {
-	const { GraphOrchestratorFactory } = require("./graph-orchestration.js");
 	return GraphOrchestratorFactory.create({ optimizationStrategy: strategy });
 };
 
 export const createObservabilityManager = (
 	logLevel: "debug" | "info" | "warn" | "error" = "info",
 ) => {
-	const { ObservabilityManagerFactory } = require("./observability.js");
-	return ObservabilityManagerFactory.create({ logLevel });
+	return ObservabilityManagerFactory.create({
+		logLevel,
+		enableMetrics: true,
+		enableTracing: true,
+	});
 };
 
 export const createStatisticalAnalyzer = () => {
-	const { StatisticalAnalyzerFactory } = require("./statistical-analysis.js");
 	return StatisticalAnalyzerFactory.create();
 };
