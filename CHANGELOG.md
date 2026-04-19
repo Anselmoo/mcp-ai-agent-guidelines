@@ -9,6 +9,7 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 
 ### Added
+- add Jest testing support and improve observability infrastructure
 
 - Jest test infrastructure added for orchestration config tests.
 - Lefthook integration upgraded to `repo-release-tools` v0.1.10: `rrt-update-unreleased` auto-writes changelog bullets on commit, `--strategy unreleased` pre-push guard replaces the per-commit file-diff check.
