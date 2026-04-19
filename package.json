@@ -142,6 +142,7 @@
         "graphology-shortest-path": "^2.1.0",
         "graphology-traversal": "^0.3.1",
         "gray-matter": "^4.0.3",
+        "jest": "^30.3.0",
         "json-schema-to-ts": "^3.1.1",
         "jsonpath-plus": "^10.3.0",
         "mathjs": "^15.2.0",

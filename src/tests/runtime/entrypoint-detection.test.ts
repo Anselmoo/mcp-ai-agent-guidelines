@@ -45,4 +45,22 @@ describe("entrypoint detection", () => {
 			rmSync(tempDir, { recursive: true, force: true });
 		}
 	});
+
+	it("falls back to URL comparison when realpath resolution fails", () => {
+		const tempDir = mkdtempSync(join(tmpdir(), "entrypoint-detection-"));
+
+		try {
+			const missingEntry = join(tempDir, "missing-entry.js");
+			const otherEntry = join(tempDir, "other-entry.js");
+
+			expect(
+				isDirectExecutionEntry(missingEntry, pathToFileURL(missingEntry).href),
+			).toBe(true);
+			expect(
+				isDirectExecutionEntry(missingEntry, pathToFileURL(otherEntry).href),
+			).toBe(false);
+		} finally {
+			rmSync(tempDir, { recursive: true, force: true });
+		}
+	});
 });

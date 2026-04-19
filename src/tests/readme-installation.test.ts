@@ -4,6 +4,10 @@ import { describe, expect, it } from "vitest";
 
 const readmePath = fileURLToPath(new URL("../../README.md", import.meta.url));
 const readme = readFileSync(readmePath, "utf8");
+const cliReferencePath = fileURLToPath(
+	new URL("../../docs/src/content/docs/reference/cli.mdx", import.meta.url),
+);
+const cliReference = readFileSync(cliReferencePath, "utf8");
 
 describe("README installation guidance", () => {
 	it("uses valid npm package syntax for latest npx examples", () => {
@@ -25,5 +29,18 @@ describe("README installation guidance", () => {
 			"`mcp-ai-agent-guidelines` — MCP stdio server entrypoint",
 		);
 		expect(readme).toContain("`mcp-cli` — interactive CLI");
+	});
+
+	it("keeps the CLI reference aligned with the published entrypoints", () => {
+		expect(cliReference).toContain(
+			"npx --yes --package mcp-ai-agent-guidelines@latest mcp-cli [command]",
+		);
+		expect(cliReference).toContain("mcp-cli onboard init");
+		expect(cliReference).toContain("mcp-cli orchestration config read");
+		expect(cliReference).toContain(
+			"`mcp-ai-agent-guidelines` as the MCP stdio server entrypoint",
+		);
+		expect(cliReference).not.toContain("npx mcp-ai-agent-guidelines [command]");
+		expect(cliReference).not.toContain("mcp-ai-agent-guidelines onboard init");
 	});
 });
