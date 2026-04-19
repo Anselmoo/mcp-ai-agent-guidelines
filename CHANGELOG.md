@@ -8,6 +8,9 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+
+### Added
+- implement advisory bootstrap defaults for orchestration config
 ## [0.15.1] - 2026-04-19
 ### Added
 - Added a dedicated Jest smoke-test lane for compiled ESM entrypoints alongside the main Vitest suite.
