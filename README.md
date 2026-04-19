@@ -193,9 +193,9 @@ Instruction-tool input schema — the public instruction workflows share this sh
 ## Configuration Files
 
 - `.mcp-ai-agent-guidelines/config/orchestration.toml` — primary orchestration authority (local, not tracked in git)
-- `src/config/orchestration-defaults.ts` — builtin fallback defaults; strict mode fails fast when workspace config is absent
+- `src/config/orchestration-defaults.ts` — builtin bootstrap defaults used to auto-create the workspace config in advisory mode when `orchestration.toml` is absent
 
-Run `mcp-cli onboard init` for first-time setup or `mcp-cli orchestration edit` to reopen the interactive editor.
+First-time runs auto-create `orchestration.toml` from builtin advisory defaults, including semantic role placeholders so routing can proceed before model discovery. Run `mcp-cli onboard init` to customize the setup or `mcp-cli orchestration edit` to reopen the interactive editor.
 
 ---
 

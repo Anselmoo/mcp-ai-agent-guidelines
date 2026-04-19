@@ -12,7 +12,9 @@ const DEFAULT_ORCHESTRATION_CONFIG = {
 	// Physical model IDs are NOT defined here. They are discovered at runtime
 	// via the `model-discover` MCP tool, which writes them into
 	// .mcp-ai-agent-guidelines/config/orchestration.toml using the semantic
-	// role names below (free_primary, strong_secondary, …).
+	// role names below (free_primary, strong_secondary, …). The bootstrap
+	// helper below can materialize advisory placeholder models for first-run
+	// environments, but the canonical defaults stay discovery-driven.
 	models: {},
 	capabilities: {
 		fast_draft: [
@@ -303,6 +305,72 @@ const DEFAULT_ORCHESTRATION_CONFIG = {
 	},
 } satisfies OrchestrationConfig;
 
+const BOOTSTRAP_ROLE_MODELS = {
+	free_primary: {
+		id: "free_primary",
+		provider: "other",
+		available: true,
+		context_window: 128_000,
+		reason:
+			"Advisory bootstrap placeholder. Replace with a host model via onboarding or model-discover.",
+	},
+	free_secondary: {
+		id: "free_secondary",
+		provider: "other",
+		available: true,
+		context_window: 128_000,
+		reason:
+			"Advisory bootstrap placeholder. Replace with a host model via onboarding or model-discover.",
+	},
+	cheap_primary: {
+		id: "cheap_primary",
+		provider: "other",
+		available: true,
+		context_window: 128_000,
+		reason:
+			"Advisory bootstrap placeholder. Replace with a host model via onboarding or model-discover.",
+	},
+	cheap_secondary: {
+		id: "cheap_secondary",
+		provider: "other",
+		available: true,
+		context_window: 128_000,
+		reason:
+			"Advisory bootstrap placeholder. Replace with a host model via onboarding or model-discover.",
+	},
+	strong_primary: {
+		id: "strong_primary",
+		provider: "other",
+		available: true,
+		context_window: 200_000,
+		reason:
+			"Advisory bootstrap placeholder. Replace with a host model via onboarding or model-discover.",
+	},
+	strong_secondary: {
+		id: "strong_secondary",
+		provider: "other",
+		available: true,
+		context_window: 200_000,
+		reason:
+			"Advisory bootstrap placeholder. Replace with a host model via onboarding or model-discover.",
+	},
+	reviewer_primary: {
+		id: "reviewer_primary",
+		provider: "other",
+		available: true,
+		context_window: 200_000,
+		reason:
+			"Advisory bootstrap placeholder. Replace with a host model via onboarding or model-discover.",
+	},
+} satisfies OrchestrationConfig["models"];
+
 export function createBuiltinOrchestrationDefaults(): OrchestrationConfig {
 	return structuredClone(DEFAULT_ORCHESTRATION_CONFIG);
+}
+
+export function createBuiltinBootstrapOrchestrationConfig(): OrchestrationConfig {
+	const config = createBuiltinOrchestrationDefaults();
+	config.environment.strict_mode = false;
+	config.models = structuredClone(BOOTSTRAP_ROLE_MODELS);
+	return config;
 }

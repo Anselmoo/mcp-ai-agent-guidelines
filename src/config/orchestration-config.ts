@@ -1,12 +1,13 @@
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
-import { parse } from "smol-toml";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { parse, stringify as stringifyToml } from "smol-toml";
 import { z } from "zod";
 import { toErrorMessage } from "../infrastructure/object-utilities.js";
 import { createOperationalLogger } from "../infrastructure/observability.js";
 import { parseOrThrow } from "../validation/schema-utilities.js";
 import {
 	BUILTIN_ORCHESTRATION_DEFAULTS_SOURCE,
+	createBuiltinBootstrapOrchestrationConfig,
 	createBuiltinOrchestrationDefaults,
 } from "./orchestration-defaults.js";
 
@@ -358,6 +359,37 @@ export function resolveOrchestrationConfigPath(
 	return resolve(workspaceRoot, ORCHESTRATION_CONFIG_RELATIVE_PATH);
 }
 
+function hasErrorCode(error: unknown, code: string): boolean {
+	return (
+		typeof error === "object" &&
+		error !== null &&
+		"code" in error &&
+		error.code === code
+	);
+}
+
+function renderBootstrappedOrchestrationConfig(
+	config: OrchestrationConfig,
+): string {
+	return (
+		"# MCP AI Agent Guidelines configuration\n" +
+		"# Primary authority. Auto-generated from builtin defaults because the workspace file was missing.\n\n" +
+		stringifyToml(config)
+	);
+}
+
+function bootstrapMissingWorkspaceOrchestrationConfig(
+	configPath: string,
+	config: OrchestrationConfig,
+): void {
+	mkdirSync(dirname(configPath), { recursive: true });
+	writeFileSync(
+		configPath,
+		renderBootstrappedOrchestrationConfig(config),
+		"utf8",
+	);
+}
+
 function firstAvailableModelId(
 	config: OrchestrationConfig,
 	aliases: string[],
@@ -421,9 +453,38 @@ export function loadOrchestrationConfig(
 		const fallbackConfig = createDefaultOrchestrationConfig();
 		const detail = toErrorMessage(error);
 		const message = `[orchestration] Failed to load primary config at ${configPath}: ${detail}`;
+		if (overridePath === undefined && hasErrorCode(error, "ENOENT")) {
+			const bootstrapConfig = createBuiltinBootstrapOrchestrationConfig();
+			try {
+				bootstrapMissingWorkspaceOrchestrationConfig(
+					configPath,
+					bootstrapConfig,
+				);
+				orchestrationConfigLogger.log(
+					"warn",
+					"Bootstrapped missing orchestration config in advisory mode",
+					{
+						configPath,
+						fallbackSource: BUILTIN_ORCHESTRATION_DEFAULTS_SOURCE,
+						strictMode: bootstrapConfig.environment.strict_mode,
+					},
+				);
+				_config = bootstrapConfig;
+				return _config;
+			} catch (bootstrapError) {
+				throw new Error(
+					`${message}. Failed to bootstrap a new workspace config from ${BUILTIN_ORCHESTRATION_DEFAULTS_SOURCE}: ${toErrorMessage(bootstrapError)}. ` +
+						`Run \`mcp-cli onboard init\` or create ${ORCHESTRATION_CONFIG_RELATIVE_PATH} manually.`,
+				);
+			}
+		}
 		if (fallbackConfig.environment.strict_mode) {
+			const guidance =
+				overridePath === undefined
+					? `Run \`mcp-cli onboard init\` or create ${ORCHESTRATION_CONFIG_RELATIVE_PATH} manually.`
+					: "Check the override path or create the requested config file.";
 			throw new Error(
-				`${message}. Strict mode forbids falling back to builtin defaults from ${BUILTIN_ORCHESTRATION_DEFAULTS_SOURCE}.`,
+				`${message}. Strict mode forbids falling back to builtin defaults from ${BUILTIN_ORCHESTRATION_DEFAULTS_SOURCE}. ${guidance}`,
 			);
 		}
 		orchestrationConfigLogger.log(

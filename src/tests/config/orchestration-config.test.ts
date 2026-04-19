@@ -1,4 +1,10 @@
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import {
+	mkdirSync,
+	mkdtempSync,
+	readFileSync,
+	rmSync,
+	writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -312,6 +318,45 @@ describe("orchestration-config: capability-driven resolver", () => {
 		resetConfigCache();
 		const second = resolveProfile("research");
 		expect(second).toBe(first); // same result, but reloaded
+	});
+
+	it("bootstraps a missing workspace orchestration config from builtin defaults", async () => {
+		const { loadOrchestrationConfig } = await import(
+			"../../config/orchestration-config.js"
+		);
+		const workspaceRoot = mkdtempSync(`${tmpdir()}/orch-bootstrap-`);
+		const cwdSpy = vi.spyOn(process, "cwd").mockReturnValue(workspaceRoot);
+
+		try {
+			resetConfigCache();
+			const config = loadOrchestrationConfig();
+			const configPath = resolve(
+				workspaceRoot,
+				ORCHESTRATION_CONFIG_RELATIVE_PATH,
+			);
+			const writtenConfig = readFileSync(configPath, "utf8");
+
+			expect(config.environment.strict_mode).toBe(false);
+			expect(config.models.free_primary).toMatchObject({
+				id: "free_primary",
+				provider: "other",
+				available: true,
+			});
+			expect(writtenConfig).toContain(
+				"Auto-generated from builtin defaults because the workspace file was missing.",
+			);
+			expect(writtenConfig).toContain("strict_mode = false");
+			expect(resolveProfile("default")).toBe("free_primary");
+			expect(resolveForSkill("arch-system")).toBe("strong_primary");
+			expect(writtenConfig).toContain("[environment]");
+
+			resetConfigCache();
+			expect(loadOrchestrationConfig().environment.strict_mode).toBe(false);
+		} finally {
+			cwdSpy.mockRestore();
+			resetConfigCache();
+			rmSync(workspaceRoot, { recursive: true, force: true });
+		}
 	});
 
 	it("loadOrchestrationConfig with bad path fails fast in strict mode", async () => {

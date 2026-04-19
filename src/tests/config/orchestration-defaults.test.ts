@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
 	BUILTIN_ORCHESTRATION_DEFAULTS_SOURCE,
+	createBuiltinBootstrapOrchestrationConfig,
 	createBuiltinOrchestrationDefaults,
 } from "../../config/orchestration-defaults.js";
 
@@ -47,5 +48,21 @@ describe("orchestration defaults", () => {
 				).toBe(true);
 			}
 		}
+	});
+
+	it("exposes advisory bootstrap defaults with semantic role models", () => {
+		const config = createBuiltinBootstrapOrchestrationConfig();
+
+		expect(config.environment.strict_mode).toBe(false);
+		expect(config.models.free_primary).toMatchObject({
+			id: "free_primary",
+			provider: "other",
+			available: true,
+		});
+		expect(config.models.strong_primary).toMatchObject({
+			id: "strong_primary",
+			provider: "other",
+			available: true,
+		});
 	});
 });

@@ -38,10 +38,12 @@ describe("orchestration-config-service", () => {
 
 		expect(loaded.exists).toBe(false);
 		expect(loaded.source).toBe("fallback-defaults");
-		expect(loaded.warning).toContain("Using builtin fallback defaults");
+		expect(loaded.warning).toContain("Using advisory bootstrap defaults");
+		expect(loaded.config.environment.strict_mode).toBe(false);
+		expect(loaded.config.models.free_primary?.id).toBe("free_primary");
 		expect(summary.configSource).toBe("fallback-defaults");
 		expect(summary.usingFallbackDefaults).toBe(true);
-		expect(summary.warning).toContain("Using builtin fallback defaults");
+		expect(summary.warning).toContain("Using advisory bootstrap defaults");
 	});
 
 	it("makes the synchronous orchestration resolver honor the workspace primary config", async () => {
