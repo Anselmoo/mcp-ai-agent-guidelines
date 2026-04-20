@@ -38,10 +38,12 @@ describe("orchestration-config-service", () => {
 
 		expect(loaded.exists).toBe(false);
 		expect(loaded.source).toBe("fallback-defaults");
-		expect(loaded.warning).toContain("Using builtin fallback defaults");
+		expect(loaded.warning).toContain("Using advisory bootstrap defaults");
+		expect(loaded.config.environment.strict_mode).toBe(false);
+		expect(loaded.config.models.free_primary?.id).toBe("free_primary");
 		expect(summary.configSource).toBe("fallback-defaults");
 		expect(summary.usingFallbackDefaults).toBe(true);
-		expect(summary.warning).toContain("Using builtin fallback defaults");
+		expect(summary.warning).toContain("Using advisory bootstrap defaults");
 	});
 
 	it("makes the synchronous orchestration resolver honor the workspace primary config", async () => {
@@ -332,6 +334,44 @@ describe("orchestration-config-service", () => {
 		expect(classes?.strong).toContain("custom-strong");
 		expect(classes?.reviewer).toContain("custom-reviewer");
 		expect(classes?.cheap).toContain("custom-cheap");
+	});
+
+	it("classifies custom aliases from builtin profile metadata even without alias hints", () => {
+		const config = createDefaultOrchestrationConfig();
+		delete config.models.strong_primary;
+		config.models.alias_without_hint = {
+			id: "strong_primary",
+			provider: "anthropic",
+			available: true,
+			context_window: 200_000,
+		};
+
+		const derived = deriveModelAvailabilityConfig(config);
+
+		expect(derived.models.strong_primary?.modelClass).toBe("strong");
+		expect(derived.classes?.strong).toContain("strong_primary");
+	});
+
+	it("defaults truly unmatched custom aliases to free and disables advisory in strict mode", () => {
+		const config = createDefaultOrchestrationConfig();
+		config.environment.strict_mode = true;
+		config.models.alias_without_hint = {
+			id: "vendor-special",
+			provider: "openai",
+			available: false,
+			reason: "not provisioned",
+			context_window: 32_000,
+		};
+
+		const derived = deriveModelAvailabilityConfig(config);
+
+		expect(derived.advisory).toBe(false);
+		expect(derived.models["vendor-special"]).toMatchObject({
+			available: false,
+			reason: "not provisioned",
+			modelClass: "free",
+		});
+		expect(derived.classes?.free).toContain("vendor-special");
 	});
 
 	it("renders orchestration TOML with the managed header and config content", () => {

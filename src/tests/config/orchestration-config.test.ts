@@ -1,4 +1,10 @@
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import {
+	mkdirSync,
+	mkdtempSync,
+	readFileSync,
+	rmSync,
+	writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -118,6 +124,43 @@ describe("orchestration-config: capability-driven resolver", () => {
 		expect(modelId.length).toBeGreaterThan(0);
 	});
 
+	it("falls back to builtin default profile when the workspace config omits default", async () => {
+		const workspaceRoot = mkdtempSync(`${tmpdir()}/orch-missing-default-`);
+		const configPath = resolve(
+			workspaceRoot,
+			ORCHESTRATION_CONFIG_RELATIVE_PATH,
+		);
+		const config = createDefaultOrchestrationConfig();
+		config.environment.strict_mode = false;
+		config.models.free_primary = {
+			id: "gpt-4.1",
+			provider: "openai",
+			available: true,
+			context_window: 128_000,
+		};
+		config.capabilities.structured_output = ["free_primary"];
+		config.capabilities.fast_draft = ["free_primary"];
+		config.capabilities.cost_sensitive = ["free_primary"];
+		delete config.profiles.default;
+
+		try {
+			mkdirSync(resolve(workspaceRoot, ".mcp-ai-agent-guidelines/config"), {
+				recursive: true,
+			});
+			writeFileSync(configPath, renderOrchestrationToml(config), "utf8");
+			const { loadOrchestrationConfig } = await import(
+				"../../config/orchestration-config.js"
+			);
+			resetConfigCache();
+			loadOrchestrationConfig(configPath);
+
+			expect(resolveProfile("missing_workspace_profile")).toBe("gpt-4.1");
+		} finally {
+			resetConfigCache();
+			rmSync(workspaceRoot, { recursive: true, force: true });
+		}
+	});
+
 	it("falls back to cost_sensitive in non-strict mode when requires are unsatisfied", async () => {
 		const logSpy = vi
 			.spyOn(ObservabilityOrchestrator.prototype, "log")
@@ -219,6 +262,45 @@ describe("orchestration-config: capability-driven resolver", () => {
 		}
 	});
 
+	it("continues through missing fallback capabilities until one resolves", async () => {
+		const workspaceRoot = mkdtempSync(`${tmpdir()}/orch-fallback-loop-`);
+		const configPath = resolve(
+			workspaceRoot,
+			ORCHESTRATION_CONFIG_RELATIVE_PATH,
+		);
+		const config = createDefaultOrchestrationConfig();
+		config.environment.strict_mode = false;
+		config.models.free_primary = {
+			id: "gpt-4.1",
+			provider: "openai",
+			available: true,
+			context_window: 128_000,
+		};
+		config.capabilities.fast_draft = ["free_primary"];
+		config.profiles.loop_fallback = {
+			requires: ["missing_requirement"],
+			fallback: ["missing_capability", "fast_draft"],
+			fan_out: 1,
+		};
+
+		try {
+			mkdirSync(resolve(workspaceRoot, ".mcp-ai-agent-guidelines/config"), {
+				recursive: true,
+			});
+			writeFileSync(configPath, renderOrchestrationToml(config), "utf8");
+			const { loadOrchestrationConfig } = await import(
+				"../../config/orchestration-config.js"
+			);
+			resetConfigCache();
+			loadOrchestrationConfig(configPath);
+
+			expect(resolveProfile("loop_fallback")).toBe("gpt-4.1");
+		} finally {
+			resetConfigCache();
+			rmSync(workspaceRoot, { recursive: true, force: true });
+		}
+	});
+
 	// ── Skill routing ───────────────────────────────────────────────────────
 
 	it("getProfileForSkill maps qm-* to physics_analysis", () => {
@@ -312,6 +394,45 @@ describe("orchestration-config: capability-driven resolver", () => {
 		resetConfigCache();
 		const second = resolveProfile("research");
 		expect(second).toBe(first); // same result, but reloaded
+	});
+
+	it("bootstraps a missing workspace orchestration config from builtin defaults", async () => {
+		const { loadOrchestrationConfig } = await import(
+			"../../config/orchestration-config.js"
+		);
+		const workspaceRoot = mkdtempSync(`${tmpdir()}/orch-bootstrap-`);
+		const cwdSpy = vi.spyOn(process, "cwd").mockReturnValue(workspaceRoot);
+
+		try {
+			resetConfigCache();
+			const config = loadOrchestrationConfig();
+			const configPath = resolve(
+				workspaceRoot,
+				ORCHESTRATION_CONFIG_RELATIVE_PATH,
+			);
+			const writtenConfig = readFileSync(configPath, "utf8");
+
+			expect(config.environment.strict_mode).toBe(false);
+			expect(config.models.free_primary).toMatchObject({
+				id: "free_primary",
+				provider: "other",
+				available: true,
+			});
+			expect(writtenConfig).toContain(
+				"Auto-generated from builtin defaults because the workspace file was missing.",
+			);
+			expect(writtenConfig).toContain("strict_mode = false");
+			expect(resolveProfile("default")).toBe("free_primary");
+			expect(resolveForSkill("arch-system")).toBe("strong_primary");
+			expect(writtenConfig).toContain("[environment]");
+
+			resetConfigCache();
+			expect(loadOrchestrationConfig().environment.strict_mode).toBe(false);
+		} finally {
+			cwdSpy.mockRestore();
+			resetConfigCache();
+			rmSync(workspaceRoot, { recursive: true, force: true });
+		}
 	});
 
 	it("loadOrchestrationConfig with bad path fails fast in strict mode", async () => {
@@ -425,6 +546,52 @@ describe("orchestration-config: capability-driven resolver", () => {
 		// Uses live config — get two skills that resolve to the same profile
 		const result = resolveProfile("research");
 		expect(typeof result).toBe("string");
+	});
+
+	it("keeps candidate order when the preferred capability is not configured", async () => {
+		const workspaceRoot = mkdtempSync(`${tmpdir()}/orch-missing-prefer-`);
+		const configPath = resolve(
+			workspaceRoot,
+			ORCHESTRATION_CONFIG_RELATIVE_PATH,
+		);
+		const config = createDefaultOrchestrationConfig();
+		config.environment.strict_mode = false;
+		config.models.free_primary = {
+			id: "gpt-4.1",
+			provider: "openai",
+			available: true,
+			context_window: 128_000,
+		};
+		config.models.free_secondary = {
+			id: "gpt-5-mini",
+			provider: "openai",
+			available: true,
+			context_window: 128_000,
+		};
+		config.capabilities.structured_output = ["free_primary", "free_secondary"];
+		config.profiles.missing_prefer = {
+			requires: ["structured_output"],
+			prefer: "missing_prefer_capability",
+			fallback: [],
+			fan_out: 1,
+		};
+
+		try {
+			mkdirSync(resolve(workspaceRoot, ".mcp-ai-agent-guidelines/config"), {
+				recursive: true,
+			});
+			writeFileSync(configPath, renderOrchestrationToml(config), "utf8");
+			const { loadOrchestrationConfig } = await import(
+				"../../config/orchestration-config.js"
+			);
+			resetConfigCache();
+			loadOrchestrationConfig(configPath);
+
+			expect(resolveProfile("missing_prefer")).toBe("gpt-4.1");
+		} finally {
+			resetConfigCache();
+			rmSync(workspaceRoot, { recursive: true, force: true });
+		}
 	});
 
 	it("getDomainTier maps debug-* to default or debug profile", () => {
@@ -542,9 +709,7 @@ describe("orchestration-config: capability-driven resolver", () => {
 			);
 			resetConfigCache();
 			loadOrchestrationConfig(configPath);
-			const result = resolveProfile("no_cost_sensitive");
-			expect(typeof result).toBe("string");
-			expect(result.length).toBeGreaterThan(0);
+			expect(resolveProfile("no_cost_sensitive")).toBe("test-last-resort-id");
 		} finally {
 			resetConfigCache();
 			rmSync(workspaceRoot, { recursive: true, force: true });

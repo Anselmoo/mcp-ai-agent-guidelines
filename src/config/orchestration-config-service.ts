@@ -12,7 +12,10 @@ import {
 	parseOrchestrationConfigValue,
 	resolveOrchestrationConfigPath,
 } from "./orchestration-config.js";
-import { BUILTIN_ORCHESTRATION_DEFAULTS_SOURCE } from "./orchestration-defaults.js";
+import {
+	BUILTIN_ORCHESTRATION_DEFAULTS_SOURCE,
+	createBuiltinBootstrapOrchestrationConfig,
+} from "./orchestration-defaults.js";
 
 export interface ModelDeclaration {
 	available: boolean;
@@ -310,9 +313,9 @@ export async function loadOrchestrationConfigForWorkspace(
 	if (!exists) {
 		const warning =
 			`Primary orchestration config not found at ${paths.orchestrationPath}. ` +
-			`Using builtin fallback defaults from ${BUILTIN_ORCHESTRATION_DEFAULTS_SOURCE}.`;
+			`Using advisory bootstrap defaults from ${BUILTIN_ORCHESTRATION_DEFAULTS_SOURCE}.`;
 		return {
-			config: createDefaultOrchestrationConfig(),
+			config: createBuiltinBootstrapOrchestrationConfig(),
 			exists: false,
 			paths,
 			source: "fallback-defaults",
