@@ -8,7 +8,7 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-
+## [0.15.2] - 2026-04-20
 ### Added
 - implement advisory bootstrap defaults for orchestration config
 ## [0.15.1] - 2026-04-19
