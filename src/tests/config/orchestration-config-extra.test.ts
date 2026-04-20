@@ -1,14 +1,17 @@
 import { afterEach, describe, expect, it } from "vitest";
 import {
+	createDefaultOrchestrationConfig,
 	getAvailableModelsForTier,
 	getDomainRouting,
 	getDomainTier,
 	getFanOut,
 	getHumanInLoopProfiles,
+	parseOrchestrationConfigDocument,
 	parseOrchestrationConfigValue,
 	resetConfigCache,
 	resolveCapabilityToIds,
 } from "../../config/orchestration-config.js";
+import { renderOrchestrationToml } from "../../config/orchestration-config-service.js";
 
 describe("orchestration-config: extra branch coverage", () => {
 	afterEach(() => {
@@ -35,6 +38,81 @@ describe("orchestration-config: extra branch coverage", () => {
 
 	it("parseOrchestrationConfigValue throws on an empty object", () => {
 		expect(() => parseOrchestrationConfigValue({})).toThrow();
+	});
+
+	it("parseOrchestrationConfigDocument parses optional sections and profile extras from TOML", () => {
+		const config = createDefaultOrchestrationConfig();
+		config.profiles.research = {
+			...config.profiles.research,
+			confidence_threshold: 0.8,
+			min_signal_count: 2,
+			emit_routing_decision: true,
+		} as typeof config.profiles.research;
+		config.session_continuity = {
+			preload_enabled: true,
+			session_path: ".mcp-ai-agent-guidelines/session",
+			snapshot_path: ".mcp-ai-agent-guidelines/snapshots",
+			fingerprint_ttl_seconds: 900,
+			preload_max_sessions: 4,
+			format_version_min: 2,
+		};
+		config.agent_mode = {
+			re_activation_interval_turns: 3,
+			context_drift_threshold: 0.35,
+			reactivation_instruction:
+				"Re-check the workspace snapshot before continuing.",
+			heartbeat_enabled: true,
+		};
+		config.session_security = {
+			key_rotation_interval_days: 14,
+		};
+		config.quality_gates = {
+			eval_trigger_interval_turns: 6,
+		};
+
+		const parsed = parseOrchestrationConfigDocument(
+			renderOrchestrationToml(config),
+		);
+		const parsedResearchProfile = parsed.profiles
+			.research as typeof parsed.profiles.research & {
+			confidence_threshold?: number;
+			min_signal_count?: number;
+			emit_routing_decision?: boolean;
+		};
+
+		expect(parsedResearchProfile).toMatchObject({
+			confidence_threshold: 0.8,
+			min_signal_count: 2,
+			emit_routing_decision: true,
+		});
+		expect(parsed.session_continuity).toEqual(config.session_continuity);
+		expect(parsed.agent_mode).toEqual(config.agent_mode);
+		expect(parsed.session_security).toEqual(config.session_security);
+		expect(parsed.quality_gates).toEqual(config.quality_gates);
+	});
+
+	it("parseOrchestrationConfigDocument throws on syntactically invalid TOML", () => {
+		expect(() =>
+			parseOrchestrationConfigDocument(`
+[environment]
+strict_mode = true
+default_max_context =
+`),
+		).toThrow();
+	});
+
+	it("parseOrchestrationConfigDocument throws when an optional section fails schema validation", () => {
+		const config = createDefaultOrchestrationConfig();
+		const validToml = renderOrchestrationToml(config);
+		const invalidToml = `${validToml}
+
+[quality_gates]
+eval_trigger_interval_turns = "often"
+`;
+
+		expect(() => parseOrchestrationConfigDocument(invalidToml)).toThrow(
+			/eval_trigger_interval_turns|quality_gates|number|string/i,
+		);
 	});
 
 	// ── getDomainTier (deprecated shim for getProfileForSkill) ─────────────
