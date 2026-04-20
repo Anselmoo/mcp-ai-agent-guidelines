@@ -1,6 +1,6 @@
 {
     "name": "mcp-ai-agent-guidelines",
-    "version": "0.15.1",
+    "version": "0.15.2",
     "description": "MCP server exposing public instruction workflows as tools, backed by hidden AI agent skills for requirements, orchestration, quality, research, evaluation, governance, resilience, and physics-inspired analysis",
     "main": "dist/index.js",
     "type": "module",
