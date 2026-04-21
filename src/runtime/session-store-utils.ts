@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
+import { access, mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 
 /**
@@ -34,7 +34,6 @@ const SESSION_STATE_GITIGNORE_PATH = ".gitignore";
 const SESSION_STATE_GITIGNORE_REQUIRED_RULES = [
 	"cache/",
 	"sessions/",
-	"snapshots/",
 	"session-*.json",
 	"session-*.json.*",
 	"config/*.key",
@@ -92,6 +91,36 @@ function assertSafeStateDir(rawStateDir: string): void {
 	}
 }
 
+/**
+ * Walk up the directory tree from `startDir` looking for a `.git` directory
+ * or `package.json` file that marks the workspace root. Returns `null` if no
+ * workspace root is found before reaching the filesystem root.
+ */
+export async function findWorkspaceRoot(
+	startDir: string,
+): Promise<string | null> {
+	let current = resolve(startDir);
+	const root = resolve("/");
+	while (current !== root) {
+		try {
+			await access(join(current, ".git"));
+			return current;
+		} catch {
+			// not found — try package.json
+		}
+		try {
+			await access(join(current, "package.json"));
+			return current;
+		} catch {
+			// not found — go up
+		}
+		const parent = dirname(current);
+		if (parent === current) break;
+		current = parent;
+	}
+	return null;
+}
+
 export function resolveSessionStateDir(rawStateDir?: string): string {
 	const stateDir =
 		rawStateDir ??
@@ -99,6 +128,31 @@ export function resolveSessionStateDir(rawStateDir?: string): string {
 		DEFAULT_SESSION_STATE_DIR;
 	assertSafeStateDir(stateDir);
 	return resolve(stateDir);
+}
+
+/**
+ * Async variant of `resolveSessionStateDir` that auto-detects the workspace
+ * root when only the default relative `DEFAULT_SESSION_STATE_DIR` would be
+ * used. If a workspace root is found via `.git` / `package.json` walk-up the
+ * state dir is anchored to that root instead of `process.cwd()`.
+ *
+ * The explicit override priority is:
+ *   1. `rawStateDir` argument
+ *   2. `MCP_AI_AGENT_GUIDELINES_STATE_DIR` env var
+ *   3. workspace-root auto-detection (`.git` / `package.json` walk-up)
+ *   4. `process.cwd()` fallback
+ */
+export async function resolveSessionStateDirAsync(
+	rawStateDir?: string,
+): Promise<string> {
+	const explicitDir = rawStateDir ?? process.env[SESSION_STATE_DIR_ENV_VAR];
+	if (explicitDir) {
+		assertSafeStateDir(explicitDir);
+		return resolve(explicitDir);
+	}
+	const workspaceRoot = await findWorkspaceRoot(process.cwd());
+	const base = workspaceRoot ?? process.cwd();
+	return resolve(base, DEFAULT_SESSION_STATE_DIR);
 }
 
 export function resolveSessionPathWithinStateDir(

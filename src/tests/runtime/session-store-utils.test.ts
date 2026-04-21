@@ -89,7 +89,6 @@ describe("runtime/session-store-utils", () => {
 					"# Ignore ephemeral execution state and caches, including legacy flat session files.",
 					"cache/",
 					"sessions/",
-					"snapshots/",
 					"session-*.json",
 					"session-*.json.*",
 					"config/*.key",

@@ -25,6 +25,7 @@ import {
 import {
 	ensureSessionStateGitignore,
 	resolveSessionStateDir,
+	resolveSessionStateDirAsync,
 	runExclusiveSessionOperation,
 	writeTextFileAtomic,
 } from "../runtime/session-store-utils.js";
@@ -131,9 +132,9 @@ export class ToonMemoryInterface {
 	// Older snapshots beyond this count are pruned after each new capture.
 	private static readonly SNAPSHOT_MAX_RETAIN = 10;
 	private readonly version = "1.0.0";
-	private readonly baseDir: string;
-	private readonly sessionDir: string;
-	private readonly memoryDir: string;
+	private baseDir: string;
+	private sessionDir: string;
+	private memoryDir: string;
 	private readonly sessionLocks = new Map<string, Promise<void>>();
 	private readonly securityOptions: {
 		enableEncryption: boolean;
@@ -142,8 +143,8 @@ export class ToonMemoryInterface {
 	private encryptionKeyPromise: Promise<string> | null = null;
 	private skillIdSource?: () => string[];
 	private instructionNameSource?: () => string[];
-	/** Tracks an in-flight bootstrap snapshot so we never start a second scan. */
-	private snapshotBootstrapPromise: Promise<void> | undefined;
+	/** Resolves once the workspace-root–aware base directory has been determined. */
+	private baseDirReadyPromise: Promise<void> | undefined;
 
 	/**
 	 * Wire live registry data into the scanner so skillIds / instructionNames
@@ -166,6 +167,8 @@ export class ToonMemoryInterface {
 			encryptionKey?: string;
 		} = {},
 	) {
+		// Sync best-effort resolution — will be refined by resolveBaseDir() on
+		// first async operation if no explicit dir was provided.
 		this.baseDir = customDir ?? resolveSessionStateDir();
 		this.sessionDir = join(this.baseDir, "sessions");
 		this.memoryDir = join(this.baseDir, "memory");
@@ -173,7 +176,23 @@ export class ToonMemoryInterface {
 			enableEncryption: options.enableEncryption ?? true,
 			encryptionKey: options.encryptionKey,
 		};
+		// If no explicit dir was provided, kick off async workspace-root detection
+		// immediately so it is ready before any IO call.
+		if (!customDir && !process.env["MCP_AI_AGENT_GUIDELINES_STATE_DIR"]) {
+			this.baseDirReadyPromise = resolveSessionStateDirAsync().then(
+				(resolvedDir) => {
+					if (resolvedDir !== this.baseDir) {
+						this.baseDir = resolvedDir;
+						this.sessionDir = join(resolvedDir, "sessions");
+						this.memoryDir = join(resolvedDir, "memory");
+					}
+				},
+			);
+		}
 	}
+
+	/** Tracks an in-flight bootstrap snapshot so we never start a second scan. */
+	private snapshotBootstrapPromise: Promise<void> | undefined;
 
 	// Reference layout:
 	//   .mcp-ai-agent-guidelines/
@@ -262,6 +281,12 @@ export class ToonMemoryInterface {
 	}
 
 	private async ensureDirectories(): Promise<void> {
+		// Await workspace-root resolution before any filesystem access so the
+		// correct baseDir (workspace vs. $HOME) is used for all paths.
+		if (this.baseDirReadyPromise) {
+			await this.baseDirReadyPromise;
+			this.baseDirReadyPromise = undefined;
+		}
 		await ensureSessionStateGitignore(this.baseDir);
 		await mkdir(this.memoryDir, { recursive: true });
 		await mkdir(this.snapshotDir(), { recursive: true });

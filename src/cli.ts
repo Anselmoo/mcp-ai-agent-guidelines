@@ -121,13 +121,15 @@ export class McpAgentCli {
 						return;
 					}
 
-					const config = await this.context.scriptRunner.withSpinner(
-						"Running onboarding wizard",
-						() => this.context.onboardingWizard.runInteractiveSetup(),
-					);
+					const config =
+						await this.context.onboardingWizard.runInteractiveSetup();
 					await this.context.scriptRunner.withSpinner(
 						"Saving onboarding configuration",
 						() => this.context.onboardingWizard.saveConfiguration(config),
+					);
+					await this.context.scriptRunner.withSpinner(
+						"Taking initial snapshot",
+						() => this.context.memoryInterface.refresh(),
 					);
 
 					console.log(
