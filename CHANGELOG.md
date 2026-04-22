@@ -14,6 +14,9 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 - enhance meta-routing instruction for better task classification and usage guidance
+
+### Fixed
+- update changelog to reflect recent enhancements in onboarding and meta-routing instructions
 ## [0.15.3] - 2026-04-21
 
 _No notable changes recorded._
