@@ -18,6 +18,7 @@ vi.mock("../../memory/toon-interface.js", () => ({
 	ToonMemoryInterface: class {
 		deleteMemoryArtifact = deleteMemoryArtifactMock;
 		findMemoryArtifacts = findMemoryArtifactsMock;
+		isWorkspaceInitialized = vi.fn().mockResolvedValue(true);
 		loadFingerprintSnapshot = loadFingerprintSnapshotMock;
 		loadMemoryArtifact = loadMemoryArtifactMock;
 		saveMemoryArtifact = saveMemoryArtifactMock;

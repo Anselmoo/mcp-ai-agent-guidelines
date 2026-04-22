@@ -318,6 +318,25 @@ export class ToonMemoryInterface {
 		return this.snapshotBootstrapPromise;
 	}
 
+	/**
+	 * Returns `true` when `config/orchestration.toml` exists inside the current
+	 * state directory, meaning the workspace has been bootstrapped.  Used by
+	 * write-path tool guards.
+	 */
+	async isWorkspaceInitialized(): Promise<boolean> {
+		if (this.baseDirReadyPromise) {
+			await this.baseDirReadyPromise;
+			this.baseDirReadyPromise = undefined;
+		}
+		const configPath = join(this.configDir(), "orchestration.toml");
+		try {
+			await access(configPath);
+			return true;
+		} catch {
+			return false;
+		}
+	}
+
 	private buildSnapshotId(capturedAt: string): string {
 		const timestamp = capturedAt.replace(/[-:.TZ]/g, "").slice(0, 14);
 		return `${timestamp}-${randomUUID().slice(0, 8)}`;
@@ -552,12 +571,15 @@ export class ToonMemoryInterface {
 			.sort();
 	}
 
-	async refresh(): Promise<CodebaseFingerprint> {
+	async refresh(
+		onProgress?: (filePath: string, index: number, total: number) => void,
+	): Promise<CodebaseFingerprint> {
 		await this.ensureDirectories();
 		const history = await this.ensureSnapshotHistoryInitialized();
 		const scanner = new CodebaseScanner({
 			skillIdSource: this.skillIdSource,
 			instructionNameSource: this.instructionNameSource,
+			onProgress,
 		});
 		const fingerprint = await scanner.scan();
 		const snapshotId = this.buildSnapshotId(fingerprint.capturedAt);

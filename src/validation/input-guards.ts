@@ -404,12 +404,12 @@ export async function criticalSkillGuard(
 	}
 
 	if (skillId.startsWith("adapt-")) {
-		const allowAdaptive = process.env.ENABLE_ADAPTIVE_ROUTING === "true";
+		const allowAdaptive = process.env.DISABLE_ADAPTIVE_ROUTING !== "true";
 		if (!allowAdaptive) {
 			return {
 				allowed: false,
 				reason:
-					"Adaptive routing skills are disabled. Enable with ENABLE_ADAPTIVE_ROUTING=true.",
+					"Adaptive routing skills are disabled. Unset DISABLE_ADAPTIVE_ROUTING to re-enable.",
 			};
 		}
 	}

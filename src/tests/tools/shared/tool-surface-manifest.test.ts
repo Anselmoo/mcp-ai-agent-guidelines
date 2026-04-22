@@ -100,39 +100,40 @@ describe("getHiddenToolNames", () => {
 
 describe("computeEffectiveHiddenTools", () => {
 	const savedHidden = process.env.HIDDEN_TOOLS;
-	const savedAdaptive = process.env.ENABLE_ADAPTIVE_ROUTING;
+	const savedAdaptive = process.env.DISABLE_ADAPTIVE_ROUTING;
 
 	afterEach(() => {
 		if (savedHidden === undefined) delete process.env.HIDDEN_TOOLS;
 		else process.env.HIDDEN_TOOLS = savedHidden;
-		if (savedAdaptive === undefined) delete process.env.ENABLE_ADAPTIVE_ROUTING;
-		else process.env.ENABLE_ADAPTIVE_ROUTING = savedAdaptive;
+		if (savedAdaptive === undefined)
+			delete process.env.DISABLE_ADAPTIVE_ROUTING;
+		else process.env.DISABLE_ADAPTIVE_ROUTING = savedAdaptive;
 	});
 
-	it("includes adapt when ENABLE_ADAPTIVE_ROUTING is not set", () => {
+	it("includes adapt when DISABLE_ADAPTIVE_ROUTING is not set (opt-in by default)", () => {
 		delete process.env.HIDDEN_TOOLS;
-		delete process.env.ENABLE_ADAPTIVE_ROUTING;
-		const result = computeEffectiveHiddenTools();
-		expect(result).toBe("routing-adapt");
-	});
-
-	it("excludes adapt when ENABLE_ADAPTIVE_ROUTING is true", () => {
-		delete process.env.HIDDEN_TOOLS;
-		process.env.ENABLE_ADAPTIVE_ROUTING = "true";
+		delete process.env.DISABLE_ADAPTIVE_ROUTING;
 		const result = computeEffectiveHiddenTools();
 		expect(result).toBe("");
 	});
 
+	it("excludes adapt when DISABLE_ADAPTIVE_ROUTING is true", () => {
+		delete process.env.HIDDEN_TOOLS;
+		process.env.DISABLE_ADAPTIVE_ROUTING = "true";
+		const result = computeEffectiveHiddenTools();
+		expect(result).toBe("routing-adapt");
+	});
+
 	it("combines HIDDEN_TOOLS with adapt when routing is disabled", () => {
 		process.env.HIDDEN_TOOLS = "enterprise,govern";
-		delete process.env.ENABLE_ADAPTIVE_ROUTING;
+		process.env.DISABLE_ADAPTIVE_ROUTING = "true";
 		const result = computeEffectiveHiddenTools();
 		expect(result).toBe("enterprise,govern,routing-adapt");
 	});
 
-	it("returns only HIDDEN_TOOLS when routing is enabled", () => {
+	it("returns only HIDDEN_TOOLS when routing is enabled (default)", () => {
 		process.env.HIDDEN_TOOLS = "enterprise";
-		process.env.ENABLE_ADAPTIVE_ROUTING = "true";
+		delete process.env.DISABLE_ADAPTIVE_ROUTING;
 		const result = computeEffectiveHiddenTools();
 		expect(result).toBe("enterprise");
 	});

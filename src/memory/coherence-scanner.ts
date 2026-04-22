@@ -75,6 +75,12 @@ export interface CodebaseScannerOptions {
 	 * Defaults to `<cwd>/.mcp-ai-agent-guidelines/symbol-cache`.
 	 */
 	symbolCacheDir?: string;
+	/**
+	 * Called for each source file as it is summarised during `scan()`.
+	 * Useful for driving progress-bar / spinner updates.
+	 * `index` is 0-based; `total` is the count of code files in this scan.
+	 */
+	onProgress?: (filePath: string, index: number, total: number) => void;
 }
 
 function uniqueSorted(values: readonly string[]) {
@@ -201,6 +207,7 @@ async function buildFileSummaries(
 	repositoryRoot: string,
 	codePaths: readonly string[],
 	symbolMap: Record<string, string[]>,
+	onProgress?: (filePath: string, index: number, total: number) => void,
 ): Promise<FingerprintFileSummary[]> {
 	const tsPaths = codePaths.filter(
 		(path) => path.endsWith(".ts") || path.endsWith(".tsx"),
@@ -211,7 +218,7 @@ async function buildFileSummaries(
 	});
 
 	const summaries = await Promise.all(
-		codePaths.map(async (relativePath) => {
+		codePaths.map(async (relativePath, index) => {
 			const content = await readFile(relativePath, "utf8").catch((error) => {
 				if (
 					typeof error === "object" &&
@@ -224,6 +231,7 @@ async function buildFileSummaries(
 				throw error;
 			});
 			const fileSymbols = allSymbols[relativePath] ?? [];
+			onProgress?.(relativePath, index, codePaths.length);
 			return {
 				path: relativePath,
 				contentHash: computeFileHash(content),
@@ -243,13 +251,22 @@ export class CodebaseScanner {
 	private readonly options: Required<
 		Omit<
 			CodebaseScannerOptions,
-			"skillIdSource" | "instructionNameSource" | "lsClient" | "symbolCacheDir"
+			| "skillIdSource"
+			| "instructionNameSource"
+			| "lsClient"
+			| "symbolCacheDir"
+			| "onProgress"
 		>
 	>;
 	private readonly skillIdSource?: () => string[];
 	private readonly instructionNameSource?: () => string[];
 	private readonly lsClient?: LspClient;
 	private readonly symbolCacheDir: string;
+	private readonly onProgress?: (
+		filePath: string,
+		index: number,
+		total: number,
+	) => void;
 
 	constructor(options: CodebaseScannerOptions = {}) {
 		this.options = {
@@ -268,6 +285,7 @@ export class CodebaseScanner {
 		this.lsClient = options.lsClient;
 		this.symbolCacheDir =
 			options.symbolCacheDir ?? ".mcp-ai-agent-guidelines/symbol-cache";
+		this.onProgress = options.onProgress;
 	}
 
 	async scan(): Promise<CodebaseFingerprint> {
@@ -334,6 +352,7 @@ export class CodebaseScanner {
 			process.cwd(),
 			sortedCodePaths,
 			symbolMap,
+			this.onProgress,
 		);
 
 		return {

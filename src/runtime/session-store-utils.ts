@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { existsSync } from "node:fs";
 import { access, mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 
@@ -121,6 +122,24 @@ export async function findWorkspaceRoot(
 	return null;
 }
 
+/**
+ * Synchronous variant of `findWorkspaceRoot`.  Used by modules that must
+ * resolve paths at initialisation time without an async context (e.g. the
+ * orchestration config singleton).
+ */
+export function findWorkspaceRootSync(startDir: string): string | null {
+	let current = resolve(startDir);
+	const root = resolve("/");
+	while (current !== root) {
+		if (existsSync(join(current, ".git"))) return current;
+		if (existsSync(join(current, "package.json"))) return current;
+		const parent = dirname(current);
+		if (parent === current) break;
+		current = parent;
+	}
+	return null;
+}
+
 export function resolveSessionStateDir(rawStateDir?: string): string {
 	const stateDir =
 		rawStateDir ??
@@ -236,6 +255,27 @@ export async function writeTextFileAtomic(
 	const tempPath = `${targetPath}.${randomUUID()}.tmp`;
 	await writeFile(tempPath, contents, "utf8");
 	await rename(tempPath, targetPath);
+}
+
+/**
+ * Returns `true` when `config/orchestration.toml` exists inside the given
+ * state directory.  A `false` result means the workspace has never been
+ * bootstrapped via `mcp-cli onboard init` (or `project-onboard`).
+ *
+ * Mutating tool commands (`agent-memory write`, `agent-session write`,
+ * `agent-snapshot refresh`) should call this before performing any filesystem
+ * writes and surface an actionable error when it returns `false`.
+ */
+export async function isWorkspaceInitialized(
+	baseDir: string,
+): Promise<boolean> {
+	const configPath = join(baseDir, "config", "orchestration.toml");
+	try {
+		await access(configPath);
+		return true;
+	} catch {
+		return false;
+	}
 }
 
 export async function runExclusiveSessionOperation<T>(

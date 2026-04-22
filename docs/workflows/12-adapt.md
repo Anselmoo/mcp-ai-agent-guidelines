@@ -5,7 +5,7 @@
 **Intent:** Mutates and reinforces good pathways dynamically without hardcoded modifications. Uses biological metaphors for adaptation.
 
 ## 2. Resource Pooling
-- **Routing today:** capability/profile-based via `orchestration.toml`; adaptive work uses the `adaptive_routing` profile (`structured_output` required, `cost_sensitive` preferred, `fast_draft` fallback) and is gated by `ENABLE_ADAPTIVE_ROUTING=true`.
+- **Routing today:** capability/profile-based via `orchestration.toml`; adaptive work uses the `adaptive_routing` profile (`structured_output` required, `cost_sensitive` preferred, `fast_draft` fallback) and is enabled by default (set `DISABLE_ADAPTIVE_ROUTING=true` to opt-out).
 
 ## 3. Required Skills
 - `adv-aco-router`
@@ -27,7 +27,7 @@ If the simulated annealing optimizer finds a structurally better layout, auto-up
 
 This workflow is a terminal node — it does not chain to other workflows on completion.
 
-> **Precondition:** Requires `ENABLE_ADAPTIVE_ROUTING=true` environment variable.
+> **Default behaviour:** `routing-adapt` is enabled by default. Set `DISABLE_ADAPTIVE_ROUTING=true` to opt-out.
 
 ## 6. Mermaid FSM — *Emergence from local interaction (adapted: bio-inspired adaptive routing)*
 ```mermaid

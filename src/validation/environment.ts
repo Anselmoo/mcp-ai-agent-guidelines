@@ -193,10 +193,11 @@ export function validateEnvironment(): EnvironmentValidationResult {
 			.default("false")
 			.asBool();
 
-		const enableAdaptiveRouting = env
-			.get("ENABLE_ADAPTIVE_ROUTING")
+		const disableAdaptiveRouting = env
+			.get("DISABLE_ADAPTIVE_ROUTING")
 			.default("false")
 			.asBool();
+		const enableAdaptiveRouting = !disableAdaptiveRouting;
 
 		const validationMode = env
 			.get("VALIDATION_MODE")
@@ -387,7 +388,7 @@ function getDefaultConfig(): EnvironmentConfig {
 		maxInstructionDepth: 10,
 		maxParallelSkills: 5,
 		enablePhysicsSkills: false,
-		enableAdaptiveRouting: false,
+		enableAdaptiveRouting: true,
 		validationMode: "advisory",
 		defaultModelTimeout: 30000,
 		maxRetries: 3,

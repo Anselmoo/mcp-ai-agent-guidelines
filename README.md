@@ -356,13 +356,72 @@ Published package note: the npm package ships `dist/`, `README.md`, and `LICENSE
 | `HIDDEN_TOOLS` | `""` | Comma-separated list of tool names to exclude from ListTools |
 | `LOG_LEVEL` | `"info"` | Observability log level (`debug`, `info`, `warn`, `error`) |
 | `ALLOW_GOVERNANCE_SKILLS` | unset / `"false"` | Must be `true` to allow `gov-*` skills through `criticalSkillGuard` |
-| `ENABLE_ADAPTIVE_ROUTING` | unset / `"false"` | Must be `true` to allow `adapt-*` skills through `criticalSkillGuard` |
+| `DISABLE_ADAPTIVE_ROUTING` | unset / `"false"` | Set to `true` to hide `routing-adapt` and block `adapt-*` skills; enabled by default (opt-out model) |
 | `ALLOW_INTENSIVE_SKILLS` | unset / `"false"` | Must be `true` to allow resource-intensive skills such as `bench-eval-suite`, `eval-prompt-bench`, `qm-path-integral-historian`, and `gr-spacetime-debt-metric` |
 | `ENABLE_PHYSICS_SKILLS` | unset / `"false"` | Required by input validation when physics skills are not otherwise authorized; physics skills also require conventional-evidence schema validation |
+| `MCP_SLIM_MODE` | unset / `"false"` | Set to `true` to expose only the minimal surface: `task-bootstrap`, `meta-routing`, and `project-onboard` (useful for low-context agents) |
 
 ### Skill gates
 
 Skill execution is gated by environment variables above. Physics skills (`qm-*`, `gr-*`) additionally require `ENABLE_PHYSICS_SKILLS=true` and conventional-evidence input. Model availability is derived from `.mcp-ai-agent-guidelines/config/orchestration.toml`; `strict_mode = false` allows warnings-only, `strict_mode = true` blocks on missing models.
+
+---
+
+## Auto Mode & Session Hooks
+
+Long-running agent sessions (VS Code Copilot, Claude Code, Copilot CLI) can drift away from MCP tools after the first few exchanges. The **session hooks** mechanism counteracts this by injecting lightweight reminders at the IDE lifecycle boundaries.
+
+### What the hooks do
+
+| Hook | Trigger | Effect |
+|------|---------|--------|
+| `SessionStart` | New chat session begins | Reminds agent to call `task-bootstrap` / `meta-routing` first |
+| `PreToolUse` | Before every tool call | Detects consecutive non-MCP calls; nudges agent to re-orient |
+
+### Quick install
+
+```bash
+# VS Code / Copilot CLI (writes to ~/.copilot/hooks/)
+mcp-cli hooks setup --client vscode
+
+# Claude Code (writes to ~/.claude/)
+mcp-cli hooks setup --client claude-code
+
+# Inspect what will be written without touching the filesystem
+mcp-cli hooks print --client vscode
+```
+
+### Manual install
+
+Copy the following JSON to `~/.copilot/hooks/mcp-ai-agent-guidelines-hooks.json`:
+
+```json
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "mcp-ai-agent-guidelines hooks remind-session"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "type": "command",
+        "command": "mcp-ai-agent-guidelines hooks remind-drift"
+      }
+    ]
+  }
+}
+```
+
+### Routing guidance
+
+The `.agent/rules/` directory contains IDE-readable routing tables:
+
+- `.agent/rules/default.md` — universal symptom → tool pipeline table and anti-patterns
+- `.agent/rules/copilot.md` — VS Code Copilot-specific quick reference and session-start checklist
+
+These files are automatically picked up by Copilot's custom instructions system and by Serena's hook integration layer.
 
 ---
 

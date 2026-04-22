@@ -9,7 +9,7 @@ export const instructionManifest: InstructionManifestEntry = {
 	aliases: [],
 	displayName: "Adapt: Bio-Inspired Adaptive Routing",
 	description:
-		"ONLY use when an existing multi-agent workflow needs autonomous bio-inspired route optimization based on historical performance — e.g. Hebbian reinforcement, ant-colony pheromone trails, simulated annealing, quorum sensing, or Physarum network pruning. Requires ENABLE_ADAPTIVE_ROUTING=true. Do NOT use for: general research, design, review, debugging, planning, implementation, code quality, documentation, or any task that does not involve bio-inspired routing algorithms. If unsure, use the specific domain tool (design, research, review, implement, etc.) instead.",
+		"ONLY use when an existing multi-agent workflow needs autonomous bio-inspired route optimization based on historical performance — e.g. Hebbian reinforcement, ant-colony pheromone trails, simulated annealing, quorum sensing, or Physarum network pruning. Disable with DISABLE_ADAPTIVE_ROUTING=true. Do NOT use for: general research, design, review, debugging, planning, implementation, code quality, documentation, or any task that does not involve bio-inspired routing algorithms. If unsure, use the specific domain tool (design, research, review, implement, etc.) instead.",
 	sourcePath: "src/instructions/instruction-specs.ts#adapt",
 	mission:
 		"Deploy → observe → reinforce → prune → converge. Workflows that get smarter over time.",

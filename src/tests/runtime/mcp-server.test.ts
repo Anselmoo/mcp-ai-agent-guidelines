@@ -232,28 +232,28 @@ describe("mcp server request handlers", () => {
 	});
 
 	describe("adapt tool visibility", () => {
-		const savedAdaptive = process.env.ENABLE_ADAPTIVE_ROUTING;
+		const savedAdaptive = process.env.DISABLE_ADAPTIVE_ROUTING;
 
 		afterEach(() => {
 			if (savedAdaptive === undefined)
-				delete process.env.ENABLE_ADAPTIVE_ROUTING;
-			else process.env.ENABLE_ADAPTIVE_ROUTING = savedAdaptive;
+				delete process.env.DISABLE_ADAPTIVE_ROUTING;
+			else process.env.DISABLE_ADAPTIVE_ROUTING = savedAdaptive;
 		});
 
-		it("hides adapt when ENABLE_ADAPTIVE_ROUTING is not set", async () => {
-			delete process.env.ENABLE_ADAPTIVE_ROUTING;
-			const handlers = createRequestHandlers(createRuntime());
-			const result = await handlers.listTools();
-			const names = result.tools.map((tool) => tool.name);
-			expect(names).not.toContain("routing-adapt");
-		});
-
-		it("lists adapt when ENABLE_ADAPTIVE_ROUTING is true", async () => {
-			process.env.ENABLE_ADAPTIVE_ROUTING = "true";
+		it("lists adapt by default (opt-out model)", async () => {
+			delete process.env.DISABLE_ADAPTIVE_ROUTING;
 			const handlers = createRequestHandlers(createRuntime());
 			const result = await handlers.listTools();
 			const names = result.tools.map((tool) => tool.name);
 			expect(names).toContain("routing-adapt");
+		});
+
+		it("hides adapt when DISABLE_ADAPTIVE_ROUTING is true", async () => {
+			process.env.DISABLE_ADAPTIVE_ROUTING = "true";
+			const handlers = createRequestHandlers(createRuntime());
+			const result = await handlers.listTools();
+			const names = result.tools.map((tool) => tool.name);
+			expect(names).not.toContain("routing-adapt");
 		});
 	});
 });

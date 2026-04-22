@@ -29,6 +29,7 @@ vi.mock("../../memory/toon-interface.js", () => ({
 		deleteSessionContext = deleteSessionContextMock;
 		getMemoryStats = getMemoryStatsMock;
 		getSessionStats = getSessionStatsMock;
+		isWorkspaceInitialized = vi.fn().mockResolvedValue(true);
 		listSessionIds = listSessionIdsMock;
 		loadScanResults = loadScanResultsMock;
 		loadSessionContext = loadSessionContextMock;

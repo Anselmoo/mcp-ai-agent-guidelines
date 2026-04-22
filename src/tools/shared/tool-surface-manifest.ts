@@ -73,7 +73,10 @@ export function getHiddenToolNames(env?: string): ReadonlySet<string> {
  * Compute the effective HIDDEN_TOOLS value by combining the explicit
  * `HIDDEN_TOOLS` env-var with policy-driven hiding:
  *
- * - `routing-adapt` is auto-hidden unless `ENABLE_ADAPTIVE_ROUTING=true`.
+ * - `routing-adapt` is auto-hidden when `DISABLE_ADAPTIVE_ROUTING=true`
+ *   (default: visible — opt-out model).
+ * - When `MCP_SLIM_MODE=true`, all tools except the 3-tool core surface
+ *   (`task-bootstrap`, `meta-routing`, `project-onboard`) are hidden.
  *
  * Returns a comma-separated string suitable for passing to `filterHiddenTools`.
  */
@@ -83,10 +86,41 @@ export function computeEffectiveHiddenTools(): string {
 	if (explicit) {
 		parts.push(explicit);
 	}
-	if (process.env.ENABLE_ADAPTIVE_ROUTING !== "true") {
+	if (process.env.DISABLE_ADAPTIVE_ROUTING === "true") {
 		parts.push("routing-adapt");
 	}
 	return parts.join(",");
+}
+
+/**
+ * The curated minimal surface exposed when `MCP_SLIM_MODE=true`.
+ *
+ * Only these three tools are visible — sufficient to orient the agent and
+ * route to the correct domain tool without exhausting a short context window.
+ */
+export const SLIM_SURFACE_TOOLS = new Set([
+	"task-bootstrap",
+	"meta-routing",
+	"project-onboard",
+]);
+
+/**
+ * Filter `tools` to the slim surface when `MCP_SLIM_MODE=true`.
+ *
+ * When slim mode is active, only `task-bootstrap`, `meta-routing`, and
+ * `project-onboard` survive regardless of `HIDDEN_TOOLS` or
+ * `DISABLE_ADAPTIVE_ROUTING`.
+ *
+ * @param tools  Full (or already-filtered) list of tool definitions
+ * @param env    Optional override (defaults to `process.env.MCP_SLIM_MODE`)
+ */
+export function applySlimMode<T extends HideableToolDefinition>(
+	tools: T[],
+	env?: string,
+): T[] {
+	const slimMode = (env ?? process.env.MCP_SLIM_MODE) === "true";
+	if (!slimMode) return tools;
+	return tools.filter((t) => SLIM_SURFACE_TOOLS.has(t.name.toLowerCase()));
 }
 
 // ---------------------------------------------------------------------------

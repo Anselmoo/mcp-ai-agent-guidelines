@@ -23,7 +23,7 @@ import {
 	ModelOrchestrationRunner,
 	type OrchestrationPatternName,
 } from "./models/model-orchestration-runner.js";
-import OnboardingWizard from "./onboarding/wizard.js";
+import OnboardingWizard, { type SkillHookClient } from "./onboarding/wizard.js";
 import { ReportingCliCommands } from "./presentation/cli-extensions.js";
 import { isValidSessionId } from "./runtime/secure-session-store.js";
 
@@ -86,6 +86,7 @@ export class McpAgentCli {
 		// Onboarding commands
 		this.setupOnboardingCommands();
 		this.setupOrchestrationCommands();
+		this.setupHooksCommands();
 
 		// Reporting and presentation commands
 		this.setupReportingCommands();
@@ -108,12 +109,17 @@ export class McpAgentCli {
 		onboard
 			.command("init")
 			.description("Run interactive onboarding wizard")
-			.action(async () => {
+			.option(
+				"-y, --yes",
+				"Skip interactive prompts and accept built-in defaults (CI-safe)",
+				false,
+			)
+			.action(async (opts: { yes: boolean }) => {
 				try {
 					const hasExisting =
 						await this.context.onboardingWizard.checkExistingSetup();
 
-					if (hasExisting) {
+					if (hasExisting && !opts.yes) {
 						console.log(chalk.yellow("⚠️ Existing configuration found."));
 						console.log(
 							"Use 'onboard status' to view current setup or 'onboard reset' to reconfigure.",
@@ -121,16 +127,21 @@ export class McpAgentCli {
 						return;
 					}
 
-					const config =
-						await this.context.onboardingWizard.runInteractiveSetup();
+					const config = opts.yes
+						? await this.context.onboardingWizard.runSetupWithDefaults()
+						: await this.context.onboardingWizard.runInteractiveSetup();
 					await this.context.scriptRunner.withSpinner(
 						"Saving onboarding configuration",
 						() => this.context.onboardingWizard.saveConfiguration(config),
 					);
-					await this.context.scriptRunner.withSpinner(
+					await this.context.scriptRunner.withProgressSpinner(
 						"Taking initial snapshot",
-						() => this.context.memoryInterface.refresh(),
+						(update) =>
+							this.context.memoryInterface.refresh((filePath, index, total) => {
+								update(`Scanning files… ${index + 1}/${total}  ${filePath}`);
+							}),
 					);
+					await this.context.onboardingWizard.emitSkillHooks();
 
 					console.log(
 						chalk.green(
@@ -231,6 +242,47 @@ export class McpAgentCli {
 					console.error(chalk.red(`Reset failed: ${toErrorMessage(error)}`));
 				}
 			});
+
+		onboard
+			.command("skills")
+			.description("(Re)generate IDE skill hooks for every public instruction")
+			.option(
+				"--global",
+				"Write to user-home skill directories instead of workspace-local ones",
+				false,
+			)
+			.option(
+				"--target <client>",
+				"Which IDE client(s) to target: copilot | claude | codex | all (default: all)",
+				"all",
+			)
+			.action(async (opts: { global: boolean; target: string }) => {
+				const ALL_CLIENTS: SkillHookClient[] = ["copilot", "claude", "codex"];
+				const validClients = new Set<string>(ALL_CLIENTS);
+				const target = opts.target.toLowerCase();
+				if (target !== "all" && !validClients.has(target)) {
+					console.error(
+						chalk.red(
+							`Invalid --target "${opts.target}". Valid values: copilot, claude, codex, all`,
+						),
+					);
+					process.exit(1);
+				}
+				const clients: SkillHookClient[] =
+					target === "all" ? ALL_CLIENTS : [target as SkillHookClient];
+				try {
+					const count = await this.context.onboardingWizard.emitSkillHooks(
+						opts.global,
+						clients,
+					);
+					console.log(chalk.green(`✅ Emitted ${count} skill hook file(s)`));
+				} catch (error) {
+					console.error(
+						chalk.red(`Skill hook generation failed: ${toErrorMessage(error)}`),
+					);
+					process.exit(1);
+				}
+			});
 	}
 
 	private setupOrchestrationCommands() {
@@ -304,6 +356,202 @@ export class McpAgentCli {
 					}
 				},
 			);
+	}
+
+	private setupHooksCommands() {
+		const hooks = this.program
+			.command("hooks")
+			.description(
+				"Manage IDE session hooks to prevent agent drift (SessionStart / PreToolUse)",
+			);
+
+		/** Supported clients and where their hook JSON lives. */
+		const HOOK_PATHS: Record<
+			"vscode" | "copilot-cli" | "claude-code",
+			{ dir: string[]; file: string }
+		> = {
+			vscode: {
+				dir: [".copilot", "hooks"],
+				file: "mcp-ai-agent-guidelines-hooks.json",
+			},
+			"copilot-cli": {
+				dir: [".copilot", "hooks"],
+				file: "mcp-ai-agent-guidelines-hooks.json",
+			},
+			"claude-code": { dir: [".claude"], file: "settings.json" },
+		};
+
+		const buildHookJson = (client: string) => ({
+			hooks: {
+				SessionStart: [
+					{
+						type: "command",
+						command: "mcp-ai-agent-guidelines hooks remind-session",
+					},
+				],
+				PreToolUse: [
+					{
+						type: "command",
+						command: "mcp-ai-agent-guidelines hooks remind-drift",
+					},
+				],
+			},
+			_meta: {
+				generatedBy: `mcp-ai-agent-guidelines hooks setup --client ${client}`,
+				docs: "https://github.com/Anselmoo/mcp-ai-agent-guidelines#auto-mode--session-hooks",
+			},
+		});
+
+		hooks
+			.command("setup")
+			.description(
+				"Write hook JSON to the appropriate path for the specified IDE client",
+			)
+			.option(
+				"--client <client>",
+				"Target IDE client: vscode | copilot-cli | claude-code (default: vscode)",
+				"vscode",
+			)
+			.option("--dry-run", "Print the hook JSON without writing to disk")
+			.action(async (opts: { client: string; dryRun?: boolean }) => {
+				const validClients = new Set(Object.keys(HOOK_PATHS));
+				if (!validClients.has(opts.client)) {
+					console.error(
+						chalk.red(
+							`Invalid --client "${opts.client}". Valid values: ${[...validClients].join(", ")}`,
+						),
+					);
+					process.exit(1);
+				}
+
+				const { homedir } = await import("node:os");
+				const { mkdir, writeFile } = await import("node:fs/promises");
+				const { join } = await import("node:path");
+
+				const clientKey = opts.client as keyof typeof HOOK_PATHS;
+				const { dir, file } = HOOK_PATHS[clientKey];
+				const hookJson = buildHookJson(opts.client);
+				const hookContent = JSON.stringify(hookJson, null, 2);
+
+				if (opts.dryRun) {
+					console.log(chalk.cyan(`\n# Hook JSON for --client ${opts.client}:`));
+					console.log(hookContent);
+					return;
+				}
+
+				const destDir = join(homedir(), ...dir);
+				const destFile = join(destDir, file);
+
+				try {
+					await mkdir(destDir, { recursive: true });
+					await writeFile(destFile, hookContent, "utf8");
+					console.log(
+						chalk.green(`✅ Hook configuration written to ${destFile}`),
+					);
+					console.log(chalk.cyan("\nHook lifecycle:"));
+					console.log(
+						"  SessionStart → calls `task-bootstrap` reminder on new session",
+					);
+					console.log(
+						"  PreToolUse   → detects consecutive non-MCP calls and nudges agent",
+					);
+					console.log(chalk.gray("\nTo uninstall, delete: " + destFile));
+				} catch (error) {
+					console.error(
+						chalk.red(`Hook setup failed: ${toErrorMessage(error)}`),
+					);
+					process.exit(1);
+				}
+			});
+
+		hooks
+			.command("print")
+			.description("Print the hook JSON to stdout without writing to disk")
+			.option(
+				"--client <client>",
+				"Target IDE client: vscode | copilot-cli | claude-code (default: vscode)",
+				"vscode",
+			)
+			.action((opts: { client: string }) => {
+				const validClients = new Set(Object.keys(HOOK_PATHS));
+				if (!validClients.has(opts.client)) {
+					console.error(
+						chalk.red(
+							`Invalid --client "${opts.client}". Valid values: ${[...validClients].join(", ")}`,
+						),
+					);
+					process.exit(1);
+				}
+				console.log(JSON.stringify(buildHookJson(opts.client), null, 2));
+			});
+
+		// These subcommands are invoked BY the hook JSON entries above.
+		hooks
+			.command("remind-session")
+			.description(
+				"Print a SessionStart reminder (called by IDE hook on session start)",
+			)
+			.action(() => {
+				console.log(
+					"[mcp-ai-agent-guidelines] Session started.\n" +
+						"  → Call `task-bootstrap` first to load project context, TOON memory, and the codebase baseline.\n" +
+						"  → If the task spans multiple domains or is ambiguous, call `meta-routing` before any domain tool.\n" +
+						"  → See .agent/rules/default.md for the full routing table.",
+				);
+			});
+
+		hooks
+			.command("remind-drift")
+			.description(
+				"Print a drift-detection reminder (called by IDE hook on PreToolUse)",
+			)
+			.option(
+				"--tool <name>",
+				"Name of the tool about to be called (used to skip MCP tools)",
+				"",
+			)
+			.action((opts: { tool: string }) => {
+				const mcpToolPrefixes = [
+					"task-bootstrap",
+					"meta-routing",
+					"project-onboard",
+					"feature-implement",
+					"issue-debug",
+					"system-design",
+					"code-review",
+					"code-refactor",
+					"test-verify",
+					"evidence-research",
+					"strategy-plan",
+					"docs-generate",
+					"quality-evaluate",
+					"prompt-engineering",
+					"policy-govern",
+					"agent-orchestrate",
+					"enterprise-strategy",
+					"fault-resilience",
+					"routing-adapt",
+					"physics-analysis",
+					"agent-memory",
+					"agent-session",
+					"agent-snapshot",
+					"agent-workspace",
+					"orchestration-config",
+					"model-discover",
+					"graph-visualize",
+				];
+				const tool = opts.tool.toLowerCase();
+				const isMcp = mcpToolPrefixes.some(
+					(p) => tool === p || tool.startsWith(p),
+				);
+				if (!isMcp) {
+					console.log(
+						"[mcp-ai-agent-guidelines] Reminder: you may be drifting away from MCP tools.\n" +
+							"  → If you have made several consecutive non-MCP calls (grep, read_file, bash), pause and\n" +
+							"    call `meta-routing` to re-orient, or `task-bootstrap` to reload project context.",
+					);
+				}
+			});
 	}
 
 	private setupMemoryCommands() {

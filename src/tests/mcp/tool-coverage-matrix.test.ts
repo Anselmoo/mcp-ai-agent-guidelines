@@ -29,13 +29,11 @@ let tempStateDir: string;
 beforeAll(() => {
 	tempStateDir = mkdtempSync(join(tmpdir(), "tool-coverage-matrix-"));
 	process.env.MCP_AI_AGENT_GUIDELINES_STATE_DIR = tempStateDir;
-	// Ensure adapt is visible so the coverage matrix accounts for all tools.
-	process.env.ENABLE_ADAPTIVE_ROUTING = "true";
+	// routing-adapt is now visible by default (opt-out model); no env var needed.
 });
 
 afterAll(() => {
 	delete process.env.MCP_AI_AGENT_GUIDELINES_STATE_DIR;
-	delete process.env.ENABLE_ADAPTIVE_ROUTING;
 	rmSync(tempStateDir, { recursive: true, force: true });
 });
 

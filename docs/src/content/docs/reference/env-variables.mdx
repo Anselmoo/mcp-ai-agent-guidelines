@@ -40,16 +40,17 @@ Enables the `gov-*` governance and compliance skill prefix. The `govern` workflo
 ALLOW_GOVERNANCE_SKILLS=true node dist/index.js
 ```
 
-### `ENABLE_ADAPTIVE_ROUTING`
+### `DISABLE_ADAPTIVE_ROUTING`
 
 | Default | Values |
 |---------|--------|
 | `false` | `true` / `false` |
 
-Enables the `adapt-*` bio-inspired routing skill prefix and the `routing-adapt` MCP tool. Also un-hides the `routing-adapt` tool from the public surface (see `HIDDEN_TOOLS`). Required for Hebbian reinforcement, ACO pheromone routing, Physarum pruning, and simulated annealing workflows.
+Disables the `adapt-*` bio-inspired routing skill prefix and hides the `routing-adapt` MCP tool from the public surface. By default `routing-adapt` is **visible** and adaptive skills are **enabled** — set this flag to opt-out. Required for Hebbian reinforcement, ACO pheromone routing, Physarum pruning, and simulated annealing workflows.
 
 ```bash
-ENABLE_ADAPTIVE_ROUTING=true node dist/index.js
+# Opt-out: hide routing-adapt and block adapt-* skill execution
+DISABLE_ADAPTIVE_ROUTING=true node dist/index.js
 ```
 
 ### `ALLOW_INTENSIVE_SKILLS`
@@ -78,7 +79,7 @@ HIDDEN_TOOLS="physics-analysis,enterprise,govern" node dist/index.js
 ```
 
 <Aside type="note">
-`routing-adapt` is automatically hidden unless `ENABLE_ADAPTIVE_ROUTING=true`, regardless of `HIDDEN_TOOLS`.
+`routing-adapt` is visible by default. Set `DISABLE_ADAPTIVE_ROUTING=true` to hide it from `tools/list` regardless of `HIDDEN_TOOLS`.
 </Aside>
 
 ---
