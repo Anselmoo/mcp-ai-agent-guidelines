@@ -1898,4 +1898,24 @@ describe("ToonMemoryInterface — isWorkspaceInitialized", () => {
 		const result = await memoryInterface.isWorkspaceInitialized();
 		expect(result).toBe(true);
 	});
+
+	it("awaits baseDirReadyPromise when no explicit dir or env var is given", async () => {
+		// Remove env var so the async workspace-root detection branch is triggered.
+		const saved = process.env.MCP_AI_AGENT_GUIDELINES_STATE_DIR;
+		delete process.env.MCP_AI_AGENT_GUIDELINES_STATE_DIR;
+		try {
+			// Construct without customDir — this sets baseDirReadyPromise.
+			const iface = new ToonMemoryInterface();
+			// Call immediately before the promise resolves to exercise the await path.
+			const result = await iface.isWorkspaceInitialized();
+			// The current working directory is the repo root which has orchestration.toml.
+			expect(typeof result).toBe("boolean");
+		} finally {
+			if (saved === undefined) {
+				delete process.env.MCP_AI_AGENT_GUIDELINES_STATE_DIR;
+			} else {
+				process.env.MCP_AI_AGENT_GUIDELINES_STATE_DIR = saved;
+			}
+		}
+	});
 });

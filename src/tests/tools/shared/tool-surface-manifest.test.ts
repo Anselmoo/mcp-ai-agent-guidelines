@@ -1,10 +1,12 @@
 import { afterEach, describe, expect, it } from "vitest";
 import {
+	applySlimMode,
 	computeEffectiveHiddenTools,
 	computeExternalToolDiagnostics,
 	filterHiddenTools,
 	getHiddenToolNames,
 	isToolHidden,
+	SLIM_SURFACE_TOOLS,
 	validateExternalToolSurface,
 } from "../../../tools/shared/tool-surface-manifest.js";
 
@@ -208,5 +210,50 @@ describe("computeExternalToolDiagnostics", () => {
 			STRICT_TOOL_SURFACE: "true",
 		});
 		expect(diag.strictMode).toBe(true);
+	});
+});
+
+describe("applySlimMode", () => {
+	const FULL_TOOLS = [
+		{ name: "task-bootstrap" },
+		{ name: "meta-routing" },
+		{ name: "project-onboard" },
+		{ name: "feature-implement" },
+		{ name: "system-design" },
+	] as const;
+
+	it("returns all tools when slim mode is off (no env)", () => {
+		const result = applySlimMode([...FULL_TOOLS], undefined);
+		expect(result).toHaveLength(5);
+	});
+
+	it("returns all tools when env override is not 'true'", () => {
+		const result = applySlimMode([...FULL_TOOLS], "false");
+		expect(result).toHaveLength(5);
+	});
+
+	it("filters to only SLIM_SURFACE_TOOLS when env override is 'true'", () => {
+		const result = applySlimMode([...FULL_TOOLS], "true");
+		expect(result).toHaveLength(3);
+		for (const t of result) {
+			expect(SLIM_SURFACE_TOOLS.has(t.name.toLowerCase())).toBe(true);
+		}
+	});
+
+	it("preserves extra properties on surviving tools", () => {
+		const rich = [
+			{ name: "task-bootstrap", description: "bootstrap", version: 1 },
+			{ name: "feature-implement", description: "implement", version: 2 },
+		];
+		const result = applySlimMode(rich, "true");
+		expect(result).toHaveLength(1);
+		expect(result[0]?.description).toBe("bootstrap");
+		expect(result[0]?.version).toBe(1);
+	});
+
+	it("returns empty array when no tools match the slim surface", () => {
+		const tools = [{ name: "feature-implement" }, { name: "system-design" }];
+		const result = applySlimMode(tools, "true");
+		expect(result).toHaveLength(0);
 	});
 });

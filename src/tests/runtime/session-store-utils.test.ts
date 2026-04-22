@@ -1,5 +1,5 @@
-import { mkdirSync, mkdtempSync, rmSync } from "node:fs";
-import { mkdir, readFile, rm } from "node:fs/promises";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
@@ -7,6 +7,7 @@ import {
 	ensureSessionStateGitignore,
 	findWorkspaceRoot,
 	findWorkspaceRootSync,
+	isWorkspaceInitialized,
 	resolveSessionPathWithinStateDir,
 	resolveSessionStateDir,
 	resolveSessionStateDirAsync,
@@ -217,6 +218,60 @@ describe("resolveSessionStateDirAsync", () => {
 			} else {
 				process.env[SESSION_STATE_DIR_ENV_VAR] = prev;
 			}
+		}
+	});
+});
+
+describe("findWorkspaceRoot — package.json fallback path", () => {
+	it("returns a dir that contains package.json when no .git is present", async () => {
+		const tmpBase = mkdtempSync(join(tmpdir(), "ws-pkg-"));
+		const subDir = join(tmpBase, "nested", "src");
+		mkdirSync(subDir, { recursive: true });
+		writeFileSync(join(tmpBase, "package.json"), '{"name":"test"}\n', "utf8");
+		try {
+			// No .git in tmpBase — should fall through to package.json check.
+			const result = await findWorkspaceRoot(subDir);
+			expect(result).toBe(resolve(tmpBase));
+		} finally {
+			rmSync(tmpBase, { recursive: true, force: true });
+		}
+	});
+
+	it("findWorkspaceRootSync returns dir with package.json when no .git is present", () => {
+		const tmpBase = mkdtempSync(join(tmpdir(), "ws-pkg-sync-"));
+		const subDir = join(tmpBase, "nested");
+		mkdirSync(subDir, { recursive: true });
+		writeFileSync(join(tmpBase, "package.json"), '{"name":"test"}\n', "utf8");
+		try {
+			const result = findWorkspaceRootSync(subDir);
+			expect(result).toBe(resolve(tmpBase));
+		} finally {
+			rmSync(tmpBase, { recursive: true, force: true });
+		}
+	});
+});
+
+describe("isWorkspaceInitialized", () => {
+	it("returns false when orchestration.toml is absent", async () => {
+		const tmpBase = mkdtempSync(join(tmpdir(), "ws-init-"));
+		try {
+			const result = await isWorkspaceInitialized(tmpBase);
+			expect(result).toBe(false);
+		} finally {
+			await rm(tmpBase, { recursive: true, force: true });
+		}
+	});
+
+	it("returns true when orchestration.toml exists", async () => {
+		const tmpBase = mkdtempSync(join(tmpdir(), "ws-init-"));
+		const configDir = join(tmpBase, "config");
+		await mkdir(configDir, { recursive: true });
+		await writeFile(join(configDir, "orchestration.toml"), "[model]\n", "utf8");
+		try {
+			const result = await isWorkspaceInitialized(tmpBase);
+			expect(result).toBe(true);
+		} finally {
+			await rm(tmpBase, { recursive: true, force: true });
 		}
 	});
 });
