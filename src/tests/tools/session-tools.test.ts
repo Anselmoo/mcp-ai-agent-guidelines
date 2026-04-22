@@ -4,6 +4,7 @@ const {
 	deleteSessionContextMock,
 	getMemoryStatsMock,
 	getSessionStatsMock,
+	isWorkspaceInitializedMock,
 	listSessionIdsMock,
 	loadScanResultsMock,
 	loadSessionContextMock,
@@ -15,6 +16,7 @@ const {
 	deleteSessionContextMock: vi.fn(),
 	getMemoryStatsMock: vi.fn(),
 	getSessionStatsMock: vi.fn(),
+	isWorkspaceInitializedMock: vi.fn().mockResolvedValue(true),
 	listSessionIdsMock: vi.fn(),
 	loadScanResultsMock: vi.fn(),
 	loadSessionContextMock: vi.fn(),
@@ -29,7 +31,7 @@ vi.mock("../../memory/toon-interface.js", () => ({
 		deleteSessionContext = deleteSessionContextMock;
 		getMemoryStats = getMemoryStatsMock;
 		getSessionStats = getSessionStatsMock;
-		isWorkspaceInitialized = vi.fn().mockResolvedValue(true);
+		isWorkspaceInitialized = isWorkspaceInitializedMock;
 		listSessionIds = listSessionIdsMock;
 		loadScanResults = loadScanResultsMock;
 		loadSessionContext = loadSessionContextMock;
@@ -58,6 +60,7 @@ function getText(
 describe("tools/session-tools", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
+		isWorkspaceInitializedMock.mockResolvedValue(true);
 	});
 
 	it("publishes the expected session tool definition", () => {
@@ -510,5 +513,24 @@ describe("tools/session-tools", () => {
 
 		expect(result.isError).toBe(true);
 		expect(getText(result)).toContain("Session context not found");
+	});
+
+	it("blocks write command when workspace is not initialized", async () => {
+		isWorkspaceInitializedMock.mockResolvedValue(false);
+
+		const result = await dispatchSessionToolCall(
+			SESSION_TOOL_NAME,
+			{
+				command: "write",
+				target: "scan-results",
+				sessionId: "session-abcdefghijklmnopqrstuvwx",
+				data: { findings: ["x"] },
+			},
+			{ sessionId: "session-ABCDEFGHJKMN" },
+		);
+
+		expect(result.isError).toBe(true);
+		expect(getText(result)).toContain("Workspace not initialized");
+		expect(getText(result)).toContain("mcp-cli onboard init");
 	});
 });

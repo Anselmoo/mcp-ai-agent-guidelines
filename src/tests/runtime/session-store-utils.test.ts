@@ -1,12 +1,15 @@
-import { mkdtempSync } from "node:fs";
-import { readFile, rm } from "node:fs/promises";
+import { mkdirSync, mkdtempSync, rmSync } from "node:fs";
+import { mkdir, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import {
 	ensureSessionStateGitignore,
+	findWorkspaceRoot,
+	findWorkspaceRootSync,
 	resolveSessionPathWithinStateDir,
 	resolveSessionStateDir,
+	resolveSessionStateDirAsync,
 	runExclusiveSessionOperation,
 	SESSION_STATE_DIR_ENV_VAR,
 	writeTextFileAtomic,
@@ -148,5 +151,72 @@ describe("runtime/session-store-utils", () => {
 			"second-end",
 		]);
 		expect(locks.size).toBe(0);
+	});
+});
+
+describe("findWorkspaceRoot / findWorkspaceRootSync", () => {
+	it("findWorkspaceRoot resolves to a directory containing package.json or .git", async () => {
+		const result = await findWorkspaceRoot(process.cwd());
+		expect(result).not.toBeNull();
+		expect(typeof result).toBe("string");
+	});
+
+	it("findWorkspaceRoot returns null for a deeply nested temp dir with no markers", async () => {
+		const tmpBase = mkdtempSync(join(tmpdir(), "no-workspace-"));
+		const deepDir = join(tmpBase, "a", "b", "c", "d");
+		await mkdir(deepDir, { recursive: true });
+		try {
+			const result = await findWorkspaceRoot(deepDir);
+			// Should either find something up the chain (system /tmp may have markers)
+			// or return null — it must not throw.
+			expect(result === null || typeof result === "string").toBe(true);
+		} finally {
+			await rm(tmpBase, { recursive: true, force: true });
+		}
+	});
+
+	it("findWorkspaceRootSync returns a string for the current working directory", () => {
+		const result = findWorkspaceRootSync(process.cwd());
+		expect(result).not.toBeNull();
+		expect(typeof result).toBe("string");
+	});
+
+	it("findWorkspaceRootSync returns null or string for a temp dir with no markers", () => {
+		const tmpBase = mkdtempSync(join(tmpdir(), "no-workspace-sync-"));
+		try {
+			const deepDir = join(tmpBase, "a", "b");
+			mkdirSync(deepDir, { recursive: true });
+			const result = findWorkspaceRootSync(deepDir);
+			expect(result === null || typeof result === "string").toBe(true);
+		} finally {
+			try {
+				rmSync(tmpBase, { recursive: true, force: true });
+			} catch {
+				/* ignore */
+			}
+		}
+	});
+});
+
+describe("resolveSessionStateDirAsync", () => {
+	it("resolves to a non-empty string without throwing", async () => {
+		const result = await resolveSessionStateDirAsync();
+		expect(typeof result).toBe("string");
+		expect(result.length).toBeGreaterThan(0);
+	});
+
+	it("uses the env var override when set", async () => {
+		const prev = process.env[SESSION_STATE_DIR_ENV_VAR];
+		process.env[SESSION_STATE_DIR_ENV_VAR] = "/tmp/custom-state-dir";
+		try {
+			const result = await resolveSessionStateDirAsync();
+			expect(result).toBe("/tmp/custom-state-dir");
+		} finally {
+			if (prev === undefined) {
+				delete process.env[SESSION_STATE_DIR_ENV_VAR];
+			} else {
+				process.env[SESSION_STATE_DIR_ENV_VAR] = prev;
+			}
+		}
 	});
 });

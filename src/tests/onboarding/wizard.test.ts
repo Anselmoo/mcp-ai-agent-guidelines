@@ -1502,3 +1502,110 @@ describe("onboarding/wizard", () => {
 		expect(loggedOutput).not.toContain("Version:");
 	});
 });
+
+describe("runSetupWithDefaults", () => {
+	afterEach(() => {
+		vi.restoreAllMocks();
+		restoreStateDirEnvVar();
+	});
+
+	it("returns a valid OnboardingConfig without interactive prompts", async () => {
+		vi.spyOn(console, "log").mockImplementation(() => {});
+		const wizard = new OnboardingWizard();
+		const config = await wizard.runSetupWithDefaults();
+
+		expect(config.projectName).toBeTruthy();
+		expect(typeof config.projectName).toBe("string");
+		expect(config.projectType).toBeTruthy();
+		expect(config.orchestration).toBeDefined();
+		expect(config.setup.firstRun).toBe(true);
+		expect(config.setup.version).toBe(PACKAGE_VERSION);
+		expect(typeof config.setup.timestamp).toBe("string");
+	});
+
+	it("uses the package name from package.json when available", async () => {
+		vi.spyOn(console, "log").mockImplementation(() => {});
+		const wizard = new OnboardingWizard();
+		const config = await wizard.runSetupWithDefaults();
+
+		// Current workspace has package.json with name "mcp-ai-agent-guidelines"
+		expect(config.projectName).toBe("mcp-ai-agent-guidelines");
+	});
+
+	it("uses 'my-ai-project' as default when package.json is absent", async () => {
+		vi.spyOn(console, "log").mockImplementation(() => {});
+		const wizard = new OnboardingWizard(
+			createWizardFileSystem({
+				access: vi.fn(async () => {
+					// Simulate no package.json or other files
+					throw Object.assign(new Error("not found"), { code: "ENOENT" });
+				}),
+				readFile: vi.fn(async () => ""),
+			}),
+		);
+		const config = await wizard.runSetupWithDefaults();
+
+		expect(config.projectName).toBe("my-ai-project");
+	});
+});
+
+describe("emitSkillHooks", () => {
+	afterEach(() => {
+		vi.restoreAllMocks();
+		restoreStateDirEnvVar();
+	});
+
+	it("writes SKILL.md files for each public instruction per client", async () => {
+		vi.spyOn(console, "log").mockImplementation(() => {});
+		const tmpBase = mkdtempSync(join(tmpdir(), "skill-hooks-"));
+		vi.spyOn(process, "cwd").mockReturnValue(tmpBase);
+
+		try {
+			const wizard = new OnboardingWizard();
+			const count = await wizard.emitSkillHooks(false, ["copilot"]);
+
+			expect(count).toBeGreaterThan(0);
+
+			// Verify SKILL.md files exist in the expected location
+			const { readdir } = await import("node:fs/promises");
+			const skillsDir = join(tmpBase, ".github", "skills");
+			const subdirs = await readdir(skillsDir);
+			expect(subdirs.length).toBe(count);
+		} finally {
+			vi.restoreAllMocks();
+			rmSync(tmpBase, { recursive: true, force: true });
+		}
+	});
+
+	it("returns 0 when called with an empty client list", async () => {
+		vi.spyOn(console, "log").mockImplementation(() => {});
+		const wizard = new OnboardingWizard();
+		const count = await wizard.emitSkillHooks(false, []);
+
+		expect(count).toBe(0);
+	});
+
+	it("multiplies output count by number of clients", async () => {
+		vi.spyOn(console, "log").mockImplementation(() => {});
+		const tmpBase1 = mkdtempSync(join(tmpdir(), "skill-hooks-one-"));
+		const tmpBase2 = mkdtempSync(join(tmpdir(), "skill-hooks-two-"));
+		const cwdSpy = vi.spyOn(process, "cwd").mockReturnValue(tmpBase1);
+
+		try {
+			const wizard = new OnboardingWizard();
+			const singleClient = await wizard.emitSkillHooks(false, ["copilot"]);
+
+			cwdSpy.mockReturnValue(tmpBase2);
+			const twoClients = await wizard.emitSkillHooks(false, [
+				"copilot",
+				"claude",
+			]);
+
+			expect(twoClients).toBe(singleClient * 2);
+		} finally {
+			vi.restoreAllMocks();
+			rmSync(tmpBase1, { recursive: true, force: true });
+			rmSync(tmpBase2, { recursive: true, force: true });
+		}
+	});
+});

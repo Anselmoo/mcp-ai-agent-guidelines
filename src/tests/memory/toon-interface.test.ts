@@ -1867,3 +1867,35 @@ describe("ToonMemoryInterface — housekeeping", () => {
 		expect(stats.sessionStats["session-ABCDEFGHJKMN"]).toBeUndefined();
 	});
 });
+
+describe("ToonMemoryInterface — isWorkspaceInitialized", () => {
+	let testDir: string | undefined;
+	let memoryInterface: ToonMemoryInterface;
+
+	beforeEach(async () => {
+		testDir = await createIsolatedTestDir();
+		process.env.MCP_AI_AGENT_GUIDELINES_STATE_DIR = testDir;
+		memoryInterface = new ToonMemoryInterface(testDir);
+	});
+
+	afterEach(async () => {
+		delete process.env.MCP_AI_AGENT_GUIDELINES_STATE_DIR;
+		await cleanupTestDir(testDir);
+	});
+
+	it("returns false when orchestration.toml does not exist", async () => {
+		// testDir has no config/orchestration.toml
+		const result = await memoryInterface.isWorkspaceInitialized();
+		expect(result).toBe(false);
+	});
+
+	it("returns true when orchestration.toml exists", async () => {
+		const { mkdir } = await import("node:fs/promises");
+		const configDir = join(testDir!, "config");
+		await mkdir(configDir, { recursive: true });
+		await writeFile(join(configDir, "orchestration.toml"), "[model]\n", "utf8");
+
+		const result = await memoryInterface.isWorkspaceInitialized();
+		expect(result).toBe(true);
+	});
+});
