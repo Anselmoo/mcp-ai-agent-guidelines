@@ -11,6 +11,9 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 - streamline onboarding process and enhance memory interface initialization
+
+### Added
+- enhance meta-routing instruction for better task classification and usage guidance
 ## [0.15.3] - 2026-04-21
 
 _No notable changes recorded._
