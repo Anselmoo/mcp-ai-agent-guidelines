@@ -143,7 +143,8 @@ if (specMtime > 0 && specMtime > customMtime) {
     `⚠️  **Skill/instruction specs** were modified ~${specAge}m ago but .github/skills/ and\n` +
       "     .github/instructions/ may not reflect those changes.\n" +
       "     Review: re-run the relevant SKILL.md skill or update .github/instructions/ manually.\n" +
-      "     Skills affected: pr-quality-cycle, fix-codecov-gaps, address-pr-review-locally, coverage-guard",
+      "     Skills affected: pr-quality-cycle, fix-codecov-gaps, address-pr-review-locally, coverage-guard\n" +
+      "     Hook affected: .github/hooks/coverage-guard.json (95% target)",
   );
 }
 
