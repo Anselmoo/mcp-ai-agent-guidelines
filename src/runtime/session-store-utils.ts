@@ -1,7 +1,15 @@
 import { randomUUID } from "node:crypto";
 import { existsSync } from "node:fs";
 import { access, mkdir, readFile, rename, writeFile } from "node:fs/promises";
-import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
+import {
+	dirname,
+	isAbsolute,
+	join,
+	parse,
+	relative,
+	resolve,
+	sep,
+} from "node:path";
 
 /**
  * Seam type for reading a text file.  Allows tests (and other callers) to
@@ -101,8 +109,8 @@ export async function findWorkspaceRoot(
 	startDir: string,
 ): Promise<string | null> {
 	let current = resolve(startDir);
-	const root = resolve("/");
-	while (current !== root) {
+	const fsRoot = parse(current).root;
+	while (current !== fsRoot) {
 		try {
 			await access(join(current, ".git"));
 			return current;
@@ -129,8 +137,8 @@ export async function findWorkspaceRoot(
  */
 export function findWorkspaceRootSync(startDir: string): string | null {
 	let current = resolve(startDir);
-	const root = resolve("/");
-	while (current !== root) {
+	const fsRoot = parse(current).root;
+	while (current !== fsRoot) {
 		if (existsSync(join(current, ".git"))) return current;
 		if (existsSync(join(current, "package.json"))) return current;
 		const parent = dirname(current);
@@ -262,9 +270,8 @@ export async function writeTextFileAtomic(
  * state directory.  A `false` result means the workspace has never been
  * bootstrapped via `mcp-cli onboard init` (or `project-onboard`).
  *
- * Mutating tool commands (`agent-memory write`, `agent-session write`,
- * `agent-snapshot refresh`) should call this before performing any filesystem
- * writes and surface an actionable error when it returns `false`.
+ * Callers that perform filesystem mutations can use this to gate writes and
+ * surface an actionable onboarding error when it returns `false`.
  */
 export async function isWorkspaceInitialized(
 	baseDir: string,

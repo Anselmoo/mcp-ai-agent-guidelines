@@ -50,7 +50,7 @@ describe("cli onboard commands", () => {
 			);
 		});
 
-		it("runs setup even when existing config exists and --yes is given", async () => {
+		it("runs setup when --force is given even when config already exists", async () => {
 			const runSetupWithDefaults = vi
 				.fn()
 				.mockResolvedValue({ projectName: "test" });
@@ -84,10 +84,48 @@ describe("cli onboard commands", () => {
 				reportingCommands: { registerCommands() {} } as never,
 			});
 
+			await cli.run(["node", "cli", "onboard", "init", "--yes", "--force"]);
+
+			// --force bypasses the hasExisting guard — setup still runs
+			expect(runSetupWithDefaults).toHaveBeenCalledOnce();
+		});
+
+		it("blocks init with --yes alone when config already exists", async () => {
+			const runSetupWithDefaults = vi.fn().mockResolvedValue({});
+			const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+			const cli = new McpAgentCli({
+				onboardingWizard: {
+					checkExistingSetup: vi.fn().mockResolvedValue(true),
+					runSetupWithDefaults,
+					runInteractiveSetup: vi.fn(),
+					saveConfiguration: vi.fn().mockResolvedValue(undefined),
+					emitSkillHooks: vi.fn().mockResolvedValue(0),
+				} as never,
+				memoryInterface: {
+					refresh: vi.fn().mockResolvedValue(undefined),
+				} as never,
+				scriptRunner: {
+					withSpinner: vi.fn(
+						async (_msg: string, task: () => Promise<unknown>) => task(),
+					),
+					withProgressSpinner: vi.fn(
+						async (
+							_msg: string,
+							task: (update: (s: string) => void) => Promise<unknown>,
+						) => task(() => {}),
+					),
+				} as never,
+				reportingCommands: { registerCommands() {} } as never,
+			});
+
 			await cli.run(["node", "cli", "onboard", "init", "--yes"]);
 
-			// --yes bypasses the hasExisting guard — setup still runs
-			expect(runSetupWithDefaults).toHaveBeenCalledOnce();
+			// --yes alone must NOT bypass the existing-config guard
+			expect(runSetupWithDefaults).not.toHaveBeenCalled();
+			expect(logSpy).toHaveBeenCalledWith(
+				expect.stringContaining("Pass --force"),
+			);
 		});
 
 		it("calls withProgressSpinner for snapshot during onboard init", async () => {

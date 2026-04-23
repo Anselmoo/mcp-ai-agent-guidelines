@@ -423,6 +423,9 @@ The `.agent/rules/` directory contains IDE-readable routing tables:
 
 These files are automatically picked up by Copilot's custom instructions system and by Serena's hook integration layer.
 
+> [!NOTE]
+> The published npm package does **not** include `.agent/rules/`. If you install from npm and want these routing rules, copy them from the GitHub repository into your workspace.
+
 ---
 
 ## Contributing

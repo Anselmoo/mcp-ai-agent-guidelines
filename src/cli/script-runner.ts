@@ -61,17 +61,12 @@ export async function withProgressSpinner<T>(
 	message: string,
 	task: (update: (text: string) => void) => Promise<T>,
 ): Promise<T> {
-	let spinner: ReturnType<typeof ora> | null = null;
-	try {
-		spinner = ora(message).start();
-	} catch {
-		// non-TTY: spinner stays null
-	}
+	const isInteractive = process.stdout.isTTY === true;
+	const spinner = isInteractive ? ora(message).start() : null;
 
-	const spinnerRef = spinner;
-	const update = spinnerRef
+	const update = spinner
 		? (text: string) => {
-				spinnerRef.text = text;
+				spinner.text = text;
 			}
 		: (text: string) => {
 				process.stdout.write(`${text}\n`);

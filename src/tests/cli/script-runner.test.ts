@@ -11,6 +11,8 @@ import {
 	promptForConfirmation,
 	promptForInput,
 	promptForSelection,
+	withProgressSpinner,
+	withSpinner,
 } from "../../cli/script-runner.js";
 
 afterEach(() => {
@@ -44,5 +46,36 @@ describe("script-runner prompts", () => {
 			promptForSelection("Choose instruction", ["review", "implement"]),
 		).resolves.toBe("review");
 		await expect(promptForConfirmation("Continue?")).resolves.toBe(false);
+	});
+});
+
+describe("withSpinner", () => {
+	it("runs the task and returns the result", async () => {
+		await expect(withSpinner("msg", () => Promise.resolve(42))).resolves.toBe(
+			42,
+		);
+	});
+
+	it("re-throws task errors", async () => {
+		await expect(
+			withSpinner("msg", () => Promise.reject(new Error("boom"))),
+		).rejects.toThrow("boom");
+	});
+});
+
+describe("withProgressSpinner", () => {
+	it("passes an update callback and returns the result (non-TTY path)", async () => {
+		const result = await withProgressSpinner("msg", async (update) => {
+			update("step 1");
+			update("step 2");
+			return "done";
+		});
+		expect(result).toBe("done");
+	});
+
+	it("re-throws task errors", async () => {
+		await expect(
+			withProgressSpinner("msg", () => Promise.reject(new Error("fail"))),
+		).rejects.toThrow("fail");
 	});
 });

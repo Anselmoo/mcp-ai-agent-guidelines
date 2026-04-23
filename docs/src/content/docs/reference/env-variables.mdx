@@ -46,7 +46,7 @@ ALLOW_GOVERNANCE_SKILLS=true node dist/index.js
 |---------|--------|
 | `false` | `true` / `false` |
 
-Disables the `adapt-*` bio-inspired routing skill prefix and hides the `routing-adapt` MCP tool from the public surface. By default `routing-adapt` is **visible** and adaptive skills are **enabled** — set this flag to opt-out. Required for Hebbian reinforcement, ACO pheromone routing, Physarum pruning, and simulated annealing workflows.
+Disables the `adapt-*` bio-inspired routing skill prefix and hides the `routing-adapt` MCP tool from the public surface. By default `routing-adapt` is **visible** and adaptive skills are **enabled** — set this flag to opt-out. Hebbian reinforcement, ACO pheromone routing, Physarum pruning, and simulated annealing workflows remain available unless this flag is set.
 
 ```bash
 # Opt-out: hide routing-adapt and block adapt-* skill execution

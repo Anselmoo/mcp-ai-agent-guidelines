@@ -705,7 +705,7 @@ export class OnboardingWizard {
 				await mkdir(skillDir, { recursive: true });
 				const content = [
 					"---",
-					`name: ${spec.displayName}`,
+					`name: "${spec.toolName}"`,
 					"description: |",
 					...spec.description.split("\n").map((line) => `  ${line}`),
 					"---",

@@ -217,8 +217,9 @@ async function buildFileSummaries(
 		includeMembers: true,
 	});
 
+	let completed = 0;
 	const summaries = await Promise.all(
-		codePaths.map(async (relativePath, index) => {
+		codePaths.map(async (relativePath) => {
 			const content = await readFile(relativePath, "utf8").catch((error) => {
 				if (
 					typeof error === "object" &&
@@ -231,7 +232,7 @@ async function buildFileSummaries(
 				throw error;
 			});
 			const fileSymbols = allSymbols[relativePath] ?? [];
-			onProgress?.(relativePath, index, codePaths.length);
+			onProgress?.(relativePath, completed++, codePaths.length);
 			return {
 				path: relativePath,
 				contentHash: computeFileHash(content),

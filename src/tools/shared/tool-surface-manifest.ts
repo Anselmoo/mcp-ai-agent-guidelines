@@ -75,8 +75,6 @@ export function getHiddenToolNames(env?: string): ReadonlySet<string> {
  *
  * - `routing-adapt` is auto-hidden when `DISABLE_ADAPTIVE_ROUTING=true`
  *   (default: visible — opt-out model).
- * - When `MCP_SLIM_MODE=true`, all tools except the 3-tool core surface
- *   (`task-bootstrap`, `meta-routing`, `project-onboard`) are hidden.
  *
  * Returns a comma-separated string suitable for passing to `filterHiddenTools`.
  */

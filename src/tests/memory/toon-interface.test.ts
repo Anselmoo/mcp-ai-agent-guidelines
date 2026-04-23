@@ -467,6 +467,17 @@ describe("ToonMemoryInterface", () => {
 			}
 		});
 	});
+
+	describe("refresh with onProgress callback", () => {
+		it("accepts an onProgress callback and does not throw", async () => {
+			const progressCalls: Array<[string, number, number]> = [];
+			await memoryInterface.refresh((filePath, index, total) => {
+				progressCalls.push([filePath, index, total]);
+			});
+			// An empty workspace scans zero files — callback may not fire, but no throw
+			expect(Array.isArray(progressCalls)).toBe(true);
+		});
+	});
 });
 
 describe("ToonSessionStore", () => {

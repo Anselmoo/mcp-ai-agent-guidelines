@@ -114,15 +114,23 @@ export class McpAgentCli {
 				"Skip interactive prompts and accept built-in defaults (CI-safe)",
 				false,
 			)
-			.action(async (opts: { yes: boolean }) => {
+			.option(
+				"-f, --force",
+				"Overwrite existing configuration without confirmation (use with caution)",
+				false,
+			)
+			.action(async (opts: { yes: boolean; force: boolean }) => {
 				try {
 					const hasExisting =
 						await this.context.onboardingWizard.checkExistingSetup();
 
-					if (hasExisting && !opts.yes) {
+					if (hasExisting && !opts.force) {
 						console.log(chalk.yellow("⚠️ Existing configuration found."));
 						console.log(
 							"Use 'onboard status' to view current setup or 'onboard reset' to reconfigure.",
+						);
+						console.log(
+							"Pass --force to overwrite the existing configuration.",
 						);
 						return;
 					}
@@ -378,7 +386,10 @@ export class McpAgentCli {
 				dir: [".copilot", "hooks"],
 				file: "mcp-ai-agent-guidelines-hooks.json",
 			},
-			"claude-code": { dir: [".claude"], file: "settings.json" },
+			"claude-code": {
+				dir: [".claude"],
+				file: "mcp-ai-agent-guidelines-hooks.json",
+			},
 		};
 
 		const buildHookJson = (client: string) => ({
@@ -496,7 +507,7 @@ export class McpAgentCli {
 					"[mcp-ai-agent-guidelines] Session started.\n" +
 						"  → Call `task-bootstrap` first to load project context, TOON memory, and the codebase baseline.\n" +
 						"  → If the task spans multiple domains or is ambiguous, call `meta-routing` before any domain tool.\n" +
-						"  → See .agent/rules/default.md for the full routing table.",
+						"  → See README.md or https://github.com/Anselmoo/mcp-ai-agent-guidelines for the full routing table.",
 				);
 			});
 

@@ -112,7 +112,7 @@ describe("computeEffectiveHiddenTools", () => {
 		else process.env.DISABLE_ADAPTIVE_ROUTING = savedAdaptive;
 	});
 
-	it("includes adapt when DISABLE_ADAPTIVE_ROUTING is not set (opt-in by default)", () => {
+	it("includes adapt when DISABLE_ADAPTIVE_ROUTING is not set (opt-out model)", () => {
 		delete process.env.HIDDEN_TOOLS;
 		delete process.env.DISABLE_ADAPTIVE_ROUTING;
 		const result = computeEffectiveHiddenTools();
