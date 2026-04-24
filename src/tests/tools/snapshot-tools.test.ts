@@ -18,6 +18,7 @@ vi.mock("../../memory/toon-interface.js", () => ({
 	ToonMemoryInterface: class {
 		compare = compareMock;
 		deleteFingerprintSnapshot = deleteFingerprintSnapshotMock;
+		isWorkspaceInitialized = vi.fn().mockResolvedValue(true);
 		listFingerprintSnapshots = listFingerprintSnapshotsMock;
 		loadFingerprintSnapshot = loadFingerprintSnapshotMock;
 		refresh = refreshMock;

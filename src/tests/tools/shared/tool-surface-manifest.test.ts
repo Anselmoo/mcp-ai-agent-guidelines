@@ -1,10 +1,12 @@
 import { afterEach, describe, expect, it } from "vitest";
 import {
+	applySlimMode,
 	computeEffectiveHiddenTools,
 	computeExternalToolDiagnostics,
 	filterHiddenTools,
 	getHiddenToolNames,
 	isToolHidden,
+	SLIM_SURFACE_TOOLS,
 	validateExternalToolSurface,
 } from "../../../tools/shared/tool-surface-manifest.js";
 
@@ -100,39 +102,40 @@ describe("getHiddenToolNames", () => {
 
 describe("computeEffectiveHiddenTools", () => {
 	const savedHidden = process.env.HIDDEN_TOOLS;
-	const savedAdaptive = process.env.ENABLE_ADAPTIVE_ROUTING;
+	const savedAdaptive = process.env.DISABLE_ADAPTIVE_ROUTING;
 
 	afterEach(() => {
 		if (savedHidden === undefined) delete process.env.HIDDEN_TOOLS;
 		else process.env.HIDDEN_TOOLS = savedHidden;
-		if (savedAdaptive === undefined) delete process.env.ENABLE_ADAPTIVE_ROUTING;
-		else process.env.ENABLE_ADAPTIVE_ROUTING = savedAdaptive;
+		if (savedAdaptive === undefined)
+			delete process.env.DISABLE_ADAPTIVE_ROUTING;
+		else process.env.DISABLE_ADAPTIVE_ROUTING = savedAdaptive;
 	});
 
-	it("includes adapt when ENABLE_ADAPTIVE_ROUTING is not set", () => {
+	it("includes adapt when DISABLE_ADAPTIVE_ROUTING is not set (opt-out model)", () => {
 		delete process.env.HIDDEN_TOOLS;
-		delete process.env.ENABLE_ADAPTIVE_ROUTING;
-		const result = computeEffectiveHiddenTools();
-		expect(result).toBe("routing-adapt");
-	});
-
-	it("excludes adapt when ENABLE_ADAPTIVE_ROUTING is true", () => {
-		delete process.env.HIDDEN_TOOLS;
-		process.env.ENABLE_ADAPTIVE_ROUTING = "true";
+		delete process.env.DISABLE_ADAPTIVE_ROUTING;
 		const result = computeEffectiveHiddenTools();
 		expect(result).toBe("");
 	});
 
+	it("excludes adapt when DISABLE_ADAPTIVE_ROUTING is true", () => {
+		delete process.env.HIDDEN_TOOLS;
+		process.env.DISABLE_ADAPTIVE_ROUTING = "true";
+		const result = computeEffectiveHiddenTools();
+		expect(result).toBe("routing-adapt");
+	});
+
 	it("combines HIDDEN_TOOLS with adapt when routing is disabled", () => {
 		process.env.HIDDEN_TOOLS = "enterprise,govern";
-		delete process.env.ENABLE_ADAPTIVE_ROUTING;
+		process.env.DISABLE_ADAPTIVE_ROUTING = "true";
 		const result = computeEffectiveHiddenTools();
 		expect(result).toBe("enterprise,govern,routing-adapt");
 	});
 
-	it("returns only HIDDEN_TOOLS when routing is enabled", () => {
+	it("returns only HIDDEN_TOOLS when routing is enabled (default)", () => {
 		process.env.HIDDEN_TOOLS = "enterprise";
-		process.env.ENABLE_ADAPTIVE_ROUTING = "true";
+		delete process.env.DISABLE_ADAPTIVE_ROUTING;
 		const result = computeEffectiveHiddenTools();
 		expect(result).toBe("enterprise");
 	});
@@ -207,5 +210,50 @@ describe("computeExternalToolDiagnostics", () => {
 			STRICT_TOOL_SURFACE: "true",
 		});
 		expect(diag.strictMode).toBe(true);
+	});
+});
+
+describe("applySlimMode", () => {
+	const FULL_TOOLS = [
+		{ name: "task-bootstrap" },
+		{ name: "meta-routing" },
+		{ name: "project-onboard" },
+		{ name: "feature-implement" },
+		{ name: "system-design" },
+	] as const;
+
+	it("returns all tools when slim mode is off (no env)", () => {
+		const result = applySlimMode([...FULL_TOOLS], undefined);
+		expect(result).toHaveLength(5);
+	});
+
+	it("returns all tools when env override is not 'true'", () => {
+		const result = applySlimMode([...FULL_TOOLS], "false");
+		expect(result).toHaveLength(5);
+	});
+
+	it("filters to only SLIM_SURFACE_TOOLS when env override is 'true'", () => {
+		const result = applySlimMode([...FULL_TOOLS], "true");
+		expect(result).toHaveLength(3);
+		for (const t of result) {
+			expect(SLIM_SURFACE_TOOLS.has(t.name.toLowerCase())).toBe(true);
+		}
+	});
+
+	it("preserves extra properties on surviving tools", () => {
+		const rich = [
+			{ name: "task-bootstrap", description: "bootstrap", version: 1 },
+			{ name: "feature-implement", description: "implement", version: 2 },
+		];
+		const result = applySlimMode(rich, "true");
+		expect(result).toHaveLength(1);
+		expect(result[0]?.description).toBe("bootstrap");
+		expect(result[0]?.version).toBe(1);
+	});
+
+	it("returns empty array when no tools match the slim surface", () => {
+		const tools = [{ name: "feature-implement" }, { name: "system-design" }];
+		const result = applySlimMode(tools, "true");
+		expect(result).toHaveLength(0);
 	});
 });

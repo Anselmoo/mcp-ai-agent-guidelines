@@ -218,6 +218,17 @@ export async function dispatchMemoryToolCall(
 		};
 	}
 	if (command === "write") {
+		if (!(await memoryInterface.isWorkspaceInitialized())) {
+			return {
+				content: [
+					{
+						type: "text",
+						text: "Workspace not initialized. Run `mcp-cli onboard init` (or call `project-onboard`) to generate the required config, snapshots, and memory directories before writing artifacts.",
+					},
+				],
+				isError: true,
+			};
+		}
 		const summary = record.summary as string | undefined;
 		if (!summary) {
 			return {

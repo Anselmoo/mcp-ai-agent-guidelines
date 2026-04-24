@@ -49,6 +49,39 @@ export async function withSpinner<T>(
 	}
 }
 
+/**
+ * Like `withSpinner`, but exposes an `update(text)` callback to the task so it
+ * can report incremental progress (e.g. per-file during a snapshot scan).
+ *
+ * On a real TTY the spinner label is updated on each call.
+ * In CI / non-TTY environments (where `ora` can't spin) each `update()` call
+ * writes a plain log line to stdout instead — safe for piped output.
+ */
+export async function withProgressSpinner<T>(
+	message: string,
+	task: (update: (text: string) => void) => Promise<T>,
+): Promise<T> {
+	const isInteractive = process.stdout.isTTY === true;
+	const spinner = isInteractive ? ora(message).start() : null;
+
+	const update = spinner
+		? (text: string) => {
+				spinner.text = text;
+			}
+		: (text: string) => {
+				process.stdout.write(`${text}\n`);
+			};
+
+	try {
+		const result = await task(update);
+		spinner?.succeed(message);
+		return result;
+	} catch (err) {
+		spinner?.fail(message);
+		throw err;
+	}
+}
+
 export async function promptForInput(
 	message: string,
 	defaultValue?: string,
@@ -98,6 +131,13 @@ export class ScriptRunner {
 
 	async withSpinner<T>(message: string, task: () => Promise<T>): Promise<T> {
 		return withSpinner(message, task);
+	}
+
+	async withProgressSpinner<T>(
+		message: string,
+		task: (update: (text: string) => void) => Promise<T>,
+	): Promise<T> {
+		return withProgressSpinner(message, task);
 	}
 
 	async promptForInput(

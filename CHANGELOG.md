@@ -8,6 +8,17 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+
+### Changed
+- streamline onboarding process and enhance memory interface initialization
+
+### Added
+- enhance meta-routing instruction for better task classification and usage guidance
+
+### Fixed
+- address all Copilot review comments from PR #1461 and add push-ready gate
+- update changelog to include recent enhancements in onboarding and meta-routing instructions
+- update changelog to reflect recent enhancements in onboarding and meta-routing instructions
 ## [0.15.3] - 2026-04-21
 
 _No notable changes recorded._

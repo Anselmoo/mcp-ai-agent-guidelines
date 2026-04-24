@@ -58,6 +58,7 @@ import {
 	SESSION_TOOL_DEFINITIONS,
 } from "./tools/session-tools.js";
 import {
+	applySlimMode,
 	computeEffectiveHiddenTools,
 	filterHiddenTools,
 } from "./tools/shared/tool-surface-manifest.js";
@@ -161,18 +162,20 @@ export function createRuntime(): ServerRuntime {
 export function createRequestHandlers(sharedRuntime = createRuntime()) {
 	return {
 		listTools: async () => ({
-			tools: filterHiddenTools(
-				[
-					...buildPublicToolSurface(sharedRuntime.instructionRegistry),
-					...buildWorkspaceToolSurface(),
-					...MEMORY_TOOL_DEFINITIONS,
-					...SESSION_TOOL_DEFINITIONS,
-					...SNAPSHOT_TOOL_DEFINITIONS,
-					...ORCHESTRATION_TOOL_DEFINITIONS,
-					...MODEL_DISCOVERY_TOOL_DEFINITIONS,
-					...buildVisualizationToolSurface(),
-				],
-				computeEffectiveHiddenTools(),
+			tools: applySlimMode(
+				filterHiddenTools(
+					[
+						...buildPublicToolSurface(sharedRuntime.instructionRegistry),
+						...buildWorkspaceToolSurface(),
+						...MEMORY_TOOL_DEFINITIONS,
+						...SESSION_TOOL_DEFINITIONS,
+						...SNAPSHOT_TOOL_DEFINITIONS,
+						...ORCHESTRATION_TOOL_DEFINITIONS,
+						...MODEL_DISCOVERY_TOOL_DEFINITIONS,
+						...buildVisualizationToolSurface(),
+					],
+					computeEffectiveHiddenTools(),
+				),
 			),
 		}),
 		callTool: async (request: {

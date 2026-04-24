@@ -26,7 +26,6 @@ import {
 	resolveProfile,
 } from "../../config/orchestration-config.js";
 import { renderOrchestrationToml } from "../../config/orchestration-config-service.js";
-import { BUILTIN_ORCHESTRATION_DEFAULTS_SOURCE } from "../../config/orchestration-defaults.js";
 import { ObservabilityOrchestrator } from "../../infrastructure/observability.js";
 
 describe("orchestration-config: capability-driven resolver", () => {
@@ -435,14 +434,15 @@ describe("orchestration-config: capability-driven resolver", () => {
 		}
 	});
 
-	it("loadOrchestrationConfig with bad path fails fast in strict mode", async () => {
+	it("loadOrchestrationConfig with nonexistent path uses advisory defaults instead of crashing", async () => {
 		const { loadOrchestrationConfig } = await import(
 			"../../config/orchestration-config.js"
 		);
 		resetConfigCache();
-		expect(() => loadOrchestrationConfig("/nonexistent/path.toml")).toThrow(
-			new RegExp(BUILTIN_ORCHESTRATION_DEFAULTS_SOURCE),
-		);
+		// Should NOT throw — advisory bootstrap defaults cover missing files,
+		// even when the caller supplied an explicit override path.
+		const config = loadOrchestrationConfig("/nonexistent/path.toml");
+		expect(config.environment.strict_mode).toBe(false);
 		resetConfigCache();
 	});
 

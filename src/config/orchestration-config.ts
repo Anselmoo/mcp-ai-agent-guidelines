@@ -4,6 +4,7 @@ import { parse, stringify as stringifyToml } from "smol-toml";
 import { z } from "zod";
 import { toErrorMessage } from "../infrastructure/object-utilities.js";
 import { createOperationalLogger } from "../infrastructure/observability.js";
+import { findWorkspaceRootSync } from "../runtime/session-store-utils.js";
 import { parseOrThrow } from "../validation/schema-utilities.js";
 import {
 	BUILTIN_ORCHESTRATION_DEFAULTS_SOURCE,
@@ -353,10 +354,23 @@ export function resetConfigCache(): void {
 	_config = null;
 }
 
-export function resolveOrchestrationConfigPath(
-	workspaceRoot = process.cwd(),
-): string {
-	return resolve(workspaceRoot, ORCHESTRATION_CONFIG_RELATIVE_PATH);
+/**
+ * Resolve the path to the primary orchestration config file.
+ *
+ * Priority order (first match wins):
+ *  1. Explicit `workspaceRoot` argument from the caller.
+ *  2. Workspace-root auto-detection: walk up from `process.cwd()` looking for
+ *     `.git` or `package.json`.
+ *  3. `process.cwd()` fallback.
+ */
+export function resolveOrchestrationConfigPath(workspaceRoot?: string): string {
+	if (workspaceRoot !== undefined) {
+		return resolve(workspaceRoot, ORCHESTRATION_CONFIG_RELATIVE_PATH);
+	}
+	// Walk up from CWD to find the workspace root (handles MCP servers launched
+	// from $HOME by VS Code / Claude Desktop where CWD ≠ workspace).
+	const detected = findWorkspaceRootSync(process.cwd());
+	return resolve(detected ?? process.cwd(), ORCHESTRATION_CONFIG_RELATIVE_PATH);
 }
 
 function hasErrorCode(error: unknown, code: string): boolean {
@@ -453,7 +467,9 @@ export function loadOrchestrationConfig(
 		const fallbackConfig = createDefaultOrchestrationConfig();
 		const detail = toErrorMessage(error);
 		const message = `[orchestration] Failed to load primary config at ${configPath}: ${detail}`;
-		if (overridePath === undefined && hasErrorCode(error, "ENOENT")) {
+		if (hasErrorCode(error, "ENOENT")) {
+			// Config file is missing — bootstrap advisory defaults regardless of
+			// whether the path came from the caller or from auto-detection.
 			const bootstrapConfig = createBuiltinBootstrapOrchestrationConfig();
 			try {
 				bootstrapMissingWorkspaceOrchestrationConfig(
@@ -472,10 +488,18 @@ export function loadOrchestrationConfig(
 				_config = bootstrapConfig;
 				return _config;
 			} catch (bootstrapError) {
-				throw new Error(
-					`${message}. Failed to bootstrap a new workspace config from ${BUILTIN_ORCHESTRATION_DEFAULTS_SOURCE}: ${toErrorMessage(bootstrapError)}. ` +
-						`Run \`mcp-cli onboard init\` or create ${ORCHESTRATION_CONFIG_RELATIVE_PATH} manually.`,
+				// Bootstrap write failed (e.g. permissions).  Fall through to
+				// in-memory advisory defaults so at least this invocation succeeds.
+				orchestrationConfigLogger.log(
+					"warn",
+					"Bootstrap write failed; using in-memory advisory defaults",
+					{
+						configPath,
+						bootstrapError: toErrorMessage(bootstrapError),
+					},
 				);
+				_config = bootstrapConfig;
+				return _config;
 			}
 		}
 		if (fallbackConfig.environment.strict_mode) {

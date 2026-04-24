@@ -50,6 +50,7 @@ describe("validation index", () => {
 			mode: "strict",
 			enabledFeatures: [
 				"physics-skills",
+				"adaptive-routing",
 				"file-operations",
 				"network-access",
 				"trace-validation",

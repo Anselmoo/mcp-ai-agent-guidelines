@@ -88,6 +88,7 @@ export const instructionManifest: InstructionManifestEntry = {
 		],
 	},
 	chainTo: [
+		"meta-routing",
 		"system-design",
 		"feature-implement",
 		"evidence-research",
