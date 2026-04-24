@@ -8,7 +8,7 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-
+## [0.15.4] - 2026-04-24
 ### Changed
 - streamline onboarding process and enhance memory interface initialization
 
