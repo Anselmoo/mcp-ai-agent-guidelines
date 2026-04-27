@@ -168,6 +168,7 @@ describe("input-guards", () => {
 
 	it("guards adaptive, intensive, and physics skills based on environment and evidence", async () => {
 		const timestamp = new Date().toISOString();
+		process.env.DISABLE_ADAPTIVE_ROUTING = "true";
 		const adaptiveBlocked = await criticalSkillGuard(
 			"adapt-aco-router",
 			{ request: "optimize routes" },
@@ -179,7 +180,7 @@ describe("input-guards", () => {
 			{ timestamp },
 		);
 
-		process.env.ENABLE_ADAPTIVE_ROUTING = "true";
+		delete process.env.DISABLE_ADAPTIVE_ROUTING;
 		process.env.ALLOW_INTENSIVE_SKILLS = "true";
 
 		const adaptiveAllowed = await criticalSkillGuard(
@@ -205,7 +206,7 @@ describe("input-guards", () => {
 		expect(adaptiveBlocked).toEqual({
 			allowed: false,
 			reason:
-				"Adaptive routing skills are disabled. Enable with ENABLE_ADAPTIVE_ROUTING=true.",
+				"Adaptive routing skills are disabled. Unset DISABLE_ADAPTIVE_ROUTING to re-enable.",
 		});
 		expect(intensiveBlocked).toEqual({
 			allowed: false,

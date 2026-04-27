@@ -103,6 +103,7 @@ describe("cli end-user flows", () => {
 				checkExistingSetup,
 				runInteractiveSetup,
 				saveConfiguration,
+				emitSkillHooks: vi.fn().mockResolvedValue(0),
 			} as never,
 			reportingCommands: { registerCommands() {} } as never,
 		});

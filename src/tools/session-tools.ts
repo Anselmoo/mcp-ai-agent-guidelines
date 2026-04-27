@@ -326,6 +326,17 @@ export async function dispatchSessionToolCall(
 	}
 
 	if (command === "write") {
+		if (!(await sessionMemoryInterface.isWorkspaceInitialized())) {
+			return {
+				content: [
+					{
+						type: "text",
+						text: "Workspace not initialized. Run `mcp-cli onboard init` (or call `project-onboard`) to generate the required config, snapshots, and memory directories before writing artifacts.",
+					},
+				],
+				isError: true,
+			};
+		}
 		const sessionId = resolveSessionId(record.sessionId, runtime.sessionId);
 		const target = parseArtifactName(record.target);
 		const data = record.data;

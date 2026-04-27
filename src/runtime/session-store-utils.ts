@@ -1,6 +1,15 @@
 import { randomUUID } from "node:crypto";
-import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
-import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
+import { existsSync } from "node:fs";
+import { access, mkdir, readFile, rename, writeFile } from "node:fs/promises";
+import {
+	dirname,
+	isAbsolute,
+	join,
+	parse,
+	relative,
+	resolve,
+	sep,
+} from "node:path";
 
 /**
  * Seam type for reading a text file.  Allows tests (and other callers) to
@@ -34,7 +43,6 @@ const SESSION_STATE_GITIGNORE_PATH = ".gitignore";
 const SESSION_STATE_GITIGNORE_REQUIRED_RULES = [
 	"cache/",
 	"sessions/",
-	"snapshots/",
 	"session-*.json",
 	"session-*.json.*",
 	"config/*.key",
@@ -92,6 +100,54 @@ function assertSafeStateDir(rawStateDir: string): void {
 	}
 }
 
+/**
+ * Walk up the directory tree from `startDir` looking for a `.git` directory
+ * or `package.json` file that marks the workspace root. Returns `null` if no
+ * workspace root is found before reaching the filesystem root.
+ */
+export async function findWorkspaceRoot(
+	startDir: string,
+): Promise<string | null> {
+	let current = resolve(startDir);
+	const fsRoot = parse(current).root;
+	while (current !== fsRoot) {
+		try {
+			await access(join(current, ".git"));
+			return current;
+		} catch {
+			// not found — try package.json
+		}
+		try {
+			await access(join(current, "package.json"));
+			return current;
+		} catch {
+			// not found — go up
+		}
+		const parent = dirname(current);
+		if (parent === current) break;
+		current = parent;
+	}
+	return null;
+}
+
+/**
+ * Synchronous variant of `findWorkspaceRoot`.  Used by modules that must
+ * resolve paths at initialisation time without an async context (e.g. the
+ * orchestration config singleton).
+ */
+export function findWorkspaceRootSync(startDir: string): string | null {
+	let current = resolve(startDir);
+	const fsRoot = parse(current).root;
+	while (current !== fsRoot) {
+		if (existsSync(join(current, ".git"))) return current;
+		if (existsSync(join(current, "package.json"))) return current;
+		const parent = dirname(current);
+		if (parent === current) break;
+		current = parent;
+	}
+	return null;
+}
+
 export function resolveSessionStateDir(rawStateDir?: string): string {
 	const stateDir =
 		rawStateDir ??
@@ -99,6 +155,31 @@ export function resolveSessionStateDir(rawStateDir?: string): string {
 		DEFAULT_SESSION_STATE_DIR;
 	assertSafeStateDir(stateDir);
 	return resolve(stateDir);
+}
+
+/**
+ * Async variant of `resolveSessionStateDir` that auto-detects the workspace
+ * root when only the default relative `DEFAULT_SESSION_STATE_DIR` would be
+ * used. If a workspace root is found via `.git` / `package.json` walk-up the
+ * state dir is anchored to that root instead of `process.cwd()`.
+ *
+ * The explicit override priority is:
+ *   1. `rawStateDir` argument
+ *   2. `MCP_AI_AGENT_GUIDELINES_STATE_DIR` env var
+ *   3. workspace-root auto-detection (`.git` / `package.json` walk-up)
+ *   4. `process.cwd()` fallback
+ */
+export async function resolveSessionStateDirAsync(
+	rawStateDir?: string,
+): Promise<string> {
+	const explicitDir = rawStateDir ?? process.env[SESSION_STATE_DIR_ENV_VAR];
+	if (explicitDir) {
+		assertSafeStateDir(explicitDir);
+		return resolve(explicitDir);
+	}
+	const workspaceRoot = await findWorkspaceRoot(process.cwd());
+	const base = workspaceRoot ?? process.cwd();
+	return resolve(base, DEFAULT_SESSION_STATE_DIR);
 }
 
 export function resolveSessionPathWithinStateDir(
@@ -182,6 +263,26 @@ export async function writeTextFileAtomic(
 	const tempPath = `${targetPath}.${randomUUID()}.tmp`;
 	await writeFile(tempPath, contents, "utf8");
 	await rename(tempPath, targetPath);
+}
+
+/**
+ * Returns `true` when `config/orchestration.toml` exists inside the given
+ * state directory.  A `false` result means the workspace has never been
+ * bootstrapped via `mcp-cli onboard init` (or `project-onboard`).
+ *
+ * Callers that perform filesystem mutations can use this to gate writes and
+ * surface an actionable onboarding error when it returns `false`.
+ */
+export async function isWorkspaceInitialized(
+	baseDir: string,
+): Promise<boolean> {
+	const configPath = join(baseDir, "config", "orchestration.toml");
+	try {
+		await access(configPath);
+		return true;
+	} catch {
+		return false;
+	}
 }
 
 export async function runExclusiveSessionOperation<T>(

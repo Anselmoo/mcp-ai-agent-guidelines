@@ -18,6 +18,7 @@ vi.mock("../../memory/toon-interface.js", () => ({
 	ToonMemoryInterface: class {
 		deleteMemoryArtifact = deleteMemoryArtifactMock;
 		findMemoryArtifacts = findMemoryArtifactsMock;
+		isWorkspaceInitialized = vi.fn().mockResolvedValue(true);
 		loadFingerprintSnapshot = loadFingerprintSnapshotMock;
 		loadMemoryArtifact = loadMemoryArtifactMock;
 		saveMemoryArtifact = saveMemoryArtifactMock;
@@ -315,5 +316,32 @@ describe("tools/memory-tools", () => {
 		expect(getFirstTextContent(result)).toContain(
 			"requires both artifactId and libraryContext",
 		);
+	});
+
+	it("blocks write command when workspace is not initialized", async () => {
+		// Override the isWorkspaceInitialized mock for this test only
+		const { memoryInterface: mi } = await import("../../tools/memory-tools.js");
+		const originalFn = (mi as unknown as Record<string, () => Promise<boolean>>)
+			.isWorkspaceInitialized;
+		(
+			mi as unknown as Record<string, () => Promise<boolean>>
+		).isWorkspaceInitialized = vi.fn().mockResolvedValue(false);
+
+		try {
+			const result = await dispatchMemoryToolCall(MEMORY_TOOL_NAME, {
+				command: "write",
+				summary: "A summary that should be blocked",
+			});
+
+			expect(result.isError).toBe(true);
+			expect(getFirstTextContent(result)).toContain(
+				"Workspace not initialized",
+			);
+			expect(getFirstTextContent(result)).toContain("mcp-cli onboard init");
+		} finally {
+			(
+				mi as unknown as Record<string, () => Promise<boolean>>
+			).isWorkspaceInitialized = originalFn;
+		}
 	});
 });

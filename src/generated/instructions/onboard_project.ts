@@ -59,9 +59,9 @@ export const instructionManifest: InstructionManifestEntry = {
 			},
 		],
 	},
-	chainTo: [],
+	chainTo: ["task-bootstrap"],
 	preferredModelClass: "free",
-	autoChainOnCompletion: false,
+	autoChainOnCompletion: true,
 	requiredPreconditions: [],
 	reactivationPolicy: "once",
 };

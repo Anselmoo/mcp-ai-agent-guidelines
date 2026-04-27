@@ -3,7 +3,9 @@
  * Provides project discovery, model configuration, and initial setup
  */
 
-import { access, mkdir, readFile } from "node:fs/promises";
+import { access, mkdir, readFile, writeFile } from "node:fs/promises";
+import { homedir } from "node:os";
+import { join } from "node:path";
 import { confirm, input, select } from "@inquirer/prompts";
 import chalk from "chalk";
 import type {
@@ -16,8 +18,10 @@ import {
 	loadOrchestrationConfigForWorkspace,
 	saveOrchestrationConfig,
 } from "../config/orchestration-config-service.js";
+import { createBuiltinBootstrapOrchestrationConfig } from "../config/orchestration-defaults.js";
 import { toErrorMessage } from "../infrastructure/object-utilities.js";
 import { PACKAGE_VERSION } from "../infrastructure/package-metadata.js";
+import { INSTRUCTION_SPECS } from "../instructions/instruction-specs.js";
 import { GlyphFormatter } from "../memory/glyphs-layer.js";
 import { ToonMemoryInterface } from "../memory/toon-interface.js";
 import {
@@ -86,6 +90,35 @@ export interface ProjectDiscoveryResult {
 	suggestedProjectType: OnboardingConfig["projectType"];
 	detectedFrameworks: string[];
 }
+
+/**
+ * Which IDE clients to emit skill hooks for.
+ *
+ * | client    | local (workspace)  | global (user home)         |
+ * |-----------|--------------------|-----------------------------||
+ * | copilot   | .github/skills/    | ~/.copilot/skills/          |
+ * | claude    | .claude/skills/    | ~/.claude/skills/           |
+ * | codex     | .agents/skills/    | ~/.agents/skills/           |
+ */
+export type SkillHookClient = "copilot" | "claude" | "codex";
+
+const SKILL_HOOK_DIRS: Record<
+	SkillHookClient,
+	{ local: string[]; global: string[] }
+> = {
+	copilot: {
+		local: [".github", "skills"],
+		global: [".copilot", "skills"],
+	},
+	claude: {
+		local: [".claude", "skills"],
+		global: [".claude", "skills"],
+	},
+	codex: {
+		local: [".agents", "skills"],
+		global: [".agents", "skills"],
+	},
+};
 
 export class OnboardingWizard {
 	private readonly memoryInterface = new ToonMemoryInterface();
@@ -587,6 +620,115 @@ export class OnboardingWizard {
 
 		console.log(chalk.green(`\n💾 Initial session created: ${sessionId}`));
 		return sessionId;
+	}
+
+	/**
+	 * Non-interactive variant of `runInteractiveSetup`.  Uses built-in defaults
+	 * for all prompts — safe for CI or headless environments (`onboard init --yes`).
+	 */
+	async runSetupWithDefaults(): Promise<OnboardingConfig> {
+		console.log(
+			chalk.blue(
+				"🚀 MCP AI Agent Guidelines — non-interactive setup (--yes)\n",
+			),
+		);
+		const discovery = await this.discoverProject();
+		this.displayDiscoveryResults(discovery);
+
+		let projectName = "my-ai-project";
+		if (discovery.hasPackageJson) {
+			projectName = await this.extractPackageName();
+		}
+
+		const orchestration = createBuiltinBootstrapOrchestrationConfig();
+		const derivedModelAvailabilitySnapshot =
+			deriveModelAvailabilityConfig(orchestration).models;
+
+		return {
+			projectName,
+			projectType: discovery.suggestedProjectType,
+			orchestration,
+			derivedModelAvailability: Object.fromEntries(
+				Object.entries(derivedModelAvailabilitySnapshot).map(
+					([modelId, declaration]) => [
+						modelId,
+						{
+							available: declaration.available,
+							reason: declaration.reason ?? "Available",
+						},
+					],
+				),
+			),
+			preferences: {
+				useGlyphs: true,
+				advisoryMode: true,
+			},
+			setup: {
+				timestamp: new Date().toISOString(),
+				version: PACKAGE_VERSION,
+				firstRun: true,
+			},
+		};
+	}
+
+	/**
+	 * Generates `<base>/<toolName>/SKILL.md` for every public instruction so IDE
+	 * clients (VS Code Copilot, Claude Code, OpenAI Codex, etc.) can pick up
+	 * per-skill routing hints without manual setup.
+	 *
+	 * The `base` directory is resolved from `clients` × `global`:
+	 *   - local  (default) — workspace-relative dir for each requested client
+	 *   - global (opt-in)  — user-home dir for each requested client
+	 *
+	 * @param global  When `true`, writes to the user-home paths.
+	 * @param clients Which IDE clients to target.  Defaults to all three.
+	 * @returns The total number of `SKILL.md` files written.
+	 */
+	async emitSkillHooks(
+		global = false,
+		clients: SkillHookClient[] = ["copilot", "claude", "codex"],
+	): Promise<number> {
+		const publicSpecs = INSTRUCTION_SPECS.filter((s) => s.public);
+		let written = 0;
+
+		for (const client of clients) {
+			const segments = global
+				? SKILL_HOOK_DIRS[client].global
+				: SKILL_HOOK_DIRS[client].local;
+
+			const rootDir = global
+				? join(homedir(), ...segments)
+				: join(process.cwd(), ...segments);
+
+			for (const spec of publicSpecs) {
+				const skillDir = join(rootDir, spec.toolName);
+				await mkdir(skillDir, { recursive: true });
+				const content = [
+					"---",
+					`name: "${spec.toolName}"`,
+					"description: |",
+					...spec.description.split("\n").map((line) => `  ${line}`),
+					"---",
+					"",
+					`<!-- Generated by mcp-cli onboard skills${global ? " --global" : ""} --client ${client} -->`,
+					`<!-- Source: ${spec.sourcePath} -->`,
+					"",
+				].join("\n");
+				await writeFile(join(skillDir, "SKILL.md"), content, "utf8");
+				written++;
+			}
+
+			const destLabel = global
+				? `~/${segments.join("/")}/ `
+				: `${segments.join("/")}/ `;
+			console.log(
+				chalk.cyan(
+					`  📁 [${client}] Skill hooks → ${destLabel}(${publicSpecs.length} files)`,
+				),
+			);
+		}
+
+		return written;
 	}
 
 	async checkExistingSetup(): Promise<boolean> {

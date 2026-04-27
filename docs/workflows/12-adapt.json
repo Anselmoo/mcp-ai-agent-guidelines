@@ -15,7 +15,7 @@
   ],
   "chainTo": [],
   "preconditions": {
-    "env": "ENABLE_ADAPTIVE_ROUTING=true"
+    "env": "DISABLE_ADAPTIVE_ROUTING != true"
   },
   "skillTree": {
     "root": "pheromone-routing",

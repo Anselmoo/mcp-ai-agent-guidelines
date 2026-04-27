@@ -9,10 +9,10 @@ export const instructionManifest: InstructionManifestEntry = {
 	aliases: [],
 	displayName: "Meta-Routing: Task Router",
 	description:
-		"Use when you need to choose which instruction to invoke, when a task spans multiple domains, when instructions should run serially vs in parallel, or when escalation or cross-instruction chaining is needed. Master decision guide for disambiguating complex or compound tasks. Companion tools: use `graph-visualize` (chain-graph) to inspect instruction chains and routing topology.",
+		"Use at session start to classify the problem before any domain tool is called; use when a task spans multiple domains; use when instructions should run serially vs in parallel; use when escalation or cross-instruction chaining is needed. This is the master decision guide — call it when unsure which tool to use. Do NOT use for single-domain tasks where the right tool is obvious (just call the domain tool directly). Anti-patterns: do not call meta-routing for straightforward implement/debug/review requests; do not call it after every single step. Companion tools: use `graph-visualize` (chain-graph) to inspect instruction chains and routing topology. Triggers: 'not sure which tool', 'multi-domain task', 'how should I approach this', 'route this request', 'classify the problem', 'session start', 'orient myself'.",
 	sourcePath: "src/instructions/instruction-specs.ts#meta-routing",
 	mission:
-		"Decide which instruction(s) to invoke, in what order, and how to chain them for compound tasks.",
+		"Decide which instruction(s) to invoke, in what order, and how to chain them for compound or ambiguous tasks.",
 	inputSchema: {
 		type: "object",
 		properties: {
@@ -161,7 +161,7 @@ export const instructionManifest: InstructionManifestEntry = {
 	preferredModelClass: "cheap",
 	autoChainOnCompletion: false,
 	requiredPreconditions: [],
-	reactivationPolicy: "on-context-drift",
+	reactivationPolicy: "session-start",
 };
 
 export const instructionModule = createInstructionModule(instructionManifest);

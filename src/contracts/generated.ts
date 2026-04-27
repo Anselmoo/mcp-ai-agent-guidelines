@@ -2,7 +2,8 @@ export type ModelClass = "free" | "cheap" | "strong" | "reviewer";
 export type InstructionReactivationPolicy =
 	| "once"
 	| "periodic"
-	| "on-context-drift";
+	| "on-context-drift"
+	| "session-start";
 
 export interface SchemaFieldConfig {
 	name: string;

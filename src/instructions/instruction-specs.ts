@@ -11,7 +11,12 @@ export type InstructionSurfaceCategory = "workflow" | "discovery" | "internal";
  * - `"on-context-drift"` — re-fires when the context-drift detector exceeds
  *   `agent_mode.context_drift_threshold`.
  */
-export type ReactivationPolicy = "once" | "periodic" | "on-context-drift";
+export type ReactivationPolicy =
+	| "once"
+	| "periodic"
+	| "on-context-drift"
+	/** Fires once at the beginning of every new session (SessionStart equivalent). */
+	| "session-start";
 
 export interface InstructionSpecDefinition {
 	id: string;
@@ -289,7 +294,7 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 		toolName: "routing-adapt",
 		displayName: "Adapt: Bio-Inspired Adaptive Routing",
 		description:
-			"ONLY use when an existing multi-agent workflow needs autonomous bio-inspired route optimization based on historical performance — e.g. Hebbian reinforcement, ant-colony pheromone trails, simulated annealing, quorum sensing, or Physarum network pruning. Requires ENABLE_ADAPTIVE_ROUTING=true. Do NOT use for: general research, design, review, debugging, planning, implementation, code quality, documentation, or any task that does not involve bio-inspired routing algorithms. If unsure, use the specific domain tool (design, research, review, implement, etc.) instead.",
+			"ONLY use when an existing multi-agent workflow needs autonomous bio-inspired route optimization based on historical performance — e.g. Hebbian reinforcement, ant-colony pheromone trails, simulated annealing, quorum sensing, or Physarum network pruning. Disable with DISABLE_ADAPTIVE_ROUTING=true. Do NOT use for: general research, design, review, debugging, planning, implementation, code quality, documentation, or any task that does not involve bio-inspired routing algorithms. If unsure, use the specific domain tool (design, research, review, implement, etc.) instead.",
 		mission:
 			"Deploy → observe → reinforce → prune → converge. Workflows that get smarter over time.",
 		chainTo: ["agent-orchestrate", "quality-evaluate"],
@@ -337,6 +342,7 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 		mission:
 			"Orient the agent, load project context, identify scope and unknowns before any implementation starts.",
 		chainTo: [
+			"meta-routing",
 			"system-design",
 			"feature-implement",
 			"evidence-research",
@@ -370,17 +376,17 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 		toolName: "meta-routing",
 		displayName: "Meta-Routing: Task Router",
 		description:
-			"Use when you need to choose which instruction to invoke, when a task spans multiple domains, when instructions should run serially vs in parallel, or when escalation or cross-instruction chaining is needed. Master decision guide for disambiguating complex or compound tasks. Companion tools: use `graph-visualize` (chain-graph) to inspect instruction chains and routing topology.",
+			"Use at session start to classify the problem before any domain tool is called; use when a task spans multiple domains; use when instructions should run serially vs in parallel; use when escalation or cross-instruction chaining is needed. This is the master decision guide — call it when unsure which tool to use. Do NOT use for single-domain tasks where the right tool is obvious (just call the domain tool directly). Anti-patterns: do not call meta-routing for straightforward implement/debug/review requests; do not call it after every single step. Companion tools: use `graph-visualize` (chain-graph) to inspect instruction chains and routing topology. Triggers: 'not sure which tool', 'multi-domain task', 'how should I approach this', 'route this request', 'classify the problem', 'session start', 'orient myself'.",
 		mission:
-			"Decide which instruction(s) to invoke, in what order, and how to chain them for compound tasks.",
+			"Decide which instruction(s) to invoke, in what order, and how to chain them for compound or ambiguous tasks.",
 		chainTo: [],
 		preferredModelClass: "cheap",
 		public: true,
 		surface: "discovery",
 		sourcePath: "src/instructions/instruction-specs.ts#meta-routing",
-		// Re-orient whenever the embedding-cosine context drift detector fires,
-		// preventing routing collapse on long sessions (P5 / RS2 fix).
-		reactivationPolicy: "on-context-drift",
+		// Fires once at the beginning of every new session so problem-classification
+		// always happens before the first domain tool is invoked (issue #1445 fix).
+		reactivationPolicy: "session-start",
 	},
 	{
 		id: "onboard_project",
@@ -389,7 +395,8 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 		description:
 			"Use when starting a new work session, exploring what this codebase does, understanding the skill taxonomy, or getting oriented in mcp-ai-agent-guidelines for the first time. Covers project structure, skill navigation, instruction index, and verification workflow. Companion tools: use `graph-visualize` (skill-graph, chain-graph) to explore the skill topology and instruction chains; use `agent-workspace` (list) to browse source files, `agent-session` (list or fetch) to inspect session artifacts, and `agent-snapshot` (status) to confirm the current codebase baseline.",
 		mission: "",
-		chainTo: [],
+		chainTo: ["task-bootstrap"],
+		autoChainOnCompletion: true,
 		preferredModelClass: "free",
 		public: true,
 		surface: "discovery",
