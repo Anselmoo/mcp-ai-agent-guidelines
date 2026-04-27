@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+eeds this#!/usr/bin/env node
 /**
  * mcp-ai-agent-guidelines — PreToolUse drift-detection reminder hook
  *

@@ -28,13 +28,17 @@ describe("sdk compatibility lane", () => {
 			expect.arrayContaining([
 				"docs-generate",
 				workspaceTool,
-				"agent-session",
-				"agent-snapshot",
+				"agent-memory-write",
+				"agent-session-fetch",
+				"agent-snapshot-fetch",
 			]),
 		);
 		expect(names).not.toContain("workspace");
 		expect(names).not.toContain("session");
 		expect(names).not.toContain("snapshot");
+		expect(names).not.toContain("agent-session");
+		expect(names).not.toContain("agent-snapshot");
+		expect(names).not.toContain("agent-memory");
 		expect(names).not.toContain("workspace-list");
 		expect(names).not.toContain("workspace-read");
 		expect(names).not.toContain("workspace-artifact");

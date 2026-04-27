@@ -132,6 +132,38 @@ describe("tools/memory-tools", () => {
 		});
 	});
 
+	it("captures critical vibe-coding source tool references on write", async () => {
+		loadFingerprintSnapshotMock.mockResolvedValue({
+			fingerprint: {
+				capturedAt: "2026-04-11T00:00:00.000Z",
+				skillIds: [],
+				instructionNames: [],
+				codePaths: [],
+			},
+		});
+
+		const result = await dispatchMemoryToolCall(MEMORY_WRITE_TOOL_NAME, {
+			summary: "Persist evidence for self-consistent vibe coding",
+			artifactContext:
+				"Inputs came from fetch_webpage, mcp_github_search_repositories, mcp_ai-agent-guid_agent-orchestrate, mcp_ai-agent-guid_prompt-engineering, and mcp_ai-agent-guid_system-design to keep agent support memory concise and useful.",
+		});
+
+		expect(result.isError).toBe(false);
+		expect(saveMemoryArtifactMock).toHaveBeenCalledOnce();
+		expect(saveMemoryArtifactMock.mock.calls[0]?.[0]).toMatchObject({
+			links: {
+				sources: expect.arrayContaining([
+					"fetch_webpage",
+					"mcp_github_search_repositories",
+					"mcp_ai-agent-guid_agent-orchestrate",
+					"mcp_ai-agent-guid_prompt-engineering",
+					"mcp_ai-agent-guid_system-design",
+					".mcp-ai-agent-guidelines/snapshots/fingerprint-latest.json",
+				]),
+			},
+		});
+	});
+
 	it("surfaces explicit persistence errors on write failures", async () => {
 		saveMemoryArtifactMock.mockRejectedValue(new Error("disk full"));
 
