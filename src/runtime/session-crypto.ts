@@ -99,6 +99,18 @@ async function readSecretFile(secretPath: string): Promise<string | null> {
 	}
 }
 
+function validateProvidedSecret(secret: string, fieldName: string): string {
+	const trimmedSecret = secret.trim();
+	if (trimmedSecret.length === 0) {
+		throw new ValidationError(
+			"Secret material cannot be empty.",
+			createErrorContext("session-store"),
+			fieldName,
+		);
+	}
+	return trimmedSecret;
+}
+
 export async function resolveOrCreatePersistentSecret(options: {
 	rootDir: string;
 	keyFilePath: string;
@@ -106,14 +118,13 @@ export async function resolveOrCreatePersistentSecret(options: {
 	explicitSecret?: string;
 	fieldName: string;
 }): Promise<string> {
-	const explicitSecret = options.explicitSecret?.trim();
-	if (explicitSecret) {
-		return explicitSecret;
+	if (options.explicitSecret !== undefined) {
+		return validateProvidedSecret(options.explicitSecret, options.fieldName);
 	}
 
-	const environmentSecret = process.env[options.envVar]?.trim();
-	if (environmentSecret) {
-		return environmentSecret;
+	const environmentSecret = process.env[options.envVar];
+	if (environmentSecret !== undefined) {
+		return validateProvidedSecret(environmentSecret, options.envVar);
 	}
 
 	const secretPath = resolvePathWithinRoot(

@@ -5,7 +5,7 @@
  * produce expected output shapes.
  */
 
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
 	buildArcPath,
 	buildD3PathPolyline,
@@ -17,6 +17,47 @@ import {
 	SvgExportEngine,
 	SvgExporter,
 } from "../../visualization/svg-export.js";
+
+afterEach(() => {
+	vi.restoreAllMocks();
+	vi.resetModules();
+	vi.doUnmock("roughjs");
+	vi.doUnmock("satori");
+});
+
+async function importSvgExportWithMocks(options?: {
+	roughLineSets?: Array<{ type: string; ops: unknown[] }>;
+	roughLineError?: Error;
+	roughPath?: string;
+	satoriResult?: string;
+	satoriError?: Error;
+}) {
+	vi.resetModules();
+	vi.doMock("roughjs", () => ({
+		default: {
+			generator: () => ({
+				line: () => {
+					if (options?.roughLineError) {
+						throw options.roughLineError;
+					}
+					return {
+						sets: options?.roughLineSets ?? [{ type: "path", ops: [] }],
+					};
+				},
+				opsToPath: () => options?.roughPath ?? "M0 0L10 10",
+			}),
+		},
+	}));
+	vi.doMock("satori", () => ({
+		default: vi.fn(async () => {
+			if (options?.satoriError) {
+				throw options.satoriError;
+			}
+			return options?.satoriResult ?? '<svg data-source="mocked-satori"></svg>';
+		}),
+	}));
+	return await import("../../visualization/svg-export.js");
+}
 
 describe("buildLinePath (d3-shape + d3-path)", () => {
 	it("returns a non-empty string containing 'M' for two points", () => {
@@ -123,6 +164,56 @@ describe("generateSvgFromElement (satori)", () => {
 		expect(result).toContain("wave10");
 		expect(result).not.toContain("satori: no fonts");
 	});
+
+	it("extracts nested text content and escapes special characters", async () => {
+		const { generateSvgFromElement: generateSvgFromMockedModule } =
+			await importSvgExportWithMocks({
+				satoriError: new Error("fallback should bypass satori"),
+			});
+		const result = await generateSvgFromMockedModule(
+			{
+				type: "div",
+				props: {
+					children: [
+						"top & <",
+						{
+							type: "span",
+							props: { children: ["inner", ['quote"', "'", 7]] },
+						},
+						null,
+					],
+				},
+			},
+			180,
+			60,
+		);
+		expect(result).toContain("top &amp; &lt; inner quote&quot; &#39; 7");
+	});
+
+	it("returns mocked satori output when no fallback text is available", async () => {
+		const { generateSvgFromElement: generateSvgFromMockedModule } =
+			await importSvgExportWithMocks({
+				satoriResult: '<svg data-source="satori-success"></svg>',
+			});
+		const result = await generateSvgFromMockedModule(
+			{ type: "div", props: {} },
+			120,
+			40,
+		);
+		expect(result).toContain('data-source="satori-success"');
+	});
+
+	it("wraps satori failures with a helpful error message", async () => {
+		const { generateSvgFromElement: generateSvgFromMockedModule } =
+			await importSvgExportWithMocks({
+				satoriError: new Error("font registry unavailable"),
+			});
+		await expect(
+			generateSvgFromMockedModule({ type: "div", props: {} }),
+		).rejects.toThrow(
+			"Unable to render SVG element with satori: font registry unavailable",
+		);
+	});
 });
 
 describe("SvgExporter class", () => {
@@ -202,6 +293,27 @@ describe("SvgExportEngine class", () => {
 		expect(result).toContain("Skill coverage");
 		expect(result).toContain("skill-0");
 	});
+
+	it("returns an empty-state shell for agent topology with no agents", async () => {
+		const result = await engine.generateAgentTopologyDiagram([]);
+		expect(result).toContain('viewBox="0 0 260 72"');
+		expect(result).toContain('role="img"');
+		expect(result).toContain("No agents supplied");
+	});
+
+	it("returns an empty-state shell for orchestration flow with no steps", async () => {
+		const result = await engine.generateOrchestrationFlowDiagram([]);
+		expect(result).toContain('viewBox="0 0 260 72"');
+		expect(result).toContain('role="img"');
+		expect(result).toContain("No steps supplied");
+	});
+
+	it("shows fallback copy for skill coverage with no skills", async () => {
+		const result = await engine.generateSkillCoverageDiagram([]);
+		expect(result).toContain("Skill coverage");
+		expect(result).toContain("No skills supplied");
+		expect(result).toContain(">0</text>");
+	});
 });
 
 describe("NoopSvgExportEngine class", () => {
@@ -217,5 +329,36 @@ describe("NoopSvgExportEngine class", () => {
 		const result = await engine.generateSkillCoverageDiagram(["skill-a"]);
 		expect(result.toLowerCase()).toContain("svg");
 		expect(result).toContain("1 of 102 skills");
+	});
+
+	it("renders orchestration flow labels with escaped content", async () => {
+		const result = await engine.generateOrchestrationFlowDiagram([
+			`plan & align`,
+			`ship <review> "now" 'soon'`,
+		]);
+		expect(result).toContain('width="200"');
+		expect(result).toContain("Workflow steps (2)");
+		expect(result).toContain("plan &amp; align");
+		expect(result).toContain(
+			"ship &lt;review&gt; &quot;now&quot; &#39;soon&#39;",
+		);
+	});
+});
+
+describe("mocked svg-export edge cases", () => {
+	it("returns an empty string when roughjs yields no path sets", async () => {
+		const { createRoughLine: createRoughLineFromMockedModule } =
+			await importSvgExportWithMocks({
+				roughLineSets: [{ type: "fillSketch", ops: [] }],
+			});
+		expect(createRoughLineFromMockedModule(0, 0, 10, 10)).toBe("");
+	});
+
+	it("returns an empty string when roughjs throws", async () => {
+		const { createRoughLine: createRoughLineFromMockedModule } =
+			await importSvgExportWithMocks({
+				roughLineError: new Error("rough generator failed"),
+			});
+		expect(createRoughLineFromMockedModule(0, 0, 10, 10)).toBe("");
 	});
 });
