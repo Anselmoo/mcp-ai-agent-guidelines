@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { skillModule } from "../../../skills/qm/qm-dirac-notation-mapper.js";
 import {
+	createMockSkillRuntime,
 	expectEmptyRequestHandling,
 	expectSkillGuidance,
 	expectSkillModuleContract,
@@ -38,5 +39,41 @@ describe("qm-dirac-notation-mapper", () => {
 				"Dirac mapping checks",
 			]),
 		);
+	});
+
+	it("returns insufficient signal when the request lacks overlap semantics", async () => {
+		const result = await skillModule.run(
+			{
+				request: "review the architecture from a high level",
+				context:
+					"this note keeps the phrasing general and avoids specialized analysis terms",
+			},
+			createMockSkillRuntime(),
+		);
+
+		expect(result.summary).toContain(
+			"requires an overlap or file-centrality signal",
+		);
+	});
+
+	it("handles near-orthogonal pair overlap with numeric advice", async () => {
+		const result = await expectSkillGuidance(
+			skillModule,
+			{
+				request: "analyse these two files for overlap and independence",
+				options: {
+					focus: "orthogonality",
+					fileCount: 5,
+					pairOverlap: 0.15,
+					projectionWeight: 1.2,
+				},
+			},
+			{
+				detailIncludes: ["mostly independent"],
+				recommendationCountAtLeast: 3,
+			},
+		);
+
+		expect(result.summary).toContain("Dirac Notation Mapper");
 	});
 });

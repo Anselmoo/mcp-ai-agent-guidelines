@@ -378,6 +378,52 @@ describe("tool-call-handler", () => {
 		}
 	});
 
+	it("does not fail the tool call when session context persistence fails", async () => {
+		vi.spyOn(memoryInterface, "saveMemoryArtifact").mockResolvedValue();
+		vi.spyOn(memoryInterface, "saveSessionContext").mockRejectedValue(
+			new Error("disk full"),
+		);
+		vi.spyOn(memoryInterface, "findMemoryArtifacts").mockResolvedValue([]);
+		vi.spyOn(memoryInterface, "loadFingerprintSnapshot").mockResolvedValue(
+			null,
+		);
+
+		try {
+			const result = await dispatchToolCall(
+				"code-review",
+				{ request: "review the runtime architecture" },
+				createRuntime(),
+			);
+
+			expect(result.isError).toBeUndefined();
+		} finally {
+			vi.restoreAllMocks();
+		}
+	});
+
+	it("does not fail the tool call when memory artifact persistence fails", async () => {
+		vi.spyOn(memoryInterface, "saveMemoryArtifact").mockRejectedValue(
+			new Error("disk full"),
+		);
+		vi.spyOn(memoryInterface, "saveSessionContext").mockResolvedValue();
+		vi.spyOn(memoryInterface, "findMemoryArtifacts").mockResolvedValue([]);
+		vi.spyOn(memoryInterface, "loadFingerprintSnapshot").mockResolvedValue(
+			null,
+		);
+
+		try {
+			const result = await dispatchToolCall(
+				"code-review",
+				{ request: "review the runtime architecture" },
+				createRuntime(),
+			);
+
+			expect(result.isError).toBeUndefined();
+		} finally {
+			vi.restoreAllMocks();
+		}
+	});
+
 	it("dispatches memory tool call when tool name resolves as memory tool", async () => {
 		const result = await dispatchToolCall(
 			"agent-memory-fetch",

@@ -139,6 +139,62 @@ describe("tools/session-tools", () => {
 		);
 	});
 
+	it("rejects write when workspace is not initialized", async () => {
+		isWorkspaceInitializedMock.mockResolvedValue(false);
+
+		const result = await dispatchSessionToolCall(
+			SESSION_WRITE_TOOL_NAME,
+			{
+				target: "session-context",
+				sessionId: "session-abcdefghijklmnopqrstuvwx",
+				data: { phase: "review" },
+			},
+			{ sessionId: "session-ABCDEFGHJKMN" },
+		);
+
+		expect(result.isError).toBe(true);
+		expect(getText(result)).toContain("Workspace not initialized.");
+	});
+
+	it("returns not found for missing session artifacts", async () => {
+		loadSessionContextMock.mockResolvedValue(null);
+
+		const result = await dispatchSessionToolCall(
+			SESSION_READ_TOOL_NAME,
+			{
+				sessionId: "session-abcdefghijklmnopqrstuvwx",
+				artifact: "session-context",
+			},
+			{ sessionId: "session-ABCDEFGHJKMN" },
+		);
+
+		expect(result.isError).toBe(true);
+		expect(getText(result)).toContain(
+			"Session context not found for session-abcdefghijklmnopqrstuvwx.",
+		);
+	});
+
+	it("fetches a single session summary when sessionId is provided", async () => {
+		loadSessionContextMock.mockResolvedValue({
+			context: { requestScope: "sync", phase: "review" },
+			progress: { completed: ["a"], inProgress: [], blocked: [], next: [] },
+		});
+		loadWorkspaceMapMock.mockResolvedValue({ path: "src" });
+		loadScanResultsMock.mockResolvedValue({ results: [] });
+
+		const result = await dispatchSessionToolCall(
+			SESSION_FETCH_TOOL_NAME,
+			{ sessionId: "session-abcdefghijklmnopqrstuvwx" },
+			{ sessionId: "session-ABCDEFGHJKMN" },
+		);
+
+		expect(result.isError).toBe(false);
+		expect(getText(result)).toContain(
+			'"sessionId": "session-abcdefghijklmnopqrstuvwx"',
+		);
+		expect(getText(result)).toContain('"workspaceMap"');
+	});
+
 	it("surfaces explicit persistence errors on write failures", async () => {
 		saveScanResultsMock.mockRejectedValue(new Error("permission denied"));
 
@@ -157,6 +213,21 @@ describe("tools/session-tools", () => {
 		expect(getText(result)).toContain("permission denied");
 	});
 
+	it("returns session deletion not found when the session does not exist", async () => {
+		deleteSessionContextMock.mockResolvedValue(false);
+
+		const result = await dispatchSessionToolCall(
+			SESSION_DELETE_TOOL_NAME,
+			{ sessionId: "session-abcdefghijklmnopqrstuvwx" },
+			{ sessionId: "session-ABCDEFGHJKMN" },
+		);
+
+		expect(result.isError).toBe(false);
+		expect(getText(result)).toContain(
+			"Session session-abcdefghijklmnopqrstuvwx did not exist.",
+		);
+	});
+
 	it("deletes a stored session", async () => {
 		deleteSessionContextMock.mockResolvedValue(true);
 
@@ -169,6 +240,61 @@ describe("tools/session-tools", () => {
 		expect(result.isError).toBe(false);
 		expect(getText(result)).toContain(
 			"Deleted session session-abcdefghijklmnopqrstuvwx.",
+		);
+	});
+
+	it("reads a missing workspace map as not found", async () => {
+		loadWorkspaceMapMock.mockResolvedValue(null);
+
+		const result = await dispatchSessionToolCall(
+			SESSION_READ_TOOL_NAME,
+			{
+				sessionId: "session-abcdefghijklmnopqrstuvwx",
+				artifact: "workspace-map",
+			},
+			{ sessionId: "session-ABCDEFGHJKMN" },
+		);
+
+		expect(result.isError).toBe(true);
+		expect(getText(result)).toContain(
+			"Workspace map not found for session-abcdefghijklmnopqrstuvwx.",
+		);
+	});
+
+	it("reads missing scan results as not found", async () => {
+		loadScanResultsMock.mockResolvedValue(null);
+
+		const result = await dispatchSessionToolCall(
+			SESSION_READ_TOOL_NAME,
+			{
+				sessionId: "session-abcdefghijklmnopqrstuvwx",
+				artifact: "scan-results",
+			},
+			{ sessionId: "session-ABCDEFGHJKMN" },
+		);
+
+		expect(result.isError).toBe(true);
+		expect(getText(result)).toContain(
+			"Scan results not found for session-abcdefghijklmnopqrstuvwx.",
+		);
+	});
+
+	it("writes a workspace map artifact", async () => {
+		const result = await dispatchSessionToolCall(
+			SESSION_WRITE_TOOL_NAME,
+			{
+				target: "workspace-map",
+				sessionId: "session-abcdefghijklmnopqrstuvwx",
+				data: { path: "src/index.ts" },
+			},
+			{ sessionId: "session-ABCDEFGHJKMN" },
+		);
+
+		expect(result.isError).toBe(false);
+		expect(getText(result)).toContain("Updated workspace-map");
+		expect(saveWorkspaceMapMock).toHaveBeenCalledWith(
+			"session-abcdefghijklmnopqrstuvwx",
+			{ path: "src/index.ts" },
 		);
 	});
 });

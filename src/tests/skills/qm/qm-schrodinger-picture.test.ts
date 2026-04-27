@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { skillModule } from "../../../skills/qm/qm-schrodinger-picture.js";
 import {
+	createMockSkillRuntime,
 	expectEmptyRequestHandling,
 	expectSkillGuidance,
 	expectSkillModuleContract,
@@ -39,5 +40,44 @@ describe("qm-schrodinger-picture", () => {
 				"Trajectory forecast checks",
 			]),
 		);
+	});
+
+	it("reports incompatible snapshot dimensions as insufficient signal", async () => {
+		const result = await skillModule.run(
+			{
+				request: "forecast future drift",
+				options: {
+					snapshots: [
+						{ label: "v1", state: [0.2, 0.1] },
+						{ label: "v2", state: [0.3, 0.2, 0.4] },
+					],
+				},
+			},
+			createMockSkillRuntime(),
+		);
+
+		expect(result.summary).toContain("incompatible snapshot dimensions");
+	});
+
+	it("forecasts drift with compatible snapshots and custom steps", async () => {
+		const result = await expectSkillGuidance(
+			skillModule,
+			{
+				request: "forecast future code state",
+				options: {
+					steps: 2,
+					snapshots: [
+						{ label: "v1", state: [0.2, 0.1] },
+						{ label: "v2", state: [0.3, 0.2] },
+					],
+				},
+			},
+			{
+				detailIncludes: ["Illustrative Schrödinger forecast"],
+				recommendationCountAtLeast: 3,
+			},
+		);
+
+		expect(result.summary).toContain("Schrödinger Picture");
 	});
 });
