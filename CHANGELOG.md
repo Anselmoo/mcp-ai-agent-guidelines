@@ -8,6 +8,9 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+
+### Fixed
+- update tool references and enhance memory tool tests for better context handling
 ## [0.15.4] - 2026-04-24
 ### Changed
 - streamline onboarding process and enhance memory interface initialization
