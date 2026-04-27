@@ -13,80 +13,124 @@ import {
 
 export const memoryInterface = sharedToonMemoryInterface;
 
-export const MEMORY_TOOL_NAME = "agent-memory";
+export const MEMORY_READ_TOOL_NAME = "agent-memory-read";
+export const MEMORY_WRITE_TOOL_NAME = "agent-memory-write";
+export const MEMORY_FETCH_TOOL_NAME = "agent-memory-fetch";
+export const MEMORY_DELETE_TOOL_NAME = "agent-memory-delete";
 
-export function resolveMemoryToolName(
-	name: string,
-): typeof MEMORY_TOOL_NAME | null {
-	return name === MEMORY_TOOL_NAME ? MEMORY_TOOL_NAME : null;
+type MemoryToolName =
+	| typeof MEMORY_READ_TOOL_NAME
+	| typeof MEMORY_WRITE_TOOL_NAME
+	| typeof MEMORY_FETCH_TOOL_NAME
+	| typeof MEMORY_DELETE_TOOL_NAME;
+
+const MEMORY_TOOL_NAMES = new Set<MemoryToolName>([
+	MEMORY_READ_TOOL_NAME,
+	MEMORY_WRITE_TOOL_NAME,
+	MEMORY_FETCH_TOOL_NAME,
+	MEMORY_DELETE_TOOL_NAME,
+]);
+
+export function resolveMemoryToolName(name: string): MemoryToolName | null {
+	return MEMORY_TOOL_NAMES.has(name as MemoryToolName)
+		? (name as MemoryToolName)
+		: null;
 }
 
 export const MEMORY_TOOL_DEFINITIONS: readonly ToolDefinitionWithInputSchema[] =
 	[
 		{
-			name: MEMORY_TOOL_NAME,
-			description:
-				"Long-term TOON memory artifacts backed by `.mcp-ai-agent-guidelines/memory/*.toon`. Use `agent-memory` for persistent artifacts, `agent-session` for session state, and `agent-snapshot` for codebase baselines. Commands: status, list, read, find, write, enrich, delete.",
+			name: MEMORY_READ_TOOL_NAME,
+			description: "Read one long-term TOON memory artifact by artifactId.",
 			inputSchema: {
 				type: "object" as const,
 				properties: {
-					command: {
-						type: "string" as const,
-						enum: [
-							"status",
-							"list",
-							"read",
-							"find",
-							"write",
-							"enrich",
-							"delete",
-						] as const,
-						description:
-							"status: Show long-term artifact summary. list: Enumerate stored memory artifacts. read: Read one memory artifact (`artifactId`). find: Search memory artifacts (optionally filter by tags/minRelevance). write: Persist a new memory artifact. enrich: Append context7 library documentation to an existing artifact (`artifactId` + `libraryContext`). delete: Delete a memory artifact (`artifactId`).",
-					},
 					artifactId: {
 						type: "string" as const,
 						description:
-							"Memory artifact ID for command=read or command=delete when targeting long-term memory artifacts.",
+							"Memory artifact ID to read from `.mcp-ai-agent-guidelines/memory/*.toon`.",
 					},
-					tags: {
-						type: "array" as const,
-						items: { type: "string" as const },
-						description:
-							"Tag filter for command=find. Returns artifacts matching ANY of the given tags.",
-					},
-					minRelevance: {
-						type: "string" as const,
-						description:
-							"Minimum relevance threshold (0–1) for command=find, as a decimal string. Defaults to '0' (all artifacts).",
-					},
+				},
+				required: ["artifactId"],
+			},
+		},
+		{
+			name: MEMORY_WRITE_TOOL_NAME,
+			description:
+				"Write long-term TOON memory artifacts. Create mode: provide summary (and optional details/context/tags/relevance). Enrich mode: provide artifactId + libraryContext to append documentation context to an existing artifact.",
+			inputSchema: {
+				type: "object" as const,
+				properties: {
 					summary: {
 						type: "string" as const,
 						description:
-							"Short summary text (required for command=write). Stored as content.summary.",
+							"Short summary text for create mode. Required unless artifactId + libraryContext is provided.",
 					},
 					details: {
 						type: "string" as const,
 						description:
-							"Extended detail text for command=write. Stored as content.details.",
+							"Extended detail text for create mode. Defaults to summary.",
 					},
 					artifactContext: {
 						type: "string" as const,
-						description:
-							"Request context string for command=write. Stored as content.context.",
+						description: "Request context string for create mode.",
+					},
+					tags: {
+						type: "array" as const,
+						items: { type: "string" as const },
+						description: "Tags to persist with the artifact.",
 					},
 					relevance: {
 						type: "string" as const,
 						description:
-							"Relevance score (0–1) for command=write, as a decimal string. Defaults to '0.7'.",
+							"Relevance score (0–1) for create mode. Defaults to '0.7'.",
+					},
+					artifactId: {
+						type: "string" as const,
+						description: "Existing artifact ID for enrich mode.",
 					},
 					libraryContext: {
 						type: "string" as const,
-						description:
-							"Library documentation text for command=enrich. Pass the combined output of context7 get-library-docs calls here. Stored in content.libraryContext and never overwrites the original details field.",
+						description: "Library documentation text for enrich mode.",
 					},
 				},
-				required: ["command"],
+				required: [],
+			},
+		},
+		{
+			name: MEMORY_FETCH_TOOL_NAME,
+			description:
+				"Fetch long-term memory artifact summaries. Supports optional tags and minRelevance filtering.",
+			inputSchema: {
+				type: "object" as const,
+				properties: {
+					tags: {
+						type: "array" as const,
+						items: { type: "string" as const },
+						description:
+							"Tag filter. Returns artifacts matching any provided tag.",
+					},
+					minRelevance: {
+						type: "string" as const,
+						description:
+							"Minimum relevance threshold (0–1), as a decimal string. Defaults to '0'.",
+					},
+				},
+				required: [],
+			},
+		},
+		{
+			name: MEMORY_DELETE_TOOL_NAME,
+			description: "Delete one long-term TOON memory artifact by artifactId.",
+			inputSchema: {
+				type: "object" as const,
+				properties: {
+					artifactId: {
+						type: "string" as const,
+						description: "Memory artifact ID to delete.",
+					},
+				},
+				required: ["artifactId"],
 			},
 		},
 	];
@@ -117,74 +161,27 @@ export async function dispatchMemoryToolCall(
 		};
 	}
 
-	const command = record.command as string;
-	if (command === "status") {
-		const artifacts = await memoryInterface.findMemoryArtifacts();
-		const artifactsLine =
-			artifacts.length === 0
-				? "Artifacts: none stored — use command=write to persist memory artifacts"
-				: `Artifacts: ${artifacts.length} stored — use command=find to search and command=read with artifactId for details`;
-		const mostRelevantLine =
-			artifacts.length === 0
-				? "Most relevant artifact: none yet"
-				: `Most relevant artifact: ${artifacts[0]?.meta.id} (relevance ${artifacts[0]?.meta.relevance})`;
-		return {
-			content: [
-				{
-					type: "text",
-					text: `${artifactsLine}\n${mostRelevantLine}`,
-				},
-			],
-			isError: false,
-		};
-	}
-	if (command === "list") {
-		const artifacts = await memoryInterface.findMemoryArtifacts();
-		const text =
-			artifacts.length === 0
-				? "No stored memory artifacts found."
-				: `Stored memory artifacts (${artifacts.length}):\n${artifacts
-						.map(
-							(artifact) =>
-								`  ${artifact.meta.id} relevance=${artifact.meta.relevance} tags=${artifact.meta.tags.join(",")}`,
-						)
-						.join("\n")}`;
-		return {
-			content: [{ type: "text", text }],
-			isError: false,
-		};
-	}
-	if (command === "read") {
-		const artifactId = record.artifactId as string | undefined;
-		if (artifactId) {
-			const artifact = await memoryInterface.loadMemoryArtifact(artifactId);
-			if (!artifact) {
-				return {
-					content: [
-						{
-							type: "text",
-							text: `Memory artifact "${artifactId}" not found. Use command=find or command=list with scope=artifacts to discover valid IDs.`,
-						},
-					],
-					isError: true,
-				};
-			}
+	if (canonicalName === MEMORY_READ_TOOL_NAME) {
+		const artifactId = record.artifactId as string;
+		const artifact = await memoryInterface.loadMemoryArtifact(artifactId);
+		if (!artifact) {
 			return {
-				content: [{ type: "text", text: JSON.stringify(artifact, null, 2) }],
-				isError: false,
+				content: [
+					{
+						type: "text",
+						text: `Memory artifact "${artifactId}" not found. Use \`agent-memory-fetch\` to discover valid IDs.`,
+					},
+				],
+				isError: true,
 			};
 		}
 		return {
-			content: [
-				{
-					type: "text",
-					text: "command=read requires artifactId. Use the `agent-session` tool for session-scoped state.",
-				},
-			],
-			isError: true,
+			content: [{ type: "text", text: JSON.stringify(artifact, null, 2) }],
+			isError: false,
 		};
 	}
-	if (command === "find") {
+
+	if (canonicalName === MEMORY_FETCH_TOOL_NAME) {
 		const rawTags = record.tags as string[] | undefined;
 		const rawMinRelevance = record.minRelevance as string | undefined;
 		const minRelevance =
@@ -217,7 +214,8 @@ export async function dispatchMemoryToolCall(
 			isError: false,
 		};
 	}
-	if (command === "write") {
+
+	if (canonicalName === MEMORY_WRITE_TOOL_NAME) {
 		if (!(await memoryInterface.isWorkspaceInitialized())) {
 			return {
 				content: [
@@ -229,13 +227,45 @@ export async function dispatchMemoryToolCall(
 				isError: true,
 			};
 		}
+
+		const artifactId = record.artifactId as string | undefined;
+		const libraryContext = record.libraryContext as string | undefined;
+		if (artifactId !== undefined || libraryContext !== undefined) {
+			if (!artifactId || !libraryContext) {
+				return {
+					content: [
+						{
+							type: "text",
+							text: "Enrich mode requires both artifactId and libraryContext.",
+						},
+					],
+					isError: true,
+				};
+			}
+			const ok = await memoryInterface.enrichMemoryArtifact(
+				artifactId,
+				libraryContext,
+			);
+			return {
+				content: [
+					{
+						type: "text",
+						text: ok
+							? `Enriched artifact "${artifactId}" with library context.`
+							: `Artifact "${artifactId}" not found.`,
+					},
+				],
+				isError: !ok,
+			};
+		}
+
 		const summary = record.summary as string | undefined;
 		if (!summary) {
 			return {
 				content: [
 					{
 						type: "text",
-						text: "command=write requires a summary field.",
+						text: "Create mode requires a summary field.",
 					},
 				],
 				isError: true,
@@ -253,26 +283,40 @@ export async function dispatchMemoryToolCall(
 			extractRequestSignals({ request: summary, context: artifactContext }),
 			{ includeSnapshotSource: snapshot !== null },
 		);
-		await memoryInterface.saveMemoryArtifact({
-			meta: {
-				id: `user-${now.replace(/[:.]/g, "-")}`,
-				created: now,
-				updated: now,
-				tags: rawTags ?? [],
-				relevance: Number.isFinite(relevance) ? relevance : 0.7,
-			},
-			content: {
-				summary,
-				details: (record.details as string | undefined) ?? summary,
-				context: artifactContext,
-				actionable: true,
-			},
-			links: {
-				relatedSessions: [],
-				relatedMemories: [],
-				sources: sourceRefs,
-			},
-		});
+
+		try {
+			await memoryInterface.saveMemoryArtifact({
+				meta: {
+					id: `user-${now.replace(/[:.]/g, "-")}`,
+					created: now,
+					updated: now,
+					tags: rawTags ?? [],
+					relevance: Number.isFinite(relevance) ? relevance : 0.7,
+				},
+				content: {
+					summary,
+					details: (record.details as string | undefined) ?? summary,
+					context: artifactContext,
+					actionable: true,
+				},
+				links: {
+					relatedSessions: [],
+					relatedMemories: [],
+					sources: sourceRefs,
+				},
+			});
+		} catch (error) {
+			return {
+				content: [
+					{
+						type: "text",
+						text: `Failed to persist TOON artifact to .mcp-ai-agent-guidelines/memory/: ${toErrorMessage(error)}`,
+					},
+				],
+				isError: true,
+			};
+		}
+
 		return {
 			content: [
 				{
@@ -283,64 +327,25 @@ export async function dispatchMemoryToolCall(
 			isError: false,
 		};
 	}
-	if (command === "delete") {
-		const artifactId = record.artifactId as string | undefined;
-		if (artifactId) {
-			const deleted = await memoryInterface.deleteMemoryArtifact(artifactId);
-			return {
-				content: [
-					{
-						type: "text",
-						text: deleted
-							? `Deleted memory artifact: ${artifactId}`
-							: `Memory artifact not found: ${artifactId}`,
-					},
-				],
-				isError: false,
-			};
-		}
+
+	if (canonicalName === MEMORY_DELETE_TOOL_NAME) {
+		const artifactId = record.artifactId as string;
+		const deleted = await memoryInterface.deleteMemoryArtifact(artifactId);
 		return {
 			content: [
 				{
 					type: "text",
-					text: "command=delete requires artifactId. Use the `agent-session` tool to delete stored sessions.",
+					text: deleted
+						? `Deleted memory artifact: ${artifactId}`
+						: `Memory artifact not found: ${artifactId}`,
 				},
 			],
-			isError: true,
+			isError: false,
 		};
 	}
-	if (command === "enrich") {
-		const artifactId = record.artifactId as string | undefined;
-		const libraryContext = record.libraryContext as string | undefined;
-		if (!artifactId || !libraryContext) {
-			return {
-				content: [
-					{
-						type: "text",
-						text: "command=enrich requires both artifactId and libraryContext.",
-					},
-				],
-				isError: true,
-			};
-		}
-		const ok = await memoryInterface.enrichMemoryArtifact(
-			artifactId,
-			libraryContext,
-		);
-		return {
-			content: [
-				{
-					type: "text",
-					text: ok
-						? `Enriched artifact "${artifactId}" with library context (content.libraryContext updated, tag "context7-enriched" added).`
-						: `Artifact "${artifactId}" not found.`,
-				},
-			],
-			isError: !ok,
-		};
-	}
+
 	return {
-		content: [{ type: "text", text: `Unknown memory command: ${command}` }],
+		content: [{ type: "text", text: `Unknown memory tool: ${canonicalName}` }],
 		isError: true,
 	};
 }

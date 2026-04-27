@@ -103,14 +103,14 @@ describe("generated — contract shapes", () => {
 			chainTo: ["review"],
 			preferredModelClass: "cheap",
 			autoChainOnCompletion: true,
-			requiredPreconditions: ["agent-memory"],
+			requiredPreconditions: ["agent-memory-fetch"],
 			reactivationPolicy: "periodic",
 		};
 		expect(entry.id).toBe("bootstrap");
 		expect(entry.preferredModelClass).toBe("cheap");
 		expect(entry.chainTo).toContain("review");
 		expect(entry.aliases).toContain("bootstrap");
-		expect(entry.requiredPreconditions).toContain("agent-memory");
+		expect(entry.requiredPreconditions).toContain("agent-memory-fetch");
 	});
 
 	it("SkillManifestEntry domain is a prefix string without trailing hyphen", () => {

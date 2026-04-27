@@ -236,8 +236,8 @@ describe("tool-call-handler", () => {
 
 	it("routes canonical snapshot tools through the shared dispatcher", async () => {
 		const result = await dispatchToolCall(
-			"agent-snapshot",
-			{ command: "status" },
+			"agent-snapshot-fetch",
+			{},
 			createRuntime(),
 		);
 
@@ -264,8 +264,8 @@ describe("tool-call-handler", () => {
 
 		try {
 			const result = await dispatchToolCall(
-				"agent-snapshot",
-				{ command: "status" },
+				"agent-snapshot-fetch",
+				{},
 				createRuntime(),
 			);
 
@@ -380,8 +380,8 @@ describe("tool-call-handler", () => {
 
 	it("dispatches memory tool call when tool name resolves as memory tool", async () => {
 		const result = await dispatchToolCall(
-			"agent-memory",
-			{ command: "list" },
+			"agent-memory-fetch",
+			{},
 			createRuntime(),
 		);
 		expect(result).toBeDefined();
@@ -390,8 +390,8 @@ describe("tool-call-handler", () => {
 
 	it("dispatches session tool call when tool name resolves as session tool", async () => {
 		const result = await dispatchToolCall(
-			"agent-session",
-			{ command: "read" },
+			"agent-session-fetch",
+			{},
 			createRuntime(),
 		);
 		expect(result).toBeDefined();

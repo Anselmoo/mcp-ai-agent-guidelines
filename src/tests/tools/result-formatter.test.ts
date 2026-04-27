@@ -189,7 +189,7 @@ describe("formatWorkflowResult", () => {
 									title: "Review flow",
 									steps: [
 										{
-											tool: "agent-memory",
+											tool: "agent-memory-fetch",
 											description: "load prior artifacts",
 										},
 										{
@@ -208,7 +208,7 @@ describe("formatWorkflowResult", () => {
 		expect(out).toContain("Output template: Prompt template");
 		expect(out).toContain("`goal`");
 		expect(out).toContain("Tool chain: Review flow");
-		expect(out).toContain("`agent-memory`");
+		expect(out).toContain("`agent-memory-fetch`");
 	});
 
 	it("renders top-level WorkflowExecutionResult.artifacts in the produced artifacts section", () => {

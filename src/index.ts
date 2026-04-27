@@ -326,18 +326,13 @@ export async function main() {
 
 	void (async () => {
 		await Promise.all([
-			dispatchSnapshotToolCall("agent-snapshot", { command: "refresh" }).catch(
+			dispatchSnapshotToolCall("agent-snapshot-write", {}).catch(() => {}),
+			dispatchSessionToolCall("agent-session-fetch", {}, runtime).catch(
 				() => {},
 			),
 			dispatchSessionToolCall(
-				"agent-session",
-				{ command: "fetch" },
-				runtime,
-			).catch(() => {}),
-			dispatchSessionToolCall(
-				"agent-session",
+				"agent-session-write",
 				{
-					command: "write",
 					target: "scan-results",
 					data: {
 						scannedAt: new Date().toISOString(),
@@ -362,7 +357,7 @@ export async function main() {
 		const sessionsSummary =
 			priorSessionIds.length === 0
 				? "no prior sessions"
-				: `${priorSessionIds.length} prior session(s) stored — use agent-session(status) to orient or agent-session(list) to enumerate`;
+				: `${priorSessionIds.length} prior session(s) stored — use agent-session-fetch(sessionId=...) to orient or agent-session-fetch() to enumerate`;
 		process.stderr.write(
 			`\nmcp-ai-agent-guidelines ready — ` +
 				`${runtime.instructionRegistry.getAll().length} instructions, ` +
@@ -376,9 +371,8 @@ export async function main() {
 	const shutdown = async () => {
 		await bootstrap.persist(skillHandler);
 		await dispatchSessionToolCall(
-			"agent-session",
+			"agent-session-write",
 			{
-				command: "write",
 				target: "session-context",
 				data: {
 					sessionId: runtime.sessionId,

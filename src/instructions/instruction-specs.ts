@@ -338,7 +338,7 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 		toolName: "task-bootstrap",
 		displayName: "Bootstrap: First Contact",
 		description:
-			"Use when starting a new task with unclear scope, before any implementation begins, when requirements are vague or ambiguous, or when the agent needs to orient itself on what the user actually wants. Covers scope clarification, requirements extraction, priority setting, and context loading. Companion tools: use `agent-snapshot` (refresh or compare) to load the codebase baseline, `agent-session` (fetch or status) to inspect session-scoped artifacts, `agent-memory` (find or read) for long-term artifacts, and `agent-workspace` for source-file access.",
+			"Use when starting a new task with unclear scope, before any implementation begins, when requirements are vague or ambiguous, or when the agent needs to orient itself on what the user actually wants. Covers scope clarification, requirements extraction, priority setting, and context loading. Companion tools: use `agent-snapshot-write` (refresh) or `agent-snapshot-compare` to load the codebase baseline, `agent-session-fetch` to inspect session-scoped artifacts, `agent-memory-fetch` / `agent-memory-read` for long-term artifacts, and `agent-workspace` for source-file access.",
 		mission:
 			"Orient the agent, load project context, identify scope and unknowns before any implementation starts.",
 		chainTo: [
@@ -369,7 +369,11 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 		// Snapshot + session + memory inspection should precede scope analysis so
 		// the agent loads the codebase baseline, current session artifacts, and
 		// long-term TOON context before committing to a plan.
-		requiredPreconditions: ["agent-snapshot", "agent-session", "agent-memory"],
+		requiredPreconditions: [
+			"agent-snapshot-fetch",
+			"agent-session-fetch",
+			"agent-memory-fetch",
+		],
 	},
 	{
 		id: "meta-routing",
@@ -393,7 +397,7 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 		toolName: "project-onboard",
 		displayName: "Onboard: Project Familiarization",
 		description:
-			"Use when starting a new work session, exploring what this codebase does, understanding the skill taxonomy, or getting oriented in mcp-ai-agent-guidelines for the first time. Covers project structure, skill navigation, instruction index, and verification workflow. Companion tools: use `graph-visualize` (skill-graph, chain-graph) to explore the skill topology and instruction chains; use `agent-workspace` (list) to browse source files, `agent-session` (list or fetch) to inspect session artifacts, and `agent-snapshot` (status) to confirm the current codebase baseline.",
+			"Use when starting a new work session, exploring what this codebase does, understanding the skill taxonomy, or getting oriented in mcp-ai-agent-guidelines for the first time. Covers project structure, skill navigation, instruction index, and verification workflow. Companion tools: use `graph-visualize` (skill-graph, chain-graph) to explore the skill topology and instruction chains; use `agent-workspace` (list) to browse source files, `agent-session-fetch` to inspect session artifacts, and `agent-snapshot-fetch` to confirm the current codebase baseline.",
 		mission: "",
 		chainTo: ["task-bootstrap"],
 		autoChainOnCompletion: true,

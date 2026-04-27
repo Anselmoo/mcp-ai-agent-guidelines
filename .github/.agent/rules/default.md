@@ -53,7 +53,7 @@ the same request:
 
 | Instruction | Companion tools |
 |---|---|
-| `task-bootstrap` | `agent-snapshot` (refresh), `agent-session` (status), `agent-memory` (find) |
+| `task-bootstrap` | `agent-snapshot-write` (refresh), `agent-session-fetch` (status/list), `agent-memory-fetch` (find/list) |
 | `system-design` | `graph-visualize` (chain-graph, skill-graph) |
 | `agent-orchestrate` | `orchestration-config` (read/write), `model-discover` |
 | `meta-routing` | `graph-visualize` (chain-graph) |
