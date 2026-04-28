@@ -9,7 +9,7 @@ export const instructionManifest: InstructionManifestEntry = {
 	aliases: [],
 	displayName: "Bootstrap: First Contact",
 	description:
-		"Use when starting a new task with unclear scope, before any implementation begins, when requirements are vague or ambiguous, or when the agent needs to orient itself on what the user actually wants. Covers scope clarification, requirements extraction, priority setting, and context loading. Companion tools: use `agent-snapshot` (refresh or compare) to load the codebase baseline, `agent-session` (fetch or status) to inspect session-scoped artifacts, `agent-memory` (find or read) for long-term artifacts, and `agent-workspace` for source-file access.",
+		"Use when starting a new task with unclear scope, before any implementation begins, when requirements are vague or ambiguous, or when the agent needs to orient itself on what the user actually wants. Covers scope clarification, requirements extraction, priority setting, and context loading. Companion tools: use `agent-snapshot-write` (refresh) or `agent-snapshot-compare` to load the codebase baseline, `agent-session-fetch` to inspect session-scoped artifacts, `agent-memory-fetch` / `agent-memory-read` for long-term artifacts, and `agent-workspace` for source-file access.",
 	sourcePath: "src/instructions/instruction-specs.ts#bootstrap",
 	mission:
 		"Orient the agent, load project context, identify scope and unknowns before any implementation starts.",
@@ -104,7 +104,11 @@ export const instructionManifest: InstructionManifestEntry = {
 	],
 	preferredModelClass: "free",
 	autoChainOnCompletion: true,
-	requiredPreconditions: ["agent-snapshot", "agent-session", "agent-memory"],
+	requiredPreconditions: [
+		"agent-snapshot-fetch",
+		"agent-session-fetch",
+		"agent-memory-fetch",
+	],
 	reactivationPolicy: "periodic",
 };
 

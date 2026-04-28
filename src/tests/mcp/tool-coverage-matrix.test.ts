@@ -12,9 +12,19 @@ import { createRequestHandlers, createRuntime } from "../../index.js";
 const WORKSPACE_PUBLIC_TOOL_NAMES = ["agent-workspace"] as const;
 
 const MEMORY_PUBLIC_TOOL_NAMES = [
-	"agent-memory",
-	"agent-session",
-	"agent-snapshot",
+	"agent-memory-read",
+	"agent-memory-write",
+	"agent-memory-fetch",
+	"agent-memory-delete",
+	"agent-session-read",
+	"agent-session-write",
+	"agent-session-fetch",
+	"agent-session-delete",
+	"agent-snapshot-read",
+	"agent-snapshot-write",
+	"agent-snapshot-fetch",
+	"agent-snapshot-compare",
+	"agent-snapshot-delete",
 ] as const;
 
 const ORCHESTRATION_PUBLIC_TOOL_NAMES = [
@@ -70,7 +80,7 @@ describe("mcp tool coverage matrix", () => {
 				DISCOVERY_PUBLIC_INSTRUCTION_MODULES.length,
 		);
 		expect(coverageFamilies.workspaceSurface).toHaveLength(1);
-		expect(coverageFamilies.memorySurface).toHaveLength(3);
+		expect(coverageFamilies.memorySurface).toHaveLength(13);
 		expect(coverageFamilies.orchestrationSurface).toHaveLength(2);
 		expect(coverageFamilies.visualizationSurface).toHaveLength(1);
 	});

@@ -31,12 +31,61 @@ function canonicalToolName(name: string) {
 		case "workspace":
 			return "agent-workspace";
 		case "session":
-			return "agent-session";
+			return "agent-session-fetch";
 		case "snapshot":
-			return "agent-snapshot";
+			return "agent-snapshot-fetch";
 		default:
 			return name;
 	}
+}
+
+function normalizeToolCall(name: string, args: Record<string, unknown>) {
+	if (name === "snapshot") {
+		const command = args.command;
+		if (command === "refresh") {
+			return { name: "agent-snapshot-write", args: {} };
+		}
+		if (command === "compare") {
+			return {
+				name: "agent-snapshot-compare",
+				args: { selector: args.selector },
+			};
+		}
+		if (command === "read") {
+			return { name: "agent-snapshot-read", args: { selector: args.selector } };
+		}
+		if (command === "history") {
+			return { name: "agent-snapshot-fetch", args: { mode: "history" } };
+		}
+	}
+
+	if (name === "session") {
+		const command = args.command;
+		if (command === "read") {
+			return {
+				name: "agent-session-read",
+				args: { sessionId: args.sessionId, artifact: args.artifact },
+			};
+		}
+		if (command === "write") {
+			return {
+				name: "agent-session-write",
+				args: {
+					sessionId: args.sessionId,
+					target: args.target,
+					data: args.data,
+				},
+			};
+		}
+		if (command === "delete") {
+			return {
+				name: "agent-session-delete",
+				args: { sessionId: args.sessionId },
+			};
+		}
+	}
+
+	return { name: canonicalToolName(name), args };
 }
 
 class SimulationContext {
@@ -48,18 +97,30 @@ class SimulationContext {
 	) {}
 
 	async callTool(name: string, args: Record<string, unknown>) {
-		const result = await this.client.callTool(canonicalToolName(name), {
-			...args,
-			...(args.sessionId ? {} : { sessionId: this.sessionId }),
+		const normalized = normalizeToolCall(name, args);
+		const shouldAttachSessionId =
+			normalized.name === "agent-workspace" ||
+			normalized.name.startsWith("agent-session-");
+		const result = await this.client.callTool(normalized.name, {
+			...normalized.args,
+			...(shouldAttachSessionId && !normalized.args.sessionId
+				? { sessionId: this.sessionId }
+				: {}),
 		});
 		expectToolSucceeded(result, this.client.stderrOutput);
 		return result;
 	}
 
 	async callToolExpectError(name: string, args: Record<string, unknown>) {
-		const result = await this.client.callTool(canonicalToolName(name), {
-			...args,
-			...(args.sessionId ? {} : { sessionId: this.sessionId }),
+		const normalized = normalizeToolCall(name, args);
+		const shouldAttachSessionId =
+			normalized.name === "agent-workspace" ||
+			normalized.name.startsWith("agent-session-");
+		const result = await this.client.callTool(normalized.name, {
+			...normalized.args,
+			...(shouldAttachSessionId && !normalized.args.sessionId
+				? { sessionId: this.sessionId }
+				: {}),
 		});
 		expect(("isError" in result ? result.isError : false) ?? false).toBe(true);
 		return result;

@@ -17,34 +17,29 @@ const SESSION_ARTIFACT_NAMES = [
 ] as const;
 
 type SessionArtifactKind = (typeof SESSION_ARTIFACT_NAMES)[number];
-type SessionCommand = "status" | "list" | "read" | "write" | "fetch" | "delete";
 
-const VALID_SESSION_COMMANDS = new Set<SessionCommand>([
-	"status",
-	"list",
-	"read",
-	"write",
-	"fetch",
-	"delete",
+export const SESSION_READ_TOOL_NAME = "agent-session-read";
+export const SESSION_WRITE_TOOL_NAME = "agent-session-write";
+export const SESSION_FETCH_TOOL_NAME = "agent-session-fetch";
+export const SESSION_DELETE_TOOL_NAME = "agent-session-delete";
+
+type SessionToolName =
+	| typeof SESSION_READ_TOOL_NAME
+	| typeof SESSION_WRITE_TOOL_NAME
+	| typeof SESSION_FETCH_TOOL_NAME
+	| typeof SESSION_DELETE_TOOL_NAME;
+
+const SESSION_TOOL_NAMES = new Set<SessionToolName>([
+	SESSION_READ_TOOL_NAME,
+	SESSION_WRITE_TOOL_NAME,
+	SESSION_FETCH_TOOL_NAME,
+	SESSION_DELETE_TOOL_NAME,
 ]);
 
 const sessionMemoryInterface = sharedToonMemoryInterface;
 
 function stringifyJson(value: unknown) {
 	return `${JSON.stringify(value, null, "\t")}\n`;
-}
-
-function parseSessionCommand(record: Record<string, unknown>): SessionCommand {
-	const cmd = record.command;
-	if (
-		typeof cmd !== "string" ||
-		!VALID_SESSION_COMMANDS.has(cmd as SessionCommand)
-	) {
-		throw new Error(
-			`session command must be one of: ${[...VALID_SESSION_COMMANDS].join(", ")}.`,
-		);
-	}
-	return cmd as SessionCommand;
 }
 
 function resolveSessionId(
@@ -58,59 +53,73 @@ function resolveSessionId(
 	return assertValidSessionId(sessionIdValue);
 }
 
-function parseArtifactName(artifactValue: unknown): SessionArtifactKind {
+function parseArtifactName(artifactValue: unknown): SessionArtifactKind | null {
 	if (
-		typeof artifactValue !== "string" ||
-		!SESSION_ARTIFACT_NAMES.includes(artifactValue as SessionArtifactKind)
+		typeof artifactValue === "string" &&
+		SESSION_ARTIFACT_NAMES.includes(artifactValue as SessionArtifactKind)
 	) {
-		throw new Error(
-			`session artifact must be one of: ${SESSION_ARTIFACT_NAMES.join(", ")}.`,
-		);
+		return artifactValue as SessionArtifactKind;
 	}
 
-	return artifactValue as SessionArtifactKind;
+	return null;
 }
 
-export const SESSION_TOOL_NAME = "agent-session";
+function invalidSessionArtifactResult(fieldName: "artifact" | "target") {
+	return {
+		content: [
+			{
+				type: "text" as const,
+				text: `${fieldName} must be one of: ${SESSION_ARTIFACT_NAMES.join(", ")}.`,
+			},
+		],
+		isError: true,
+	};
+}
 
-export function resolveSessionToolName(
-	name: string,
-): typeof SESSION_TOOL_NAME | null {
-	return name === SESSION_TOOL_NAME ? SESSION_TOOL_NAME : null;
+export function resolveSessionToolName(name: string): SessionToolName | null {
+	return SESSION_TOOL_NAMES.has(name as SessionToolName)
+		? (name as SessionToolName)
+		: null;
 }
 
 export const SESSION_TOOL_DEFINITIONS: readonly ToolDefinitionWithInputSchema[] =
 	[
 		{
-			name: SESSION_TOOL_NAME,
+			name: SESSION_READ_TOOL_NAME,
 			description:
-				"Session-scoped TOON/JSON artifact operations. Canonical name: `agent-session`. Commands: status (session counts or stats), list (sessions or per-session artifacts), read (artifact), write (artifact), fetch (all session artifacts), delete (session).",
+				"Read one session-backed artifact (session-context, workspace-map, or scan-results).",
 			inputSchema: {
 				type: "object" as const,
 				properties: {
-					command: {
-						type: "string" as const,
-						enum: [
-							"status",
-							"list",
-							"read",
-							"write",
-							"fetch",
-							"delete",
-						] as const,
-						description:
-							"status: Show aggregate session counts or per-session stats. list: List stored session IDs or list artifacts for a session. read: Read one session-backed artifact. write: Persist one session-backed artifact. fetch: Return all artifacts for a session. delete: Delete one stored session.",
-					},
 					sessionId: {
 						type: "string" as const,
-						description:
-							"Optional session ID. Defaults to the runtime session for read/write/fetch/delete. When provided to list/status, scopes the result to that session.",
+						description: "Optional session ID. Defaults to runtime session.",
 					},
 					artifact: {
 						type: "string" as const,
 						enum: [...SESSION_ARTIFACT_NAMES] as const,
 						description:
 							"Artifact to read. One of: session-context, workspace-map, scan-results.",
+					},
+				},
+				required: ["artifact"],
+			},
+			annotations: {
+				readOnlyHint: true,
+				destructiveHint: false,
+				idempotentHint: true,
+				openWorldHint: false,
+			},
+		},
+		{
+			name: SESSION_WRITE_TOOL_NAME,
+			description: "Write one session-backed artifact.",
+			inputSchema: {
+				type: "object" as const,
+				properties: {
+					sessionId: {
+						type: "string" as const,
+						description: "Optional session ID. Defaults to runtime session.",
 					},
 					target: {
 						type: "string" as const,
@@ -120,16 +129,57 @@ export const SESSION_TOOL_DEFINITIONS: readonly ToolDefinitionWithInputSchema[] 
 					},
 					data: {
 						type: "object" as const,
-						description:
-							"Structured value to persist into the selected session artifact.",
+						description: "Structured value to persist.",
 					},
 				},
-				required: ["command"],
+				required: ["target", "data"],
 			},
 			annotations: {
 				readOnlyHint: false,
 				destructiveHint: false,
+				idempotentHint: false,
+				openWorldHint: false,
+			},
+		},
+		{
+			name: SESSION_FETCH_TOOL_NAME,
+			description:
+				"Fetch session metadata. With sessionId omitted: list all stored session IDs. With sessionId set: return all artifacts and progress summary for that session.",
+			inputSchema: {
+				type: "object" as const,
+				properties: {
+					sessionId: {
+						type: "string" as const,
+						description:
+							"Optional session ID. Omit to list session IDs; provide to fetch artifacts for that session.",
+					},
+				},
+				required: [],
+			},
+			annotations: {
+				readOnlyHint: true,
+				destructiveHint: false,
 				idempotentHint: true,
+				openWorldHint: false,
+			},
+		},
+		{
+			name: SESSION_DELETE_TOOL_NAME,
+			description: "Delete one stored session context by sessionId.",
+			inputSchema: {
+				type: "object" as const,
+				properties: {
+					sessionId: {
+						type: "string" as const,
+						description: "Optional session ID. Defaults to runtime session.",
+					},
+				},
+				required: [],
+			},
+			annotations: {
+				readOnlyHint: false,
+				destructiveHint: true,
+				idempotentHint: false,
 				openWorldHint: false,
 			},
 		},
@@ -166,47 +216,43 @@ export async function dispatchSessionToolCall(
 		};
 	}
 
-	const command = parseSessionCommand(record);
-
-	if (command === "status") {
-		if (record.sessionId !== undefined) {
-			const sessionId = resolveSessionId(record.sessionId, runtime.sessionId);
-			const [stats, context] = await Promise.all([
-				sessionMemoryInterface.getSessionStats(sessionId),
-				sessionMemoryInterface.loadSessionContext(sessionId),
-			]);
-			if (!stats) {
-				return {
-					content: [
-						{ type: "text", text: `Session "${sessionId}" was not found.` },
-					],
-					isError: true,
-				};
-			}
+	if (canonicalName === SESSION_FETCH_TOOL_NAME) {
+		if (record.sessionId === undefined) {
+			const sessionIds = await sessionMemoryInterface.listSessionIds();
 			return {
 				content: [
-					{
-						type: "text",
-						text: stringifyJson({
-							sessionId,
-							stats,
-							phase: context?.context.phase ?? null,
-							progress: context?.progress ?? null,
-						}),
-					},
+					{ type: "text", text: stringifyJson({ entries: sessionIds }) },
 				],
 				isError: false,
 			};
 		}
+		const sessionId = resolveSessionId(record.sessionId, runtime.sessionId);
+		const [sessionContext, workspaceMap, rawScanResults] = await Promise.all([
+			sessionMemoryInterface.loadSessionContext(sessionId),
+			sessionMemoryInterface.loadWorkspaceMap(sessionId),
+			sessionMemoryInterface.loadScanResults(sessionId),
+		]);
 
-		const stats = await sessionMemoryInterface.getMemoryStats();
 		return {
 			content: [
 				{
 					type: "text",
 					text: stringifyJson({
-						totalSessions: stats.totalSessions,
-						artifactCount: stats.artifactCount,
+						sessionId,
+						progressSummary: sessionContext
+							? {
+									phase: sessionContext.context.phase,
+									completed: sessionContext.progress.completed,
+									inProgress: sessionContext.progress.inProgress,
+									blocked: sessionContext.progress.blocked,
+									next: sessionContext.progress.next,
+								}
+							: null,
+						artifacts: {
+							sessionContext,
+							workspaceMap,
+							scanResults: rawScanResults,
+						},
 					}),
 				},
 			],
@@ -214,55 +260,12 @@ export async function dispatchSessionToolCall(
 		};
 	}
 
-	if (command === "list") {
-		if (record.sessionId !== undefined) {
-			const sessionId = resolveSessionId(record.sessionId, runtime.sessionId);
-			const [sessionContext, workspaceMap, scanResults] = await Promise.all([
-				sessionMemoryInterface.loadSessionContext(sessionId),
-				sessionMemoryInterface.loadWorkspaceMap(sessionId),
-				sessionMemoryInterface.loadScanResults(sessionId),
-			]);
-
-			return {
-				content: [
-					{
-						type: "text",
-						text: stringifyJson({
-							sessionId,
-							entries: [
-								{
-									kind: "session-context",
-									present: sessionContext !== null,
-									encoding: "toon",
-								},
-								{
-									kind: "workspace-map",
-									present: workspaceMap !== null,
-									encoding: "json",
-								},
-								{
-									kind: "scan-results",
-									present: scanResults !== null,
-									encoding: "json",
-								},
-							],
-						}),
-					},
-				],
-				isError: false,
-			};
-		}
-
-		const sessionIds = await sessionMemoryInterface.listSessionIds();
-		return {
-			content: [{ type: "text", text: stringifyJson({ entries: sessionIds }) }],
-			isError: false,
-		};
-	}
-
-	if (command === "read") {
+	if (canonicalName === SESSION_READ_TOOL_NAME) {
 		const sessionId = resolveSessionId(record.sessionId, runtime.sessionId);
 		const artifact = parseArtifactName(record.artifact);
+		if (!artifact) {
+			return invalidSessionArtifactResult("artifact");
+		}
 
 		switch (artifact) {
 			case "session-context": {
@@ -325,7 +328,7 @@ export async function dispatchSessionToolCall(
 		}
 	}
 
-	if (command === "write") {
+	if (canonicalName === SESSION_WRITE_TOOL_NAME) {
 		if (!(await sessionMemoryInterface.isWorkspaceInitialized())) {
 			return {
 				content: [
@@ -339,6 +342,9 @@ export async function dispatchSessionToolCall(
 		}
 		const sessionId = resolveSessionId(record.sessionId, runtime.sessionId);
 		const target = parseArtifactName(record.target);
+		if (!target) {
+			return invalidSessionArtifactResult("target");
+		}
 		const data = record.data;
 
 		if (typeof data !== "object" || data === null) {
@@ -353,59 +359,36 @@ export async function dispatchSessionToolCall(
 			};
 		}
 
-		switch (target) {
-			case "session-context":
-				await sessionMemoryInterface.saveSessionContext(sessionId, data);
-				break;
-			case "workspace-map":
-				await sessionMemoryInterface.saveWorkspaceMap(
-					sessionId,
-					data as Parameters<ToonMemoryInterface["saveWorkspaceMap"]>[1],
-				);
-				break;
-			case "scan-results":
-				await sessionMemoryInterface.saveScanResults(sessionId, data);
-				break;
+		try {
+			switch (target) {
+				case "session-context":
+					await sessionMemoryInterface.saveSessionContext(sessionId, data);
+					break;
+				case "workspace-map":
+					await sessionMemoryInterface.saveWorkspaceMap(
+						sessionId,
+						data as Parameters<ToonMemoryInterface["saveWorkspaceMap"]>[1],
+					);
+					break;
+				case "scan-results":
+					await sessionMemoryInterface.saveScanResults(sessionId, data);
+					break;
+			}
+		} catch (error) {
+			return {
+				content: [
+					{
+						type: "text",
+						text: `Failed to persist session artifact to .mcp-ai-agent-guidelines/session/: ${toErrorMessage(error)}`,
+					},
+				],
+				isError: true,
+			};
 		}
 
 		return {
 			content: [
 				{ type: "text", text: `Updated ${target} for session ${sessionId}.` },
-			],
-			isError: false,
-		};
-	}
-
-	if (command === "fetch") {
-		const sessionId = resolveSessionId(record.sessionId, runtime.sessionId);
-		const [sessionContext, workspaceMap, rawScanResults] = await Promise.all([
-			sessionMemoryInterface.loadSessionContext(sessionId),
-			sessionMemoryInterface.loadWorkspaceMap(sessionId),
-			sessionMemoryInterface.loadScanResults(sessionId),
-		]);
-
-		return {
-			content: [
-				{
-					type: "text",
-					text: stringifyJson({
-						sessionId,
-						progressSummary: sessionContext
-							? {
-									phase: sessionContext.context.phase,
-									completed: sessionContext.progress.completed,
-									inProgress: sessionContext.progress.inProgress,
-									blocked: sessionContext.progress.blocked,
-									next: sessionContext.progress.next,
-								}
-							: null,
-						artifacts: {
-							sessionContext,
-							workspaceMap,
-							scanResults: rawScanResults,
-						},
-					}),
-				},
 			],
 			isError: false,
 		};

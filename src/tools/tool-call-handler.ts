@@ -67,7 +67,7 @@ function buildEnrichmentHint(
 		"To anchor this memory artifact to current library documentation:",
 		"1. Call `mcp_context7_resolve-library-id` for each library above",
 		"2. Call `mcp_context7_get-library-docs` with the resolved ID and the user's original request as the query",
-		`3. Call \`agent-memory(command=enrich, artifactId="${artifactId}", libraryContext=<combined docs>)\``,
+		`3. Call \`agent-memory-write(artifactId="${artifactId}", libraryContext=<combined docs>)\``,
 	].join("\n");
 }
 

@@ -158,16 +158,16 @@ export function resolveSessionStateDir(rawStateDir?: string): string {
 }
 
 /**
- * Async variant of `resolveSessionStateDir` that auto-detects the workspace
- * root when only the default relative `DEFAULT_SESSION_STATE_DIR` would be
- * used. If a workspace root is found via `.git` / `package.json` walk-up the
- * state dir is anchored to that root instead of `process.cwd()`.
+ * Async variant of `resolveSessionStateDir` that scopes runtime state to the
+ * current working directory when no explicit override is provided.
  *
  * The explicit override priority is:
  *   1. `rawStateDir` argument
  *   2. `MCP_AI_AGENT_GUIDELINES_STATE_DIR` env var
- *   3. workspace-root auto-detection (`.git` / `package.json` walk-up)
- *   4. `process.cwd()` fallback
+ *   3. `process.cwd()`
+ *
+ * This keeps writes project-local (e.g. `<cwd>/.mcp-ai-agent-guidelines`) even
+ * for non-Node repositories such as Python projects.
  */
 export async function resolveSessionStateDirAsync(
 	rawStateDir?: string,
@@ -177,9 +177,7 @@ export async function resolveSessionStateDirAsync(
 		assertSafeStateDir(explicitDir);
 		return resolve(explicitDir);
 	}
-	const workspaceRoot = await findWorkspaceRoot(process.cwd());
-	const base = workspaceRoot ?? process.cwd();
-	return resolve(base, DEFAULT_SESSION_STATE_DIR);
+	return resolve(process.cwd(), DEFAULT_SESSION_STATE_DIR);
 }
 
 export function resolveSessionPathWithinStateDir(

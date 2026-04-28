@@ -236,8 +236,8 @@ describe("tool-call-handler", () => {
 
 	it("routes canonical snapshot tools through the shared dispatcher", async () => {
 		const result = await dispatchToolCall(
-			"agent-snapshot",
-			{ command: "status" },
+			"agent-snapshot-fetch",
+			{},
 			createRuntime(),
 		);
 
@@ -264,8 +264,8 @@ describe("tool-call-handler", () => {
 
 		try {
 			const result = await dispatchToolCall(
-				"agent-snapshot",
-				{ command: "status" },
+				"agent-snapshot-fetch",
+				{},
 				createRuntime(),
 			);
 
@@ -378,10 +378,56 @@ describe("tool-call-handler", () => {
 		}
 	});
 
+	it("does not fail the tool call when session context persistence fails", async () => {
+		vi.spyOn(memoryInterface, "saveMemoryArtifact").mockResolvedValue();
+		vi.spyOn(memoryInterface, "saveSessionContext").mockRejectedValue(
+			new Error("disk full"),
+		);
+		vi.spyOn(memoryInterface, "findMemoryArtifacts").mockResolvedValue([]);
+		vi.spyOn(memoryInterface, "loadFingerprintSnapshot").mockResolvedValue(
+			null,
+		);
+
+		try {
+			const result = await dispatchToolCall(
+				"code-review",
+				{ request: "review the runtime architecture" },
+				createRuntime(),
+			);
+
+			expect(result.isError).toBeUndefined();
+		} finally {
+			vi.restoreAllMocks();
+		}
+	});
+
+	it("does not fail the tool call when memory artifact persistence fails", async () => {
+		vi.spyOn(memoryInterface, "saveMemoryArtifact").mockRejectedValue(
+			new Error("disk full"),
+		);
+		vi.spyOn(memoryInterface, "saveSessionContext").mockResolvedValue();
+		vi.spyOn(memoryInterface, "findMemoryArtifacts").mockResolvedValue([]);
+		vi.spyOn(memoryInterface, "loadFingerprintSnapshot").mockResolvedValue(
+			null,
+		);
+
+		try {
+			const result = await dispatchToolCall(
+				"code-review",
+				{ request: "review the runtime architecture" },
+				createRuntime(),
+			);
+
+			expect(result.isError).toBeUndefined();
+		} finally {
+			vi.restoreAllMocks();
+		}
+	});
+
 	it("dispatches memory tool call when tool name resolves as memory tool", async () => {
 		const result = await dispatchToolCall(
-			"agent-memory",
-			{ command: "list" },
+			"agent-memory-fetch",
+			{},
 			createRuntime(),
 		);
 		expect(result).toBeDefined();
@@ -390,8 +436,8 @@ describe("tool-call-handler", () => {
 
 	it("dispatches session tool call when tool name resolves as session tool", async () => {
 		const result = await dispatchToolCall(
-			"agent-session",
-			{ command: "read" },
+			"agent-session-fetch",
+			{},
 			createRuntime(),
 		);
 		expect(result).toBeDefined();

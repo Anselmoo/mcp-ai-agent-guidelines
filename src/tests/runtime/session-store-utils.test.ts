@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
 	ensureSessionStateGitignore,
 	findWorkspaceRoot,
@@ -200,10 +200,24 @@ describe("findWorkspaceRoot / findWorkspaceRootSync", () => {
 });
 
 describe("resolveSessionStateDirAsync", () => {
-	it("resolves to a non-empty string without throwing", async () => {
+	it("scopes default state dir to the current working directory", async () => {
 		const result = await resolveSessionStateDirAsync();
-		expect(typeof result).toBe("string");
-		expect(result.length).toBeGreaterThan(0);
+		expect(result).toBe(resolve(process.cwd(), ".mcp-ai-agent-guidelines"));
+	});
+
+	it("does not require .git or package.json markers for default resolution", async () => {
+		const tmpBase = mkdtempSync(join(tmpdir(), "cwd-scoped-state-"));
+		const deepDir = join(tmpBase, "python", "project", "src");
+		await mkdir(deepDir, { recursive: true });
+		const cwdSpy = vi.spyOn(process, "cwd").mockReturnValue(deepDir);
+
+		try {
+			const result = await resolveSessionStateDirAsync();
+			expect(result).toBe(resolve(deepDir, ".mcp-ai-agent-guidelines"));
+		} finally {
+			cwdSpy.mockRestore();
+			await rm(tmpBase, { recursive: true, force: true });
+		}
 	});
 
 	it("uses the env var override when set", async () => {

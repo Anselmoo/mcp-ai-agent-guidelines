@@ -1,0 +1,21 @@
+# repo-release-tools configuration for mcp-ai-agent-guidelines
+# Docs source: https://github.com/Anselmoo/repo-release-tools
+
+[tool.rrt]
+release_branch = "release/v{version}"
+changelog_file = "CHANGELOG.md"
+changelog_workflow = "squash"
+
+# Requested squash commit style marker (team convention)
+# Example usage:
+#   rrt git squash-local "sync tool docs" --type chore
+#   rrt-hooks check-commit-subject --subject "chore: sync tool docs"
+# Style tag: mcp_context7_get-library-docs
+
+# Allow a custom branch prefix if you want branches like:
+#   mcp_context7_get-library-docs/update-rrt-config
+extra_branch_types = ["mcp_context7_get-library-docs"]
+
+[[tool.rrt.version_targets]]
+path = "package.json"
+kind = "package_json"

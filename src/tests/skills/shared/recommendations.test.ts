@@ -468,6 +468,24 @@ describe("recommendations", () => {
 		).toBe(true);
 	});
 
+	it("extractRequestSignals recognizes canonical and mcp_ai-agent-guid tool aliases in context", () => {
+		const signals = extractRequestSignals({
+			request: "persist agent support context",
+			context:
+				"Evidence came from fetch_webpage, mcp_github_search_repositories, mcp_ai-agent-guid_agent-orchestrate, mcp_ai-agent-guid_prompt-engineering, and mcp_ai-agent-guid_system-design.",
+		});
+
+		expect(signals.contextTools).toEqual(
+			expect.arrayContaining([
+				"fetch_webpage",
+				"mcp_github_search_repositories",
+				"mcp_ai-agent-guid_agent-orchestrate",
+				"mcp_ai-agent-guid_prompt-engineering",
+				"mcp_ai-agent-guid_system-design",
+			]),
+		);
+	});
+
 	it("buildContextEvidenceLines includes snapshot tool mention and orchestration pairing note", () => {
 		// Context must include the tool name (contextTools comes from contextText, not request)
 		const signals = extractRequestSignals({

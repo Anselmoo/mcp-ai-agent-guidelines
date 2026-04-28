@@ -1,4 +1,6 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { createDefaultOrchestrationConfig } from "../../config/orchestration-config.js";
+import * as orchestrationConfigService from "../../config/orchestration-config-service.js";
 import {
 	type DiscoveryModelEntry,
 	dispatchModelDiscoveryToolCall,
@@ -25,6 +27,10 @@ function getFirstText(
 	expect(first?.type).toBe("text");
 	return first?.type === "text" ? first.text : "";
 }
+
+afterEach(() => {
+	vi.restoreAllMocks();
+});
 
 // ─── performModelDiscovery (pure logic) ───────────────────────────────────────
 
@@ -100,6 +106,25 @@ describe("performModelDiscovery", () => {
 		expect(result.warnings.some((w) => w.includes("supermodel"))).toBe(true);
 	});
 
+	it("skips entries with missing or invalid ids", () => {
+		const entries = [
+			{ id: "", role: "free_primary", provider: "openai" },
+			{
+				id: 42 as unknown as string,
+				role: "strong_primary",
+				provider: "openai",
+			},
+		] as DiscoveryModelEntry[];
+		const result = performModelDiscovery(entries);
+
+		expect(result.models).toEqual({});
+		expect(
+			result.warnings.filter((warning) =>
+				warning.includes("missing or invalid id"),
+			),
+		).toHaveLength(2);
+	});
+
 	it("overwrites a duplicate role with a warning", () => {
 		const entries: DiscoveryModelEntry[] = [
 			makeEntry({ id: "first-model", role: "cheap_primary" }),
@@ -141,6 +166,19 @@ describe("performModelDiscovery", () => {
 			(w) => w.includes("free_primary") && w.includes("No model"),
 		);
 		expect(freeWarn).toHaveLength(0);
+	});
+
+	it("defaults provider to other when it is omitted", () => {
+		const entries = [
+			{
+				id: "portable-model",
+				role: "free_primary",
+				provider: undefined,
+			},
+		] as unknown as DiscoveryModelEntry[];
+		const result = performModelDiscovery(entries);
+
+		expect(result.models["free_primary"]?.provider).toBe("other");
 	});
 
 	it("handles all 7 roles assigned with no warnings", () => {
@@ -224,5 +262,162 @@ describe("dispatchModelDiscoveryToolCall", () => {
 		expect(result.isError).toBeFalsy();
 		expect(parsed).toHaveProperty("assignedRoles");
 		expect(parsed.assignedRoles as string[]).toContain("free_primary");
+	});
+
+	it("returns a validation summary when all entries become invalid after validation", async () => {
+		const result = await dispatchModelDiscoveryToolCall("model-discover", {
+			models: [{ id: "", role: "free_primary", provider: "openai" }],
+		});
+		const text = getFirstText(result);
+
+		expect(result.isError).toBe(true);
+		expect(text).toContain("No valid model entries after validation");
+		expect(text).toContain("Skipping entry with missing or invalid id");
+	});
+
+	it("returns a success payload without warnings when validation is clean", async () => {
+		const loadSpy = vi
+			.spyOn(orchestrationConfigService, "loadOrchestrationConfigForWorkspace")
+			.mockResolvedValue({
+				config: createDefaultOrchestrationConfig(),
+				exists: true,
+				paths: {
+					workspaceRoot: "/workspace",
+					configDirectory: "/workspace/.mcp-ai-agent-guidelines/config",
+					orchestrationPath:
+						"/workspace/.mcp-ai-agent-guidelines/config/orchestration.toml",
+				},
+				source: "workspace",
+				warning: undefined,
+			});
+		const saveSpy = vi
+			.spyOn(orchestrationConfigService, "saveOrchestrationConfig")
+			.mockResolvedValue({
+				workspaceRoot: "/workspace",
+				configDirectory: "/workspace/.mcp-ai-agent-guidelines/config",
+				orchestrationPath:
+					"/workspace/.mcp-ai-agent-guidelines/config/orchestration.toml",
+			});
+
+		const result = await dispatchModelDiscoveryToolCall("model-discover", {
+			models: [
+				{ id: "gpt-5-mini", role: "free_primary", provider: "openai" },
+				{
+					id: "claude-sonnet-4-5",
+					role: "strong_primary",
+					provider: "anthropic",
+				},
+			],
+		});
+		const parsed = JSON.parse(getFirstText(result)) as {
+			success: boolean;
+			warnings?: string[];
+			savedTo: { workspaceRoot: string };
+		};
+
+		expect(result.isError).toBeFalsy();
+		expect(parsed.success).toBe(true);
+		expect(parsed.warnings).toBeUndefined();
+		expect(parsed.savedTo.workspaceRoot).toBe("/workspace");
+		expect(loadSpy).toHaveBeenCalledWith(undefined);
+		expect(saveSpy).toHaveBeenCalledWith(expect.any(Object), {
+			workspaceRoot: undefined,
+		});
+	});
+
+	it("returns warnings and uses the provided workspace root when saving succeeds", async () => {
+		const loadSpy = vi
+			.spyOn(orchestrationConfigService, "loadOrchestrationConfigForWorkspace")
+			.mockResolvedValue({
+				config: createDefaultOrchestrationConfig(),
+				exists: false,
+				paths: {
+					workspaceRoot: "/custom/workspace",
+					configDirectory: "/custom/workspace/.mcp-ai-agent-guidelines/config",
+					orchestrationPath:
+						"/custom/workspace/.mcp-ai-agent-guidelines/config/orchestration.toml",
+				},
+				source: "fallback-defaults",
+				warning: "using defaults",
+			});
+		const saveSpy = vi
+			.spyOn(orchestrationConfigService, "saveOrchestrationConfig")
+			.mockResolvedValue({
+				workspaceRoot: "/custom/workspace",
+				configDirectory: "/custom/workspace/.mcp-ai-agent-guidelines/config",
+				orchestrationPath:
+					"/custom/workspace/.mcp-ai-agent-guidelines/config/orchestration.toml",
+			});
+
+		const result = await dispatchModelDiscoveryToolCall("model-discover", {
+			models: [
+				{ id: "gpt-5-mini", role: "free_primary", provider: "openai" },
+				{
+					id: "gpt-5-mini-alt",
+					role: "free_primary",
+					provider: "openai",
+				},
+				{
+					id: "claude-sonnet-4-5",
+					role: "strong_primary",
+					provider: "anthropic",
+				},
+			],
+			workspace_root: "/custom/workspace",
+		});
+		const parsed = JSON.parse(getFirstText(result)) as {
+			warnings?: string[];
+			savedTo: { workspaceRoot: string };
+		};
+
+		expect(result.isError).toBeFalsy();
+		expect(parsed.warnings).toEqual(
+			expect.arrayContaining([
+				expect.stringContaining('Role "free_primary" already assigned'),
+			]),
+		);
+		expect(parsed.savedTo.workspaceRoot).toBe("/custom/workspace");
+		expect(loadSpy).toHaveBeenCalledWith("/custom/workspace");
+		expect(saveSpy).toHaveBeenCalledWith(expect.any(Object), {
+			workspaceRoot: "/custom/workspace",
+		});
+	});
+
+	it("returns an error when saving the merged config fails", async () => {
+		vi.spyOn(
+			orchestrationConfigService,
+			"loadOrchestrationConfigForWorkspace",
+		).mockResolvedValue({
+			config: createDefaultOrchestrationConfig(),
+			exists: true,
+			paths: {
+				workspaceRoot: "/workspace",
+				configDirectory: "/workspace/.mcp-ai-agent-guidelines/config",
+				orchestrationPath:
+					"/workspace/.mcp-ai-agent-guidelines/config/orchestration.toml",
+			},
+			source: "workspace",
+			warning: undefined,
+		});
+		vi.spyOn(
+			orchestrationConfigService,
+			"saveOrchestrationConfig",
+		).mockRejectedValue(new Error("disk full"));
+
+		const result = await dispatchModelDiscoveryToolCall("model-discover", {
+			models: [
+				{ id: "gpt-5-mini", role: "free_primary", provider: "openai" },
+				{
+					id: "claude-sonnet-4-5",
+					role: "strong_primary",
+					provider: "anthropic",
+				},
+			],
+		});
+
+		expect(result.isError).toBe(true);
+		expect(getFirstText(result)).toContain(
+			"Failed to save orchestration config: disk full",
+		);
 	});
 });

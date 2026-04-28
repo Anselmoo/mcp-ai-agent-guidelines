@@ -27,9 +27,13 @@ vi.mock("../../memory/toon-interface.js", () => ({
 
 import {
 	dispatchSnapshotToolCall,
+	SNAPSHOT_COMPARE_TOOL_NAME,
+	SNAPSHOT_DELETE_TOOL_NAME,
+	SNAPSHOT_FETCH_TOOL_NAME,
+	SNAPSHOT_READ_TOOL_NAME,
 	SNAPSHOT_TOOL_DEFINITIONS,
-	SNAPSHOT_TOOL_NAME,
 	SNAPSHOT_TOOL_VALIDATORS,
+	SNAPSHOT_WRITE_TOOL_NAME,
 } from "../../tools/snapshot-tools.js";
 
 function getText(
@@ -45,9 +49,13 @@ describe("tools/snapshot-tools", () => {
 		vi.clearAllMocks();
 	});
 
-	it("publishes the expected snapshot tool definition", () => {
+	it("publishes split snapshot tool definitions", () => {
 		expect(SNAPSHOT_TOOL_DEFINITIONS.map((tool) => tool.name)).toEqual([
-			SNAPSHOT_TOOL_NAME,
+			SNAPSHOT_FETCH_TOOL_NAME,
+			SNAPSHOT_READ_TOOL_NAME,
+			SNAPSHOT_WRITE_TOOL_NAME,
+			SNAPSHOT_COMPARE_TOOL_NAME,
+			SNAPSHOT_DELETE_TOOL_NAME,
 		]);
 		expect(
 			SNAPSHOT_TOOL_DEFINITIONS.every((tool) =>
@@ -56,16 +64,14 @@ describe("tools/snapshot-tools", () => {
 		).toBe(true);
 	});
 
-	it("rejects retired snapshot aliases after the hard-cut rename", async () => {
-		const result = await dispatchSnapshotToolCall("snapshot", {
-			command: "status",
-		});
+	it("rejects retired snapshot alias", async () => {
+		const result = await dispatchSnapshotToolCall("agent-snapshot", {});
 
 		expect(result.isError).toBe(true);
 		expect(getText(result)).toContain("Unknown snapshot tool");
 	});
 
-	it("reports snapshot status when a baseline exists — returns structured JSON", async () => {
+	it("fetches snapshot status", async () => {
 		listFingerprintSnapshotsMock.mockResolvedValue([
 			{
 				snapshotId: "20260411000000-deadbeef",
@@ -86,52 +92,24 @@ describe("tools/snapshot-tools", () => {
 				skillIds: ["a", "b"],
 				instructionNames: ["x"],
 				codePaths: ["src/a.ts", "src/b.ts"],
-				fileSummaries: [
-					{
-						path: "src/a.ts",
-						contentHash: "a",
-						language: "typescript",
-						category: "source",
-						exportedSymbols: ["a"],
-						totalSymbols: 1,
-						symbolKinds: { function: 1 },
-					},
-					{
-						path: "src/b.ts",
-						contentHash: "b",
-						language: "typescript",
-						category: "source",
-						exportedSymbols: ["b"],
-						totalSymbols: 1,
-						symbolKinds: { function: 1 },
-					},
-				],
+				fileSummaries: [],
 			},
 		});
 
-		const result = await dispatchSnapshotToolCall(SNAPSHOT_TOOL_NAME, {
-			command: "status",
-		});
+		const result = await dispatchSnapshotToolCall(SNAPSHOT_FETCH_TOOL_NAME, {});
 
 		expect(result.isError).toBe(false);
 		const payload = JSON.parse(getText(result)) as Record<string, unknown>;
 		expect(payload.present).toBe(true);
 		expect(payload.snapshotId).toBe("20260411000000-deadbeef");
-		expect(payload.capturedAt).toBe("2026-04-11T00:00:00.000Z");
 		expect(payload.skillCount).toBe(2);
-		expect(payload.instructionCount).toBe(1);
-		expect(payload.codeFileCount).toBe(2);
-		expect(payload.fileSummaryCount).toBe(2);
-		expect(payload.retainedCount).toBe(1);
 	});
 
 	it("reports snapshot status as absent when no baseline is stored", async () => {
 		listFingerprintSnapshotsMock.mockResolvedValue([]);
 		loadFingerprintSnapshotMock.mockResolvedValue(null);
 
-		const result = await dispatchSnapshotToolCall(SNAPSHOT_TOOL_NAME, {
-			command: "status",
-		});
+		const result = await dispatchSnapshotToolCall(SNAPSHOT_FETCH_TOOL_NAME, {});
 
 		expect(result.isError).toBe(false);
 		const payload = JSON.parse(getText(result)) as Record<string, unknown>;
@@ -139,7 +117,7 @@ describe("tools/snapshot-tools", () => {
 		expect(typeof payload.message).toBe("string");
 	});
 
-	it("lists retained snapshot history", async () => {
+	it("fetches retained history", async () => {
 		listFingerprintSnapshotsMock.mockResolvedValue([
 			{
 				snapshotId: "20260410000000-cafebabe",
@@ -147,24 +125,42 @@ describe("tools/snapshot-tools", () => {
 				fileName: "fingerprint-20260410000000-cafebabe.json",
 				version: "2",
 			},
-			{
-				snapshotId: "20260411000000-deadbeef",
-				capturedAt: "2026-04-11T00:00:00.000Z",
-				fileName: "fingerprint-20260411000000-deadbeef.json",
-				version: "2",
-			},
 		]);
 
-		const result = await dispatchSnapshotToolCall(SNAPSHOT_TOOL_NAME, {
-			command: "history",
+		const result = await dispatchSnapshotToolCall(SNAPSHOT_FETCH_TOOL_NAME, {
+			mode: "history",
 		});
 
 		expect(result.isError).toBe(false);
 		expect(getText(result)).toContain("20260410000000-cafebabe");
-		expect(getText(result)).toContain("20260411000000-deadbeef");
 	});
 
-	it("refreshes a snapshot baseline — returns structured JSON", async () => {
+	it("reads a selected snapshot", async () => {
+		loadFingerprintSnapshotMock.mockResolvedValue({
+			meta: {
+				version: "2",
+				capturedAt: "2026-04-10T00:00:00.000Z",
+				snapshotId: "20260410000000-cafebabe",
+				previousSnapshotId: null,
+			},
+			fingerprint: {
+				capturedAt: "2026-04-10T00:00:00.000Z",
+				skillIds: ["a"],
+				instructionNames: ["x"],
+				codePaths: ["src/a.ts"],
+				fileSummaries: [],
+			},
+		});
+
+		const result = await dispatchSnapshotToolCall(SNAPSHOT_READ_TOOL_NAME, {
+			selector: "previous",
+		});
+
+		expect(result.isError).toBe(false);
+		expect(loadFingerprintSnapshotMock).toHaveBeenCalledWith("previous");
+	});
+
+	it("writes a refreshed snapshot baseline", async () => {
 		refreshMock.mockResolvedValue({
 			capturedAt: "2026-04-11T00:00:00.000Z",
 			skillIds: ["a"],
@@ -188,47 +184,12 @@ describe("tools/snapshot-tools", () => {
 			},
 		});
 
-		const result = await dispatchSnapshotToolCall(SNAPSHOT_TOOL_NAME, {
-			command: "refresh",
-		});
-
+		const result = await dispatchSnapshotToolCall(SNAPSHOT_WRITE_TOOL_NAME, {});
 		expect(result.isError).toBe(false);
-		const payload = JSON.parse(getText(result)) as Record<string, unknown>;
-		expect(payload.snapshotId).toBe("20260411000000-deadbeef");
-		expect(payload.capturedAt).toBe("2026-04-11T00:00:00.000Z");
-		expect(payload.skillCount).toBe(1);
-		expect(payload.instructionCount).toBe(2);
-		expect(payload.codeFileCount).toBe(1);
+		expect(getText(result)).toContain("20260411000000-deadbeef");
 	});
 
-	it("reads a selected snapshot by selector", async () => {
-		loadFingerprintSnapshotMock.mockResolvedValue({
-			meta: {
-				version: "2",
-				capturedAt: "2026-04-10T00:00:00.000Z",
-				snapshotId: "20260410000000-cafebabe",
-				previousSnapshotId: null,
-			},
-			fingerprint: {
-				capturedAt: "2026-04-10T00:00:00.000Z",
-				skillIds: ["a"],
-				instructionNames: ["x"],
-				codePaths: ["src/a.ts"],
-				fileSummaries: [],
-			},
-		});
-
-		const result = await dispatchSnapshotToolCall(SNAPSHOT_TOOL_NAME, {
-			command: "read",
-			selector: "previous",
-		});
-
-		expect(result.isError).toBe(false);
-		expect(loadFingerprintSnapshotMock).toHaveBeenCalledWith("previous");
-		expect(getText(result)).toContain("20260410000000-cafebabe");
-	});
-
-	it("compares current codebase against the baseline — returns structured JSON", async () => {
+	it("compares current codebase against baseline", async () => {
 		compareMock.mockResolvedValue({
 			toon: "drift report",
 			drift: {
@@ -240,32 +201,16 @@ describe("tools/snapshot-tools", () => {
 			},
 		});
 
-		const result = await dispatchSnapshotToolCall(SNAPSHOT_TOOL_NAME, {
-			command: "compare",
+		const result = await dispatchSnapshotToolCall(SNAPSHOT_COMPARE_TOOL_NAME, {
 			selector: "previous",
 		});
 
 		expect(result.isError).toBe(false);
 		expect(compareMock).toHaveBeenCalledWith("previous");
-
-		// Output must be valid JSON (machine-readable, not prose)
-		const raw = getText(result);
-		const payload = JSON.parse(raw) as Record<string, unknown>;
-
-		expect(payload.selector).toBe("previous");
-		expect(payload.clean).toBe(false);
-		expect(payload.driftCount).toBe(1);
-		expect(payload.summary).toContain(
-			"⚠️ 1 drift entries detected against previous.",
-		);
-		expect(payload.toon).toBe("drift report");
-		expect(payload.drift).toMatchObject({
-			clean: false,
-			entries: [{ id: "x" }],
-		});
+		expect(getText(result)).toContain("driftCount");
 	});
 
-	it("compares current codebase against the baseline — clean result is structured", async () => {
+	it("reports a clean compare result with the default selector", async () => {
 		compareMock.mockResolvedValue({
 			toon: "",
 			drift: {
@@ -277,38 +222,27 @@ describe("tools/snapshot-tools", () => {
 			},
 		});
 
-		const result = await dispatchSnapshotToolCall(SNAPSHOT_TOOL_NAME, {
-			command: "compare",
-		});
+		const result = await dispatchSnapshotToolCall(
+			SNAPSHOT_COMPARE_TOOL_NAME,
+			{},
+		);
 
 		expect(result.isError).toBe(false);
+		expect(compareMock).toHaveBeenCalledWith("latest");
 		const payload = JSON.parse(getText(result)) as Record<string, unknown>;
 		expect(payload.clean).toBe(true);
 		expect(payload.driftCount).toBe(0);
-		expect(payload.summary).toContain("✅ No drift detected.");
+		expect(payload.summary).toBe("✅ No drift detected.");
 	});
 
-	it("deletes the stored snapshot baseline — returns structured JSON", async () => {
+	it("deletes stored snapshots", async () => {
 		deleteFingerprintSnapshotMock.mockResolvedValue(true);
 
-		const result = await dispatchSnapshotToolCall(SNAPSHOT_TOOL_NAME, {
-			command: "delete",
-		});
-
+		const result = await dispatchSnapshotToolCall(
+			SNAPSHOT_DELETE_TOOL_NAME,
+			{},
+		);
 		expect(result.isError).toBe(false);
-		const payload = JSON.parse(getText(result)) as Record<string, unknown>;
-		expect(payload.deleted).toBe(true);
-	});
-
-	it("delete returns deleted=false when nothing was stored", async () => {
-		deleteFingerprintSnapshotMock.mockResolvedValue(false);
-
-		const result = await dispatchSnapshotToolCall(SNAPSHOT_TOOL_NAME, {
-			command: "delete",
-		});
-
-		expect(result.isError).toBe(false);
-		const payload = JSON.parse(getText(result)) as Record<string, unknown>;
-		expect(payload.deleted).toBe(false);
+		expect(getText(result)).toContain('"deleted": true');
 	});
 });

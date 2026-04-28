@@ -9,7 +9,7 @@ export const instructionManifest: InstructionManifestEntry = {
 	aliases: [],
 	displayName: "Onboard: Project Familiarization",
 	description:
-		"Use when starting a new work session, exploring what this codebase does, understanding the skill taxonomy, or getting oriented in mcp-ai-agent-guidelines for the first time. Covers project structure, skill navigation, instruction index, and verification workflow. Companion tools: use `graph-visualize` (skill-graph, chain-graph) to explore the skill topology and instruction chains; use `agent-workspace` (list) to browse source files, `agent-session` (list or fetch) to inspect session artifacts, and `agent-snapshot` (status) to confirm the current codebase baseline.",
+		"Use when starting a new work session, exploring what this codebase does, understanding the skill taxonomy, or getting oriented in mcp-ai-agent-guidelines for the first time. Covers project structure, skill navigation, instruction index, and verification workflow. Companion tools: use `graph-visualize` (skill-graph, chain-graph) to explore the skill topology and instruction chains; use `agent-workspace` (list) to browse source files, `agent-session-fetch` to inspect session artifacts, and `agent-snapshot-fetch` to confirm the current codebase baseline.",
 	sourcePath: "src/instructions/instruction-specs.ts#onboard_project",
 	mission: "",
 	inputSchema: {

@@ -53,10 +53,10 @@ function createRuntime() {
 ValidationService.initialize();
 
 describe("tool-call-handler-extra", () => {
-	it("dispatches to memory tool handler when tool name is agent-memory (line 112)", async () => {
+	it("dispatches to memory tool handler when tool name is agent-memory-fetch", async () => {
 		const result = await dispatchToolCall(
-			"agent-memory",
-			{ command: "status" },
+			"agent-memory-fetch",
+			{},
 			createRuntime(),
 		);
 		// Memory tool returns a result (not an instruction validation error)
@@ -65,10 +65,10 @@ describe("tool-call-handler-extra", () => {
 		expect(result.content[0]?.text).toBeDefined();
 	});
 
-	it("dispatches to session tool handler when tool name is agent-session (line 156)", async () => {
+	it("dispatches to session tool handler when tool name is agent-session-fetch", async () => {
 		const result = await dispatchToolCall(
-			"agent-session",
-			{ command: "status" },
+			"agent-session-fetch",
+			{},
 			createRuntime(),
 		);
 		expect(result.content).toBeDefined();
@@ -76,10 +76,10 @@ describe("tool-call-handler-extra", () => {
 		expect(result.content[0]?.text).toBeDefined();
 	});
 
-	it("dispatches to snapshot tool handler when tool name is agent-snapshot (line 162)", async () => {
+	it("dispatches to snapshot tool handler when tool name is agent-snapshot-fetch", async () => {
 		const result = await dispatchToolCall(
-			"agent-snapshot",
-			{ command: "status" },
+			"agent-snapshot-fetch",
+			{},
 			createRuntime(),
 		);
 		expect(result.content).toBeDefined();
@@ -178,7 +178,7 @@ describe("tool-call-handler-extra", () => {
 	it("recovers gracefully when memory tool is called with missing args (lines 434-462)", async () => {
 		// Passing undefined args — the handler should not throw uncaught
 		const result = await dispatchToolCall(
-			"agent-memory",
+			"agent-memory-fetch",
 			undefined,
 			createRuntime(),
 		);

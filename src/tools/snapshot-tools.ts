@@ -7,86 +7,133 @@ import {
 	validateToolArguments,
 } from "./shared/tool-validators.js";
 
-type SnapshotCommand =
-	| "status"
-	| "history"
-	| "read"
-	| "refresh"
-	| "compare"
-	| "delete";
-
-const VALID_SNAPSHOT_COMMANDS = new Set<SnapshotCommand>([
-	"status",
-	"history",
-	"read",
-	"refresh",
-	"compare",
-	"delete",
-]);
-
 const snapshotMemoryInterface = sharedToonMemoryInterface;
-
-function parseSnapshotCommand(
-	record: Record<string, unknown>,
-): SnapshotCommand {
-	const cmd = record.command;
-	if (
-		typeof cmd !== "string" ||
-		!VALID_SNAPSHOT_COMMANDS.has(cmd as SnapshotCommand)
-	) {
-		throw new Error(
-			`snapshot command must be one of: ${[...VALID_SNAPSHOT_COMMANDS].join(", ")}.`,
-		);
-	}
-	return cmd as SnapshotCommand;
-}
 
 function stringifyJson(value: unknown) {
 	return `${JSON.stringify(value, null, "\t")}\n`;
 }
 
-export const SNAPSHOT_TOOL_NAME = "agent-snapshot";
+export const SNAPSHOT_READ_TOOL_NAME = "agent-snapshot-read";
+export const SNAPSHOT_WRITE_TOOL_NAME = "agent-snapshot-write";
+export const SNAPSHOT_FETCH_TOOL_NAME = "agent-snapshot-fetch";
+export const SNAPSHOT_COMPARE_TOOL_NAME = "agent-snapshot-compare";
+export const SNAPSHOT_DELETE_TOOL_NAME = "agent-snapshot-delete";
 
-export function resolveSnapshotToolName(
-	name: string,
-): typeof SNAPSHOT_TOOL_NAME | null {
-	return name === SNAPSHOT_TOOL_NAME ? SNAPSHOT_TOOL_NAME : null;
+type SnapshotToolName =
+	| typeof SNAPSHOT_READ_TOOL_NAME
+	| typeof SNAPSHOT_WRITE_TOOL_NAME
+	| typeof SNAPSHOT_FETCH_TOOL_NAME
+	| typeof SNAPSHOT_COMPARE_TOOL_NAME
+	| typeof SNAPSHOT_DELETE_TOOL_NAME;
+
+const SNAPSHOT_TOOL_NAMES = new Set<SnapshotToolName>([
+	SNAPSHOT_READ_TOOL_NAME,
+	SNAPSHOT_WRITE_TOOL_NAME,
+	SNAPSHOT_FETCH_TOOL_NAME,
+	SNAPSHOT_COMPARE_TOOL_NAME,
+	SNAPSHOT_DELETE_TOOL_NAME,
+]);
+
+export function resolveSnapshotToolName(name: string): SnapshotToolName | null {
+	return SNAPSHOT_TOOL_NAMES.has(name as SnapshotToolName)
+		? (name as SnapshotToolName)
+		: null;
 }
 
 export const SNAPSHOT_TOOL_DEFINITIONS: readonly ToolDefinitionWithInputSchema[] =
 	[
 		{
-			name: SNAPSHOT_TOOL_NAME,
+			name: SNAPSHOT_FETCH_TOOL_NAME,
 			description:
-				"Codebase fingerprint snapshot operations. Canonical name: `agent-snapshot`. Commands: status (summary), history (list retained snapshots), read (full fingerprint snapshot by selector), refresh (re-scan codebase), compare (diff current codebase against a selected baseline), delete (remove stored snapshots).",
+				"Fetch snapshot status or retained history. mode=status (default) returns latest baseline summary; mode=history returns retained snapshots.",
 			inputSchema: {
 				type: "object" as const,
 				properties: {
-					command: {
+					mode: {
 						type: "string" as const,
-						enum: [
-							"status",
-							"history",
-							"read",
-							"refresh",
-							"compare",
-							"delete",
-						] as const,
+						enum: ["status", "history"] as const,
 						description:
-							"status: Show whether snapshots exist and summarize the latest one. history: List retained snapshots. read: Read a stored fingerprint snapshot using selector latest/previous/oldest or a snapshot ID. refresh: Re-scan and persist a new baseline. compare: Diff current codebase against a selected baseline. delete: Remove stored snapshots.",
-					},
-					selector: {
-						type: "string" as const,
-						description:
-							"Optional snapshot selector for read/compare. Use latest, previous, oldest, or a concrete snapshot ID.",
+							"Fetch mode. status=latest summary, history=retained snapshots list.",
 					},
 				},
-				required: ["command"],
+				required: [],
+			},
+			annotations: {
+				readOnlyHint: true,
+				destructiveHint: false,
+				idempotentHint: true,
+				openWorldHint: false,
+			},
+		},
+		{
+			name: SNAPSHOT_READ_TOOL_NAME,
+			description:
+				"Read a stored fingerprint snapshot by selector (latest, previous, oldest, or snapshot ID).",
+			inputSchema: {
+				type: "object" as const,
+				properties: {
+					selector: {
+						type: "string" as const,
+						description: "Optional snapshot selector. Defaults to latest.",
+					},
+				},
+				required: [],
+			},
+			annotations: {
+				readOnlyHint: true,
+				destructiveHint: false,
+				idempotentHint: true,
+				openWorldHint: false,
+			},
+		},
+		{
+			name: SNAPSHOT_WRITE_TOOL_NAME,
+			description: "Refresh (re-scan) and persist a new snapshot baseline.",
+			inputSchema: {
+				type: "object" as const,
+				properties: {},
+				required: [],
 			},
 			annotations: {
 				readOnlyHint: false,
 				destructiveHint: false,
+				idempotentHint: false,
+				openWorldHint: false,
+			},
+		},
+		{
+			name: SNAPSHOT_COMPARE_TOOL_NAME,
+			description:
+				"Compare current codebase against a selected snapshot baseline.",
+			inputSchema: {
+				type: "object" as const,
+				properties: {
+					selector: {
+						type: "string" as const,
+						description: "Optional baseline selector. Defaults to latest.",
+					},
+				},
+				required: [],
+			},
+			annotations: {
+				readOnlyHint: true,
+				destructiveHint: false,
 				idempotentHint: true,
+				openWorldHint: false,
+			},
+		},
+		{
+			name: SNAPSHOT_DELETE_TOOL_NAME,
+			description: "Delete stored fingerprint snapshot baselines.",
+			inputSchema: {
+				type: "object" as const,
+				properties: {},
+				required: [],
+			},
+			annotations: {
+				readOnlyHint: false,
+				destructiveHint: true,
+				idempotentHint: false,
 				openWorldHint: false,
 			},
 		},
@@ -122,13 +169,32 @@ export async function dispatchSnapshotToolCall(
 		};
 	}
 
-	const command = parseSnapshotCommand(record);
 	const selector =
 		typeof record.selector === "string" && record.selector.length > 0
 			? record.selector
 			: "latest";
 
-	if (command === "status") {
+	if (canonicalName === SNAPSHOT_FETCH_TOOL_NAME) {
+		const mode = record.mode === "history" ? "history" : "status";
+		if (mode === "history") {
+			const history = await snapshotMemoryInterface.listFingerprintSnapshots();
+			if (history.length === 0) {
+				return {
+					content: [
+						{
+							type: "text",
+							text: "No snapshot history is currently stored.",
+						},
+					],
+					isError: false,
+				};
+			}
+			return {
+				content: [{ type: "text", text: stringifyJson(history) }],
+				isError: false,
+			};
+		}
+
 		const snapshot = await snapshotMemoryInterface.loadFingerprintSnapshot();
 		const history = await snapshotMemoryInterface.listFingerprintSnapshots();
 		if (!snapshot) {
@@ -139,7 +205,7 @@ export async function dispatchSnapshotToolCall(
 						text: stringifyJson({
 							present: false,
 							message:
-								"No snapshot stored — run command=refresh to create one.",
+								"No snapshot stored — run agent-snapshot-write to create one.",
 						}),
 					},
 				],
@@ -168,27 +234,7 @@ export async function dispatchSnapshotToolCall(
 		};
 	}
 
-	if (command === "history") {
-		const history = await snapshotMemoryInterface.listFingerprintSnapshots();
-		if (history.length === 0) {
-			return {
-				content: [
-					{
-						type: "text",
-						text: "No snapshot history is currently stored.",
-					},
-				],
-				isError: false,
-			};
-		}
-
-		return {
-			content: [{ type: "text", text: stringifyJson(history) }],
-			isError: false,
-		};
-	}
-
-	if (command === "read") {
+	if (canonicalName === SNAPSHOT_READ_TOOL_NAME) {
 		const snapshot =
 			await snapshotMemoryInterface.loadFingerprintSnapshot(selector);
 		if (!snapshot) {
@@ -209,7 +255,7 @@ export async function dispatchSnapshotToolCall(
 		};
 	}
 
-	if (command === "refresh") {
+	if (canonicalName === SNAPSHOT_WRITE_TOOL_NAME) {
 		const fp = await snapshotMemoryInterface.refresh();
 		const latest = await snapshotMemoryInterface.loadFingerprintSnapshot();
 		return {
@@ -229,7 +275,7 @@ export async function dispatchSnapshotToolCall(
 		};
 	}
 
-	if (command === "compare") {
+	if (canonicalName === SNAPSHOT_COMPARE_TOOL_NAME) {
 		const { toon, drift } = await snapshotMemoryInterface.compare(selector);
 		const summary = drift.clean
 			? "✅ No drift detected."
