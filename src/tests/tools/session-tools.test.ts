@@ -72,6 +72,11 @@ describe("tools/session-tools", () => {
 				SESSION_TOOL_VALIDATORS.has(tool.name),
 			),
 		).toBe(true);
+		expect(
+			SESSION_TOOL_DEFINITIONS.find(
+				(tool) => tool.name === SESSION_WRITE_TOOL_NAME,
+			)?.annotations?.idempotentHint,
+		).toBe(false);
 	});
 
 	it("rejects retired session alias", async () => {
@@ -120,6 +125,22 @@ describe("tools/session-tools", () => {
 		expect(getText(result)).toContain('"requestScope": "triage"');
 	});
 
+	it("rejects invalid session artifact names with a deterministic error", async () => {
+		const result = await dispatchSessionToolCall(
+			SESSION_READ_TOOL_NAME,
+			{
+				sessionId: "session-abcdefghijklmnopqrstuvwx",
+				artifact: "not-a-real-artifact",
+			},
+			{ sessionId: "session-ABCDEFGHJKMN" },
+		);
+
+		expect(result.isError).toBe(true);
+		expect(getText(result)).toContain(
+			"artifact must be one of: session-context, workspace-map, scan-results.",
+		);
+	});
+
 	it("writes session-backed artifacts", async () => {
 		const result = await dispatchSessionToolCall(
 			SESSION_WRITE_TOOL_NAME,
@@ -137,6 +158,24 @@ describe("tools/session-tools", () => {
 			"session-abcdefghijklmnopqrstuvwx",
 			{ findings: ["a"] },
 		);
+	});
+
+	it("rejects invalid session write targets with a deterministic error", async () => {
+		const result = await dispatchSessionToolCall(
+			SESSION_WRITE_TOOL_NAME,
+			{
+				target: "invalid-target",
+				sessionId: "session-abcdefghijklmnopqrstuvwx",
+				data: { findings: ["a"] },
+			},
+			{ sessionId: "session-ABCDEFGHJKMN" },
+		);
+
+		expect(result.isError).toBe(true);
+		expect(getText(result)).toContain(
+			"target must be one of: session-context, workspace-map, scan-results.",
+		);
+		expect(saveScanResultsMock).not.toHaveBeenCalled();
 	});
 
 	it("rejects write when workspace is not initialized", async () => {

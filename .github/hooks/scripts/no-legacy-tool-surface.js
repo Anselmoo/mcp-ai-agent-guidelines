@@ -21,7 +21,7 @@ const LEGACY_TOOL_NAMES = new Set([
 
 function readHookInput() {
 	try {
-		const raw = readFileSync("/dev/stdin", "utf8");
+		const raw = readFileSync(0, "utf8");
 		return raw ? JSON.parse(raw) : {};
 	} catch {
 		return {};

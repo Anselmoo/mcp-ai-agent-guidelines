@@ -105,6 +105,18 @@ describe("tools/snapshot-tools", () => {
 		expect(payload.skillCount).toBe(2);
 	});
 
+	it("reports snapshot status as absent when no baseline is stored", async () => {
+		listFingerprintSnapshotsMock.mockResolvedValue([]);
+		loadFingerprintSnapshotMock.mockResolvedValue(null);
+
+		const result = await dispatchSnapshotToolCall(SNAPSHOT_FETCH_TOOL_NAME, {});
+
+		expect(result.isError).toBe(false);
+		const payload = JSON.parse(getText(result)) as Record<string, unknown>;
+		expect(payload.present).toBe(false);
+		expect(typeof payload.message).toBe("string");
+	});
+
 	it("fetches retained history", async () => {
 		listFingerprintSnapshotsMock.mockResolvedValue([
 			{
@@ -196,6 +208,31 @@ describe("tools/snapshot-tools", () => {
 		expect(result.isError).toBe(false);
 		expect(compareMock).toHaveBeenCalledWith("previous");
 		expect(getText(result)).toContain("driftCount");
+	});
+
+	it("reports a clean compare result with the default selector", async () => {
+		compareMock.mockResolvedValue({
+			toon: "",
+			drift: {
+				clean: true,
+				baseline: "2026-04-11T00:00:00.000Z",
+				current: "2026-04-11T00:00:00.000Z",
+				entries: [],
+				orphanedArtifacts: [],
+			},
+		});
+
+		const result = await dispatchSnapshotToolCall(
+			SNAPSHOT_COMPARE_TOOL_NAME,
+			{},
+		);
+
+		expect(result.isError).toBe(false);
+		expect(compareMock).toHaveBeenCalledWith("latest");
+		const payload = JSON.parse(getText(result)) as Record<string, unknown>;
+		expect(payload.clean).toBe(true);
+		expect(payload.driftCount).toBe(0);
+		expect(payload.summary).toBe("✅ No drift detected.");
 	});
 
 	it("deletes stored snapshots", async () => {

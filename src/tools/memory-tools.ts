@@ -12,6 +12,7 @@ import {
 } from "./shared/tool-validators.js";
 
 export const memoryInterface = sharedToonMemoryInterface;
+const MEMORY_ARTIFACTS_DIR = ".mcp-ai-agent-guidelines/memory/";
 
 export const MEMORY_READ_TOOL_NAME = "agent-memory-read";
 export const MEMORY_WRITE_TOOL_NAME = "agent-memory-write";
@@ -139,6 +140,30 @@ export const MEMORY_TOOL_VALIDATORS = buildToolValidators(
 	MEMORY_TOOL_DEFINITIONS,
 );
 
+function invalidRelevanceResult() {
+	return {
+		content: [
+			{
+				type: "text" as const,
+				text: "relevance must be a number between 0 and 1.",
+			},
+		],
+		isError: true,
+	};
+}
+
+function memoryPersistenceErrorResult(error: unknown) {
+	return {
+		content: [
+			{
+				type: "text" as const,
+				text: `Failed to persist TOON artifact to ${MEMORY_ARTIFACTS_DIR}: ${toErrorMessage(error)}`,
+			},
+		],
+		isError: true,
+	};
+}
+
 export async function dispatchMemoryToolCall(
 	name: string,
 	args: Record<string, unknown>,
@@ -242,10 +267,15 @@ export async function dispatchMemoryToolCall(
 					isError: true,
 				};
 			}
-			const ok = await memoryInterface.enrichMemoryArtifact(
-				artifactId,
-				libraryContext,
-			);
+			let ok: boolean;
+			try {
+				ok = await memoryInterface.enrichMemoryArtifact(
+					artifactId,
+					libraryContext,
+				);
+			} catch (error) {
+				return memoryPersistenceErrorResult(error);
+			}
 			return {
 				content: [
 					{
@@ -275,6 +305,9 @@ export async function dispatchMemoryToolCall(
 		const rawRelevance = record.relevance as string | undefined;
 		const relevance =
 			rawRelevance !== undefined ? Number.parseFloat(rawRelevance) : 0.7;
+		if (!Number.isFinite(relevance) || relevance < 0 || relevance > 1) {
+			return invalidRelevanceResult();
+		}
 		const now = new Date().toISOString();
 		const artifactContext =
 			(record.artifactContext as string | undefined) ?? "";
@@ -291,7 +324,7 @@ export async function dispatchMemoryToolCall(
 					created: now,
 					updated: now,
 					tags: rawTags ?? [],
-					relevance: Number.isFinite(relevance) ? relevance : 0.7,
+					relevance,
 				},
 				content: {
 					summary,
@@ -306,15 +339,7 @@ export async function dispatchMemoryToolCall(
 				},
 			});
 		} catch (error) {
-			return {
-				content: [
-					{
-						type: "text",
-						text: `Failed to persist TOON artifact to .mcp-ai-agent-guidelines/memory/: ${toErrorMessage(error)}`,
-					},
-				],
-				isError: true,
-			};
+			return memoryPersistenceErrorResult(error);
 		}
 
 		return {

@@ -135,19 +135,19 @@ describe("runtime/toon-ecosystem-demo", () => {
 
 		await workflow.recordArchitecturalMemory(
 			"TOON keeps workflow memory actionable",
-			9,
+			0.9,
 		);
 
 		const persistedMemory = new ToonMemoryInterface(baseDir);
 		const artifacts = await persistedMemory.findMemoryArtifacts({
 			tags: ["architecture"],
-			minRelevance: 9,
+			minRelevance: 0.9,
 		});
 
 		expect(artifacts).toHaveLength(1);
 		expect(artifacts[0]).toMatchObject({
 			meta: {
-				relevance: 9,
+				relevance: 0.9,
 				tags: expect.arrayContaining(["architecture", "toon", "quality"]),
 			},
 			content: {

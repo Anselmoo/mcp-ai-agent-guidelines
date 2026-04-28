@@ -58,9 +58,13 @@ describe("index request handlers", () => {
 		const result = await handlers.callTool({
 			params: { name: "not-a-real-tool-name", arguments: { request: "foo" } },
 		});
+		const text =
+			result.content[0] && "text" in result.content[0]
+				? result.content[0].text
+				: "";
 
-		expect(result.isError).toBe(true);
-		expect(result.content[0]?.text).toContain("Unknown instruction tool");
+		expect("isError" in result && result.isError).toBe(true);
+		expect(text).toContain("Unknown instruction tool");
 	});
 
 	it("detects direct execution when the entry path matches the module URL", () => {

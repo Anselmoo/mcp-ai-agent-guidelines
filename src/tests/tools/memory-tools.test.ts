@@ -193,6 +193,37 @@ describe("tools/memory-tools", () => {
 		expect(enrichMock).toHaveBeenCalledWith("art-1", "Library docs here");
 	});
 
+	it("surfaces explicit persistence errors for enrich mode failures", async () => {
+		const enrichMock = vi.fn().mockRejectedValue(new Error("disk full"));
+		const { memoryInterface: mi } = await import("../../tools/memory-tools.js");
+		(mi as unknown as Record<string, unknown>).enrichMemoryArtifact =
+			enrichMock;
+
+		const result = await dispatchMemoryToolCall(MEMORY_WRITE_TOOL_NAME, {
+			artifactId: "art-1",
+			libraryContext: "Library docs here",
+		});
+
+		expect(result.isError).toBe(true);
+		expect(getFirstTextContent(result)).toContain(
+			"Failed to persist TOON artifact",
+		);
+		expect(getFirstTextContent(result)).toContain("disk full");
+	});
+
+	it("rejects out-of-range relevance values before persisting", async () => {
+		const result = await dispatchMemoryToolCall(MEMORY_WRITE_TOOL_NAME, {
+			summary: "Saved summary",
+			relevance: "9",
+		});
+
+		expect(result.isError).toBe(true);
+		expect(getFirstTextContent(result)).toContain(
+			"relevance must be a number between 0 and 1.",
+		);
+		expect(saveMemoryArtifactMock).not.toHaveBeenCalled();
+	});
+
 	it("deletes a memory artifact by artifactId", async () => {
 		deleteMemoryArtifactMock.mockResolvedValue(true);
 

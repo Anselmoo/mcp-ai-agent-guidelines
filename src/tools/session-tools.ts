@@ -53,17 +53,27 @@ function resolveSessionId(
 	return assertValidSessionId(sessionIdValue);
 }
 
-function parseArtifactName(artifactValue: unknown): SessionArtifactKind {
+function parseArtifactName(artifactValue: unknown): SessionArtifactKind | null {
 	if (
-		typeof artifactValue !== "string" ||
-		!SESSION_ARTIFACT_NAMES.includes(artifactValue as SessionArtifactKind)
+		typeof artifactValue === "string" &&
+		SESSION_ARTIFACT_NAMES.includes(artifactValue as SessionArtifactKind)
 	) {
-		throw new Error(
-			`session artifact must be one of: ${SESSION_ARTIFACT_NAMES.join(", ")}.`,
-		);
+		return artifactValue as SessionArtifactKind;
 	}
 
-	return artifactValue as SessionArtifactKind;
+	return null;
+}
+
+function invalidSessionArtifactResult(fieldName: "artifact" | "target") {
+	return {
+		content: [
+			{
+				type: "text" as const,
+				text: `${fieldName} must be one of: ${SESSION_ARTIFACT_NAMES.join(", ")}.`,
+			},
+		],
+		isError: true,
+	};
 }
 
 export function resolveSessionToolName(name: string): SessionToolName | null {
@@ -127,7 +137,7 @@ export const SESSION_TOOL_DEFINITIONS: readonly ToolDefinitionWithInputSchema[] 
 			annotations: {
 				readOnlyHint: false,
 				destructiveHint: false,
-				idempotentHint: true,
+				idempotentHint: false,
 				openWorldHint: false,
 			},
 		},
@@ -253,6 +263,9 @@ export async function dispatchSessionToolCall(
 	if (canonicalName === SESSION_READ_TOOL_NAME) {
 		const sessionId = resolveSessionId(record.sessionId, runtime.sessionId);
 		const artifact = parseArtifactName(record.artifact);
+		if (!artifact) {
+			return invalidSessionArtifactResult("artifact");
+		}
 
 		switch (artifact) {
 			case "session-context": {
@@ -329,6 +342,9 @@ export async function dispatchSessionToolCall(
 		}
 		const sessionId = resolveSessionId(record.sessionId, runtime.sessionId);
 		const target = parseArtifactName(record.target);
+		if (!target) {
+			return invalidSessionArtifactResult("target");
+		}
 		const data = record.data;
 
 		if (typeof data !== "object" || data === null) {
