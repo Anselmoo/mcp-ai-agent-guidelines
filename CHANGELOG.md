@@ -8,7 +8,7 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-
+## [0.16.0] - 2026-04-28
 ### Fixed
 - update tool references and enhance memory tool tests for better context handling
 ## [0.15.4] - 2026-04-24
