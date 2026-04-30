@@ -436,10 +436,9 @@ export class ToonMemoryInterface {
 			JSON.stringify(migratedSnapshot, null, 2),
 			"utf8",
 		);
-		await writeFile(
+		await writeTextFileAtomic(
 			this.snapshotLatestPath(),
 			JSON.stringify(migratedSnapshot, null, 2),
-			"utf8",
 		);
 
 		const migratedHistory: FingerprintSnapshotHistory = {
@@ -468,15 +467,13 @@ export class ToonMemoryInterface {
 
 		const normalizedSnapshot = this.normalizeFingerprintSnapshot(snapshot);
 		const fileName = `fingerprint-${snapshotId}.json`;
-		await writeFile(
+		await writeTextFileAtomic(
 			this.snapshotArchivePath(snapshotId),
 			JSON.stringify(normalizedSnapshot, null, 2),
-			"utf8",
 		);
-		await writeFile(
+		await writeTextFileAtomic(
 			this.snapshotLatestPath(),
 			JSON.stringify(normalizedSnapshot, null, 2),
-			"utf8",
 		);
 
 		const existingHistory = await this.ensureSnapshotHistoryInitialized();
@@ -746,10 +743,9 @@ export class ToonMemoryInterface {
 		const now = new Date().toISOString();
 		const enhancedArtifact = enhanceMemoryArtifact(artifact, now);
 
-		await writeFile(
+		await writeTextFileAtomic(
 			this.memoryArtifactPath(enhancedArtifact.meta.id),
 			toonEncode(enhancedArtifact, { delimiter: "\t", keyFolding: "safe" }),
-			"utf8",
 		);
 	}
 

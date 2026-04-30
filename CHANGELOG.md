@@ -11,6 +11,9 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 - **mcp**: allow workspace writes when uninitialized
+
+### Documentation
+- **mcp**: document local write behavior for .mcp-ai-agent-guidelines
 ## [0.16.0] - 2026-04-28
 ### Fixed
 - update tool references and enhance memory tool tests for better context handling
