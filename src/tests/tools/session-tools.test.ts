@@ -178,7 +178,7 @@ describe("tools/session-tools", () => {
 		expect(saveScanResultsMock).not.toHaveBeenCalled();
 	});
 
-	it("rejects write when workspace is not initialized", async () => {
+	it("writes session-backed artifacts when workspace is not initialized", async () => {
 		isWorkspaceInitializedMock.mockResolvedValue(false);
 
 		const result = await dispatchSessionToolCall(
@@ -191,8 +191,11 @@ describe("tools/session-tools", () => {
 			{ sessionId: "session-ABCDEFGHJKMN" },
 		);
 
-		expect(result.isError).toBe(true);
-		expect(getText(result)).toContain("Workspace not initialized.");
+		expect(result.isError).toBe(false);
+		expect(saveSessionContextMock).toHaveBeenCalledWith(
+			"session-abcdefghijklmnopqrstuvwx",
+			expect.any(Object),
+		);
 	});
 
 	it("returns not found for missing session artifacts", async () => {

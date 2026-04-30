@@ -37,6 +37,7 @@ import {
 	SecureFileSessionStore,
 } from "./runtime/secure-session-store.js";
 import { SessionBootstrap } from "./runtime/session-bootstrap.js";
+import { resolveWorkspaceRoot } from "./runtime/session-store-utils.js";
 import { SkillRegistry } from "./skills/skill-registry.js";
 import {
 	dispatchMemoryToolCall,
@@ -145,7 +146,7 @@ export function createRuntime(): ServerRuntime {
 	);
 	return {
 		sessionId: createSessionId(),
-		workspaceRoot: process.cwd(),
+		workspaceRoot: resolveWorkspaceRoot(),
 		executionState: {
 			instructionStack: [],
 			progressRecords: [] as ExecutionProgressRecord[],

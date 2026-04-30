@@ -38,6 +38,7 @@ import {
 
 export const DEFAULT_SESSION_STATE_DIR = ".mcp-ai-agent-guidelines";
 export const SESSION_STATE_DIR_ENV_VAR = "MCP_AI_AGENT_GUIDELINES_STATE_DIR";
+export const WORKSPACE_ROOT_ENV_VAR = "MCP_WORKSPACE_ROOT";
 const INVALID_LITERAL_STATE_DIRS = new Set(["undefined", "null"]);
 const SESSION_STATE_GITIGNORE_PATH = ".gitignore";
 const SESSION_STATE_GITIGNORE_REQUIRED_RULES = [
@@ -148,6 +149,26 @@ export function findWorkspaceRootSync(startDir: string): string | null {
 	return null;
 }
 
+/**
+ * Resolve the workspace root directory.
+ *
+ * Priority order (first match wins):
+ *  1. `MCP_WORKSPACE_ROOT` environment variable — explicitly set by the user,
+ *     required when the MCP client launches the server via `npx` and does not
+ *     preserve the terminal's working directory (Claude Desktop sets `cwd=~`,
+ *     Windsurf sets `cwd=/`).
+ *  2. Auto-detection: walk up from `fallback` looking for `.git` or `package.json`.
+ *  3. `fallback` — the raw value passed by the caller (defaults to `process.cwd()`).
+ */
+export function resolveWorkspaceRoot(fallback = process.cwd()): string {
+	const explicitRoot = process.env[WORKSPACE_ROOT_ENV_VAR];
+	if (explicitRoot && explicitRoot.trim().length > 0) {
+		return resolve(explicitRoot.trim());
+	}
+	const detected = findWorkspaceRootSync(fallback);
+	return detected ?? fallback;
+}
+
 export function resolveSessionStateDir(rawStateDir?: string): string {
 	const stateDir =
 		rawStateDir ??
@@ -164,10 +185,11 @@ export function resolveSessionStateDir(rawStateDir?: string): string {
  * The explicit override priority is:
  *   1. `rawStateDir` argument
  *   2. `MCP_AI_AGENT_GUIDELINES_STATE_DIR` env var
- *   3. `process.cwd()`
+ *   3. `resolveWorkspaceRoot()` — respects `MCP_WORKSPACE_ROOT` or auto-detects
+ *      via `.git` / `package.json` walk-up, then falls back to `process.cwd()`.
  *
- * This keeps writes project-local (e.g. `<cwd>/.mcp-ai-agent-guidelines`) even
- * for non-Node repositories such as Python projects.
+ * This keeps writes project-local (e.g. `<workspace>/.mcp-ai-agent-guidelines`)
+ * even when the MCP client launches the server via `npx` from the wrong cwd.
  */
 export async function resolveSessionStateDirAsync(
 	rawStateDir?: string,
@@ -177,7 +199,7 @@ export async function resolveSessionStateDirAsync(
 		assertSafeStateDir(explicitDir);
 		return resolve(explicitDir);
 	}
-	return resolve(process.cwd(), DEFAULT_SESSION_STATE_DIR);
+	return resolve(resolveWorkspaceRoot(), DEFAULT_SESSION_STATE_DIR);
 }
 
 export function resolveSessionPathWithinStateDir(
