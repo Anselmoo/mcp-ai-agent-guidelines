@@ -4,6 +4,7 @@ import { join, resolve } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import {
 	DEFAULT_SESSION_STATE_DIR,
+	resolveSessionStateDir,
 	resolveSessionStateDirAsync,
 	resolveWorkspaceRoot,
 	WORKSPACE_ROOT_ENV_VAR,
@@ -122,6 +123,20 @@ describe("resolveSessionStateDirAsync() uses resolveWorkspaceRoot()", () => {
 			const explicitDir = join(tmpDir, "custom-state");
 			const result = await resolveSessionStateDirAsync(explicitDir);
 			expect(result).toBe(resolve(explicitDir));
+		} finally {
+			rmSync(tmpDir, { recursive: true, force: true });
+		}
+	});
+});
+
+describe("resolveSessionStateDir()", () => {
+	it("uses MCP_WORKSPACE_ROOT for sync default resolution when no explicit state dir is set", () => {
+		const tmpDir = mkdtempSync(join(tmpdir(), "workspace-root-sync-state-"));
+		try {
+			process.env[WORKSPACE_ROOT_ENV_VAR] = tmpDir;
+			expect(resolveSessionStateDir()).toBe(
+				resolve(tmpDir, DEFAULT_SESSION_STATE_DIR),
+			);
 		} finally {
 			rmSync(tmpDir, { recursive: true, force: true });
 		}

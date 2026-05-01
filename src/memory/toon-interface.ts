@@ -281,12 +281,7 @@ export class ToonMemoryInterface {
 	}
 
 	private async ensureDirectories(): Promise<void> {
-		// Await workspace-root resolution before any filesystem access so the
-		// correct baseDir (workspace vs. $HOME) is used for all paths.
-		if (this.baseDirReadyPromise) {
-			await this.baseDirReadyPromise;
-			this.baseDirReadyPromise = undefined;
-		}
+		await this.awaitBaseDirReady();
 		await ensureSessionStateGitignore(this.baseDir);
 		await mkdir(this.memoryDir, { recursive: true });
 		await mkdir(this.snapshotDir(), { recursive: true });
@@ -324,10 +319,7 @@ export class ToonMemoryInterface {
 	 * write-path tool guards.
 	 */
 	async isWorkspaceInitialized(): Promise<boolean> {
-		if (this.baseDirReadyPromise) {
-			await this.baseDirReadyPromise;
-			this.baseDirReadyPromise = undefined;
-		}
+		await this.awaitBaseDirReady();
 		const configPath = join(this.configDir(), "orchestration.toml");
 		try {
 			await access(configPath);
@@ -518,7 +510,18 @@ export class ToonMemoryInterface {
 		return (await this.ensureSnapshotHistoryInitialized()).snapshots;
 	}
 
+	private async awaitBaseDirReady(): Promise<void> {
+		if (this.baseDirReadyPromise) {
+			await this.baseDirReadyPromise;
+			this.baseDirReadyPromise = undefined;
+		}
+	}
+
 	private async ensureSessionDir(sessionId: string): Promise<void> {
+		// Session writes need the same workspace-root correction as snapshot and
+		// memory writes, otherwise an npx-launched server can leak state into the
+		// launch directory before MCP_WORKSPACE_ROOT takes effect.
+		await this.awaitBaseDirReady();
 		await ensureSessionStateGitignore(this.baseDir);
 		await mkdir(this.sessionSubDir(sessionId), { recursive: true });
 		await mkdir(this.memoryDir, { recursive: true });

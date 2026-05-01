@@ -170,12 +170,13 @@ export function resolveWorkspaceRoot(fallback = process.cwd()): string {
 }
 
 export function resolveSessionStateDir(rawStateDir?: string): string {
-	const stateDir =
-		rawStateDir ??
-		process.env[SESSION_STATE_DIR_ENV_VAR] ??
-		DEFAULT_SESSION_STATE_DIR;
-	assertSafeStateDir(stateDir);
-	return resolve(stateDir);
+	const explicitDir = rawStateDir ?? process.env[SESSION_STATE_DIR_ENV_VAR];
+	if (explicitDir !== undefined) {
+		assertSafeStateDir(explicitDir);
+		return resolve(explicitDir);
+	}
+
+	return resolve(resolveWorkspaceRoot(), DEFAULT_SESSION_STATE_DIR);
 }
 
 /**

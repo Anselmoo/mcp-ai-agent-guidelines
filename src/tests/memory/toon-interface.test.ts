@@ -10,6 +10,7 @@ import {
 	rm,
 	writeFile,
 } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { CodebaseScanner } from "../../memory/coherence-scanner.js";
@@ -19,9 +20,7 @@ import {
 } from "../../memory/toon-interface.js";
 
 async function createIsolatedTestDir(): Promise<string> {
-	return await mkdtemp(
-		join(process.cwd(), ".test-mcp-ai-agent-guidelines-memory-"),
-	);
+	return await mkdtemp(join(tmpdir(), "mcp-ai-agent-guidelines-memory-"));
 }
 
 async function cleanupTestDir(testDir: string | undefined): Promise<void> {
@@ -798,7 +797,7 @@ describe("ToonMemoryInterface — housekeeping", () => {
 
 	beforeEach(async () => {
 		testDir = await mkdtemp(
-			join(process.cwd(), ".test-mcp-ai-agent-guidelines-housekeeping-"),
+			join(tmpdir(), "mcp-ai-agent-guidelines-housekeeping-"),
 		);
 		memoryInterface = new ToonMemoryInterface(testDir);
 	});
@@ -1680,9 +1679,10 @@ describe("ToonMemoryInterface — housekeeping", () => {
 		const { mkdtemp: mkdtempFresh, rm: rmFresh } = await import(
 			"node:fs/promises"
 		);
+		const { tmpdir: tmpdirFresh } = await import("node:os");
 		const { join: joinFresh } = await import("node:path");
 		const freshDir = await mkdtempFresh(
-			joinFresh(process.cwd(), ".test-import-"),
+			joinFresh(tmpdirFresh(), "mcp-test-import-"),
 		);
 		try {
 			const freshInterface = new ToonMemoryInterface(freshDir);
