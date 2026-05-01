@@ -17,6 +17,7 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - **mcp**: document local write behavior for .mcp-ai-agent-guidelines
 
 ### Fixed
+- **pr**: address PR #1467 review feedback
 - **mcp**: make all state artifact writes atomic
 - **mcp**: use atomic writes for memory artifacts and snapshots
 
