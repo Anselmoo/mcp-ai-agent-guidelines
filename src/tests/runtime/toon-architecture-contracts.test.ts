@@ -4,7 +4,9 @@
  * Validates TOON session storage and persistence behavior.
  */
 
-import { rm } from "node:fs/promises";
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { nanoid } from "nanoid";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
@@ -18,8 +20,8 @@ describe("TOON Architecture Contracts", () => {
 	let sessionManager: SessionManager;
 	let testDir: string;
 
-	beforeEach(() => {
-		testDir = `.test-toon-${nanoid()}`;
+	beforeEach(async () => {
+		testDir = await mkdtemp(join(tmpdir(), `toon-${nanoid()}-`));
 		toonInterface = new ToonMemoryInterface(testDir);
 		sessionManager = new SessionManager({ baseDir: testDir });
 	});

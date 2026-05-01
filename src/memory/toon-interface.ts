@@ -3,7 +3,7 @@
  */
 
 import { randomUUID } from "node:crypto";
-import { access, mkdir, readdir, readFile, writeFile } from "node:fs/promises";
+import { access, mkdir, readdir, readFile } from "node:fs/promises";
 import { isAbsolute, join, relative, resolve, sep } from "node:path";
 import { decode as toonDecode, encode as toonEncode } from "@toon-format/toon";
 import type {
@@ -281,12 +281,7 @@ export class ToonMemoryInterface {
 	}
 
 	private async ensureDirectories(): Promise<void> {
-		// Await workspace-root resolution before any filesystem access so the
-		// correct baseDir (workspace vs. $HOME) is used for all paths.
-		if (this.baseDirReadyPromise) {
-			await this.baseDirReadyPromise;
-			this.baseDirReadyPromise = undefined;
-		}
+		await this.awaitBaseDirReady();
 		await ensureSessionStateGitignore(this.baseDir);
 		await mkdir(this.memoryDir, { recursive: true });
 		await mkdir(this.snapshotDir(), { recursive: true });
@@ -324,10 +319,7 @@ export class ToonMemoryInterface {
 	 * write-path tool guards.
 	 */
 	async isWorkspaceInitialized(): Promise<boolean> {
-		if (this.baseDirReadyPromise) {
-			await this.baseDirReadyPromise;
-			this.baseDirReadyPromise = undefined;
-		}
+		await this.awaitBaseDirReady();
 		const configPath = join(this.configDir(), "orchestration.toml");
 		try {
 			await access(configPath);
@@ -404,10 +396,9 @@ export class ToonMemoryInterface {
 	private async saveFingerprintSnapshotHistory(
 		history: FingerprintSnapshotHistory,
 	): Promise<void> {
-		await writeFile(
+		await writeTextFileAtomic(
 			this.snapshotHistoryPath(),
 			JSON.stringify(history, null, 2),
-			"utf8",
 		);
 	}
 
@@ -431,15 +422,13 @@ export class ToonMemoryInterface {
 		}
 
 		const fileName = `fingerprint-${snapshotId}.json`;
-		await writeFile(
+		await writeTextFileAtomic(
 			this.snapshotArchivePath(snapshotId),
 			JSON.stringify(migratedSnapshot, null, 2),
-			"utf8",
 		);
-		await writeFile(
+		await writeTextFileAtomic(
 			this.snapshotLatestPath(),
 			JSON.stringify(migratedSnapshot, null, 2),
-			"utf8",
 		);
 
 		const migratedHistory: FingerprintSnapshotHistory = {
@@ -468,15 +457,13 @@ export class ToonMemoryInterface {
 
 		const normalizedSnapshot = this.normalizeFingerprintSnapshot(snapshot);
 		const fileName = `fingerprint-${snapshotId}.json`;
-		await writeFile(
+		await writeTextFileAtomic(
 			this.snapshotArchivePath(snapshotId),
 			JSON.stringify(normalizedSnapshot, null, 2),
-			"utf8",
 		);
-		await writeFile(
+		await writeTextFileAtomic(
 			this.snapshotLatestPath(),
 			JSON.stringify(normalizedSnapshot, null, 2),
-			"utf8",
 		);
 
 		const existingHistory = await this.ensureSnapshotHistoryInitialized();
@@ -523,7 +510,18 @@ export class ToonMemoryInterface {
 		return (await this.ensureSnapshotHistoryInitialized()).snapshots;
 	}
 
+	private async awaitBaseDirReady(): Promise<void> {
+		if (this.baseDirReadyPromise) {
+			await this.baseDirReadyPromise;
+			this.baseDirReadyPromise = undefined;
+		}
+	}
+
 	private async ensureSessionDir(sessionId: string): Promise<void> {
+		// Session writes need the same workspace-root correction as snapshot and
+		// memory writes, otherwise an npx-launched server can leak state into the
+		// launch directory before MCP_WORKSPACE_ROOT takes effect.
+		await this.awaitBaseDirReady();
 		await ensureSessionStateGitignore(this.baseDir);
 		await mkdir(this.sessionSubDir(sessionId), { recursive: true });
 		await mkdir(this.memoryDir, { recursive: true });
@@ -543,20 +541,18 @@ export class ToonMemoryInterface {
 					};
 
 		await this.ensureSessionDir(sessionId);
-		await writeFile(
+		await writeTextFileAtomic(
 			this.workspaceMapPath(sessionId),
 			JSON.stringify(workspaceMap, null, 2),
-			"utf8",
 		);
 	}
 
 	/** Save per-session scan results (code scanning / AST outputs). */
 	async saveScanResults(sessionId: string, results: unknown): Promise<void> {
 		await this.ensureSessionDir(sessionId);
-		await writeFile(
+		await writeTextFileAtomic(
 			this.scanResultsPath(sessionId),
 			JSON.stringify(results, null, 2),
-			"utf8",
 		);
 	}
 
@@ -746,10 +742,9 @@ export class ToonMemoryInterface {
 		const now = new Date().toISOString();
 		const enhancedArtifact = enhanceMemoryArtifact(artifact, now);
 
-		await writeFile(
+		await writeTextFileAtomic(
 			this.memoryArtifactPath(enhancedArtifact.meta.id),
 			toonEncode(enhancedArtifact, { delimiter: "\t", keyFolding: "safe" }),
-			"utf8",
 		);
 	}
 

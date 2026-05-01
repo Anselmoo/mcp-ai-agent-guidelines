@@ -329,17 +329,9 @@ export async function dispatchSessionToolCall(
 	}
 
 	if (canonicalName === SESSION_WRITE_TOOL_NAME) {
-		if (!(await sessionMemoryInterface.isWorkspaceInitialized())) {
-			return {
-				content: [
-					{
-						type: "text",
-						text: "Workspace not initialized. Run `mcp-cli onboard init` (or call `project-onboard`) to generate the required config, snapshots, and memory directories before writing artifacts.",
-					},
-				],
-				isError: true,
-			};
-		}
+		// Allow writing session-backed artifacts even when the workspace has not
+		// been fully bootstrapped. The underlying memory interface will create
+		// required session directories and perform atomic writes as needed.
 		const sessionId = resolveSessionId(record.sessionId, runtime.sessionId);
 		const target = parseArtifactName(record.target);
 		if (!target) {

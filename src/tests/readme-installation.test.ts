@@ -31,6 +31,13 @@ describe("README installation guidance", () => {
 		expect(readme).toContain("`mcp-cli` — interactive CLI");
 	});
 
+	it("documents MCP_WORKSPACE_ROOT env var for npx-based MCP config", () => {
+		expect(readme).toContain("MCP_WORKSPACE_ROOT");
+		// VS Code supports ${workspaceFolder} interpolation
+		expect(readme).toContain("workspaceFolder");
+		expect(readme).toContain("/absolute/path/to/your/project");
+	});
+
 	it("keeps the CLI reference aligned with the published entrypoints", () => {
 		expect(cliReference).toContain(
 			"npx --yes --package mcp-ai-agent-guidelines@latest mcp-cli [command]",

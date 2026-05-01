@@ -48,12 +48,6 @@ const MAX_SESSIONS = 5;
  */
 const REPLAY_WEIGHTS = [0.5, 0.25, 0.13, 0.07, 0.05] as const;
 
-/**
- * Project-local TOON session state directory — mirrors DEFAULT_SESSION_STATE_DIR
- * from session-store-utils so SessionBootstrap avoids a cross-module import.
- */
-const TOON_BASE_DIR = ".mcp-ai-agent-guidelines";
-
 /** Maximum number of recent TOON sessions to pre-seed from. */
 const TOON_PRELOAD_MAX = 3;
 
@@ -175,7 +169,7 @@ export class SessionBootstrap {
 			process.stderr.write(
 				"[\u{1F4CD} #reading snapshots] Pre-loading TOON session context...\n",
 			);
-			const toon = new ToonMemoryInterface(TOON_BASE_DIR);
+			const toon = new ToonMemoryInterface();
 			const allIds = await toon.listSessionIds();
 			if (allIds.length === 0) return;
 

@@ -57,6 +57,16 @@ See [Orchestration Concepts](/mcp-ai-agent-guidelines/concepts/orchestration/) f
 ENABLE_PHYSICS_SKILLS=true npx mcp-ai-agent-guidelines
 ```
 
+### Workspace Root
+
+<Aside type="tip">
+Set `MCP_WORKSPACE_ROOT` to the absolute path of your project when launching via `npx`. MCP clients such as Claude Desktop, Cursor, and Windsurf spawn the server process without preserving the terminal's working directory, which causes `.mcp-ai-agent-guidelines/` writes to land in the wrong place.
+</Aside>
+
+| Variable | Purpose |
+|----------|--------|
+| `MCP_WORKSPACE_ROOT` | Absolute path to the project the server should write state into. Auto-detected via `.git` / `package.json` walk-up when not set; falls back to `process.cwd()` only as a last resort. |
+
 ### Session Security
 
 | Variable | Purpose |
@@ -94,6 +104,7 @@ Config file: `~/Library/Application Support/Claude/claude_desktop_config.json`
       "command": "npx",
       "args": ["-y", "mcp-ai-agent-guidelines@latest"],
       "env": {
+        "MCP_WORKSPACE_ROOT": "/absolute/path/to/your/project",
         "ENABLE_PHYSICS_SKILLS": "true",
         "LOG_LEVEL": "warn"
       }
@@ -101,6 +112,10 @@ Config file: `~/Library/Application Support/Claude/claude_desktop_config.json`
   }
 }
 ```
+
+<Aside type="caution">
+Claude Desktop does not interpolate environment variables in config values. Use a hardcoded absolute path for `MCP_WORKSPACE_ROOT`.
+</Aside>
 
 ## VS Code (User Settings JSON)
 
@@ -112,6 +127,7 @@ Config file: `~/Library/Application Support/Claude/claude_desktop_config.json`
         "command": "npx",
         "args": ["-y", "mcp-ai-agent-guidelines@latest"],
         "env": {
+          "MCP_WORKSPACE_ROOT": "${workspaceFolder}",
           "ENABLE_PHYSICS_SKILLS": "true",
           "SESSION_HMAC_SECRET": "${env:MCP_SESSION_HMAC_SECRET}"
         }

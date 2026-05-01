@@ -116,12 +116,19 @@ Add the server to your MCP host config. The entry-point is `dist/index.js` and c
 
 ### Claude Desktop (`~/Library/Application Support/Claude/claude_desktop_config.json`)
 
+> [!IMPORTANT]
+> Claude Desktop spawns the server with a different working directory than your project.
+> Set `MCP_WORKSPACE_ROOT` to the absolute path of the project you want the server to write state into.
+
 ```json
 {
   "mcpServers": {
     "ai-agent-guidelines": {
       "command": "npx",
-      "args": ["mcp-ai-agent-guidelines"]
+      "args": ["-y", "mcp-ai-agent-guidelines@latest"],
+      "env": {
+        "MCP_WORKSPACE_ROOT": "/absolute/path/to/your/project"
+      }
     }
   }
 }
@@ -135,7 +142,10 @@ Add the server to your MCP host config. The entry-point is `dist/index.js` and c
     "ai-agent-guidelines": {
       "type": "stdio",
       "command": "npx",
-      "args": ["mcp-ai-agent-guidelines"]
+      "args": ["-y", "mcp-ai-agent-guidelines@latest"],
+      "env": {
+        "MCP_WORKSPACE_ROOT": "${workspaceFolder}"
+      }
     }
   }
 }
@@ -359,6 +369,7 @@ Published package note: the npm package ships `dist/`, `README.md`, and `LICENSE
 | `DISABLE_ADAPTIVE_ROUTING` | unset / `"false"` | Set to `true` to hide `routing-adapt` and block `adapt-*` skills; enabled by default (opt-out model) |
 | `ALLOW_INTENSIVE_SKILLS` | unset / `"false"` | Must be `true` to allow resource-intensive skills such as `bench-eval-suite`, `eval-prompt-bench`, `qm-path-integral-historian`, and `gr-spacetime-debt-metric` |
 | `ENABLE_PHYSICS_SKILLS` | unset / `"false"` | Required by input validation when physics skills are not otherwise authorized; physics skills also require conventional-evidence schema validation |
+| `MCP_WORKSPACE_ROOT` | unset | Absolute path to the project directory the server should write state into (`.mcp-ai-agent-guidelines/`). Required when using `npx` via Claude Desktop, Cursor, or Windsurf — these clients do not preserve the terminal's working directory. VS Code supports `${workspaceFolder}`. |
 | `MCP_SLIM_MODE` | unset / `"false"` | Set to `true` to expose only the minimal surface: `task-bootstrap`, `meta-routing`, and `project-onboard` (useful for low-context agents) |
 
 ### Skill gates

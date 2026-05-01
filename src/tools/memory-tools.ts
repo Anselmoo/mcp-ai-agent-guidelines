@@ -241,17 +241,9 @@ export async function dispatchMemoryToolCall(
 	}
 
 	if (canonicalName === MEMORY_WRITE_TOOL_NAME) {
-		if (!(await memoryInterface.isWorkspaceInitialized())) {
-			return {
-				content: [
-					{
-						type: "text",
-						text: "Workspace not initialized. Run `mcp-cli onboard init` (or call `project-onboard`) to generate the required config, snapshots, and memory directories before writing artifacts.",
-					},
-				],
-				isError: true,
-			};
-		}
+		// Allow writing memory artifacts even when the workspace has not been
+		// fully bootstrapped. The underlying memory interface will create the
+		// required directories and perform atomic writes as needed.
 
 		const artifactId = record.artifactId as string | undefined;
 		const libraryContext = record.libraryContext as string | undefined;
