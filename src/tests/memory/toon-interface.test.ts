@@ -2,7 +2,14 @@
  * Tests for TOON memory interface
  */
 
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import {
+	chmod,
+	mkdtemp,
+	readdir,
+	readFile,
+	rm,
+	writeFile,
+} from "node:fs/promises";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { CodebaseScanner } from "../../memory/coherence-scanner.js";
@@ -272,6 +279,126 @@ describe("ToonMemoryInterface", () => {
 			await expect(
 				memoryInterface.loadWorkspaceMap(sessionId),
 			).resolves.toEqual(workspaceMap);
+		});
+
+		it("persists session, memory, and snapshot artifacts on disk without temp leftovers", async () => {
+			const sessionId = "session-550e8400-e29b-41d4-a716-446655440010";
+			const artifact = {
+				meta: {
+					id: "fs-persist-artifact",
+					created: new Date().toISOString(),
+					updated: new Date().toISOString(),
+					tags: ["fs", "persist"],
+					relevance: 0.5,
+				},
+				content: {
+					summary: "Filesystem artifact",
+					details: "Verifies on-disk persistence",
+					context: "integration",
+					actionable: true,
+				},
+				links: {
+					relatedSessions: [sessionId],
+					relatedMemories: [],
+					sources: ["test"],
+				},
+			};
+
+			await writeFile(
+				join(testDir, "sample.ts"),
+				"export const sample = 1;\n",
+				"utf8",
+			);
+			await memoryInterface.saveSessionContext(sessionId, {
+				context: {
+					requestScope: "Filesystem persistence",
+					constraints: [],
+					phase: "review",
+				},
+			});
+			await memoryInterface.saveWorkspaceMap(sessionId, {
+				core: {
+					path: "src",
+					files: ["sample.ts"],
+					dependencies: [],
+				},
+			} as never);
+			await memoryInterface.saveScanResults(sessionId, {
+				findings: ["persisted"],
+			});
+			await memoryInterface.saveMemoryArtifact(artifact);
+			await memoryInterface.refresh();
+
+			await expect(
+				readFile(join(testDir, "sessions", sessionId, "state.toon"), "utf8"),
+			).resolves.toContain("mcp-toon-encrypted:v1:");
+			await expect(
+				readFile(
+					join(testDir, "sessions", sessionId, "workspace-map.json"),
+					"utf8",
+				),
+			).resolves.toContain('"modules"');
+			await expect(
+				readFile(
+					join(testDir, "sessions", sessionId, "scan-results.json"),
+					"utf8",
+				),
+			).resolves.toContain('"findings"');
+			await expect(
+				readFile(join(testDir, "memory", "fs-persist-artifact.toon"), "utf8"),
+			).resolves.toContain("Filesystem artifact");
+			await expect(
+				readFile(join(testDir, "snapshots", "fingerprint-latest.json"), "utf8"),
+			).resolves.toContain('"snapshotId"');
+			await expect(
+				readFile(
+					join(testDir, "snapshots", "fingerprint-history.json"),
+					"utf8",
+				),
+			).resolves.toContain('"latestSnapshotId"');
+
+			const artifactEntries = await readdir(join(testDir, "memory"));
+			const sessionEntries = await readdir(
+				join(testDir, "sessions", sessionId),
+			);
+			const snapshotEntries = await readdir(join(testDir, "snapshots"));
+			expect(
+				[...artifactEntries, ...sessionEntries, ...snapshotEntries].some(
+					(entry) => entry.endsWith(".tmp"),
+				),
+			).toBe(false);
+		});
+
+		it("surfaces permission failures for session artifact writes", async () => {
+			if (process.platform === "win32" || process.getuid?.() === 0) {
+				return;
+			}
+
+			const sessionId = "session-550e8400-e29b-41d4-a716-446655440011";
+			await memoryInterface.saveWorkspaceMap(sessionId, {
+				core: {
+					path: "src",
+					files: ["index.ts"],
+					dependencies: [],
+				},
+			} as never);
+
+			const sessionDir = join(testDir, "sessions", sessionId);
+			await chmod(sessionDir, 0o500);
+
+			try {
+				const error = await memoryInterface
+					.saveScanResults(sessionId, { findings: ["denied"] })
+					.then(
+						() => null,
+						(caughtError) => caughtError as NodeJS.ErrnoException,
+					);
+
+				expect(error).not.toBeNull();
+				expect(["EACCES", "EPERM"]).toContain(error?.code);
+			} finally {
+				await chmod(sessionDir, 0o700);
+			}
 		});
 	});
 

@@ -404,10 +404,9 @@ export class ToonMemoryInterface {
 	private async saveFingerprintSnapshotHistory(
 		history: FingerprintSnapshotHistory,
 	): Promise<void> {
-		await writeFile(
+		await writeTextFileAtomic(
 			this.snapshotHistoryPath(),
 			JSON.stringify(history, null, 2),
-			"utf8",
 		);
 	}
 
@@ -431,10 +430,9 @@ export class ToonMemoryInterface {
 		}
 
 		const fileName = `fingerprint-${snapshotId}.json`;
-		await writeFile(
+		await writeTextFileAtomic(
 			this.snapshotArchivePath(snapshotId),
 			JSON.stringify(migratedSnapshot, null, 2),
-			"utf8",
 		);
 		await writeTextFileAtomic(
 			this.snapshotLatestPath(),
@@ -540,20 +538,18 @@ export class ToonMemoryInterface {
 					};
 
 		await this.ensureSessionDir(sessionId);
-		await writeFile(
+		await writeTextFileAtomic(
 			this.workspaceMapPath(sessionId),
 			JSON.stringify(workspaceMap, null, 2),
-			"utf8",
 		);
 	}
 
 	/** Save per-session scan results (code scanning / AST outputs). */
 	async saveScanResults(sessionId: string, results: unknown): Promise<void> {
 		await this.ensureSessionDir(sessionId);
-		await writeFile(
+		await writeTextFileAtomic(
 			this.scanResultsPath(sessionId),
 			JSON.stringify(results, null, 2),
-			"utf8",
 		);
 	}
 

@@ -14,6 +14,9 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Documentation
 - **mcp**: document local write behavior for .mcp-ai-agent-guidelines
+
+### Fixed
+- **mcp**: use atomic writes for memory artifacts and snapshots\n\nUse writeTextFileAtomic for memory artifacts and fingerprint snapshot files to avoid partial writes.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
 ## [0.16.0] - 2026-04-28
 ### Fixed
 - update tool references and enhance memory tool tests for better context handling
