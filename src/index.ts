@@ -6,6 +6,7 @@ import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
 	CallToolRequestSchema,
+	type CallToolResult,
 	GetPromptRequestSchema,
 	ListPromptsRequestSchema,
 	ListResourcesRequestSchema,
@@ -94,6 +95,8 @@ export interface ServerRuntime extends WorkflowExecutionRuntime {
 	workflowEngine: WorkflowEngine;
 }
 
+const STARTUP_ONBOARDING_MEMORY_ID = "system-bootstrap-onboarding";
+
 function getValidationService() {
 	try {
 		return ValidationService.getInstance();
@@ -129,6 +132,69 @@ function formatAuxToolError(
 			},
 		],
 	};
+}
+
+function summarizeToolResult(result: CallToolResult): string {
+	return result.content
+		.map((item) => ("text" in item ? item.text : ""))
+		.filter((text) => text.length > 0)
+		.join(" ")
+		.trim();
+}
+
+async function runStartupToolCall(
+	label: string,
+	operation: () => Promise<CallToolResult>,
+): Promise<void> {
+	try {
+		const result = await operation();
+		if (!result.isError) {
+			return;
+		}
+
+		const detail = summarizeToolResult(result);
+		process.stderr.write(
+			`[warn] Startup ${label} failed${detail ? `: ${detail}` : ""}\n`,
+		);
+	} catch (error) {
+		process.stderr.write(
+			`[warn] Startup ${label} failed: ${toErrorMessage(error)}\n`,
+		);
+	}
+}
+
+async function ensureStartupOnboardingMemory(
+	runtime: Pick<ServerRuntime, "workspaceRoot" | "sessionId">,
+): Promise<void> {
+	const existingArtifact = await sharedToonMemoryInterface.loadMemoryArtifact(
+		STARTUP_ONBOARDING_MEMORY_ID,
+	);
+	if (existingArtifact) {
+		return;
+	}
+
+	const now = new Date().toISOString();
+	await sharedToonMemoryInterface.saveMemoryArtifact({
+		meta: {
+			id: STARTUP_ONBOARDING_MEMORY_ID,
+			created: now,
+			updated: now,
+			tags: ["bootstrap", "onboarding", "system"],
+			relevance: 0.2,
+		},
+		content: {
+			summary: "Workspace bootstrap initialized",
+			details:
+				"This onboarding artifact is created automatically on first startup. It records that local TOON state is active before interactive onboarding and that snapshots, sessions, and memory can persist under .mcp-ai-agent-guidelines.",
+			context: `Workspace root: ${runtime.workspaceRoot}`,
+			actionable: false,
+		},
+		links: {
+			relatedSessions: [],
+			relatedMemories: [],
+			sources: ["startup-bootstrap"],
+		},
+	});
 }
 
 export function createRuntime(): ServerRuntime {
@@ -327,21 +393,51 @@ export async function main() {
 
 	void (async () => {
 		await Promise.all([
-			dispatchSnapshotToolCall("agent-snapshot-write", {}).catch(() => {}),
-			dispatchSessionToolCall("agent-session-fetch", {}, runtime).catch(
-				() => {},
+			runStartupToolCall("snapshot bootstrap", () =>
+				dispatchSnapshotToolCall("agent-snapshot-write", {}),
 			),
-			dispatchSessionToolCall(
-				"agent-session-write",
-				{
-					target: "scan-results",
-					data: {
-						scannedAt: new Date().toISOString(),
-						sessionId: runtime.sessionId,
+			runStartupToolCall("session listing bootstrap", () =>
+				dispatchSessionToolCall("agent-session-fetch", {}, runtime),
+			),
+			runStartupToolCall("session scan-results bootstrap", () =>
+				dispatchSessionToolCall(
+					"agent-session-write",
+					{
+						target: "scan-results",
+						data: {
+							scannedAt: new Date().toISOString(),
+							sessionId: runtime.sessionId,
+						},
 					},
-				},
-				runtime,
-			).catch(() => {}),
+					runtime,
+				),
+			),
+			runStartupToolCall("session context bootstrap", () =>
+				dispatchSessionToolCall(
+					"agent-session-write",
+					{
+						target: "session-context",
+						data: {
+							context: {
+								requestScope: "Startup bootstrap",
+								constraints: ["Pre-onboarding local state"],
+								phase: "bootstrap",
+							},
+							progress: {
+								next: ["Run onboarding or continue with MCP tools"],
+							},
+						},
+					},
+					runtime,
+				),
+			),
+			ensureStartupOnboardingMemory(runtime).catch((error: unknown) => {
+				process.stderr.write(
+					`[warn] Startup onboarding memory bootstrap failed: ${toErrorMessage(
+						error,
+					)}\n`,
+				);
+			}),
 		]);
 		resolveContextReady();
 
