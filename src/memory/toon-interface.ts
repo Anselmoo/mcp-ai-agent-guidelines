@@ -3,7 +3,7 @@
  */
 
 import { randomUUID } from "node:crypto";
-import { access, mkdir, readdir, readFile, writeFile } from "node:fs/promises";
+import { access, mkdir, readdir, readFile } from "node:fs/promises";
 import { isAbsolute, join, relative, resolve, sep } from "node:path";
 import { decode as toonDecode, encode as toonEncode } from "@toon-format/toon";
 import type {

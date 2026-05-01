@@ -10,6 +10,7 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
 ### Added
+- **mcp**: implement startup onboarding memory handling and enhance tool result summarization
 - **mcp**: allow workspace writes when uninitialized
 
 ### Documentation
@@ -18,6 +19,9 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Fixed
 - **mcp**: make all state artifact writes atomic
 - **mcp**: use atomic writes for memory artifacts and snapshots
+
+### Changed
+- **mcp**: improve workspace directory handling and cleanup in tests
 ## [0.16.0] - 2026-04-28
 ### Fixed
 - update tool references and enhance memory tool tests for better context handling

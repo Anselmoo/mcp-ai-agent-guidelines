@@ -117,7 +117,7 @@ function printSessionStartWarnings() {
 
   if (!existsSync(MCP_STATE_DIR)) {
     warnings.push(
-      "Local MCP state directory `.mcp-ai-agent-guidelines/` is not present. Some write and memory tools may fail until workspace state is restored or reinitialized."
+      "Local MCP state directory `.mcp-ai-agent-guidelines/` is not present yet. Write paths can create it on demand, but reads and prior-artifact lookups will not have existing local state until the workspace is initialized."
     );
   }
 
@@ -128,13 +128,12 @@ function printSessionStartWarnings() {
   }
 
   if (warnings.length > 0) {
-    console.log(`[_tool-sanity] Workspace sanity check:`);
-    for (const warning of warnings) {
-      console.log(`- ${warning}`);
-    }
-    console.log(
-      "If the workspace is up to date, restart the MCP server and rerun `npm run build` so the latest local version is active."
-    );
+    const lines = [
+      "[_tool-sanity] Workspace sanity check:",
+      ...warnings.map((warning) => `- ${warning}`),
+      "If the workspace is up to date, restart the MCP server and rerun `npm run build` so the latest local version is active.",
+    ];
+    process.stderr.write(`${lines.join("\n")}\n`);
   }
 }
 

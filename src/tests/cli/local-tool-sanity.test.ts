@@ -1,11 +1,14 @@
 import { spawnSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
-const ROOT_DIR = new URL("../../../", import.meta.url).pathname;
-const SCRIPT_PATH = new URL(
-	"../../../.github/hooks/scripts/local-tool-sanity.js",
-	import.meta.url,
-).pathname;
+const ROOT_DIR = fileURLToPath(new URL("../../../", import.meta.url));
+const SCRIPT_PATH = fileURLToPath(
+	new URL(
+		"../../../.github/hooks/scripts/local-tool-sanity.js",
+		import.meta.url,
+	),
+);
 
 describe(".github hooks/local-tool-sanity.js", () => {
 	it("returns allow for SessionStart and prints a workspace sanity JSON result", () => {
@@ -15,7 +18,12 @@ describe(".github hooks/local-tool-sanity.js", () => {
 		});
 
 		expect(result.status).toBe(0);
-		expect(result.stdout).toContain('"permissionDecision":"allow"');
+		expect(JSON.parse(result.stdout)).toMatchObject({
+			hookSpecificOutput: {
+				hookEventName: "SessionStart",
+				permissionDecision: "allow",
+			},
+		});
 	});
 
 	it("asks when a blocked tool is detected", () => {

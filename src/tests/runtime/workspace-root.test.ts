@@ -46,16 +46,11 @@ describe("resolveWorkspaceRoot()", () => {
 	});
 
 	it("ignores an empty MCP_WORKSPACE_ROOT and falls back to detection", () => {
-		// Use a temp dir with a .git marker so detection succeeds
 		const tmpDir = mkdtempSync(join(tmpdir(), "workspace-root-empty-"));
 		try {
 			mkdirSync(join(tmpDir, ".git"));
 			process.env[WORKSPACE_ROOT_ENV_VAR] = "   ";
-			// fallback walks up from process.cwd(), not guaranteed to be tmpDir —
-			// so we just confirm it returns a non-empty string and not the whitespace value
-			const result = resolveWorkspaceRoot();
-			expect(result).toBeTruthy();
-			expect(result.trim()).toBe(result);
+			expect(resolveWorkspaceRoot(tmpDir)).toBe(resolve(tmpDir));
 		} finally {
 			rmSync(tmpDir, { recursive: true, force: true });
 		}
