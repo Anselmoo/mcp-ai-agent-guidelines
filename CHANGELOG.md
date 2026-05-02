@@ -8,7 +8,7 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-
+## [0.16.1] - 2026-05-02
 ### Added
 - **mcp**: implement startup onboarding memory handling and enhance tool result summarization
 - **mcp**: allow workspace writes when uninitialized
