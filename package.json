@@ -98,7 +98,7 @@
     },
     "devDependencies": {
         "@astrojs/starlight": "^0.34.0",
-        "@biomejs/biome": "2.4.12",
+        "@biomejs/biome": "2.4.14",
         "@modelcontextprotocol/inspector": "^0.21.1",
         "@types/d3": "^7.4.3",
         "@types/inquirer": "^9.0.9",
