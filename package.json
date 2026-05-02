@@ -97,7 +97,7 @@
         "picomatch": "^4.0.4"
     },
     "devDependencies": {
-        "@astrojs/starlight": "^0.34.0",
+        "@astrojs/starlight": "^0.38.4",
         "@biomejs/biome": "2.4.14",
         "@modelcontextprotocol/inspector": "^0.21.1",
         "@types/d3": "^7.4.3",
@@ -106,7 +106,7 @@
         "@types/lodash": "^4.17.24",
         "@types/node": "^25.0.2",
         "@vitest/coverage-v8": "^4.0.0",
-        "astro": "^5.7.0",
+        "astro": "^6.2.1",
         "astro-mermaid": "^2.0.1",
         "d3": "^7.9.0",
         "inquirer": "^13.3.2",
