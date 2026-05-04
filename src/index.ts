@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { realpathSync } from "node:fs";
+import { join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
@@ -13,6 +14,11 @@ import {
 	ListToolsRequestSchema,
 	ReadResourceRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
+import {
+	loadOrchestrationConfig,
+	resetConfigCache,
+	resolveOrchestrationConfigPath,
+} from "./config/orchestration-config.js";
 import type {
 	ExecutionProgressRecord,
 	SessionStateStore,
@@ -38,7 +44,10 @@ import {
 	SecureFileSessionStore,
 } from "./runtime/secure-session-store.js";
 import { SessionBootstrap } from "./runtime/session-bootstrap.js";
-import { resolveWorkspaceRoot } from "./runtime/session-store-utils.js";
+import {
+	DEFAULT_SESSION_STATE_DIR,
+	resolveWorkspaceRoot,
+} from "./runtime/session-store-utils.js";
 import { SkillRegistry } from "./skills/skill-registry.js";
 import {
 	dispatchMemoryToolCall,
@@ -356,6 +365,61 @@ export function createServer(sharedRuntime = createRuntime()) {
 	return { server, runtime: sharedRuntime };
 }
 
+/**
+ * Phase C: Anchor state storage to the MCP client's workspace root.
+ *
+ * When launched via `npx`, `process.cwd()` is typically the user's home
+ * directory (~) or the filesystem root.  The MCP `roots/list` call returns the
+ * actual project directories the client has open, so we redirect all
+ * memory/session/snapshot writes there before bootstrap fires.
+ *
+ * Exported for testability — the function is side-effect-free with respect to
+ * the transport and can be exercised with a mocked Server instance.
+ *
+ * @returns The resolved workspace root path, or `undefined` if no roots were
+ *          available (client doesn't expose roots capability, empty roots list,
+ *          or any error during the roots query).
+ */
+export async function anchorStateToClientRoots(
+	server: Server,
+	runtime: WorkflowExecutionRuntime,
+	memoryInterface: {
+		setBaseDir(dir: string): void;
+	} = sharedToonMemoryInterface,
+): Promise<string | undefined> {
+	try {
+		const clientCaps = server.getClientCapabilities();
+		if (!clientCaps?.roots) {
+			return undefined;
+		}
+		const { roots } = await server.listRoots();
+		if (roots.length === 0) {
+			return undefined;
+		}
+		const firstRootUri = roots[0].uri;
+		const firstRoot = firstRootUri.startsWith("file://")
+			? fileURLToPath(firstRootUri)
+			: firstRootUri;
+		const stateDir = join(firstRoot, DEFAULT_SESSION_STATE_DIR);
+		memoryInterface.setBaseDir(stateDir);
+		runtime.workspaceRoot = firstRoot;
+		// Reset the orchestration config cache so it reloads from the correct
+		// project path (it may have cached a stale home-dir path during
+		// modelRouter.initialize() before roots were known).
+		resetConfigCache();
+		loadOrchestrationConfig(resolveOrchestrationConfigPath(firstRoot));
+		process.stderr.write(
+			`[info] Workspace root resolved from client roots: ${firstRoot}\n`,
+		);
+		return firstRoot;
+	} catch (err: unknown) {
+		process.stderr.write(
+			`[warn] Could not resolve workspace root from client roots: ${toErrorMessage(err)}\n`,
+		);
+		return undefined;
+	}
+}
+
 export async function main() {
 	const { server, runtime } = createServer();
 	ValidationService.initialize();
@@ -390,6 +454,9 @@ export async function main() {
 
 	const transport = new StdioServerTransport();
 	await server.connect(transport);
+
+	// Phase C: Anchor state storage to the MCP client's workspace root.
+	await anchorStateToClientRoots(server, runtime);
 
 	void (async () => {
 		await Promise.all([

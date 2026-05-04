@@ -145,6 +145,12 @@ export class ToonMemoryInterface {
 	private instructionNameSource?: () => string[];
 	/** Resolves once the workspace-root–aware base directory has been determined. */
 	private baseDirReadyPromise: Promise<void> | undefined;
+	/**
+	 * Incremented each time the base directory is overridden so that any
+	 * in-flight async resolution callbacks can detect they are stale and skip
+	 * the update.
+	 */
+	private baseDirGeneration = 0;
 
 	/**
 	 * Wire live registry data into the scanner so skillIds / instructionNames
@@ -158,6 +164,27 @@ export class ToonMemoryInterface {
 	): void {
 		this.skillIdSource = skillIdSource;
 		this.instructionNameSource = instructionNameSource;
+	}
+
+	/**
+	 * Override the base storage directory after construction.
+	 *
+	 * Call this once the MCP transport has connected and the client's workspace
+	 * roots are known (e.g. via `server.listRoots()`).  This redirects all
+	 * state writes — memory, sessions, snapshots — to the correct project
+	 * directory instead of the `npx` launch directory (typically `~`).
+	 *
+	 * The pending async resolution promise is cancelled so it can never
+	 * overwrite the explicitly-provided directory.
+	 */
+	setBaseDir(newBaseDir: string): void {
+		if (newBaseDir === this.baseDir) return;
+		this.baseDirGeneration++;
+		this.baseDir = newBaseDir;
+		this.sessionDir = join(newBaseDir, "sessions");
+		this.memoryDir = join(newBaseDir, "memory");
+		// Cancel any in-flight async resolution — the explicit root wins.
+		this.baseDirReadyPromise = undefined;
 	}
 
 	constructor(
@@ -179,9 +206,13 @@ export class ToonMemoryInterface {
 		// If no explicit dir was provided, kick off async workspace-root detection
 		// immediately so it is ready before any IO call.
 		if (!customDir && !process.env["MCP_AI_AGENT_GUIDELINES_STATE_DIR"]) {
+			const generation = ++this.baseDirGeneration;
 			this.baseDirReadyPromise = resolveSessionStateDirAsync().then(
 				(resolvedDir) => {
-					if (resolvedDir !== this.baseDir) {
+					if (
+						this.baseDirGeneration === generation &&
+						resolvedDir !== this.baseDir
+					) {
 						this.baseDir = resolvedDir;
 						this.sessionDir = join(resolvedDir, "sessions");
 						this.memoryDir = join(resolvedDir, "memory");

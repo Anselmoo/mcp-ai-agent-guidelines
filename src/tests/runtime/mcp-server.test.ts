@@ -1,8 +1,19 @@
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
+import { pathToFileURL } from "node:url";
+import type { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import {
+	afterAll,
+	afterEach,
+	beforeAll,
+	describe,
+	expect,
+	it,
+	vi,
+} from "vitest";
+import {
+	anchorStateToClientRoots,
 	createRequestHandlers,
 	createRuntime,
 	createServer,
@@ -250,5 +261,125 @@ describe("mcp server request handlers", () => {
 			const names = result.tools.map((tool) => tool.name);
 			expect(names).not.toContain("routing-adapt");
 		});
+	});
+});
+
+// ---------------------------------------------------------------------------
+// anchorStateToClientRoots — unit tests
+// ---------------------------------------------------------------------------
+
+describe("anchorStateToClientRoots", () => {
+	let server: Server;
+
+	beforeAll(() => {
+		// createServer() returns a Server wired with all handlers — reuse it for
+		// the helper tests so we don't need to configure capabilities manually.
+		({ server } = createServer());
+	});
+
+	it("returns undefined when client has no roots capability", async () => {
+		const mockCaps = vi
+			.spyOn(server, "getClientCapabilities")
+			.mockReturnValue(undefined);
+		const runtime = createRuntime();
+
+		const result = await anchorStateToClientRoots(server, runtime, {
+			setBaseDir: vi.fn(),
+		});
+
+		expect(result).toBeUndefined();
+		mockCaps.mockRestore();
+	});
+
+	it("returns undefined when client has roots capability but empty roots list", async () => {
+		const mockCaps = vi
+			.spyOn(server, "getClientCapabilities")
+			.mockReturnValue({ roots: {} });
+		const mockRoots = vi
+			.spyOn(server, "listRoots")
+			.mockResolvedValue({ roots: [] });
+		const runtime = createRuntime();
+
+		const result = await anchorStateToClientRoots(server, runtime, {
+			setBaseDir: vi.fn(),
+		});
+
+		expect(result).toBeUndefined();
+		mockCaps.mockRestore();
+		mockRoots.mockRestore();
+	});
+
+	it("anchors state when roots list contains a file:// URI", async () => {
+		const tmpDir = mkdtempSync(join(tmpdir(), "anchor-roots-test-"));
+		const fileUri = pathToFileURL(tmpDir).href;
+		const mockCaps = vi
+			.spyOn(server, "getClientCapabilities")
+			.mockReturnValue({ roots: {} });
+		const mockRoots = vi
+			.spyOn(server, "listRoots")
+			.mockResolvedValue({ roots: [{ uri: fileUri, name: "test" }] });
+		const setBaseDir = vi.fn();
+		const runtime = createRuntime();
+
+		const result = await anchorStateToClientRoots(server, runtime, {
+			setBaseDir,
+		});
+
+		expect(result).toBe(tmpDir);
+		expect(setBaseDir).toHaveBeenCalledWith(
+			expect.stringContaining(".mcp-ai-agent-guidelines"),
+		);
+		expect(runtime.workspaceRoot).toBe(tmpDir);
+		rmSync(tmpDir, { recursive: true, force: true });
+		mockCaps.mockRestore();
+		mockRoots.mockRestore();
+	});
+
+	it("anchors state when roots list contains a plain (non-file://) URI", async () => {
+		const mockCaps = vi
+			.spyOn(server, "getClientCapabilities")
+			.mockReturnValue({ roots: {} });
+		const plainRoot = "/some/plain/path";
+		const mockRoots = vi
+			.spyOn(server, "listRoots")
+			.mockResolvedValue({ roots: [{ uri: plainRoot, name: "test" }] });
+		const setBaseDir = vi.fn();
+		const runtime = createRuntime();
+
+		const result = await anchorStateToClientRoots(server, runtime, {
+			setBaseDir,
+		});
+
+		expect(result).toBe(plainRoot);
+		expect(setBaseDir).toHaveBeenCalledWith(
+			expect.stringContaining(".mcp-ai-agent-guidelines"),
+		);
+		mockCaps.mockRestore();
+		mockRoots.mockRestore();
+	});
+
+	it("returns undefined and logs a warning when listRoots throws", async () => {
+		const mockCaps = vi
+			.spyOn(server, "getClientCapabilities")
+			.mockReturnValue({ roots: {} });
+		const mockRoots = vi
+			.spyOn(server, "listRoots")
+			.mockRejectedValue(new Error("transport error"));
+		const stderrSpy = vi
+			.spyOn(process.stderr, "write")
+			.mockImplementation(() => true);
+		const runtime = createRuntime();
+
+		const result = await anchorStateToClientRoots(server, runtime, {
+			setBaseDir: vi.fn(),
+		});
+
+		expect(result).toBeUndefined();
+		expect(stderrSpy).toHaveBeenCalledWith(
+			expect.stringContaining("Could not resolve workspace root"),
+		);
+		stderrSpy.mockRestore();
+		mockCaps.mockRestore();
+		mockRoots.mockRestore();
 	});
 });

@@ -2057,3 +2057,97 @@ describe("ToonMemoryInterface — isWorkspaceInitialized", () => {
 		}
 	});
 });
+
+describe("ToonMemoryInterface — setBaseDir", () => {
+	let testDir: string | undefined;
+
+	afterEach(async () => {
+		if (testDir) {
+			await rm(testDir, { recursive: true, force: true }).catch(() => {});
+			testDir = undefined;
+		}
+	});
+
+	it("redirects memory writes to the new directory", async () => {
+		const dir1 = await mkdtemp(join(tmpdir(), "toon-setbase-a-"));
+		const dir2 = await mkdtemp(join(tmpdir(), "toon-setbase-b-"));
+		testDir = dir1;
+		try {
+			const iface = new ToonMemoryInterface(dir1);
+			iface.setBaseDir(dir2);
+			await iface.saveMemoryArtifact({
+				meta: {
+					id: "setbase-test",
+					created: new Date().toISOString(),
+					updated: new Date().toISOString(),
+					tags: [],
+					relevance: 5,
+				},
+				content: {
+					summary: "setBaseDir test",
+					details: "",
+					context: "",
+					actionable: false,
+				},
+				links: { relatedSessions: [], relatedMemories: [], sources: [] },
+			});
+			const { existsSync } = await import("node:fs");
+			// Artifact should land in dir2, not dir1
+			expect(existsSync(join(dir2, "memory", "setbase-test.toon"))).toBe(true);
+			expect(existsSync(join(dir1, "memory", "setbase-test.toon"))).toBe(false);
+		} finally {
+			await rm(dir1, { recursive: true, force: true }).catch(() => {});
+			await rm(dir2, { recursive: true, force: true }).catch(() => {});
+		}
+	});
+
+	it("is a no-op when the new dir is the same as the current one", async () => {
+		const dir = await mkdtemp(join(tmpdir(), "toon-setbase-same-"));
+		testDir = dir;
+		try {
+			const iface = new ToonMemoryInterface(dir);
+			// Should not throw or reset the baseDirReadyPromise
+			expect(() => iface.setBaseDir(dir)).not.toThrow();
+		} finally {
+			await rm(dir, { recursive: true, force: true }).catch(() => {});
+		}
+	});
+
+	it("cancels the pending baseDirReadyPromise so the explicit dir wins", async () => {
+		const dir = await mkdtemp(join(tmpdir(), "toon-setbase-cancel-"));
+		testDir = dir;
+		const saved = process.env.MCP_AI_AGENT_GUIDELINES_STATE_DIR;
+		delete process.env.MCP_AI_AGENT_GUIDELINES_STATE_DIR;
+		try {
+			// Construct without customDir so baseDirReadyPromise is set.
+			const iface = new ToonMemoryInterface();
+			// Override before the promise resolves.
+			iface.setBaseDir(dir);
+			await iface.saveMemoryArtifact({
+				meta: {
+					id: "cancel-test",
+					created: new Date().toISOString(),
+					updated: new Date().toISOString(),
+					tags: [],
+					relevance: 1,
+				},
+				content: {
+					summary: "cancel promise test",
+					details: "",
+					context: "",
+					actionable: false,
+				},
+				links: { relatedSessions: [], relatedMemories: [], sources: [] },
+			});
+			const { existsSync } = await import("node:fs");
+			expect(existsSync(join(dir, "memory", "cancel-test.toon"))).toBe(true);
+		} finally {
+			if (saved === undefined) {
+				delete process.env.MCP_AI_AGENT_GUIDELINES_STATE_DIR;
+			} else {
+				process.env.MCP_AI_AGENT_GUIDELINES_STATE_DIR = saved;
+			}
+			await rm(dir, { recursive: true, force: true }).catch(() => {});
+		}
+	});
+});
