@@ -200,7 +200,12 @@ export async function resolveSessionStateDirAsync(
 		assertSafeStateDir(explicitDir);
 		return resolve(explicitDir);
 	}
-	return resolve(resolveWorkspaceRoot(), DEFAULT_SESSION_STATE_DIR);
+	const explicitRoot = process.env[WORKSPACE_ROOT_ENV_VAR];
+	if (explicitRoot && explicitRoot.trim().length > 0) {
+		return resolve(explicitRoot.trim(), DEFAULT_SESSION_STATE_DIR);
+	}
+	const detected = await findWorkspaceRoot(process.cwd());
+	return resolve(detected ?? process.cwd(), DEFAULT_SESSION_STATE_DIR);
 }
 
 export function resolveSessionPathWithinStateDir(

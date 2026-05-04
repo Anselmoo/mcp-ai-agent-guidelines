@@ -289,3 +289,76 @@ describe("isWorkspaceInitialized", () => {
 		}
 	});
 });
+
+describe("resolveSessionStateDirAsync — MCP_WORKSPACE_ROOT branch", () => {
+	const WORKSPACE_ROOT_ENV_VAR = "MCP_WORKSPACE_ROOT";
+
+	it("uses MCP_WORKSPACE_ROOT when set, ignoring cwd", async () => {
+		const prev = process.env[WORKSPACE_ROOT_ENV_VAR];
+		process.env[WORKSPACE_ROOT_ENV_VAR] = "/tmp/explicit-ws-root";
+		try {
+			const result = await resolveSessionStateDirAsync();
+			expect(result).toBe(
+				resolve("/tmp/explicit-ws-root", ".mcp-ai-agent-guidelines"),
+			);
+		} finally {
+			if (prev === undefined) {
+				delete process.env[WORKSPACE_ROOT_ENV_VAR];
+			} else {
+				process.env[WORKSPACE_ROOT_ENV_VAR] = prev;
+			}
+		}
+	});
+
+	it("MCP_AI_AGENT_GUIDELINES_STATE_DIR takes precedence over MCP_WORKSPACE_ROOT", async () => {
+		const prevState = process.env[SESSION_STATE_DIR_ENV_VAR];
+		const prevRoot = process.env[WORKSPACE_ROOT_ENV_VAR];
+		process.env[SESSION_STATE_DIR_ENV_VAR] = "/tmp/explicit-state";
+		process.env[WORKSPACE_ROOT_ENV_VAR] = "/tmp/should-be-ignored";
+		try {
+			const result = await resolveSessionStateDirAsync();
+			expect(result).toBe("/tmp/explicit-state");
+		} finally {
+			if (prevState === undefined) {
+				delete process.env[SESSION_STATE_DIR_ENV_VAR];
+			} else {
+				process.env[SESSION_STATE_DIR_ENV_VAR] = prevState;
+			}
+			if (prevRoot === undefined) {
+				delete process.env[WORKSPACE_ROOT_ENV_VAR];
+			} else {
+				process.env[WORKSPACE_ROOT_ENV_VAR] = prevRoot;
+			}
+		}
+	});
+
+	it("falls back to async findWorkspaceRoot when no env vars are set", async () => {
+		const tmpBase = mkdtempSync(join(tmpdir(), "async-ws-detect-"));
+		const subDir = join(tmpBase, "src", "deep");
+		mkdirSync(subDir, { recursive: true });
+		writeFileSync(join(tmpBase, "package.json"), '{"name":"test"}\n', "utf8");
+		const prevState = process.env[SESSION_STATE_DIR_ENV_VAR];
+		const prevRoot = process.env[WORKSPACE_ROOT_ENV_VAR];
+		delete process.env[SESSION_STATE_DIR_ENV_VAR];
+		delete process.env[WORKSPACE_ROOT_ENV_VAR];
+		const cwdSpy = vi.spyOn(process, "cwd").mockReturnValue(subDir);
+		try {
+			const result = await resolveSessionStateDirAsync();
+			// Should detect tmpBase (has package.json) and scope state there
+			expect(result).toBe(resolve(tmpBase, ".mcp-ai-agent-guidelines"));
+		} finally {
+			cwdSpy.mockRestore();
+			if (prevState === undefined) {
+				delete process.env[SESSION_STATE_DIR_ENV_VAR];
+			} else {
+				process.env[SESSION_STATE_DIR_ENV_VAR] = prevState;
+			}
+			if (prevRoot === undefined) {
+				delete process.env[WORKSPACE_ROOT_ENV_VAR];
+			} else {
+				process.env[WORKSPACE_ROOT_ENV_VAR] = prevRoot;
+			}
+			rmSync(tmpBase, { recursive: true, force: true });
+		}
+	});
+});
