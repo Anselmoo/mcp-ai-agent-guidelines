@@ -10,6 +10,7 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
 ### Added
+- implement workspace root anchoring for state storage and enhance ToonMemoryInterface
 - **mcp**: implement startup onboarding memory handling and enhance tool result summarization
 - **mcp**: allow workspace writes when uninitialized
 
