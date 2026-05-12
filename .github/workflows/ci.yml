@@ -68,7 +68,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Policy checks (branch · commit · changelog)
-        uses: Anselmoo/repo-release-tools@5ed8326d4977f87b06605364f23fcc1e393d3fea # v1.3.0
+        uses: Anselmoo/repo-release-tools@163918969ea468ad9a88d45d48a45daf22908b13 # v1.4.0
         with:
           check-dirty-tree: "false"
           changelog-strategy: "unreleased"
