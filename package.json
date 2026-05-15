@@ -126,7 +126,7 @@
         "@inquirer/prompts": "^7.5.2",
         "@modelcontextprotocol/sdk": "^1.17.1",
         "@noble/hashes": "^2.0.1",
-        "@paralleldrive/cuid2": "^2.2.2",
+        "@paralleldrive/cuid2": "^3.3.0",
         "@svgdotjs/svg.js": "^3.2.4",
         "@toon-format/toon": "^2.1.0",
         "ai": "^6.0.145",
