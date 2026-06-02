@@ -3,7 +3,6 @@ import {
 	expectToolSucceeded,
 	extractText,
 	FORBIDDEN_PLACEHOLDER_SNIPPETS,
-	parseJsonText,
 	SdkMcpTestClient,
 } from "./sdk-test-client.js";
 
@@ -56,85 +55,21 @@ describe("sdk compatibility lane", () => {
 		}
 	});
 
-	it("persists and reuses session artifacts across multiple workspace tools in one SDK client session", async () => {
-		const sessionId = "session-550e8400-e29b-41d4-a716-446655440001";
-		const workspaceMapResult = await sdkClient.callTool(workspaceTool, {
-			command: "persist",
-			target: "workspace-map",
-			sessionId,
-			data: {
-				generated: "2024-01-03T00:00:00.000Z",
-				modules: {
-					docs: {
-						path: "docs",
-						files: ["README.md"],
-						dependencies: ["src"],
-					},
-				},
-			},
+	it("lists and reads source files via workspace tool through the SDK", async () => {
+		const listResult = await sdkClient.callTool(workspaceTool, {
+			command: "list",
+			path: "src",
 		});
+		expectToolSucceeded(listResult, sdkClient.stderrOutput);
+		expect(extractText(listResult)).toContain('"entries"');
 
-		expectToolSucceeded(workspaceMapResult, sdkClient.stderrOutput);
-		const persistPayload = JSON.parse(
-			extractText(workspaceMapResult),
-		) as Record<string, unknown>;
-		expect(persistPayload.artifact).toBe("workspace-map");
-		expect(persistPayload.sessionId).toBe(sessionId);
-
-		const readWorkspaceMapResult = await sdkClient.callTool(workspaceTool, {
+		const readResult = await sdkClient.callTool(workspaceTool, {
 			command: "read",
-			scope: "artifact",
-			artifact: "workspace-map",
-			sessionId,
-		});
-
-		expectToolSucceeded(readWorkspaceMapResult, sdkClient.stderrOutput);
-		expect(extractText(readWorkspaceMapResult)).toContain('"README.md"');
-
-		const scanResultsResult = await sdkClient.callTool(workspaceTool, {
-			command: "persist",
-			target: "scan-results",
-			sessionId,
-			data: {
-				generatedBy: "src/tests/mcp/sdk-compatibility-lane.test.ts",
-				status: "ok",
-				files: ["README.md"],
-			},
-		});
-
-		expectToolSucceeded(scanResultsResult, sdkClient.stderrOutput);
-		const scanPersistPayload = JSON.parse(
-			extractText(scanResultsResult),
-		) as Record<string, unknown>;
-		expect(scanPersistPayload.artifact).toBe("scan-results");
-
-		const fetchResult = await sdkClient.callTool(workspaceTool, {
-			command: "fetch",
-			path: "package.json",
-			sessionId,
-		});
-
-		expectToolSucceeded(fetchResult, sdkClient.stderrOutput);
-		const payload = parseJsonText(fetchResult);
-		expect(payload.sessionId).toBe(sessionId);
-		expect(payload.sourceFile).toMatchObject({
 			path: "package.json",
 		});
-		expect(payload.artifacts).toMatchObject({
-			workspaceMap: {
-				modules: {
-					docs: {
-						path: "docs",
-						files: ["README.md"],
-						dependencies: ["src"],
-					},
-				},
-			},
-			scanResults: {
-				generatedBy: "src/tests/mcp/sdk-compatibility-lane.test.ts",
-				status: "ok",
-				files: ["README.md"],
-			},
-		});
+		expectToolSucceeded(readResult, sdkClient.stderrOutput);
+		expect(extractText(readResult)).toContain(
+			'"name": "mcp-ai-agent-guidelines"',
+		);
 	});
 });

@@ -6,7 +6,6 @@ import type {
 	SkillExecutionResult,
 	SkillExecutionRuntime,
 	SkillModule,
-	SkillWorkspaceSurface,
 	WorkflowExecutionRuntime,
 	WorkspaceReader,
 } from "../../contracts/runtime.js";
@@ -72,9 +71,6 @@ export function createMockSkillRuntime(
 		...(overrides.workspace === undefined
 			? {}
 			: { workspace: overrides.workspace }),
-		...(overrides.workspaceSurface === undefined
-			? {}
-			: { workspaceSurface: overrides.workspaceSurface }),
 	};
 }
 
@@ -285,42 +281,5 @@ export function createWorkspaceReaderStub(): WorkspaceReader {
 	return {
 		listFiles: async () => [{ name: "README.md", type: "file" }],
 		readFile: async () => "stub content",
-	};
-}
-
-/**
- * Creates a minimal stub that satisfies the full SkillWorkspaceSurface
- * contract.  Safe to use in unit tests — all methods are no-ops or return
- * empty/null values.
- */
-export function createWorkspaceSurfaceStub(): SkillWorkspaceSurface {
-	return {
-		listFiles: async () => [{ name: "README.md", type: "file" }],
-		readFile: async (_path: string) => "stub content",
-		listArtifacts: async (_sessionId: string) => [],
-		readArtifact: async (_input: { artifact: string; sessionId: string }) =>
-			"{}",
-		writeArtifact: async (_input: {
-			artifact: string;
-			sessionId: string;
-			value: unknown;
-		}) => undefined,
-		fetchContext: async (sessionId: string) => ({
-			sessionId,
-			sourceFile: null,
-			artifacts: {
-				sessionContext: null,
-				workspaceMap: null,
-				scanResults: null,
-				fingerprintSnapshot: null,
-			},
-		}),
-		compare: async (_selector?: string) => ({
-			selector: _selector ?? "latest",
-			baselineMeta: null,
-			drift: null,
-			toon: "",
-		}),
-		refresh: async () => ({ hash: "stub-hash" }),
 	};
 }

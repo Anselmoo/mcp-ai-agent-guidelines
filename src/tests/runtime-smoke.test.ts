@@ -230,39 +230,12 @@ describe("clean-room runtime", () => {
 		);
 	});
 
-	it("exposes unified workspace tools across source and session artifacts", async () => {
+	it("exposes the unified workspace tool (source-only surface)", async () => {
 		const runtime = createRuntime();
 		const tools = buildWorkspaceToolSurface();
-		await dispatchWorkspaceToolCall(
-			WORKSPACE_TOOL_NAME,
-			{
-				command: "persist",
-				target: "scan-results",
-				data: {
-					generatedBy: "runtime-smoke",
-					files: 3,
-				},
-			},
-			runtime,
-		);
 		const sourceResult = await dispatchWorkspaceToolCall(
 			WORKSPACE_TOOL_NAME,
 			{ command: "read", path: "package.json" },
-			runtime,
-		);
-		const artifactList = await dispatchWorkspaceToolCall(
-			WORKSPACE_TOOL_NAME,
-			{ command: "list", scope: "artifact" },
-			runtime,
-		);
-		const artifactResult = await dispatchWorkspaceToolCall(
-			WORKSPACE_TOOL_NAME,
-			{ command: "read", scope: "artifact", artifact: "scan-results" },
-			runtime,
-		);
-		const contextResult = await dispatchWorkspaceToolCall(
-			WORKSPACE_TOOL_NAME,
-			{ command: "fetch", path: "package.json" },
 			runtime,
 		);
 
@@ -271,24 +244,6 @@ describe("clean-room runtime", () => {
 		expect(sourceResult.content[0].text).toContain(
 			'"name": "mcp-ai-agent-guidelines"',
 		);
-		expect(artifactList.content[0].text).toContain('"artifact"');
-		expect(artifactResult.content[0].text).toContain(
-			'"generatedBy": "runtime-smoke"',
-		);
-		expect(contextResult.content[0].text).toContain('"scanResults"');
-		expect(contextResult.content[0].text).toContain('"sourceFile"');
-	});
-
-	it("compares the current workspace against the TOON snapshot", async () => {
-		const runtime = createRuntime();
-		const result = await dispatchWorkspaceToolCall(
-			WORKSPACE_TOOL_NAME,
-			{ command: "compare", refreshBaseline: true },
-			runtime,
-		);
-
-		expect(result.content[0].text).toContain('"clean": true');
-		expect(result.content[0].text).toContain('"toon"');
 	});
 
 	it("rejects workspace path traversal outside the repository root", async () => {

@@ -209,107 +209,6 @@ export interface WorkspaceEntry {
 	type: "file" | "directory";
 }
 
-// ─── Runtime/Skill bridge: rich workspace substrate types ────────────────────
-
-/**
- * Available artifact kinds in the workspace substrate.
- * Defined here (not in workspace-adapter) so SkillWorkspaceSurface can
- * reference them without creating a circular dependency.
- */
-export type WorkspaceArtifactKind =
-	| "session-context"
-	| "workspace-map"
-	| "scan-results"
-	| "fingerprint-snapshot";
-
-/**
- * Artifact kinds that can be written (fingerprint-snapshot is compute-only,
- * never written directly by skills).
- */
-export type WritableWorkspaceArtifactKind = Exclude<
-	WorkspaceArtifactKind,
-	"fingerprint-snapshot"
->;
-
-/** Metadata entry returned by SkillWorkspaceSurface.listArtifacts(). */
-export interface WorkspaceArtifactEntry {
-	kind: WorkspaceArtifactKind;
-	encoding: "toon" | "json";
-	present: boolean;
-}
-
-/**
- * Context bundle returned by SkillWorkspaceSurface.fetchContext().
- *
- * Artifact values are typed `unknown` at the contract layer to avoid
- * importing the memory subsystem into contracts.  Skills that need
- * the full shaped types should import them from
- * `skills/runtime/workspace-adapter.ts`.
- */
-export interface SkillWorkspaceContextBundle {
-	sessionId: string;
-	sourceFile: { path: string; content: string } | null;
-	artifacts: {
-		sessionContext: unknown;
-		workspaceMap: unknown;
-		scanResults: Record<string, unknown> | null;
-		fingerprintSnapshot: unknown;
-	};
-}
-
-/**
- * Result returned by SkillWorkspaceSurface.compare().
- *
- * `drift` is typed `unknown` at the contract layer; the full CoherenceDrift
- * shape lives in `memory/coherence-types.ts`.
- */
-export interface SkillWorkspaceCompareResult {
-	selector: string;
-	baselineMeta: { snapshotId: string | null; capturedAt: string } | null;
-	drift: unknown;
-	/** Toon-encoded drift summary string. */
-	toon: string;
-}
-
-/**
- * Rich, session/snapshot-aware workspace surface injected into
- * SkillExecutionRuntime.  Extends WorkspaceReader with access to persisted
- * artifacts (session context, workspace map, scan results, fingerprint
- * snapshots) and a compare/refresh API.
- *
- * Skills should access this via `context.runtime.workspaceSurface` and MUST
- * degrade gracefully when it is `undefined`.
- *
- * Implemented by WorkspaceSurface in skills/runtime/workspace-adapter.ts.
- */
-export interface SkillWorkspaceSurface extends WorkspaceReader {
-	/** List available workspace artifacts for the given session. */
-	listArtifacts(sessionId: string): Promise<WorkspaceArtifactEntry[]>;
-	/** Read a workspace artifact as a serialized string. */
-	readArtifact(input: {
-		artifact: WorkspaceArtifactKind;
-		sessionId: string;
-	}): Promise<string>;
-	/** Persist a workspace artifact. */
-	writeArtifact(input: {
-		artifact: WritableWorkspaceArtifactKind;
-		sessionId: string;
-		value: unknown;
-	}): Promise<void>;
-	/** Fetch the full context bundle for a session. */
-	fetchContext(
-		sessionId: string,
-		sourcePath?: string,
-	): Promise<SkillWorkspaceContextBundle>;
-	/**
-	 * Compare the current codebase against a stored fingerprint baseline.
-	 * @param selector - "latest" (default), "previous", "oldest", or a snapshot ID.
-	 */
-	compare(selector?: string): Promise<SkillWorkspaceCompareResult>;
-	/** Capture a fresh fingerprint snapshot and return the new fingerprint hash. */
-	refresh(): Promise<unknown>;
-}
-
 /**
  * Safe, read-only access to the workspace filesystem.
  * Injected into SkillExecutionRuntime so skill handlers can enumerate or
@@ -354,18 +253,6 @@ export interface SkillExecutionRuntime {
 	 * when undefined or when any call throws.
 	 */
 	workspace?: WorkspaceReader;
-	/**
-	 * Richer session/snapshot-aware workspace surface.
-	 *
-	 * When present this is the same object as `workspace` (upcast to its full
-	 * type), so skill handlers can use either API without redundancy.
-	 * Handlers MUST degrade gracefully when this is `undefined` — it is absent
-	 * in unit tests and in runtimes that only supply a plain WorkspaceReader.
-	 *
-	 * Access pattern:
-	 *   const ctx = await context.runtime.workspaceSurface?.fetchContext(sessionId);
-	 */
-	workspaceSurface?: SkillWorkspaceSurface;
 }
 
 export interface WorkflowExecutionRuntime {

@@ -315,13 +315,6 @@ export async function main() {
 	const skillHandler = new SkillHandler();
 	const bootstrap = new SessionBootstrap();
 
-	// Phase A: Wire live registry sources into the memory scanner so skillIds /
-	// instructionNames are populated even without .github/ source files.
-	sharedToonMemoryInterface.setRegistrySources(
-		() => runtime.skillRegistry.getAll().map((s) => s.manifest.id),
-		() => runtime.instructionRegistry.getAll().map((i) => i.manifest.id),
-	);
-
 	// Parallelize Hebbian warmup + model router init — neither blocks transport.
 	await Promise.all([
 		bootstrap.warmUp(skillHandler).catch(() => {}),
@@ -356,19 +349,12 @@ export async function main() {
 			mode === "advisory"
 				? "advisory mode (using defaults)"
 				: "configured mode";
-		const priorSessionIds = await sharedToonMemoryInterface
-			.listSessionIds()
-			.catch(() => [] as string[]);
-		const sessionsSummary =
-			priorSessionIds.length === 0
-				? "no prior sessions"
-				: `${priorSessionIds.length} prior session(s) stored — use agent-session-fetch(sessionId=...) to orient or agent-session-fetch() to enumerate`;
 		process.stderr.write(
 			`\nmcp-ai-agent-guidelines ready — ` +
 				`${runtime.instructionRegistry.getAll().length} instructions, ` +
 				`${runtime.skillRegistry.getAll().length} skills, ` +
 				`models: ${modelStatus}, ` +
-				`session: ${runtime.sessionId} (${sessionsSummary})\n`,
+				`session: ${runtime.sessionId}\n`,
 		);
 	})();
 
