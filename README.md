@@ -57,8 +57,8 @@ npm install -g mcp-ai-agent-guidelines
 # MCP stdio server entrypoint
 mcp-ai-agent-guidelines
 
-# Interactive CLI
-mcp-cli info
+# IDE hook + skill-file installer
+mcp-cli --help
 ```
 
 ### Local install (monorepo / project dependency)
@@ -168,24 +168,19 @@ Add the server to your MCP host config. The entry-point is `dist/index.js` and c
 
 ## CLI Usage
 
-An interactive CLI wizard is included for standalone use outside an MCP host. The
-published package exposes two entrypoints:
+The published package exposes two entrypoints:
 
-- `mcp-ai-agent-guidelines` — MCP stdio server entrypoint for editors and MCP hosts
-- `mcp-cli` — interactive CLI for onboarding, orchestration, and diagnostics
+- `mcp-ai-agent-guidelines` — MCP stdio server entrypoint for editors and MCP hosts (the primary surface; an agent reaches all functionality through this)
+- `mcp-cli` — a thin IDE-integration installer. It does not duplicate MCP server functionality; its only purpose is to wire up the hook scripts and per-IDE `SKILL.md` files that an agent itself cannot install.
 
 ```bash
-# Project onboarding
-mcp-cli onboard init
+# Install SessionStart / PreToolUse hooks for an IDE
+mcp-cli hooks setup --client vscode        # or copilot-cli / claude-code
+mcp-cli hooks print --client claude-code   # preview without writing
 
-# Re-open the orchestration editor
-mcp-cli orchestration edit
-
-# Quick re-entry for environment + model fleet only
-mcp-cli orchestration edit --quick
-
-# Direct skill invocation
-mcp-cli --skill core-prompt-engineering --request "Write a system prompt for a coding assistant"
+# Emit per-IDE skill files for every public instruction
+mcp-cli onboard skills --target all        # copilot + claude + codex
+mcp-cli onboard skills --target claude --global   # user-home install
 ```
 
 Instruction-tool input schema — the public instruction workflows share this shape:
@@ -202,10 +197,8 @@ Instruction-tool input schema — the public instruction workflows share this sh
 
 ## Configuration Files
 
-- `.mcp-ai-agent-guidelines/config/orchestration.toml` — primary orchestration authority (local, not tracked in git)
-- `src/config/orchestration-defaults.ts` — builtin bootstrap defaults used to auto-create the workspace config in advisory mode when `orchestration.toml` is absent
-
-First-time runs auto-create `orchestration.toml` from builtin advisory defaults, including semantic role placeholders so routing can proceed before model discovery. Run `mcp-cli onboard init` to customize the setup or `mcp-cli orchestration edit` to reopen the interactive editor.
+- `.mcp-ai-agent-guidelines/config/orchestration.toml` — optional orchestration overrides. The MCP server **no longer auto-writes** this file; defaults come from `src/config/orchestration-defaults.ts` in memory. Write the file explicitly (via `mcp-cli` is no longer available — edit by hand, or persist via the `model-discover` MCP tool's save action) if you need to override the advisory defaults.
+- `src/config/orchestration-defaults.ts` — builtin defaults used in memory whenever a workspace config is absent.
 
 ---
 
