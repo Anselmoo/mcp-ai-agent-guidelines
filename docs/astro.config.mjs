@@ -119,7 +119,7 @@ export default defineConfig({
 						{
 							label: "Skill Reference",
 							collapsed: true,
-							autogenerate: { directory: "skills/reference" },
+							items: [{ autogenerate: { directory: "skills/reference" } }],
 						},
 						{
 							label: "Domain Reference",
@@ -191,7 +191,7 @@ export default defineConfig({
 						{ slug: "workflows" },
 						{
 							label: "Workflow Reference",
-							autogenerate: { directory: "workflows/reference" },
+							items: [{ autogenerate: { directory: "workflows/reference" } }],
 						},
 					],
 				},
