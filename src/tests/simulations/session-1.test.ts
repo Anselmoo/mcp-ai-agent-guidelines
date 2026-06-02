@@ -457,54 +457,6 @@ const SIMULATION_SCENARIOS: readonly SimulationScenario[] = [
 		},
 	},
 	{
-		name: "document -> snapshot-refresh -> snapshot-compare -> scan-results",
-		run: async (context) => {
-			const documentResult = await context.callTool("document", {
-				request: "Document how TOON memory snapshots help MCP debugging.",
-			});
-			const documentText = context.getText(documentResult);
-			assertNoPlaceholderText(documentText);
-
-			const refreshResult = await context.callTool("snapshot", {
-				command: "refresh",
-			});
-			const refreshText = context.getText(refreshResult);
-			const refreshPayload = JSON.parse(refreshText) as Record<string, unknown>;
-			expect(typeof refreshPayload.snapshotId).toBe("string");
-			expect(typeof refreshPayload.skillCount).toBe("number");
-
-			const compareResult = await context.callTool("snapshot", {
-				command: "compare",
-			});
-			const compareText = context.getText(compareResult);
-			expect(
-				compareText.includes("No drift detected.") ||
-					compareText.includes("drift entries detected."),
-			).toBe(true);
-
-			await context.callTool("workspace", {
-				command: "persist",
-				target: "scan-results",
-				data: buildScanResults("memory-tools", documentText, {
-					refreshObserved: refreshPayload.snapshotId !== undefined,
-					compareSummary: summarize(compareText, 64),
-				}),
-			});
-			const fetchResult = await context.callTool("workspace", {
-				command: "fetch",
-				path: "README.md",
-			});
-
-			expect(
-				asWorkspaceFetchPayload(context.getJson(fetchResult)).artifacts
-					.scanResults,
-			).toMatchObject({
-				generatedBy: "simulation:memory-tools",
-				refreshObserved: true,
-			});
-		},
-	},
-	{
 		name: "workspace-list -> derived map -> compare",
 		run: async (context) => {
 			const listResult = await context.callTool("workspace", {
@@ -565,52 +517,6 @@ const SIMULATION_SCENARIOS: readonly SimulationScenario[] = [
 					.scanResults,
 			).toMatchObject({
 				topic: "context reuse",
-			});
-		},
-	},
-	{
-		name: "orchestration read -> invalid write capture -> fetch",
-		run: async (context) => {
-			const readResult = await context.callTool("orchestration-config", {
-				command: "read",
-			});
-			const readPayload = context.getJson(readResult);
-			expect(readPayload).toHaveProperty("config");
-			expect(readPayload).toHaveProperty("summary");
-
-			const invalidWriteResult = await context.callToolExpectError(
-				"orchestration-config",
-				{
-					command: "write",
-					patch: {
-						modelAvailability: {
-							defaultModel: "bad",
-						},
-					},
-				},
-			);
-			const errorText = context.getText(invalidWriteResult);
-			expect(errorText).toContain("unsupported top-level keys");
-
-			await context.callTool("workspace", {
-				command: "persist",
-				target: "scan-results",
-				data: {
-					...buildScanResults("orchestration", errorText),
-					configKeys: Object.keys(
-						(readPayload.config as Record<string, unknown>) ?? {},
-					).sort(),
-				},
-			});
-			const fetchResult = await context.callTool("workspace", {
-				command: "fetch",
-				path: "package.json",
-			});
-			expect(
-				asWorkspaceFetchPayload(context.getJson(fetchResult)).artifacts
-					.scanResults,
-			).toMatchObject({
-				generatedBy: "simulation:orchestration",
 			});
 		},
 	},

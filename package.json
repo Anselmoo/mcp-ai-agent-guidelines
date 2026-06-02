@@ -23,9 +23,7 @@
         "test:mcp:py:inspector": "python3 -m unittest scripts.test_mcp_smoke_inspector",
         "test:mcp:smoke": "npm run test:mcp:ts && npm run test:mcp:sdk && npm run test:mcp:py",
         "test:mcp:smoke:inspector": "npm run test:mcp:ts && npm run test:mcp:sdk && npm run test:mcp:py:inspector",
-        "test:toon": "vitest run src/tests/runtime/toon-architecture-contracts.test.ts",
         "toon:markdown": "npm run build && node scripts/toon-to-markdown.mjs",
-        "demo:toon": "npm run build && node dist/toon-demo.js",
         "lint": "biome lint --diagnostic-level=error src/",
         "lint:fix": "biome lint --write src/",
         "format": "biome format src/",
@@ -80,8 +78,7 @@
     },
     "bin": {
         "mcp-ai-agent-guidelines": "dist/index.js",
-        "mcp-cli": "dist/cli-main.js",
-        "toon-demo": "dist/toon-demo.js"
+        "mcp-cli": "dist/cli-main.js"
     },
     "files": [
         "dist",

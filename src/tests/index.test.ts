@@ -5,12 +5,8 @@ import {
 	createRuntime,
 	isDirectExecutionEntry,
 } from "../index.js";
-import * as memoryTools from "../tools/memory-tools.js";
 import * as modelDiscoveryTools from "../tools/model-discovery.js";
 import { MODEL_DISCOVERY_TOOL_NAME } from "../tools/model-discovery.js";
-import * as orchestrationTools from "../tools/orchestration-tools.js";
-import * as sessionTools from "../tools/session-tools.js";
-import * as snapshotTools from "../tools/snapshot-tools.js";
 import * as visualizationTools from "../tools/visualization-tools.js";
 import * as workspaceTools from "../tools/workspace-tools.js";
 import { ValidationService } from "../validation/index.js";
@@ -61,20 +57,6 @@ describe("index request handlers", () => {
 		);
 	});
 
-	it("dispatches session tool calls through the request handler", async () => {
-		const handlers = createRequestHandlers(createRuntime());
-		const result = await handlers.callTool({
-			params: { name: "agent-session-fetch", arguments: {} },
-		});
-
-		expect(result).toEqual(
-			expect.objectContaining({
-				content: expect.any(Array),
-			}),
-		);
-		expect(result.content[0]?.type).toBe("text");
-	});
-
 	it("returns an error for an unknown tool name", async () => {
 		const handlers = createRequestHandlers(createRuntime());
 		const result = await handlers.callTool({
@@ -91,30 +73,6 @@ describe("index request handlers", () => {
 
 	it.each([
 		{
-			args: {},
-			name: "agent-memory-fetch",
-			setup: () =>
-				vi
-					.spyOn(memoryTools, "dispatchMemoryToolCall")
-					.mockRejectedValue(new Error("memory boom")),
-		},
-		{
-			args: {},
-			name: "agent-session-fetch",
-			setup: () =>
-				vi
-					.spyOn(sessionTools, "dispatchSessionToolCall")
-					.mockRejectedValue(new Error("session boom")),
-		},
-		{
-			args: {},
-			name: "agent-snapshot-fetch",
-			setup: () =>
-				vi
-					.spyOn(snapshotTools, "dispatchSnapshotToolCall")
-					.mockRejectedValue(new Error("snapshot boom")),
-		},
-		{
 			args: {
 				models: [{ id: "gpt-4.1", role: "free_primary", provider: "openai" }],
 			},
@@ -123,14 +81,6 @@ describe("index request handlers", () => {
 				vi
 					.spyOn(modelDiscoveryTools, "dispatchModelDiscoveryToolCall")
 					.mockRejectedValue(new Error("model boom")),
-		},
-		{
-			args: { command: "read" },
-			name: "orchestration-config",
-			setup: () =>
-				vi
-					.spyOn(orchestrationTools, "dispatchOrchestrationToolCall")
-					.mockRejectedValue(new Error("orchestration boom")),
 		},
 		{
 			args: { format: "mermaid", view: "instruction-chain" },

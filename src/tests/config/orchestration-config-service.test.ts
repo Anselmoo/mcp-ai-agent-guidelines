@@ -16,7 +16,6 @@ import {
 	resolveConfigPaths,
 	saveOrchestrationConfig,
 } from "../../config/orchestration-config-service.js";
-import { dispatchOrchestrationToolCall } from "../../tools/orchestration-tools.js";
 
 describe("orchestration-config-service", () => {
 	let workspaceRoot = "";
@@ -220,33 +219,6 @@ describe("orchestration-config-service", () => {
 			reason: "disabled for merge coverage",
 		});
 		expect(merged.profiles.custom_profile?.fan_out).toBe(3);
-	});
-
-	it("exposes non-interactive orchestration read/write helpers for MCP", async () => {
-		const writeResult = await dispatchOrchestrationToolCall(
-			"orchestration-config",
-			{
-				command: "write",
-				resetToDefaults: true,
-				patch: {
-					environment: {
-						strict_mode: false,
-					},
-				},
-			},
-		);
-		const readResult = await dispatchOrchestrationToolCall(
-			"orchestration-config",
-			{ command: "read" },
-		);
-		const readText =
-			readResult.content[0]?.type === "text" ? readResult.content[0].text : "";
-
-		expect(writeResult.isError).toBe(false);
-		expect(readResult.isError).toBe(false);
-		expect(readText).toContain('"configSource": "workspace"');
-		expect(readText).toContain('"strict_mode": false');
-		expect(readText).toContain('"derivedModelAvailability"');
 	});
 
 	it("resolves workspace config paths deterministically", () => {

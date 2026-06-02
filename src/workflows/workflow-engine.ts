@@ -1,4 +1,3 @@
-import { createHash } from "node:crypto";
 import type { WorkflowStep } from "../contracts/generated.js";
 import type {
 	ExecutionProgressRecord,
@@ -18,12 +17,6 @@ import {
 } from "./parallel-runner.js";
 import type { SerialRunnerOptions } from "./serial-runner.js";
 import { runSerialSteps } from "./serial-runner.js";
-import {
-	type CheckpointManager,
-	createInitialCheckpoint,
-	resolveResumeIndex,
-	type WorkflowCheckpoint,
-} from "./workflow-checkpoint.js";
 import type { RetryConfig } from "./workflow-retry.js";
 import {
 	assertWorkflowExecutionMatchesSpec,
@@ -55,17 +48,6 @@ export interface WorkflowEngineOptions {
 	 * Default 8.
 	 */
 	maxSelfCallDepth?: number;
-	/**
-	 * When true, the engine saves a checkpoint after each successfully
-	 * completed step so interrupted workflows can resume.
-	 * Requires `checkpointManager` to be set.
-	 * Default false.
-	 */
-	enableCheckpointing?: boolean;
-	/**
-	 * Optional checkpoint manager. Required when `enableCheckpointing` is true.
-	 */
-	checkpointManager?: CheckpointManager;
 	/**
 	 * When true, the engine collects per-step telemetry and attaches a
 	 * `telemetry` object to the `WorkflowExecutionResult`.
@@ -107,22 +89,6 @@ function collectArtifacts(steps: StepExecutionRecord[]): SkillArtifact[] {
 				? collectArtifacts(step.children)
 				: []),
 	]);
-}
-
-/**
- * Compute a short deterministic hash of the workflow input for checkpoint
- * cache-invalidation. Non-fatal: falls back to "unknown" when serialization
- * fails (e.g. circular references in input objects).
- */
-function computeInputHash(input: InstructionInput): string {
-	try {
-		return createHash("sha256")
-			.update(JSON.stringify(input))
-			.digest("hex")
-			.slice(0, 16);
-	} catch {
-		return "unknown";
-	}
 }
 
 function recordProgress(
@@ -184,16 +150,12 @@ export class WorkflowEngine {
 	private readonly defaultStepTimeoutMs: number;
 	private readonly defaultRetryConfig?: RetryConfig;
 	private readonly maxSelfCallDepth: number;
-	private readonly enableCheckpointing: boolean;
-	private readonly checkpointManager?: CheckpointManager;
 	private readonly enableTelemetry: boolean;
 
 	constructor(options: WorkflowEngineOptions = {}) {
 		this.defaultStepTimeoutMs = options.defaultStepTimeoutMs ?? 0;
 		this.defaultRetryConfig = options.defaultRetryConfig;
 		this.maxSelfCallDepth = options.maxSelfCallDepth ?? 8;
-		this.enableCheckpointing = options.enableCheckpointing ?? false;
-		this.checkpointManager = options.checkpointManager;
 		this.enableTelemetry = options.enableTelemetry ?? false;
 	}
 
@@ -276,48 +238,12 @@ export class WorkflowEngine {
 				)
 			: null;
 
-		// ── Checkpointing ─────────────────────────────────────────────────────
-		const checkpointMgr =
-			this.enableCheckpointing && this.checkpointManager
-				? this.checkpointManager
-				: null;
-
-		let checkpoint: WorkflowCheckpoint | null = checkpointMgr
-			? await checkpointMgr.load(instruction.manifest.id, runtime.sessionId)
-			: null;
-
-		const resumeFromIndex = resolveResumeIndex(checkpoint);
-		if (resumeFromIndex > 0) {
-			console.log(
-				`[workflow] Resuming "${instruction.manifest.id}" from step ${resumeFromIndex} ` +
-					`(${resumeFromIndex} step(s) already completed).`,
-			);
-		}
-
-		// Initialise checkpoint for a fresh run
-		if (!checkpoint && checkpointMgr) {
-			checkpoint = createInitialCheckpoint(
-				instruction.manifest.id,
-				runtime.sessionId,
-				{
-					totalSteps: workflowSteps.length,
-					inputHash: computeInputHash(input),
-				},
-			);
-		}
-
 		try {
-			// ── Collect already-completed steps from checkpoint ──────────────
-			const steps: StepExecutionRecord[] = checkpoint
-				? [...checkpoint.completedSteps]
-				: [];
+			const steps: StepExecutionRecord[] = [];
 
 			for (let i = 0; i < workflowSteps.length; i++) {
 				const step = workflowSteps[i];
 				if (!step) continue;
-
-				// Skip steps that were completed before the crash
-				if (i < resumeFromIndex) continue;
 
 				const stepTimer = telemetryCollector?.startStep(step.label, step.kind);
 
@@ -339,11 +265,6 @@ export class WorkflowEngine {
 					kind: stepRecord.kind,
 					summary: stepRecord.summary,
 				});
-
-				// Advance checkpoint after each successful step
-				if (checkpointMgr && checkpoint) {
-					checkpoint = await checkpointMgr.advance(checkpoint, stepRecord);
-				}
 			}
 
 			const recommendations = collectRecommendations(steps);
@@ -363,14 +284,8 @@ export class WorkflowEngine {
 				assertWorkflowExecutionMatchesSpec(authoritativeSpec, result.steps);
 			}
 
-			// Attach telemetry if enabled
 			if (telemetryCollector) {
 				result.telemetry = telemetryCollector.finalise();
-			}
-
-			// Clear checkpoint on clean completion
-			if (checkpointMgr && checkpoint) {
-				await checkpointMgr.clear(instruction.manifest.id, runtime.sessionId);
 			}
 
 			return result;

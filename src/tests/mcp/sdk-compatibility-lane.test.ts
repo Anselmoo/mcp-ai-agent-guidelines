@@ -28,22 +28,18 @@ describe("sdk compatibility lane", () => {
 			expect.arrayContaining([
 				"docs-generate",
 				workspaceTool,
-				"agent-memory-write",
-				"agent-session-fetch",
-				"agent-snapshot-fetch",
+				"model-discover",
+				"graph-visualize",
 			]),
 		);
 		expect(names).not.toContain("workspace");
-		expect(names).not.toContain("session");
-		expect(names).not.toContain("snapshot");
-		expect(names).not.toContain("agent-session");
-		expect(names).not.toContain("agent-snapshot");
-		expect(names).not.toContain("agent-memory");
-		expect(names).not.toContain("workspace-list");
-		expect(names).not.toContain("workspace-read");
-		expect(names).not.toContain("workspace-artifact");
-		expect(names).not.toContain("workspace-fetch");
-		expect(names).not.toContain("workspace-compare");
+		expect(names).not.toContain("agent-memory-write");
+		expect(names).not.toContain("agent-memory-fetch");
+		expect(names).not.toContain("agent-session-fetch");
+		expect(names).not.toContain("agent-session-write");
+		expect(names).not.toContain("agent-snapshot-fetch");
+		expect(names).not.toContain("agent-snapshot-write");
+		expect(names).not.toContain("orchestration-config");
 	});
 
 	it("calls an instruction tool through the official TypeScript SDK", async () => {

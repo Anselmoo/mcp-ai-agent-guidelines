@@ -371,6 +371,19 @@ Published package note: the npm package ships `dist/`, `README.md`, and `LICENSE
 | `ENABLE_PHYSICS_SKILLS` | unset / `"false"` | Required by input validation when physics skills are not otherwise authorized; physics skills also require conventional-evidence schema validation |
 | `MCP_WORKSPACE_ROOT` | unset | Absolute path to the project directory the server should write state into (`.mcp-ai-agent-guidelines/`). Required when using `npx` via Claude Desktop, Cursor, or Windsurf — these clients do not preserve the terminal's working directory. VS Code supports `${workspaceFolder}`. |
 | `MCP_SLIM_MODE` | unset / `"false"` | Set to `true` to expose only the minimal surface: `task-bootstrap`, `meta-routing`, and `project-onboard` (useful for low-context agents) |
+| `MCP_SERENA_COMMAND` | unset | Opt-in. When set, the server spawns Serena as a child MCP server over stdio and resolves Serena queries directly. When unset (default), the server emits structured **advisories** that the host model executes via its own Serena connection — recommended when the host (e.g. Claude Code) already runs Serena. |
+| `MCP_SERENA_ARGS` | unset | Space-separated args passed to `MCP_SERENA_COMMAND`. Example: `--from git+https://github.com/oraios/serena serena-mcp-server`. |
+| `MCP_SERENA_CWD` | unset | Working directory for the spawned Serena child. Defaults to the parent process cwd. |
+| `MCP_LOCAL_MEMORY` | unset / `"false"` | Set to `true` to restore the legacy per-tool-call TOON memory artifact write+read flow (writes under `.mcp-ai-agent-guidelines/memory/`). Off by default — the Serena advisory footer is the recommended cross-session memory channel. |
+
+### Symbol & memory backend (Serena)
+
+Tool responses can be enriched with Serena's LSP-backed symbol surface and per-project memories. Two modes:
+
+- **Advisory mode (default)** — no setup. Tool responses append a `🧭 Serena enrichment available` footer that names the exact Serena tool (`mcp__serena__find_symbol`, `mcp__serena__list_memories`, etc.) and arguments the host model should call. Use this when your MCP host already loads Serena as a sibling server (e.g. Claude Code with Serena configured).
+- **Child-spawn mode (opt-in)** — set `MCP_SERENA_COMMAND=uvx` and `MCP_SERENA_ARGS="--from git+https://github.com/oraios/serena serena-mcp-server"` (or equivalent). The server spawns Serena once on startup and resolves queries directly, embedding the data in the response footer. Use when no host-level Serena is available.
+
+Both modes go through the same internal seam (`src/serena/client.ts`), so tool code paths are identical regardless of mode.
 
 ### Skill gates
 

@@ -434,6 +434,13 @@ export interface WorkflowExecutionRuntime {
 			result: SkillExecutionResult;
 		}>;
 	};
+	/**
+	 * Optional Serena client seam.  When present, tools can query Serena's
+	 * LSP-backed symbol surface and per-project memory.  Default builds attach
+	 * an `AdvisorySerenaClient` that returns structured hints rather than
+	 * spawning a child process — see `src/serena/client.ts`.
+	 */
+	serena?: import("../serena/client.js").SerenaClient;
 }
 
 export interface SkillModule {
