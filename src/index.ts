@@ -42,7 +42,6 @@ import {
 	isValidSessionId,
 	SecureFileSessionStore,
 } from "./runtime/secure-session-store.js";
-import { SessionBootstrap } from "./runtime/session-bootstrap.js";
 import {
 	DEFAULT_SESSION_STATE_DIR,
 	resolveWorkspaceRoot,
@@ -59,7 +58,6 @@ import {
 	computeEffectiveHiddenTools,
 	filterHiddenTools,
 } from "./tools/shared/tool-surface-manifest.js";
-import { SkillHandler } from "./tools/skill-handler.js";
 import { dispatchToolCall } from "./tools/tool-call-handler.js";
 import { buildPublicToolSurface } from "./tools/tool-surface.js";
 import {
@@ -312,19 +310,10 @@ export async function main() {
 	const { server, runtime } = createServer();
 	ValidationService.initialize();
 
-	const skillHandler = new SkillHandler();
-	const bootstrap = new SessionBootstrap();
-
-	// Parallelize Hebbian warmup + model router init — neither blocks transport.
-	await Promise.all([
-		bootstrap.warmUp(skillHandler).catch(() => {}),
-		runtime.modelRouter.initialize().catch((err: unknown) => {
-			const msg = err instanceof Error ? err.message : String(err);
-			process.stderr.write(
-				`[warn] Model router initialization failed: ${msg}\n`,
-			);
-		}),
-	]);
+	await runtime.modelRouter.initialize().catch((err: unknown) => {
+		const msg = err instanceof Error ? err.message : String(err);
+		process.stderr.write(`[warn] Model router initialization failed: ${msg}\n`);
+	});
 
 	// Phase B: Set up contextReady BEFORE connecting transport so the promise
 	// is always defined when the first tool-call handler fires.
@@ -358,9 +347,8 @@ export async function main() {
 		);
 	})();
 
-	// Phase 2: Graceful shutdown — persist Hebbian snapshot + close Serena.
+	// Phase 2: Graceful shutdown — close the optional Serena client.
 	const shutdown = async () => {
-		await bootstrap.persist(skillHandler).catch(() => {});
 		await runtime.serena?.close?.().catch(() => {});
 		process.exit(0);
 	};
