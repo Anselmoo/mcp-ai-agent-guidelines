@@ -381,7 +381,7 @@ Published package note: the npm package ships `dist/`, `README.md`, and `LICENSE
 Tool responses can be enriched with Serena's LSP-backed symbol surface and per-project memories. Two modes:
 
 - **Advisory mode (default)** — no setup. Tool responses append a `🧭 Serena enrichment available` footer that names the exact Serena tool (`mcp__serena__find_symbol`, `mcp__serena__list_memories`, etc.) and arguments the host model should call. Use this when your MCP host already loads Serena as a sibling server (e.g. Claude Code with Serena configured).
-- **Child-spawn mode (opt-in)** — set `MCP_SERENA_COMMAND=uvx` and `MCP_SERENA_ARGS="--from git+https://github.com/oraios/serena serena-mcp-server"` (or equivalent). The server spawns Serena once on startup and resolves queries directly, embedding the data in the response footer. Use when no host-level Serena is available.
+- **Child-spawn mode (opt-in)** — set `MCP_SERENA_COMMAND=uvx` and `MCP_SERENA_ARGS="--from git+https://github.com/oraios/serena serena start-mcp-server --project <your-project-path>"`. The server spawns Serena once on startup and resolves queries directly, embedding the data in the response footer. Pin `--project` explicitly because Serena's global registry won't auto-activate a fresh `cwd`. Use this mode when no host-level Serena is available. Verify the wiring with `npm run test:mcp:serena` (requires `MCP_SERENA_E2E=1` and `uvx` installed).
 
 Both modes go through the same internal seam (`src/serena/client.ts`), so tool code paths are identical regardless of mode.
 

@@ -23,6 +23,8 @@
         "test:mcp:py:inspector": "python3 -m unittest scripts.test_mcp_smoke_inspector",
         "test:mcp:smoke": "npm run test:mcp:ts && npm run test:mcp:sdk && npm run test:mcp:py",
         "test:mcp:smoke:inspector": "npm run test:mcp:ts && npm run test:mcp:sdk && npm run test:mcp:py:inspector",
+        "pretest:mcp:serena": "npm run build",
+        "test:mcp:serena": "MCP_SERENA_E2E=1 vitest run src/tests/serena/e2e.test.ts",
         "toon:markdown": "npm run build && node scripts/toon-to-markdown.mjs",
         "lint": "biome lint --diagnostic-level=error src/",
         "lint:fix": "biome lint --write src/",
