@@ -177,15 +177,11 @@ export default defineConfig({
 							items: [
 								{ slug: "tools/task-bootstrap" },
 								{ slug: "tools/meta-routing" },
-								{ slug: "tools/project-onboard" },
 							],
 						},
 						{
 							label: "Workspace Tools",
-							items: [
-								{ slug: "tools/agent-memory" },
-								{ slug: "tools/graph-visualize" },
-							],
+							items: [{ slug: "tools/graph-visualize" }],
 						},
 					],
 				},

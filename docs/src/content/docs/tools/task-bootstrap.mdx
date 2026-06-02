@@ -42,10 +42,9 @@ After scope is locked, `task-bootstrap` auto-chains to the highest-confidence do
 
 ## Required Pre-Conditions
 
-Before scope analysis, these companion tools should be invoked to load context:
-- `agent-snapshot` — codebase baseline
-- `agent-session` — session-scoped artifacts
-- `agent-memory` — long-term TOON context
+Before scope analysis, prime context through the agent's existing MCP surface:
+- `agent-workspace` (`list` / `read`) for source files in scope
+- Serena MCP tools (`mcp__serena__list_memories`, `mcp__serena__get_symbols_overview`) — every `task-bootstrap` response ends with a 🧭 Serena enrichment footer naming the exact call to make. See [Serena Integration](/mcp-ai-agent-guidelines/concepts/serena-integration/).
 
 ## Reactivation Policy
 
