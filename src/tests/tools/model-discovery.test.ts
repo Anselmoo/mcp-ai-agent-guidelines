@@ -57,21 +57,21 @@ describe("performModelDiscovery", () => {
 			}),
 		];
 		const result = performModelDiscovery(entries);
-		expect(result.models["free_primary"]?.id).toBe("gpt-4.1");
-		expect(result.models["strong_primary"]?.id).toBe("claude-sonnet-4-5");
-		expect(result.models["strong_primary"]?.provider).toBe("anthropic");
+		expect(result.models.free_primary?.id).toBe("gpt-4.1");
+		expect(result.models.strong_primary?.id).toBe("claude-sonnet-4-5");
+		expect(result.models.strong_primary?.provider).toBe("anthropic");
 	});
 
 	it("defaults context_window to 128_000 when omitted", () => {
 		const entries = [makeEntry({ id: "my-model", role: "free_primary" })];
 		const result = performModelDiscovery(entries);
-		expect(result.models["free_primary"]?.context_window).toBe(128_000);
+		expect(result.models.free_primary?.context_window).toBe(128_000);
 	});
 
 	it("defaults available to true when omitted", () => {
 		const entries = [makeEntry({ id: "my-model", role: "free_primary" })];
 		const result = performModelDiscovery(entries);
-		expect(result.models["free_primary"]?.available).toBe(true);
+		expect(result.models.free_primary?.available).toBe(true);
 	});
 
 	it("preserves explicit context_window and available values", () => {
@@ -86,7 +86,7 @@ describe("performModelDiscovery", () => {
 			}),
 		];
 		const result = performModelDiscovery(entries);
-		const model = result.models["strong_primary"];
+		const model = result.models.strong_primary;
 		expect(model?.context_window).toBe(200_000);
 		expect(model?.available).toBe(false);
 		expect(model?.reason).toBe("Quota exceeded");
@@ -131,7 +131,7 @@ describe("performModelDiscovery", () => {
 			makeEntry({ id: "second-model", role: "cheap_primary" }),
 		];
 		const result = performModelDiscovery(entries);
-		expect(result.models["cheap_primary"]?.id).toBe("second-model");
+		expect(result.models.cheap_primary?.id).toBe("second-model");
 		expect(
 			result.warnings.some(
 				(w) => w.includes("cheap_primary") && w.includes("Overwriting"),
@@ -178,7 +178,7 @@ describe("performModelDiscovery", () => {
 		] as unknown as DiscoveryModelEntry[];
 		const result = performModelDiscovery(entries);
 
-		expect(result.models["free_primary"]?.provider).toBe("other");
+		expect(result.models.free_primary?.provider).toBe("other");
 	});
 
 	it("handles all 7 roles assigned with no warnings", () => {

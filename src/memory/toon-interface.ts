@@ -205,7 +205,7 @@ export class ToonMemoryInterface {
 		};
 		// If no explicit dir was provided, kick off async workspace-root detection
 		// immediately so it is ready before any IO call.
-		if (!customDir && !process.env["MCP_AI_AGENT_GUIDELINES_STATE_DIR"]) {
+		if (!customDir && !process.env.MCP_AI_AGENT_GUIDELINES_STATE_DIR) {
 			const generation = ++this.baseDirGeneration;
 			this.baseDirReadyPromise = resolveSessionStateDirAsync().then(
 				(resolvedDir) => {

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, it } from "vitest";
 import { skillModule } from "../../../skills/qm/qm-uncertainty-tradeoff.js";
 import {
 	expectEmptyRequestHandling,

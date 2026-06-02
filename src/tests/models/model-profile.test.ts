@@ -54,22 +54,22 @@ describe("MODEL_PROFILES", () => {
 	});
 
 	it("costTier matches modelClass for free-tier models", () => {
-		expect(MODEL_PROFILES["free_primary"]?.costTier).toBe("free");
-		expect(MODEL_PROFILES["free_secondary"]?.costTier).toBe("free");
+		expect(MODEL_PROFILES.free_primary?.costTier).toBe("free");
+		expect(MODEL_PROFILES.free_secondary?.costTier).toBe("free");
 	});
 
 	it("costTier matches modelClass for cheap-tier models", () => {
-		expect(MODEL_PROFILES["cheap_primary"]?.costTier).toBe("cheap");
-		expect(MODEL_PROFILES["cheap_secondary"]?.costTier).toBe("cheap");
+		expect(MODEL_PROFILES.cheap_primary?.costTier).toBe("cheap");
+		expect(MODEL_PROFILES.cheap_secondary?.costTier).toBe("cheap");
 	});
 
 	it("strong models have large context windows", () => {
-		expect(MODEL_PROFILES["strong_primary"]?.maxContextWindow).toBe("large");
-		expect(MODEL_PROFILES["strong_secondary"]?.maxContextWindow).toBe("large");
+		expect(MODEL_PROFILES.strong_primary?.maxContextWindow).toBe("large");
+		expect(MODEL_PROFILES.strong_secondary?.maxContextWindow).toBe("large");
 	});
 
 	it("reviewer profile is classified as reviewer tier", () => {
-		const reviewer = MODEL_PROFILES["reviewer_primary"];
+		const reviewer = MODEL_PROFILES.reviewer_primary;
 		expect(reviewer?.modelClass).toBe("reviewer");
 		expect(reviewer?.costTier).toBe("reviewer");
 	});

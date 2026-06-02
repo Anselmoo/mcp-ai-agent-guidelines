@@ -190,7 +190,7 @@ export class MyService {
 		// result is keyed by relative path, then by class name
 		const fileEntry = result["service.ts"];
 		expect(fileEntry).toBeDefined();
-		expect(fileEntry?.["MyService"]).toBeDefined();
-		expect(fileEntry?.["MyService"]?.members).toContain("hello");
+		expect(fileEntry?.MyService).toBeDefined();
+		expect(fileEntry?.MyService?.members).toContain("hello");
 	});
 });

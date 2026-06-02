@@ -48,10 +48,10 @@ export function workflowRuntimeToMermaid(spec: WorkflowSpec): string | null {
 					lines.push(`    ${id}{{"gate: ${sanitize(step.condition)}"}}`);
 					if (prevId) lines.push(`    ${prevId} --> ${id}`);
 					prevId = null;
-					renderSteps(step.ifTrue, id + "_if");
+					renderSteps(step.ifTrue, `${id}_if`);
 					lines.push(`    ${id} -->|true| ${id}_if`);
 					if (step.ifFalse && step.ifFalse.length > 0) {
-						renderSteps(step.ifFalse, id + "_else");
+						renderSteps(step.ifFalse, `${id}_else`);
 						lines.push(`    ${id} -->|false| ${id}_else`);
 					} else {
 						lines.push(`    ${id} -->|false| skip_${id}[ ]`);

@@ -1,5 +1,5 @@
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { dispatchVisualizationToolCall } from "../../tools/visualization-tools.js";
 
 function getFirstText(result: CallToolResult) {

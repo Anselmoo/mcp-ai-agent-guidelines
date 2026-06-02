@@ -537,7 +537,7 @@ export class GitGlyphs {
 
 	logLine(sha: string, message: string, refs: string[] = []): string {
 		const refStr = refs.length
-			? " " + refs.map((r) => `${this.refL}${r}${this.refR}`).join(" ")
+			? ` ${refs.map((r) => `${this.refL}${r}${this.refR}`).join(" ")}`
 			: "";
 		return `${this.commit} ${sha.slice(0, 7)}${refStr} ${message}`;
 	}

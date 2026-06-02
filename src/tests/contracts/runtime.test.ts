@@ -30,7 +30,7 @@ describe("runtime — contract shapes", () => {
 			request: "implement feature",
 			customField: "value",
 		};
-		expect(extended["customField"]).toBe("value");
+		expect(extended.customField).toBe("value");
 	});
 
 	it("InstructionInput can carry a typed options envelope when a skill narrows it", () => {
