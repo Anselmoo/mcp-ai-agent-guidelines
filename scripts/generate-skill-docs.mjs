@@ -13,7 +13,7 @@
  *   npm run generate:skill-docs
  */
 
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, rmSync, existsSync, writeFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -35,6 +35,7 @@ try {
 }
 
 const OUT_DIR = resolve(ROOT, "docs/src/content/docs/skills/reference");
+if (existsSync(OUT_DIR)) rmSync(OUT_DIR, { recursive: true, force: true });
 mkdirSync(OUT_DIR, { recursive: true });
 
 // Sidebar badge variants per model class

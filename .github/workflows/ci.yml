@@ -36,16 +36,84 @@ jobs:
       - name: Run Lefthook (biome-check)
         run: npx lefthook run pre-commit --command biome-check --no-tty
 
-  # ── 1. Quality gate — fast fail ──────────────────────────────────────────────
-  quality:
-    name: Quality Gate
+  # ── 1a. Audit — dependency & secret scan ─────────────────────────────────────
+  audit:
+    name: Audit (npm · Gitleaks)
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: lint
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v6
         with:
-          fetch-depth: 0  # Gitleaks needs the base commit for PR diff scans
+          fetch-depth: 0  # Gitleaks needs full history for PR diff scans
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Dependency audit
+        run: npm audit --production --audit-level=high
+
+      - name: Secret scan (Gitleaks)
+        uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ── 1b. Policy — branch · commit · changelog ─────────────────────────────────
+  policy:
+    name: Policy (branch · commit · changelog)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: lint
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Policy checks
+        uses: Anselmoo/repo-release-tools@5ed8326d4977f87b06605364f23fcc1e393d3fea # v1.3.0
+        with:
+          check-dirty-tree: "false"
+          changelog-strategy: "unreleased"
+
+  # ── 1c. Type-check ────────────────────────────────────────────────────────────
+  typecheck:
+    name: Type-check (tsc)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: lint
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type-check
+        run: npx tsc --noEmit
+
+  # ── 1d. Checks — matrix · python tests · workflow-docs · biome · dep-audit ───
+  checks:
+    name: Checks (matrix · python · biome · dep-audit)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: lint
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
 
       - uses: actions/setup-node@v6
         with:
@@ -59,32 +127,43 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Dependency audit
-        run: npm audit --production --audit-level=high
-
-      - name: Secret scan (Gitleaks)
-        uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Policy checks (branch · commit · changelog)
-        uses: Anselmoo/repo-release-tools@5ed8326d4977f87b06605364f23fcc1e393d3fea # v1.3.0
-        with:
-          check-dirty-tree: "false"
-          changelog-strategy: "unreleased"
-
-      - name: Type-check
-        run: npx tsc --noEmit
-
-      - name: Quality gate (matrix · python tests · type-check · biome · dep-audit)
+      - name: Quality checks (matrix · python tests · workflow-docs · biome · dep-audit)
         run: npm run quality
+
+  # ── 1e. Docs build — validates Astro/Starlight on every PR ───────────────────
+  docs-build:
+    name: Docs build (Astro/Starlight)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: lint
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build TypeScript (required for skill-docs generator)
+        run: npm run build
+
+      - name: Generate skill reference docs
+        run: npm run generate:skill-docs
+
+      - name: Build Astro / Starlight site
+        run: npm run docs:build
 
   # ── 2. Test matrix ────────────────────────────────────────────────────────────
   test:
     name: Test (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs: quality
+    needs: [audit, policy, typecheck, checks]
     permissions:
       contents: read
       id-token: write  # Codecov OIDC
@@ -126,12 +205,12 @@ jobs:
           slug: Anselmoo/mcp-ai-agent-guidelines
           fail_ci_if_error: false
 
-  # ── 3. Security scan (filesystem) ──────────────────────────────────────────
+  # ── 3. Security scan (filesystem) ────────────────────────────────────────────
   security:
     name: Security scan (Trivy)
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: quality
+    needs: [audit, policy, typecheck, checks]
     permissions:
       contents: read
     steps:

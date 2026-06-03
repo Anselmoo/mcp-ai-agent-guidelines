@@ -41,7 +41,7 @@
         "audit:biome": "python3 scripts/audit-biome-issues.py",
         "audit:biome:unused": "python3 scripts/audit-biome-issues.py --unused-only",
         "audit:type-safety": "python3 scripts/audit-type-safety.py",
-        "quality": "python3 scripts/verify_matrix.py && python3 -m unittest scripts.test_generate_tool_definitions && npm run type-check && npm run check:workflow-docs && npm run check && python3 scripts/audit-dependency-usage.py",
+        "quality": "python3 scripts/verify_matrix.py && python3 -m unittest scripts.test_generate_tool_definitions && npm run check:workflow-docs && npm run check && python3 scripts/audit-dependency-usage.py",
         "generate:tool-definitions": "python3 scripts/generate-tool-definitions.py",
         "generate:skill-graph": "python3 scripts/visualize_skill_graph.py",
         "generate:test-mirrors": "python3 scripts/generate-test-mirrors.py",
