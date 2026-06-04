@@ -97,8 +97,8 @@
         "picomatch": "^4.0.4"
     },
     "devDependencies": {
-        "@astrojs/starlight": "^0.34.0",
-        "@biomejs/biome": "2.4.14",
+        "@astrojs/starlight": "^0.39.3",
+        "@biomejs/biome": "2.4.16",
         "@modelcontextprotocol/inspector": "^0.21.1",
         "@types/d3": "^7.4.3",
         "@types/inquirer": "^9.0.9",
@@ -106,10 +106,10 @@
         "@types/lodash": "^4.17.24",
         "@types/node": "^25.0.2",
         "@vitest/coverage-v8": "^4.0.0",
-        "astro": "^5.7.0",
+        "astro": "^6.4.4",
         "astro-mermaid": "^2.0.1",
         "d3": "^7.9.0",
-        "inquirer": "^13.3.2",
+        "inquirer": "^14.0.2",
         "jest": "^30.3.0",
         "lefthook": "^2.1.5",
         "lucide-astro": "^0.556.0",
