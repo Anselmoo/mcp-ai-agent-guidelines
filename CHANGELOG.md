@@ -27,6 +27,7 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Default install no longer writes to `~/.mcp-ai-agent-guidelines/` or `~/.cache/mcp-ai-agent-guidelines/`. Workspace-local `.mcp-ai-agent-guidelines/` is touched only by explicit user actions (drift `compare`, `model-discover save`).
 - Docs site: deleted stale tool pages, added the Serena concept page, documented the new env vars, and rewrote the CLI reference for the slimmed surface.
 - Lint: cleared 20 auto-fixable warnings (unused imports across test files).
+- Consolidated IDE-side automation under `.claude/`: hook JSONs and scripts moved from `.github/hooks/` and `.agent/hooks/`, skills moved from `.github/skills/`, routing rules moved from `.agent/rules/`. Hook command paths in `.claude/hooks/*.json` were updated to reference the new script locations. The `mcp-cli onboard skills --target copilot` command still writes to `.github/skills/` in **user** repos — that's the GitHub Copilot convention for custom skills and is intentional, not a stale reference.
 
 ## [0.17.0] - 2026-05-05
 ### Added

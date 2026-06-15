@@ -1,3 +1,7 @@
+// TODO(coverage): 24 uncovered branches (64.7%) — central dispatch surface
+// with the biggest bang-per-test ratio. Closing this is the recommended
+// starting point for the 87.38% → 90% project branch-coverage push noted
+// in PR #1517. End-to-end coverable via existing tool-call fixtures.
 import type {
 	InstructionInput,
 	WorkflowExecutionRuntime,
