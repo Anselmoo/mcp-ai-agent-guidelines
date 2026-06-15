@@ -433,15 +433,15 @@ Copy the following JSON to `~/.copilot/hooks/mcp-ai-agent-guidelines-hooks.json`
 
 ### Routing guidance
 
-The `.agent/rules/` directory contains IDE-readable routing tables:
+The `.claude/rules/` directory contains IDE-readable routing tables:
 
-- `.agent/rules/default.md` — universal symptom → tool pipeline table and anti-patterns
-- `.agent/rules/copilot.md` — VS Code Copilot-specific quick reference and session-start checklist
+- `.claude/rules/default.md` — universal symptom → tool pipeline table and anti-patterns
+- `.claude/rules/copilot.md` — VS Code Copilot-specific quick reference and session-start checklist
 
-These files are automatically picked up by Copilot's custom instructions system and by Serena's hook integration layer.
+These files are automatically picked up by Claude Code, Copilot's custom instructions system, and Serena's hook integration layer.
 
 > [!NOTE]
-> The published npm package does **not** include `.agent/rules/`. If you install from npm and want these routing rules, copy them from the GitHub repository into your workspace.
+> The published npm package does **not** include `.claude/rules/`. If you install from npm and want these routing rules, copy them from the GitHub repository into your workspace.
 
 ---
 
