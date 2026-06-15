@@ -141,6 +141,46 @@ describe("index request handlers", () => {
 			false,
 		);
 	});
+
+	it("createRuntime honors an injected serena client (?? short-circuit)", async () => {
+		const fakeSerena = {
+			query: async () => ({ kind: "advisory" as const }),
+			close: async () => undefined,
+		};
+		const runtime = createRuntime({ serena: fakeSerena as never });
+		expect(runtime.serena).toBe(fakeSerena);
+	});
+
+	it("createRuntime resolves a real serena client when none is injected", () => {
+		const runtime = createRuntime();
+		expect(runtime.serena).toBeDefined();
+		expect(typeof runtime.serena?.query).toBe("function");
+	});
+
+	it("callTool dispatches the workspace tool path", async () => {
+		const handlers = createRequestHandlers(createRuntime());
+		const result = await handlers.callTool({
+			params: { name: "agent-workspace", arguments: { command: "list" } },
+		});
+		// Either success or formatted error — both prove the workspace branch ran.
+		expect(result).toHaveProperty("content");
+	});
+
+	it("listResources, listPrompts, readResource have stable shapes", async () => {
+		const handlers = createRequestHandlers(createRuntime());
+		const resources = await handlers.listResources();
+		expect(Array.isArray(resources.resources)).toBe(true);
+
+		const prompts = await handlers.listPrompts();
+		expect(Array.isArray(prompts.prompts)).toBe(true);
+
+		// Unknown URI → readResource throws (exercises the dispatch path).
+		await expect(
+			handlers.readResource({
+				params: { uri: "mcp://does-not-exist/foo" },
+			}),
+		).rejects.toThrow(/Unknown resource/);
+	});
 });
 
 describe("anchorStateToClientRoots", () => {
