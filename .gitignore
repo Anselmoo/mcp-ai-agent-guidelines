@@ -399,3 +399,7 @@ vite.config.ts.timestamp-*
 # (session data, memory artifacts, snapshots, and config are all runtime state)
 # Fresh onboarding regenerates orchestration.toml at runtime
 .mcp-ai-agent-guidelines/
+
+# Claude Code harness artifacts (per-session runtime state)
+.claude/scheduled_tasks.lock
+.claude/settings.local.json
