@@ -1,10 +1,30 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
 	AdvisorySerenaClient,
 	ChildSerenaClient,
 	resolveSerenaClient,
 	type SerenaQuery,
 } from "../../serena/client.js";
+
+const sdkClientMock = vi.hoisted(() => ({
+	callTool: vi.fn(),
+	connect: vi.fn(),
+	close: vi.fn(),
+}));
+const sdkTransportMock = vi.hoisted(() => ({
+	close: vi.fn(),
+}));
+const sdkConstructors = vi.hoisted(() => ({
+	Client: vi.fn(),
+	StdioClientTransport: vi.fn(),
+}));
+
+vi.mock("@modelcontextprotocol/sdk/client/index.js", () => ({
+	Client: sdkConstructors.Client,
+}));
+vi.mock("@modelcontextprotocol/sdk/client/stdio.js", () => ({
+	StdioClientTransport: sdkConstructors.StdioClientTransport,
+}));
 
 describe("AdvisorySerenaClient", () => {
 	const client = new AdvisorySerenaClient();
@@ -84,6 +104,164 @@ describe("resolveSerenaClient", () => {
 		process.env.MCP_SERENA_COMMAND = "uvx";
 		process.env.MCP_SERENA_ARGS = "serena start-mcp-server";
 		expect(resolveSerenaClient()).toBeInstanceOf(ChildSerenaClient);
+	});
+
+	it("returns ChildSerenaClient with empty args when MCP_SERENA_ARGS is empty", () => {
+		process.env.MCP_SERENA_COMMAND = "uvx";
+		// MCP_SERENA_ARGS unset → exercises the `argsRaw.length > 0 ? ... : []` branch
+		expect(resolveSerenaClient()).toBeInstanceOf(ChildSerenaClient);
+	});
+
+	it("ignores empty MCP_SERENA_CWD (treated as undefined)", () => {
+		process.env.MCP_SERENA_COMMAND = "uvx";
+		process.env.MCP_SERENA_CWD = "   ";
+		expect(resolveSerenaClient()).toBeInstanceOf(ChildSerenaClient);
+	});
+
+	it("returns AdvisorySerenaClient when MCP_SERENA_COMMAND is whitespace only", () => {
+		process.env.MCP_SERENA_COMMAND = "   ";
+		expect(resolveSerenaClient()).toBeInstanceOf(AdvisorySerenaClient);
+	});
+});
+
+describe("ChildSerenaClient", () => {
+	beforeEach(() => {
+		sdkClientMock.callTool.mockReset();
+		sdkClientMock.connect.mockReset();
+		sdkClientMock.close.mockReset();
+		sdkTransportMock.close.mockReset();
+		sdkConstructors.Client.mockClear();
+		sdkConstructors.StdioClientTransport.mockClear();
+		// biome-ignore lint/complexity/useArrowFunction: `new` requires a
+		// [[Construct]] slot, which arrow functions don't have.
+		sdkConstructors.Client.mockImplementation(function () {
+			return sdkClientMock;
+		});
+		// biome-ignore lint/complexity/useArrowFunction: same constructor reason.
+		sdkConstructors.StdioClientTransport.mockImplementation(function () {
+			return sdkTransportMock;
+		});
+		sdkClientMock.connect.mockResolvedValue(undefined);
+		sdkClientMock.close.mockResolvedValue(undefined);
+		sdkTransportMock.close.mockResolvedValue(undefined);
+	});
+
+	it("proxies a query to the spawned Serena child and returns data", async () => {
+		sdkClientMock.callTool.mockResolvedValue({ content: [{ text: "ok" }] });
+		const client = new ChildSerenaClient({
+			command: "uvx",
+			args: ["serena", "start-mcp-server"],
+			cwd: "/tmp/project",
+		});
+
+		const result = await client.query({
+			kind: "find_symbol",
+			namePath: "Foo.bar",
+			relativePath: "src/foo.ts",
+			includeBody: true,
+		});
+
+		expect(result.kind).toBe("data");
+		if (result.kind === "data") {
+			expect(result.tool).toBe("find_symbol");
+			expect(result.data).toEqual({ content: [{ text: "ok" }] });
+		}
+		expect(sdkConstructors.StdioClientTransport).toHaveBeenCalledWith({
+			command: "uvx",
+			args: ["serena", "start-mcp-server"],
+			cwd: "/tmp/project",
+		});
+		expect(sdkClientMock.callTool).toHaveBeenCalledWith({
+			name: "find_symbol",
+			arguments: {
+				name_path: "Foo.bar",
+				relative_path: "src/foo.ts",
+				include_body: true,
+			},
+		});
+	});
+
+	it("falls back to an error result when the child call fails", async () => {
+		sdkClientMock.callTool.mockRejectedValue(new Error("boom"));
+		const client = new ChildSerenaClient({ command: "uvx", args: [] });
+
+		const result = await client.query({
+			kind: "read_memory",
+			name: "notes",
+		});
+
+		expect(result.kind).toBe("error");
+		if (result.kind === "error") {
+			expect(result.tool).toBe("mcp__serena__read_memory");
+			expect(result.error).toContain("boom");
+			expect(result.error).toContain("advisory");
+		}
+	});
+
+	it("falls back to an error result when the transport fails to connect", async () => {
+		sdkClientMock.connect.mockRejectedValueOnce(new Error("spawn ENOENT"));
+		const client = new ChildSerenaClient({ command: "missing", args: [] });
+
+		const result = await client.query({ kind: "list_memories" });
+
+		expect(result.kind).toBe("error");
+		if (result.kind === "error") {
+			expect(result.error).toContain("spawn ENOENT");
+		}
+	});
+
+	it("only connects once across concurrent queries", async () => {
+		sdkClientMock.callTool.mockResolvedValue({ data: 1 });
+		const client = new ChildSerenaClient({ command: "uvx", args: [] });
+
+		await Promise.all([
+			client.query({ kind: "list_memories" }),
+			client.query({ kind: "list_memories" }),
+			client.query({ kind: "list_memories" }),
+		]);
+
+		expect(sdkConstructors.Client).toHaveBeenCalledTimes(1);
+		expect(sdkConstructors.StdioClientTransport).toHaveBeenCalledTimes(1);
+		expect(sdkClientMock.connect).toHaveBeenCalledTimes(1);
+		expect(sdkClientMock.callTool).toHaveBeenCalledTimes(3);
+	});
+
+	it("closes the underlying client and transport and clears state", async () => {
+		sdkClientMock.callTool.mockResolvedValue({ ok: true });
+		const client = new ChildSerenaClient({ command: "uvx", args: [] });
+
+		await client.query({ kind: "list_memories" });
+		await client.close();
+
+		expect(sdkClientMock.close).toHaveBeenCalledTimes(1);
+		expect(sdkTransportMock.close).toHaveBeenCalledTimes(1);
+
+		// A subsequent query should reconnect (i.e. state was cleared).
+		await client.query({ kind: "list_memories" });
+		expect(sdkConstructors.Client).toHaveBeenCalledTimes(2);
+	});
+
+	it("close() is safe before connect()", async () => {
+		const client = new ChildSerenaClient({ command: "uvx", args: [] });
+		await expect(client.close()).resolves.toBeUndefined();
+		expect(sdkClientMock.close).not.toHaveBeenCalled();
+		expect(sdkTransportMock.close).not.toHaveBeenCalled();
+	});
+
+	it("write_memory query forwards content in arguments", async () => {
+		sdkClientMock.callTool.mockResolvedValue({ ok: true });
+		const client = new ChildSerenaClient({ command: "uvx", args: [] });
+
+		await client.query({
+			kind: "write_memory",
+			name: "decisions",
+			content: "use Astro v5",
+		});
+
+		expect(sdkClientMock.callTool).toHaveBeenCalledWith({
+			name: "write_memory",
+			arguments: { memory_name: "decisions", content: "use Astro v5" },
+		});
 	});
 });
 

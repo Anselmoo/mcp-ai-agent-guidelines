@@ -1,7 +1,7 @@
 import { mkdtempSync, readdirSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
 	emitSkillHooks,
 	SKILL_HOOK_CLIENTS,
@@ -78,5 +78,33 @@ describe("skill-hook-emitter", () => {
 
 		const globalEntries = readdirSync(join(home, ".copilot", "skills"));
 		expect(globalEntries.length).toBe(PUBLIC_INSTRUCTION_COUNT);
+	});
+
+	it("prints a per-client summary when quiet=false (local)", async () => {
+		const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+		await emitSkillHooks({ cwd, home, quiet: false, clients: ["copilot"] });
+
+		const allLogs = logSpy.mock.calls.flat().join("\n");
+		expect(allLogs).toContain("[copilot]");
+		expect(allLogs).toContain("Skill hooks →");
+		expect(allLogs).toContain(".github/skills/");
+		expect(allLogs).toContain(`(${PUBLIC_INSTRUCTION_COUNT} files)`);
+	});
+
+	it("prints a ~/ destLabel when quiet=false with global=true", async () => {
+		const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+		await emitSkillHooks({
+			global: true,
+			cwd,
+			home,
+			quiet: false,
+			clients: ["claude"],
+		});
+
+		const allLogs = logSpy.mock.calls.flat().join("\n");
+		expect(allLogs).toContain("[claude]");
+		expect(allLogs).toContain("~/.claude/skills/");
 	});
 });
