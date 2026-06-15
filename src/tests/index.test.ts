@@ -126,6 +126,21 @@ describe("index request handlers", () => {
 			isDirectExecutionEntry(fileURLToPath(import.meta.url), import.meta.url),
 		).toBe(true);
 	});
+
+	it("returns false when entryPath is undefined", () => {
+		expect(isDirectExecutionEntry(undefined, import.meta.url)).toBe(false);
+	});
+
+	it("falls back to URL comparison when realpath fails", () => {
+		// A non-existent path makes realpathSync throw, exercising the catch fallback.
+		const missing = "/path/that/does/not/exist/index.js";
+		// Equal URLs → true via the URL-comparison branch.
+		expect(isDirectExecutionEntry(missing, `file://${missing}`)).toBe(true);
+		// Different URLs → false via the URL-comparison branch.
+		expect(isDirectExecutionEntry(missing, "file:///other/path.js")).toBe(
+			false,
+		);
+	});
 });
 
 describe("anchorStateToClientRoots", () => {
