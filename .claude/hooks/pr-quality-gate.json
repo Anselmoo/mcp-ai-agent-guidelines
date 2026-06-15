@@ -3,7 +3,7 @@
     "PreToolUse": [
       {
         "type": "command",
-        "command": "node .github/hooks/scripts/pr-quality-gate.js",
+        "command": "node .claude/hooks/scripts/pr-quality-gate.js",
         "timeout": 10
       }
     ]

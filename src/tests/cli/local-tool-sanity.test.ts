@@ -5,12 +5,12 @@ import { describe, expect, it } from "vitest";
 const ROOT_DIR = fileURLToPath(new URL("../../../", import.meta.url));
 const SCRIPT_PATH = fileURLToPath(
 	new URL(
-		"../../../.github/hooks/scripts/local-tool-sanity.js",
+		"../../../.claude/hooks/scripts/local-tool-sanity.js",
 		import.meta.url,
 	),
 );
 
-describe(".github hooks/local-tool-sanity.js", () => {
+describe(".claude hooks/local-tool-sanity.js", () => {
 	it("returns allow for SessionStart and prints a workspace sanity JSON result", () => {
 		const result = spawnSync("node", [SCRIPT_PATH, "SessionStart"], {
 			cwd: ROOT_DIR,

@@ -3,7 +3,7 @@
         "PreToolUse": [
             {
                 "type": "command",
-                "command": "node .github/hooks/scripts/no-legacy-tool-surface.js",
+                "command": "node .claude/hooks/scripts/no-legacy-tool-surface.js",
                 "timeout": 10
             }
         ]

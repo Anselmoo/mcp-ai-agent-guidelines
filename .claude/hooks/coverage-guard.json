@@ -3,7 +3,7 @@
     "PreToolUse": [
       {
         "type": "command",
-        "command": "node .github/hooks/scripts/coverage-guard.js",
+        "command": "node .claude/hooks/scripts/coverage-guard.js",
         "timeout": 10
       }
     ]

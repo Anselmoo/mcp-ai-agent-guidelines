@@ -3,7 +3,7 @@
     "PreToolUse": [
       {
         "type": "command",
-        "command": "node .github/hooks/scripts/push-ready.js",
+        "command": "node .claude/hooks/scripts/push-ready.js",
         "timeout": 20
       }
     ]

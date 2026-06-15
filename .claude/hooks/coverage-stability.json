@@ -3,7 +3,7 @@
         "PreToolUse": [
             {
                 "type": "command",
-                "command": "node .github/hooks/scripts/coverage-stability.js",
+                "command": "node .claude/hooks/scripts/coverage-stability.js",
                 "timeout": 20
             }
         ]
