@@ -132,7 +132,6 @@ describe("WorkflowEngine constructor", () => {
 			defaultStepTimeoutMs: 5000,
 			defaultRetryConfig: { maxAttempts: 2 },
 			maxSelfCallDepth: 4,
-			enableCheckpointing: false,
 			enableTelemetry: true,
 		};
 		const engine = new WorkflowEngine(opts);

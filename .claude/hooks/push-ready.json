@@ -1,0 +1,11 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "type": "command",
+        "command": "node .claude/hooks/scripts/push-ready.js",
+        "timeout": 20
+      }
+    ]
+  }
+}

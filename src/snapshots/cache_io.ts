@@ -88,7 +88,7 @@ export function saveCache<T>(
 ): void {
 	const envelope: CacheEnvelope<T> = { __cache_version: version, obj };
 	const json = JSON.stringify(envelope, null, 0); // compact for speed
-	const tmp = filePath + ".tmp";
+	const tmp = `${filePath}.tmp`;
 
 	try {
 		fs.mkdirSync(path.dirname(filePath), { recursive: true });

@@ -2,9 +2,10 @@ import { describe, expect, it, vi } from "vitest";
 import type { ExecutionProgressRecord } from "../../contracts/runtime.js";
 import { ObservabilityOrchestrator } from "../../infrastructure/observability.js";
 import { InstructionRegistry } from "../../instructions/instruction-registry.js";
+import { sharedToonMemoryInterface as memoryInterface } from "../../memory/shared-memory.js";
 import { ModelRouter } from "../../models/model-router.js";
+import { AdvisorySerenaClient } from "../../serena/client.js";
 import { SkillRegistry } from "../../skills/skill-registry.js";
-import { memoryInterface } from "../../tools/memory-tools.js";
 import { dispatchToolCall } from "../../tools/tool-call-handler.js";
 import { ValidationService } from "../../validation/index.js";
 import { WorkflowEngine } from "../../workflows/workflow-engine.js";
@@ -63,6 +64,35 @@ describe("tool-call-handler", () => {
 		expect(result.content[0]?.text).toContain(
 			"Invalid input for `code-review`",
 		);
+	});
+
+	it("appends a Serena enrichment footer when the runtime exposes a SerenaClient", async () => {
+		const runtime = {
+			...createRuntime(),
+			serena: new AdvisorySerenaClient(),
+		};
+		const result = await dispatchToolCall(
+			"code-review",
+			{ request: "review the runtime architecture" },
+			runtime,
+		);
+
+		expect(result.isError).toBeUndefined();
+		expect(result.content[0]?.text).toContain(
+			"## 🧭 Serena enrichment available",
+		);
+		expect(result.content[0]?.text).toContain("mcp__serena__list_memories");
+	});
+
+	it("omits the Serena footer when the runtime has no SerenaClient", async () => {
+		const result = await dispatchToolCall(
+			"code-review",
+			{ request: "review the runtime architecture" },
+			createRuntime(),
+		);
+
+		expect(result.isError).toBeUndefined();
+		expect(result.content[0]?.text).not.toContain("Serena enrichment");
 	});
 
 	it("executes valid instruction tools and formats the workflow result", async () => {
@@ -133,6 +163,7 @@ describe("tool-call-handler", () => {
 	});
 
 	it("persists related memory IDs and snapshot sources in saved artifacts", async () => {
+		process.env.MCP_LOCAL_MEMORY = "true";
 		const saveSpy = vi
 			.spyOn(memoryInterface, "saveMemoryArtifact")
 			.mockResolvedValue();
@@ -220,6 +251,7 @@ describe("tool-call-handler", () => {
 			saveSpy.mockRestore();
 			findSpy.mockRestore();
 			snapshotSpy.mockRestore();
+			delete process.env.MCP_LOCAL_MEMORY;
 		}
 	});
 
@@ -232,48 +264,6 @@ describe("tool-call-handler", () => {
 
 		expect(result.isError).toBeUndefined();
 		expect(result.content[0]?.text).toContain("mcp-ai-agent-guidelines");
-	});
-
-	it("routes canonical snapshot tools through the shared dispatcher", async () => {
-		const result = await dispatchToolCall(
-			"agent-snapshot-fetch",
-			{},
-			createRuntime(),
-		);
-
-		expect(result.isError ?? false).toBe(false);
-		// snapshot-tools now returns structured JSON for status; assert the
-		// stable discriminator field that is present in both "absent" and
-		// "present" response shapes.
-		expect(result.content[0]?.text).toContain('"present"');
-	});
-
-	it("returns structured snapshot status payloads", async () => {
-		const snapshotSpy = vi
-			.spyOn(memoryInterface, "loadFingerprintSnapshot")
-			.mockResolvedValue({
-				meta: { version: "1", capturedAt: "2026-04-11T00:00:00.000Z" },
-				fingerprint: {
-					capturedAt: "2026-04-11T00:00:00.000Z",
-					skillIds: [],
-					instructionNames: [],
-					codePaths: [],
-					srcPaths: [],
-				},
-			});
-
-		try {
-			const result = await dispatchToolCall(
-				"agent-snapshot-fetch",
-				{},
-				createRuntime(),
-			);
-
-			expect(result.isError ?? false).toBe(false);
-			expect(result.content[0]?.text).toContain('"snapshotId"');
-		} finally {
-			snapshotSpy.mockRestore();
-		}
 	});
 
 	it("rejects retired workspace aliases after the hard-cut rename", async () => {
@@ -323,6 +313,7 @@ describe("tool-call-handler", () => {
 	});
 
 	it("prefixes artifact count in memory summary when top-level artifacts are present", async () => {
+		process.env.MCP_LOCAL_MEMORY = "true";
 		const saveSpy = vi
 			.spyOn(memoryInterface, "saveMemoryArtifact")
 			.mockResolvedValue();
@@ -375,6 +366,7 @@ describe("tool-call-handler", () => {
 		} finally {
 			saveSpy.mockRestore();
 			executeInstructionSpy.mockRestore();
+			delete process.env.MCP_LOCAL_MEMORY;
 		}
 	});
 

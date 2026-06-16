@@ -76,5 +76,5 @@ export function toonToMarkdown(toonInput: string, title?: string): string {
 	}
 
 	md += valueToMarkdown(data);
-	return md.trimEnd() + "\n";
+	return `${md.trimEnd()}\n`;
 }

@@ -119,8 +119,19 @@ document it. What is the right sequence of tools?
 
 `meta-routing` emits a sequenced call plan — you then execute each step.
 
+## Cross-session memory
+
+Every instruction tool response ends with a **🧭 Serena enrichment** footer naming the exact `mcp__serena__*` call the host model should make to pull in prior project memories and AST-grounded symbol context. No setup is required if the host already loads Serena (most do). To verify the full pipeline locally:
+
+```bash
+MCP_SERENA_E2E=1 npm run test:mcp:serena   # requires uvx
+```
+
+See [Serena Integration](/mcp-ai-agent-guidelines/concepts/serena-integration/) for the two modes and env-var reference.
+
 ## Next Steps
 
 - [MCP Configuration](/mcp-ai-agent-guidelines/getting-started/mcp-config/) — environment variables and orchestration config
-- [Tool Reference](/mcp-ai-agent-guidelines/tools/) — all 20 tools with triggers and chain graphs
+- [Tool Reference](/mcp-ai-agent-guidelines/tools/) — public instruction surface with triggers and chain graphs
 - [Skill System Explained](/mcp-ai-agent-guidelines/concepts/skill-system/) — how skills work beneath the tools
+- [Serena Integration](/mcp-ai-agent-guidelines/concepts/serena-integration/) — the cross-session memory backend

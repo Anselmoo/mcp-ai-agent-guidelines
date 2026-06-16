@@ -24,11 +24,12 @@ describe("README installation guidance", () => {
 		);
 	});
 
-	it("documents both the MCP server and interactive CLI entrypoints", () => {
+	it("documents both the MCP server and IDE-integration CLI entrypoints", () => {
 		expect(readme).toContain(
 			"`mcp-ai-agent-guidelines` — MCP stdio server entrypoint",
 		);
-		expect(readme).toContain("`mcp-cli` — interactive CLI");
+		// CLI is intentionally tiny now — just IDE-side hook + skill-file installer.
+		expect(readme).toContain("`mcp-cli` — a thin IDE-integration installer");
 	});
 
 	it("documents MCP_WORKSPACE_ROOT env var for npx-based MCP config", () => {
@@ -38,15 +39,17 @@ describe("README installation guidance", () => {
 		expect(readme).toContain("/absolute/path/to/your/project");
 	});
 
-	it("keeps the CLI reference aligned with the published entrypoints", () => {
+	it("keeps the CLI reference aligned with the slimmed entrypoints", () => {
 		expect(cliReference).toContain(
 			"npx --yes --package mcp-ai-agent-guidelines@latest mcp-cli [command]",
 		);
-		expect(cliReference).toContain("mcp-cli onboard init");
-		expect(cliReference).toContain("mcp-cli orchestration config read");
-		expect(cliReference).toContain(
-			"`mcp-ai-agent-guidelines` as the MCP stdio server entrypoint",
-		);
+		// New surface: hooks + onboard skills only.
+		expect(cliReference).toContain("hooks setup");
+		expect(cliReference).toContain("onboard skills");
+		// Removed commands must NOT reappear in the CLI reference.
+		expect(cliReference).not.toContain("mcp-cli onboard init");
+		expect(cliReference).not.toContain("mcp-cli orchestration");
+		expect(cliReference).not.toContain("mcp-cli memory list");
 		expect(cliReference).not.toContain("npx mcp-ai-agent-guidelines [command]");
 		expect(cliReference).not.toContain("mcp-ai-agent-guidelines onboard init");
 	});

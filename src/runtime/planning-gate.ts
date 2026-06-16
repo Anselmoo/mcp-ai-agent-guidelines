@@ -17,7 +17,7 @@ import { MODEL_PROFILES } from "../models/model-profile.js";
 import { ModelRouter } from "../models/model-router.js";
 
 /** Build a minimal {@link SkillManifestEntry} suitable for model-routing only. */
-function minimalSkillEntry(
+function _minimalSkillEntry(
 	id: string,
 	preferredModelClass: ModelClass = "free",
 ): SkillManifestEntry {

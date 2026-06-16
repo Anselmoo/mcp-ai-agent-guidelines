@@ -50,23 +50,23 @@ function getSkillsByPrefix(prefix: string) {
 
 describe("Model tier classification", () => {
 	it("free_primary is free tier", () => {
-		expect(MODEL_PROFILES["free_primary"]?.costTier).toBe("free");
+		expect(MODEL_PROFILES.free_primary?.costTier).toBe("free");
 	});
 
 	it("free_secondary is free tier", () => {
-		expect(MODEL_PROFILES["free_secondary"]?.costTier).toBe("free");
+		expect(MODEL_PROFILES.free_secondary?.costTier).toBe("free");
 	});
 
 	it("cheap_primary is cheap tier", () => {
-		expect(MODEL_PROFILES["cheap_primary"]?.costTier).toBe("cheap");
+		expect(MODEL_PROFILES.cheap_primary?.costTier).toBe("cheap");
 	});
 
 	it("strong_primary is strong tier", () => {
-		expect(MODEL_PROFILES["strong_primary"]?.costTier).toBe("strong");
+		expect(MODEL_PROFILES.strong_primary?.costTier).toBe("strong");
 	});
 
 	it("strong_secondary is strong tier", () => {
-		expect(MODEL_PROFILES["strong_secondary"]?.costTier).toBe("strong");
+		expect(MODEL_PROFILES.strong_secondary?.costTier).toBe("strong");
 	});
 });
 

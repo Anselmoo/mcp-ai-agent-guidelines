@@ -112,6 +112,50 @@ In `advisory` mode, input validation failures are logged as warnings rather than
 
 ---
 
+## Serena Integration
+
+See [Serena Integration](../concepts/serena-integration) for the full backend description. By default the server runs in **advisory mode** and emits structured hints that the host model executes via its own Serena connection. The variables below opt into the **child-spawn mode** instead, where this server starts Serena as a stdio subprocess and resolves queries directly.
+
+### `MCP_SERENA_COMMAND`
+
+| Default | Values |
+|---------|--------|
+| unset | shell command, e.g. `uvx` |
+
+When set, the server lazily spawns Serena as a child MCP server over stdio and proxies queries to it. When unset, the server falls back to advisory mode and emits suggested `mcp__serena__*` calls for the host model to execute.
+
+### `MCP_SERENA_ARGS`
+
+| Default | Values |
+|---------|--------|
+| unset | space-separated args |
+
+Passed verbatim to `MCP_SERENA_COMMAND`. Recommended:
+
+```bash
+MCP_SERENA_ARGS="--from git+https://github.com/oraios/serena serena start-mcp-server --project /absolute/path/to/your/project"
+```
+
+Pin `--project <path>` explicitly: Serena keeps a global registry and otherwise refuses memory operations on a fresh `cwd`.
+
+### `MCP_SERENA_CWD`
+
+| Default | Values |
+|---------|--------|
+| parent cwd | absolute path |
+
+Working directory for the spawned Serena child.
+
+### `MCP_LOCAL_MEMORY`
+
+| Default | Values |
+|---------|--------|
+| `false` | `true` / `false` |
+
+Opt-in switch for the legacy per-tool-call TOON memory artifacts under `.mcp-ai-agent-guidelines/memory/`. Off by default — Serena memory (advertised via the 🧭 enrichment footer) is the recommended cross-session channel.
+
+---
+
 ## Model Router
 
 Model router variables are managed via `orchestration.toml` and the `orchestration-model-discover` MCP tool. Avoid hardcoding model display names — use role classes (`free`, `cheap`, `strong`, `reviewer`) in code and let the router resolve actual model IDs at runtime.

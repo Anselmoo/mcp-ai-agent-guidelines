@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type { InstructionManifestEntry } from "../../contracts/generated.js";
 import { modelAvailabilityService } from "../../models/model-availability.js";
 import { MODEL_PROFILES } from "../../models/model-profile.js";

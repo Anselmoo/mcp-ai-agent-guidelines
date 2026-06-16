@@ -57,8 +57,8 @@ npm install -g mcp-ai-agent-guidelines
 # MCP stdio server entrypoint
 mcp-ai-agent-guidelines
 
-# Interactive CLI
-mcp-cli info
+# IDE hook + skill-file installer
+mcp-cli --help
 ```
 
 ### Local install (monorepo / project dependency)
@@ -168,24 +168,19 @@ Add the server to your MCP host config. The entry-point is `dist/index.js` and c
 
 ## CLI Usage
 
-An interactive CLI wizard is included for standalone use outside an MCP host. The
-published package exposes two entrypoints:
+The published package exposes two entrypoints:
 
-- `mcp-ai-agent-guidelines` — MCP stdio server entrypoint for editors and MCP hosts
-- `mcp-cli` — interactive CLI for onboarding, orchestration, and diagnostics
+- `mcp-ai-agent-guidelines` — MCP stdio server entrypoint for editors and MCP hosts (the primary surface; an agent reaches all functionality through this)
+- `mcp-cli` — a thin IDE-integration installer. It does not duplicate MCP server functionality; its only purpose is to wire up the hook scripts and per-IDE `SKILL.md` files that an agent itself cannot install.
 
 ```bash
-# Project onboarding
-mcp-cli onboard init
+# Install SessionStart / PreToolUse hooks for an IDE
+mcp-cli hooks setup --client vscode        # or copilot-cli / claude-code
+mcp-cli hooks print --client claude-code   # preview without writing
 
-# Re-open the orchestration editor
-mcp-cli orchestration edit
-
-# Quick re-entry for environment + model fleet only
-mcp-cli orchestration edit --quick
-
-# Direct skill invocation
-mcp-cli --skill core-prompt-engineering --request "Write a system prompt for a coding assistant"
+# Emit per-IDE skill files for every public instruction
+mcp-cli onboard skills --target all        # copilot + claude + codex
+mcp-cli onboard skills --target claude --global   # user-home install
 ```
 
 Instruction-tool input schema — the public instruction workflows share this shape:
@@ -202,10 +197,8 @@ Instruction-tool input schema — the public instruction workflows share this sh
 
 ## Configuration Files
 
-- `.mcp-ai-agent-guidelines/config/orchestration.toml` — primary orchestration authority (local, not tracked in git)
-- `src/config/orchestration-defaults.ts` — builtin bootstrap defaults used to auto-create the workspace config in advisory mode when `orchestration.toml` is absent
-
-First-time runs auto-create `orchestration.toml` from builtin advisory defaults, including semantic role placeholders so routing can proceed before model discovery. Run `mcp-cli onboard init` to customize the setup or `mcp-cli orchestration edit` to reopen the interactive editor.
+- `.mcp-ai-agent-guidelines/config/orchestration.toml` — optional orchestration overrides. The MCP server **no longer auto-writes** this file; defaults come from `src/config/orchestration-defaults.ts` in memory. Write the file explicitly (via `mcp-cli` is no longer available — edit by hand, or persist via the `model-discover` MCP tool's save action) if you need to override the advisory defaults.
+- `src/config/orchestration-defaults.ts` — builtin defaults used in memory whenever a workspace config is absent.
 
 ---
 
@@ -371,6 +364,19 @@ Published package note: the npm package ships `dist/`, `README.md`, and `LICENSE
 | `ENABLE_PHYSICS_SKILLS` | unset / `"false"` | Required by input validation when physics skills are not otherwise authorized; physics skills also require conventional-evidence schema validation |
 | `MCP_WORKSPACE_ROOT` | unset | Absolute path to the project directory the server should write state into (`.mcp-ai-agent-guidelines/`). Required when using `npx` via Claude Desktop, Cursor, or Windsurf — these clients do not preserve the terminal's working directory. VS Code supports `${workspaceFolder}`. |
 | `MCP_SLIM_MODE` | unset / `"false"` | Set to `true` to expose only the minimal surface: `task-bootstrap`, `meta-routing`, and `project-onboard` (useful for low-context agents) |
+| `MCP_SERENA_COMMAND` | unset | Opt-in. When set, the server spawns Serena as a child MCP server over stdio and resolves Serena queries directly. When unset (default), the server emits structured **advisories** that the host model executes via its own Serena connection — recommended when the host (e.g. Claude Code) already runs Serena. |
+| `MCP_SERENA_ARGS` | unset | Space-separated args passed to `MCP_SERENA_COMMAND`. Example: `--from git+https://github.com/oraios/serena serena-mcp-server`. |
+| `MCP_SERENA_CWD` | unset | Working directory for the spawned Serena child. Defaults to the parent process cwd. |
+| `MCP_LOCAL_MEMORY` | unset / `"false"` | Set to `true` to restore the legacy per-tool-call TOON memory artifact write+read flow (writes under `.mcp-ai-agent-guidelines/memory/`). Off by default — the Serena advisory footer is the recommended cross-session memory channel. |
+
+### Symbol & memory backend (Serena)
+
+Tool responses can be enriched with Serena's LSP-backed symbol surface and per-project memories. Two modes:
+
+- **Advisory mode (default)** — no setup. Tool responses append a `🧭 Serena enrichment available` footer that names the exact Serena tool (`mcp__serena__find_symbol`, `mcp__serena__list_memories`, etc.) and arguments the host model should call. Use this when your MCP host already loads Serena as a sibling server (e.g. Claude Code with Serena configured).
+- **Child-spawn mode (opt-in)** — set `MCP_SERENA_COMMAND=uvx` and `MCP_SERENA_ARGS="--from git+https://github.com/oraios/serena serena start-mcp-server --project <your-project-path>"`. The server spawns Serena once on startup and resolves queries directly, embedding the data in the response footer. Pin `--project` explicitly because Serena's global registry won't auto-activate a fresh `cwd`. Use this mode when no host-level Serena is available. Verify the wiring with `npm run test:mcp:serena` (requires `MCP_SERENA_E2E=1` and `uvx` installed).
+
+Both modes go through the same internal seam (`src/serena/client.ts`), so tool code paths are identical regardless of mode.
 
 ### Skill gates
 
@@ -427,15 +433,15 @@ Copy the following JSON to `~/.copilot/hooks/mcp-ai-agent-guidelines-hooks.json`
 
 ### Routing guidance
 
-The `.agent/rules/` directory contains IDE-readable routing tables:
+The `.claude/rules/` directory contains IDE-readable routing tables:
 
-- `.agent/rules/default.md` — universal symptom → tool pipeline table and anti-patterns
-- `.agent/rules/copilot.md` — VS Code Copilot-specific quick reference and session-start checklist
+- `.claude/rules/default.md` — universal symptom → tool pipeline table and anti-patterns
+- `.claude/rules/copilot.md` — VS Code Copilot-specific quick reference and session-start checklist
 
-These files are automatically picked up by Copilot's custom instructions system and by Serena's hook integration layer.
+These files are automatically picked up by Claude Code, Copilot's custom instructions system, and Serena's hook integration layer.
 
 > [!NOTE]
-> The published npm package does **not** include `.agent/rules/`. If you install from npm and want these routing rules, copy them from the GitHub repository into your workspace.
+> The published npm package does **not** include `.claude/rules/`. If you install from npm and want these routing rules, copy them from the GitHub repository into your workspace.
 
 ---
 

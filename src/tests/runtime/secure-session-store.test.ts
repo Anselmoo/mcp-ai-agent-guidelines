@@ -6,8 +6,10 @@ import { deflateSync } from "node:zlib";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { ObservabilityOrchestrator } from "../../infrastructure/observability.js";
 import {
+	assertValidSessionId,
 	createSessionId,
 	createUuidSessionId,
+	FileSessionStore,
 	isValidSessionId,
 	SecureFileSessionStore,
 } from "../../runtime/secure-session-store.js";
@@ -420,5 +422,153 @@ describe("runtime/secure-session-store", () => {
 		expect(isValidSessionId("session-..\\escape")).toBe(false);
 		expect(isValidSessionId("../escape")).toBe(false);
 		expect(isValidSessionId("session-../../escape")).toBe(false);
+	});
+
+	it("rejects the empty-id-after-prefix branch in isValidSessionId", () => {
+		// Exercise the `id === ""` branch (line 448-450) — a "session-" prefix
+		// followed by nothing should be rejected.
+		expect(isValidSessionId("session-")).toBe(false);
+	});
+
+	describe("getSessionIntegrity", () => {
+		it("reports exists: false for a missing session", async () => {
+			createStateDir();
+			const store = new SecureFileSessionStore();
+			const info = await store.getSessionIntegrity("session-missing-12ab");
+			expect(info).toEqual({
+				exists: false,
+				hasValidMac: false,
+				isCompressed: false,
+				version: 0,
+			});
+		});
+
+		it("reports exists: true and isCompressed/version flags for a real session", async () => {
+			const stateDir = createStateDir();
+			const store = new SecureFileSessionStore({ enableMac: false });
+			const sessionId = createSessionId();
+			await store.writeSessionHistory(sessionId, [
+				{ stepLabel: "a", kind: "note", summary: "x" },
+			]);
+
+			const info = await store.getSessionIntegrity(sessionId);
+			expect(info.exists).toBe(true);
+			expect(info.hasValidMac).toBe(true); // MAC disabled → trivially valid
+			expect(info.isCompressed).toBe(false);
+			expect(info.version).toBe(1);
+			expect(typeof info.timestamp).toBe("number");
+			// stateDir is the workspace we wrote into.
+			expect(stateDir).toContain("secure-session-store-");
+		});
+	});
+});
+
+describe("assertValidSessionId", () => {
+	it("returns the sessionId unchanged when valid", () => {
+		const id = "session-1234567890ab";
+		expect(assertValidSessionId(id)).toBe(id);
+	});
+
+	it("throws when sessionId is not a string", () => {
+		expect(() => assertValidSessionId(undefined)).toThrow(
+			"sessionId must be a non-empty string.",
+		);
+		expect(() => assertValidSessionId(42)).toThrow(
+			"sessionId must be a non-empty string.",
+		);
+	});
+
+	it("throws when sessionId is empty or whitespace", () => {
+		expect(() => assertValidSessionId("")).toThrow(
+			"sessionId must be a non-empty string.",
+		);
+		expect(() => assertValidSessionId("   ")).toThrow(
+			"sessionId must be a non-empty string.",
+		);
+	});
+
+	it("throws when sessionId fails format validation", () => {
+		expect(() => assertValidSessionId("session-bogus")).toThrow(
+			"must be a valid session ID in a supported format.",
+		);
+	});
+
+	it("honors the fieldName override in error messages", () => {
+		expect(() => assertValidSessionId(undefined, "snapshotId")).toThrow(
+			"snapshotId must be a non-empty string.",
+		);
+	});
+});
+
+describe("FileSessionStore (legacy)", () => {
+	function createStateDir() {
+		const stateDir = mkdtempSync(join(tmpdir(), "file-session-store-"));
+		process.env.MCP_AI_AGENT_GUIDELINES_STATE_DIR = stateDir;
+		return stateDir;
+	}
+
+	it("returns [] for a missing session file", async () => {
+		createStateDir();
+		const store = new FileSessionStore();
+		expect(await store.readSessionHistory("session-1234567890ab")).toEqual([]);
+	});
+
+	it("returns [] when the file is not a JSON array", async () => {
+		const stateDir = createStateDir();
+		const sessionId = "session-1234567890ab";
+		await writeFile(
+			join(stateDir, `${sessionId}.json`),
+			JSON.stringify({ not: "an array" }),
+			"utf8",
+		);
+		const store = new FileSessionStore();
+		expect(await store.readSessionHistory(sessionId)).toEqual([]);
+	});
+
+	it("writes and reads back a record array", async () => {
+		createStateDir();
+		const store = new FileSessionStore();
+		const sessionId = "session-1234567890ab";
+		const records = [{ stepLabel: "a", kind: "note", summary: "hello" }];
+		await store.writeSessionHistory(sessionId, records);
+		expect(await store.readSessionHistory(sessionId)).toEqual(records);
+	});
+
+	it("serializes concurrent appends per session", async () => {
+		createStateDir();
+		const store = new FileSessionStore();
+		const sessionId = "session-1234567890ab";
+
+		await Promise.all([
+			store.appendSessionHistory(sessionId, {
+				stepLabel: "a",
+				kind: "note",
+				summary: "1",
+			}),
+			store.appendSessionHistory(sessionId, {
+				stepLabel: "b",
+				kind: "note",
+				summary: "2",
+			}),
+			store.appendSessionHistory(sessionId, {
+				stepLabel: "c",
+				kind: "note",
+				summary: "3",
+			}),
+		]);
+
+		const records = await store.readSessionHistory(sessionId);
+		expect(records).toHaveLength(3);
+		expect(records.map((r) => r.summary).sort()).toEqual(["1", "2", "3"]);
+	});
+
+	it("honors the readTextFile seam for read paths", async () => {
+		const store = new FileSessionStore({
+			readTextFile: async () =>
+				JSON.stringify([{ stepLabel: "x", kind: "note", summary: "seam" }]),
+		});
+		expect(await store.readSessionHistory("session-1234567890ab")).toEqual([
+			{ stepLabel: "x", kind: "note", summary: "seam" },
+		]);
 	});
 });

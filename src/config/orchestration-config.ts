@@ -1,6 +1,6 @@
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
-import { parse, stringify as stringifyToml } from "smol-toml";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
+import { parse } from "smol-toml";
 import { z } from "zod";
 import { toErrorMessage } from "../infrastructure/object-utilities.js";
 import { createOperationalLogger } from "../infrastructure/observability.js";
@@ -382,28 +382,6 @@ function hasErrorCode(error: unknown, code: string): boolean {
 	);
 }
 
-function renderBootstrappedOrchestrationConfig(
-	config: OrchestrationConfig,
-): string {
-	return (
-		"# MCP AI Agent Guidelines configuration\n" +
-		"# Primary authority. Auto-generated from builtin defaults because the workspace file was missing.\n\n" +
-		stringifyToml(config)
-	);
-}
-
-function bootstrapMissingWorkspaceOrchestrationConfig(
-	configPath: string,
-	config: OrchestrationConfig,
-): void {
-	mkdirSync(dirname(configPath), { recursive: true });
-	writeFileSync(
-		configPath,
-		renderBootstrappedOrchestrationConfig(config),
-		"utf8",
-	);
-}
-
 function firstAvailableModelId(
 	config: OrchestrationConfig,
 	aliases: string[],
@@ -468,39 +446,23 @@ export function loadOrchestrationConfig(
 		const detail = toErrorMessage(error);
 		const message = `[orchestration] Failed to load primary config at ${configPath}: ${detail}`;
 		if (hasErrorCode(error, "ENOENT")) {
-			// Config file is missing — bootstrap advisory defaults regardless of
-			// whether the path came from the caller or from auto-detection.
+			// Config file is missing — use advisory defaults in memory.  Never
+			// auto-write the bootstrap file to disk; the explicit save flow lives
+			// in saveOrchestrationConfig (called by model-discover or the CLI
+			// onboarding wizard).  Auto-writing here was the dominant source of
+			// unexpected workspace state leaks.
 			const bootstrapConfig = createBuiltinBootstrapOrchestrationConfig();
-			try {
-				bootstrapMissingWorkspaceOrchestrationConfig(
+			orchestrationConfigLogger.log(
+				"warn",
+				"Using advisory orchestration defaults (no workspace config found)",
+				{
 					configPath,
-					bootstrapConfig,
-				);
-				orchestrationConfigLogger.log(
-					"warn",
-					"Bootstrapped missing orchestration config in advisory mode",
-					{
-						configPath,
-						fallbackSource: BUILTIN_ORCHESTRATION_DEFAULTS_SOURCE,
-						strictMode: bootstrapConfig.environment.strict_mode,
-					},
-				);
-				_config = bootstrapConfig;
-				return _config;
-			} catch (bootstrapError) {
-				// Bootstrap write failed (e.g. permissions).  Fall through to
-				// in-memory advisory defaults so at least this invocation succeeds.
-				orchestrationConfigLogger.log(
-					"warn",
-					"Bootstrap write failed; using in-memory advisory defaults",
-					{
-						configPath,
-						bootstrapError: toErrorMessage(bootstrapError),
-					},
-				);
-				_config = bootstrapConfig;
-				return _config;
-			}
+					fallbackSource: BUILTIN_ORCHESTRATION_DEFAULTS_SOURCE,
+					strictMode: bootstrapConfig.environment.strict_mode,
+				},
+			);
+			_config = bootstrapConfig;
+			return _config;
 		}
 		if (fallbackConfig.environment.strict_mode) {
 			const guidance =

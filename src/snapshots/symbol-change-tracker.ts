@@ -1,3 +1,7 @@
+// TODO(coverage): 15 uncovered branches (84.4%) — well-bounded surface, mostly
+// git/fs branching. Counted in the 87.38% → 90% project branch-coverage push
+// tracked from PR #1517.
+
 /**
  * symbol-change-tracker.ts
  *

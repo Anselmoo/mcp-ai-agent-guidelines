@@ -1,3 +1,7 @@
+// TODO(coverage): 27 uncovered branches (79.8%) — largest single contributor to
+// the gap between 87.38% project branch coverage and the 90% stretch target
+// noted in PR #1517. Needs parameterized tests over the tunneling-decision
+// branch matrix.
 import { z } from "zod";
 import { qm_tunneling_breakthrough_manifest as skillManifest } from "../../generated/manifests/skill-manifests.js";
 import { createSkillModule } from "../create-skill-module.js";

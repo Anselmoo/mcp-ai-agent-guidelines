@@ -1,6 +1,6 @@
 ---
 title: CLI Reference
-description: Command-line interface for onboarding, memory management, session history, and configuration.
+description: mcp-cli — the thin IDE-integration installer that complements the MCP server.
 sidebar:
   label: CLI
   order: 3
@@ -8,17 +8,19 @@ sidebar:
 
 import { Aside } from '@astrojs/starlight/components';
 
-The `mcp-cli` command provides project onboarding, session lifecycle management, memory inspection, and observability reporting. The published package also exposes `mcp-ai-agent-guidelines` as the MCP stdio server entrypoint for editors and MCP hosts.
+`mcp-cli` is a deliberately tiny companion to the MCP server. Everything an agent needs at runtime — instructions, skills, memory (via Serena), workspace reads — flows through the MCP stdio entrypoint (`mcp-ai-agent-guidelines`). The CLI exists only for the two things an agent **cannot** install on its own behalf:
+
+1. IDE lifecycle hooks (`SessionStart` / `PreToolUse`) that nudge the agent back to the MCP surface when it drifts.
+2. Per-IDE `SKILL.md` hook files so Copilot / Claude / Codex auto-discover the public instruction tools.
+
+If you do not use those features you do not need `mcp-cli` at all.
 
 ```bash
-# Run via npx / npm exec (no install required)
+# Run via npx (no install required)
 npx --yes --package mcp-ai-agent-guidelines@latest mcp-cli [command]
 
 # Or after global install
 mcp-cli [command]
-
-# Or after local install
-node dist/cli-main.js [command]
 ```
 
 ---
@@ -27,114 +29,61 @@ node dist/cli-main.js [command]
 
 | Option | Description |
 |--------|-------------|
-| `-v, --verbose` | Enable verbose output |
 | `--version` | Print version |
 | `--help` | Show help |
 
 ---
 
-## `onboard` — Project Setup
+## `hooks` — IDE lifecycle hooks
 
-### `onboard init`
+### `hooks setup --client <client>`
 
-Run the interactive onboarding wizard. Guides you through model configuration, skill surface selection, and MCP client setup. Skips automatically if configuration already exists.
-
-```bash
-mcp-cli onboard init
-```
-
-### `onboard status`
-
-Show the current onboarding status and active configuration.
+Write hook JSON to the appropriate directory for the specified IDE client. Currently supported: `vscode`, `copilot-cli`, `claude-code`.
 
 ```bash
-mcp-cli onboard status
+mcp-cli hooks setup --client vscode
+mcp-cli hooks setup --client claude-code
+mcp-cli hooks setup --client copilot-cli
 ```
 
-### `onboard reset`
+Each hook script triggers `mcp-cli hooks remind-session` on a new chat session and `mcp-cli hooks remind-drift` before every tool call, so agents that have drifted away from MCP tools (multiple consecutive `grep` / `read_file` / `bash` calls) get a one-line nudge to re-orient.
 
-Reset configuration. Removes session and memory state and re-runs the wizard.
+Pair with `--dry-run` to print the JSON without writing to disk.
+
+### `hooks print --client <client>`
+
+Print the hook JSON to stdout. Same as `setup --dry-run`; useful for piping into custom installers.
+
+### `hooks remind-session` and `hooks remind-drift`
+
+Invoked **by** the installed hook scripts at runtime — not user-facing. `remind-drift` accepts an optional `--tool <name>` argument so it can skip the reminder when the upcoming call is itself an MCP tool.
+
+---
+
+## `onboard` — IDE-side onboarding helpers
+
+### `onboard skills [--global] [--target <client>]`
+
+Generate one `SKILL.md` file per public instruction inside the requested clients' skill-hook directories.
+
+| Client | Local target | Global target |
+|--------|--------------|---------------|
+| `copilot` | `.github/skills/` | `~/.copilot/skills/` |
+| `claude` | `.claude/skills/` | `~/.claude/skills/` |
+| `codex` | `.agents/skills/` | `~/.agents/skills/` |
 
 ```bash
-mcp-cli onboard reset
+# All three clients, workspace-local
+mcp-cli onboard skills
+
+# Claude Code only, user-home install
+mcp-cli onboard skills --target claude --global
 ```
 
-<Aside type="caution">
-`onboard reset` deletes existing session history and memory artifacts in `.mcp-ai-agent-guidelines/sessions/` and `.mcp-ai-agent-guidelines/memory/`.
+`--target` accepts `copilot`, `claude`, `codex`, or `all` (default).
+
+---
+
+<Aside type="note" title="What about everything else?">
+Earlier versions of `mcp-cli` exposed `onboard init`, `orchestration edit`, `memory list`, reporting, analytics, and dev commands. They were removed because Serena (via the 🧭 footer the MCP server now emits on every tool response) is the canonical cross-session memory channel, and the rest duplicated functionality the agent already reaches through the MCP server. See [Serena Integration](../concepts/serena-integration) for the migration story.
 </Aside>
-
----
-
-## `orchestration` — Model Configuration
-
-Manage model routing via `orchestration.toml` without editing the file directly.
-
-### `orchestration config read`
-
-Print the current `orchestration.toml` as JSON.
-
-```bash
-mcp-cli orchestration config read
-```
-
-### `orchestration config write`
-
-Update a specific role in `orchestration.toml`.
-
-```bash
-mcp-cli orchestration config write --role strong_primary --model claude-sonnet-4-5
-```
-
----
-
-## `memory` — TOON Context
-
-### `memory list`
-
-List all memory artifacts and TOON snapshots.
-
-```bash
-mcp-cli memory list
-```
-
-### `memory show <id>`
-
-Print a specific memory artifact by ID.
-
-```bash
-mcp-cli memory show <session-id>
-```
-
----
-
-## `status` — Server Info
-
-Print version, loaded skills, active flags, and model router state.
-
-```bash
-mcp-cli status
-```
-
----
-
-## `docs:*` — Documentation Scripts
-
-These npm scripts delegate to the `docs/` Starlight site.
-
-```bash
-npm run docs:dev      # Start dev server at localhost:4321
-npm run docs:build    # Build static site to docs/dist/
-npm run docs:preview  # Preview built site locally
-```
-
----
-
-## MCP Server Entry Point
-
-The MCP server itself (not the CLI) is started with:
-
-```bash
-node dist/index.js
-```
-
-This speaks MCP over `stdin/stdout` and is what your MCP client (Copilot, Claude Desktop, etc.) invokes.

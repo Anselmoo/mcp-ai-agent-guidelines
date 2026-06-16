@@ -119,7 +119,7 @@ export default defineConfig({
 						{
 							label: "Skill Reference",
 							collapsed: true,
-							autogenerate: { directory: "skills/reference" },
+							items: [{ autogenerate: { directory: "skills/reference" } }],
 						},
 						{
 							label: "Domain Reference",
@@ -177,15 +177,11 @@ export default defineConfig({
 							items: [
 								{ slug: "tools/task-bootstrap" },
 								{ slug: "tools/meta-routing" },
-								{ slug: "tools/project-onboard" },
 							],
 						},
 						{
 							label: "Workspace Tools",
-							items: [
-								{ slug: "tools/agent-memory" },
-								{ slug: "tools/graph-visualize" },
-							],
+							items: [{ slug: "tools/graph-visualize" }],
 						},
 					],
 				},
@@ -195,7 +191,7 @@ export default defineConfig({
 						{ slug: "workflows" },
 						{
 							label: "Workflow Reference",
-							autogenerate: { directory: "workflows/reference" },
+							items: [{ autogenerate: { directory: "workflows/reference" } }],
 						},
 					],
 				},

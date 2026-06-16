@@ -165,4 +165,4 @@ ENABLE_PHYSICS_SKILLS=true LOG_LEVEL=debug node /path/to/dist/index.js
 | Single session | CLI / one-shot tools | Default |
 | Continuous agent | VS Code Copilot, Cline | `task-bootstrap` auto-chains; periodic reactivation via `reactivationPolicy: "periodic"` |
 
-The `task-bootstrap` tool triggers `agent-snapshot`, `agent-session`, and `agent-memory` as preconditions before scope analysis — this loads the codebase baseline and session artifacts automatically.
+`task-bootstrap` loads source-file context through `agent-workspace` (`list` / `read`) and surfaces a 🧭 [Serena enrichment](/mcp-ai-agent-guidelines/concepts/serena-integration/) footer pointing the host model at `mcp__serena__list_memories` and friends for prior project memories.

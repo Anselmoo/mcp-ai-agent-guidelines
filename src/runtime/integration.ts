@@ -2,6 +2,10 @@
  * Runtime integration for orchestration, caching, planning gates, and validation.
  */
 
+// TODO(coverage): 14 uncovered branches (82.0%) — remaining branches are likely
+// defensive `?.` chains and integrity-failure paths. Counted in the 87.38% →
+// 90% project branch-coverage push tracked from PR #1517.
+
 import { DEFAULT_INTEGRATED_RUNTIME_CONFIG_VALUES } from "../config/runtime-defaults.js";
 import type {
 	InstructionInput,

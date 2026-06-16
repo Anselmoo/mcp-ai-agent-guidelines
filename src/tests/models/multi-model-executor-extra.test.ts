@@ -29,7 +29,7 @@ describe("multi-model-executor extra branches", () => {
 	it("majorityVote resolves with clear majority (no tie)", async () => {
 		// Two voters say "yes", one says "no"
 		let call = 0;
-		const votingExecutor: executor.LaneExecutor = async (modelId) => {
+		const votingExecutor: executor.LaneExecutor = async (_modelId) => {
 			call++;
 			if (call <= 2) return "yes and details";
 			return "no and reasoning";
@@ -47,7 +47,7 @@ describe("multi-model-executor extra branches", () => {
 	it("majorityVote calls tiebreaker on tie", async () => {
 		// Split 1-1 (2 voters)
 		let call = 0;
-		const tiedExecutor: executor.LaneExecutor = async (modelId) => {
+		const tiedExecutor: executor.LaneExecutor = async (_modelId) => {
 			call++;
 			if (call === 1) return "yes";
 			if (call === 2) return "no";

@@ -32,7 +32,6 @@ The 20 instruction tools are the public surface of the server. Each tool accepts
     <CardGrid>
       <LinkCard title="task-bootstrap" href="/mcp-ai-agent-guidelines/tools/task-bootstrap/" description="Bootstrap: First Contact — Zero-Cost. Onboards the model to a new session and project context." />
       <LinkCard title="meta-routing" href="/mcp-ai-agent-guidelines/tools/meta-routing/" description="Meta-Routing: Task Router — Efficient. Routes any ad-hoc request to the right specialized tool." />
-      <LinkCard title="project-onboard" href="/mcp-ai-agent-guidelines/tools/project-onboard/" description="Onboard: Project Familiarization — Zero-Cost. Deep-reads codebase structure, conventions, and history." />
     </CardGrid>
   </TabItem>
   <TabItem label="Workflow tools" icon="seti:pipeline">
@@ -59,10 +58,11 @@ The 20 instruction tools are the public surface of the server. Each tool accepts
     </CardGrid>
   </TabItem>
   <TabItem label="Workspace tools" icon="setting">
-    Read-only introspection tools that operate on the MCP server's internal state rather than producing advisory outputs.
+    Lightweight utilities that read source files or surface MCP server state. Cross-session memory now flows through Serena via the 🧭 enrichment footer on every instruction response — see [Serena Integration](/mcp-ai-agent-guidelines/concepts/serena-integration/).
 
     <CardGrid>
-      <LinkCard title="agent-memory" href="/mcp-ai-agent-guidelines/tools/agent-memory/" description="Persistent cross-session TOON artifact store — list, read, find, write, enrich, delete" />
+      <LinkCard title="agent-workspace" href="/mcp-ai-agent-guidelines/tools/agent-workspace/" description="Source-file list/read inside the workspace root. Artifact persistence moved to Serena memory." />
+      <LinkCard title="model-discover" href="/mcp-ai-agent-guidelines/tools/model-discover/" description="Inspect available models and (optionally) persist routing overrides to orchestration.toml" />
       <LinkCard title="graph-visualize" href="/mcp-ai-agent-guidelines/tools/graph-visualize/" description="Generate Mermaid diagrams for chain graphs, skill graphs, and domain views" />
     </CardGrid>
   </TabItem>

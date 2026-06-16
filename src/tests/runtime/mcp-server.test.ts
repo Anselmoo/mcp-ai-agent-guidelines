@@ -32,7 +32,7 @@ afterAll(() => {
 });
 
 describe("mcp server request handlers", () => {
-	it("lists public, workspace, memory, session, snapshot, and orchestration tools", async () => {
+	it("lists public, workspace, model-discover, and graph-visualize tools", async () => {
 		const handlers = createRequestHandlers(createRuntime());
 
 		const result = await handlers.listTools();
@@ -40,10 +40,8 @@ describe("mcp server request handlers", () => {
 
 		expect(names).toContain("feature-implement");
 		expect(names).toContain("agent-workspace");
-		expect(names).toContain("agent-memory-fetch");
-		expect(names).toContain("agent-session-fetch");
-		expect(names).toContain("agent-snapshot-fetch");
-		expect(names).toContain("orchestration-config");
+		expect(names).toContain("model-discover");
+		expect(names).toContain("graph-visualize");
 	});
 
 	it("routes canonical workspace tool calls through MCP-friendly error formatting", async () => {
@@ -122,35 +120,9 @@ describe("mcp server request handlers", () => {
 		expect(prompt.messages[0]?.content.text).toContain("review this code");
 	});
 
-	it("routes auxiliary tool families through their dedicated handlers", async () => {
+	it("routes graph-visualize through its dedicated handler", async () => {
 		const handlers = createRequestHandlers(createRuntime());
 
-		const memoryResult = await handlers.callTool({
-			params: {
-				name: "agent-memory-fetch",
-				arguments: {},
-			},
-		});
-		const sessionResult = await handlers.callTool({
-			params: {
-				name: "agent-session-fetch",
-				arguments: {},
-			},
-		});
-		const snapshotResult = await handlers.callTool({
-			params: {
-				name: "agent-snapshot-fetch",
-				arguments: {},
-			},
-		});
-		const orchestrationResult = await handlers.callTool({
-			params: {
-				name: "orchestration-config",
-				arguments: {
-					command: "read",
-				},
-			},
-		});
 		const visualizationResult = await handlers.callTool({
 			params: {
 				name: "graph-visualize",
@@ -161,57 +133,10 @@ describe("mcp server request handlers", () => {
 			},
 		});
 
-		expect("isError" in memoryResult ? memoryResult.isError : false).toBe(
-			false,
-		);
-		expect(JSON.stringify(memoryResult.content)).toContain("artifact");
-		expect("isError" in sessionResult ? sessionResult.isError : false).toBe(
-			false,
-		);
-		expect(JSON.stringify(sessionResult.content)).toContain("entries");
-		expect("isError" in snapshotResult ? snapshotResult.isError : false).toBe(
-			false,
-		);
-		expect(JSON.stringify(snapshotResult.content)).toContain("present");
-		expect(
-			"isError" in orchestrationResult ? orchestrationResult.isError : false,
-		).toBe(false);
-		expect(JSON.stringify(orchestrationResult.content)).toContain("summary");
 		expect(
 			"isError" in visualizationResult ? visualizationResult.isError : false,
 		).toBe(false);
 		expect(JSON.stringify(visualizationResult.content)).toContain("graph LR");
-	});
-
-	it("surfaces session validation errors and keeps snapshot fetch resilient", async () => {
-		const handlers = createRequestHandlers(createRuntime());
-
-		const sessionResult = await handlers.callTool({
-			params: {
-				name: "agent-session-write",
-				arguments: {
-					target: "scan-results",
-					data: null,
-				},
-			},
-		});
-		const snapshotResult = await handlers.callTool({
-			params: {
-				name: "agent-snapshot-fetch",
-				arguments: {
-					mode: "invalid",
-				},
-			},
-		});
-
-		expect("isError" in sessionResult && sessionResult.isError).toBe(true);
-		expect(JSON.stringify(sessionResult.content)).toContain(
-			"Invalid input for `agent-session-write`",
-		);
-		expect("isError" in snapshotResult ? snapshotResult.isError : false).toBe(
-			false,
-		);
-		expect(JSON.stringify(snapshotResult.content)).toContain("present");
 	});
 
 	it("routes instruction tool calls through the default dispatcher", async () => {

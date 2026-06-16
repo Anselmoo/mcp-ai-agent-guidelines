@@ -395,7 +395,7 @@ describe("orchestration-config: capability-driven resolver", () => {
 		expect(second).toBe(first); // same result, but reloaded
 	});
 
-	it("bootstraps a missing workspace orchestration config from builtin defaults", async () => {
+	it("uses in-memory advisory defaults when no workspace orchestration config exists", async () => {
 		const { loadOrchestrationConfig } = await import(
 			"../../config/orchestration-config.js"
 		);
@@ -409,7 +409,10 @@ describe("orchestration-config: capability-driven resolver", () => {
 				workspaceRoot,
 				ORCHESTRATION_CONFIG_RELATIVE_PATH,
 			);
-			const writtenConfig = readFileSync(configPath, "utf8");
+
+			// Defaults are served from memory; no file is auto-written. Persisting
+			// orchestration state is explicit (model-discover / CLI onboarding).
+			expect(() => readFileSync(configPath, "utf8")).toThrow(/ENOENT/);
 
 			expect(config.environment.strict_mode).toBe(false);
 			expect(config.models.free_primary).toMatchObject({
@@ -417,13 +420,8 @@ describe("orchestration-config: capability-driven resolver", () => {
 				provider: "other",
 				available: true,
 			});
-			expect(writtenConfig).toContain(
-				"Auto-generated from builtin defaults because the workspace file was missing.",
-			);
-			expect(writtenConfig).toContain("strict_mode = false");
 			expect(resolveProfile("default")).toBe("free_primary");
 			expect(resolveForSkill("arch-system")).toBe("strong_primary");
-			expect(writtenConfig).toContain("[environment]");
 
 			resetConfigCache();
 			expect(loadOrchestrationConfig().environment.strict_mode).toBe(false);

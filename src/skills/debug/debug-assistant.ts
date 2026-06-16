@@ -1,4 +1,6 @@
 // src/skills/debug/debug-assistant.ts
+// TODO(coverage): 14 uncovered branches (76.7%) — counted in the 87.38% → 90%
+// project branch-coverage push tracked from PR #1517.
 import { z } from "zod";
 import { debug_assistant_manifest as skillManifest } from "../../generated/manifests/skill-manifests.js";
 import { createSkillModule } from "../create-skill-module.js";

@@ -8,6 +8,27 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Breaking changes
+- Removed MCP tool families `agent-memory-*`, `agent-session-*`, `agent-snapshot-*`, and `orchestration-config`. Cross-session memory and AST queries flow through Serena now — every instruction tool response ends with a `🧭 Serena enrichment` footer naming the exact `mcp__serena__*` call the host should invoke.
+- Reduced `agent-workspace` to source-only commands (`list`, `read`). Removed `persist`, `fetch`, `compare` and `scope=artifact`.
+- Removed the `project-onboard` MCP tool, the workflow-engine checkpointing surface, and the `SessionBootstrap` Hebbian warmup (no more writes to `~/.cache/mcp-ai-agent-guidelines/`).
+- `mcp-cli` slimmed to IDE-integration only: `hooks setup/print/remind-session/remind-drift` and `onboard skills`. All other commands (`onboard init/status/reset`, `orchestration edit/run-pattern`, `memory list/show/sessions`, `report/export/analytics/docs`, `status/info`, `dev test-*`) and the modules behind them (`src/onboarding/`, `src/presentation/`, `model-orchestration-runner`, `script-runner`, `glyphs-layer`) are removed.
+
+### Added
+- `src/serena/client.ts` — `SerenaClient` interface with `AdvisorySerenaClient` (default; emits hints for the host model) and `ChildSerenaClient` (opt-in via `MCP_SERENA_COMMAND`; spawns Serena via stdio).
+- `🧭 Serena enrichment` footer on every instruction tool response, with per-tool `SerenaQuery` mappings for `code-review`, `code-refactor`, `feature-implement`, `issue-debug`, `evidence-research`, `system-design`.
+- New env vars: `MCP_SERENA_COMMAND`, `MCP_SERENA_ARGS`, `MCP_SERENA_CWD`, and `MCP_LOCAL_MEMORY` (opt-in to the legacy per-tool-call TOON memory writes).
+- `npm run test:mcp:serena` — opt-in e2e test gated by `MCP_SERENA_E2E=1` that spawns `uvx serena` and asserts the full `code-review → ChildSerenaClient → footer` round-trip surfaces seeded Serena memory.
+- `src/cli/skill-hook-emitter.ts` — extracted from the deleted `OnboardingWizard.emitSkillHooks` with its own unit test.
+- New docs concept page: `concepts/serena-integration` covering both modes, footer formats, and verification.
+
+### Changed
+- `orchestration.toml` is no longer auto-bootstrapped on missing file; defaults stay in memory. Persist explicitly via `model-discover` save or your host's Serena config (the CLI onboarding wizard that used to do this is removed).
+- Default install no longer writes to `~/.mcp-ai-agent-guidelines/` or `~/.cache/mcp-ai-agent-guidelines/`. Workspace-local `.mcp-ai-agent-guidelines/` is touched only by explicit user actions (drift `compare`, `model-discover save`).
+- Docs site: deleted stale tool pages, added the Serena concept page, documented the new env vars, and rewrote the CLI reference for the slimmed surface.
+- Lint: cleared 20 auto-fixable warnings (unused imports across test files).
+- Consolidated IDE-side automation under `.claude/`: hook JSONs and scripts moved from `.github/hooks/` and `.agent/hooks/`, skills moved from `.github/skills/`, routing rules moved from `.agent/rules/`. Hook command paths in `.claude/hooks/*.json` were updated to reference the new script locations. The `mcp-cli onboard skills --target copilot` command still writes to `.github/skills/` in **user** repos — that's the GitHub Copilot convention for custom skills and is intentional, not a stale reference.
+
 ## [0.17.0] - 2026-05-05
 ### Added
 - implement workspace root anchoring for state storage and enhance ToonMemoryInterface

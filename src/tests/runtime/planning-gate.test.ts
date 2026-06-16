@@ -147,7 +147,7 @@ describe("planning-gate", () => {
 			"getAvailableModelsForClass",
 		).mockReturnValue(["gpt-5.1-mini"]);
 		vi.spyOn(ModelRouter.prototype, "chooseSkillModelById").mockReturnValue(
-			MODEL_PROFILES["strong_primary"]!,
+			MODEL_PROFILES.strong_primary!,
 		);
 		vi.spyOn(modelAvailabilityService, "checkAvailability").mockImplementation(
 			(modelId: string) =>
@@ -166,7 +166,7 @@ describe("planning-gate", () => {
 			}),
 		).resolves.toMatchObject({
 			canExecute: true,
-			recommendedModel: MODEL_PROFILES["free_primary"],
+			recommendedModel: MODEL_PROFILES.free_primary,
 		});
 	});
 
@@ -180,7 +180,7 @@ describe("planning-gate", () => {
 			"getAvailableModelsForClass",
 		).mockReturnValue(["strong_primary"]);
 		vi.spyOn(ModelRouter.prototype, "chooseSkillModelById").mockReturnValue(
-			MODEL_PROFILES["strong_primary"]!,
+			MODEL_PROFILES.strong_primary!,
 		);
 		vi.spyOn(modelAvailabilityService, "checkAvailability").mockReturnValue({
 			available: false,
@@ -247,12 +247,12 @@ describe("planning-gate", () => {
 		vi.spyOn(ModelRouter.prototype, "chooseSkillModelById").mockImplementation(
 			(_skillId, modelClass) => {
 				if (modelClass === "strong") {
-					return MODEL_PROFILES["strong_secondary"]!;
+					return MODEL_PROFILES.strong_secondary!;
 				}
 				if (modelClass === "cheap") {
-					return MODEL_PROFILES["cheap_primary"]!;
+					return MODEL_PROFILES.cheap_primary!;
 				}
-				return MODEL_PROFILES["free_primary"]!;
+				return MODEL_PROFILES.free_primary!;
 			},
 		);
 		vi.spyOn(modelAvailabilityService, "checkAvailability").mockReturnValue({

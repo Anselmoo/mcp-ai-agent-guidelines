@@ -181,7 +181,7 @@ describe("SkillRoutingGraph extra branches", () => {
 		g.addDependency("B", "C");
 		g.addDependency("C", "A"); // cycle
 
-		const router = new SkillRoutingGraph(g);
+		const _router = new SkillRoutingGraph(g);
 		// getTopologicalOrder throws on cycles — detectCycles is separate
 		const cycleAnalysis = g.detectCycles();
 		expect(cycleAnalysis.hasCycle).toBe(true);
