@@ -69,6 +69,22 @@ describe("AdvisorySerenaClient", () => {
 	it("emits no side effects when closed", async () => {
 		await expect(client.close()).resolves.toBeUndefined();
 	});
+
+	it("shapes find_references with relativePath into advisory args (branch: relative_path present)", async () => {
+		const result = await client.query({
+			kind: "find_references",
+			namePath: "Foo.bar",
+			relativePath: "src/foo.ts",
+		});
+
+		expect(result.kind).toBe("advisory");
+		if (result.kind === "advisory") {
+			expect(result.suggestedArgs).toEqual({
+				name_path: "Foo.bar",
+				relative_path: "src/foo.ts",
+			});
+		}
+	});
 });
 
 describe("resolveSerenaClient", () => {
@@ -246,6 +262,37 @@ describe("ChildSerenaClient", () => {
 		await expect(client.close()).resolves.toBeUndefined();
 		expect(sdkClientMock.close).not.toHaveBeenCalled();
 		expect(sdkTransportMock.close).not.toHaveBeenCalled();
+	});
+
+	it("returns an error when client is null after connect (defensive guard branch)", async () => {
+		sdkClientMock.callTool.mockResolvedValue({ ok: true });
+		const client = new ChildSerenaClient({ command: "uvx", args: [] });
+
+		// Establish connection so connectPromise is resolved.
+		await client.query({ kind: "list_memories" });
+
+		// Force the private field to null to trigger the !this.client guard.
+		// connect() returns the cached resolved promise, but client is null.
+		// biome-ignore lint/suspicious/noExplicitAny: accessing private field for test
+		(client as any).client = null;
+
+		const result = await client.query({ kind: "list_memories" });
+		expect(result.kind).toBe("error");
+		if (result.kind === "error") {
+			expect(result.error).toContain("Serena client failed to initialise");
+		}
+	});
+
+	it("includes String(error) in the error message when a non-Error value is thrown", async () => {
+		sdkClientMock.callTool.mockRejectedValue("plain-string-error");
+		const client = new ChildSerenaClient({ command: "uvx", args: [] });
+
+		const result = await client.query({ kind: "list_memories" });
+
+		expect(result.kind).toBe("error");
+		if (result.kind === "error") {
+			expect(result.error).toContain("plain-string-error");
+		}
 	});
 
 	it("write_memory query forwards content in arguments", async () => {
