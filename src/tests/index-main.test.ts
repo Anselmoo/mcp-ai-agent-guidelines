@@ -56,7 +56,9 @@ describe("main()", () => {
 		const { main } = await import("../index.js");
 		await main();
 
-		const output = stderrSpy.mock.calls.map((c) => String(c[0])).join("");
+		const output = stderrSpy.mock.calls
+			.map((c: unknown[]) => String(c[0]))
+			.join("");
 		expect(output).toContain(
 			"[warn] Model router initialization failed: init failed",
 		);
@@ -70,7 +72,9 @@ describe("main()", () => {
 		const { main } = await import("../index.js");
 		await main();
 
-		const output = stderrSpy.mock.calls.map((c) => String(c[0])).join("");
+		const output = stderrSpy.mock.calls
+			.map((c: unknown[]) => String(c[0]))
+			.join("");
 		expect(output).toContain(
 			"[warn] Model router initialization failed: string-rejection",
 		);
