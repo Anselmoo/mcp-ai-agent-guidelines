@@ -1,6 +1,6 @@
 {
     "name": "mcp-ai-agent-guidelines",
-    "version": "0.17.0",
+    "version": "0.18.0",
     "description": "MCP server exposing public instruction workflows as tools, backed by hidden AI agent skills for requirements, orchestration, quality, research, evaluation, governance, resilience, and physics-inspired analysis",
     "main": "dist/index.js",
     "type": "module",
@@ -96,7 +96,7 @@
         "picomatch": "^4.0.4"
     },
     "devDependencies": {
-        "@astrojs/starlight": "^0.39.3",
+        "@astrojs/starlight": "^0.40.0",
         "@biomejs/biome": "2.4.14",
         "@modelcontextprotocol/inspector": "^0.21.1",
         "@types/d3": "^7.4.3",
