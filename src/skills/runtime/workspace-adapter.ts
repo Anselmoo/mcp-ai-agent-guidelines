@@ -4,6 +4,7 @@ import type {
 	WorkspaceEntry,
 	WorkspaceReader,
 } from "../../contracts/runtime.js";
+import { resolveWorkspaceRoot } from "../../runtime/session-store-utils.js";
 
 /**
  * Guard against path traversal.  Throws rather than silently accepting a
@@ -32,7 +33,7 @@ function guardRelativePath(root: string, relativePath: string): string {
  * containment.
  */
 export function createWorkspaceSurface(
-	root: string = process.cwd(),
+	root: string = resolveWorkspaceRoot(),
 ): WorkspaceReader {
 	return {
 		async listFiles(path = "."): Promise<WorkspaceEntry[]> {

@@ -297,6 +297,7 @@ export interface WorkflowExecutionRuntime {
 			input: InstructionInput,
 		) => ModelProfile;
 		chooseReviewerModel: () => ModelProfile;
+		reinitialize?: (workspaceRoot?: string) => Promise<void>;
 	};
 	workflowEngine: {
 		executeInstruction: (

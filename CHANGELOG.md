@@ -8,6 +8,11 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.18.1] - 2026-06-17
+
+### Fixed
+- add nanoid dep and honour MCP_WORKSPACE_ROOT across all entry points
+
 ## [0.18.0] - 2026-06-16
 
 ### Changed

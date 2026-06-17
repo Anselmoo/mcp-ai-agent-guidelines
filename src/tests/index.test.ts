@@ -273,7 +273,7 @@ describe("anchorStateToClientRoots", () => {
 		expect(stderrText).toContain("[info] Workspace root resolved");
 	});
 
-	it("passes a non-file:// URI through unchanged", async () => {
+	it("accepts a non-file:// URI when the path is still absolute", async () => {
 		const server = makeServer({
 			listRoots: vi.fn().mockResolvedValue({ roots: [{ uri: "/raw/path" }] }),
 		});
@@ -289,6 +289,33 @@ describe("anchorStateToClientRoots", () => {
 
 		expect(result).toBe("/raw/path");
 		expect(runtime.workspaceRoot).toBe("/raw/path");
+	});
+
+	it("rejects virtual-filesystem URIs that do not resolve to an absolute path", async () => {
+		const server = makeServer({
+			listRoots: vi.fn().mockResolvedValue({
+				roots: [{ uri: "vscode-vfs://github/org/repo" }],
+			}),
+		});
+		const runtime = makeRuntime();
+		const memory = makeMemory();
+		const stderrSpy = vi
+			.spyOn(process.stderr, "write")
+			.mockImplementation(() => true);
+
+		const result = await anchorStateToClientRoots(
+			server as never,
+			runtime,
+			memory,
+		);
+
+		expect(result).toBeUndefined();
+		expect(memory.setBaseDir).not.toHaveBeenCalled();
+		expect(runtime.workspaceRoot).toBe("/old/root");
+		const stderrText = stderrSpy.mock.calls.map((c) => c[0]).join("");
+		expect(stderrText).toContain(
+			"[warn] Skipping non-filesystem workspace root URI",
+		);
 	});
 
 	it("logs a warning and returns undefined when listRoots throws", async () => {

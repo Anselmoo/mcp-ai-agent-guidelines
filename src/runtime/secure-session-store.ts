@@ -242,9 +242,8 @@ export class SecureFileSessionStore implements SessionStateStore {
 	async readSessionHistoryResult(
 		sessionId: string,
 	): Promise<SessionHistoryReadResult> {
-		resolveSessionStateDir();
-
 		try {
+			resolveSessionStateDir();
 			const contents = await this.readTextFile(this.sessionFilePath(sessionId));
 			const sessionData = parseSessionDataEnvelope(JSON.parse(contents));
 
@@ -326,8 +325,8 @@ export class SecureFileSessionStore implements SessionStateStore {
 		sessionId: string,
 		records: ExecutionProgressRecord[],
 	): Promise<void> {
-		resolveSessionStateDir();
-		await ensureSessionStateGitignore(resolveSessionStateDir());
+		const stateDir = resolveSessionStateDir();
+		await ensureSessionStateGitignore(stateDir);
 
 		let recordsData: ExecutionProgressRecord[] | string = records;
 		let compressed = false;
