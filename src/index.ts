@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { realpathSync } from "node:fs";
-import { join } from "node:path";
+import { isAbsolute, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
@@ -286,14 +286,29 @@ export async function anchorStateToClientRoots(
 		const firstRoot = firstRootUri.startsWith("file://")
 			? fileURLToPath(firstRootUri)
 			: firstRootUri;
+		if (!isAbsolute(firstRoot)) {
+			process.stderr.write(
+				`[warn] Skipping non-filesystem workspace root URI: ${firstRootUri}\n`,
+			);
+			return undefined;
+		}
 		const stateDir = join(firstRoot, DEFAULT_SESSION_STATE_DIR);
 		memoryInterface.setBaseDir(stateDir);
 		runtime.workspaceRoot = firstRoot;
 		// Reset the orchestration config cache so it reloads from the correct
 		// project path (it may have cached a stale home-dir path during
 		// modelRouter.initialize() before roots were known).
-		resetConfigCache();
-		loadOrchestrationConfig(resolveOrchestrationConfigPath(firstRoot));
+		try {
+			resetConfigCache();
+			loadOrchestrationConfig(resolveOrchestrationConfigPath(firstRoot));
+		} catch (configErr) {
+			process.stderr.write(
+				`[warn] Failed to reload orchestration config from ${firstRoot}: ${toErrorMessage(configErr)}\n`,
+			);
+			// Ensure _config is never permanently null after the reset.
+			loadOrchestrationConfig();
+		}
+		await runtime.modelRouter?.reinitialize?.(firstRoot);
 		process.stderr.write(
 			`[info] Workspace root resolved from client roots: ${firstRoot}\n`,
 		);

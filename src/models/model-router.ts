@@ -504,6 +504,15 @@ export class ModelRouter {
 	}
 
 	/**
+	 * Re-initialize after workspace root is anchored to the MCP client root.
+	 * Resets cached availability state so the correct project config is used.
+	 */
+	async reinitialize(workspaceRoot?: string): Promise<void> {
+		this.initPromise = null;
+		await modelAvailabilityService.loadConfig(workspaceRoot);
+	}
+
+	/**
 	 * Get model availability status
 	 */
 	getModelAvailability(modelId: string) {
