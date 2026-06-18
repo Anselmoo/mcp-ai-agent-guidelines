@@ -42,7 +42,6 @@ const MCP_TOOL_PREFIXES = [
   "enterprise-strategy",
   "fault-resilience",
   "routing-adapt",
-  "physics-analysis",
   "agent-memory",
   "agent-session",
   "agent-snapshot",

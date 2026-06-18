@@ -2,6 +2,7 @@
 
 import type { InstructionModule } from "../../contracts/runtime.js";
 import { instructionModule as adapt_module } from "../instructions/adapt.js";
+import { instructionModule as analogy_think_module } from "../instructions/analogy-think.js";
 import { instructionModule as bootstrap_module } from "../instructions/bootstrap.js";
 import { instructionModule as debug_module } from "../instructions/debug.js";
 import { instructionModule as design_module } from "../instructions/design.js";
@@ -13,7 +14,6 @@ import { instructionModule as implement_module } from "../instructions/implement
 import { instructionModule as meta_routing_module } from "../instructions/meta-routing.js";
 import { instructionModule as onboard_project_module } from "../instructions/onboard_project.js";
 import { instructionModule as orchestrate_module } from "../instructions/orchestrate.js";
-import { instructionModule as physics_analysis_module } from "../instructions/physics-analysis.js";
 import { instructionModule as plan_module } from "../instructions/plan.js";
 import { instructionModule as prompt_engineering_module } from "../instructions/prompt-engineering.js";
 import { instructionModule as refactor_module } from "../instructions/refactor.js";
@@ -39,7 +39,7 @@ export const WORKFLOW_PUBLIC_INSTRUCTION_MODULES: InstructionModule[] = [
 	govern_module,
 	resilience_module,
 	adapt_module,
-	physics_analysis_module,
+	analogy_think_module,
 ];
 
 export const DISCOVERY_PUBLIC_INSTRUCTION_MODULES: InstructionModule[] = [

@@ -12,6 +12,20 @@ import { createOperationalLogger } from "../infrastructure/observability.js";
 import { INSTRUCTION_SPECS } from "../instructions/instruction-specs.js";
 import { sharedToonMemoryInterface as memoryInterface } from "../memory/shared-memory.js";
 import type { SerenaClient, SerenaQuery } from "../serena/client.js";
+import { METAPHOR_CATALOG } from "../skills/analogy/catalog.js";
+import { HEURISTIC_EXTRACTOR } from "../skills/analogy/clarify.js";
+import type { Ranker } from "../skills/analogy/matcher.js";
+import { runAnalogyWorkflow } from "../skills/analogy/workflow.js";
+import type {
+	CheckRunner,
+	CheckStatus,
+	MethodologyContext,
+	MethodologyReport,
+} from "../skills/shared/methodology-gate.js";
+import {
+	renderMethodologySection,
+	runMethodologyChecks,
+} from "../skills/shared/methodology-gate.js";
 import {
 	buildContextEvidenceLines,
 	buildContextSourceRefs,
@@ -19,13 +33,18 @@ import {
 } from "../skills/shared/recommendations.js";
 import { skillRequestSchema } from "../validation/core-schemas.js";
 import { createErrorContext, ValidationService } from "../validation/index.js";
-import { formatWorkflowResult } from "./result-formatter.js";
+import {
+	buildWorkflowEnvelopePayload,
+	formatWorkflowResult,
+} from "./result-formatter.js";
+import { buildMcpErrorContent } from "./shared/error-handler.js";
+import { toToolResult } from "./shared/output-envelope.js";
 import {
 	dispatchWorkspaceToolCall,
 	resolveWorkspaceToolName,
 } from "./workspace-tools.js";
 
-type TextToolResult = {
+export type TextToolResult = {
 	content: Array<{
 		type: "text";
 		text: string;
@@ -196,6 +215,25 @@ function buildChainToFooter(
 	].join("\n");
 }
 
+// The four engineering workflow tools that carry a methodology gate section.
+const HOST_TOOLS_WITH_METHODOLOGY_GATE = new Set([
+	"issue-debug",
+	"code-review",
+	"system-design",
+	"evidence-research",
+]);
+
+// Deterministic placeholder runner — returns needs-data for all five checks.
+// An LLM-backed runner is a follow-up task; this stub ships with Task 8.
+const defaultRunner: CheckRunner = async (
+	_name: keyof MethodologyReport,
+	_ctx: MethodologyContext,
+): Promise<CheckStatus> => ({
+	status: "needs-data",
+	question:
+		"LLM runner not yet wired (Task 8 ships a deterministic placeholder)",
+});
+
 export async function dispatchToolCall(
 	toolName: string,
 	args: unknown,
@@ -218,6 +256,77 @@ export async function dispatchToolCall(
 		const workspaceToolName = resolveWorkspaceToolName(toolName);
 		if (workspaceToolName) {
 			return await dispatchWorkspaceToolCall(workspaceToolName, args, runtime);
+		}
+
+		// ── analogy-think: direct dispatch (no workflowEngine, no LLM ranker) ──
+		// Bypasses the standard instruction.execute() path so runAnalogyWorkflow
+		// can return an AnalogyEnvelopePayload rather than WorkflowExecutionResult.
+		// Validation still goes through the registered INSTRUCTION_VALIDATORS entry.
+		// The gateOrderRanker is deterministic and requires no LLM call — it returns
+		// gated catalog entries in catalog order with descending scores (1.0, 0.9, …).
+		if (toolName === "analogy-think") {
+			const validator = INSTRUCTION_VALIDATORS.get(toolName);
+			if (!validator) {
+				throw new Error(
+					`No validator registered for instruction: ${toolName}. ` +
+						"Re-run generate:tool-definitions and rebuild.",
+				);
+			}
+			const parseResult = validator.safeParse(args);
+			if (!parseResult.success) {
+				const issues = parseResult.error.issues
+					.map((issue) =>
+						issue.path.length > 0
+							? `"${issue.path.join(".")}" — ${issue.message}`
+							: issue.message,
+					)
+					.join("; ");
+				return buildMcpErrorContent({
+					category: "validation",
+					code: `TOOL_VALIDATION_${crypto.randomUUID().slice(0, 8).toUpperCase()}`,
+					message: `Invalid input for \`${toolName}\`: ${issues}`,
+					recoverable: true,
+					suggestedAction:
+						"Provide a non-empty `request` string describing the problem.",
+					nextTool: "task-bootstrap",
+				});
+			}
+			const analogyInput = parseResult.data as {
+				request: string;
+				context?: string;
+			};
+			// Deterministic gate-order ranker: returns gated candidates in catalog order
+			// with linearly descending scores (1.0 for first, 0.9 for second, …).
+			// No LLM call; the LLM-backed ranker lands in a follow-up.
+			const gateOrderRanker: Ranker = async (
+				_summary: string,
+				candidates: ReadonlyArray<{ id: string }>,
+			) =>
+				candidates.map((c, i) => ({
+					id: c.id,
+					score: Math.max(0, 1 - i * 0.1),
+				}));
+			// Validate catalog presence at startup
+			if (METAPHOR_CATALOG.length === 0) {
+				throw new Error(
+					"METAPHOR_CATALOG is empty; analogy-think cannot dispatch.",
+				);
+			}
+			const result = await runAnalogyWorkflow(
+				{ request: analogyInput.request, context: analogyInput.context },
+				{ extract: HEURISTIC_EXTRACTOR, rank: gateOrderRanker },
+			);
+			return toToolResult({
+				summaryMarkdown: result.summaryMarkdown,
+				// instructionId is required by the tool-coverage-matrix test which checks
+				// that every workflow tool envelope carries instructionId === toolName.
+				payload: { ...result.payload, instructionId: "analogy-think" },
+				meta: {
+					tool: "analogy-think",
+					ts: new Date().toISOString(),
+					version: 1,
+				},
+			});
 		}
 
 		// Phase B: Wait for ambient startup context (memory refresh + session fetch)
@@ -263,28 +372,15 @@ export async function dispatchToolCall(
 				)
 				.join("; ");
 
-			// Format error using new system
-			const standardError = {
+			return buildMcpErrorContent({
+				category: "validation",
 				code: `TOOL_VALIDATION_${crypto.randomUUID().slice(0, 8).toUpperCase()}`,
 				message: `Invalid input for \`${toolName}\`: ${issues}`,
-				context: {
-					...context,
-					instructionId: toolName,
-				},
 				recoverable: true,
 				suggestedAction:
 					"Review the input parameters and ensure all required fields are provided with valid values.",
-			};
-
-			return {
-				isError: true,
-				content: [
-					{
-						type: "text" as const,
-						text: validationService.formatError(standardError),
-					},
-				],
-			};
+				nextTool: "task-bootstrap",
+			});
 		}
 
 		// Parse through the shared instruction/skill input schema so the public
@@ -300,27 +396,15 @@ export async function dispatchToolCall(
 				)
 				.join("; ");
 
-			const standardError = {
+			return buildMcpErrorContent({
+				category: "validation",
 				code: `TOOL_INPUT_${crypto.randomUUID().slice(0, 8).toUpperCase()}`,
 				message: `Invalid input for \`${toolName}\`: ${issues}`,
-				context: {
-					...context,
-					instructionId: toolName,
-				},
 				recoverable: true,
 				suggestedAction:
 					"Review the tool input and ensure the shared request/context contract is satisfied.",
-			};
-
-			return {
-				isError: true,
-				content: [
-					{
-						type: "text" as const,
-						text: validationService.formatError(standardError),
-					},
-				],
-			};
+				nextTool: "task-bootstrap",
+			});
 		}
 		const input: InstructionInput = inputParseResult.data;
 
@@ -398,7 +482,7 @@ export async function dispatchToolCall(
 			});
 		}
 
-		const formattedText = formatWorkflowResult(result.data);
+		const formattedText = formatWorkflowResult(result.data, toolName);
 		const contextAppendix = buildContextAppendix(input);
 		const responseText = contextAppendix
 			? `${formattedText}\n\n${contextAppendix}`
@@ -537,14 +621,69 @@ export async function dispatchToolCall(
 			.filter(Boolean)
 			.join("\n\n");
 
-		return {
-			content: [{ type: "text" as const, text: appendedText }],
-		};
+		// Wrap every workflow tool in the structured two-block envelope.
+		// content[0] carries the existing prose summary (backwards-compatible).
+		// content[1] carries the machine-parseable WorkflowEnvelopePayload.
+		const rawSummary = appendedText;
+		const rawPayload = buildWorkflowEnvelopePayload(result.data, toolName);
+
+		if (HOST_TOOLS_WITH_METHODOLOGY_GATE.has(toolName)) {
+			const methodologyCtx = {
+				problemSummary: input.request ?? "",
+				toolResult: { summaryMarkdown: rawSummary, payload: rawPayload },
+			};
+			const methodologyReport = await runMethodologyChecks(
+				methodologyCtx,
+				defaultRunner,
+			);
+			const summaryWithGate =
+				rawSummary + "\n\n" + renderMethodologySection(methodologyReport);
+			const payloadWithGate = { ...rawPayload, methodology: methodologyReport };
+			return toToolResult({
+				summaryMarkdown: summaryWithGate,
+				payload: payloadWithGate,
+				meta: {
+					tool: toolName,
+					ts: new Date().toISOString(),
+					version: 1,
+				},
+			});
+		}
+
+		return toToolResult({
+			summaryMarkdown: rawSummary,
+			payload: rawPayload,
+			meta: {
+				tool: toolName,
+				ts: new Date().toISOString(),
+				version: 1,
+			},
+		});
 	} catch (error) {
+		// Detect unknown-instruction / unknown-tool-name errors: these signal that
+		// the agent called a tool name that is not registered, and should route
+		// through meta-routing to get a proper classification before retrying.
+		const errorMessage = toErrorMessage(error);
+		const isUnknownInstruction =
+			errorMessage.startsWith("Unknown instruction tool:") ||
+			errorMessage.startsWith("No validator registered for instruction:");
+
+		if (isUnknownInstruction) {
+			return buildMcpErrorContent({
+				category: "not_found",
+				code: `TOOL_UNKNOWN_${crypto.randomUUID().slice(0, 8).toUpperCase()}`,
+				message: `Tool \`${toolName}\` failed: ${errorMessage}`,
+				recoverable: true,
+				suggestedAction:
+					"Call meta-routing to classify the request and get the correct tool name.",
+				nextTool: "meta-routing",
+			});
+		}
+
 		// Final fallback error handling
 		const standardError = {
 			code: `TOOL_EXECUTION_${crypto.randomUUID().slice(0, 8).toUpperCase()}`,
-			message: `Tool \`${toolName}\` failed: ${toErrorMessage(error)}`,
+			message: `Tool \`${toolName}\` failed: ${errorMessage}`,
 			context: createErrorContext(
 				undefined,
 				toolName,

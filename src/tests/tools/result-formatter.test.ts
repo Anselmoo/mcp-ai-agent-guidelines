@@ -1,6 +1,19 @@
 import { describe, expect, it } from "vitest";
-import type { WorkflowExecutionResult } from "../../contracts/runtime.js";
-import { formatWorkflowResult } from "../../tools/result-formatter.js";
+import type {
+	ExecutionProgressRecord,
+	WorkflowExecutionResult,
+} from "../../contracts/runtime.js";
+import { InstructionRegistry } from "../../instructions/instruction-registry.js";
+import { ModelRouter } from "../../models/model-router.js";
+import { SkillRegistry } from "../../skills/skill-registry.js";
+import {
+	buildWorkflowEnvelopePayload,
+	formatWorkflowResult,
+	type WorkflowEnvelopePayload,
+} from "../../tools/result-formatter.js";
+import { parseEnvelopeBlock } from "../../tools/shared/output-envelope.js";
+import { dispatchToolCall } from "../../tools/tool-call-handler.js";
+import { WorkflowEngine } from "../../workflows/workflow-engine.js";
 
 /** Minimal valid ModelProfile — note: 'strengths' + 'maxContextWindow', no 'provider'/'contextWindow' */
 function makeModel(
@@ -64,13 +77,14 @@ describe("formatWorkflowResult", () => {
 		expect(out).toContain("invokeSkill");
 	});
 
-	it("numbers each step in the progress snapshot section", () => {
+	it("numbers each step in the executed workflow section", () => {
 		const out = formatWorkflowResult(
 			makeResult({
 				steps: [{ label: "Step A", kind: "finalize", summary: "Done" }],
 			}),
 		);
-		expect(out).toMatch(/1\. \*\*Step A\*\*/);
+		expect(out).toContain("## Executed workflow");
+		expect(out).toMatch(/\*\*Step A\*\*/);
 	});
 
 	it("shows 'No recommendations' placeholder when recommendations is empty", () => {
@@ -149,16 +163,14 @@ describe("formatWorkflowResult", () => {
 		expect(out).toContain("Sources:");
 	});
 
-	it("output sections appear in order: heading → workflow → progress → recommendations", () => {
+	it("output sections appear in order: heading → workflow → artifacts → recommendations", () => {
 		const out = formatWorkflowResult(makeResult());
 		const headingPos = out.indexOf("# Review Runtime");
 		const workflowPos = out.indexOf("## Executed workflow");
-		const progressPos = out.indexOf("## Progress snapshot");
 		const artifactsPos = out.indexOf("## Produced artifacts");
 		const recsPos = out.indexOf("## Recommendations");
 		expect(headingPos).toBeLessThan(workflowPos);
-		expect(workflowPos).toBeLessThan(progressPos);
-		expect(progressPos).toBeLessThan(artifactsPos);
+		expect(workflowPos).toBeLessThan(artifactsPos);
 		expect(artifactsPos).toBeLessThan(recsPos);
 	});
 
@@ -287,5 +299,137 @@ describe("formatWorkflowResult", () => {
 			makeResult({ artifacts: undefined, steps: [] }),
 		);
 		expect(out).toContain("No artifacts");
+	});
+
+	it("workflow result markdown no longer renders Progress snapshot section", () => {
+		const out = formatWorkflowResult(
+			makeResult({
+				steps: [{ label: "Step A", kind: "finalize", summary: "Done" }],
+			}),
+		);
+		expect(out).not.toContain("## Progress snapshot");
+		expect(out).toContain("## Executed workflow");
+	});
+});
+
+// ── Fixture runtime (same pattern as tool-call-handler.test.ts) ──────────────
+function createRuntime() {
+	const sessionRecords = new Map<string, string[]>();
+	return {
+		sessionId: "test-result-formatter",
+		executionState: {
+			instructionStack: [],
+			progressRecords: [],
+		},
+		sessionStore: {
+			async readSessionHistory(sessionId: string) {
+				return (sessionRecords.get(sessionId) ?? []).map((stepLabel) => ({
+					stepLabel,
+					kind: "completed",
+					summary: `Completed: ${stepLabel}`,
+				}));
+			},
+			async writeSessionHistory(
+				sessionId: string,
+				records: ExecutionProgressRecord[],
+			) {
+				sessionRecords.set(
+					sessionId,
+					records.map((record) => record.stepLabel),
+				);
+			},
+			async appendSessionHistory(
+				sessionId: string,
+				record: ExecutionProgressRecord,
+			) {
+				sessionRecords.set(sessionId, [
+					...(sessionRecords.get(sessionId) ?? []),
+					record.stepLabel,
+				]);
+			},
+		},
+		instructionRegistry: new InstructionRegistry(),
+		skillRegistry: new SkillRegistry(),
+		modelRouter: new ModelRouter(),
+		workflowEngine: new WorkflowEngine(),
+	};
+}
+
+describe("buildWorkflowEnvelopePayload", () => {
+	it("extracts only id and label from model", () => {
+		const result = makeResult({
+			instructionId: "evidence-research",
+			displayName: "Research: something",
+		});
+		const payload = buildWorkflowEnvelopePayload(result);
+		expect(payload.model).toEqual({ id: "gpt-4o-mini", label: "GPT-4o Mini" });
+		expect(
+			(payload.model as Record<string, unknown>).modelClass,
+		).toBeUndefined();
+	});
+
+	it("maps steps to kind/label/summary triples", () => {
+		const result = makeResult({
+			steps: [{ label: "Step A", kind: "research", summary: "Done A" }],
+		});
+		const payload = buildWorkflowEnvelopePayload(result);
+		expect(payload.steps).toEqual([
+			{ kind: "research", label: "Step A", summary: "Done A" },
+		]);
+	});
+
+	it("merges top-level artifacts and step-level artifacts", () => {
+		const result = makeResult({
+			artifacts: [{ kind: "eval-criteria", title: "Top", criteria: ["C1"] }],
+			steps: [
+				{
+					label: "S",
+					kind: "finalize",
+					summary: "done",
+					skillResult: {
+						skillId: "test-skill",
+						displayName: "Test Skill",
+						model: makeModel(),
+						summary: "ran",
+						recommendations: [],
+						relatedSkills: [],
+						artifacts: [
+							{ kind: "eval-criteria", title: "Step", criteria: ["C2"] },
+						],
+					},
+				},
+			],
+		});
+		const payload = buildWorkflowEnvelopePayload(result);
+		expect(payload.artifacts).toHaveLength(2);
+		expect(payload.artifacts[0].title).toBe("Top");
+		expect(payload.artifacts[1].title).toBe("Step");
+	});
+
+	it("sets recommendations from result.recommendations", () => {
+		const result = makeResult({
+			recommendations: [
+				{ title: "Use DI", detail: "Better testability", modelClass: "cheap" },
+			],
+		});
+		const payload = buildWorkflowEnvelopePayload(result);
+		expect(payload.recommendations).toHaveLength(1);
+		expect(payload.recommendations[0].title).toBe("Use DI");
+	});
+});
+
+describe("evidence-research envelope integration", () => {
+	it("evidence-research result emits both markdown summary and structured payload", async () => {
+		const out = await dispatchToolCall(
+			"evidence-research",
+			{ request: "x" },
+			createRuntime(),
+		);
+		expect(out.content[0].text).toMatch(/^# Research:/m);
+		const parsed = parseEnvelopeBlock<WorkflowEnvelopePayload>(
+			out.content[1].text,
+		);
+		expect(parsed.payload.instructionId).toBe("evidence-research");
+		expect(Array.isArray(parsed.payload.steps)).toBe(true);
 	});
 });

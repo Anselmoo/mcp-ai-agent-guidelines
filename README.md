@@ -363,7 +363,7 @@ Published package note: the npm package ships `dist/`, `README.md`, and `LICENSE
 | `ALLOW_INTENSIVE_SKILLS` | unset / `"false"` | Must be `true` to allow resource-intensive skills such as `bench-eval-suite`, `eval-prompt-bench`, `qm-path-integral-historian`, and `gr-spacetime-debt-metric` |
 | `ENABLE_PHYSICS_SKILLS` | unset / `"false"` | Required by input validation when physics skills are not otherwise authorized; physics skills also require conventional-evidence schema validation |
 | `MCP_WORKSPACE_ROOT` | unset | Absolute path to the project directory the server should write state into (`.mcp-ai-agent-guidelines/`). Required when using `npx` via Claude Desktop, Cursor, or Windsurf — these clients do not preserve the terminal's working directory. VS Code supports `${workspaceFolder}`. |
-| `MCP_SLIM_MODE` | unset / `"false"` | Set to `true` to expose only the minimal surface: `task-bootstrap`, `meta-routing`, and `project-onboard` (useful for low-context agents) |
+| `MCP_FULL_SURFACE` | unset / `"false"` | Set to `true` to expose the full surface; default is slim 3-tool routing surface: `task-bootstrap`, `meta-routing`, `project-onboard` |
 | `MCP_SERENA_COMMAND` | unset | Opt-in. When set, the server spawns Serena as a child MCP server over stdio and resolves Serena queries directly. When unset (default), the server emits structured **advisories** that the host model executes via its own Serena connection — recommended when the host (e.g. Claude Code) already runs Serena. |
 | `MCP_SERENA_ARGS` | unset | Space-separated args passed to `MCP_SERENA_COMMAND`. Example: `--from git+https://github.com/oraios/serena serena-mcp-server`. |
 | `MCP_SERENA_CWD` | unset | Working directory for the spawned Serena child. Defaults to the parent process cwd. |
@@ -430,6 +430,8 @@ Copy the following JSON to `~/.copilot/hooks/mcp-ai-agent-guidelines-hooks.json`
   }
 }
 ```
+
+Manual install: add `scripts/hooks/session-start-bootstrap.mjs` as a SessionStart hook in `~/.claude/settings.json` (or `~/.copilot/hooks/`).
 
 ### Routing guidance
 

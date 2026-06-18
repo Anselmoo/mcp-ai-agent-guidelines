@@ -1,4 +1,12 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import {
+	afterAll,
+	afterEach,
+	beforeAll,
+	beforeEach,
+	describe,
+	expect,
+	it,
+} from "vitest";
 import {
 	expectToolSucceeded,
 	extractText,
@@ -9,6 +17,14 @@ import {
 describe("sdk compatibility lane", () => {
 	let sdkClient: SdkMcpTestClient;
 	const workspaceTool = "agent-workspace";
+
+	beforeAll(() => {
+		process.env.MCP_FULL_SURFACE = "true";
+	});
+
+	afterAll(() => {
+		delete process.env.MCP_FULL_SURFACE;
+	});
 
 	beforeEach(async () => {
 		sdkClient = new SdkMcpTestClient("mcp-sdk-compatibility-lane");
