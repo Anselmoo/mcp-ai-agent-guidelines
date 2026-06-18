@@ -15,13 +15,22 @@ for instr, body in data['instruction_matrix'].items():
 
 coverage_view = set(k for k in data['skill_to_instructions'] if k != '_note')
 
-missing_from_matrix   = all_skills - covered_in_matrix
-missing_from_coverage = all_skills - coverage_view
-ghost_in_matrix       = covered_in_matrix - all_skills
+hidden_skills = data.get('hidden_skills', set())
+
+# Hidden skills are intentionally not exposed on the public routing surface
+# (research scaffolding — see Track C deprecation of physics-analysis).
+# An orphaned hidden skill is allowed; an orphaned VISIBLE skill is a real bug.
+missing_from_matrix_all   = all_skills - covered_in_matrix
+missing_from_coverage_all = all_skills - coverage_view
+allowed_hidden_orphans    = missing_from_matrix_all & hidden_skills
+missing_from_matrix       = missing_from_matrix_all - hidden_skills
+missing_from_coverage     = missing_from_coverage_all - hidden_skills
+ghost_in_matrix           = covered_in_matrix - all_skills
 
 print(f"Total renamed skills:              {len(all_skills)}")
 print(f"Covered in instruction_matrix:     {len(covered_in_matrix)}")
 print(f"Covered in skill_to_instructions:  {len(coverage_view)}")
+print(f"Hidden research-only orphans:      {len(allowed_hidden_orphans)} (allowed)")
 
 instructions = [k for k in data['instruction_matrix'] if not k.startswith('_')]
 expected_total_skills = data.get('_meta', {}).get('total_skills')
