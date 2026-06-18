@@ -14,7 +14,7 @@ Both are deliberately limited. They produce metaphors and methodology checks, no
 
 ## Why this exists
 
-A previous experiment (Track C, recorded in the [conceptual analysis](../../../../superpowers/plans/2026-06-17-track-c-conceptual-analysis.md)) attempted a universal QM/GR translator that took arbitrary engineering context and produced a quantum or relativistic picture. It was deprecated when the structural reasons it cannot work as a universal translator became clear: borrowed vocabulary does not inherit borrowed rigor, no isomorphism is on offer for arbitrary problems, and a framework that can describe anything constrains nothing.
+A previous experiment (Track C, recorded in the conceptual analysis at `.superpowers/plans/2026-06-17-track-c-conceptual-analysis.md` in the repo) attempted a universal QM/GR translator that took arbitrary engineering context and produced a quantum or relativistic picture. It was deprecated when the structural reasons it cannot work as a universal translator became clear: borrowed vocabulary does not inherit borrowed rigor, no isomorphism is on offer for arbitrary problems, and a framework that can describe anything constrains nothing.
 
 `analogy-think` and the methodology gate are the two viable routes that survived that analysis:
 
@@ -153,13 +153,13 @@ A cross-blind regression suite (`src/tests/verification/cross-blind-analogy.test
 
 - **For routine routing.** `analogy-think` is not a planner; use `task-bootstrap` or `meta-routing` for that.
 - **For decisions that need quantitative rigor.** A metaphor is a cognitive scaffold, not a measurement. If the answer matters, gather the evidence the catalog entry lists under `evidenceNeeded`.
-- **For problem classes whose mathematics genuinely matches QM machinery.** Those exist, but they want named handling, not a re-labelled universal adapter — see the [conceptual analysis](../../../../superpowers/plans/2026-06-17-track-c-conceptual-analysis.md) for the structural argument.
+- **For problem classes whose mathematics genuinely matches QM machinery.** Those exist, but they want named handling, not a re-labelled universal adapter — see the conceptual analysis at `.superpowers/plans/2026-06-17-track-c-conceptual-analysis.md` for the structural argument.
 - **As a substitute for engineering practice.** The methodology gate ships in advisory mode. Its checks are prompts to think, not gates that block a deploy.
 
 ## Source pointers
 
-- Spec: `docs/superpowers/specs/2026-06-17-analogy-think-and-methodology-gate-design.md`
-- Plan: `docs/superpowers/plans/2026-06-17-analogy-think-and-methodology-gate.md`
+- Spec: `.superpowers/specs/2026-06-17-analogy-think-and-methodology-gate-design.md`
+- Plan: `.superpowers/plans/2026-06-17-analogy-think-and-methodology-gate.md`
 - Catalog: `src/skills/analogy/catalog.ts`
 - Workflow: `src/skills/analogy/workflow.ts`
 - Methodology gate: `src/skills/shared/methodology-gate.ts`

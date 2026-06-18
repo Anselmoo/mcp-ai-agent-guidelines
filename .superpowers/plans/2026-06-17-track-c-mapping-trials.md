@@ -3,7 +3,7 @@
 **Date:** 2026-06-17
 **Author:** Agent Task C.2 (spike research)
 **Branch:** feat/multi-track-mcp-execution
-**Depends on:** C.1 inventory at `docs/superpowers/plans/2026-06-17-track-c-input-inventory.md`
+**Depends on:** C.1 inventory at `.superpowers/plans/2026-06-17-track-c-input-inventory.md`
 
 ---
 

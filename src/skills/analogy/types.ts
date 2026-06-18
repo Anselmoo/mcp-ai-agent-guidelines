@@ -1,11 +1,11 @@
 /**
  * Catalog types for the analogy-think workflow tool.
  *
- * Companion spec: docs/superpowers/specs/2026-06-17-analogy-think-and-methodology-gate-design.md
+ * Companion spec: .superpowers/specs/2026-06-17-analogy-think-and-methodology-gate-design.md
  *
  * Honest framing: a MetaphorEntry is a structured suggestion, not a theorem.
  * No QM/GR domains are accepted; the conceptual analysis in
- * docs/superpowers/plans/2026-06-17-track-c-conceptual-analysis.md explains why.
+ * .superpowers/plans/2026-06-17-track-c-conceptual-analysis.md explains why.
  */
 
 export type PhysicsDomain =
