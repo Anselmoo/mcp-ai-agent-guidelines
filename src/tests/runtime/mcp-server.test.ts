@@ -33,15 +33,22 @@ afterAll(() => {
 
 describe("mcp server request handlers", () => {
 	it("lists public, workspace, model-discover, and graph-visualize tools", async () => {
-		const handlers = createRequestHandlers(createRuntime());
+		const saved = process.env.MCP_FULL_SURFACE;
+		try {
+			process.env.MCP_FULL_SURFACE = "true";
+			const handlers = createRequestHandlers(createRuntime());
 
-		const result = await handlers.listTools();
-		const names = result.tools.map((tool) => tool.name);
+			const result = await handlers.listTools();
+			const names = result.tools.map((tool) => tool.name);
 
-		expect(names).toContain("feature-implement");
-		expect(names).toContain("agent-workspace");
-		expect(names).toContain("model-discover");
-		expect(names).toContain("graph-visualize");
+			expect(names).toContain("feature-implement");
+			expect(names).toContain("agent-workspace");
+			expect(names).toContain("model-discover");
+			expect(names).toContain("graph-visualize");
+		} finally {
+			if (saved === undefined) delete process.env.MCP_FULL_SURFACE;
+			else process.env.MCP_FULL_SURFACE = saved;
+		}
 	});
 
 	it("routes canonical workspace tool calls through MCP-friendly error formatting", async () => {
@@ -164,15 +171,19 @@ describe("mcp server request handlers", () => {
 
 	describe("adapt tool visibility", () => {
 		const savedAdaptive = process.env.DISABLE_ADAPTIVE_ROUTING;
+		const savedFullSurface = process.env.MCP_FULL_SURFACE;
 
 		afterEach(() => {
 			if (savedAdaptive === undefined)
 				delete process.env.DISABLE_ADAPTIVE_ROUTING;
 			else process.env.DISABLE_ADAPTIVE_ROUTING = savedAdaptive;
+			if (savedFullSurface === undefined) delete process.env.MCP_FULL_SURFACE;
+			else process.env.MCP_FULL_SURFACE = savedFullSurface;
 		});
 
 		it("lists adapt by default (opt-out model)", async () => {
 			delete process.env.DISABLE_ADAPTIVE_ROUTING;
+			process.env.MCP_FULL_SURFACE = "true";
 			const handlers = createRequestHandlers(createRuntime());
 			const result = await handlers.listTools();
 			const names = result.tools.map((tool) => tool.name);
@@ -181,6 +192,7 @@ describe("mcp server request handlers", () => {
 
 		it("hides adapt when DISABLE_ADAPTIVE_ROUTING is true", async () => {
 			process.env.DISABLE_ADAPTIVE_ROUTING = "true";
+			process.env.MCP_FULL_SURFACE = "true";
 			const handlers = createRequestHandlers(createRuntime());
 			const result = await handlers.listTools();
 			const names = result.tools.map((tool) => tool.name);

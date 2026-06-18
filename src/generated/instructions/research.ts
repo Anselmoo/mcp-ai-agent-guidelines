@@ -125,12 +125,7 @@ export const instructionManifest: InstructionManifestEntry = {
 			},
 		],
 	},
-	chainTo: [
-		"strategy-plan",
-		"system-design",
-		"enterprise-strategy",
-		"physics-analysis",
-	],
+	chainTo: ["strategy-plan", "system-design", "enterprise-strategy"],
 	preferredModelClass: "strong",
 	autoChainOnCompletion: false,
 	requiredPreconditions: [],

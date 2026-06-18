@@ -54,9 +54,9 @@ import {
 	MODEL_DISCOVERY_TOOL_NAME,
 } from "./tools/model-discovery.js";
 import {
-	applySlimMode,
 	computeEffectiveHiddenTools,
 	filterHiddenTools,
+	filterToSlimSurface,
 } from "./tools/shared/tool-surface-manifest.js";
 import { dispatchToolCall } from "./tools/tool-call-handler.js";
 import { buildPublicToolSurface } from "./tools/tool-surface.js";
@@ -156,7 +156,7 @@ export function createRuntime(
 export function createRequestHandlers(sharedRuntime = createRuntime()) {
 	return {
 		listTools: async () => ({
-			tools: applySlimMode(
+			tools: filterToSlimSurface(
 				filterHiddenTools(
 					[
 						...buildPublicToolSurface(sharedRuntime.instructionRegistry),

@@ -1,12 +1,11 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
-	applySlimMode,
 	computeEffectiveHiddenTools,
 	computeExternalToolDiagnostics,
 	filterHiddenTools,
+	filterToSlimSurface,
 	getHiddenToolNames,
 	isToolHidden,
-	SLIM_SURFACE_TOOLS,
 	validateExternalToolSurface,
 } from "../../../tools/shared/tool-surface-manifest.js";
 
@@ -213,47 +212,63 @@ describe("computeExternalToolDiagnostics", () => {
 	});
 });
 
-describe("applySlimMode", () => {
-	const FULL_TOOLS = [
-		{ name: "task-bootstrap" },
-		{ name: "meta-routing" },
-		{ name: "project-onboard" },
-		{ name: "feature-implement" },
-		{ name: "system-design" },
-	] as const;
-
-	it("returns all tools when slim mode is off (no env)", () => {
-		const result = applySlimMode([...FULL_TOOLS], undefined);
-		expect(result).toHaveLength(5);
+describe("slim surface default", () => {
+	beforeEach(() => {
+		vi.stubEnv("MCP_FULL_SURFACE", "");
 	});
 
-	it("returns all tools when env override is not 'true'", () => {
-		const result = applySlimMode([...FULL_TOOLS], "false");
-		expect(result).toHaveLength(5);
+	afterEach(() => {
+		vi.unstubAllEnvs();
 	});
 
-	it("filters to only SLIM_SURFACE_TOOLS when env override is 'true'", () => {
-		const result = applySlimMode([...FULL_TOOLS], "true");
-		expect(result).toHaveLength(3);
-		for (const t of result) {
-			expect(SLIM_SURFACE_TOOLS.has(t.name.toLowerCase())).toBe(true);
-		}
+	it("returns the slim subset by default (MCP_FULL_SURFACE not set)", () => {
+		const tools = [
+			{ name: "task-bootstrap" },
+			{ name: "meta-routing" },
+			{ name: "evidence-research" },
+			{ name: "fault-resilience" },
+		];
+		const filtered = filterToSlimSurface(tools, {
+			MCP_FULL_SURFACE: undefined,
+		});
+		expect(filtered.map((t) => t.name).sort()).toEqual(
+			["meta-routing", "task-bootstrap"].sort(),
+		);
 	});
 
-	it("preserves extra properties on surviving tools", () => {
+	it("returns the full surface when MCP_FULL_SURFACE=true", () => {
+		const tools = [{ name: "task-bootstrap" }, { name: "evidence-research" }];
+		const filtered = filterToSlimSurface(tools, { MCP_FULL_SURFACE: "true" });
+		expect(filtered).toEqual(tools);
+	});
+
+	it("returns slim subset when MCP_FULL_SURFACE is not 'true'", () => {
+		const tools = [
+			{ name: "task-bootstrap" },
+			{ name: "meta-routing" },
+			{ name: "feature-implement" },
+		];
+		const filtered = filterToSlimSurface(tools, { MCP_FULL_SURFACE: "false" });
+		expect(filtered.map((t) => t.name).sort()).toEqual(
+			["meta-routing", "task-bootstrap"].sort(),
+		);
+	});
+
+	it("preserves extra properties on surviving slim tools", () => {
 		const rich = [
 			{ name: "task-bootstrap", description: "bootstrap", version: 1 },
 			{ name: "feature-implement", description: "implement", version: 2 },
 		];
-		const result = applySlimMode(rich, "true");
-		expect(result).toHaveLength(1);
-		expect(result[0]?.description).toBe("bootstrap");
-		expect(result[0]?.version).toBe(1);
+		const filtered = filterToSlimSurface(rich, { MCP_FULL_SURFACE: undefined });
+		expect(filtered).toHaveLength(1);
+		expect(filtered[0]?.description).toBe("bootstrap");
+		expect(filtered[0]?.version).toBe(1);
 	});
 
-	it("returns empty array when no tools match the slim surface", () => {
-		const tools = [{ name: "feature-implement" }, { name: "system-design" }];
-		const result = applySlimMode(tools, "true");
-		expect(result).toHaveLength(0);
+	it("analogy-think is excluded from the slim surface", () => {
+		const tools = [{ name: "analogy-think" }, { name: "task-bootstrap" }];
+		const filtered = filterToSlimSurface(tools, {});
+		expect(filtered.map((t) => t.name)).not.toContain("analogy-think");
+		expect(filtered.map((t) => t.name)).toContain("task-bootstrap");
 	});
 });

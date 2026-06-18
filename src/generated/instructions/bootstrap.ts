@@ -100,7 +100,6 @@ export const instructionManifest: InstructionManifestEntry = {
 		"agent-orchestrate",
 		"policy-govern",
 		"enterprise-strategy",
-		"physics-analysis",
 	],
 	preferredModelClass: "free",
 	autoChainOnCompletion: true,

@@ -490,4 +490,28 @@ describe("tool-call-handler", () => {
 			findSpy.mockRestore();
 		}
 	});
+
+	it("validation error for missing required field points to task-bootstrap", async () => {
+		// Trigger the schema-level validator failure: request is required but missing
+		const result = await dispatchToolCall(
+			"code-review",
+			{ request: "" },
+			createRuntime(),
+		);
+		expect(result.isError).toBe(true);
+		const text = result.content[0]?.text ?? "";
+		expect(text).toMatch(/Next: call `task-bootstrap` to proceed\./);
+	});
+
+	it("validation error for unknown instruction tool points to meta-routing", async () => {
+		// Trigger the unknown-instruction error path
+		const result = await dispatchToolCall(
+			"evidence-research-nonexistent",
+			{ request: "some request" },
+			createRuntime(),
+		);
+		expect(result.isError).toBe(true);
+		const text = result.content[0]?.text ?? "";
+		expect(text).toMatch(/Next: call `meta-routing` to proceed\./);
+	});
 });

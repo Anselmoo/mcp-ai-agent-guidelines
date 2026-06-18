@@ -202,6 +202,7 @@ export default defineConfig({
 						{ slug: "reference/env-variables" },
 						{ slug: "reference/cli" },
 						{ slug: "reference/mcp-debugging" },
+						{ slug: "reference/output-envelope" },
 						{ slug: "reference/contributing" },
 					],
 				},
