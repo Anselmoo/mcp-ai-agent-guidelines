@@ -8,7 +8,7 @@
  * translation back to plain engineering language, and an anti-patterns
  * list naming where this metaphor must NOT be applied.
  *
- * Spec: docs/superpowers/specs/2026-06-17-analogy-think-and-methodology-gate-design.md
+ * Spec: .superpowers/specs/2026-06-17-analogy-think-and-methodology-gate-design.md
  */
 
 import type { MetaphorEntry } from "./types.js";

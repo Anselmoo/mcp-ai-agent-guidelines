@@ -5,7 +5,7 @@
  * that requires no LLM calls. It serves as the baseline fallback for
  * feature extraction and is guaranteed to complete synchronously.
  *
- * Companion spec: docs/superpowers/specs/2026-06-17-analogy-think-and-methodology-gate-design.md
+ * Companion spec: .superpowers/specs/2026-06-17-analogy-think-and-methodology-gate-design.md
  */
 
 import type { ProblemFeature } from "./types.js";

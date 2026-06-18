@@ -5,7 +5,7 @@
  * intent, these tests fail even when the unit suite stays green.
  *
  * Companion spec:
- *   docs/superpowers/specs/2026-06-17-analogy-think-and-methodology-gate-design.md
+ *   .superpowers/specs/2026-06-17-analogy-think-and-methodology-gate-design.md
  *
  * The honest header `Metaphor, not theorem.` deliberately contains the word
  * "theorem" as a disclaimer. The rigor-laundering guard therefore scans

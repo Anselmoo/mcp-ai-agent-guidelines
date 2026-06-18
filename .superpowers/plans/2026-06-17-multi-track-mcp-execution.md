@@ -66,7 +66,7 @@
 
 **Files:**
 - Read: `.mcp-ai-agent-guidelines/session-*.json` (existing telemetry)
-- Create: `docs/superpowers/plans/2026-06-17-baseline-metrics.md`
+- Create: `.superpowers/plans/2026-06-17-baseline-metrics.md`
 
 **Interfaces:**
 - Consumes: nothing
@@ -137,7 +137,7 @@ node scripts/audit-mcp-call-ratio.mjs > /tmp/baseline.json
 cat /tmp/baseline.json
 ```
 
-Take the resulting numbers and write `docs/superpowers/plans/2026-06-17-baseline-metrics.md` containing:
+Take the resulting numbers and write `.superpowers/plans/2026-06-17-baseline-metrics.md` containing:
 
 ```markdown
 # Baseline MCP Adoption Metrics (2026-06-17)
@@ -158,7 +158,7 @@ post-rollout.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add scripts/audit-mcp-call-ratio.mjs docs/superpowers/plans/2026-06-17-baseline-metrics.md
+git add scripts/audit-mcp-call-ratio.mjs .superpowers/plans/2026-06-17-baseline-metrics.md
 git commit -m "chore(plans): capture baseline MCP-call adoption metrics"
 ```
 
@@ -425,7 +425,7 @@ git commit -m "feat(hooks): SessionStart nudge that routes the agent to task-boo
 
 **Files:**
 - Use: `scripts/audit-mcp-call-ratio.mjs` from Task 0.1.
-- Create: `docs/superpowers/plans/2026-06-17-track-a-verification.md`
+- Create: `.superpowers/plans/2026-06-17-track-a-verification.md`
 
 **Interfaces:**
 - Consumes: baseline metrics from Task 0.1.
@@ -444,7 +444,7 @@ diff <(jq . /tmp/baseline.json) <(jq . /tmp/post-track-a.json) || true
 
 - [ ] **Step 3: Write the verification doc**
 
-Create `docs/superpowers/plans/2026-06-17-track-a-verification.md` with:
+Create `.superpowers/plans/2026-06-17-track-a-verification.md` with:
 - Baseline ratio (from Task 0.1)
 - Post-change ratio
 - Pass/fail vs. the +15pp target
@@ -453,7 +453,7 @@ Create `docs/superpowers/plans/2026-06-17-track-a-verification.md` with:
 - [ ] **Step 4: Commit**
 
 ```bash
-git add docs/superpowers/plans/2026-06-17-track-a-verification.md
+git add .superpowers/plans/2026-06-17-track-a-verification.md
 git commit -m "docs(plans): Track A verification result"
 ```
 
@@ -886,7 +886,7 @@ git commit -m "docs: ToolEnvelope V1 spec for downstream consumers"
 
 **Files:**
 - Read: `src/skills/shared/physics-adapter-prototype.ts`, `src/tests/skills/shared/physics-adapter-prototype.test.ts`, `src/skills/qm/qm-physics-helpers.ts`, `src/skills/gr/gr-physics-helpers.ts`.
-- Create: `docs/superpowers/plans/2026-06-17-track-c-input-inventory.md`
+- Create: `.superpowers/plans/2026-06-17-track-c-input-inventory.md`
 
 - [ ] **Step 1: Catalog every `PhysicsConcern` blueprint**
 
@@ -898,7 +898,7 @@ The adapter already has `PHYSICS_ADAPTER_GUARDRAILS` (line 76+) that explicitly 
 
 - [ ] **Step 3: Write the inventory doc**
 
-`docs/superpowers/plans/2026-06-17-track-c-input-inventory.md`:
+`.superpowers/plans/2026-06-17-track-c-input-inventory.md`:
 - Table of 12 concerns × {lens, pattern, guardrails}
 - Section: "Shape an input must already have" — a checklist of what the adapter assumes before pattern-matching succeeds (structured metrics, explicit kind labels).
 - Section: "Things the adapter cannot decide" — list inputs that pass the pattern regex but produce vacuous output.
@@ -906,14 +906,14 @@ The adapter already has `PHYSICS_ADAPTER_GUARDRAILS` (line 76+) that explicitly 
 - [ ] **Step 4: Commit**
 
 ```bash
-git add docs/superpowers/plans/2026-06-17-track-c-input-inventory.md
+git add .superpowers/plans/2026-06-17-track-c-input-inventory.md
 git commit -m "docs(spike): catalog physics adapter supported inputs"
 ```
 
 ### Task C.2: Run 3 honest manual mappings on real contexts
 
 **Files:**
-- Create: `docs/superpowers/plans/2026-06-17-track-c-mapping-trials.md`
+- Create: `.superpowers/plans/2026-06-17-track-c-mapping-trials.md`
 
 **Interfaces:**
 - Consumes: C.1 inventory.
@@ -934,19 +934,19 @@ For each mapping, record:
 
 - [ ] **Step 3: Write the trials doc**
 
-`docs/superpowers/plans/2026-06-17-track-c-mapping-trials.md` with one section per context, a fourth section that scores each trial as `load-bearing | decorative | misleading`.
+`.superpowers/plans/2026-06-17-track-c-mapping-trials.md` with one section per context, a fourth section that scores each trial as `load-bearing | decorative | misleading`.
 
 - [ ] **Step 4: Commit**
 
 ```bash
-git add docs/superpowers/plans/2026-06-17-track-c-mapping-trials.md
+git add .superpowers/plans/2026-06-17-track-c-mapping-trials.md
 git commit -m "docs(spike): three manual physics-adapter mapping trials"
 ```
 
 ### Task C.3: Decision doc — narrow, deprecate, or research further
 
 **Files:**
-- Create: `docs/superpowers/plans/2026-06-17-track-c-decision.md`
+- Create: `.superpowers/plans/2026-06-17-track-c-decision.md`
 
 - [ ] **Step 1: Score the spike**
 
@@ -957,12 +957,12 @@ Using C.2 results, count load-bearing vs decorative outcomes. The decision rule:
 
 - [ ] **Step 2: Write the decision**
 
-`docs/superpowers/plans/2026-06-17-track-c-decision.md` records the count, the chosen branch, and the next concrete action.
+`.superpowers/plans/2026-06-17-track-c-decision.md` records the count, the chosen branch, and the next concrete action.
 
 - [ ] **Step 3: Commit**
 
 ```bash
-git add docs/superpowers/plans/2026-06-17-track-c-decision.md
+git add .superpowers/plans/2026-06-17-track-c-decision.md
 git commit -m "docs(spike): physics adapter scoping decision"
 ```
 
@@ -988,7 +988,7 @@ git commit -m "docs(spike): physics adapter scoping decision"
 
 - [ ] **Step 1: Confirm both tracks' verification gates passed**
 
-Track A: `docs/superpowers/plans/2026-06-17-track-a-verification.md` says PASS.
+Track A: `.superpowers/plans/2026-06-17-track-a-verification.md` says PASS.
 Track B: `npx vitest run` is green and the docs site builds.
 
 - [ ] **Step 2: Bump version + CHANGELOG**
@@ -1032,7 +1032,7 @@ Do **not** push or tag without the user's explicit go-ahead — both are visible
 
 ## Execution handoff
 
-Plan complete and saved to `docs/superpowers/plans/2026-06-17-multi-track-mcp-execution.md`. Two execution options:
+Plan complete and saved to `.superpowers/plans/2026-06-17-multi-track-mcp-execution.md`. Two execution options:
 
 1. **Subagent-Driven (recommended for parallel tracks)** — dispatch one subagent per track after Phase 0; review between tasks within each track; reconverge at Phase 4.
 2. **Inline Execution** — run tasks in this session via executing-plans; sequential within a track, but you'd lose the A‖B parallelism.

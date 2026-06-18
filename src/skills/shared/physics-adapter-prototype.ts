@@ -1,8 +1,8 @@
 /**
  * @deprecated 2026-06-17 (Track C.3)
- * Deprecated as production tool. See docs/superpowers/plans/2026-06-17-track-c-decision.md
+ * Deprecated as production tool. See .superpowers/plans/2026-06-17-track-c-decision.md
  * for the empirical rationale (3-trial spike: 0 of 3 mappings load-bearing).
- * See docs/superpowers/plans/2026-06-17-track-c-conceptual-analysis.md for the
+ * See .superpowers/plans/2026-06-17-track-c-conceptual-analysis.md for the
  * structural reasons a universal "translate any problem to a QM/GR picture" framing
  * cannot be made load-bearing — borrowed vocabulary does not inherit borrowed rigor.
  * Code retained as research scaffolding for future trials.

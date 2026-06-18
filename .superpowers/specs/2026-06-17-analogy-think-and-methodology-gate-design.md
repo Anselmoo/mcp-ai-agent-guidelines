@@ -2,8 +2,8 @@
 
 **Companion docs:**
 
-- Track C decision: `docs/superpowers/plans/2026-06-17-track-c-decision.md`
-- Conceptual analysis of universal QM-translation: `docs/superpowers/plans/2026-06-17-track-c-conceptual-analysis.md`
+- Track C decision: `.superpowers/plans/2026-06-17-track-c-decision.md`
+- Conceptual analysis of universal QM-translation: `.superpowers/plans/2026-06-17-track-c-conceptual-analysis.md`
 
 **Status:** Design approved in conversation 2026-06-17. Awaiting written-spec review before plan generation.
 

@@ -8,7 +8,7 @@
 
 **Tech Stack:** TypeScript 5.x strict, Vitest, neverthrow/ts-pattern (already in repo), Node ESM.
 
-**Spec:** `docs/superpowers/specs/2026-06-17-analogy-think-and-methodology-gate-design.md` (commit `4c2ad02`).
+**Spec:** `.superpowers/specs/2026-06-17-analogy-think-and-methodology-gate-design.md` (commit `4c2ad02`).
 
 ## Global Constraints
 

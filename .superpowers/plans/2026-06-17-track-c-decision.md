@@ -90,13 +90,13 @@ Even with this confound in mind, the deprecate verdict holds because:
 
 Track C.4 will implement the following code changes:
 
-1. **Drop from routing manifest:** Remove `physics-analysis` from the public skill surface and routing configuration files (e.g., `src/skills/physics-analysis/index.ts` exports, `docs/superpowers/routing-manifest.md` skill inventory).
+1. **Drop from routing manifest:** Remove `physics-analysis` from the public skill surface and routing configuration files (e.g., `src/skills/physics-analysis/index.ts` exports, `.superpowers/routing-manifest.md` skill inventory).
 
 2. **Mark deprecated:** Add a `@deprecated` JSDoc tag to the entry point with a comment:
    ```typescript
    /**
     * @deprecated 2026-06-17 (Track C.3)
-    * Deprecated as production tool. See docs/superpowers/plans/2026-06-17-track-c-decision.md
+    * Deprecated as production tool. See .superpowers/plans/2026-06-17-track-c-decision.md
     * for decision rationale. Code retained as research scaffolding for future trials.
     * Re-evaluation trigger: when session telemetry includes domain-specific engineering
     * keywords and structured metrics (see "Re-evaluation Trigger" in decision doc).

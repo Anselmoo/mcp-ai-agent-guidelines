@@ -115,7 +115,7 @@ Declaring PASS based on a +0.84pp signal from pre-change sessions would be misle
 ## Commit
 
 ```bash
-git add docs/superpowers/plans/2026-06-17-track-a-verification.md
+git add .superpowers/plans/2026-06-17-track-a-verification.md
 git commit -m "docs(plans): Track A verification deferred — telemetry granularity limit"
 ```
 
@@ -124,6 +124,6 @@ git commit -m "docs(plans): Track A verification deferred — telemetry granular
 ## References
 
 - Task A.1–A.4 brief: `.git/sdd/track-a-brief.md`
-- Task 0.1 baseline doc: `docs/superpowers/plans/2026-06-17-baseline-metrics.md` (telemetry granularity note)
+- Task 0.1 baseline doc: `.superpowers/plans/2026-06-17-baseline-metrics.md` (telemetry granularity note)
 - Audit script: `scripts/audit-mcp-call-ratio.mjs`
 - Session corpus: `.mcp-ai-agent-guidelines/session-*.json`
