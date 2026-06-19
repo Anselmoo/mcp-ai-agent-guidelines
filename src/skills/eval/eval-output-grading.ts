@@ -2,6 +2,7 @@ import { z } from "zod";
 import { eval_output_grading_manifest as skillManifest } from "../../generated/manifests/skill-manifests.js";
 import { createSkillModule } from "../create-skill-module.js";
 import type { SkillHandler } from "../runtime/contracts.js";
+import { analyzeOrDirective } from "../shared/analyze-or-directive.js";
 import {
 	buildComparisonMatrixArtifact,
 	buildEvalCriteriaArtifact,
@@ -116,7 +117,8 @@ const evalOutputGradingHandler: SkillHandler = {
 			`Grade "${summarizeKeywords(parsed.data).join(", ") || "the requested outputs"}" with a ${gradingMode} primary mode. The grading plan should define what the grader looks for, how evidence is recorded, and what happens when scores conflict.`,
 		];
 
-		details.push(...matchEvalRules(EVAL_OUTPUT_GRADING_RULES, combined));
+		const matchedRules = matchEvalRules(EVAL_OUTPUT_GRADING_RULES, combined);
+		details.push(...matchedRules);
 
 		if (includeCalibration) {
 			details.push(
@@ -268,14 +270,25 @@ const evalOutputGradingHandler: SkillHandler = {
 			),
 		];
 
+		const { recommendation: leadAnalysis } = await analyzeOrDirective(context, {
+			domain: "output-grading protocol",
+			criteria: matchedRules,
+			input: parsed.data,
+			outputContract:
+				"a grading protocol naming what the grader checks, how evidence is recorded, the score thresholds, and how grader disagreements resolve",
+		});
+
 		return createCapabilityResult(
 			context,
 			`Output Grading produced ${details.length - 1} grading-protocol guideline${details.length === 2 ? "" : "s"} (mode: ${gradingMode}; calibration: ${includeCalibration ? "included" : "omitted"}; disagreement: ${disagreementPolicy}).`,
-			createFocusRecommendations(
-				"Output grading guidance",
-				details,
-				context.model.modelClass,
-			),
+			[
+				leadAnalysis,
+				...createFocusRecommendations(
+					"Output grading guidance",
+					details,
+					context.model.modelClass,
+				),
+			],
 			artifacts,
 		);
 	},

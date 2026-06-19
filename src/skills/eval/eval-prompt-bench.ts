@@ -2,6 +2,7 @@ import { z } from "zod";
 import { eval_prompt_bench_manifest as skillManifest } from "../../generated/manifests/skill-manifests.js";
 import { createSkillModule } from "../create-skill-module.js";
 import type { SkillHandler } from "../runtime/contracts.js";
+import { analyzeOrDirective } from "../shared/analyze-or-directive.js";
 import {
 	buildComparisonMatrixArtifact,
 	buildEvalCriteriaArtifact,
@@ -110,7 +111,8 @@ const evalPromptBenchHandler: SkillHandler = {
 			`Benchmark "${summarizeKeywords(parsed.data).join(", ") || "the requested prompt variants"}" with a ${comparisonMode} comparison mode over a ${regressionWindow} regression window. The benchmark should support an explicit keep/replace decision for each prompt variant.`,
 		];
 
-		details.push(...matchEvalRules(EVAL_PROMPT_BENCH_RULES, combined));
+		const matchedRules = matchEvalRules(EVAL_PROMPT_BENCH_RULES, combined);
+		details.push(...matchedRules);
 
 		if (promptCount !== undefined) {
 			details.push(
@@ -256,14 +258,25 @@ const evalPromptBenchHandler: SkillHandler = {
 			),
 		];
 
+		const { recommendation: leadAnalysis } = await analyzeOrDirective(context, {
+			domain: "prompt benchmark",
+			criteria: matchedRules,
+			input: parsed.data,
+			outputContract:
+				"a benchmark verdict naming the winning variant, the per-variant regression risk, and the keep/replace decision for each prompt",
+		});
+
 		return createCapabilityResult(
 			context,
 			`Prompt Benchmarking produced ${details.length - 1} prompt-benchmark guideline${details.length === 2 ? "" : "s"} (comparison mode: ${comparisonMode}; regression window: ${regressionWindow}${promptCount !== undefined ? `; prompt count: ${promptCount}` : ""}).`,
-			createFocusRecommendations(
-				"Prompt benchmarking guidance",
-				details,
-				context.model.modelClass,
-			),
+			[
+				leadAnalysis,
+				...createFocusRecommendations(
+					"Prompt benchmarking guidance",
+					details,
+					context.model.modelClass,
+				),
+			],
 			artifacts,
 		);
 	},

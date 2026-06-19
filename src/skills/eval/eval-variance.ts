@@ -2,6 +2,7 @@ import { z } from "zod";
 import { eval_variance_manifest as skillManifest } from "../../generated/manifests/skill-manifests.js";
 import { createSkillModule } from "../create-skill-module.js";
 import type { SkillHandler } from "../runtime/contracts.js";
+import { analyzeOrDirective } from "../shared/analyze-or-directive.js";
 import {
 	buildComparisonMatrixArtifact,
 	buildEvalCriteriaArtifact,
@@ -108,7 +109,8 @@ const evalVarianceHandler: SkillHandler = {
 			`Analyze variance for "${summarizeKeywords(parsed.data).join(", ") || "the requested workflow surface"}" with a focus on ${varianceSource} as the likely source. The report should explain the spread of outcomes, the acceptable tolerance, and the next isolation step.`,
 		];
 
-		details.push(...matchEvalRules(EVAL_VARIANCE_RULES, combined));
+		const matchedRules = matchEvalRules(EVAL_VARIANCE_RULES, combined);
+		details.push(...matchedRules);
 
 		if (runCount !== undefined) {
 			details.push(
@@ -261,14 +263,25 @@ const evalVarianceHandler: SkillHandler = {
 			),
 		];
 
+		const { recommendation: leadAnalysis } = await analyzeOrDirective(context, {
+			domain: "variance analysis",
+			criteria: matchedRules,
+			input: parsed.data,
+			outputContract:
+				"a variance report naming the spread of outcomes, the acceptable tolerance band, and the next isolation step",
+		});
+
 		return createCapabilityResult(
 			context,
 			`Variance Analysis produced ${details.length - 1} variance-guideline${details.length === 2 ? "" : "s"} (variance source: ${varianceSource}${runCount !== undefined ? `; run count: ${runCount}` : ""}${tolerancePct !== undefined ? `; tolerance: ${tolerancePct}%` : ""}).`,
-			createFocusRecommendations(
-				"Variance analysis guidance",
-				details,
-				context.model.modelClass,
-			),
+			[
+				leadAnalysis,
+				...createFocusRecommendations(
+					"Variance analysis guidance",
+					details,
+					context.model.modelClass,
+				),
+			],
 			artifacts,
 		);
 	},

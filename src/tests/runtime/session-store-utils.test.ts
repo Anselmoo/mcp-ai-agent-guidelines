@@ -1,5 +1,12 @@
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import {
+	mkdir,
+	mkdtemp,
+	readdir,
+	readFile,
+	rm,
+	writeFile,
+} from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -13,6 +20,7 @@ import {
 	resolveSessionStateDirAsync,
 	runExclusiveSessionOperation,
 	SESSION_STATE_DIR_ENV_VAR,
+	sweepStaleTempFiles,
 	writeTextFileAtomic,
 } from "../../runtime/session-store-utils.js";
 
@@ -360,5 +368,56 @@ describe("resolveSessionStateDirAsync — MCP_WORKSPACE_ROOT branch", () => {
 			}
 			rmSync(tmpBase, { recursive: true, force: true });
 		}
+	});
+});
+
+describe("writeTextFileAtomic temp cleanup", () => {
+	it("leaves no .tmp file behind on a successful write", async () => {
+		const dir = await mkdtemp(join(tmpdir(), "atomic-"));
+		try {
+			await writeTextFileAtomic(join(dir, "a.json"), "ok");
+			const entries = await readdir(dir);
+			expect(entries.filter((e) => e.endsWith(".tmp"))).toHaveLength(0);
+			expect(await readFile(join(dir, "a.json"), "utf8")).toBe("ok");
+		} finally {
+			await rm(dir, { recursive: true, force: true });
+		}
+	});
+
+	it("removes the temp file when the rename fails", async () => {
+		const dir = await mkdtemp(join(tmpdir(), "atomic-"));
+		try {
+			// Make the target a directory so rename(tempFile, target) fails.
+			const target = join(dir, "target");
+			await mkdir(target);
+			await expect(writeTextFileAtomic(target, "data")).rejects.toBeTruthy();
+			const entries = await readdir(dir);
+			expect(entries.filter((e) => e.endsWith(".tmp"))).toHaveLength(0);
+		} finally {
+			await rm(dir, { recursive: true, force: true });
+		}
+	});
+});
+
+describe("sweepStaleTempFiles", () => {
+	it("sweeps stale .tmp files and returns the count", async () => {
+		const dir = await mkdtemp(join(tmpdir(), "sweep-"));
+		try {
+			await writeFile(join(dir, "session-a.json.123.tmp"), "");
+			await writeFile(join(dir, "session-b.json"), "keep");
+			const removed = await sweepStaleTempFiles(dir);
+			expect(removed).toBe(1);
+			const entries = await readdir(dir);
+			expect(entries).toContain("session-b.json");
+			expect(entries.some((e) => e.endsWith(".tmp"))).toBe(false);
+		} finally {
+			await rm(dir, { recursive: true, force: true });
+		}
+	});
+
+	it("returns 0 and does not throw when the directory is missing", async () => {
+		expect(
+			await sweepStaleTempFiles(join(tmpdir(), "no-such-dir-xyz-123")),
+		).toBe(0);
 	});
 });
