@@ -33,6 +33,31 @@ describe("eval-design", () => {
 		);
 	});
 
+	it("emits a return-a-prompt analysis directive grounded in the request", async () => {
+		const result = await expectSkillGuidance(
+			skillModule,
+			{
+				request: "design an eval dataset with assertions and hard negatives",
+				options: { datasetStyle: "mixed" },
+			},
+			{ summaryIncludes: ["Eval Design produced"] },
+		);
+
+		const directive = result.recommendations.find((r) =>
+			r.title.toLowerCase().startsWith("analyze your"),
+		);
+		expect(directive).toBeDefined();
+		expect(directive?.detail.toLowerCase()).toContain("analysis task");
+		expect(directive?.detail.toLowerCase()).toContain("cite");
+		expect(directive?.detail).toContain(
+			"design an eval dataset with assertions and hard negatives",
+		);
+		// The directive leads the recommendations so the agent sees the task first.
+		expect(result.recommendations[0]?.title.toLowerCase()).toMatch(
+			/^analyze your/,
+		);
+	});
+
 	it("asks for more detail when the request is empty", async () => {
 		await expectInsufficientSignalHandling(skillModule);
 	});

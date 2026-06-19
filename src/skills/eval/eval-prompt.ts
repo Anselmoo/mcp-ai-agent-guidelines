@@ -2,6 +2,7 @@ import { z } from "zod";
 import { eval_prompt_manifest as skillManifest } from "../../generated/manifests/skill-manifests.js";
 import { createSkillModule } from "../create-skill-module.js";
 import type { SkillHandler } from "../runtime/contracts.js";
+import { buildAnalysisDirective } from "../shared/analysis-directive.js";
 import {
 	buildComparisonMatrixArtifact,
 	buildEvalCriteriaArtifact,
@@ -114,7 +115,8 @@ const evalPromptHandler: SkillHandler = {
 			`Evaluate "${summarizeKeywords(parsed.data).join(", ") || "the requested prompt asset"}" with a ${scoreMode} scoring mode against a ${benchmarkFamily} benchmark family. The evaluation should make it obvious which prompt behavior is being rewarded, penalized, or compared.`,
 		];
 
-		details.push(...matchEvalRules(EVAL_PROMPT_RULES, combined));
+		const matchedRules = matchEvalRules(EVAL_PROMPT_RULES, combined);
+		details.push(...matchedRules);
 
 		if (includeBaselines) {
 			details.push(
@@ -260,11 +262,21 @@ const evalPromptHandler: SkillHandler = {
 		return createCapabilityResult(
 			context,
 			`Prompt Evaluation produced ${details.length - 1} prompt-eval guideline${details.length === 2 ? "" : "s"} (score mode: ${scoreMode}; benchmark family: ${benchmarkFamily}; baseline: ${includeBaselines ? "included" : "omitted"}).`,
-			createFocusRecommendations(
-				"Prompt evaluation guidance",
-				details,
-				context.model.modelClass,
-			),
+			[
+				buildAnalysisDirective({
+					domain: "prompt evaluation",
+					criteria: matchedRules,
+					input: parsed.data,
+					outputContract:
+						"a prompt-eval verdict naming the score per benchmark slice and the keep/change/rollback decision",
+					modelClass: context.model.modelClass,
+				}),
+				...createFocusRecommendations(
+					"Prompt evaluation guidance",
+					details,
+					context.model.modelClass,
+				),
+			],
 			artifacts,
 		);
 	},
