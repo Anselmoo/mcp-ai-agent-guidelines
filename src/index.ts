@@ -36,6 +36,7 @@ import {
 	buildPublicResources,
 	readPublicResource,
 } from "./resources/resource-surface.js";
+import { attachSamplerCapability } from "./runtime/attach-sampler.js";
 import { createIntegratedRuntime } from "./runtime/integration.js";
 import {
 	createSessionId,
@@ -342,6 +343,10 @@ export async function main() {
 
 	// Phase C: Anchor state storage to the MCP client's workspace root.
 	await anchorStateToClientRoots(server, runtime);
+
+	// Attach the optional MCP sampling capability so skills can request
+	// real, project-specific analysis when the client supports it.
+	attachSamplerCapability(runtime, server);
 
 	void (async () => {
 		resolveContextReady();
