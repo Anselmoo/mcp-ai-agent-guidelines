@@ -47,6 +47,16 @@ import {
 export const DEFAULT_SESSION_STATE_DIR = ".mcp-ai-agent-guidelines";
 export const SESSION_STATE_DIR_ENV_VAR = "MCP_AI_AGENT_GUIDELINES_STATE_DIR";
 export const WORKSPACE_ROOT_ENV_VAR = "MCP_WORKSPACE_ROOT";
+export const EPHEMERAL_ENV_VAR = "MCP_AI_AGENT_GUIDELINES_EPHEMERAL";
+
+/**
+ * Ephemeral mode keeps all session/memory state in-process and writes nothing to
+ * the user's project. Enabled via `MCP_AI_AGENT_GUIDELINES_EPHEMERAL=true` (or `1`).
+ */
+export function isEphemeralMode(): boolean {
+	const raw = process.env[EPHEMERAL_ENV_VAR]?.trim().toLowerCase();
+	return raw === "true" || raw === "1";
+}
 const INVALID_LITERAL_STATE_DIRS = new Set(["undefined", "null"]);
 const SESSION_STATE_GITIGNORE_PATH = ".gitignore";
 const SESSION_STATE_GITIGNORE_REQUIRED_RULES = [
