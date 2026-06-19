@@ -2,7 +2,7 @@ import { z } from "zod";
 import { eval_variance_manifest as skillManifest } from "../../generated/manifests/skill-manifests.js";
 import { createSkillModule } from "../create-skill-module.js";
 import type { SkillHandler } from "../runtime/contracts.js";
-import { buildAnalysisDirective } from "../shared/analysis-directive.js";
+import { analyzeOrDirective } from "../shared/analyze-or-directive.js";
 import {
 	buildComparisonMatrixArtifact,
 	buildEvalCriteriaArtifact,
@@ -263,18 +263,19 @@ const evalVarianceHandler: SkillHandler = {
 			),
 		];
 
+		const { recommendation: leadAnalysis } = await analyzeOrDirective(context, {
+			domain: "variance analysis",
+			criteria: matchedRules,
+			input: parsed.data,
+			outputContract:
+				"a variance report naming the spread of outcomes, the acceptable tolerance band, and the next isolation step",
+		});
+
 		return createCapabilityResult(
 			context,
 			`Variance Analysis produced ${details.length - 1} variance-guideline${details.length === 2 ? "" : "s"} (variance source: ${varianceSource}${runCount !== undefined ? `; run count: ${runCount}` : ""}${tolerancePct !== undefined ? `; tolerance: ${tolerancePct}%` : ""}).`,
 			[
-				buildAnalysisDirective({
-					domain: "variance analysis",
-					criteria: matchedRules,
-					input: parsed.data,
-					outputContract:
-						"a variance report naming the spread of outcomes, the acceptable tolerance band, and the next isolation step",
-					modelClass: context.model.modelClass,
-				}),
+				leadAnalysis,
 				...createFocusRecommendations(
 					"Variance analysis guidance",
 					details,

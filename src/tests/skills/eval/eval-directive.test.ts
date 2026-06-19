@@ -1,11 +1,14 @@
-import { describe, expect, it } from "vitest";
-import type { InstructionInput } from "../../../contracts/runtime.js";
+import { describe, expect, it, vi } from "vitest";
+import type { InstructionInput, Sampler } from "../../../contracts/runtime.js";
 import { skillModule as evalDesign } from "../../../skills/eval/eval-design.js";
 import { skillModule as evalOutputGrading } from "../../../skills/eval/eval-output-grading.js";
 import { skillModule as evalPrompt } from "../../../skills/eval/eval-prompt.js";
 import { skillModule as evalPromptBench } from "../../../skills/eval/eval-prompt-bench.js";
 import { skillModule as evalVariance } from "../../../skills/eval/eval-variance.js";
-import { expectSkillGuidance } from "../test-helpers.js";
+import {
+	createMockSkillRuntime,
+	expectSkillGuidance,
+} from "../test-helpers.js";
 
 // Every eval skill behind `quality-evaluate` must lead with a return-a-prompt
 // directive so the calling agent performs project-specific analysis rather than
@@ -67,4 +70,17 @@ describe("eval skills emit a return-a-prompt directive", () => {
 			expect(lead?.groundingScope).toBe("context");
 		});
 	}
+
+	it("uses the sampler to produce findings when the client supports it", async () => {
+		const sampler: Sampler = vi.fn().mockResolvedValue({
+			text: "Your golden.jsonl lacks hard negatives.",
+		});
+		const result = await evalDesign.run(
+			{ request: "design an eval dataset with assertions and hard negatives" },
+			{ ...createMockSkillRuntime(), sampler, clientSupportsSampling: true },
+		);
+		const lead = result.recommendations[0];
+		expect(lead?.title.toLowerCase()).toMatch(/^analysis of your/);
+		expect(lead?.detail).toContain("Your golden.jsonl lacks hard negatives.");
+	});
 });
