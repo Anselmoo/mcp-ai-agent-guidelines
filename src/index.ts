@@ -46,6 +46,7 @@ import {
 import {
 	DEFAULT_SESSION_STATE_DIR,
 	resolveWorkspaceRoot,
+	sweepStaleTempFiles,
 } from "./runtime/session-store-utils.js";
 import { resolveSerenaClient, type SerenaClient } from "./serena/client.js";
 import { SkillRegistry } from "./skills/skill-registry.js";
@@ -347,6 +348,13 @@ export async function main() {
 	// Attach the optional MCP sampling capability so skills can request
 	// real, project-specific analysis when the client supports it.
 	attachSamplerCapability(runtime, server);
+
+	// Best-effort sweep of orphaned temp files left by interrupted atomic writes.
+	if (runtime.workspaceRoot) {
+		void sweepStaleTempFiles(
+			join(runtime.workspaceRoot, DEFAULT_SESSION_STATE_DIR),
+		).catch(() => {});
+	}
 
 	void (async () => {
 		resolveContextReady();

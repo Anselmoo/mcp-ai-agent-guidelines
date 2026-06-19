@@ -1,6 +1,14 @@
 import { randomUUID } from "node:crypto";
 import { existsSync } from "node:fs";
-import { access, mkdir, readFile, rename, writeFile } from "node:fs/promises";
+import {
+	access,
+	mkdir,
+	readdir,
+	readFile,
+	rename,
+	rm,
+	writeFile,
+} from "node:fs/promises";
 import {
 	dirname,
 	isAbsolute,
@@ -287,8 +295,40 @@ export async function writeTextFileAtomic(
 ): Promise<void> {
 	await mkdir(dirname(targetPath), { recursive: true });
 	const tempPath = `${targetPath}.${randomUUID()}.tmp`;
-	await writeFile(tempPath, contents, "utf8");
-	await rename(tempPath, targetPath);
+	let renamed = false;
+	try {
+		await writeFile(tempPath, contents, "utf8");
+		await rename(tempPath, targetPath);
+		renamed = true;
+	} finally {
+		if (!renamed) {
+			await rm(tempPath, { force: true }).catch(() => {});
+		}
+	}
+}
+
+/**
+ * Best-effort removal of orphaned `*.tmp` files left in a state directory by
+ * interrupted atomic writes. Never throws; returns the number of files removed.
+ * Intended to run once at startup so stale temp files do not accumulate in a
+ * user's project.
+ */
+export async function sweepStaleTempFiles(dir: string): Promise<number> {
+	let removed = 0;
+	try {
+		const entries = await readdir(dir);
+		await Promise.all(
+			entries
+				.filter((name) => name.endsWith(".tmp"))
+				.map(async (name) => {
+					await rm(join(dir, name), { force: true }).catch(() => {});
+					removed += 1;
+				}),
+		);
+	} catch {
+		// missing dir or permission issue — nothing to sweep
+	}
+	return removed;
 }
 
 /**
