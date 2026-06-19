@@ -15,25 +15,6 @@
       "evidence": ["package.json", "src/index.ts"],
       "notes": "Core MCP server/runtime package."
     },
-    "@toon-format/toon": {
-      "section": "dependencies",
-      "status": "questionable",
-      "layer": "runtime",
-      "owners": ["prompt", "flow", "orch", "shared"],
-      "allowedPaths": [
-        "src/skills/prompt/**",
-        "src/skills/flow/**",
-        "src/skills/orch/**",
-        "src/skills/shared/**"
-      ],
-      "evidence": [
-        "package.json",
-        ".github/skills/core-prompt-chaining/SKILL.md",
-        "src/skills/flow/flow-context-handoff.ts",
-        "src/skills/orch/orch-result-synthesis.ts"
-      ],
-      "notes": "Candidate for structured exchange/output formatting if plain text becomes too fragile."
-    },
     "@biomejs/biome": {
       "section": "devDependencies",
       "status": "used-now",
