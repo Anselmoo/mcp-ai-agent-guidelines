@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { realpathSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { isAbsolute, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
@@ -36,7 +37,9 @@ import {
 	buildPublicResources,
 	readPublicResource,
 } from "./resources/resource-surface.js";
+import { attachSamplerCapability } from "./runtime/attach-sampler.js";
 import { createIntegratedRuntime } from "./runtime/integration.js";
+import { MemorySessionStore } from "./runtime/memory-session-store.js";
 import {
 	createSessionId,
 	isValidSessionId,
@@ -44,7 +47,9 @@ import {
 } from "./runtime/secure-session-store.js";
 import {
 	DEFAULT_SESSION_STATE_DIR,
+	isEphemeralMode,
 	resolveWorkspaceRoot,
+	sweepStaleTempFiles,
 } from "./runtime/session-store-utils.js";
 import { resolveSerenaClient, type SerenaClient } from "./serena/client.js";
 import { SkillRegistry } from "./skills/skill-registry.js";
@@ -143,7 +148,9 @@ export function createRuntime(
 			instructionStack: [],
 			progressRecords: [] as ExecutionProgressRecord[],
 		},
-		sessionStore: new SecureFileSessionStore(),
+		sessionStore: isEphemeralMode()
+			? new MemorySessionStore()
+			: new SecureFileSessionStore(),
 		instructionRegistry,
 		skillRegistry,
 		modelRouter,
@@ -273,6 +280,14 @@ export async function anchorStateToClientRoots(
 		setBaseDir(dir: string): void;
 	} = sharedToonMemoryInterface,
 ): Promise<string | undefined> {
+	// Ephemeral mode never anchors state to the user's project — point memory at a
+	// throwaway temp dir and skip workspace anchoring entirely.
+	if (isEphemeralMode()) {
+		memoryInterface.setBaseDir(
+			join(tmpdir(), `mcp-aag-ephemeral-${crypto.randomUUID()}`),
+		);
+		return undefined;
+	}
 	try {
 		const clientCaps = server.getClientCapabilities();
 		if (!clientCaps?.roots) {
@@ -342,6 +357,17 @@ export async function main() {
 
 	// Phase C: Anchor state storage to the MCP client's workspace root.
 	await anchorStateToClientRoots(server, runtime);
+
+	// Attach the optional MCP sampling capability so skills can request
+	// real, project-specific analysis when the client supports it.
+	attachSamplerCapability(runtime, server);
+
+	// Best-effort sweep of orphaned temp files left by interrupted atomic writes.
+	if (runtime.workspaceRoot) {
+		void sweepStaleTempFiles(
+			join(runtime.workspaceRoot, DEFAULT_SESSION_STATE_DIR),
+		).catch(() => {});
+	}
 
 	void (async () => {
 		resolveContextReady();

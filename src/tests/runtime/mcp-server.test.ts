@@ -228,6 +228,24 @@ describe("anchorStateToClientRoots", () => {
 		mockCaps.mockRestore();
 	});
 
+	it("redirects memory to a temp dir and skips project anchoring in ephemeral mode", async () => {
+		process.env.MCP_AI_AGENT_GUIDELINES_EPHEMERAL = "true";
+		const setBaseDir = vi.fn();
+		const runtime = createRuntime();
+		try {
+			const result = await anchorStateToClientRoots(server, runtime, {
+				setBaseDir,
+			});
+			expect(result).toBeUndefined();
+			expect(setBaseDir).toHaveBeenCalledTimes(1);
+			expect(String(setBaseDir.mock.calls[0]?.[0])).toContain(
+				"mcp-aag-ephemeral",
+			);
+		} finally {
+			delete process.env.MCP_AI_AGENT_GUIDELINES_EPHEMERAL;
+		}
+	});
+
 	it("returns undefined when client has roots capability but empty roots list", async () => {
 		const mockCaps = vi
 			.spyOn(server, "getClientCapabilities")
