@@ -82,6 +82,20 @@ export interface RecommendationItem {
 	suggestedAction?: string;
 }
 
+export interface SamplerRequest {
+	system: string;
+	prompt: string;
+	maxTokens: number;
+	modelClass: ModelClass;
+}
+
+export interface SamplerResult {
+	text: string;
+}
+
+/** Optional server-driven sampling capability. Wraps MCP `sampling/createMessage`. */
+export type Sampler = (req: SamplerRequest) => Promise<SamplerResult>;
+
 export interface ModelProfile {
 	id: string;
 	label: string;
