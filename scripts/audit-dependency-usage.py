@@ -52,7 +52,6 @@ RESERVED_DEPENDENCIES: dict[str, str] = {
     "execa": "Reserved for CLI subprocess execution in script runners",
     "zx": "Reserved for shell scripting automation workflows",
     "ora": "Reserved for terminal spinner UX in long-running CLI operations",
-    "@inquirer/prompts": "Reserved for interactive CLI prompt components",
     "@noble/hashes": "Reserved for cryptographic hashing in session integrity checks",
     "uint8array-extras": "Reserved for binary data manipulation in byte-level serialisation",
     "devalue": "Reserved for structured value serialisation in the session store",
