@@ -10,7 +10,6 @@ import { INSTRUCTION_VALIDATORS } from "../generated/validators/instruction-vali
 import { toErrorMessage } from "../infrastructure/object-utilities.js";
 import { createOperationalLogger } from "../infrastructure/observability.js";
 import { INSTRUCTION_SPECS } from "../instructions/instruction-specs.js";
-import { sharedToonMemoryInterface as memoryInterface } from "../memory/shared-memory.js";
 import type { SerenaClient, SerenaQuery } from "../serena/client.js";
 import { METAPHOR_CATALOG } from "../skills/analogy/catalog.js";
 import { HEURISTIC_EXTRACTOR } from "../skills/analogy/clarify.js";
@@ -53,17 +52,6 @@ export type TextToolResult = {
 };
 
 const toolCallLogger = createOperationalLogger("warn");
-const SNAPSHOT_LINK_TIMEOUT_MS = 120;
-
-// Per-tool-call local memory artifacts (TOON files under
-// .mcp-ai-agent-guidelines/memory/) are opt-in. The Serena advisory footer
-// emitted at the bottom of every response is the default cross-session memory
-// mechanism — the host model executes the suggested `mcp__serena__write_memory`
-// call, which stores rich context in Serena's per-project memory.
-// Set MCP_LOCAL_MEMORY=true to restore the old TOON write+read enrichment flow.
-function isLocalMemoryEnabled(): boolean {
-	return process.env.MCP_LOCAL_MEMORY === "true";
-}
 
 // Maps instruction tool names to the library packages an agent should fetch
 // via context7 to enrich the saved memory artifact after execution.
@@ -408,51 +396,9 @@ export async function dispatchToolCall(
 		}
 		const input: InstructionInput = inputParseResult.data;
 
-		// Gap C — Non-blocking memory injection: prepend top recent artifacts to
-		// input.context so every skill has continuity without explicit memory reads.
-		// Bounded at 150 ms so stale or empty memory never delays tool execution.
-		// Skipped entirely when local-memory artifacts are disabled (default) — the
-		// Serena advisory footer takes over as the cross-session enrichment channel.
-		const MEMORY_INJECT_TIMEOUT_MS = 150;
-		const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
-		const recentArtifacts = isLocalMemoryEnabled()
-			? await Promise.race([
-					memoryInterface.findMemoryArtifacts({
-						minRelevance: 0.5,
-						maxAgeMs: SEVEN_DAYS_MS,
-					}),
-					new Promise<never>((_, reject) =>
-						setTimeout(
-							() => reject(new Error("memory inject timeout")),
-							MEMORY_INJECT_TIMEOUT_MS,
-						),
-					),
-				]).catch(() => [])
-			: [];
-
-		// Only inject artifacts written by the same instruction type (topic tag match).
-		// Cross-tool injection (e.g. review artifacts inside docs-generate) is noise.
-		const topicTag = `topic:${toolName}`;
-		const topicArtifacts = recentArtifacts.filter(
-			(a) => a.meta.tags.includes(topicTag) && a.meta.relevance >= 0.7,
-		);
-		const enrichedInput: InstructionInput =
-			topicArtifacts.length > 0
-				? {
-						...input,
-						context: (() => {
-							const prefix = topicArtifacts
-								.slice(0, 3)
-								.map((a) => `Prior context: ${a.content.summary}`)
-								.join("\n");
-							return input.context ? `${prefix}\n\n${input.context}` : prefix;
-						})(),
-					}
-				: input;
-
 		// Execute instruction with validation boundaries
 		const result = await validationService.executeWithValidation(
-			() => instruction.execute(enrichedInput, runtime),
+			() => instruction.execute(input, runtime),
 			toolName,
 			context,
 			true, // enable retry
@@ -487,114 +433,7 @@ export async function dispatchToolCall(
 		const responseText = contextAppendix
 			? `${formattedText}\n\n${contextAppendix}`
 			: formattedText;
-		const relatedMemoryIds = recentArtifacts
-			.slice(0, 5)
-			.map((artifact) => artifact.meta.id)
-			.filter(
-				(artifactId) => artifactId !== `${toolName}-${runtime.sessionId}`,
-			);
-		const sourceSignals = extractRequestSignals(input);
-
-		// Gap E — fire-and-forget session + memory persistence.
-		// Both writes are non-blocking and swallow IO errors so tool execution
-		// is never influenced by persistence failures.
-		// Skipped entirely when local-memory artifacts are disabled (default) — the
-		// Serena advisory footer drives memory persistence via the host model instead.
-		const now = new Date().toISOString();
 		const chainTo = instruction.manifest.chainTo ?? [];
-		if (isLocalMemoryEnabled()) {
-			memoryInterface
-				.saveSessionContext(runtime.sessionId, {
-					context: {
-						requestScope: input.request.slice(0, 200),
-						constraints: [],
-						phase: toolName,
-					},
-					progress: {
-						// Record this tool as completed (not inProgress) at save time —
-						// the result is already produced before saveSessionContext fires.
-						completed: [toolName],
-						inProgress: [],
-						blocked: [],
-						next: chainTo,
-					},
-					memory: {
-						keyInsights: [],
-						decisions: {},
-						patterns: [],
-						warnings: [],
-					},
-				})
-				.catch((err) => {
-					toolCallLogger.log("warn", "Session context persistence failed", {
-						toolName,
-						sessionId: runtime.sessionId,
-						error: err instanceof Error ? err.message : String(err),
-					});
-				});
-
-			Promise.race([
-				memoryInterface.loadFingerprintSnapshot(),
-				new Promise<null>((resolve) =>
-					setTimeout(() => resolve(null), SNAPSHOT_LINK_TIMEOUT_MS),
-				),
-			])
-				.then((snapshot) =>
-					memoryInterface.saveMemoryArtifact({
-						meta: {
-							id: `${toolName}-${runtime.sessionId}`,
-							created: now,
-							updated: now,
-							// Stable topic tag (toolName) + session tag for grouping.
-							// The stable tag enables find(tags:["docs-generate"]) to work
-							// reliably across sessions without knowing the session ID.
-							tags: [toolName, `topic:${toolName}`, runtime.sessionId],
-							relevance: 0.8,
-						},
-						content: {
-							// Prepend an artifact-count note to the summary when the workflow
-							// produced top-level artifacts. This gives memory consumers a
-							// quick signal that structured outputs are available without
-							// parsing the full details text.
-							summary: (() => {
-								const baseSummary =
-									responseText
-										.split("\n")
-										.map((l) => l.replace(/^#+\s*/, "").trim())
-										.find((l) => l.length > 0)
-										?.slice(0, 200) ?? responseText.slice(0, 200);
-								const topArtifacts = result.data.artifacts ?? [];
-								if (topArtifacts.length === 0) return baseSummary;
-								// Prefix must NOT start with "[" — the TOON encoder treats
-								// "[N " as TOON array syntax, producing an undecodable artifact.
-								const artifactNote =
-									topArtifacts.length +
-									" artifact" +
-									(topArtifacts.length === 1 ? "" : "s") +
-									" — ";
-								return (artifactNote + baseSummary).slice(0, 200);
-							})(),
-							details: responseText,
-							context: input.request,
-							actionable: true,
-						},
-						links: {
-							relatedSessions: [runtime.sessionId],
-							relatedMemories: relatedMemoryIds,
-							sources: buildContextSourceRefs(sourceSignals, {
-								includeSnapshotSource: snapshot !== null,
-							}),
-						},
-					}),
-				)
-				.catch((err) => {
-					toolCallLogger.log("warn", "Memory artifact persistence failed", {
-						toolName,
-						sessionId: runtime.sessionId,
-						error: err instanceof Error ? err.message : String(err),
-					});
-				});
-		}
 
 		// Gap F — structured chainTo footer for every instruction that declares
 		// downstream tools. Replaces the old hardcoded adapt-only text paragraph.

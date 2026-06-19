@@ -2,7 +2,6 @@ import { describe, expect, it, vi } from "vitest";
 import type { ExecutionProgressRecord } from "../../contracts/runtime.js";
 import { ObservabilityOrchestrator } from "../../infrastructure/observability.js";
 import { InstructionRegistry } from "../../instructions/instruction-registry.js";
-import { sharedToonMemoryInterface as memoryInterface } from "../../memory/shared-memory.js";
 import { ModelRouter } from "../../models/model-router.js";
 import { AdvisorySerenaClient } from "../../serena/client.js";
 import { SkillRegistry } from "../../skills/skill-registry.js";
@@ -162,99 +161,6 @@ describe("tool-call-handler", () => {
 		expect(result.content[0]?.text).toContain("docs/tool-renaming.md");
 	});
 
-	it("persists related memory IDs and snapshot sources in saved artifacts", async () => {
-		process.env.MCP_LOCAL_MEMORY = "true";
-		const saveSpy = vi
-			.spyOn(memoryInterface, "saveMemoryArtifact")
-			.mockResolvedValue();
-		const findSpy = vi
-			.spyOn(memoryInterface, "findMemoryArtifacts")
-			.mockResolvedValue([
-				{
-					meta: {
-						id: "memory-1",
-						created: "2026-04-11T00:00:00.000Z",
-						updated: "2026-04-11T00:00:00.000Z",
-						tags: ["review"],
-						relevance: 0.9,
-					},
-					content: {
-						summary: "Prior review",
-						details: "Prior review details",
-						context: "ctx",
-						actionable: true,
-					},
-					links: { relatedSessions: [], relatedMemories: [], sources: [] },
-				},
-			]);
-		const snapshotSpy = vi
-			.spyOn(memoryInterface, "loadFingerprintSnapshot")
-			.mockResolvedValue({
-				meta: { version: "1", capturedAt: "2026-04-11T00:00:00.000Z" },
-				fingerprint: {
-					capturedAt: "2026-04-11T00:00:00.000Z",
-					skillIds: [],
-					instructionNames: [],
-					codePaths: [],
-					srcPaths: [],
-				},
-			});
-
-		try {
-			await dispatchToolCall(
-				"code-review",
-				{
-					request: "review the runtime architecture",
-					context:
-						"Use mcp_ai-agent-guid_code-review, mcp_ai-agent-guid_strategy-plan, mcp_ai-agent-guid_evidence-research, fetch_webpage, mcp_github_search_code, and src/snapshots/document_symbols.ts",
-					options: {
-						evidence: [
-							{
-								sourceType: "github-file",
-								toolName: "mcp_github_get_file_contents",
-								locator: "docs/tool-renaming.md",
-								authority: "implementation",
-								sourceTier: 2,
-							},
-						],
-					},
-				},
-				createRuntime(),
-			);
-			await new Promise((resolve) => setTimeout(resolve, 0));
-
-			expect(saveSpy).toHaveBeenCalled();
-			const savedArtifact = saveSpy.mock.calls[0]?.[0];
-			expect(savedArtifact).toMatchObject({
-				links: {
-					relatedSessions: ["test-tool-call"],
-					relatedMemories: ["memory-1"],
-					sources: expect.arrayContaining([
-						"mcp_ai-agent-guid_code-review",
-						"mcp_ai-agent-guid_strategy-plan",
-						"mcp_ai-agent-guid_evidence-research",
-						"fetch_webpage",
-						"mcp_github_search_code",
-						"docs/tool-renaming.md",
-						"src/snapshots/document_symbols.ts",
-					]),
-				},
-			});
-			expect(savedArtifact?.links.sources).toEqual(
-				expect.arrayContaining([
-					expect.stringMatching(
-						/(?:\.mcp-ai-agent-guidelines\/snapshots\/fingerprint-latest\.json|snapshot)/,
-					),
-				]),
-			);
-		} finally {
-			saveSpy.mockRestore();
-			findSpy.mockRestore();
-			snapshotSpy.mockRestore();
-			delete process.env.MCP_LOCAL_MEMORY;
-		}
-	});
-
 	it("routes canonical workspace tools through the shared dispatcher", async () => {
 		const result = await dispatchToolCall(
 			"agent-workspace",
@@ -312,110 +218,6 @@ describe("tool-call-handler", () => {
 		}
 	});
 
-	it("prefixes artifact count in memory summary when top-level artifacts are present", async () => {
-		process.env.MCP_LOCAL_MEMORY = "true";
-		const saveSpy = vi
-			.spyOn(memoryInterface, "saveMemoryArtifact")
-			.mockResolvedValue();
-		vi.spyOn(memoryInterface, "findMemoryArtifacts").mockResolvedValue([]);
-		vi.spyOn(memoryInterface, "loadFingerprintSnapshot").mockResolvedValue(
-			null,
-		);
-
-		// Intercept the workflow execution to inject top-level artifacts
-		const { WorkflowEngine } = await import(
-			"../../workflows/workflow-engine.js"
-		);
-		const executeInstructionSpy = vi
-			.spyOn(WorkflowEngine.prototype, "executeInstruction")
-			.mockResolvedValue({
-				instructionId: "code-review",
-				displayName: "Review Runtime",
-				model: {
-					id: "gpt-4o-mini",
-					label: "GPT-4o Mini",
-					modelClass: "cheap",
-					strengths: ["speed"],
-					maxContextWindow: "medium",
-					costTier: "cheap",
-				},
-				steps: [],
-				recommendations: [],
-				artifacts: [
-					{ kind: "eval-criteria", title: "Gate A", criteria: ["Pass all"] },
-					{
-						kind: "output-template",
-						title: "Review template",
-						template: "...",
-					},
-				],
-			});
-
-		try {
-			await dispatchToolCall(
-				"code-review",
-				{ request: "review the runtime architecture" },
-				createRuntime(),
-			);
-			// Allow fire-and-forget persistence to settle
-			await new Promise((resolve) => setTimeout(resolve, 10));
-
-			expect(saveSpy).toHaveBeenCalled();
-			const savedArtifact = saveSpy.mock.calls[0]?.[0];
-			expect(savedArtifact?.content.summary).toMatch(/^2 artifacts —/);
-		} finally {
-			saveSpy.mockRestore();
-			executeInstructionSpy.mockRestore();
-			delete process.env.MCP_LOCAL_MEMORY;
-		}
-	});
-
-	it("does not fail the tool call when session context persistence fails", async () => {
-		vi.spyOn(memoryInterface, "saveMemoryArtifact").mockResolvedValue();
-		vi.spyOn(memoryInterface, "saveSessionContext").mockRejectedValue(
-			new Error("disk full"),
-		);
-		vi.spyOn(memoryInterface, "findMemoryArtifacts").mockResolvedValue([]);
-		vi.spyOn(memoryInterface, "loadFingerprintSnapshot").mockResolvedValue(
-			null,
-		);
-
-		try {
-			const result = await dispatchToolCall(
-				"code-review",
-				{ request: "review the runtime architecture" },
-				createRuntime(),
-			);
-
-			expect(result.isError).toBeUndefined();
-		} finally {
-			vi.restoreAllMocks();
-		}
-	});
-
-	it("does not fail the tool call when memory artifact persistence fails", async () => {
-		vi.spyOn(memoryInterface, "saveMemoryArtifact").mockRejectedValue(
-			new Error("disk full"),
-		);
-		vi.spyOn(memoryInterface, "saveSessionContext").mockResolvedValue();
-		vi.spyOn(memoryInterface, "findMemoryArtifacts").mockResolvedValue([]);
-		vi.spyOn(memoryInterface, "loadFingerprintSnapshot").mockResolvedValue(
-			null,
-		);
-
-		try {
-			const result = await dispatchToolCall(
-				"code-review",
-				{ request: "review the runtime architecture" },
-				createRuntime(),
-			);
-
-			expect(result.isError).toBeUndefined();
-		} finally {
-			vi.restoreAllMocks();
-		}
-	});
-
 	it("dispatches memory tool call when tool name resolves as memory tool", async () => {
 		const result = await dispatchToolCall(
 			"agent-memory-fetch",
@@ -447,48 +249,6 @@ describe("tool-call-handler", () => {
 			runtime,
 		);
 		expect(result).toBeDefined();
-	});
-
-	it("injects topic artifacts into input context when relevant artifacts exist", async () => {
-		vi.spyOn(memoryInterface, "saveMemoryArtifact").mockResolvedValue();
-		vi.spyOn(memoryInterface, "saveSessionContext").mockResolvedValue();
-		vi.spyOn(memoryInterface, "loadFingerprintSnapshot").mockResolvedValue(
-			null,
-		);
-		const findSpy = vi
-			.spyOn(memoryInterface, "findMemoryArtifacts")
-			.mockResolvedValue([
-				{
-					meta: {
-						id: "code-review-session-123",
-						tags: ["topic:code-review"],
-						relevance: 0.9,
-						updated: new Date().toISOString(),
-						sessionId: "session-123",
-						toolName: "code-review",
-						snapshotSources: [],
-						relatedMemoryIds: [],
-					},
-					content: {
-						summary: "Prior review of runtime architecture",
-						details: "",
-					},
-					links: [],
-				} as unknown as Awaited<
-					ReturnType<typeof memoryInterface.findMemoryArtifacts>
-				>[0],
-			]);
-
-		try {
-			const result = await dispatchToolCall(
-				"code-review",
-				{ request: "review again", context: "existing context" },
-				createRuntime(),
-			);
-			expect(result).toBeDefined();
-		} finally {
-			findSpy.mockRestore();
-		}
 	});
 
 	it("validation error for missing required field points to task-bootstrap", async () => {

@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 import { realpathSync } from "node:fs";
-import { tmpdir } from "node:os";
 import { isAbsolute, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
@@ -27,7 +26,6 @@ import type {
 import { toErrorMessage } from "./infrastructure/object-utilities.js";
 import { packageMetadata } from "./infrastructure/package-metadata.js";
 import { InstructionRegistry } from "./instructions/instruction-registry.js";
-import { sharedToonMemoryInterface } from "./memory/shared-memory.js";
 import { ModelRouter } from "./models/model-router.js";
 import {
 	buildPublicPrompts,
@@ -276,18 +274,7 @@ export function createServer(sharedRuntime = createRuntime()) {
 export async function anchorStateToClientRoots(
 	server: Server,
 	runtime: WorkflowExecutionRuntime,
-	memoryInterface: {
-		setBaseDir(dir: string): void;
-	} = sharedToonMemoryInterface,
 ): Promise<string | undefined> {
-	// Ephemeral mode never anchors state to the user's project — point memory at a
-	// throwaway temp dir and skip workspace anchoring entirely.
-	if (isEphemeralMode()) {
-		memoryInterface.setBaseDir(
-			join(tmpdir(), `mcp-aag-ephemeral-${crypto.randomUUID()}`),
-		);
-		return undefined;
-	}
 	try {
 		const clientCaps = server.getClientCapabilities();
 		if (!clientCaps?.roots) {
@@ -307,8 +294,6 @@ export async function anchorStateToClientRoots(
 			);
 			return undefined;
 		}
-		const stateDir = join(firstRoot, DEFAULT_SESSION_STATE_DIR);
-		memoryInterface.setBaseDir(stateDir);
 		runtime.workspaceRoot = firstRoot;
 		// Reset the orchestration config cache so it reloads from the correct
 		// project path (it may have cached a stale home-dir path during
