@@ -37,9 +37,9 @@ export const WORKFLOW_PUBLIC_INSTRUCTION_MODULES: InstructionModule[] = [
 	orchestrate_module,
 	enterprise_module,
 	govern_module,
+	analogy_think_module,
 	resilience_module,
 	adapt_module,
-	analogy_think_module,
 ];
 
 export const DISCOVERY_PUBLIC_INSTRUCTION_MODULES: InstructionModule[] = [

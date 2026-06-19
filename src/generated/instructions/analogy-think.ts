@@ -1,17 +1,7 @@
-// HAND-AUTHORED — generator has no markdown source for analogy-think.
-//
-// NOTE: analogy-think does NOT use the standard workflowEngine.executeInstruction path.
-// Its runtime dispatch is handled by a pre-branch in tool-call-handler.ts that calls
-// runAnalogyWorkflow directly and returns a ToolEnvelope V1 response.
-// The execute() stub below is never reached in production; it exists only so
-// InstructionRegistry and INSTRUCTION_VALIDATORS can register this tool.
+// AUTO-GENERATED — do not edit manually.
 
 import type { InstructionManifestEntry } from "../../contracts/generated.js";
-import type {
-	InstructionInput,
-	InstructionModule,
-	WorkflowExecutionRuntime,
-} from "../../contracts/runtime.js";
+import { createInstructionModule } from "../../instructions/create-instruction-module.js";
 
 export const instructionManifest: InstructionManifestEntry = {
 	id: "analogy-think",
@@ -28,13 +18,18 @@ export const instructionManifest: InstructionManifestEntry = {
 		properties: {
 			request: {
 				type: "string",
-				description:
-					"Problem description to map to physics metaphors. Describe the system behaviour, feedback loops, or structural dynamics you are trying to understand.",
+				description: "Primary task request for this workflow.",
 			},
 			context: {
 				type: "string",
-				description:
-					"Optional additional context that helps the feature extractor detect structural signals (e.g. relevant terminology, system constraints).",
+				description: "Relevant background context for the workflow.",
+			},
+			constraints: {
+				type: "array",
+				description: "Relevant constraints for the workflow.",
+				items: {
+					type: "string",
+				},
 			},
 		},
 		required: ["request"],
@@ -55,11 +50,4 @@ export const instructionManifest: InstructionManifestEntry = {
 	reactivationPolicy: "once",
 };
 
-export const instructionModule: InstructionModule = {
-	manifest: instructionManifest,
-	async execute(input: InstructionInput, runtime: WorkflowExecutionRuntime) {
-		throw new Error(
-			"analogy-think must be dispatched via the pre-branch in tool-call-handler.ts",
-		);
-	},
-};
+export const instructionModule = createInstructionModule(instructionManifest);
