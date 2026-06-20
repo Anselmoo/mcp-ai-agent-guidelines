@@ -79,5 +79,21 @@ export async function toSituationResult(
 		},
 	);
 
-	return { ...result, recommendations: [recommendation] };
+	const evidenceAnchors = [
+		...new Set(result.recommendations.flatMap((r) => r.evidenceAnchors ?? [])),
+	];
+	const sourceRefs = [
+		...new Set(result.recommendations.flatMap((r) => r.sourceRefs ?? [])),
+	];
+
+	return {
+		...result,
+		recommendations: [
+			{
+				...recommendation,
+				...(evidenceAnchors.length > 0 ? { evidenceAnchors } : {}),
+				...(sourceRefs.length > 0 ? { sourceRefs } : {}),
+			},
+		],
+	};
 }

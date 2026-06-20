@@ -146,4 +146,26 @@ describe("toSituationResult", () => {
 		const out = await toSituationResult(result, deps);
 		expect(out).toBe(result);
 	});
+
+	it("forwards the union of evidence anchors and source refs onto the collapsed rec", async () => {
+		const result = workflowResult([
+			{
+				...rec("Define the dataset slices."),
+				evidenceAnchors: ["src/eval/runner.ts"],
+				sourceRefs: ["docs/eval.md"],
+			},
+			{
+				...rec("Attach an oracle."),
+				evidenceAnchors: ["src/eval/runner.ts", "tests/golden.jsonl"],
+				sourceRefs: ["docs/eval.md", "RFC-12"],
+			},
+		]);
+		const out = await toSituationResult(result, deps);
+		const lead = out.recommendations[0];
+		expect(lead?.evidenceAnchors).toEqual([
+			"src/eval/runner.ts",
+			"tests/golden.jsonl",
+		]);
+		expect(lead?.sourceRefs).toEqual(["docs/eval.md", "RFC-12"]);
+	});
 });
