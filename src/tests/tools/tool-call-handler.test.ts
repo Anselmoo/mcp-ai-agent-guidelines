@@ -369,4 +369,17 @@ describe("tool-call-handler", () => {
 			else process.env.MCP_SITUATION_TRANSFORM = prev;
 		}
 	});
+
+	it("feature-implement now emits a target-oriented build directive, not a template wall", async () => {
+		const result = await dispatchToolCall(
+			"feature-implement",
+			{ request: "add rate limiting to the public checkout API" },
+			createRuntime(),
+		);
+		expect(result.isError).toBeUndefined();
+		const text = result.content[0]?.text ?? "";
+		expect(text).toContain("Analyze your feature to implement");
+		expect(text).toContain("add rate limiting to the public checkout API");
+		expect(text.toLowerCase()).not.toContain("advisory only");
+	});
 });

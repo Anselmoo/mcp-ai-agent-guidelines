@@ -64,6 +64,36 @@ describe("resolveTransformProfile", () => {
 		expect(resolveTransformProfile("task-bootstrap")).toBeUndefined();
 		expect(resolveTransformProfile("agent-orchestrate")).toBeUndefined();
 	});
+
+	it("covers the solution-producing tools with the build contract", () => {
+		for (const tool of [
+			"feature-implement",
+			"code-refactor",
+			"test-verify",
+			"strategy-plan",
+			"docs-generate",
+			"enterprise-strategy",
+		]) {
+			const p = resolveTransformProfile(tool);
+			expect(p, tool).toBeDefined();
+			expect(p?.outputContract.toLowerCase()).toContain("tailored");
+			expect(p?.domain).not.toMatch(/^[A-Z][a-z]+:/);
+		}
+	});
+
+	it("still excludes routers, orchestration, and the analogy/prompt special paths", () => {
+		for (const tool of [
+			"meta-routing",
+			"routing-adapt",
+			"task-bootstrap",
+			"project-onboard",
+			"agent-orchestrate",
+			"analogy-think",
+			"prompt-engineering",
+		]) {
+			expect(resolveTransformProfile(tool), tool).toBeUndefined();
+		}
+	});
 });
 
 describe("toSituationResult", () => {

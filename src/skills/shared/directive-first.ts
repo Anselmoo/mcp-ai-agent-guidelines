@@ -24,11 +24,16 @@ export interface TransformProfile {
 export const ANALYSIS_OUTPUT_CONTRACT =
 	"findings per criterion that cite the actual files, values, or evidence in this project, then a tailored next-action workflow";
 
+/** Output contract for build/plan tools — a tailored deliverable + next steps. */
+export const BUILD_OUTPUT_CONTRACT =
+	"a concrete, tailored deliverable for this request — the specific changes, steps, tests, or artifacts to produce, grounded in the actual files and code, followed by an ordered next-action sequence";
+
 /**
  * Per-tool transform profiles. Presence is the allow-list; absence means
  * "pass through untouched". Analysis tools produce findings against a rubric;
- * routers/orientation/orchestration tools are intentionally absent (their
- * deliverable is a decision/config, not a rubric analysis).
+ * build tools produce concrete deliverables. Routers/orientation/orchestration
+ * tools are intentionally absent (their deliverable is a decision/config, not
+ * a rubric analysis or concrete build).
  */
 export const TRANSFORM_PROFILES: Readonly<Record<string, TransformProfile>> = {
 	"quality-evaluate": {
@@ -58,6 +63,30 @@ export const TRANSFORM_PROFILES: Readonly<Record<string, TransformProfile>> = {
 	"fault-resilience": {
 		domain: "fault-tolerance and resilience posture",
 		outputContract: ANALYSIS_OUTPUT_CONTRACT,
+	},
+	"feature-implement": {
+		domain: "feature to implement",
+		outputContract: BUILD_OUTPUT_CONTRACT,
+	},
+	"code-refactor": {
+		domain: "refactor target",
+		outputContract: BUILD_OUTPUT_CONTRACT,
+	},
+	"test-verify": {
+		domain: "test and verification gap",
+		outputContract: BUILD_OUTPUT_CONTRACT,
+	},
+	"strategy-plan": {
+		domain: "plan or roadmap",
+		outputContract: BUILD_OUTPUT_CONTRACT,
+	},
+	"docs-generate": {
+		domain: "documentation to produce",
+		outputContract: BUILD_OUTPUT_CONTRACT,
+	},
+	"enterprise-strategy": {
+		domain: "enterprise strategy",
+		outputContract: BUILD_OUTPUT_CONTRACT,
 	},
 };
 
