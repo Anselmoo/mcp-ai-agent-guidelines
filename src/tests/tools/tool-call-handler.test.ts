@@ -326,6 +326,31 @@ describe("tool-call-handler", () => {
 		expect(text).not.toContain("Analysis task");
 	});
 
+	// Sampling lever: when the connected client advertises `sampling`, the server
+	// has a runtime.sampler, and the transform must return the model's FINDINGS
+	// (not the return-a-prompt directive) through the full dispatch path.
+	it("returns sampled findings for an analysis tool when a sampler is present", async () => {
+		const sampler = vi.fn().mockResolvedValue({
+			text: "SAMPLED-FINDINGS: golden.jsonl lacks negatives.",
+		});
+		const runtime = {
+			...createRuntime(),
+			sampler,
+			clientSupportsSampling: true,
+		};
+		const result = await dispatchToolCall(
+			"quality-evaluate",
+			{ request: "design an eval set with hard negatives" },
+			runtime,
+		);
+		expect(result.isError).toBeUndefined();
+		const text = result.content[0]?.text ?? "";
+		expect(text).toContain("SAMPLED-FINDINGS: golden.jsonl lacks negatives.");
+		// It is the findings, not the directive.
+		expect(text.toLowerCase()).not.toContain("analysis task");
+		expect(sampler).toHaveBeenCalled();
+	});
+
 	// Kill-switch for A/B evaluation and ops rollback: MCP_SITUATION_TRANSFORM=0
 	// disables the transform so the tool emits its pre-transform template output.
 	it("honors MCP_SITUATION_TRANSFORM=0 as a kill-switch (no transform)", async () => {
