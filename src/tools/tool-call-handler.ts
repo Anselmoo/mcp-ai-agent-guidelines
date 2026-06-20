@@ -432,14 +432,14 @@ export async function dispatchToolCall(
 			});
 		}
 
-		// LLM→LLM transform (single chokepoint): for analysis-family tools only,
-		// replace the keyword-matched template recommendation wall with ONE
-		// situation-specific result — per-criterion findings + a tailored
-		// next-action workflow — the matched templates seed (via `criteria`) but no
-		// longer dictate. Sampled when the client supports it, a return-a-prompt
-		// directive otherwise. Routers/onboarding/orchestration tools resolve to no
-		// domain and pass through untouched (their deliverable is not a rubric
-		// analysis).
+		// LLM→LLM transform (single chokepoint): for tools with a transform
+		// profile, replace the keyword-matched template recommendation wall with
+		// ONE situation-specific result — per the profile's output contract
+		// (analysis findings, a build deliverable, a routing decision, …) — the
+		// matched templates seed (via `criteria`) but no longer dictate. Sampled
+		// when the client supports it, a return-a-prompt directive otherwise.
+		// Orientation/niche/special tools resolve to no profile and pass through
+		// untouched (see TRANSFORM_PROFILES).
 		// Kill-switch (`MCP_SITUATION_TRANSFORM=0`) for A/B evaluation and ops
 		// rollback: disables the transform so tools emit pre-transform output.
 		const profile =

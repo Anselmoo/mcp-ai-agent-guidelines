@@ -47,7 +47,12 @@ export const PROMPT_OUTPUT_CONTRACT =
 export const ROUTING_OUTPUT_CONTRACT =
 	"the concrete, ordered domain instruction(s) to invoke for this request — name each tool, give a one-line rationale, and say whether to run them in sequence or in parallel";
 
-/** Domain instructions a router classifies a request toward. */
+/**
+ * Domain instructions a router classifies a request toward. Intentionally a
+ * curated routing-target set, NOT a mirror of `TRANSFORM_PROFILES`: it excludes
+ * orchestration and prompt tools (invoked as deliverable producers, not routing
+ * destinations) and the router/orientation tools themselves.
+ */
 const ROUTABLE_DOMAIN_TOOLS: readonly string[] = [
 	"feature-implement",
 	"issue-debug",

@@ -87,10 +87,13 @@ only **7 of 20** public tools, and **0 of 3** on the default slim surface. Plan
   `BUILD_OUTPUT_CONTRACT` now covers the 6 solution-producing tools
   (feature-implement, code-refactor, test-verify, strategy-plan, docs-generate,
   enterprise-strategy) alongside the 7 analysis tools. Verified by enumeration.
-- **7 tools stay passthrough by design:** meta-routing, routing-adapt,
-  task-bootstrap, project-onboard, agent-orchestrate, analogy-think,
-  prompt-engineering — routers/orientation/orchestration/special, where
+- **7 tools stay passthrough by design:** ~~meta-routing~~, routing-adapt,
+  task-bootstrap, project-onboard, ~~agent-orchestrate~~, analogy-think,
+  ~~prompt-engineering~~ — routers/orientation/orchestration/special, where
   "produce a plan for THIS request" is a category error (the B#2 lesson).
+  *(Struck-through tools were later given their own profile kind — see the
+  meta-routing / agent-orchestrate / prompt-engineering updates below; this
+  bullet reflects the 13/20 state at the time.)*
 - **Default-surface gap documented.** Domain tools are hidden in slim mode but
   callable; `MCP_FULL_SURFACE=true` lists them for discovery (README +
   `tool-surface-manifest.ts`). Note: `meta-routing` currently names no domain
