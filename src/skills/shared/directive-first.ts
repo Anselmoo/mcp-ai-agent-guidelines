@@ -57,7 +57,10 @@ export interface SituationTransformDeps {
  * model works the real project against (LLM→LLM), replacing the wall of generic
  * advice. The output carries both halves of the contract — per-criterion
  * findings and a tailored next-action workflow (superseding the static
- * `chainTo`). Artifacts and steps are preserved untouched.
+ * `chainTo`). Steps' labels are preserved, but the merged artifact set is capped
+ * at `TRANSFORM_ARTIFACT_CAP` and per-step artifact lists are cleared (the
+ * directive supersedes the template wall). Only the short-circuit path — no
+ * usable seed recommendations — returns the result referentially unchanged.
  *
  * Recommendations whose text is an advisory-only disclaimer are dropped from the
  * seed. If nothing usable remains (e.g. an insufficient-signal or fallback

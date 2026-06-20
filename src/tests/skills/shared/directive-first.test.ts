@@ -163,7 +163,7 @@ describe("toSituationResult", () => {
 		expect(out).toBe(result);
 	});
 
-	it("leaves an advisory-only-only result unchanged (nothing to seed)", async () => {
+	it("leaves an advisory-only result unchanged (nothing to seed)", async () => {
 		const result = workflowResult([
 			rec("This analysis is advisory only — confirm against your project."),
 		]);
@@ -191,5 +191,15 @@ describe("toSituationResult", () => {
 			"tests/golden.jsonl",
 		]);
 		expect(lead?.sourceRefs).toEqual(["docs/eval.md", "RFC-12"]);
+	});
+
+	it("leaves evidence anchors and source refs undefined when no seed carries them", async () => {
+		const out = await toSituationResult(
+			workflowResult([rec("Define the dataset slices.")]),
+			deps,
+		);
+		const lead = out.recommendations[0];
+		expect(lead?.evidenceAnchors).toBeUndefined();
+		expect(lead?.sourceRefs).toBeUndefined();
 	});
 });
