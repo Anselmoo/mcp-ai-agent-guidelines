@@ -96,6 +96,10 @@ export function computeEffectiveHiddenTools(): string {
  * Only these three tools are visible — sufficient to orient the agent and
  * route to the correct domain tool without exhausting a short context window.
  * Set `MCP_FULL_SURFACE=true` to expose the full ~25-tool surface.
+ *
+ * Note: the situation-transform (target-oriented analysis/build output) applies
+ * only to domain tools, which are HIDDEN in slim mode but still callable by
+ * name. To expose them for discovery, set MCP_FULL_SURFACE=true.
  */
 export const SLIM_SURFACE_TOOLS = new Set([
 	"task-bootstrap",

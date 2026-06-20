@@ -364,6 +364,13 @@ Published package note: the npm package ships `dist/`, `README.md`, and `LICENSE
 | `ENABLE_PHYSICS_SKILLS` | unset / `"false"` | Required by input validation when physics skills are not otherwise authorized; physics skills also require conventional-evidence schema validation |
 | `MCP_WORKSPACE_ROOT` | unset | Absolute path to the project directory the server should write state into (`.mcp-ai-agent-guidelines/`). Required when using `npx` via Claude Desktop, Cursor, or Windsurf — these clients do not preserve the terminal's working directory. VS Code supports `${workspaceFolder}`. |
 | `MCP_FULL_SURFACE` | unset / `"false"` | Set to `true` to expose the full surface; default is slim 3-tool routing surface: `task-bootstrap`, `meta-routing`, `project-onboard` |
+
+> **Target-oriented output & the slim surface.** The situation-transform that turns
+> a tool's keyword-matched template into a project-specific analysis or build plan
+> applies to the domain tools (e.g. `code-review`, `issue-debug`, `feature-implement`).
+> These are hidden in the default slim surface but remain callable by name. Set
+> `MCP_FULL_SURFACE=true` to list them for discovery.
+
 | `MCP_SERENA_COMMAND` | unset | Opt-in. When set, the server spawns Serena as a child MCP server over stdio and resolves Serena queries directly. When unset (default), the server emits structured **advisories** that the host model executes via its own Serena connection — recommended when the host (e.g. Claude Code) already runs Serena. |
 | `MCP_SERENA_ARGS` | unset | Space-separated args passed to `MCP_SERENA_COMMAND`. Example: `--from git+https://github.com/oraios/serena serena-mcp-server`. |
 | `MCP_SERENA_CWD` | unset | Working directory for the spawned Serena child. Defaults to the parent process cwd. |
