@@ -125,12 +125,36 @@ describe("toSituationResult", () => {
 		);
 	});
 
-	it("preserves artifacts and steps untouched", async () => {
+	it("preserves steps' labels but trims the artifact wall to the cap", async () => {
 		const result = workflowResult([rec("Define the dataset slices.")]);
-		result.steps = [{ label: "s", kind: "skill", summary: "ran" }];
+		const many = Array.from({ length: 20 }, (_, i) => ({
+			kind: "eval-criteria" as const,
+			title: `crit-${i}`,
+			criteria: [`c${i}`],
+		}));
+		result.steps = [
+			{
+				label: "s",
+				kind: "skill",
+				summary: "ran",
+				skillResult: {
+					skillId: "x",
+					displayName: "X",
+					model: model,
+					summary: "ran",
+					recommendations: [],
+					relatedSkills: [],
+					artifacts: many,
+				},
+			},
+		];
 		const out = await toSituationResult(result, deps);
-		expect(out.steps).toBe(result.steps);
-		expect(out.artifacts).toBe(result.artifacts);
+		const merged = [
+			...(out.artifacts ?? []),
+			...out.steps.flatMap((s) => s.skillResult?.artifacts ?? []),
+		];
+		expect(merged.length).toBeLessThanOrEqual(6);
+		expect(out.steps[0]?.label).toBe("s");
 	});
 
 	it("leaves a result with no usable recommendations unchanged", async () => {

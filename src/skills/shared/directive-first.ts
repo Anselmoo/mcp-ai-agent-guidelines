@@ -6,6 +6,14 @@ import { ADVISORY_PREFIX } from "./advisory.js";
 import { analyzeOrDirective } from "./analyze-or-directive.js";
 
 /**
+ * Cap on artifacts a transformed (collapsed) analysis result renders. The
+ * matched templates are the rubric seed now; the directive supersedes the
+ * template wall, so we keep only a small representative sample to stop a single
+ * call ballooning to 60–230KB of delegated-skill scaffolding.
+ */
+export const TRANSFORM_ARTIFACT_CAP = 6;
+
+/**
  * The only tools whose deliverable IS a situation analysis against a rubric —
  * the ones the LLM→LLM transform should collapse. Each maps to a clean domain
  * noun: the public `displayName` carries a "Label:" prefix (e.g. "Evaluate:
@@ -86,8 +94,20 @@ export async function toSituationResult(
 		...new Set(result.recommendations.flatMap((r) => r.sourceRefs ?? [])),
 	];
 
+	const mergedArtifacts = [
+		...(result.artifacts ?? []),
+		...result.steps.flatMap((s) => s.skillResult?.artifacts ?? []),
+	].slice(0, TRANSFORM_ARTIFACT_CAP);
+	const trimmedSteps = result.steps.map((s) =>
+		s.skillResult
+			? { ...s, skillResult: { ...s.skillResult, artifacts: [] } }
+			: s,
+	);
+
 	return {
 		...result,
+		steps: trimmedSteps,
+		artifacts: mergedArtifacts,
 		recommendations: [
 			{
 				...recommendation,
