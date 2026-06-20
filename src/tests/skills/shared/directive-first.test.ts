@@ -171,6 +171,13 @@ describe("toSituationResult", () => {
 		expect(out).toBe(result);
 	});
 
+	it("leaves a result with a blank request unchanged (no problem to anchor to)", async () => {
+		const result = workflowResult([rec("Define the dataset slices.")]);
+		result.request = "   ";
+		const out = await toSituationResult(result, deps);
+		expect(out).toBe(result);
+	});
+
 	it("forwards the union of evidence anchors and source refs onto the collapsed rec", async () => {
 		const result = workflowResult([
 			{

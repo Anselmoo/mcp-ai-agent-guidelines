@@ -59,8 +59,9 @@ export interface SituationTransformDeps {
  * findings and a tailored next-action workflow (superseding the static
  * `chainTo`). Steps' labels are preserved, but the merged artifact set is capped
  * at `TRANSFORM_ARTIFACT_CAP` and per-step artifact lists are cleared (the
- * directive supersedes the template wall). Only the short-circuit path — no
- * usable seed recommendations — returns the result referentially unchanged.
+ * directive supersedes the template wall). Only the short-circuit paths — no
+ * usable seed recommendations, or a blank request — return the result
+ * referentially unchanged.
  *
  * Recommendations whose text is an advisory-only disclaimer are dropped from the
  * seed. If nothing usable remains (e.g. an insufficient-signal or fallback
@@ -78,12 +79,19 @@ export async function toSituationResult(
 		return result;
 	}
 
+	// No problem statement to anchor the analysis to → pass through unchanged
+	// rather than emit a directive that reads `Work from the actual request: ""`.
+	const request = result.request?.trim() ?? "";
+	if (request.length === 0) {
+		return result;
+	}
+
 	const { recommendation } = await analyzeOrDirective(
 		{ modelClass: result.model.modelClass, sampler: deps.sampler },
 		{
 			domain: deps.domain,
 			criteria: seedCriteria,
-			input: { request: result.request?.trim() ?? "" },
+			input: { request },
 			outputContract:
 				"findings per criterion that cite the actual files, values, or evidence in this project, then a tailored next-action workflow",
 			candidateNextTools: deps.candidateNextTools,

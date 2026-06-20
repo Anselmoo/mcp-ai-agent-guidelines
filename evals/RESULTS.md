@@ -16,6 +16,12 @@ The full tool output is captured (following the saved `tool-results/*.txt` file
 when the client truncates a large result). An LLM judge (`claude -p`, output
 order randomized) picks which is more problem-oriented. 5 analysis-family cases.
 
+> **Fairness caveat.** The judge sees each side's recommendations section sliced
+> to 3500 chars. Both sides get the same window, but A (the dense template wall)
+> is shown mid-wall while B (collapsed) usually fits whole — a structural
+> asymmetry that faithfully represents the consumer experience but leans toward
+> B. Read the win margin with that in mind.
+
 ## Result: B wins 5/5
 
 | case | tool | judge | problem-oriented | A adv/dir/size | B adv/dir/size |

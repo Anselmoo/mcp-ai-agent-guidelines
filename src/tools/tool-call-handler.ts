@@ -463,6 +463,11 @@ export async function dispatchToolCall(
 
 		// Gap F — structured chainTo footer for every instruction that declares
 		// downstream tools. Replaces the old hardcoded adapt-only text paragraph.
+		// Note: on the analysis-transform path the directive ALSO carries a
+		// prose next-action workflow. The two are intentionally distinct: this
+		// footer is the machine-parseable JSON block autonomous agents read to
+		// auto-chain, while the directive's workflow is advisory prose for the
+		// model executing the analysis. Keep both.
 		const chainToFooter = buildChainToFooter(
 			toolName,
 			chainTo,
