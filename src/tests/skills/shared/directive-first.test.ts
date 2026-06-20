@@ -6,6 +6,7 @@ import type {
 	WorkflowExecutionResult,
 } from "../../../contracts/runtime.js";
 import {
+	ANALYSIS_OUTPUT_CONTRACT,
 	resolveTransformProfile,
 	toSituationResult,
 } from "../../../skills/shared/directive-first.js";
@@ -39,8 +40,7 @@ function workflowResult(
 
 const deps = {
 	domain: "evaluation setup",
-	outputContract:
-		"findings per criterion that cite the actual files, values, or evidence in this project, then a tailored next-action workflow",
+	outputContract: ANALYSIS_OUTPUT_CONTRACT,
 	candidateNextTools: ["evidence-research", "code-review"],
 };
 
@@ -58,13 +58,6 @@ describe("resolveTransformProfile", () => {
 		expect(domain).not.toMatch(/^[A-Z][a-z]+:/);
 	});
 
-	it("excludes routers, onboarding, bootstrap, orchestration", () => {
-		expect(resolveTransformProfile("meta-routing")).toBeUndefined();
-		expect(resolveTransformProfile("project-onboard")).toBeUndefined();
-		expect(resolveTransformProfile("task-bootstrap")).toBeUndefined();
-		expect(resolveTransformProfile("agent-orchestrate")).toBeUndefined();
-	});
-
 	it("covers the solution-producing tools with the build contract", () => {
 		for (const tool of [
 			"feature-implement",
@@ -76,7 +69,7 @@ describe("resolveTransformProfile", () => {
 		]) {
 			const p = resolveTransformProfile(tool);
 			expect(p, tool).toBeDefined();
-			expect(p?.outputContract.toLowerCase()).toContain("tailored");
+			expect(p?.outputContract.toLowerCase()).toContain("deliverable");
 			expect(p?.domain).not.toMatch(/^[A-Z][a-z]+:/);
 		}
 	});

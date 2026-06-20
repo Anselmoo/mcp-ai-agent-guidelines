@@ -90,6 +90,7 @@ export const TRANSFORM_PROFILES: Readonly<Record<string, TransformProfile>> = {
 	},
 };
 
+/** Resolve a tool's transform profile, or `undefined` when it must pass through. */
 export function resolveTransformProfile(
 	toolName: string,
 ): TransformProfile | undefined {
