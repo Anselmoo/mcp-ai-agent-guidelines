@@ -2,13 +2,8 @@ import type {
 	Sampler,
 	WorkflowExecutionResult,
 } from "../../contracts/runtime.js";
+import { ADVISORY_PREFIX } from "./advisory.js";
 import { analyzeOrDirective } from "./analyze-or-directive.js";
-
-/**
- * Every advisory family disclaimer (eval/bench/gov/resil) starts with this
- * sentence, so one prefix filter strips them all out of the rubric seed.
- */
-const ADVISORY_PREFIX = "This analysis is advisory only";
 
 /**
  * The only tools whose deliverable IS a situation analysis against a rubric —
