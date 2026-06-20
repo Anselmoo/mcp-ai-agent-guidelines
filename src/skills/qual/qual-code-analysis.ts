@@ -2,7 +2,6 @@ import type { WorkspaceEntry } from "../../contracts/runtime.js";
 import { qual_code_analysis_manifest as skillManifest } from "../../generated/manifests/skill-manifests.js";
 import { createSkillModule } from "../create-skill-module.js";
 import type { SkillHandler } from "../runtime/contracts.js";
-import { analyzeOrDirective } from "../shared/analyze-or-directive.js";
 import {
 	buildComparisonMatrixArtifact,
 	buildEvalCriteriaArtifact,
@@ -136,25 +135,14 @@ const qualCodeAnalysisHandler: SkillHandler = {
 			);
 		}
 
-		const { recommendation: leadAnalysis } = await analyzeOrDirective(context, {
-			domain: "code analysis",
-			criteria: ruleFindings,
-			input,
-			outputContract:
-				"a structural hotspot table naming the top modules to inspect, the complexity/coupling/cohesion evidence per module, and the next action",
-		});
-
 		return createCapabilityResult(
 			context,
 			`Code Analysis identified ${findings.length} structural finding${findings.length === 1 ? "" : "s"} across complexity, coupling, and cohesion dimensions.`,
-			[
-				leadAnalysis,
-				...createFocusRecommendations(
-					"Structural finding",
-					findings,
-					context.model.modelClass,
-				),
-			],
+			createFocusRecommendations(
+				"Structural finding",
+				findings,
+				context.model.modelClass,
+			),
 			[
 				buildComparisonMatrixArtifact(
 					"Code analysis lens matrix",

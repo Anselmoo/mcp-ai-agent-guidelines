@@ -3,7 +3,6 @@ import { z } from "zod";
 import { debug_reproduction_manifest as skillManifest } from "../../generated/manifests/skill-manifests.js";
 import { createSkillModule } from "../create-skill-module.js";
 import type { SkillHandler } from "../runtime/contracts.js";
-import { analyzeOrDirective } from "../shared/analyze-or-directive.js";
 import {
 	buildEvalCriteriaArtifact,
 	buildInsufficientSignalResult,
@@ -153,25 +152,14 @@ const debugReproductionHandler: SkillHandler = {
 
 		const artifacts = buildReproductionArtifacts(env, hasExistingTest);
 
-		const { recommendation: leadAnalysis } = await analyzeOrDirective(context, {
-			domain: "bug reproduction",
-			criteria: details,
-			input: parsed.data,
-			outputContract:
-				"a reproduction plan naming the minimal failing input, the captured environment state, and the failing test that pins the bug",
-		});
-
 		return createCapabilityResult(
 			context,
 			`Reproduction Planner produced ${details.length} steps and ${artifacts.length} artifacts for a ${env} reproduction (existing test: ${hasExistingTest}).`,
-			[
-				leadAnalysis,
-				...createFocusRecommendations(
-					"Reproduction step",
-					details,
-					context.model.modelClass,
-				),
-			],
+			createFocusRecommendations(
+				"Reproduction step",
+				details,
+				context.model.modelClass,
+			),
 			artifacts,
 		);
 	},

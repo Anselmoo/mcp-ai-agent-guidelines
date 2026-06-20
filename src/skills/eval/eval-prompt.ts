@@ -2,7 +2,6 @@ import { z } from "zod";
 import { eval_prompt_manifest as skillManifest } from "../../generated/manifests/skill-manifests.js";
 import { createSkillModule } from "../create-skill-module.js";
 import type { SkillHandler } from "../runtime/contracts.js";
-import { analyzeOrDirective } from "../shared/analyze-or-directive.js";
 import {
 	buildComparisonMatrixArtifact,
 	buildEvalCriteriaArtifact,
@@ -259,25 +258,14 @@ const evalPromptHandler: SkillHandler = {
 			),
 		];
 
-		const { recommendation: leadAnalysis } = await analyzeOrDirective(context, {
-			domain: "prompt evaluation",
-			criteria: matchedRules,
-			input: parsed.data,
-			outputContract:
-				"a prompt-eval verdict naming the score per benchmark slice and the keep/change/rollback decision",
-		});
-
 		return createCapabilityResult(
 			context,
 			`Prompt Evaluation produced ${details.length - 1} prompt-eval guideline${details.length === 2 ? "" : "s"} (score mode: ${scoreMode}; benchmark family: ${benchmarkFamily}; baseline: ${includeBaselines ? "included" : "omitted"}).`,
-			[
-				leadAnalysis,
-				...createFocusRecommendations(
-					"Prompt evaluation guidance",
-					details,
-					context.model.modelClass,
-				),
-			],
+			createFocusRecommendations(
+				"Prompt evaluation guidance",
+				details,
+				context.model.modelClass,
+			),
 			artifacts,
 		);
 	},

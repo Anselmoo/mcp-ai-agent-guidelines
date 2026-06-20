@@ -32,6 +32,36 @@ describe("buildAnalysisDirective", () => {
 		expect(directive.groundingScope).toBe("context");
 	});
 
+	it("asks for a tailored next-action workflow, seeded by candidate next tools", () => {
+		const directive = buildAnalysisDirective({
+			domain: "evaluation setup",
+			criteria: ["Define the dataset slices."],
+			input: baseInput,
+			outputContract: "a slice-by-slice eval table",
+			modelClass: "strong",
+			candidateNextTools: ["evidence-research", "quality-evaluate"],
+		});
+
+		const lower = directive.detail.toLowerCase();
+		// Part two of the contract: a situation-specific next-action sequence.
+		expect(lower).toContain("next");
+		expect(lower).toMatch(/workflow|next[- ]action|next steps?/);
+		expect(lower).toContain("this situation");
+		// Candidate next tools are surfaced to seed (not dictate) the sequence.
+		expect(directive.detail).toContain("evidence-research");
+	});
+
+	it("never self-labels the output as advisory only", () => {
+		const directive = buildAnalysisDirective({
+			domain: "evaluation setup",
+			criteria: ["Define the dataset slices."],
+			input: baseInput,
+			outputContract: "a table",
+			modelClass: "cheap",
+		});
+		expect(directive.detail.toLowerCase()).not.toContain("advisory only");
+	});
+
 	it("embeds every rubric criterion so the agent evaluates against all of them", () => {
 		const criteria = [
 			"Define the dataset slices.",

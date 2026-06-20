@@ -22,6 +22,11 @@ export interface AnalysisDirectiveSpec {
 	outputContract: string;
 	/** Model class label carried through onto the recommendation. */
 	modelClass: ModelClass;
+	/**
+	 * Candidate tools/skills the agent may chain next. They seed — but do not
+	 * dictate — the tailored next-action workflow the directive asks for.
+	 */
+	candidateNextTools?: readonly string[];
 }
 
 /**
@@ -40,6 +45,12 @@ export function buildAnalysisDirective(
 			? criteria.map((c) => `- ${c}`).join("\n")
 			: "- Derive the criteria that matter for this case from the request and context.";
 
+	const candidates = spec.candidateNextTools ?? [];
+	const workflowLine =
+		candidates.length > 0
+			? `Then produce a next-action workflow for THIS situation: the concrete, ordered steps to take next. Candidate tools to chain (seed, not a script — tailor the actual sequence to the real problem): ${candidates.join(", ")}.`
+			: "Then produce a next-action workflow for THIS situation: the concrete, ordered steps to take next, tailored to the real problem rather than a generic checklist.";
+
 	const detail = [
 		`Analysis task — do this yourself against the real ${domain}; you have the project in context, this skill does not.`,
 		`Work from the actual request: "${input.request.trim()}".`,
@@ -47,10 +58,11 @@ export function buildAnalysisDirective(
 		`Criteria for the ${domain}:`,
 		criteriaBlock,
 		`Produce: ${outputContract}.`,
+		workflowLine,
 	].join("\n\n");
 
 	return {
-		title: `Analyze your ${domain}`,
+		title: `Analyze your ${domain} and plan next actions`,
 		detail,
 		modelClass,
 		groundingScope: "context",

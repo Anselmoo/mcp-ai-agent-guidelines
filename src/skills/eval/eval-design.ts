@@ -2,7 +2,6 @@ import { z } from "zod";
 import { eval_design_manifest as skillManifest } from "../../generated/manifests/skill-manifests.js";
 import { createSkillModule } from "../create-skill-module.js";
 import type { SkillHandler } from "../runtime/contracts.js";
-import { analyzeOrDirective } from "../shared/analyze-or-directive.js";
 import {
 	buildComparisonMatrixArtifact,
 	buildEvalCriteriaArtifact,
@@ -267,25 +266,14 @@ const evalDesignHandler: SkillHandler = {
 			),
 		];
 
-		const { recommendation: leadAnalysis } = await analyzeOrDirective(context, {
-			domain: "evaluation design",
-			criteria: matchedRules,
-			input: parsed.data,
-			outputContract:
-				"an eval plan naming the dataset slices, the grading oracle per slice, the versioned baseline, and the release decision each threshold triggers",
-		});
-
 		return createCapabilityResult(
 			context,
 			`Eval Design produced ${details.length - 1} evaluation-design guideline${details.length === 2 ? "" : "s"} (dataset style: ${datasetStyle}; assertions: ${includeAssertions ? "included" : "omitted"}${sampleCount !== undefined ? `; sample target: ${sampleCount}` : ""}).`,
-			[
-				leadAnalysis,
-				...createFocusRecommendations(
-					"Eval design guidance",
-					details,
-					context.model.modelClass,
-				),
-			],
+			createFocusRecommendations(
+				"Eval design guidance",
+				details,
+				context.model.modelClass,
+			),
 			artifacts,
 		);
 	},
