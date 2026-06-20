@@ -96,13 +96,19 @@ describe("resolveTransformProfile", () => {
 		expect(p?.outputContract.toLowerCase()).toMatch(/coordination|orchestrat/);
 	});
 
+	it("gives prompt-engineering a prompt deliverable profile", () => {
+		const p = resolveTransformProfile("prompt-engineering");
+		expect(p).toBeDefined();
+		expect(p?.domain).not.toMatch(/^[A-Z][a-z]+:/);
+		expect(p?.outputContract.toLowerCase()).toContain("prompt");
+	});
+
 	it("still excludes the orientation/niche/special tools", () => {
 		for (const tool of [
 			"routing-adapt",
 			"task-bootstrap",
 			"project-onboard",
 			"analogy-think",
-			"prompt-engineering",
 		]) {
 			expect(resolveTransformProfile(tool), tool).toBeUndefined();
 		}

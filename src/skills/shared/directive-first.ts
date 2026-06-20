@@ -39,6 +39,10 @@ export const BUILD_OUTPUT_CONTRACT =
 export const ORCHESTRATION_OUTPUT_CONTRACT =
 	"the concrete agent topology, role assignments, and coordination plan for this request — who does what, in what order, and how the results are synthesized, followed by an ordered next-action sequence";
 
+/** Output contract for prompt tools — a tailored prompt deliverable. */
+export const PROMPT_OUTPUT_CONTRACT =
+	"the concrete, tailored prompt (or prompt changes) for this request — the structure, instructions, examples, and guardrails to use, grounded in the real task and failure modes, followed by an ordered next-action sequence";
+
 /** Output contract for routing tools — a request-anchored, ordered call list. */
 export const ROUTING_OUTPUT_CONTRACT =
 	"the concrete, ordered domain instruction(s) to invoke for this request — name each tool, give a one-line rationale, and say whether to run them in sequence or in parallel";
@@ -64,11 +68,11 @@ const ROUTABLE_DOMAIN_TOOLS: readonly string[] = [
  * "pass through untouched". Analysis tools produce findings against a rubric;
  * build tools produce concrete deliverables; the router (meta-routing) produces
  * a request-anchored decision naming the instructions to invoke; orchestration
- * (agent-orchestrate) produces a tailored coordination plan. Orientation
+ * (agent-orchestrate) produces a tailored coordination plan; prompt tools
+ * (prompt-engineering) produce a tailored prompt artifact. Orientation
  * (task-bootstrap, project-onboard), adaptive routing (routing-adapt), and the
- * analogy/prompt special paths are intentionally absent — their output is
- * already request-anchored in their own modality, runs on a separate path, or
- * (prompt-engineering) carries no collapsible recommendation wall.
+ * analogy special path are intentionally absent — their output is already
+ * request-anchored in their own modality or runs on a separate path.
  */
 export const TRANSFORM_PROFILES: Readonly<Record<string, TransformProfile>> = {
 	"meta-routing": {
@@ -131,6 +135,10 @@ export const TRANSFORM_PROFILES: Readonly<Record<string, TransformProfile>> = {
 	"enterprise-strategy": {
 		domain: "enterprise strategy",
 		outputContract: BUILD_OUTPUT_CONTRACT,
+	},
+	"prompt-engineering": {
+		domain: "prompt asset",
+		outputContract: PROMPT_OUTPUT_CONTRACT,
 	},
 };
 

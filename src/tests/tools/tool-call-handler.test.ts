@@ -404,6 +404,26 @@ describe("tool-call-handler", () => {
 		}
 	});
 
+	// prompt-engineering produces a prompt artifact (its mission: "every prompt is
+	// a versioned, tested artifact"). For a real prompt request it carries 24
+	// seed-eligible recommendations, so it must collapse into a tailored directive,
+	// not a template wall. This dispatched test PROVES the transform fires (the
+	// claim "registration is enough" rests on that rec count).
+	it("prompt-engineering emits a tailored prompt directive for a prompt request", async () => {
+		const result = await dispatchToolCall(
+			"prompt-engineering",
+			{ request: "improve our hallucinating rate-limit system prompt" },
+			createRuntime(),
+		);
+		expect(result.isError).toBeUndefined();
+		const text = result.content[0]?.text ?? "";
+		expect(text).toContain("Analyze your prompt asset");
+		expect(text).toContain(
+			"improve our hallucinating rate-limit system prompt",
+		);
+		expect(text.toLowerCase()).not.toContain("advisory only");
+	});
+
 	it("feature-implement now emits a target-oriented build directive, not a template wall", async () => {
 		const result = await dispatchToolCall(
 			"feature-implement",
