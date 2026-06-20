@@ -1,0 +1,132 @@
+[
+  {
+    "id": "eval-taskforce",
+    "tool": "quality-evaluate",
+    "request": "We have 6 open bugs in our checkout flow (2 are flaky e2e tests, 1 is a wire-format overflow, 3 are validation gaps). Build a prioritized task force to fix them.",
+    "A_signals": {
+      "chars": 69478,
+      "echoes_request": true,
+      "mentions_advisory_only": true,
+      "has_analysis_directive": false,
+      "has_next_action_workflow": true,
+      "cites_files": 0
+    },
+    "B_signals": {
+      "chars": 59681,
+      "echoes_request": true,
+      "mentions_advisory_only": false,
+      "has_analysis_directive": true,
+      "has_next_action_workflow": true,
+      "cites_files": 0
+    },
+    "judge": {
+      "winner": "B",
+      "problem_oriented": "B",
+      "reason": "Output 2 quotes the actual bug list and directs concrete self-analysis against real files; Output 1 is repetitive generic 'provide more detail' filler with no problem grounding."
+    }
+  },
+  {
+    "id": "review-auth",
+    "tool": "code-review",
+    "request": "Review our authentication module under src/auth for security issues and tell me which to fix first and how.",
+    "A_signals": {
+      "chars": 71365,
+      "echoes_request": true,
+      "mentions_advisory_only": true,
+      "has_analysis_directive": false,
+      "has_next_action_workflow": true,
+      "cites_files": 0
+    },
+    "B_signals": {
+      "chars": 64850,
+      "echoes_request": true,
+      "mentions_advisory_only": false,
+      "has_analysis_directive": true,
+      "has_next_action_workflow": true,
+      "cites_files": 0
+    },
+    "judge": {
+      "winner": "B",
+      "problem_oriented": "neither",
+      "reason": "Both are templated keyword-matched filler; neither inspects src/auth. Output 1 at least frames the top item as 'do this yourself against the real code' and demotes irrelevant policy/governance text, while Output 2 elevates compliance boilerplate as top picks."
+    }
+  },
+  {
+    "id": "debug-ci-crash",
+    "tool": "issue-debug",
+    "request": "Our service crashes on startup in CI but runs fine locally. Help me reproduce it and pin the root cause.",
+    "A_signals": {
+      "chars": 235381,
+      "echoes_request": true,
+      "mentions_advisory_only": true,
+      "has_analysis_directive": false,
+      "has_next_action_workflow": true,
+      "cites_files": 4
+    },
+    "B_signals": {
+      "chars": 212186,
+      "echoes_request": true,
+      "mentions_advisory_only": false,
+      "has_analysis_directive": true,
+      "has_next_action_workflow": true,
+      "cites_files": 4
+    },
+    "judge": {
+      "winner": "B",
+      "problem_oriented": "neither",
+      "reason": "Both are generic keyword-matched templates with irrelevant perf/baseline criteria; 2 at least frames it as self-analysis citing real files/evidence, but neither offers project-specific solution ideas."
+    }
+  },
+  {
+    "id": "design-ratelimit",
+    "tool": "system-design",
+    "request": "Design a rate limiter for our public API that must keep working during a single-region outage.",
+    "A_signals": {
+      "chars": 128972,
+      "echoes_request": true,
+      "mentions_advisory_only": true,
+      "has_analysis_directive": false,
+      "has_next_action_workflow": true,
+      "cites_files": 4
+    },
+    "B_signals": {
+      "chars": 120563,
+      "echoes_request": true,
+      "mentions_advisory_only": false,
+      "has_analysis_directive": true,
+      "has_next_action_workflow": true,
+      "cites_files": 4
+    },
+    "judge": {
+      "winner": "B",
+      "problem_oriented": "B",
+      "reason": "Both share templated keyword-matched criteria, but Output 2 frames them as a self-directed analysis task against the real system design, citing actual files/evidence. Output 1 is pure generic checklist."
+    }
+  },
+  {
+    "id": "govern-eu-llm",
+    "tool": "policy-govern",
+    "request": "We are shipping an LLM-backed feature to EU users next month. What compliance guardrails and controls do we need in place?",
+    "A_signals": {
+      "chars": 138681,
+      "echoes_request": true,
+      "mentions_advisory_only": true,
+      "has_analysis_directive": false,
+      "has_next_action_workflow": true,
+      "cites_files": 0
+    },
+    "B_signals": {
+      "chars": 123826,
+      "echoes_request": true,
+      "mentions_advisory_only": false,
+      "has_analysis_directive": true,
+      "has_next_action_workflow": true,
+      "cites_files": 0
+    },
+    "judge": {
+      "winner": "B",
+      "problem_oriented": "B",
+      "reason": "Output 1 is pure generic templated process advice repeated verbatim. Output 2 reframes as project-specific analysis demanding file/evidence citations against the actual EU-shipping request."
+    }
+  }
+]

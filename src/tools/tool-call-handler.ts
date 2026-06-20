@@ -440,7 +440,12 @@ export async function dispatchToolCall(
 		// directive otherwise. Routers/onboarding/orchestration tools resolve to no
 		// domain and pass through untouched (their deliverable is not a rubric
 		// analysis).
-		const transformDomain = resolveTransformDomain(toolName);
+		// Kill-switch (`MCP_SITUATION_TRANSFORM=0`) for A/B evaluation and ops
+		// rollback: disables the transform so tools emit pre-transform output.
+		const transformDomain =
+			process.env.MCP_SITUATION_TRANSFORM === "0"
+				? undefined
+				: resolveTransformDomain(toolName);
 		const situationData = transformDomain
 			? await toSituationResult(result.data, {
 					domain: transformDomain,

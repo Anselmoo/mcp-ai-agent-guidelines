@@ -325,4 +325,23 @@ describe("tool-call-handler", () => {
 		expect(text).not.toContain("Analyze your");
 		expect(text).not.toContain("Analysis task");
 	});
+
+	// Kill-switch for A/B evaluation and ops rollback: MCP_SITUATION_TRANSFORM=0
+	// disables the transform so the tool emits its pre-transform template output.
+	it("honors MCP_SITUATION_TRANSFORM=0 as a kill-switch (no transform)", async () => {
+		const prev = process.env.MCP_SITUATION_TRANSFORM;
+		process.env.MCP_SITUATION_TRANSFORM = "0";
+		try {
+			const result = await dispatchToolCall(
+				"quality-evaluate",
+				{ request: "design an eval set with hard negatives" },
+				createRuntime(),
+			);
+			const text = result.content[0]?.text ?? "";
+			expect(text).not.toContain("Analyze your evaluation setup");
+		} finally {
+			if (prev === undefined) delete process.env.MCP_SITUATION_TRANSFORM;
+			else process.env.MCP_SITUATION_TRANSFORM = prev;
+		}
+	});
 });
