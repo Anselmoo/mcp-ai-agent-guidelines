@@ -450,7 +450,8 @@ export async function dispatchToolCall(
 			? await toSituationResult(result.data, {
 					domain: profile.domain,
 					outputContract: profile.outputContract,
-					candidateNextTools: instruction.manifest.chainTo ?? [],
+					candidateNextTools:
+						profile.candidateNextTools ?? instruction.manifest.chainTo ?? [],
 					sampler: runtime.sampler,
 				})
 			: result.data;

@@ -18,6 +18,13 @@ export interface TransformProfile {
 	domain: string;
 	/** The shape of deliverable the directive asks the model to produce. */
 	outputContract: string;
+	/**
+	 * Tools to seed the next-action workflow with, overriding the instruction's
+	 * manifest `chainTo`. Used by routing tools (e.g. meta-routing) whose job is
+	 * to name the domain instructions to invoke but whose manifest `chainTo` is
+	 * empty.
+	 */
+	candidateNextTools?: readonly string[];
 }
 
 /** Output contract for rubric-analysis tools — findings + next actions. */
@@ -28,14 +35,42 @@ export const ANALYSIS_OUTPUT_CONTRACT =
 export const BUILD_OUTPUT_CONTRACT =
 	"a concrete, tailored deliverable for this request — the specific changes, steps, tests, or artifacts to produce, grounded in the actual files and code, followed by an ordered next-action sequence";
 
+/** Output contract for routing tools — a request-anchored, ordered call list. */
+export const ROUTING_OUTPUT_CONTRACT =
+	"the concrete, ordered domain instruction(s) to invoke for this request — name each tool, give a one-line rationale, and say whether to run them in sequence or in parallel";
+
+/** Domain instructions a router classifies a request toward. */
+const ROUTABLE_DOMAIN_TOOLS: readonly string[] = [
+	"feature-implement",
+	"issue-debug",
+	"system-design",
+	"code-review",
+	"code-refactor",
+	"test-verify",
+	"evidence-research",
+	"strategy-plan",
+	"docs-generate",
+	"quality-evaluate",
+	"policy-govern",
+	"fault-resilience",
+];
+
 /**
  * Per-tool transform profiles. Presence is the allow-list; absence means
  * "pass through untouched". Analysis tools produce findings against a rubric;
- * build tools produce concrete deliverables. Routers/orientation/orchestration
- * tools are intentionally absent (their deliverable is a decision/config, not
- * a rubric analysis or concrete build).
+ * build tools produce concrete deliverables; the router (meta-routing) produces
+ * a request-anchored decision naming the instructions to invoke. Orientation
+ * (task-bootstrap, project-onboard), orchestration (agent-orchestrate),
+ * adaptive routing (routing-adapt), and the analogy/prompt special paths are
+ * intentionally absent — their output is already request-anchored in their own
+ * modality, or runs on a separate path.
  */
 export const TRANSFORM_PROFILES: Readonly<Record<string, TransformProfile>> = {
+	"meta-routing": {
+		domain: "request",
+		outputContract: ROUTING_OUTPUT_CONTRACT,
+		candidateNextTools: ROUTABLE_DOMAIN_TOOLS,
+	},
 	"quality-evaluate": {
 		domain: "evaluation setup",
 		outputContract: ANALYSIS_OUTPUT_CONTRACT,

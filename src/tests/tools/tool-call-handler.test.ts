@@ -310,13 +310,11 @@ describe("tool-call-handler", () => {
 		expect(text).not.toContain("Analyze your Evaluate:");
 	});
 
-	// Scope guard (A/B review B#2): the transform must fire ONLY for analysis-
-	// family tools. Routers/onboarding tools, whose deliverable is a decision
-	// rather than a rubric analysis, must pass through untouched — no "analyze
-	// your <router>" directive injected.
-	it("does not collapse non-analysis tools like meta-routing into an analysis directive", async () => {
+	// Scope guard (A/B review B#2): the transform must NOT fire for orientation
+	// tools, whose deliverable is session setup rather than a decision/analysis.
+	it("does not collapse orientation tools like project-onboard", async () => {
 		const result = await dispatchToolCall(
-			"meta-routing",
+			"project-onboard",
 			{ request: "where should I start hardening this repo" },
 			createRuntime(),
 		);
@@ -324,6 +322,25 @@ describe("tool-call-handler", () => {
 		const text = result.content[0]?.text ?? "";
 		expect(text).not.toContain("Analyze your");
 		expect(text).not.toContain("Analysis task");
+	});
+
+	// Tribunal fix: meta-routing's mission is to DECIDE which instruction(s) to
+	// invoke. It must emit a request-anchored routing decision that names concrete
+	// domain tools — not a request-agnostic skill-scaffolding wall.
+	it("meta-routing emits a routing decision that names concrete domain tools", async () => {
+		const result = await dispatchToolCall(
+			"meta-routing",
+			{ request: "reproduce and fix the crash in our checkout flow" },
+			createRuntime(),
+		);
+		expect(result.isError).toBeUndefined();
+		const text = result.content[0]?.text ?? "";
+		// It routes for THIS request and names routable domain instructions.
+		expect(text).toContain("reproduce and fix the crash in our checkout flow");
+		const named = ["issue-debug", "code-review", "system-design"].filter((t) =>
+			text.includes(t),
+		);
+		expect(named.length).toBeGreaterThan(0);
 	});
 
 	// Sampling lever: when the connected client advertises `sampling`, the server

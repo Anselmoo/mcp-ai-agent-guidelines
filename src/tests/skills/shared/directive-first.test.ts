@@ -74,9 +74,21 @@ describe("resolveTransformProfile", () => {
 		}
 	});
 
-	it("still excludes routers, orchestration, and the analogy/prompt special paths", () => {
+	it("gives meta-routing a routing profile that seeds the routable domain tools", () => {
+		// meta-routing's mission is to DECIDE which instruction(s) to invoke, so it
+		// must name concrete tools for the request — not collapse to a rubric
+		// analysis. The routing profile carries its own candidate tools (its
+		// manifest chainTo is empty).
+		const p = resolveTransformProfile("meta-routing");
+		expect(p).toBeDefined();
+		expect(p?.domain).not.toMatch(/^[A-Z][a-z]+:/);
+		expect(p?.outputContract.toLowerCase()).toMatch(/instruction|tool/);
+		expect(p?.candidateNextTools ?? []).toContain("issue-debug");
+		expect((p?.candidateNextTools ?? []).length).toBeGreaterThan(3);
+	});
+
+	it("still excludes the orientation/orchestration/special tools", () => {
 		for (const tool of [
-			"meta-routing",
 			"routing-adapt",
 			"task-bootstrap",
 			"project-onboard",
