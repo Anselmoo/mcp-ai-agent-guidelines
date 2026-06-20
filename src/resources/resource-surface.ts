@@ -1,6 +1,5 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { extname, resolve } from "node:path";
-import { encode as toonEncode } from "@toon-format/toon";
 import type {
 	ExecutionProgressRecord,
 	SessionStateStore,
@@ -8,12 +7,6 @@ import type {
 import { ALIAS_ENTRIES } from "../generated/graph/aliases.js";
 import { INSTRUCTION_SKILL_EDGES } from "../generated/graph/instruction-skill-edges.js";
 import { TAXONOMY_ENTRIES } from "../generated/graph/taxonomy.js";
-import {
-	type ToonMemoryArtifact,
-	ToonMemoryInterface,
-	type ToonSessionContext,
-} from "../memory/toon-interface.js";
-import { splitProgressRecords } from "../memory/toon-memory-helpers.js";
 
 export interface PublicResourceDefinition {
 	uri: string;
@@ -62,10 +55,6 @@ interface SupportingAssetCache {
 
 export interface PublicResourceOptions {
 	workspaceRoot?: string;
-}
-
-export interface ReadPublicResourceOptions extends PublicResourceOptions {
-	memoryInterface?: ToonMemoryInterface;
 }
 
 const supportingAssetCaches = new Map<string, SupportingAssetCache>();
@@ -493,12 +482,6 @@ function getSupportingAssetCache(workspaceRoot?: string) {
 	return supportingAssetCache;
 }
 
-function isReadPublicResourceOptions(
-	value: ReadPublicResourceOptions | ToonMemoryInterface,
-): value is ReadPublicResourceOptions {
-	return "workspaceRoot" in value || "memoryInterface" in value;
-}
-
 export function buildPublicResources(
 	sessionId: string,
 	options: PublicResourceOptions = {},
@@ -535,94 +518,18 @@ export function buildPublicResources(
 			description: "Structured progress history for the current session.",
 			mimeType: "application/json",
 		},
-		{
-			uri: `mcp-guidelines://session/${sessionId}/context`,
-			name: "session-context",
-			description:
-				"TOON session context for the current session, loading persisted context or deriving one from secure progress history.",
-			mimeType: "application/toon",
-		},
-		{
-			uri: "mcp-guidelines://memory/artifacts",
-			name: "memory-artifacts",
-			description:
-				"Index of persisted TOON memory artifacts, including per-artifact MCP URIs.",
-			mimeType: "application/json",
-		},
 		...getSupportingAssetCache(options.workspaceRoot).resources.map(
 			(resource) => resource.definition,
 		),
 	];
 }
 
-function buildDerivedSessionContext(
-	sessionId: string,
-	history: ExecutionProgressRecord[],
-): ToonSessionContext {
-	const progress = splitProgressRecords(history);
-	const now = new Date().toISOString();
-
-	return {
-		meta: {
-			version: "derived-from-secure-history",
-			created: now,
-			updated: now,
-			sessionId,
-		},
-		context: {
-			requestScope:
-				"Derived session context projection from SecureFileSessionStore history.",
-			constraints: [],
-			phase: "runtime-history",
-		},
-		progress,
-		memory: {
-			keyInsights: [
-				"Session context was derived from secure runtime progress history because no persisted TOON session context was found.",
-			],
-			decisions: {},
-			patterns: [],
-			warnings: [],
-		},
-	};
-}
-
-function buildMemoryArtifactIndex(artifacts: ToonMemoryArtifact[]) {
-	return artifacts.map((artifact) => ({
-		id: artifact.meta.id,
-		summary: artifact.content.summary,
-		tags: artifact.meta.tags,
-		relevance: artifact.meta.relevance,
-		relatedSessions: artifact.links.relatedSessions,
-		uri: `mcp-guidelines://memory/artifacts/${artifact.meta.id}`,
-	}));
-}
-
 export async function readPublicResource(
 	uri: string,
 	sessionId: string,
 	sessionStore: SessionStateStore,
-	memoryInterface?: ToonMemoryInterface,
-): Promise<{ contents: { uri: string; mimeType: string; text: string }[] }>;
-export async function readPublicResource(
-	uri: string,
-	sessionId: string,
-	sessionStore: SessionStateStore,
-	options?: ReadPublicResourceOptions,
-): Promise<{ contents: { uri: string; mimeType: string; text: string }[] }>;
-export async function readPublicResource(
-	uri: string,
-	sessionId: string,
-	sessionStore: SessionStateStore,
-	optionsOrMemoryInterface?: ReadPublicResourceOptions | ToonMemoryInterface,
-) {
-	const options: ReadPublicResourceOptions =
-		optionsOrMemoryInterface === undefined
-			? {}
-			: isReadPublicResourceOptions(optionsOrMemoryInterface)
-				? optionsOrMemoryInterface
-				: { memoryInterface: optionsOrMemoryInterface };
-	const memoryInterface = options.memoryInterface ?? new ToonMemoryInterface();
+	options: PublicResourceOptions = {},
+): Promise<{ contents: { uri: string; mimeType: string; text: string }[] }> {
 	switch (uri) {
 		case "mcp-guidelines://graph/taxonomy":
 			return {
@@ -688,60 +595,7 @@ export async function readPublicResource(
 				],
 			};
 		}
-		case `mcp-guidelines://session/${sessionId}/context`: {
-			const storedContext = await memoryInterface.loadSessionContext(sessionId);
-			const context =
-				storedContext ??
-				buildDerivedSessionContext(
-					sessionId,
-					await sessionStore.readSessionHistory(sessionId),
-				);
-			return {
-				contents: [
-					{
-						uri,
-						mimeType: "application/toon",
-						text: toonEncode(context, { delimiter: "\t", keyFolding: "safe" }),
-					},
-				],
-			};
-		}
-		case "mcp-guidelines://memory/artifacts": {
-			const artifacts = await memoryInterface.findMemoryArtifacts();
-			return {
-				contents: [
-					toJsonResource(
-						uri,
-						"memory-artifacts",
-						"Index of persisted TOON memory artifacts, including per-artifact MCP URIs.",
-						buildMemoryArtifactIndex(artifacts),
-					).resource,
-				],
-			};
-		}
 		default: {
-			if (uri.startsWith("mcp-guidelines://memory/artifacts/")) {
-				const memoryId = uri.slice("mcp-guidelines://memory/artifacts/".length);
-				if (memoryId.length === 0) {
-					throw new Error(`Unknown resource: ${uri}`);
-				}
-				const artifact = await memoryInterface.loadMemoryArtifact(memoryId);
-				if (!artifact) {
-					throw new Error(`Unknown resource: ${uri}`);
-				}
-				return {
-					contents: [
-						{
-							uri,
-							mimeType: "application/toon",
-							text: toonEncode(artifact, {
-								delimiter: "\t",
-								keyFolding: "safe",
-							}),
-						},
-					],
-				};
-			}
 			const resource = getSupportingAssetCache(
 				options.workspaceRoot,
 			).resourceByUri.get(uri);

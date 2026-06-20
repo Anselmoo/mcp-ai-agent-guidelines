@@ -50,10 +50,6 @@ describe("anchorStateToClientRoots — config-reload fallback (v0.18.1)", () => 
 		};
 	}
 
-	function makeMemory() {
-		return { setBaseDir: vi.fn() };
-	}
-
 	it("calls the no-arg fallback when the explicit reload throws", async () => {
 		// First call (with explicit path) throws — second call (no args) succeeds.
 		mocks.loadOrchestrationConfig
@@ -64,7 +60,6 @@ describe("anchorStateToClientRoots — config-reload fallback (v0.18.1)", () => 
 
 		const server = makeServer("file:///tmp/some-project");
 		const runtime = makeRuntime();
-		const memory = makeMemory();
 		const stderrSpy = vi
 			.spyOn(process.stderr, "write")
 			.mockImplementation(() => true);
@@ -72,7 +67,6 @@ describe("anchorStateToClientRoots — config-reload fallback (v0.18.1)", () => 
 		const result = await anchorStateToClientRoots(
 			server as never,
 			runtime as never,
-			memory,
 		);
 
 		// Anchor still completes successfully despite the inner throw.
@@ -102,13 +96,11 @@ describe("anchorStateToClientRoots — config-reload fallback (v0.18.1)", () => 
 
 		const server = makeServer("file:///tmp/another-project");
 		const runtime = makeRuntime({ reinitialize });
-		const memory = makeMemory();
 		vi.spyOn(process.stderr, "write").mockImplementation(() => true);
 
 		const result = await anchorStateToClientRoots(
 			server as never,
 			runtime as never,
-			memory,
 		);
 
 		expect(result).toBe("/tmp/another-project");

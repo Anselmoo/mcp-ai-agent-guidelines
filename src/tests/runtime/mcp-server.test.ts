@@ -220,30 +220,10 @@ describe("anchorStateToClientRoots", () => {
 			.mockReturnValue(undefined);
 		const runtime = createRuntime();
 
-		const result = await anchorStateToClientRoots(server, runtime, {
-			setBaseDir: vi.fn(),
-		});
+		const result = await anchorStateToClientRoots(server, runtime);
 
 		expect(result).toBeUndefined();
 		mockCaps.mockRestore();
-	});
-
-	it("redirects memory to a temp dir and skips project anchoring in ephemeral mode", async () => {
-		process.env.MCP_AI_AGENT_GUIDELINES_EPHEMERAL = "true";
-		const setBaseDir = vi.fn();
-		const runtime = createRuntime();
-		try {
-			const result = await anchorStateToClientRoots(server, runtime, {
-				setBaseDir,
-			});
-			expect(result).toBeUndefined();
-			expect(setBaseDir).toHaveBeenCalledTimes(1);
-			expect(String(setBaseDir.mock.calls[0]?.[0])).toContain(
-				"mcp-aag-ephemeral",
-			);
-		} finally {
-			delete process.env.MCP_AI_AGENT_GUIDELINES_EPHEMERAL;
-		}
 	});
 
 	it("returns undefined when client has roots capability but empty roots list", async () => {
@@ -255,16 +235,14 @@ describe("anchorStateToClientRoots", () => {
 			.mockResolvedValue({ roots: [] });
 		const runtime = createRuntime();
 
-		const result = await anchorStateToClientRoots(server, runtime, {
-			setBaseDir: vi.fn(),
-		});
+		const result = await anchorStateToClientRoots(server, runtime);
 
 		expect(result).toBeUndefined();
 		mockCaps.mockRestore();
 		mockRoots.mockRestore();
 	});
 
-	it("anchors state when roots list contains a file:// URI", async () => {
+	it("resolves the workspace root when roots list contains a file:// URI", async () => {
 		const tmpDir = mkdtempSync(join(tmpdir(), "anchor-roots-test-"));
 		const fileUri = pathToFileURL(tmpDir).href;
 		const mockCaps = vi
@@ -273,24 +251,18 @@ describe("anchorStateToClientRoots", () => {
 		const mockRoots = vi
 			.spyOn(server, "listRoots")
 			.mockResolvedValue({ roots: [{ uri: fileUri, name: "test" }] });
-		const setBaseDir = vi.fn();
 		const runtime = createRuntime();
 
-		const result = await anchorStateToClientRoots(server, runtime, {
-			setBaseDir,
-		});
+		const result = await anchorStateToClientRoots(server, runtime);
 
 		expect(result).toBe(tmpDir);
-		expect(setBaseDir).toHaveBeenCalledWith(
-			expect.stringContaining(".mcp-ai-agent-guidelines"),
-		);
 		expect(runtime.workspaceRoot).toBe(tmpDir);
 		rmSync(tmpDir, { recursive: true, force: true });
 		mockCaps.mockRestore();
 		mockRoots.mockRestore();
 	});
 
-	it("anchors state when roots list contains a plain (non-file://) URI", async () => {
+	it("resolves the workspace root when roots list contains a plain (non-file://) URI", async () => {
 		const mockCaps = vi
 			.spyOn(server, "getClientCapabilities")
 			.mockReturnValue({ roots: {} });
@@ -298,17 +270,12 @@ describe("anchorStateToClientRoots", () => {
 		const mockRoots = vi
 			.spyOn(server, "listRoots")
 			.mockResolvedValue({ roots: [{ uri: plainRoot, name: "test" }] });
-		const setBaseDir = vi.fn();
 		const runtime = createRuntime();
 
-		const result = await anchorStateToClientRoots(server, runtime, {
-			setBaseDir,
-		});
+		const result = await anchorStateToClientRoots(server, runtime);
 
 		expect(result).toBe(plainRoot);
-		expect(setBaseDir).toHaveBeenCalledWith(
-			expect.stringContaining(".mcp-ai-agent-guidelines"),
-		);
+		expect(runtime.workspaceRoot).toBe(plainRoot);
 		mockCaps.mockRestore();
 		mockRoots.mockRestore();
 	});
@@ -325,9 +292,7 @@ describe("anchorStateToClientRoots", () => {
 			.mockImplementation(() => true);
 		const runtime = createRuntime();
 
-		const result = await anchorStateToClientRoots(server, runtime, {
-			setBaseDir: vi.fn(),
-		});
+		const result = await anchorStateToClientRoots(server, runtime);
 
 		expect(result).toBeUndefined();
 		expect(stderrSpy).toHaveBeenCalledWith(

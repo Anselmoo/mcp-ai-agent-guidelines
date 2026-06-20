@@ -8,7 +8,7 @@
 | Metric | Value |
 |--------|-------|
 | Instructions | 20 |
-| Unique skills covered | 102 |
+| Unique skills covered | 100 |
 | Orphan skills (0 instructions) | 0 |
 
 
@@ -46,6 +46,7 @@ flowchart LR
     %% ── Instructions (left column) ──────────────────────────────
     subgraph INSTRUCTIONS["📌 Instructions"]
         adapt["🧬 adapt"]
+        analogy_think["📌 analogy-think"]
         bootstrap["🌱 bootstrap"]
         debug["🐛 debug"]
         design["🎨 design"]
@@ -57,7 +58,6 @@ flowchart LR
         meta_routing["🧭 meta-routing"]
         onboard_project["📌 onboard_project"]
         orchestrate["🎭 orchestrate"]
-        physics_analysis["⚛️ physics-analysis"]
         plan["🗺️ plan"]
         prompt_engineering["💬 prompt-engineering"]
         refactor["♻️ refactor"]
@@ -133,7 +133,6 @@ flowchart LR
         gr_event_horizon_detector["gr-event-horizon-detector"]
         gr_frame_dragging_detector["gr-frame-dragging-detector"]
         gr_geodesic_refactor["gr-geodesic-refactor"]
-        gr_gravitational_lensing_tracer["gr-gravitational-lensing-tracer"]
         gr_gravitational_wave_detector["gr-gravitational-wave-detector"]
         gr_hawking_entropy_auditor["gr-hawking-entropy-auditor"]
         gr_inflation_detector["gr-inflation-detector"]
@@ -172,7 +171,6 @@ flowchart LR
     subgraph D_qm["⚛️ QM"]
         qm_bloch_interpolator["qm-bloch-interpolator"]
         qm_decoherence_sentinel["qm-decoherence-sentinel"]
-        qm_dirac_notation_mapper["qm-dirac-notation-mapper"]
         qm_double_slit_interference["qm-double-slit-interference"]
         qm_entanglement_mapper["qm-entanglement-mapper"]
         qm_hamiltonian_descent["qm-hamiltonian-descent"]
@@ -239,6 +237,7 @@ flowchart LR
     adapt --> orch_multi_agent
     adapt --> resil_homeostatic
     adapt --> strat_tradeoff
+
 
     bootstrap --> flow_context_handoff
     bootstrap --> flow_mode_switching
@@ -426,37 +425,6 @@ flowchart LR
     orchestrate --> orch_result_synthesis
     orchestrate --> req_scope
     orchestrate --> strat_prioritization
-
-    physics_analysis --> gr_dark_energy_forecaster
-    physics_analysis --> gr_equivalence_principle_checker
-    physics_analysis --> gr_event_horizon_detector
-    physics_analysis --> gr_frame_dragging_detector
-    physics_analysis --> gr_geodesic_refactor
-    physics_analysis --> gr_gravitational_lensing_tracer
-    physics_analysis --> gr_gravitational_wave_detector
-    physics_analysis --> gr_hawking_entropy_auditor
-    physics_analysis --> gr_inflation_detector
-    physics_analysis --> gr_neutron_star_compactor
-    physics_analysis --> gr_penrose_diagram_mapper
-    physics_analysis --> gr_redshift_velocity_mapper
-    physics_analysis --> gr_schwarzschild_classifier
-    physics_analysis --> gr_spacetime_debt_metric
-    physics_analysis --> gr_tidal_force_analyzer
-    physics_analysis --> qm_bloch_interpolator
-    physics_analysis --> qm_decoherence_sentinel
-    physics_analysis --> qm_dirac_notation_mapper
-    physics_analysis --> qm_double_slit_interference
-    physics_analysis --> qm_entanglement_mapper
-    physics_analysis --> qm_hamiltonian_descent
-    physics_analysis --> qm_heisenberg_picture
-    physics_analysis --> qm_measurement_collapse
-    physics_analysis --> qm_path_integral_historian
-    physics_analysis --> qm_phase_kickback_reviewer
-    physics_analysis --> qm_schrodinger_picture
-    physics_analysis --> qm_superposition_generator
-    physics_analysis --> qm_tunneling_breakthrough
-    physics_analysis --> qm_uncertainty_tradeoff
-    physics_analysis --> qm_wavefunction_coverage
 
     plan --> doc_runbook
     plan --> eval_design
