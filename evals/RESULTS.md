@@ -45,12 +45,30 @@ directive; size = tool output bytes.)
    client must advertise MCP **sampling** (or the calling LLM must execute the
    directive — which a real agent does).
 
-3. **Volume is the remaining problem.** Every response is 58–229KB. The transform
-   collapses the recommendation wall but the template **artifacts** (matrices,
-   output templates, worked examples) still ship, so the envelope stays huge —
-   the opposite of focused solution ideas. `cites_files=0` on the tool output
-   itself (the directive asks the *consumer* to cite files). Trimming artifact
-   volume is the next lever, independent of the transform.
+3. **Volume was the remaining problem — now addressed.** In the first run every
+   response was 58–229KB: the transform collapsed the recommendation wall but the
+   template **artifacts** (matrices, output templates, worked examples) still
+   shipped. The `TRANSFORM_ARTIFACT_CAP` (6) added afterwards caps the merged
+   artifact set on the collapsed result. `cites_files=0` on the tool output itself
+   is by design (the directive asks the *consumer* to cite files).
+
+## Update — after the artifact cap + sampling proof (2026-06-20)
+
+The plan `.superpowers/plans/2026-06-20-finish-situation-transform.md` was
+executed (4 implementation tasks, each reviewed clean).
+
+- **Volume cut sharply.** Direct measurement (transform OFF vs ON, same build via
+  the `MCP_SITUATION_TRANSFORM` kill-switch): quality-evaluate 19KB→11KB,
+  issue-debug 71KB→24KB, code-review 23KB→9KB, policy-govern 42KB→15KB — a
+  **42–66% reduction**. End-to-end through the real MCP, the task-force case
+  dropped from **B=58KB to B=29KB** (~50%).
+- **Still wins.** The 1-case end-to-end A/B re-run kept **winner = B** (A is the
+  69KB advisory-only template wall; B is the 29KB request-anchored directive).
+- **Sampling path now proven.** Without a client sampler B remains a directive
+  ("neither" problem-oriented on this case) — but the directive→findings path is
+  now covered end-to-end by an integration test (`tool-call-handler.test.ts`,
+  "returns sampled findings … when a sampler is present"). A client that
+  advertises MCP `sampling` gets findings, not a directive.
 
 ## Reproduce
 
