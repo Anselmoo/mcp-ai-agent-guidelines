@@ -109,10 +109,20 @@ an optional `candidateNextTools` on the profile (routers seed their own
 candidates since their manifest `chainTo` is empty). `meta-routing` now collapses
 its wall into a request-anchored decision naming the ordered domain instructions
 (issue-debug, system-design, code-review, …), and shrank **42KB → 14KB**.
-**Coverage 13/20 → 14/20.** The remaining 6 untransformed tools (routing-adapt,
-task-bootstrap, project-onboard, agent-orchestrate, analogy-think,
-prompt-engineering) were confirmed correctly excluded — already request-anchored
-in their own modality, or a separate deterministic path.
+**Coverage 13/20 → 14/20.**
+
+A follow-up mission-vs-output pass then caught one more: **`agent-orchestrate`**
+— its mission "synthesize results … coherent unified output" produces a
+deliverable and it carries a 21-item collapsible wall, yet it passed through.
+Added an `ORCHESTRATION_OUTPUT_CONTRACT` (domain "agent orchestration") → it now
+collapses into a tailored coordination plan. **Coverage 14/20 → 15/20.**
+
+The remaining 5 untransformed tools are correctly excluded: routing-adapt
+(niche adaptive routing), task-bootstrap / project-onboard (orientation),
+analogy-think (deterministic special path), and prompt-engineering — which emits
+**0 top-level recommendations** (its content lives in artifacts/steps), so the
+collapse has nothing to seed; making it target-oriented needs the *skill*
+restructured to emit a recommendation, a deeper change tracked as a follow-up.
 
 ## Reproduce
 

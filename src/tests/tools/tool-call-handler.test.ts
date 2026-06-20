@@ -343,6 +343,23 @@ describe("tool-call-handler", () => {
 		expect(named.length).toBeGreaterThan(0);
 	});
 
+	// Tribunal follow-up: agent-orchestrate's mission produces a "coherent unified
+	// output" (a deliverable), so it must emit a tailored coordination plan, not a
+	// passthrough template wall.
+	it("agent-orchestrate emits a tailored coordination directive", async () => {
+		const result = await dispatchToolCall(
+			"agent-orchestrate",
+			{ request: "coordinate 3 agents to fix our checkout bugs in parallel" },
+			createRuntime(),
+		);
+		expect(result.isError).toBeUndefined();
+		const text = result.content[0]?.text ?? "";
+		expect(text).toContain("Analyze your agent orchestration");
+		expect(text).toContain(
+			"coordinate 3 agents to fix our checkout bugs in parallel",
+		);
+	});
+
 	// Sampling lever: when the connected client advertises `sampling`, the server
 	// has a runtime.sampler, and the transform must return the model's FINDINGS
 	// (not the return-a-prompt directive) through the full dispatch path.

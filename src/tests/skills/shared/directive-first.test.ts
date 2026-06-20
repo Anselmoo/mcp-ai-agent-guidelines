@@ -87,12 +87,20 @@ describe("resolveTransformProfile", () => {
 		expect((p?.candidateNextTools ?? []).length).toBeGreaterThan(3);
 	});
 
-	it("still excludes the orientation/orchestration/special tools", () => {
+	it("gives agent-orchestrate an orchestration profile (it produces a deliverable)", () => {
+		// Mission: "synthesize results … coherent unified output" — a deliverable,
+		// not a passthrough. It collapses into a tailored coordination plan.
+		const p = resolveTransformProfile("agent-orchestrate");
+		expect(p).toBeDefined();
+		expect(p?.domain).not.toMatch(/^[A-Z][a-z]+:/);
+		expect(p?.outputContract.toLowerCase()).toMatch(/coordination|orchestrat/);
+	});
+
+	it("still excludes the orientation/niche/special tools", () => {
 		for (const tool of [
 			"routing-adapt",
 			"task-bootstrap",
 			"project-onboard",
-			"agent-orchestrate",
 			"analogy-think",
 			"prompt-engineering",
 		]) {

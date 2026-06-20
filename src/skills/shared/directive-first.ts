@@ -35,6 +35,10 @@ export const ANALYSIS_OUTPUT_CONTRACT =
 export const BUILD_OUTPUT_CONTRACT =
 	"a concrete, tailored deliverable for this request — the specific changes, steps, tests, or artifacts to produce, grounded in the actual files and code, followed by an ordered next-action sequence";
 
+/** Output contract for orchestration tools — a tailored coordination plan. */
+export const ORCHESTRATION_OUTPUT_CONTRACT =
+	"the concrete agent topology, role assignments, and coordination plan for this request — who does what, in what order, and how the results are synthesized, followed by an ordered next-action sequence";
+
 /** Output contract for routing tools — a request-anchored, ordered call list. */
 export const ROUTING_OUTPUT_CONTRACT =
 	"the concrete, ordered domain instruction(s) to invoke for this request — name each tool, give a one-line rationale, and say whether to run them in sequence or in parallel";
@@ -59,17 +63,22 @@ const ROUTABLE_DOMAIN_TOOLS: readonly string[] = [
  * Per-tool transform profiles. Presence is the allow-list; absence means
  * "pass through untouched". Analysis tools produce findings against a rubric;
  * build tools produce concrete deliverables; the router (meta-routing) produces
- * a request-anchored decision naming the instructions to invoke. Orientation
- * (task-bootstrap, project-onboard), orchestration (agent-orchestrate),
- * adaptive routing (routing-adapt), and the analogy/prompt special paths are
- * intentionally absent — their output is already request-anchored in their own
- * modality, or runs on a separate path.
+ * a request-anchored decision naming the instructions to invoke; orchestration
+ * (agent-orchestrate) produces a tailored coordination plan. Orientation
+ * (task-bootstrap, project-onboard), adaptive routing (routing-adapt), and the
+ * analogy/prompt special paths are intentionally absent — their output is
+ * already request-anchored in their own modality, runs on a separate path, or
+ * (prompt-engineering) carries no collapsible recommendation wall.
  */
 export const TRANSFORM_PROFILES: Readonly<Record<string, TransformProfile>> = {
 	"meta-routing": {
 		domain: "request",
 		outputContract: ROUTING_OUTPUT_CONTRACT,
 		candidateNextTools: ROUTABLE_DOMAIN_TOOLS,
+	},
+	"agent-orchestrate": {
+		domain: "agent orchestration",
+		outputContract: ORCHESTRATION_OUTPUT_CONTRACT,
 	},
 	"quality-evaluate": {
 		domain: "evaluation setup",
