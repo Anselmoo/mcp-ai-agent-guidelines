@@ -117,12 +117,14 @@ deliverable and it carries a 21-item collapsible wall, yet it passed through.
 Added an `ORCHESTRATION_OUTPUT_CONTRACT` (domain "agent orchestration") → it now
 collapses into a tailored coordination plan. **Coverage 14/20 → 15/20.**
 
-The remaining 5 untransformed tools are correctly excluded: routing-adapt
-(niche adaptive routing), task-bootstrap / project-onboard (orientation),
-analogy-think (deterministic special path), and prompt-engineering — which emits
-**0 top-level recommendations** (its content lives in artifacts/steps), so the
-collapse has nothing to seed; making it target-oriented needs the *skill*
-restructured to emit a recommendation, a deeper change tracked as a follow-up.
+The remaining 4 untransformed tools are correctly excluded: routing-adapt
+(niche adaptive routing), task-bootstrap / project-onboard (orientation), and
+analogy-think (deterministic special path). **prompt-engineering** was
+corrected in a follow-up: it has a full collapsible wall (**27 recommendations,
+24 seed-eligible**) for a genuine prompt request; an earlier measurement
+artifact (off-topic probe) had incorrectly suggested 0 recs. It was registered
+with `PROMPT_OUTPUT_CONTRACT` (domain "prompt asset"), bringing coverage to
+**16/20**.
 
 ## Reproduce
 
