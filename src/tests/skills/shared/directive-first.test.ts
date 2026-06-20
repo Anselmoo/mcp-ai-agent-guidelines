@@ -6,7 +6,7 @@ import type {
 	WorkflowExecutionResult,
 } from "../../../contracts/runtime.js";
 import {
-	resolveTransformDomain,
+	resolveTransformProfile,
 	toSituationResult,
 } from "../../../skills/shared/directive-first.js";
 
@@ -39,29 +39,30 @@ function workflowResult(
 
 const deps = {
 	domain: "evaluation setup",
+	outputContract:
+		"findings per criterion that cite the actual files, values, or evidence in this project, then a tailored next-action workflow",
 	candidateNextTools: ["evidence-research", "code-review"],
 };
 
-describe("resolveTransformDomain", () => {
-	it("returns a clean domain noun for analysis-family tools", () => {
-		// The public displayName is "Evaluate: Benchmark and Assess Quality" — the
-		// "Label:" prefix reads wrong as an analysis domain, so the resolver maps
-		// to a grammatical noun instead.
-		expect(resolveTransformDomain("quality-evaluate")).toBe("evaluation setup");
-		expect(resolveTransformDomain("code-review")).toBeTruthy();
-		expect(resolveTransformDomain("issue-debug")).toBeTruthy();
+describe("resolveTransformProfile", () => {
+	it("returns a profile with a clean domain noun for analysis-family tools", () => {
+		const p = resolveTransformProfile("quality-evaluate");
+		expect(p?.domain).toBe("evaluation setup");
+		expect(p?.outputContract.toLowerCase()).toContain("findings per criterion");
+		expect(resolveTransformProfile("code-review")?.domain).toBeTruthy();
+		expect(resolveTransformProfile("issue-debug")?.domain).toBeTruthy();
 	});
 
-	it("never returns the raw 'Label:' displayName form", () => {
-		const domain = resolveTransformDomain("quality-evaluate") ?? "";
+	it("never returns the raw 'Label:' displayName form as the domain", () => {
+		const domain = resolveTransformProfile("quality-evaluate")?.domain ?? "";
 		expect(domain).not.toMatch(/^[A-Z][a-z]+:/);
 	});
 
-	it("excludes non-analysis tools (routers, onboarding, bootstrap)", () => {
-		expect(resolveTransformDomain("meta-routing")).toBeUndefined();
-		expect(resolveTransformDomain("project-onboard")).toBeUndefined();
-		expect(resolveTransformDomain("task-bootstrap")).toBeUndefined();
-		expect(resolveTransformDomain("agent-orchestrate")).toBeUndefined();
+	it("excludes routers, onboarding, bootstrap, orchestration", () => {
+		expect(resolveTransformProfile("meta-routing")).toBeUndefined();
+		expect(resolveTransformProfile("project-onboard")).toBeUndefined();
+		expect(resolveTransformProfile("task-bootstrap")).toBeUndefined();
+		expect(resolveTransformProfile("agent-orchestrate")).toBeUndefined();
 	});
 });
 

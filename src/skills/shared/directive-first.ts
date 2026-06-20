@@ -13,38 +13,65 @@ import { analyzeOrDirective } from "./analyze-or-directive.js";
  */
 export const TRANSFORM_ARTIFACT_CAP = 6;
 
-/**
- * The only tools whose deliverable IS a situation analysis against a rubric —
- * the ones the LLM→LLM transform should collapse. Each maps to a clean domain
- * noun: the public `displayName` carries a "Label:" prefix (e.g. "Evaluate:
- * Benchmark and Assess Quality") that reads wrong as an analysis domain.
- *
- * Routers, onboarding, bootstrap, orchestration, and planning tools are
- * intentionally absent — their deliverable is a decision, config, or plan, not
- * a rubric analysis, so collapsing them to "analyze your X" is nonsensical.
- * Presence in this map is the allow-list; absence means "pass through untouched".
- */
-export const ANALYSIS_TRANSFORM_DOMAINS: Readonly<Record<string, string>> = {
-	"quality-evaluate": "evaluation setup",
-	"code-review": "code under review",
-	"issue-debug": "bug or incident",
-	"system-design": "system design",
-	"evidence-research": "research question",
-	"policy-govern": "governance and compliance posture",
-	"fault-resilience": "fault-tolerance and resilience posture",
-};
+export interface TransformProfile {
+	/** Clean domain noun for the directive ("evaluation setup", not "Evaluate:"). */
+	domain: string;
+	/** The shape of deliverable the directive asks the model to produce. */
+	outputContract: string;
+}
+
+/** Output contract for rubric-analysis tools — findings + next actions. */
+export const ANALYSIS_OUTPUT_CONTRACT =
+	"findings per criterion that cite the actual files, values, or evidence in this project, then a tailored next-action workflow";
 
 /**
- * Resolve the clean analysis domain for a tool, or `undefined` when the tool is
- * not in the analysis family and must not be transformed.
+ * Per-tool transform profiles. Presence is the allow-list; absence means
+ * "pass through untouched". Analysis tools produce findings against a rubric;
+ * routers/orientation/orchestration tools are intentionally absent (their
+ * deliverable is a decision/config, not a rubric analysis).
  */
-export function resolveTransformDomain(toolName: string): string | undefined {
-	return ANALYSIS_TRANSFORM_DOMAINS[toolName];
+export const TRANSFORM_PROFILES: Readonly<Record<string, TransformProfile>> = {
+	"quality-evaluate": {
+		domain: "evaluation setup",
+		outputContract: ANALYSIS_OUTPUT_CONTRACT,
+	},
+	"code-review": {
+		domain: "code under review",
+		outputContract: ANALYSIS_OUTPUT_CONTRACT,
+	},
+	"issue-debug": {
+		domain: "bug or incident",
+		outputContract: ANALYSIS_OUTPUT_CONTRACT,
+	},
+	"system-design": {
+		domain: "system design",
+		outputContract: ANALYSIS_OUTPUT_CONTRACT,
+	},
+	"evidence-research": {
+		domain: "research question",
+		outputContract: ANALYSIS_OUTPUT_CONTRACT,
+	},
+	"policy-govern": {
+		domain: "governance and compliance posture",
+		outputContract: ANALYSIS_OUTPUT_CONTRACT,
+	},
+	"fault-resilience": {
+		domain: "fault-tolerance and resilience posture",
+		outputContract: ANALYSIS_OUTPUT_CONTRACT,
+	},
+};
+
+export function resolveTransformProfile(
+	toolName: string,
+): TransformProfile | undefined {
+	return TRANSFORM_PROFILES[toolName];
 }
 
 export interface SituationTransformDeps {
 	/** Public display name of the instruction → the analysis domain. */
 	domain: string;
+	/** The shape of deliverable the directive asks the model to produce. */
+	outputContract: string;
 	/** `instruction.chainTo` → candidate next tools that seed the workflow. */
 	candidateNextTools: readonly string[];
 	/** Optional server-driven sampling (MCP `sampling/createMessage`). */
@@ -92,8 +119,7 @@ export async function toSituationResult(
 			domain: deps.domain,
 			criteria: seedCriteria,
 			input: { request },
-			outputContract:
-				"findings per criterion that cite the actual files, values, or evidence in this project, then a tailored next-action workflow",
+			outputContract: deps.outputContract,
 			candidateNextTools: deps.candidateNextTools,
 		},
 	);

@@ -16,7 +16,7 @@ import { HEURISTIC_EXTRACTOR } from "../skills/analogy/clarify.js";
 import type { Ranker } from "../skills/analogy/matcher.js";
 import { runAnalogyWorkflow } from "../skills/analogy/workflow.js";
 import {
-	resolveTransformDomain,
+	resolveTransformProfile,
 	toSituationResult,
 } from "../skills/shared/directive-first.js";
 import type {
@@ -442,13 +442,14 @@ export async function dispatchToolCall(
 		// analysis).
 		// Kill-switch (`MCP_SITUATION_TRANSFORM=0`) for A/B evaluation and ops
 		// rollback: disables the transform so tools emit pre-transform output.
-		const transformDomain =
+		const profile =
 			process.env.MCP_SITUATION_TRANSFORM === "0"
 				? undefined
-				: resolveTransformDomain(toolName);
-		const situationData = transformDomain
+				: resolveTransformProfile(toolName);
+		const situationData = profile
 			? await toSituationResult(result.data, {
-					domain: transformDomain,
+					domain: profile.domain,
+					outputContract: profile.outputContract,
 					candidateNextTools: instruction.manifest.chainTo ?? [],
 					sampler: runtime.sampler,
 				})
