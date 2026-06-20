@@ -10,6 +10,35 @@ import { analyzeOrDirective } from "./analyze-or-directive.js";
  */
 const ADVISORY_PREFIX = "This analysis is advisory only";
 
+/**
+ * The only tools whose deliverable IS a situation analysis against a rubric —
+ * the ones the LLM→LLM transform should collapse. Each maps to a clean domain
+ * noun: the public `displayName` carries a "Label:" prefix (e.g. "Evaluate:
+ * Benchmark and Assess Quality") that reads wrong as an analysis domain.
+ *
+ * Routers, onboarding, bootstrap, orchestration, and planning tools are
+ * intentionally absent — their deliverable is a decision, config, or plan, not
+ * a rubric analysis, so collapsing them to "analyze your X" is nonsensical.
+ * Presence in this map is the allow-list; absence means "pass through untouched".
+ */
+export const ANALYSIS_TRANSFORM_DOMAINS: Readonly<Record<string, string>> = {
+	"quality-evaluate": "evaluation setup",
+	"code-review": "code under review",
+	"issue-debug": "bug or incident",
+	"system-design": "system design",
+	"evidence-research": "research question",
+	"policy-govern": "governance and compliance posture",
+	"fault-resilience": "fault-tolerance and resilience posture",
+};
+
+/**
+ * Resolve the clean analysis domain for a tool, or `undefined` when the tool is
+ * not in the analysis family and must not be transformed.
+ */
+export function resolveTransformDomain(toolName: string): string | undefined {
+	return ANALYSIS_TRANSFORM_DOMAINS[toolName];
+}
+
 export interface SituationTransformDeps {
 	/** Public display name of the instruction → the analysis domain. */
 	domain: string;

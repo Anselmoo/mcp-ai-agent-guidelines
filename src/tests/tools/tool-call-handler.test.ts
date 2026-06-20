@@ -305,5 +305,24 @@ describe("tool-call-handler", () => {
 		// instruction's chain-to tools.
 		expect(text.toLowerCase()).toMatch(/next[- ]action|workflow|next steps?/);
 		expect(text).toContain("prompt-engineering");
+		// Clean domain noun, not the raw "Label:" displayName.
+		expect(text.toLowerCase()).toContain("analyze your evaluation setup");
+		expect(text).not.toContain("Analyze your Evaluate:");
+	});
+
+	// Scope guard (A/B review B#2): the transform must fire ONLY for analysis-
+	// family tools. Routers/onboarding tools, whose deliverable is a decision
+	// rather than a rubric analysis, must pass through untouched — no "analyze
+	// your <router>" directive injected.
+	it("does not collapse non-analysis tools like meta-routing into an analysis directive", async () => {
+		const result = await dispatchToolCall(
+			"meta-routing",
+			{ request: "where should I start hardening this repo" },
+			createRuntime(),
+		);
+		expect(result.isError).toBeUndefined();
+		const text = result.content[0]?.text ?? "";
+		expect(text).not.toContain("Analyze your");
+		expect(text).not.toContain("Analysis task");
 	});
 });

@@ -5,7 +5,10 @@ import type {
 	Sampler,
 	WorkflowExecutionResult,
 } from "../../../contracts/runtime.js";
-import { toSituationResult } from "../../../skills/shared/directive-first.js";
+import {
+	resolveTransformDomain,
+	toSituationResult,
+} from "../../../skills/shared/directive-first.js";
 
 const model: ModelProfile = {
 	id: "m",
@@ -38,6 +41,29 @@ const deps = {
 	domain: "evaluation setup",
 	candidateNextTools: ["evidence-research", "code-review"],
 };
+
+describe("resolveTransformDomain", () => {
+	it("returns a clean domain noun for analysis-family tools", () => {
+		// The public displayName is "Evaluate: Benchmark and Assess Quality" — the
+		// "Label:" prefix reads wrong as an analysis domain, so the resolver maps
+		// to a grammatical noun instead.
+		expect(resolveTransformDomain("quality-evaluate")).toBe("evaluation setup");
+		expect(resolveTransformDomain("code-review")).toBeTruthy();
+		expect(resolveTransformDomain("issue-debug")).toBeTruthy();
+	});
+
+	it("never returns the raw 'Label:' displayName form", () => {
+		const domain = resolveTransformDomain("quality-evaluate") ?? "";
+		expect(domain).not.toMatch(/^[A-Z][a-z]+:/);
+	});
+
+	it("excludes non-analysis tools (routers, onboarding, bootstrap)", () => {
+		expect(resolveTransformDomain("meta-routing")).toBeUndefined();
+		expect(resolveTransformDomain("project-onboard")).toBeUndefined();
+		expect(resolveTransformDomain("task-bootstrap")).toBeUndefined();
+		expect(resolveTransformDomain("agent-orchestrate")).toBeUndefined();
+	});
+});
 
 describe("toSituationResult", () => {
 	it("collapses the template recommendation wall into one situation result", async () => {

@@ -15,7 +15,10 @@ import { METAPHOR_CATALOG } from "../skills/analogy/catalog.js";
 import { HEURISTIC_EXTRACTOR } from "../skills/analogy/clarify.js";
 import type { Ranker } from "../skills/analogy/matcher.js";
 import { runAnalogyWorkflow } from "../skills/analogy/workflow.js";
-import { toSituationResult } from "../skills/shared/directive-first.js";
+import {
+	resolveTransformDomain,
+	toSituationResult,
+} from "../skills/shared/directive-first.js";
 import type {
 	CheckRunner,
 	CheckStatus,
@@ -429,16 +432,22 @@ export async function dispatchToolCall(
 			});
 		}
 
-		// LLM→LLM transform (single chokepoint for the whole surface): replace the
-		// keyword-matched template recommendation wall with ONE situation-specific
-		// result — per-criterion findings + a tailored next-action workflow — the
-		// matched templates seed (via `criteria`) but no longer dictate. Sampled
-		// when the client supports it, a return-a-prompt directive otherwise.
-		const situationData = await toSituationResult(result.data, {
-			domain: instruction.manifest.displayName,
-			candidateNextTools: instruction.manifest.chainTo ?? [],
-			sampler: runtime.sampler,
-		});
+		// LLM→LLM transform (single chokepoint): for analysis-family tools only,
+		// replace the keyword-matched template recommendation wall with ONE
+		// situation-specific result — per-criterion findings + a tailored
+		// next-action workflow — the matched templates seed (via `criteria`) but no
+		// longer dictate. Sampled when the client supports it, a return-a-prompt
+		// directive otherwise. Routers/onboarding/orchestration tools resolve to no
+		// domain and pass through untouched (their deliverable is not a rubric
+		// analysis).
+		const transformDomain = resolveTransformDomain(toolName);
+		const situationData = transformDomain
+			? await toSituationResult(result.data, {
+					domain: transformDomain,
+					candidateNextTools: instruction.manifest.chainTo ?? [],
+					sampler: runtime.sampler,
+				})
+			: result.data;
 
 		const formattedText = formatWorkflowResult(situationData, toolName);
 		const contextAppendix = buildContextAppendix(input);
