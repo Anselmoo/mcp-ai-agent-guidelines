@@ -96,6 +96,24 @@ only **7 of 20** public tools, and **0 of 3** on the default slim surface. Plan
   `tool-surface-manifest.ts`). Note: `meta-routing` currently names no domain
   tool (`chainTo: []`) — making the router surface them is a tracked follow-up.
 
+## Update — meta-routing routing fix (2026-06-20)
+
+A second rubber-duck tribunal (coverage-v2 rubric) audited the 7 untransformed
+tools per-tool. Verdict: **6 of 7 correctly untransformed**, but **`meta-routing`
+was a genuine defect** — its mission is "decide which instruction(s) to invoke,"
+yet it emitted a request-agnostic skill-scaffolding wall naming zero tools.
+
+Fixed with a third transform profile **kind — routing** (not the analysis/build
+collapse, which is a category error for a router): `ROUTING_OUTPUT_CONTRACT` +
+an optional `candidateNextTools` on the profile (routers seed their own
+candidates since their manifest `chainTo` is empty). `meta-routing` now collapses
+its wall into a request-anchored decision naming the ordered domain instructions
+(issue-debug, system-design, code-review, …), and shrank **42KB → 14KB**.
+**Coverage 13/20 → 14/20.** The remaining 6 untransformed tools (routing-adapt,
+task-bootstrap, project-onboard, agent-orchestrate, analogy-think,
+prompt-engineering) were confirmed correctly excluded — already request-anchored
+in their own modality, or a separate deterministic path.
+
 ## Reproduce
 
 ```bash
