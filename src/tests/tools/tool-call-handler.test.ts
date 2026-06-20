@@ -274,4 +274,36 @@ describe("tool-call-handler", () => {
 		const text = result.content[0]?.text ?? "";
 		expect(text).toMatch(/Next: call `meta-routing` to proceed\./);
 	});
+
+	// Dogfood the original complaint: quality-evaluate used to return a wall of
+	// keyword-matched eval-process templates labelled "advisory only" with zero
+	// project-specific analysis. The instruction-level LLM→LLM transform must now
+	// yield ONE situation-specific result — an analysis task (no sampler in this
+	// runtime → return-a-prompt directive) plus a tailored next-action workflow —
+	// with no advisory-only self-label and no template recommendation wall.
+	it("quality-evaluate returns a situation-specific analysis, not a template wall labelled 'advisory only'", async () => {
+		const result = await dispatchToolCall(
+			"quality-evaluate",
+			{
+				request:
+					"design an eval set with realistic prompts, hard negatives, and discriminative assertions",
+			},
+			createRuntime(),
+		);
+
+		expect(result.isError).toBeUndefined();
+		const text = result.content[0]?.text ?? "";
+		// The self-label that prompted the complaint is gone.
+		expect(text.toLowerCase()).not.toContain("advisory only");
+		// It is an analysis directive the calling agent runs against its project.
+		expect(text.toLowerCase()).toContain("analysis task");
+		// It anchors to the real request rather than echoing the title keywords.
+		expect(text).toContain(
+			"design an eval set with realistic prompts, hard negatives, and discriminative assertions",
+		);
+		// Part two of the contract: a tailored next-action workflow seeded by the
+		// instruction's chain-to tools.
+		expect(text.toLowerCase()).toMatch(/next[- ]action|workflow|next steps?/);
+		expect(text).toContain("prompt-engineering");
+	});
 });

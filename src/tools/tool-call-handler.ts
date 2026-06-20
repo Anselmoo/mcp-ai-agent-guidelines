@@ -15,6 +15,7 @@ import { METAPHOR_CATALOG } from "../skills/analogy/catalog.js";
 import { HEURISTIC_EXTRACTOR } from "../skills/analogy/clarify.js";
 import type { Ranker } from "../skills/analogy/matcher.js";
 import { runAnalogyWorkflow } from "../skills/analogy/workflow.js";
+import { toSituationResult } from "../skills/shared/directive-first.js";
 import type {
 	CheckRunner,
 	CheckStatus,
@@ -428,7 +429,18 @@ export async function dispatchToolCall(
 			});
 		}
 
-		const formattedText = formatWorkflowResult(result.data, toolName);
+		// LLM→LLM transform (single chokepoint for the whole surface): replace the
+		// keyword-matched template recommendation wall with ONE situation-specific
+		// result — per-criterion findings + a tailored next-action workflow — the
+		// matched templates seed (via `criteria`) but no longer dictate. Sampled
+		// when the client supports it, a return-a-prompt directive otherwise.
+		const situationData = await toSituationResult(result.data, {
+			domain: instruction.manifest.displayName,
+			candidateNextTools: instruction.manifest.chainTo ?? [],
+			sampler: runtime.sampler,
+		});
+
+		const formattedText = formatWorkflowResult(situationData, toolName);
 		const contextAppendix = buildContextAppendix(input);
 		const responseText = contextAppendix
 			? `${formattedText}\n\n${contextAppendix}`
@@ -464,7 +476,7 @@ export async function dispatchToolCall(
 		// content[0] carries the existing prose summary (backwards-compatible).
 		// content[1] carries the machine-parseable WorkflowEnvelopePayload.
 		const rawSummary = appendedText;
-		const rawPayload = buildWorkflowEnvelopePayload(result.data, toolName);
+		const rawPayload = buildWorkflowEnvelopePayload(situationData, toolName);
 
 		if (HOST_TOOLS_WITH_METHODOLOGY_GATE.has(toolName)) {
 			const methodologyCtx = {
