@@ -49,7 +49,7 @@ const EVANGELIST_RULES: Array<{ pattern: RegExp; guidance: string }> = [
 	{
 		pattern: /\b(feature|flag|experiment|optional|maybe|gradual|rollout)\b/i,
 		guidance:
-			"New tech is not experimental: if a package (satori, d3-shape, xstate, @toon-format/toon) is strategic, design around it, not despite it. Define machine configs, export contracts, and visualization layers before writing ad-hoc code.",
+			"New tech is not experimental: if a package (satori, d3-shape, xstate) is strategic, design around it, not despite it. Define machine configs, export contracts, and visualization layers before writing ad-hoc code.",
 	},
 	{
 		pattern: /\b(migration|pathway|replacement|switching|upgrade|refactor)\b/i,

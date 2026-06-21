@@ -1,6 +1,7 @@
 // AUTO-GENERATED — do not edit manually.
 
 import { instructionManifest as adapt_manifest } from "../instructions/adapt.js";
+import { instructionManifest as analogy_think_manifest } from "../instructions/analogy-think.js";
 import { instructionManifest as bootstrap_manifest } from "../instructions/bootstrap.js";
 import { instructionManifest as debug_manifest } from "../instructions/debug.js";
 import { instructionManifest as design_manifest } from "../instructions/design.js";
@@ -37,6 +38,7 @@ export const INSTRUCTION_MANIFESTS = [
 	orchestrate_manifest,
 	enterprise_manifest,
 	govern_manifest,
+	analogy_think_manifest,
 	resilience_manifest,
 	adapt_manifest,
 	physics_analysis_manifest,

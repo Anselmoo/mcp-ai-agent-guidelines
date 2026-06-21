@@ -1,4 +1,4 @@
-import { mkdtempSync } from "node:fs";
+import { existsSync, mkdtempSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -13,10 +13,8 @@ import {
 	isValidSessionId,
 	SecureFileSessionStore,
 } from "../../runtime/secure-session-store.js";
-import { SESSION_MAC_KEY_ENV_VAR } from "../../runtime/session-crypto.js";
 
 const ORIGINAL_STATE_DIR = process.env.MCP_AI_AGENT_GUIDELINES_STATE_DIR;
-const ORIGINAL_MAC_KEY = process.env[SESSION_MAC_KEY_ENV_VAR];
 
 function restoreEnvVar(name: string, value: string | undefined): void {
 	if (value === undefined) {
@@ -29,7 +27,6 @@ function restoreEnvVar(name: string, value: string | undefined): void {
 
 afterEach(() => {
 	restoreEnvVar("MCP_AI_AGENT_GUIDELINES_STATE_DIR", ORIGINAL_STATE_DIR);
-	restoreEnvVar(SESSION_MAC_KEY_ENV_VAR, ORIGINAL_MAC_KEY);
 	vi.restoreAllMocks();
 });
 
@@ -57,11 +54,9 @@ describe("runtime/secure-session-store", () => {
 		);
 	}
 
-	it("accepts a valid MAC", async () => {
-		createStateDir();
-		const store = new SecureFileSessionStore({
-			compressionThreshold: 1,
-		});
+	it("round-trips records and writes no integrity key file", async () => {
+		const stateDir = createStateDir();
+		const store = new SecureFileSessionStore({ compressionThreshold: 1 });
 		const sessionId = createSessionId();
 		const records = [
 			{ stepLabel: "VALIDATE", kind: "completed", summary: "ok" },
@@ -70,132 +65,23 @@ describe("runtime/secure-session-store", () => {
 		await store.writeSessionHistory(sessionId, records);
 
 		await expect(store.readSessionHistory(sessionId)).resolves.toEqual(records);
-		await expect(store.getSessionIntegrity(sessionId)).resolves.toMatchObject({
-			exists: true,
-			hasValidMac: true,
-			isCompressed: true,
-			version: 1,
-		});
+		// Keyless store: no secret key is ever created.
+		expect(existsSync(join(stateDir, "config", "session-integrity.key"))).toBe(
+			false,
+		);
 	});
 
-	it("rejects an invalid MAC", async () => {
+	it("treats a garbled session file as empty without any key", async () => {
 		const stateDir = createStateDir();
-		const logSpy = vi
-			.spyOn(ObservabilityOrchestrator.prototype, "log")
-			.mockImplementation(() => {});
 		const store = new SecureFileSessionStore();
 		const sessionId = createSessionId();
-		const records = [
-			{ stepLabel: "VALIDATE", kind: "completed", summary: "ok" },
-		];
+		await writeFile(join(stateDir, `${sessionId}.json`), "{ not valid json");
 
-		await store.writeSessionHistory(sessionId, records);
-		await updateStoredSession(stateDir, sessionId, (sessionData) => {
-			const originalMac = String(sessionData.mac);
-			sessionData.mac = `${originalMac[0] === "0" ? "1" : "0"}${originalMac.slice(1)}`;
-		});
-
-		await expect(store.getSessionIntegrity(sessionId)).resolves.toMatchObject({
-			exists: true,
-			hasValidMac: false,
-		});
-		await expect(store.readSessionHistory(sessionId)).resolves.toEqual([]);
-		expect(logSpy).toHaveBeenCalledOnce();
-	});
-
-	it("rejects a mismatched-length MAC safely", async () => {
-		const stateDir = createStateDir();
-		const logSpy = vi
-			.spyOn(ObservabilityOrchestrator.prototype, "log")
-			.mockImplementation(() => {});
-		const store = new SecureFileSessionStore();
-		const sessionId = createSessionId();
-		const records = [
-			{ stepLabel: "VALIDATE", kind: "completed", summary: "ok" },
-		];
-
-		await store.writeSessionHistory(sessionId, records);
-		await updateStoredSession(stateDir, sessionId, (sessionData) => {
-			sessionData.mac = "00";
-		});
-
-		await expect(store.getSessionIntegrity(sessionId)).resolves.toMatchObject({
-			exists: true,
-			hasValidMac: false,
-		});
-		await expect(store.readSessionHistory(sessionId)).resolves.toEqual([]);
-		expect(logSpy).toHaveBeenCalledOnce();
-	});
-
-	it("rejects non-hex MAC values safely", async () => {
-		const stateDir = createStateDir();
-		const logSpy = vi
-			.spyOn(ObservabilityOrchestrator.prototype, "log")
-			.mockImplementation(() => {});
-		const store = new SecureFileSessionStore();
-		const sessionId = createSessionId();
-
-		await store.writeSessionHistory(sessionId, [
-			{ stepLabel: "VALIDATE", kind: "completed", summary: "ok" },
-		]);
-		await updateStoredSession(stateDir, sessionId, (sessionData) => {
-			sessionData.mac = "zzzz";
-		});
-
-		await expect(store.getSessionIntegrity(sessionId)).resolves.toMatchObject({
-			exists: true,
-			hasValidMac: false,
-		});
-		await expect(store.readSessionHistory(sessionId)).resolves.toEqual([]);
-		expect(logSpy).toHaveBeenCalledOnce();
-	});
-
-	it("rejects a missing MAC when MAC validation is enabled", async () => {
-		const stateDir = createStateDir();
-		const logSpy = vi
-			.spyOn(ObservabilityOrchestrator.prototype, "log")
-			.mockImplementation(() => {});
-		const store = new SecureFileSessionStore();
-		const sessionId = createSessionId();
-
-		await store.writeSessionHistory(sessionId, [
-			{ stepLabel: "VALIDATE", kind: "completed", summary: "ok" },
-		]);
-		await updateStoredSession(stateDir, sessionId, (sessionData) => {
-			delete sessionData.mac;
-		});
-
-		await expect(store.getSessionIntegrity(sessionId)).resolves.toMatchObject({
-			exists: true,
-			hasValidMac: false,
-		});
-		await expect(store.readSessionHistory(sessionId)).resolves.toEqual([]);
-		expect(logSpy).toHaveBeenCalledOnce();
-	});
-
-	it("warns once when MAC validation is disabled", async () => {
-		createStateDir();
-		const logSpy = vi
-			.spyOn(ObservabilityOrchestrator.prototype, "log")
-			.mockImplementation(() => {});
-		const store = new SecureFileSessionStore({
-			enableMac: false,
-		});
-		const sessionId = createSessionId();
-		const records = [
-			{ stepLabel: "VALIDATE", kind: "completed", summary: "ok" },
-		];
-
-		await store.writeSessionHistory(sessionId, records);
-		await expect(store.readSessionHistory(sessionId)).resolves.toEqual(records);
-		await expect(store.getSessionIntegrity(sessionId)).resolves.toMatchObject({
-			exists: true,
-			hasValidMac: true,
-		});
-		expect(logSpy).toHaveBeenCalledTimes(1);
-		expect(logSpy).toHaveBeenCalledWith(
-			"warn",
-			"SecureFileSessionStore MAC validation is disabled; session integrity protection is reduced.",
+		const result = await store.readSessionHistoryResult(sessionId);
+		expect(result.records).toEqual([]);
+		expect(result.integrityFailure).toBe(false);
+		expect(existsSync(join(stateDir, "config", "session-integrity.key"))).toBe(
+			false,
 		);
 	});
 
@@ -215,10 +101,6 @@ describe("runtime/secure-session-store", () => {
 		});
 
 		await expect(store.readSessionHistory(sessionId)).resolves.toEqual([]);
-		await expect(store.getSessionIntegrity(sessionId)).resolves.toMatchObject({
-			exists: false,
-			hasValidMac: false,
-		});
 		expect(logSpy).toHaveBeenCalledOnce();
 	});
 
@@ -227,10 +109,7 @@ describe("runtime/secure-session-store", () => {
 		const logSpy = vi
 			.spyOn(ObservabilityOrchestrator.prototype, "log")
 			.mockImplementation(() => {});
-		const store = new SecureFileSessionStore({
-			enableMac: false,
-			compressionThreshold: 1,
-		});
+		const store = new SecureFileSessionStore({ compressionThreshold: 1 });
 		const sessionId = createSessionId();
 
 		await store.writeSessionHistory(sessionId, [
@@ -262,51 +141,6 @@ describe("runtime/secure-session-store", () => {
 		});
 	});
 
-	it("reports MAC integrity failures explicitly", async () => {
-		const stateDir = createStateDir();
-		const store = new SecureFileSessionStore();
-		const sessionId = createSessionId();
-
-		await store.writeSessionHistory(sessionId, [
-			{ stepLabel: "VALIDATE", kind: "completed", summary: "ok" },
-		]);
-		await updateStoredSession(stateDir, sessionId, (sessionData) => {
-			const originalMac = String(sessionData.mac);
-			sessionData.mac = `${originalMac[0] === "0" ? "1" : "0"}${originalMac.slice(1)}`;
-		});
-
-		await expect(
-			store.readSessionHistoryResult(sessionId),
-		).resolves.toMatchObject({
-			records: [],
-			missing: false,
-			integrityFailure: true,
-			error: expect.stringContaining("Session integrity check failed"),
-		});
-	});
-
-	it("reports missing MAC integrity failures explicitly", async () => {
-		const stateDir = createStateDir();
-		const store = new SecureFileSessionStore();
-		const sessionId = createSessionId();
-
-		await store.writeSessionHistory(sessionId, [
-			{ stepLabel: "VALIDATE", kind: "completed", summary: "ok" },
-		]);
-		await updateStoredSession(stateDir, sessionId, (sessionData) => {
-			delete sessionData.mac;
-		});
-
-		await expect(
-			store.readSessionHistoryResult(sessionId),
-		).resolves.toMatchObject({
-			records: [],
-			missing: false,
-			integrityFailure: true,
-			error: expect.stringContaining("missing MAC"),
-		});
-	});
-
 	it("rejects traversal in the configured session state directory", async () => {
 		process.env.MCP_AI_AGENT_GUIDELINES_STATE_DIR = "../escape";
 		expect(() => new SecureFileSessionStore()).toThrow(
@@ -316,7 +150,7 @@ describe("runtime/secure-session-store", () => {
 
 	it("serializes concurrent appends per session", async () => {
 		createStateDir();
-		const store = new SecureFileSessionStore({ enableMac: false });
+		const store = new SecureFileSessionStore();
 		const sessionId = createSessionId();
 
 		await Promise.all(
@@ -334,10 +168,7 @@ describe("runtime/secure-session-store", () => {
 
 	it("stores record arrays inline when compression is disabled", async () => {
 		const stateDir = createStateDir();
-		const store = new SecureFileSessionStore({
-			enableCompression: false,
-			enableMac: false,
-		});
+		const store = new SecureFileSessionStore({ enableCompression: false });
 		const sessionId = createSessionId();
 		const records = [
 			{ stepLabel: "INLINE", kind: "completed", summary: "stored inline" },
@@ -354,10 +185,7 @@ describe("runtime/secure-session-store", () => {
 
 	it("accepts base64 payloads when compressed data was stored without deflation", async () => {
 		const stateDir = createStateDir();
-		const store = new SecureFileSessionStore({
-			enableCompression: false,
-			enableMac: false,
-		});
+		const store = new SecureFileSessionStore({ enableCompression: false });
 		const sessionId = createSessionId();
 		const records = [
 			{ stepLabel: "FALLBACK", kind: "completed", summary: "inflate fallback" },
@@ -373,35 +201,6 @@ describe("runtime/secure-session-store", () => {
 		});
 
 		await expect(store.readSessionHistory(sessionId)).resolves.toEqual(records);
-	});
-
-	it("persists the MAC key across store instances in the same state directory", async () => {
-		const stateDir = createStateDir();
-		delete process.env[SESSION_MAC_KEY_ENV_VAR];
-		const sessionId = createSessionId();
-		const records = [
-			{ stepLabel: "PERSIST", kind: "completed", summary: "key persisted" },
-		];
-		const firstStore = new SecureFileSessionStore();
-
-		await firstStore.writeSessionHistory(sessionId, records);
-
-		const secondStore = new SecureFileSessionStore();
-		await expect(secondStore.readSessionHistory(sessionId)).resolves.toEqual(
-			records,
-		);
-		await expect(
-			secondStore.getSessionIntegrity(sessionId),
-		).resolves.toMatchObject({
-			exists: true,
-			hasValidMac: true,
-		});
-		await expect(
-			readFile(join(stateDir, "config", "session-integrity.key"), "utf8"),
-		).resolves.toMatch(/[0-9a-f]{64}/i);
-		await expect(
-			readFile(join(stateDir, ".gitignore"), "utf8"),
-		).resolves.toContain("config/*.key");
 	});
 
 	it("creates valid session ids for both compact and uuid-style formats", () => {
@@ -425,41 +224,7 @@ describe("runtime/secure-session-store", () => {
 	});
 
 	it("rejects the empty-id-after-prefix branch in isValidSessionId", () => {
-		// Exercise the `id === ""` branch (line 448-450) — a "session-" prefix
-		// followed by nothing should be rejected.
 		expect(isValidSessionId("session-")).toBe(false);
-	});
-
-	describe("getSessionIntegrity", () => {
-		it("reports exists: false for a missing session", async () => {
-			createStateDir();
-			const store = new SecureFileSessionStore();
-			const info = await store.getSessionIntegrity("session-missing-12ab");
-			expect(info).toEqual({
-				exists: false,
-				hasValidMac: false,
-				isCompressed: false,
-				version: 0,
-			});
-		});
-
-		it("reports exists: true and isCompressed/version flags for a real session", async () => {
-			const stateDir = createStateDir();
-			const store = new SecureFileSessionStore({ enableMac: false });
-			const sessionId = createSessionId();
-			await store.writeSessionHistory(sessionId, [
-				{ stepLabel: "a", kind: "note", summary: "x" },
-			]);
-
-			const info = await store.getSessionIntegrity(sessionId);
-			expect(info.exists).toBe(true);
-			expect(info.hasValidMac).toBe(true); // MAC disabled → trivially valid
-			expect(info.isCompressed).toBe(false);
-			expect(info.version).toBe(1);
-			expect(typeof info.timestamp).toBe("number");
-			// stateDir is the workspace we wrote into.
-			expect(stateDir).toContain("secure-session-store-");
-		});
 	});
 });
 

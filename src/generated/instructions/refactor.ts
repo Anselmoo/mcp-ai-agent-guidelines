@@ -221,7 +221,7 @@ export const instructionManifest: InstructionManifestEntry = {
 			},
 		],
 	},
-	chainTo: ["test-verify", "code-review", "physics-analysis"],
+	chainTo: ["test-verify", "code-review"],
 	preferredModelClass: "cheap",
 	autoChainOnCompletion: false,
 	requiredPreconditions: [],

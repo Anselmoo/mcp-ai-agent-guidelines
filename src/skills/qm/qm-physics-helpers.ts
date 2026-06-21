@@ -26,7 +26,7 @@
  * Must appear in at least one recommendation for every QM skill invocation.
  */
 export const QM_ADVISORY_DISCLAIMER =
-	"This analysis applies a quantum-mechanical metaphor as a supplementary lens. " +
+	"This analysis is advisory only — it applies a quantum-mechanical metaphor as a supplementary lens. " +
 	"The framework helps surface patterns and prompt structured thinking — it is not " +
 	"a physics simulation or a replacement for conventional code-metrics analysis. " +
 	"Use the recommendations as advisory input alongside your standard engineering judgement.";

@@ -1,0 +1,27 @@
+[
+	{
+		"id": "eval-taskforce",
+		"tool": "quality-evaluate",
+		"request": "We have 6 open bugs in our checkout flow (2 are flaky e2e tests, 1 is a wire-format overflow, 3 are validation gaps). Build a prioritized task force to fix them."
+	},
+	{
+		"id": "review-auth",
+		"tool": "code-review",
+		"request": "Review our authentication module under src/auth for security issues and tell me which to fix first and how."
+	},
+	{
+		"id": "debug-ci-crash",
+		"tool": "issue-debug",
+		"request": "Our service crashes on startup in CI but runs fine locally. Help me reproduce it and pin the root cause."
+	},
+	{
+		"id": "design-ratelimit",
+		"tool": "system-design",
+		"request": "Design a rate limiter for our public API that must keep working during a single-region outage."
+	},
+	{
+		"id": "govern-eu-llm",
+		"tool": "policy-govern",
+		"request": "We are shipping an LLM-backed feature to EU users next month. What compliance guardrails and controls do we need in place?"
+	}
+]

@@ -10,6 +10,7 @@ import { err, ok, type Result } from "neverthrow";
 import { match } from "ts-pattern";
 import type { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
+import { toToolResult } from "./output-envelope.js";
 
 // ---------------------------------------------------------------------------
 // Error categories
@@ -33,6 +34,7 @@ export interface McpErrorPayload {
 	details?: string;
 	recoverable: boolean;
 	suggestedAction?: string;
+	nextTool?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -82,6 +84,8 @@ export function formatMcpError(error: McpErrorPayload): string {
 	const lines = [`${prefix} [${error.code}]: ${error.message}`];
 	if (error.details) lines.push(`Details: ${error.details}`);
 	if (error.suggestedAction) lines.push(`Suggestion: ${error.suggestedAction}`);
+	if (error.nextTool)
+		lines.push(`Next: call \`${error.nextTool}\` to proceed.`);
 	if (error.recoverable)
 		lines.push("(This error may be recoverable — retry is safe.)");
 
@@ -91,15 +95,21 @@ export function formatMcpError(error: McpErrorPayload): string {
 /**
  * Produce an MCP-compatible tool error content block from a
  * {@link McpErrorPayload}.
+ *
+ * Emits two content blocks: prose first, structured envelope second.
+ * The envelope carries the raw `McpErrorPayload` so chained agents can parse
+ * code, category, nextTool, etc. directly.
  */
 export function buildMcpErrorContent(error: McpErrorPayload): {
 	isError: true;
 	content: Array<{ type: "text"; text: string }>;
 } {
-	return {
-		isError: true,
-		content: [{ type: "text" as const, text: formatMcpError(error) }],
-	};
+	const env = toToolResult({
+		summaryMarkdown: formatMcpError(error),
+		payload: error,
+		meta: { tool: "mcp", ts: new Date().toISOString(), version: 1 },
+	});
+	return { isError: true as const, content: env.content };
 }
 
 // ---------------------------------------------------------------------------

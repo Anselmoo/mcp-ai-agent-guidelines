@@ -33,15 +33,22 @@ afterAll(() => {
 
 describe("mcp server request handlers", () => {
 	it("lists public, workspace, model-discover, and graph-visualize tools", async () => {
-		const handlers = createRequestHandlers(createRuntime());
+		const saved = process.env.MCP_FULL_SURFACE;
+		try {
+			process.env.MCP_FULL_SURFACE = "true";
+			const handlers = createRequestHandlers(createRuntime());
 
-		const result = await handlers.listTools();
-		const names = result.tools.map((tool) => tool.name);
+			const result = await handlers.listTools();
+			const names = result.tools.map((tool) => tool.name);
 
-		expect(names).toContain("feature-implement");
-		expect(names).toContain("agent-workspace");
-		expect(names).toContain("model-discover");
-		expect(names).toContain("graph-visualize");
+			expect(names).toContain("feature-implement");
+			expect(names).toContain("agent-workspace");
+			expect(names).toContain("model-discover");
+			expect(names).toContain("graph-visualize");
+		} finally {
+			if (saved === undefined) delete process.env.MCP_FULL_SURFACE;
+			else process.env.MCP_FULL_SURFACE = saved;
+		}
 	});
 
 	it("routes canonical workspace tool calls through MCP-friendly error formatting", async () => {
@@ -164,15 +171,19 @@ describe("mcp server request handlers", () => {
 
 	describe("adapt tool visibility", () => {
 		const savedAdaptive = process.env.DISABLE_ADAPTIVE_ROUTING;
+		const savedFullSurface = process.env.MCP_FULL_SURFACE;
 
 		afterEach(() => {
 			if (savedAdaptive === undefined)
 				delete process.env.DISABLE_ADAPTIVE_ROUTING;
 			else process.env.DISABLE_ADAPTIVE_ROUTING = savedAdaptive;
+			if (savedFullSurface === undefined) delete process.env.MCP_FULL_SURFACE;
+			else process.env.MCP_FULL_SURFACE = savedFullSurface;
 		});
 
 		it("lists adapt by default (opt-out model)", async () => {
 			delete process.env.DISABLE_ADAPTIVE_ROUTING;
+			process.env.MCP_FULL_SURFACE = "true";
 			const handlers = createRequestHandlers(createRuntime());
 			const result = await handlers.listTools();
 			const names = result.tools.map((tool) => tool.name);
@@ -181,6 +192,7 @@ describe("mcp server request handlers", () => {
 
 		it("hides adapt when DISABLE_ADAPTIVE_ROUTING is true", async () => {
 			process.env.DISABLE_ADAPTIVE_ROUTING = "true";
+			process.env.MCP_FULL_SURFACE = "true";
 			const handlers = createRequestHandlers(createRuntime());
 			const result = await handlers.listTools();
 			const names = result.tools.map((tool) => tool.name);
@@ -208,9 +220,7 @@ describe("anchorStateToClientRoots", () => {
 			.mockReturnValue(undefined);
 		const runtime = createRuntime();
 
-		const result = await anchorStateToClientRoots(server, runtime, {
-			setBaseDir: vi.fn(),
-		});
+		const result = await anchorStateToClientRoots(server, runtime);
 
 		expect(result).toBeUndefined();
 		mockCaps.mockRestore();
@@ -225,16 +235,14 @@ describe("anchorStateToClientRoots", () => {
 			.mockResolvedValue({ roots: [] });
 		const runtime = createRuntime();
 
-		const result = await anchorStateToClientRoots(server, runtime, {
-			setBaseDir: vi.fn(),
-		});
+		const result = await anchorStateToClientRoots(server, runtime);
 
 		expect(result).toBeUndefined();
 		mockCaps.mockRestore();
 		mockRoots.mockRestore();
 	});
 
-	it("anchors state when roots list contains a file:// URI", async () => {
+	it("resolves the workspace root when roots list contains a file:// URI", async () => {
 		const tmpDir = mkdtempSync(join(tmpdir(), "anchor-roots-test-"));
 		const fileUri = pathToFileURL(tmpDir).href;
 		const mockCaps = vi
@@ -243,24 +251,18 @@ describe("anchorStateToClientRoots", () => {
 		const mockRoots = vi
 			.spyOn(server, "listRoots")
 			.mockResolvedValue({ roots: [{ uri: fileUri, name: "test" }] });
-		const setBaseDir = vi.fn();
 		const runtime = createRuntime();
 
-		const result = await anchorStateToClientRoots(server, runtime, {
-			setBaseDir,
-		});
+		const result = await anchorStateToClientRoots(server, runtime);
 
 		expect(result).toBe(tmpDir);
-		expect(setBaseDir).toHaveBeenCalledWith(
-			expect.stringContaining(".mcp-ai-agent-guidelines"),
-		);
 		expect(runtime.workspaceRoot).toBe(tmpDir);
 		rmSync(tmpDir, { recursive: true, force: true });
 		mockCaps.mockRestore();
 		mockRoots.mockRestore();
 	});
 
-	it("anchors state when roots list contains a plain (non-file://) URI", async () => {
+	it("resolves the workspace root when roots list contains a plain (non-file://) URI", async () => {
 		const mockCaps = vi
 			.spyOn(server, "getClientCapabilities")
 			.mockReturnValue({ roots: {} });
@@ -268,17 +270,12 @@ describe("anchorStateToClientRoots", () => {
 		const mockRoots = vi
 			.spyOn(server, "listRoots")
 			.mockResolvedValue({ roots: [{ uri: plainRoot, name: "test" }] });
-		const setBaseDir = vi.fn();
 		const runtime = createRuntime();
 
-		const result = await anchorStateToClientRoots(server, runtime, {
-			setBaseDir,
-		});
+		const result = await anchorStateToClientRoots(server, runtime);
 
 		expect(result).toBe(plainRoot);
-		expect(setBaseDir).toHaveBeenCalledWith(
-			expect.stringContaining(".mcp-ai-agent-guidelines"),
-		);
+		expect(runtime.workspaceRoot).toBe(plainRoot);
 		mockCaps.mockRestore();
 		mockRoots.mockRestore();
 	});
@@ -295,9 +292,7 @@ describe("anchorStateToClientRoots", () => {
 			.mockImplementation(() => true);
 		const runtime = createRuntime();
 
-		const result = await anchorStateToClientRoots(server, runtime, {
-			setBaseDir: vi.fn(),
-		});
+		const result = await anchorStateToClientRoots(server, runtime);
 
 		expect(result).toBeUndefined();
 		expect(stderrSpy).toHaveBeenCalledWith(

@@ -4,7 +4,7 @@ import { parse } from "smol-toml";
 import { z } from "zod";
 import { toErrorMessage } from "../infrastructure/object-utilities.js";
 import { createOperationalLogger } from "../infrastructure/observability.js";
-import { findWorkspaceRootSync } from "../runtime/session-store-utils.js";
+import { resolveWorkspaceRoot } from "../runtime/session-store-utils.js";
 import { parseOrThrow } from "../validation/schema-utilities.js";
 import {
 	BUILTIN_ORCHESTRATION_DEFAULTS_SOURCE,
@@ -367,10 +367,9 @@ export function resolveOrchestrationConfigPath(workspaceRoot?: string): string {
 	if (workspaceRoot !== undefined) {
 		return resolve(workspaceRoot, ORCHESTRATION_CONFIG_RELATIVE_PATH);
 	}
-	// Walk up from CWD to find the workspace root (handles MCP servers launched
-	// from $HOME by VS Code / Claude Desktop where CWD ≠ workspace).
-	const detected = findWorkspaceRootSync(process.cwd());
-	return resolve(detected ?? process.cwd(), ORCHESTRATION_CONFIG_RELATIVE_PATH);
+	// Honour MCP_WORKSPACE_ROOT first, then walk up from CWD, then fall back to
+	// CWD — same three-level priority as resolveWorkspaceRoot().
+	return resolve(resolveWorkspaceRoot(), ORCHESTRATION_CONFIG_RELATIVE_PATH);
 }
 
 function hasErrorCode(error: unknown, code: string): boolean {

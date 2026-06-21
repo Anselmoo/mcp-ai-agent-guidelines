@@ -116,7 +116,8 @@ const evalOutputGradingHandler: SkillHandler = {
 			`Grade "${summarizeKeywords(parsed.data).join(", ") || "the requested outputs"}" with a ${gradingMode} primary mode. The grading plan should define what the grader looks for, how evidence is recorded, and what happens when scores conflict.`,
 		];
 
-		details.push(...matchEvalRules(EVAL_OUTPUT_GRADING_RULES, combined));
+		const matchedRules = matchEvalRules(EVAL_OUTPUT_GRADING_RULES, combined);
+		details.push(...matchedRules);
 
 		if (includeCalibration) {
 			details.push(

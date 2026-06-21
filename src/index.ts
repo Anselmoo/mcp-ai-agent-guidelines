@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { realpathSync } from "node:fs";
-import { join } from "node:path";
+import { isAbsolute, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
@@ -26,7 +26,6 @@ import type {
 import { toErrorMessage } from "./infrastructure/object-utilities.js";
 import { packageMetadata } from "./infrastructure/package-metadata.js";
 import { InstructionRegistry } from "./instructions/instruction-registry.js";
-import { sharedToonMemoryInterface } from "./memory/shared-memory.js";
 import { ModelRouter } from "./models/model-router.js";
 import {
 	buildPublicPrompts,
@@ -36,7 +35,9 @@ import {
 	buildPublicResources,
 	readPublicResource,
 } from "./resources/resource-surface.js";
+import { attachSamplerCapability } from "./runtime/attach-sampler.js";
 import { createIntegratedRuntime } from "./runtime/integration.js";
+import { MemorySessionStore } from "./runtime/memory-session-store.js";
 import {
 	createSessionId,
 	isValidSessionId,
@@ -44,7 +45,9 @@ import {
 } from "./runtime/secure-session-store.js";
 import {
 	DEFAULT_SESSION_STATE_DIR,
+	isEphemeralMode,
 	resolveWorkspaceRoot,
+	sweepStaleTempFiles,
 } from "./runtime/session-store-utils.js";
 import { resolveSerenaClient, type SerenaClient } from "./serena/client.js";
 import { SkillRegistry } from "./skills/skill-registry.js";
@@ -54,9 +57,9 @@ import {
 	MODEL_DISCOVERY_TOOL_NAME,
 } from "./tools/model-discovery.js";
 import {
-	applySlimMode,
 	computeEffectiveHiddenTools,
 	filterHiddenTools,
+	filterToSlimSurface,
 } from "./tools/shared/tool-surface-manifest.js";
 import { dispatchToolCall } from "./tools/tool-call-handler.js";
 import { buildPublicToolSurface } from "./tools/tool-surface.js";
@@ -143,7 +146,9 @@ export function createRuntime(
 			instructionStack: [],
 			progressRecords: [] as ExecutionProgressRecord[],
 		},
-		sessionStore: new SecureFileSessionStore(),
+		sessionStore: isEphemeralMode()
+			? new MemorySessionStore()
+			: new SecureFileSessionStore(),
 		instructionRegistry,
 		skillRegistry,
 		modelRouter,
@@ -156,7 +161,7 @@ export function createRuntime(
 export function createRequestHandlers(sharedRuntime = createRuntime()) {
 	return {
 		listTools: async () => ({
-			tools: applySlimMode(
+			tools: filterToSlimSurface(
 				filterHiddenTools(
 					[
 						...buildPublicToolSurface(sharedRuntime.instructionRegistry),
@@ -269,9 +274,6 @@ export function createServer(sharedRuntime = createRuntime()) {
 export async function anchorStateToClientRoots(
 	server: Server,
 	runtime: WorkflowExecutionRuntime,
-	memoryInterface: {
-		setBaseDir(dir: string): void;
-	} = sharedToonMemoryInterface,
 ): Promise<string | undefined> {
 	try {
 		const clientCaps = server.getClientCapabilities();
@@ -286,14 +288,27 @@ export async function anchorStateToClientRoots(
 		const firstRoot = firstRootUri.startsWith("file://")
 			? fileURLToPath(firstRootUri)
 			: firstRootUri;
-		const stateDir = join(firstRoot, DEFAULT_SESSION_STATE_DIR);
-		memoryInterface.setBaseDir(stateDir);
+		if (!isAbsolute(firstRoot)) {
+			process.stderr.write(
+				`[warn] Skipping non-filesystem workspace root URI: ${firstRootUri}\n`,
+			);
+			return undefined;
+		}
 		runtime.workspaceRoot = firstRoot;
 		// Reset the orchestration config cache so it reloads from the correct
 		// project path (it may have cached a stale home-dir path during
 		// modelRouter.initialize() before roots were known).
-		resetConfigCache();
-		loadOrchestrationConfig(resolveOrchestrationConfigPath(firstRoot));
+		try {
+			resetConfigCache();
+			loadOrchestrationConfig(resolveOrchestrationConfigPath(firstRoot));
+		} catch (configErr) {
+			process.stderr.write(
+				`[warn] Failed to reload orchestration config from ${firstRoot}: ${toErrorMessage(configErr)}\n`,
+			);
+			// Ensure _config is never permanently null after the reset.
+			loadOrchestrationConfig();
+		}
+		await runtime.modelRouter?.reinitialize?.(firstRoot);
 		process.stderr.write(
 			`[info] Workspace root resolved from client roots: ${firstRoot}\n`,
 		);
@@ -327,6 +342,17 @@ export async function main() {
 
 	// Phase C: Anchor state storage to the MCP client's workspace root.
 	await anchorStateToClientRoots(server, runtime);
+
+	// Attach the optional MCP sampling capability so skills can request
+	// real, project-specific analysis when the client supports it.
+	attachSamplerCapability(runtime, server);
+
+	// Best-effort sweep of orphaned temp files left by interrupted atomic writes.
+	if (runtime.workspaceRoot) {
+		void sweepStaleTempFiles(
+			join(runtime.workspaceRoot, DEFAULT_SESSION_STATE_DIR),
+		).catch(() => {});
+	}
 
 	void (async () => {
 		resolveContextReady();

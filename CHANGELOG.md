@@ -8,6 +8,37 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+- `analogy-think` workflow tool with curated 12-entry metaphor catalog (mechanics, oscillators, thermodynamics, stat-mech, fluids, em, general); structural-feature gating; honest `Metaphor, not theorem.` header on every output; available only with `MCP_FULL_SURFACE=true`
+- Methodology gate appended to `issue-debug`, `code-review`, `system-design`, `evidence-research`: prose section `## Methodology checks (not proofs)` + optional `methodology: MethodologyReport` payload field with five checks (`dimensional`, `conservation`, `fermi`, `scaling`, `falsifiability`)
+- Cross-blind verification suite (`src/tests/verification/cross-blind-analogy.test.ts`) — intent-anchored regression for slim-default exclusion, honest header presence, no rigor-laundering strings (`theorem`, `proven`, `QED`) in any envelope payload, methodology gate presence on four host tools
+- Reference doc page `docs/src/content/docs/reference/analogy-think.md` covering catalog schema, methodology gate, honest-labelling rationale, and when not to use either
+
+### Notes
+- Heuristic feature extractor + deterministic placeholder ranker + placeholder methodology runner ship in this entry; LLM-backed implementations are a planned follow-up
+
+---
+
+## [0.19.0] - 2026-06-17
+
+### Added
+- SessionStart hook script (`scripts/hooks/session-start-bootstrap.mjs`) emits task-bootstrap nudge to Claude/Copilot at session start (Track A)
+- Structured errors with routing hints via `McpErrorPayload.nextTool` carrying recommended next tool; dispatcher validation errors point at `task-bootstrap` or `meta-routing` (Track B)
+- Hybrid output envelope (V1) for workflow tools: human-readable markdown summary AND structured `__ENVELOPE_V1__:` block with typed payload (instructionId, model, steps, recommendations, artifacts); errors travel same envelope (Track B)
+
+### Changed
+- Slim tool surface is now default; only `task-bootstrap`, `meta-routing`, `project-onboard` exposed; set `MCP_FULL_SURFACE=true` to restore the full 25-tool surface (Track A)
+- Markdown summary simplified: duplicate "Progress snapshot" section removed from prose; structured consumers read `payload.steps` instead (Track B)
+- Internal: sdk-compatibility-lane and tool-coverage-matrix tests now stub `MCP_FULL_SURFACE` for full-surface assertions (Track B)
+
+### Deprecated
+- `physics-analysis` tool deprecated as production tool. Scoping spike (Track C) found 0 of 3 trials load-bearing; source remains for research but tool removed from routing surface (Track C)
+
+## [0.18.1] - 2026-06-17
+
+### Fixed
+- add nanoid dep and honour MCP_WORKSPACE_ROOT across all entry points
+
 ## [0.18.0] - 2026-06-16
 
 ### Changed

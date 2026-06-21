@@ -106,9 +106,10 @@ const qualCodeAnalysisHandler: SkillHandler = {
 		}
 
 		const combined = `${signals.rawRequest} ${signals.contextText}`;
-		const findings: string[] = CODE_ANALYSIS_RULES.filter(({ pattern }) =>
+		const ruleFindings = CODE_ANALYSIS_RULES.filter(({ pattern }) =>
 			pattern.test(combined),
 		).map(({ finding }) => finding);
+		const findings: string[] = [...ruleFindings];
 
 		try {
 			const entries = (await context.runtime.workspace?.listFiles()) ?? [];

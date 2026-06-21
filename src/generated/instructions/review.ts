@@ -197,12 +197,7 @@ export const instructionManifest: InstructionManifestEntry = {
 			},
 		],
 	},
-	chainTo: [
-		"policy-govern",
-		"code-refactor",
-		"test-verify",
-		"physics-analysis",
-	],
+	chainTo: ["policy-govern", "code-refactor", "test-verify"],
 	preferredModelClass: "reviewer",
 	autoChainOnCompletion: false,
 	requiredPreconditions: [],

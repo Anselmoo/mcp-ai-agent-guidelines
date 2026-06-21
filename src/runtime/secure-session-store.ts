@@ -1,4 +1,3 @@
-import { timingSafeEqual } from "node:crypto";
 import { promisify } from "node:util";
 import { deflate, inflate } from "node:zlib";
 import { createId as cuid2 } from "@paralleldrive/cuid2";
@@ -8,12 +7,6 @@ import { DEFAULT_SESSION_INTEGRITY_OPTIONS_VALUES } from "../config/runtime-defa
 import { toErrorMessage } from "../infrastructure/object-utilities.js";
 import { createOperationalLogger } from "../infrastructure/observability.js";
 import { parseOrThrow } from "../validation/schema-utilities.js";
-import {
-	resolveOrCreatePersistentSecret,
-	SESSION_MAC_KEY_ENV_VAR,
-	SESSION_MAC_KEY_FILE,
-	signSessionData,
-} from "./session-crypto.js";
 import {
 	defaultReadTextFile,
 	ensureSessionStateGitignore,
@@ -112,14 +105,10 @@ function parseExecutionProgressRecords(
  * Session integrity options
  */
 interface SessionIntegrityOptions {
-	/** Enable MAC validation for session data */
-	enableMac: boolean;
 	/** Enable compression for large session payloads */
 	enableCompression: boolean;
 	/** Compression threshold in bytes */
 	compressionThreshold: number;
-	/** Secret key for MAC generation (will generate if not provided) */
-	secretKey?: string;
 }
 
 const DEFAULT_INTEGRITY_OPTIONS: SessionIntegrityOptions = {
@@ -137,7 +126,6 @@ export interface SessionHistoryReadResult {
  * Enhanced session store with integrity checking and compression
  */
 export class SecureFileSessionStore implements SessionStateStore {
-	private readonly secretKeyPromise: Promise<string>;
 	private options: SessionIntegrityOptions;
 	private readonly writeLocks = new Map<string, Promise<void>>();
 	private readonly readTextFile: (path: string) => Promise<string>;
@@ -148,76 +136,12 @@ export class SecureFileSessionStore implements SessionStateStore {
 	) {
 		this.options = { ...DEFAULT_INTEGRITY_OPTIONS, ...options };
 		this.readTextFile = seams.readTextFile ?? defaultReadTextFile;
-		this.secretKeyPromise = this.options.enableMac
-			? resolveOrCreatePersistentSecret({
-					rootDir: resolveSessionStateDir(),
-					keyFilePath: SESSION_MAC_KEY_FILE,
-					envVar: SESSION_MAC_KEY_ENV_VAR,
-					explicitSecret: options.secretKey,
-					fieldName: "sessionIntegrityKey",
-				})
-			: Promise.resolve("");
-		if (!this.options.enableMac) {
-			secureSessionStoreLogger.log(
-				"warn",
-				"SecureFileSessionStore MAC validation is disabled; session integrity protection is reduced.",
-			);
-		}
-	}
-
-	private async resolveSecretKey(): Promise<string> {
-		return await this.secretKeyPromise;
+		// Validate the configured state directory eagerly (fail fast on traversal).
+		resolveSessionStateDir();
 	}
 
 	private sessionFilePath(sessionId: string): string {
 		return resolveSessionPathWithinStateDir(`${sessionId}.json`);
-	}
-
-	private async generateMac(data: string): Promise<string> {
-		if (!this.options.enableMac) return "";
-		return signSessionData(data, await this.resolveSecretKey());
-	}
-
-	private async verifyMac(data: string, expectedMac: string): Promise<boolean> {
-		if (!this.options.enableMac) return true;
-		const actualMac = await this.generateMac(data);
-		if (
-			expectedMac.length !== actualMac.length ||
-			expectedMac.length % 2 !== 0 ||
-			!/^[0-9a-f]+$/i.test(expectedMac)
-		) {
-			return false;
-		}
-		const actualMacBuffer = Buffer.from(actualMac, "hex");
-		const expectedMacBuffer = Buffer.from(expectedMac, "hex");
-		if (actualMacBuffer.length !== expectedMacBuffer.length) {
-			return false;
-		}
-		return timingSafeEqual(actualMacBuffer, expectedMacBuffer);
-	}
-
-	private async getMacValidationError(
-		sessionId: string,
-		sessionData: SessionData,
-	): Promise<string | undefined> {
-		if (!this.options.enableMac) {
-			return undefined;
-		}
-
-		if (!sessionData.mac) {
-			return `Session integrity check failed for ${sessionId}: missing MAC`;
-		}
-
-		const dataToVerify = JSON.stringify({
-			...sessionData,
-			mac: undefined,
-		});
-
-		if (!(await this.verifyMac(dataToVerify, sessionData.mac))) {
-			return `Session integrity check failed for ${sessionId}`;
-		}
-
-		return undefined;
 	}
 
 	private async compressData(data: Buffer): Promise<Buffer> {
@@ -242,24 +166,10 @@ export class SecureFileSessionStore implements SessionStateStore {
 	async readSessionHistoryResult(
 		sessionId: string,
 	): Promise<SessionHistoryReadResult> {
-		resolveSessionStateDir();
-
 		try {
+			resolveSessionStateDir();
 			const contents = await this.readTextFile(this.sessionFilePath(sessionId));
 			const sessionData = parseSessionDataEnvelope(JSON.parse(contents));
-
-			const macValidationError = await this.getMacValidationError(
-				sessionId,
-				sessionData,
-			);
-			if (macValidationError) {
-				return {
-					records: [],
-					missing: false,
-					integrityFailure: true,
-					error: macValidationError,
-				};
-			}
 
 			if (sessionData.compressed) {
 				if (typeof sessionData.records !== "string") {
@@ -326,8 +236,8 @@ export class SecureFileSessionStore implements SessionStateStore {
 		sessionId: string,
 		records: ExecutionProgressRecord[],
 	): Promise<void> {
-		resolveSessionStateDir();
-		await ensureSessionStateGitignore(resolveSessionStateDir());
+		const stateDir = resolveSessionStateDir();
+		await ensureSessionStateGitignore(stateDir);
 
 		let recordsData: ExecutionProgressRecord[] | string = records;
 		let compressed = false;
@@ -354,12 +264,6 @@ export class SecureFileSessionStore implements SessionStateStore {
 			compressed,
 		};
 
-		// Generate MAC if enabled
-		if (this.options.enableMac) {
-			const dataToSign = JSON.stringify(sessionData);
-			sessionData.mac = await this.generateMac(dataToSign);
-		}
-
 		await writeTextFileAtomic(
 			this.sessionFilePath(sessionId),
 			`${JSON.stringify(sessionData, null, "\t")}\n`,
@@ -375,40 +279,6 @@ export class SecureFileSessionStore implements SessionStateStore {
 			existing.push(record);
 			await this.writeSessionHistory(sessionId, existing);
 		});
-	}
-
-	/**
-	 * Get integrity status for a session
-	 */
-	async getSessionIntegrity(sessionId: string): Promise<{
-		exists: boolean;
-		hasValidMac: boolean;
-		isCompressed: boolean;
-		version: number;
-		timestamp?: number;
-	}> {
-		try {
-			const contents = await this.readTextFile(this.sessionFilePath(sessionId));
-			const sessionData = parseSessionDataEnvelope(JSON.parse(contents));
-			const hasValidMac =
-				(await this.getMacValidationError(sessionId, sessionData)) ===
-				undefined;
-
-			return {
-				exists: true,
-				hasValidMac,
-				isCompressed: sessionData.compressed || false,
-				version: sessionData.version || 0,
-				timestamp: sessionData.timestamp,
-			};
-		} catch {
-			return {
-				exists: false,
-				hasValidMac: false,
-				isCompressed: false,
-				version: 0,
-			};
-		}
 	}
 }
 

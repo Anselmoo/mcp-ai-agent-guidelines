@@ -82,6 +82,20 @@ export interface RecommendationItem {
 	suggestedAction?: string;
 }
 
+export interface SamplerRequest {
+	system: string;
+	prompt: string;
+	maxTokens: number;
+	modelClass: ModelClass;
+}
+
+export interface SamplerResult {
+	text: string;
+}
+
+/** Optional server-driven sampling capability. Wraps MCP `sampling/createMessage`. */
+export type Sampler = (req: SamplerRequest) => Promise<SamplerResult>;
+
 export interface ModelProfile {
 	id: string;
 	label: string;
@@ -253,6 +267,14 @@ export interface SkillExecutionRuntime {
 	 * when undefined or when any call throws.
 	 */
 	workspace?: WorkspaceReader;
+	/**
+	 * Optional server-driven sampling capability. Present only when the MCP
+	 * client advertises `sampling`. Skill handlers should read it via
+	 * `context.runtime.sampler?` and must degrade gracefully when undefined.
+	 */
+	sampler?: Sampler;
+	/** True when the connected client advertised the `sampling` capability. */
+	clientSupportsSampling?: boolean;
 }
 
 export interface WorkflowExecutionRuntime {
@@ -297,6 +319,7 @@ export interface WorkflowExecutionRuntime {
 			input: InstructionInput,
 		) => ModelProfile;
 		chooseReviewerModel: () => ModelProfile;
+		reinitialize?: (workspaceRoot?: string) => Promise<void>;
 	};
 	workflowEngine: {
 		executeInstruction: (
@@ -328,6 +351,15 @@ export interface WorkflowExecutionRuntime {
 	 * spawning a child process — see `src/serena/client.ts`.
 	 */
 	serena?: import("../serena/client.js").SerenaClient;
+	/**
+	 * Optional server-driven sampling capability, mirrored from
+	 * `SkillExecutionRuntime` so it survives the registry threading where this
+	 * interface is the static type. Populated post-connect; undefined in headless
+	 * runtimes and tests.
+	 */
+	sampler?: Sampler;
+	/** True when the connected client advertised the `sampling` capability. */
+	clientSupportsSampling?: boolean;
 }
 
 export interface SkillModule {
