@@ -111,4 +111,14 @@ describe("matchCandidates", () => {
 		);
 		expect(out).toEqual([]);
 	});
+
+	it("throws when the ranker returns an id absent from the gated set", async () => {
+		await expect(
+			matchCandidates(
+				{ features: ["has-time-evolution"], problemSummary: "..." },
+				async () => [{ id: "ghost", score: 1 }],
+				fakeCatalog,
+			),
+		).rejects.toThrow("ranker returned unknown id ghost");
+	});
 });

@@ -21,4 +21,15 @@ describe("HEURISTIC_EXTRACTOR", () => {
 		const r = await HEURISTIC_EXTRACTOR("a".repeat(500));
 		expect(r.problemSummary.length).toBeLessThanOrEqual(240);
 	});
+
+	it("folds the optional context into the analyzed text", async () => {
+		// Exercises the `context ? request + context : request` branch: a feature
+		// only present in the context must still be detected.
+		const r = await HEURISTIC_EXTRACTOR(
+			"the service is slow",
+			"caused by a retry loop that overshoots and feeds back on itself",
+		);
+		expect(r.features).toContain("has-feedback-loop");
+		expect(r.problemSummary).toContain("retry loop");
+	});
 });

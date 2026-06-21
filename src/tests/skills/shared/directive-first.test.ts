@@ -232,6 +232,25 @@ describe("toSituationResult", () => {
 		expect(out.steps[0]?.label).toBe("s");
 	});
 
+	it("tolerates a step that carries no skillResult when merging artifacts", async () => {
+		// Exercises the `s.skillResult?.artifacts` optional-chain short-circuit
+		// branch — a step whose skillResult is undefined must not throw.
+		const result = workflowResult([rec("Define the dataset slices.")]);
+		result.steps = [{ label: "note", kind: "note", summary: "a bare note" }];
+		const out = await toSituationResult(result, deps);
+		expect(out.steps[0]?.label).toBe("note");
+		expect(out.recommendations).toHaveLength(1);
+	});
+
+	it("passes through unchanged when the request is undefined", async () => {
+		// Exercises the `result.request?.trim() ?? ""` optional-chain branch: with
+		// no request there is nothing to anchor the directive to.
+		const result = workflowResult([rec("Define the dataset slices.")]);
+		(result as { request?: string }).request = undefined;
+		const out = await toSituationResult(result, deps);
+		expect(out).toBe(result);
+	});
+
 	it("leaves a result with no usable recommendations unchanged", async () => {
 		const result = workflowResult([]);
 		const out = await toSituationResult(result, deps);

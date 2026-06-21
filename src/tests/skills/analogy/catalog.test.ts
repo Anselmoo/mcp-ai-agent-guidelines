@@ -3,6 +3,7 @@ import {
 	METAPHOR_CATALOG,
 	validateEntry,
 } from "../../../skills/analogy/catalog.js";
+import type { MetaphorEntry } from "../../../skills/analogy/types.js";
 
 describe("metaphor catalog", () => {
 	it("seeds 12 entries", () => {
@@ -98,5 +99,57 @@ describe("validateEntry", () => {
 			confidence: "high",
 		});
 		expect(result.ok).toBe(false);
+	});
+
+	// Per-guard rejection branches (each failure path in validateEntry).
+	const base: MetaphorEntry = {
+		id: "x",
+		name: "X",
+		domain: "general",
+		requiredFeatures: [],
+		excludingFeatures: [],
+		semanticDescription: "sd",
+		mapping: [{ physics: "p", engineering: "e" }],
+		translationBack: "t",
+		antiPatterns: ["nope"],
+		confidence: "low",
+	};
+
+	it.each([
+		["empty id", { id: "" }, "empty id"],
+		["empty name", { name: "" }, "empty name"],
+		[
+			"empty semanticDescription",
+			{ semanticDescription: "" },
+			"empty semanticDescription",
+		],
+		["empty antiPatterns", { antiPatterns: [] }, "empty antiPatterns"],
+		["empty translationBack", { translationBack: "" }, "empty translationBack"],
+	])("rejects %s", (_label, override, reason) => {
+		const result = validateEntry({ ...base, ...override });
+		expect(result.ok).toBe(false);
+		expect(result.ok ? "" : result.reason).toBe(reason);
+	});
+
+	it("rejects a high-confidence entry with predictions but no evidenceNeeded", () => {
+		const result = validateEntry({
+			...base,
+			confidence: "high",
+			predictions: ["p1"],
+		});
+		expect(result.ok).toBe(false);
+		expect(result.ok ? "" : result.reason).toBe(
+			"high-confidence entry needs evidenceNeeded",
+		);
+	});
+
+	it("accepts a fully-valid high-confidence entry", () => {
+		const result = validateEntry({
+			...base,
+			confidence: "high",
+			predictions: ["p1"],
+			evidenceNeeded: ["e1"],
+		});
+		expect(result.ok).toBe(true);
 	});
 });
