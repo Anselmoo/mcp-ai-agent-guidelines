@@ -120,14 +120,49 @@ deliverable and it carries a 21-item collapsible wall, yet it passed through.
 Added an `ORCHESTRATION_OUTPUT_CONTRACT` (domain "agent orchestration") → it now
 collapses into a tailored coordination plan. **Coverage 14/20 → 15/20.**
 
-The remaining 4 untransformed tools are correctly excluded: routing-adapt
-(niche adaptive routing), task-bootstrap / project-onboard (orientation), and
-analogy-think (deterministic special path). **prompt-engineering** was
-corrected in a follow-up: it has a full collapsible wall (**27 recommendations,
-24 seed-eligible**) for a genuine prompt request; an earlier measurement
-artifact (off-topic probe) had incorrectly suggested 0 recs. It was registered
-with `PROMPT_OUTPUT_CONTRACT` (domain "prompt asset"), bringing coverage to
-**16/20**.
+**prompt-engineering** was corrected in a follow-up: it has a full collapsible
+wall (**27 recommendations, 24 seed-eligible**) for a genuine prompt request; an
+earlier measurement artifact (off-topic probe) had incorrectly suggested 0 recs.
+It was registered with `PROMPT_OUTPUT_CONTRACT` (domain "prompt asset"),
+bringing coverage to **16/20**.
+
+## Update — passthrough re-audit: 3 of the "excluded 4" were still walls (2026-06-21)
+
+The 16/20 writeup claimed the remaining 4 tools were "correctly excluded." A
+direct re-probe (dispatch through the real handler, transform OFF since they
+carry no profile, with concrete requests) **disproved that for 3 of the 4** —
+they still emitted the exact keyword→template wall this whole effort exists to
+kill:
+
+| tool | numbered recs | bytes | verdict |
+|---|---|---|---|
+| `analogy-think` | 0 | 146 | ✅ genuinely clean — gates to a request-specific metaphor (or "no analogy opens") |
+| `routing-adapt` | 44 | 21KB | ❌ generic delegation-template wall |
+| `project-onboard` | 10 | 11KB | ❌ generic scope-template wall |
+| `task-bootstrap` | 75 | 45KB | ❌ biggest wall of all — and it is the **mandated session-start tool**, so it fired first every session |
+
+The B#2 "category error" defence (don't force *solve THIS request* onto a
+router/orientation tool) did **not** protect them: the established fix is to give
+each tool a contract shaped to *its own* mission (as `meta-routing` got routing
+and `agent-orchestrate` got orchestration), not a passthrough. So:
+
+- **`routing-adapt`** → new `ADAPTIVE_ROUTING_OUTPUT_CONTRACT` (domain "adaptive
+  routing policy") — it produces a bio-inspired routing-policy deliverable,
+  structurally like `agent-orchestrate`. **16/20 → 17/20.**
+- **`task-bootstrap` / `project-onboard`** → new `ORIENTATION_OUTPUT_CONTRACT`
+  (a request-specific scope brief: in/out of scope + key ambiguities +
+  recommended first instruction, **explicitly not a finished solution**). This
+  orients rather than solves, so it is not the B#2 category error. **17/20 →
+  19/20.**
+
+Direct ON-vs-OFF measurement (same build, `MCP_SITUATION_TRANSFORM` kill-switch):
+routing-adapt **21KB→12KB (43%)**, project-onboard **11KB→4.8KB (55%)**,
+task-bootstrap **45KB→18KB (61%)**. Each collapse is covered by a
+`tool-call-handler.test.ts` case asserting the request anchor + the
+mission-shaped contract.
+
+**`analogy-think` is now the sole correct passthrough** on the 20-tool public
+surface (`physics-analysis` is internal, `public: false`). **Coverage 19/20.**
 
 ## Reproduce
 

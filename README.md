@@ -366,9 +366,12 @@ Published package note: the npm package ships `dist/`, `README.md`, and `LICENSE
 | `MCP_FULL_SURFACE` | unset / `"false"` | Set to `true` to expose the full surface; default is slim 3-tool routing surface: `task-bootstrap`, `meta-routing`, `project-onboard` |
 
 > **Target-oriented output & the slim surface.** The situation-transform that turns
-> a tool's keyword-matched template into a project-specific analysis or build plan
-> applies to the domain tools (e.g. `code-review`, `issue-debug`, `feature-implement`).
-> These are hidden in the default slim surface but remain callable by name. Set
+> a tool's keyword-matched template into a project-specific deliverable applies to
+> **19 of the 20 public tools** — the domain tools (`code-review`, `issue-debug`,
+> `feature-implement`, …) plus all three slim-surface tools (`meta-routing` →
+> routing decision, `task-bootstrap` / `project-onboard` → orientation brief).
+> `analogy-think` is the sole passthrough (it already gates to a request-specific
+> metaphor). The hidden domain tools remain callable by name; set
 > `MCP_FULL_SURFACE=true` to list them for discovery.
 
 | `MCP_SERENA_COMMAND` | unset | Opt-in. When set, the server spawns Serena as a child MCP server over stdio and resolves Serena queries directly. When unset (default), the server emits structured **advisories** that the host model executes via its own Serena connection — recommended when the host (e.g. Claude Code) already runs Serena. |

@@ -103,15 +103,40 @@ describe("resolveTransformProfile", () => {
 		expect(p?.outputContract.toLowerCase()).toContain("prompt");
 	});
 
-	it("still excludes the orientation/niche/special tools", () => {
-		for (const tool of [
-			"routing-adapt",
-			"task-bootstrap",
-			"project-onboard",
-			"analogy-think",
-		]) {
-			expect(resolveTransformProfile(tool), tool).toBeUndefined();
-		}
+	it("gives routing-adapt an adaptive-routing profile (it produces a routing policy)", () => {
+		// Mission: "Deploy → observe → reinforce → prune → converge" — produces an
+		// adaptive routing policy deliverable, structurally like agent-orchestrate.
+		// Was emitting a 44-rec / 21KB generic delegation-template wall.
+		const p = resolveTransformProfile("routing-adapt");
+		expect(p).toBeDefined();
+		expect(p?.domain).not.toMatch(/^[A-Z][a-z]+:/);
+		expect(p?.outputContract.toLowerCase()).toMatch(/rout/);
+	});
+
+	it("gives task-bootstrap an orientation profile (scope brief, not a solution)", () => {
+		// Mission: "Orient the agent … identify scope and unknowns before any
+		// implementation starts." The contract orients (in/out of scope, key
+		// ambiguities, recommended first instruction) — it does NOT solve the task,
+		// so it is not the build/analysis category error. Was emitting a 75-rec /
+		// 45KB wall at every session start.
+		const p = resolveTransformProfile("task-bootstrap");
+		expect(p).toBeDefined();
+		expect(p?.domain).not.toMatch(/^[A-Z][a-z]+:/);
+		expect(p?.outputContract.toLowerCase()).toMatch(/scope|orient|ambigu/);
+	});
+
+	it("gives project-onboard an orientation profile", () => {
+		const p = resolveTransformProfile("project-onboard");
+		expect(p).toBeDefined();
+		expect(p?.domain).not.toMatch(/^[A-Z][a-z]+:/);
+		expect(p?.outputContract.toLowerCase()).toMatch(/scope|orient|ambigu/);
+	});
+
+	it("still excludes only the analogy special path", () => {
+		// analogy-think gates to a request-specific metaphor (or "no analogy opens")
+		// — already situation-anchored, not a template wall. The sole correct
+		// passthrough on the public surface.
+		expect(resolveTransformProfile("analogy-think")).toBeUndefined();
 	});
 });
 

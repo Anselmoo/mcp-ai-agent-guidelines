@@ -438,8 +438,9 @@ export async function dispatchToolCall(
 		// (analysis findings, a build deliverable, a routing decision, …) — the
 		// matched templates seed (via `criteria`) but no longer dictate. Sampled
 		// when the client supports it, a return-a-prompt directive otherwise.
-		// Orientation/niche/special tools resolve to no profile and pass through
-		// untouched (see TRANSFORM_PROFILES).
+		// Only the analogy special path resolves to no profile and passes through
+		// untouched — it already gates to a request-anchored metaphor (see
+		// TRANSFORM_PROFILES; 19/20 of the public surface is transformed).
 		// Kill-switch (`MCP_SITUATION_TRANSFORM=0`) for A/B evaluation and ops
 		// rollback: disables the transform so tools emit pre-transform output.
 		const profile =

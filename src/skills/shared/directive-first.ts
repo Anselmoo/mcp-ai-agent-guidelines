@@ -47,6 +47,19 @@ export const PROMPT_OUTPUT_CONTRACT =
 export const ROUTING_OUTPUT_CONTRACT =
 	"the concrete, ordered domain instruction(s) to invoke for this request — name each tool, give a one-line rationale, and say whether to run them in sequence or in parallel";
 
+/** Output contract for adaptive-routing — a concrete bio-inspired routing policy. */
+export const ADAPTIVE_ROUTING_OUTPUT_CONTRACT =
+	"the concrete adaptive routing policy for this request — which bio-inspired strategy fits, the signals that reinforce or prune each route, and the convergence criteria to stop tuning, followed by an ordered next-action sequence";
+
+/**
+ * Output contract for orientation tools — a request-specific scope brief, NOT a
+ * solution. Orientation tools (task-bootstrap, project-onboard) run before
+ * implementation; asking them to "solve THIS request" is the B#2 category error,
+ * so the contract orients (scope + unknowns + first move) instead of solving.
+ */
+export const ORIENTATION_OUTPUT_CONTRACT =
+	"a request-specific orientation brief — what is in and out of scope, the key ambiguities to resolve first, and the recommended first instruction to invoke — not a finished solution, followed by an ordered next-action sequence";
+
 /**
  * Domain instructions a router classifies a request toward. Intentionally a
  * curated routing-target set, NOT a mirror of `TRANSFORM_PROFILES`: it excludes
@@ -74,16 +87,29 @@ const ROUTABLE_DOMAIN_TOOLS: readonly string[] = [
  * build tools produce concrete deliverables; the router (meta-routing) produces
  * a request-anchored decision naming the instructions to invoke; orchestration
  * (agent-orchestrate) produces a tailored coordination plan; prompt tools
- * (prompt-engineering) produce a tailored prompt artifact. Orientation
- * (task-bootstrap, project-onboard), adaptive routing (routing-adapt), and the
- * analogy special path are intentionally absent — their output is already
- * request-anchored in their own modality or runs on a separate path.
+ * (prompt-engineering) produce a tailored prompt artifact; adaptive routing
+ * (routing-adapt) produces a bio-inspired routing policy; orientation tools
+ * (task-bootstrap, project-onboard) produce a request-specific scope brief.
+ * Only the analogy special path is absent — it already gates to a
+ * request-anchored metaphor (or "no analogy opens") rather than a template wall.
  */
 export const TRANSFORM_PROFILES: Readonly<Record<string, TransformProfile>> = {
 	"meta-routing": {
 		domain: "request",
 		outputContract: ROUTING_OUTPUT_CONTRACT,
 		candidateNextTools: ROUTABLE_DOMAIN_TOOLS,
+	},
+	"routing-adapt": {
+		domain: "adaptive routing policy",
+		outputContract: ADAPTIVE_ROUTING_OUTPUT_CONTRACT,
+	},
+	"task-bootstrap": {
+		domain: "task scope and unknowns",
+		outputContract: ORIENTATION_OUTPUT_CONTRACT,
+	},
+	"project-onboard": {
+		domain: "project scope and entry points",
+		outputContract: ORIENTATION_OUTPUT_CONTRACT,
 	},
 	"agent-orchestrate": {
 		domain: "agent orchestration",

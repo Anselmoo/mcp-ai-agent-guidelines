@@ -97,9 +97,11 @@ export function computeEffectiveHiddenTools(): string {
  * route to the correct domain tool without exhausting a short context window.
  * Set `MCP_FULL_SURFACE=true` to expose the full ~25-tool surface.
  *
- * Note: the situation-transform (target-oriented analysis/build output) applies
- * only to domain tools, which are HIDDEN in slim mode but still callable by
- * name. To expose them for discovery, set MCP_FULL_SURFACE=true.
+ * Note: the situation-transform (target-oriented output) applies to 19 of the
+ * 20 public tools — including all three slim-surface tools (meta-routing →
+ * routing decision, task-bootstrap / project-onboard → orientation brief). The
+ * hidden domain tools are also transformed but stay HIDDEN in slim mode; set
+ * MCP_FULL_SURFACE=true to expose them for discovery.
  */
 export const SLIM_SURFACE_TOOLS = new Set([
 	"task-bootstrap",

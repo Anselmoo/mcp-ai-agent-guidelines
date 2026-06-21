@@ -310,9 +310,13 @@ describe("tool-call-handler", () => {
 		expect(text).not.toContain("Analyze your Evaluate:");
 	});
 
-	// Scope guard (A/B review B#2): the transform must NOT fire for orientation
-	// tools, whose deliverable is session setup rather than a decision/analysis.
-	it("does not collapse orientation tools like project-onboard", async () => {
+	// Coverage audit follow-up: orientation tools were still shipping the generic
+	// keyword→template wall (project-onboard: 10 recs/11KB; task-bootstrap:
+	// 75 recs/45KB at every session start). They now collapse into a
+	// request-specific orientation brief — scope + ambiguities + first move,
+	// NOT a solution (the B#2 category error is avoided by the orientation-shaped
+	// output contract, not by passing through).
+	it("collapses project-onboard into a request-anchored orientation brief", async () => {
 		const result = await dispatchToolCall(
 			"project-onboard",
 			{ request: "where should I start hardening this repo" },
@@ -320,8 +324,45 @@ describe("tool-call-handler", () => {
 		);
 		expect(result.isError).toBeUndefined();
 		const text = result.content[0]?.text ?? "";
-		expect(text).not.toContain("Analyze your");
-		expect(text).not.toContain("Analysis task");
+		// Anchored to the real request, not echoing title keywords.
+		expect(text).toContain("where should I start hardening this repo");
+		// Orientation contract: scope in/out + ambiguities + first instruction —
+		// explicitly NOT a finished solution.
+		expect(text.toLowerCase()).toMatch(/in and out of scope|ambiguit/);
+		expect(text).toContain("not a finished solution");
+	});
+
+	it("collapses task-bootstrap into a request-anchored orientation brief", async () => {
+		const result = await dispatchToolCall(
+			"task-bootstrap",
+			{ request: "add OAuth2 device-code login; unsure which provider" },
+			createRuntime(),
+		);
+		expect(result.isError).toBeUndefined();
+		const text = result.content[0]?.text ?? "";
+		expect(text).toContain(
+			"add OAuth2 device-code login; unsure which provider",
+		);
+		expect(text.toLowerCase()).toMatch(/in and out of scope|ambiguit/);
+		expect(text).toContain("not a finished solution");
+	});
+
+	it("collapses routing-adapt into a tailored adaptive-routing policy", async () => {
+		const result = await dispatchToolCall(
+			"routing-adapt",
+			{
+				request:
+					"optimize our 5-agent review pipeline by which agents catch the most bugs",
+			},
+			createRuntime(),
+		);
+		expect(result.isError).toBeUndefined();
+		const text = result.content[0]?.text ?? "";
+		expect(text).toContain(
+			"optimize our 5-agent review pipeline by which agents catch the most bugs",
+		);
+		// Adaptive-routing contract: a concrete policy with reinforce/prune signals.
+		expect(text.toLowerCase()).toMatch(/reinforce|prune|converg/);
 	});
 
 	// Tribunal fix: meta-routing's mission is to DECIDE which instruction(s) to
