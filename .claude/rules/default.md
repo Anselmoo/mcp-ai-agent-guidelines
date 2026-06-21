@@ -40,7 +40,6 @@ user request
     ├─ Enterprise / org-wide?     → enterprise-strategy
     ├─ Fault tolerance?           → fault-resilience
     ├─ Adaptive bio-inspired routing? → routing-adapt
-    ├─ Physics-inspired analysis? → physics-analysis
     └─ First session / onboarding?    → project-onboard → task-bootstrap
 ```
 
@@ -67,18 +66,16 @@ the same request:
 - **Do NOT** call `agent-orchestrate` for single-tool requests — use the specific
   domain tool instead.
 - **Do NOT** skip `task-bootstrap` at session start — this causes stale-context drift.
-- **Do NOT** call `physics-analysis` as a first-call tool — it requires arriving from
-  another instruction (refactor, design, review, evaluate, research, or debug).
 - **Do NOT** call multiple domain tools in parallel without running `meta-routing`
   first to establish ordering.
 
 ---
 
-## 5. Slim mode
+## 5. Slim mode (default)
 
-If you need a minimal surface (e.g. very short context window), set `MCP_SLIM_MODE=true`
-when starting the server. Only `task-bootstrap`, `meta-routing`, and `project-onboard`
-are exposed — sufficient to orient and route without exhausting context.
+The slim surface is enabled by default: only `task-bootstrap`, `meta-routing`, and
+`project-onboard` are exposed — sufficient to orient and route without exhausting
+context. Set `MCP_FULL_SURFACE=true` to restore the full 25-tool surface.
 
 ---
 

@@ -110,7 +110,8 @@ const evalPromptBenchHandler: SkillHandler = {
 			`Benchmark "${summarizeKeywords(parsed.data).join(", ") || "the requested prompt variants"}" with a ${comparisonMode} comparison mode over a ${regressionWindow} regression window. The benchmark should support an explicit keep/replace decision for each prompt variant.`,
 		];
 
-		details.push(...matchEvalRules(EVAL_PROMPT_BENCH_RULES, combined));
+		const matchedRules = matchEvalRules(EVAL_PROMPT_BENCH_RULES, combined);
+		details.push(...matchedRules);
 
 		if (promptCount !== undefined) {
 			details.push(

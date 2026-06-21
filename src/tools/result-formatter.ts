@@ -1,10 +1,10 @@
 import type { ModelClass } from "../contracts/generated.js";
 import type {
-	ExecutionProgressRecord,
 	RecommendationItem,
 	SkillArtifact,
 	WorkflowExecutionResult,
 } from "../contracts/runtime.js";
+import type { MethodologyReport } from "../skills/shared/methodology-gate.js";
 import {
 	getGroundingScopeLabel,
 	sortRecommendationsByGrounding,
@@ -69,13 +69,6 @@ function formatRecommendation(
 	return [header, ...detailLines].join("\n");
 }
 
-function formatProgressRecord(
-	record: ExecutionProgressRecord,
-	index: number,
-): string {
-	return `${stepKindEmoji(record.kind)} ${index + 1}. **${record.stepLabel}** [${record.kind}] — ${record.summary}`;
-}
-
 function formatArtifact(artifact: SkillArtifact, index: number): string {
 	switch (artifact.kind) {
 		case "worked-example":
@@ -97,7 +90,52 @@ function formatArtifact(artifact: SkillArtifact, index: number): string {
 	}
 }
 
-export function formatWorkflowResult(result: WorkflowExecutionResult): string {
+export interface WorkflowEnvelopePayload {
+	displayName: string;
+	instructionId: string;
+	model: { id: string; label: string };
+	steps: Array<{ kind: string; label: string; summary: string }>;
+	recommendations: RecommendationItem[];
+	artifacts: SkillArtifact[];
+	methodology?: MethodologyReport;
+}
+
+/**
+ * Builds the structured envelope payload for a workflow result.
+ * Extracts only `id` and `label` from `result.model` — other fields
+ * (modelClass, costTier, etc.) are intentionally omitted from the payload.
+ * This is a sibling to `formatWorkflowResult`; both coexist.
+ *
+ * Deviation note: `result.instructionId` holds the spec's internal `id`
+ * (e.g. `"research"`) which differs from the public tool name
+ * (`"evidence-research"`).  Pass `toolName` to override so the envelope
+ * exposes the stable public name callers already know.
+ */
+export function buildWorkflowEnvelopePayload(
+	result: WorkflowExecutionResult,
+	toolName?: string,
+): WorkflowEnvelopePayload {
+	return {
+		displayName: result.displayName,
+		instructionId: toolName ?? result.instructionId,
+		model: { id: result.model.id, label: result.model.label },
+		steps: result.steps.map((s) => ({
+			kind: s.kind,
+			label: s.label,
+			summary: s.summary,
+		})),
+		recommendations: result.recommendations,
+		artifacts: [
+			...(result.artifacts ?? []),
+			...result.steps.flatMap((s) => s.skillResult?.artifacts ?? []),
+		],
+	};
+}
+
+export function formatWorkflowResult(
+	result: WorkflowExecutionResult,
+	toolName?: string,
+): string {
 	const recommendationLines = result.recommendations.length
 		? sortRecommendationsByGrounding(result.recommendations)
 				.map(formatRecommendation)
@@ -110,16 +148,6 @@ export function formatWorkflowResult(result: WorkflowExecutionResult): string {
 				`${stepKindEmoji(step.kind)} **${step.label}** [${step.kind}] — ${step.summary}`,
 		)
 		.join("\n");
-	const progressLines = result.steps.length
-		? result.steps
-				.map((step) => ({
-					stepLabel: step.label,
-					kind: step.kind,
-					summary: step.summary,
-				}))
-				.map(formatProgressRecord)
-				.join("\n")
-		: "1. **No progress records** [finalize] — No workflow steps executed.";
 	// Merge top-level promoted artifacts first, then step-level artifacts.
 	// Top-level `result.artifacts` represent workflow-consolidated outputs;
 	// step-level artifacts provide per-skill detail. Both are rendered so
@@ -134,15 +162,12 @@ export function formatWorkflowResult(result: WorkflowExecutionResult): string {
 	return [
 		`# ${result.displayName}`,
 		"",
-		`**Instruction:** \`${result.instructionId}\``,
+		`**Instruction:** \`${toolName ?? result.instructionId}\``,
 		`**Assigned model:** ${result.model.label}`,
 		...(result.request ? [`**Request:** ${result.request}`] : []),
 		"",
 		"## Executed workflow",
 		stepLines || "- No workflow steps executed.",
-		"",
-		"## Progress snapshot",
-		progressLines,
 		"",
 		"## Produced artifacts",
 		artifactLines ||

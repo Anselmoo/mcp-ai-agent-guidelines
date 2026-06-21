@@ -203,10 +203,6 @@ describe("anchorStateToClientRoots", () => {
 		} as unknown as Parameters<typeof anchorStateToClientRoots>[1];
 	}
 
-	function makeMemory() {
-		return { setBaseDir: vi.fn() };
-	}
-
 	beforeEach(() => {
 		vi.restoreAllMocks();
 	});
@@ -216,16 +212,10 @@ describe("anchorStateToClientRoots", () => {
 			getClientCapabilities: vi.fn().mockReturnValue({}),
 		});
 		const runtime = makeRuntime();
-		const memory = makeMemory();
 
-		const result = await anchorStateToClientRoots(
-			server as never,
-			runtime,
-			memory,
-		);
+		const result = await anchorStateToClientRoots(server as never, runtime);
 
 		expect(result).toBeUndefined();
-		expect(memory.setBaseDir).not.toHaveBeenCalled();
 		expect(server.listRoots).not.toHaveBeenCalled();
 	});
 
@@ -234,16 +224,10 @@ describe("anchorStateToClientRoots", () => {
 			listRoots: vi.fn().mockResolvedValue({ roots: [] }),
 		});
 		const runtime = makeRuntime();
-		const memory = makeMemory();
 
-		const result = await anchorStateToClientRoots(
-			server as never,
-			runtime,
-			memory,
-		);
+		const result = await anchorStateToClientRoots(server as never, runtime);
 
 		expect(result).toBeUndefined();
-		expect(memory.setBaseDir).not.toHaveBeenCalled();
 	});
 
 	it("anchors state to a file:// root and updates the runtime workspaceRoot", async () => {
@@ -253,22 +237,14 @@ describe("anchorStateToClientRoots", () => {
 				.mockResolvedValue({ roots: [{ uri: "file:///tmp/some-project" }] }),
 		});
 		const runtime = makeRuntime();
-		const memory = makeMemory();
 		const stderrSpy = vi
 			.spyOn(process.stderr, "write")
 			.mockImplementation(() => true);
 
-		const result = await anchorStateToClientRoots(
-			server as never,
-			runtime,
-			memory,
-		);
+		const result = await anchorStateToClientRoots(server as never, runtime);
 
 		expect(result).toBe("/tmp/some-project");
 		expect(runtime.workspaceRoot).toBe("/tmp/some-project");
-		expect(memory.setBaseDir).toHaveBeenCalledTimes(1);
-		const baseDir = memory.setBaseDir.mock.calls[0][0] as string;
-		expect(baseDir.startsWith("/tmp/some-project/")).toBe(true);
 		const stderrText = stderrSpy.mock.calls.map((c) => c[0]).join("");
 		expect(stderrText).toContain("[info] Workspace root resolved");
 	});
@@ -278,14 +254,9 @@ describe("anchorStateToClientRoots", () => {
 			listRoots: vi.fn().mockResolvedValue({ roots: [{ uri: "/raw/path" }] }),
 		});
 		const runtime = makeRuntime();
-		const memory = makeMemory();
 		vi.spyOn(process.stderr, "write").mockImplementation(() => true);
 
-		const result = await anchorStateToClientRoots(
-			server as never,
-			runtime,
-			memory,
-		);
+		const result = await anchorStateToClientRoots(server as never, runtime);
 
 		expect(result).toBe("/raw/path");
 		expect(runtime.workspaceRoot).toBe("/raw/path");
@@ -298,19 +269,13 @@ describe("anchorStateToClientRoots", () => {
 			}),
 		});
 		const runtime = makeRuntime();
-		const memory = makeMemory();
 		const stderrSpy = vi
 			.spyOn(process.stderr, "write")
 			.mockImplementation(() => true);
 
-		const result = await anchorStateToClientRoots(
-			server as never,
-			runtime,
-			memory,
-		);
+		const result = await anchorStateToClientRoots(server as never, runtime);
 
 		expect(result).toBeUndefined();
-		expect(memory.setBaseDir).not.toHaveBeenCalled();
 		expect(runtime.workspaceRoot).toBe("/old/root");
 		const stderrText = stderrSpy.mock.calls.map((c) => c[0]).join("");
 		expect(stderrText).toContain(
@@ -323,19 +288,13 @@ describe("anchorStateToClientRoots", () => {
 			listRoots: vi.fn().mockRejectedValue(new Error("rpc died")),
 		});
 		const runtime = makeRuntime();
-		const memory = makeMemory();
 		const stderrSpy = vi
 			.spyOn(process.stderr, "write")
 			.mockImplementation(() => true);
 
-		const result = await anchorStateToClientRoots(
-			server as never,
-			runtime,
-			memory,
-		);
+		const result = await anchorStateToClientRoots(server as never, runtime);
 
 		expect(result).toBeUndefined();
-		expect(memory.setBaseDir).not.toHaveBeenCalled();
 		expect(runtime.workspaceRoot).toBe("/old/root");
 		const stderrText = stderrSpy.mock.calls.map((c) => c[0]).join("");
 		expect(stderrText).toContain("[warn] Could not resolve workspace root");

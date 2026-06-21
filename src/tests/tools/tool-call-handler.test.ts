@@ -2,7 +2,6 @@ import { describe, expect, it, vi } from "vitest";
 import type { ExecutionProgressRecord } from "../../contracts/runtime.js";
 import { ObservabilityOrchestrator } from "../../infrastructure/observability.js";
 import { InstructionRegistry } from "../../instructions/instruction-registry.js";
-import { sharedToonMemoryInterface as memoryInterface } from "../../memory/shared-memory.js";
 import { ModelRouter } from "../../models/model-router.js";
 import { AdvisorySerenaClient } from "../../serena/client.js";
 import { SkillRegistry } from "../../skills/skill-registry.js";
@@ -162,99 +161,6 @@ describe("tool-call-handler", () => {
 		expect(result.content[0]?.text).toContain("docs/tool-renaming.md");
 	});
 
-	it("persists related memory IDs and snapshot sources in saved artifacts", async () => {
-		process.env.MCP_LOCAL_MEMORY = "true";
-		const saveSpy = vi
-			.spyOn(memoryInterface, "saveMemoryArtifact")
-			.mockResolvedValue();
-		const findSpy = vi
-			.spyOn(memoryInterface, "findMemoryArtifacts")
-			.mockResolvedValue([
-				{
-					meta: {
-						id: "memory-1",
-						created: "2026-04-11T00:00:00.000Z",
-						updated: "2026-04-11T00:00:00.000Z",
-						tags: ["review"],
-						relevance: 0.9,
-					},
-					content: {
-						summary: "Prior review",
-						details: "Prior review details",
-						context: "ctx",
-						actionable: true,
-					},
-					links: { relatedSessions: [], relatedMemories: [], sources: [] },
-				},
-			]);
-		const snapshotSpy = vi
-			.spyOn(memoryInterface, "loadFingerprintSnapshot")
-			.mockResolvedValue({
-				meta: { version: "1", capturedAt: "2026-04-11T00:00:00.000Z" },
-				fingerprint: {
-					capturedAt: "2026-04-11T00:00:00.000Z",
-					skillIds: [],
-					instructionNames: [],
-					codePaths: [],
-					srcPaths: [],
-				},
-			});
-
-		try {
-			await dispatchToolCall(
-				"code-review",
-				{
-					request: "review the runtime architecture",
-					context:
-						"Use mcp_ai-agent-guid_code-review, mcp_ai-agent-guid_strategy-plan, mcp_ai-agent-guid_evidence-research, fetch_webpage, mcp_github_search_code, and src/snapshots/document_symbols.ts",
-					options: {
-						evidence: [
-							{
-								sourceType: "github-file",
-								toolName: "mcp_github_get_file_contents",
-								locator: "docs/tool-renaming.md",
-								authority: "implementation",
-								sourceTier: 2,
-							},
-						],
-					},
-				},
-				createRuntime(),
-			);
-			await new Promise((resolve) => setTimeout(resolve, 0));
-
-			expect(saveSpy).toHaveBeenCalled();
-			const savedArtifact = saveSpy.mock.calls[0]?.[0];
-			expect(savedArtifact).toMatchObject({
-				links: {
-					relatedSessions: ["test-tool-call"],
-					relatedMemories: ["memory-1"],
-					sources: expect.arrayContaining([
-						"mcp_ai-agent-guid_code-review",
-						"mcp_ai-agent-guid_strategy-plan",
-						"mcp_ai-agent-guid_evidence-research",
-						"fetch_webpage",
-						"mcp_github_search_code",
-						"docs/tool-renaming.md",
-						"src/snapshots/document_symbols.ts",
-					]),
-				},
-			});
-			expect(savedArtifact?.links.sources).toEqual(
-				expect.arrayContaining([
-					expect.stringMatching(
-						/(?:\.mcp-ai-agent-guidelines\/snapshots\/fingerprint-latest\.json|snapshot)/,
-					),
-				]),
-			);
-		} finally {
-			saveSpy.mockRestore();
-			findSpy.mockRestore();
-			snapshotSpy.mockRestore();
-			delete process.env.MCP_LOCAL_MEMORY;
-		}
-	});
-
 	it("routes canonical workspace tools through the shared dispatcher", async () => {
 		const result = await dispatchToolCall(
 			"agent-workspace",
@@ -312,110 +218,6 @@ describe("tool-call-handler", () => {
 		}
 	});
 
-	it("prefixes artifact count in memory summary when top-level artifacts are present", async () => {
-		process.env.MCP_LOCAL_MEMORY = "true";
-		const saveSpy = vi
-			.spyOn(memoryInterface, "saveMemoryArtifact")
-			.mockResolvedValue();
-		vi.spyOn(memoryInterface, "findMemoryArtifacts").mockResolvedValue([]);
-		vi.spyOn(memoryInterface, "loadFingerprintSnapshot").mockResolvedValue(
-			null,
-		);
-
-		// Intercept the workflow execution to inject top-level artifacts
-		const { WorkflowEngine } = await import(
-			"../../workflows/workflow-engine.js"
-		);
-		const executeInstructionSpy = vi
-			.spyOn(WorkflowEngine.prototype, "executeInstruction")
-			.mockResolvedValue({
-				instructionId: "code-review",
-				displayName: "Review Runtime",
-				model: {
-					id: "gpt-4o-mini",
-					label: "GPT-4o Mini",
-					modelClass: "cheap",
-					strengths: ["speed"],
-					maxContextWindow: "medium",
-					costTier: "cheap",
-				},
-				steps: [],
-				recommendations: [],
-				artifacts: [
-					{ kind: "eval-criteria", title: "Gate A", criteria: ["Pass all"] },
-					{
-						kind: "output-template",
-						title: "Review template",
-						template: "...",
-					},
-				],
-			});
-
-		try {
-			await dispatchToolCall(
-				"code-review",
-				{ request: "review the runtime architecture" },
-				createRuntime(),
-			);
-			// Allow fire-and-forget persistence to settle
-			await new Promise((resolve) => setTimeout(resolve, 10));
-
-			expect(saveSpy).toHaveBeenCalled();
-			const savedArtifact = saveSpy.mock.calls[0]?.[0];
-			expect(savedArtifact?.content.summary).toMatch(/^2 artifacts —/);
-		} finally {
-			saveSpy.mockRestore();
-			executeInstructionSpy.mockRestore();
-			delete process.env.MCP_LOCAL_MEMORY;
-		}
-	});
-
-	it("does not fail the tool call when session context persistence fails", async () => {
-		vi.spyOn(memoryInterface, "saveMemoryArtifact").mockResolvedValue();
-		vi.spyOn(memoryInterface, "saveSessionContext").mockRejectedValue(
-			new Error("disk full"),
-		);
-		vi.spyOn(memoryInterface, "findMemoryArtifacts").mockResolvedValue([]);
-		vi.spyOn(memoryInterface, "loadFingerprintSnapshot").mockResolvedValue(
-			null,
-		);
-
-		try {
-			const result = await dispatchToolCall(
-				"code-review",
-				{ request: "review the runtime architecture" },
-				createRuntime(),
-			);
-
-			expect(result.isError).toBeUndefined();
-		} finally {
-			vi.restoreAllMocks();
-		}
-	});
-
-	it("does not fail the tool call when memory artifact persistence fails", async () => {
-		vi.spyOn(memoryInterface, "saveMemoryArtifact").mockRejectedValue(
-			new Error("disk full"),
-		);
-		vi.spyOn(memoryInterface, "saveSessionContext").mockResolvedValue();
-		vi.spyOn(memoryInterface, "findMemoryArtifacts").mockResolvedValue([]);
-		vi.spyOn(memoryInterface, "loadFingerprintSnapshot").mockResolvedValue(
-			null,
-		);
-
-		try {
-			const result = await dispatchToolCall(
-				"code-review",
-				{ request: "review the runtime architecture" },
-				createRuntime(),
-			);
-
-			expect(result.isError).toBeUndefined();
-		} finally {
-			vi.restoreAllMocks();
-		}
-	});
-
 	it("dispatches memory tool call when tool name resolves as memory tool", async () => {
 		const result = await dispatchToolCall(
 			"agent-memory-fetch",
@@ -449,45 +251,230 @@ describe("tool-call-handler", () => {
 		expect(result).toBeDefined();
 	});
 
-	it("injects topic artifacts into input context when relevant artifacts exist", async () => {
-		vi.spyOn(memoryInterface, "saveMemoryArtifact").mockResolvedValue();
-		vi.spyOn(memoryInterface, "saveSessionContext").mockResolvedValue();
-		vi.spyOn(memoryInterface, "loadFingerprintSnapshot").mockResolvedValue(
-			null,
+	it("validation error for missing required field points to task-bootstrap", async () => {
+		// Trigger the schema-level validator failure: request is required but missing
+		const result = await dispatchToolCall(
+			"code-review",
+			{ request: "" },
+			createRuntime(),
 		);
-		const findSpy = vi
-			.spyOn(memoryInterface, "findMemoryArtifacts")
-			.mockResolvedValue([
-				{
-					meta: {
-						id: "code-review-session-123",
-						tags: ["topic:code-review"],
-						relevance: 0.9,
-						updated: new Date().toISOString(),
-						sessionId: "session-123",
-						toolName: "code-review",
-						snapshotSources: [],
-						relatedMemoryIds: [],
-					},
-					content: {
-						summary: "Prior review of runtime architecture",
-						details: "",
-					},
-					links: [],
-				} as unknown as Awaited<
-					ReturnType<typeof memoryInterface.findMemoryArtifacts>
-				>[0],
-			]);
+		expect(result.isError).toBe(true);
+		const text = result.content[0]?.text ?? "";
+		expect(text).toMatch(/Next: call `task-bootstrap` to proceed\./);
+	});
 
+	it("validation error for unknown instruction tool points to meta-routing", async () => {
+		// Trigger the unknown-instruction error path
+		const result = await dispatchToolCall(
+			"evidence-research-nonexistent",
+			{ request: "some request" },
+			createRuntime(),
+		);
+		expect(result.isError).toBe(true);
+		const text = result.content[0]?.text ?? "";
+		expect(text).toMatch(/Next: call `meta-routing` to proceed\./);
+	});
+
+	// Dogfood the original complaint: quality-evaluate used to return a wall of
+	// keyword-matched eval-process templates labelled "advisory only" with zero
+	// project-specific analysis. The instruction-level LLM→LLM transform must now
+	// yield ONE situation-specific result — an analysis task (no sampler in this
+	// runtime → return-a-prompt directive) plus a tailored next-action workflow —
+	// with no advisory-only self-label and no template recommendation wall.
+	it("quality-evaluate returns a situation-specific analysis, not a template wall labelled 'advisory only'", async () => {
+		const result = await dispatchToolCall(
+			"quality-evaluate",
+			{
+				request:
+					"design an eval set with realistic prompts, hard negatives, and discriminative assertions",
+			},
+			createRuntime(),
+		);
+
+		expect(result.isError).toBeUndefined();
+		const text = result.content[0]?.text ?? "";
+		// The self-label that prompted the complaint is gone.
+		expect(text.toLowerCase()).not.toContain("advisory only");
+		// It is an analysis directive the calling agent runs against its project.
+		expect(text.toLowerCase()).toContain("analysis task");
+		// It anchors to the real request rather than echoing the title keywords.
+		expect(text).toContain(
+			"design an eval set with realistic prompts, hard negatives, and discriminative assertions",
+		);
+		// Part two of the contract: a tailored next-action workflow seeded by the
+		// instruction's chain-to tools.
+		expect(text.toLowerCase()).toMatch(/next[- ]action|workflow|next steps?/);
+		expect(text).toContain("prompt-engineering");
+		// Clean domain noun, not the raw "Label:" displayName.
+		expect(text.toLowerCase()).toContain("analyze your evaluation setup");
+		expect(text).not.toContain("Analyze your Evaluate:");
+	});
+
+	// Coverage audit follow-up: orientation tools were still shipping the generic
+	// keyword→template wall (project-onboard: 10 recs/11KB; task-bootstrap:
+	// 75 recs/45KB at every session start). They now collapse into a
+	// request-specific orientation brief — scope + ambiguities + first move,
+	// NOT a solution (the B#2 category error is avoided by the orientation-shaped
+	// output contract, not by passing through).
+	it("collapses project-onboard into a request-anchored orientation brief", async () => {
+		const result = await dispatchToolCall(
+			"project-onboard",
+			{ request: "where should I start hardening this repo" },
+			createRuntime(),
+		);
+		expect(result.isError).toBeUndefined();
+		const text = result.content[0]?.text ?? "";
+		// Anchored to the real request, not echoing title keywords.
+		expect(text).toContain("where should I start hardening this repo");
+		// Orientation contract: scope in/out + ambiguities + first instruction —
+		// explicitly NOT a finished solution.
+		expect(text.toLowerCase()).toMatch(/in and out of scope|ambiguit/);
+		expect(text).toContain("not a finished solution");
+	});
+
+	it("collapses task-bootstrap into a request-anchored orientation brief", async () => {
+		const result = await dispatchToolCall(
+			"task-bootstrap",
+			{ request: "add OAuth2 device-code login; unsure which provider" },
+			createRuntime(),
+		);
+		expect(result.isError).toBeUndefined();
+		const text = result.content[0]?.text ?? "";
+		expect(text).toContain(
+			"add OAuth2 device-code login; unsure which provider",
+		);
+		expect(text.toLowerCase()).toMatch(/in and out of scope|ambiguit/);
+		expect(text).toContain("not a finished solution");
+	});
+
+	it("collapses routing-adapt into a tailored adaptive-routing policy", async () => {
+		const result = await dispatchToolCall(
+			"routing-adapt",
+			{
+				request:
+					"optimize our 5-agent review pipeline by which agents catch the most bugs",
+			},
+			createRuntime(),
+		);
+		expect(result.isError).toBeUndefined();
+		const text = result.content[0]?.text ?? "";
+		expect(text).toContain(
+			"optimize our 5-agent review pipeline by which agents catch the most bugs",
+		);
+		// Adaptive-routing contract: a concrete policy with reinforce/prune signals.
+		expect(text.toLowerCase()).toMatch(/reinforce|prune|converg/);
+	});
+
+	// Tribunal fix: meta-routing's mission is to DECIDE which instruction(s) to
+	// invoke. It must emit a request-anchored routing decision that names concrete
+	// domain tools — not a request-agnostic skill-scaffolding wall.
+	it("meta-routing emits a routing decision that names concrete domain tools", async () => {
+		const result = await dispatchToolCall(
+			"meta-routing",
+			{ request: "reproduce and fix the crash in our checkout flow" },
+			createRuntime(),
+		);
+		expect(result.isError).toBeUndefined();
+		const text = result.content[0]?.text ?? "";
+		// It routes for THIS request and names routable domain instructions.
+		expect(text).toContain("reproduce and fix the crash in our checkout flow");
+		const named = ["issue-debug", "code-review", "system-design"].filter((t) =>
+			text.includes(t),
+		);
+		expect(named.length).toBeGreaterThan(0);
+	});
+
+	// Tribunal follow-up: agent-orchestrate's mission produces a "coherent unified
+	// output" (a deliverable), so it must emit a tailored coordination plan, not a
+	// passthrough template wall.
+	it("agent-orchestrate emits a tailored coordination directive", async () => {
+		const result = await dispatchToolCall(
+			"agent-orchestrate",
+			{ request: "coordinate 3 agents to fix our checkout bugs in parallel" },
+			createRuntime(),
+		);
+		expect(result.isError).toBeUndefined();
+		const text = result.content[0]?.text ?? "";
+		expect(text).toContain("Analyze your agent orchestration");
+		expect(text).toContain(
+			"coordinate 3 agents to fix our checkout bugs in parallel",
+		);
+	});
+
+	// Sampling lever: when the connected client advertises `sampling`, the server
+	// has a runtime.sampler, and the transform must return the model's FINDINGS
+	// (not the return-a-prompt directive) through the full dispatch path.
+	it("returns sampled findings for an analysis tool when a sampler is present", async () => {
+		const sampler = vi.fn().mockResolvedValue({
+			text: "SAMPLED-FINDINGS: golden.jsonl lacks negatives.",
+		});
+		const runtime = {
+			...createRuntime(),
+			sampler,
+			clientSupportsSampling: true,
+		};
+		const result = await dispatchToolCall(
+			"quality-evaluate",
+			{ request: "design an eval set with hard negatives" },
+			runtime,
+		);
+		expect(result.isError).toBeUndefined();
+		const text = result.content[0]?.text ?? "";
+		expect(text).toContain("SAMPLED-FINDINGS: golden.jsonl lacks negatives.");
+		// It is the findings, not the directive.
+		expect(text.toLowerCase()).not.toContain("analysis task");
+		expect(sampler).toHaveBeenCalled();
+	});
+
+	// Kill-switch for A/B evaluation and ops rollback: MCP_SITUATION_TRANSFORM=0
+	// disables the transform so the tool emits its pre-transform template output.
+	it("honors MCP_SITUATION_TRANSFORM=0 as a kill-switch (no transform)", async () => {
+		const prev = process.env.MCP_SITUATION_TRANSFORM;
+		process.env.MCP_SITUATION_TRANSFORM = "0";
 		try {
 			const result = await dispatchToolCall(
-				"code-review",
-				{ request: "review again", context: "existing context" },
+				"quality-evaluate",
+				{ request: "design an eval set with hard negatives" },
 				createRuntime(),
 			);
-			expect(result).toBeDefined();
+			const text = result.content[0]?.text ?? "";
+			expect(text).not.toContain("Analyze your evaluation setup");
 		} finally {
-			findSpy.mockRestore();
+			if (prev === undefined) delete process.env.MCP_SITUATION_TRANSFORM;
+			else process.env.MCP_SITUATION_TRANSFORM = prev;
 		}
+	});
+
+	// prompt-engineering produces a prompt artifact (its mission: "every prompt is
+	// a versioned, tested artifact"). For a real prompt request it carries 24
+	// seed-eligible recommendations, so it must collapse into a tailored directive,
+	// not a template wall. This dispatched test PROVES the transform fires (the
+	// claim "registration is enough" rests on that rec count).
+	it("prompt-engineering emits a tailored prompt directive for a prompt request", async () => {
+		const result = await dispatchToolCall(
+			"prompt-engineering",
+			{ request: "improve our hallucinating rate-limit system prompt" },
+			createRuntime(),
+		);
+		expect(result.isError).toBeUndefined();
+		const text = result.content[0]?.text ?? "";
+		expect(text).toContain("Analyze your prompt asset");
+		expect(text).toContain(
+			"improve our hallucinating rate-limit system prompt",
+		);
+		expect(text.toLowerCase()).not.toContain("advisory only");
+	});
+
+	it("feature-implement now emits a target-oriented build directive, not a template wall", async () => {
+		const result = await dispatchToolCall(
+			"feature-implement",
+			{ request: "add rate limiting to the public checkout API" },
+			createRuntime(),
+		);
+		expect(result.isError).toBeUndefined();
+		const text = result.content[0]?.text ?? "";
+		expect(text).toContain("Analyze your feature to implement");
+		expect(text).toContain("add rate limiting to the public checkout API");
+		expect(text.toLowerCase()).not.toContain("advisory only");
 	});
 });
