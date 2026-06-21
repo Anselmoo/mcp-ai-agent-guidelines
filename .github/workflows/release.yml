@@ -151,7 +151,7 @@ jobs:
         run: npm sbom --sbom-format cyclonedx --package-lock-only --omit dev > sbom.json
 
       - name: Sign tarball with Sigstore
-        uses: sigstore/gh-action-sigstore-python@v3.3.0
+        uses: sigstore/gh-action-sigstore-python@v3.4.0
         with:
           inputs: "*.tgz"
 
