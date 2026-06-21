@@ -91,12 +91,7 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 			"Use when gathering information from multiple sources, comparing tools or approaches, synthesizing evidence into a structured summary, framing a recommendation with clear rationale, or answering questions that require surveying a landscape before deciding. This is the primary tool for information gathering and comparison — use this instead of adapt or orchestrate for research tasks. Triggers: 'research this', 'compare these options', 'what should we use', 'gather evidence', 'synthesize findings', 'recommendation on'.",
 		mission:
 			"Gather → compare → synthesize → frame. Every research output ends with a structured recommendation.",
-		chainTo: [
-			"strategy-plan",
-			"system-design",
-			"enterprise-strategy",
-			"physics-analysis",
-		],
+		chainTo: ["strategy-plan", "system-design", "enterprise-strategy"],
 		preferredModelClass: "strong",
 		public: true,
 		surface: "workflow",
@@ -111,12 +106,7 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 			"Use when reviewing existing code for quality, security vulnerabilities, correctness, maintainability, API surface hygiene, compliance adherence, or evaluation output grading. This is the primary tool for code review and quality assessment — use this instead of adapt or orchestrate for review tasks. Triggers: 'review this code', 'code review', 'check for security issues', 'quality review', 'audit this', 'grade this output', 'inspect this PR'.",
 		mission:
 			"Inspect → grade → recommend → close the loop. Every review produces actionable findings.",
-		chainTo: [
-			"policy-govern",
-			"code-refactor",
-			"test-verify",
-			"physics-analysis",
-		],
+		chainTo: ["policy-govern", "code-refactor", "test-verify"],
 		preferredModelClass: "reviewer",
 		public: true,
 		surface: "workflow",
@@ -158,7 +148,7 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 			"Use when improving existing code quality, reducing technical debt, eliminating coupling, splitting oversized modules, improving performance, or hardening security of existing code. Triggers: 'refactor this', 'reduce tech debt', 'clean up', 'improve code quality', 'split this module', 'too complex'.",
 		mission:
 			"Improve existing code: measure → prioritize → transform → verify. Never break working behavior.",
-		chainTo: ["test-verify", "code-review", "physics-analysis"],
+		chainTo: ["test-verify", "code-review"],
 		preferredModelClass: "cheap",
 		public: true,
 		surface: "workflow",
@@ -200,12 +190,7 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 			"Use when benchmarking AI system quality, measuring output consistency, running eval suites, comparing model versions, detecting quality regressions, grading outputs against rubrics, or generating evaluation reports. Triggers: 'benchmark this', 'run evals', 'measure quality', 'compare model outputs', 'quality gate', 'detect regression', 'grade these outputs', 'eval suite'.",
 		mission:
 			"Define metrics → measure → compare → report → act. Every evaluation produces a decision or action.",
-		chainTo: [
-			"prompt-engineering",
-			"code-refactor",
-			"policy-govern",
-			"physics-analysis",
-		],
+		chainTo: ["prompt-engineering", "code-refactor", "policy-govern"],
 		preferredModelClass: "reviewer",
 		public: true,
 		surface: "workflow",
@@ -276,6 +261,20 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 	// invoked under explicit conditions. Listed last to minimize positional bias.
 	// -----------------------------------------------------------------------
 	{
+		id: "analogy-think",
+		toolName: "analogy-think",
+		displayName: "Analogy Think",
+		description:
+			"Maps a problem to candidate physics metaphors with structural-feature gating. Output is a metaphor, not a theorem. Use when you want to explore structural analogies between a software/engineering problem and a physical system. Full surface only — not available in slim mode.",
+		mission:
+			"Clarify → gate → rank → expand. Produces metaphor candidates grounded in structural features, never theorem-strength claims.",
+		chainTo: [],
+		preferredModelClass: "strong",
+		public: true,
+		surface: "workflow",
+		sourcePath: "src/instructions/instruction-specs.ts#analogy-think",
+	},
+	{
 		id: "resilience",
 		toolName: "fault-resilience",
 		displayName: "Resilience: Self-Healing and Fault Tolerance",
@@ -313,8 +312,8 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 			"Apply QM/GR analogies with explicit translation, confidence tiers, and conventional fallbacks. Home base for all 30 physics skills.",
 		chainTo: ["code-review", "feature-implement"],
 		preferredModelClass: "strong",
-		public: true,
-		surface: "workflow",
+		public: false,
+		surface: "internal",
 		sourcePath: "src/instructions/instruction-specs.ts#physics-analysis",
 	},
 	// -----------------------------------------------------------------------
@@ -354,7 +353,6 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 			"agent-orchestrate",
 			"policy-govern",
 			"enterprise-strategy",
-			"physics-analysis",
 		],
 		preferredModelClass: "free",
 		public: true,

@@ -6,12 +6,11 @@ import type { SessionStateStore } from "../../contracts/runtime.js";
 import {
 	buildPublicResources,
 	clearSupportingAssetCache,
-	type ReadPublicResourceOptions,
 	readPublicResource,
 } from "../../resources/resource-surface.js";
 
 describe("resource-surface", () => {
-	it("lists graph, session, and memory resources for the active session", () => {
+	it("lists graph and session resources for the active session", () => {
 		const resources = buildPublicResources("session-123");
 
 		expect(
@@ -23,17 +22,6 @@ describe("resource-surface", () => {
 			resources.some(
 				(resource) =>
 					resource.uri === "mcp-guidelines://session/session-123/progress",
-			),
-		).toBe(true);
-		expect(
-			resources.some(
-				(resource) =>
-					resource.uri === "mcp-guidelines://session/session-123/context",
-			),
-		).toBe(true);
-		expect(
-			resources.some(
-				(resource) => resource.uri === "mcp-guidelines://memory/artifacts",
 			),
 		).toBe(true);
 	});
@@ -90,128 +78,6 @@ describe("resource-surface", () => {
 		expect(skillGraph.contents[0]?.text).toContain('"taxonomy"');
 		expect(skillGraph.contents[0]?.text).toContain('"aliases"');
 		expect(skillGraph.contents[0]?.text).toContain('"instructionSkillEdges"');
-	});
-
-	it("derives a TOON session context when no persisted context exists", async () => {
-		const sessionStore = {
-			async readSessionHistory() {
-				return [{ stepLabel: "VALIDATE", kind: "completed", summary: "done" }];
-			},
-		} as unknown as SessionStateStore;
-		const memoryInterface = {
-			async loadSessionContext() {
-				return null;
-			},
-		} as unknown as ReadPublicResourceOptions["memoryInterface"];
-
-		const resource = await readPublicResource(
-			"mcp-guidelines://session/session-123/context",
-			"session-123",
-			sessionStore,
-			{ memoryInterface },
-		);
-
-		expect(resource.contents[0]?.mimeType).toBe("application/toon");
-		expect(resource.contents[0]?.text).toContain("sessionId: session-123");
-		expect(resource.contents[0]?.text).toMatch(/completed\[1\s*\]/);
-		expect(resource.contents[0]?.text).toContain("VALIDATE");
-	});
-
-	it("reads the memory artifact index and individual memory artifacts", async () => {
-		const artifact = {
-			meta: {
-				id: "memory-1",
-				created: "2026-01-01T00:00:00.000Z",
-				updated: "2026-01-02T00:00:00.000Z",
-				tags: ["onboarding"],
-				relevance: 10,
-			},
-			content: {
-				summary: "Saved onboarding context",
-				details: "Detailed context",
-				context: "setup",
-				actionable: false,
-			},
-			links: {
-				relatedSessions: ["session-123"],
-				relatedMemories: [],
-				sources: ["test"],
-			},
-		};
-		const sessionStore = {
-			async readSessionHistory() {
-				return [];
-			},
-		} as unknown as SessionStateStore;
-		const memoryInterface = {
-			async findMemoryArtifacts() {
-				return [artifact];
-			},
-			async loadMemoryArtifact(memoryId: string) {
-				return memoryId === "memory-1" ? artifact : null;
-			},
-			async loadSessionContext() {
-				return null;
-			},
-		} as unknown as ReadPublicResourceOptions["memoryInterface"];
-
-		const index = await readPublicResource(
-			"mcp-guidelines://memory/artifacts",
-			"session-123",
-			sessionStore,
-			{ memoryInterface },
-		);
-		expect(index.contents[0]?.text).toContain('"id": "memory-1"');
-		expect(index.contents[0]?.text).toContain(
-			'"uri": "mcp-guidelines://memory/artifacts/memory-1"',
-		);
-
-		const detail = await readPublicResource(
-			"mcp-guidelines://memory/artifacts/memory-1",
-			"session-123",
-			sessionStore,
-			{ memoryInterface },
-		);
-		expect(detail.contents[0]?.mimeType).toBe("application/toon");
-		expect(detail.contents[0]?.text).toContain(
-			"summary: Saved onboarding context",
-		);
-	});
-
-	it("rejects empty and missing memory artifact resource URIs", async () => {
-		const sessionStore = {
-			async readSessionHistory() {
-				return [];
-			},
-		} as unknown as SessionStateStore;
-		const memoryInterface = {
-			async findMemoryArtifacts() {
-				return [];
-			},
-			async loadMemoryArtifact() {
-				return null;
-			},
-			async loadSessionContext() {
-				return null;
-			},
-		} as unknown as ReadPublicResourceOptions["memoryInterface"];
-
-		await expect(
-			readPublicResource(
-				"mcp-guidelines://memory/artifacts/",
-				"session-123",
-				sessionStore,
-				{ memoryInterface },
-			),
-		).rejects.toThrow("Unknown resource");
-		await expect(
-			readPublicResource(
-				"mcp-guidelines://memory/artifacts/missing-artifact",
-				"session-123",
-				sessionStore,
-				{ memoryInterface },
-			),
-		).rejects.toThrow("Unknown resource");
 	});
 
 	it("discovers supporting assets from the explicit runtime workspace root", async () => {

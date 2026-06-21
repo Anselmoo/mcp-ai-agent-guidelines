@@ -91,10 +91,17 @@ export function computeEffectiveHiddenTools(): string {
 }
 
 /**
- * The curated minimal surface exposed when `MCP_SLIM_MODE=true`.
+ * The curated minimal surface exposed by default.
  *
  * Only these three tools are visible — sufficient to orient the agent and
  * route to the correct domain tool without exhausting a short context window.
+ * Set `MCP_FULL_SURFACE=true` to expose the full ~25-tool surface.
+ *
+ * Note: the situation-transform (target-oriented output) applies to 19 of the
+ * 20 public tools — including all three slim-surface tools (meta-routing →
+ * routing decision, task-bootstrap / project-onboard → orientation brief). The
+ * hidden domain tools are also transformed but stay HIDDEN in slim mode; set
+ * MCP_FULL_SURFACE=true to expose them for discovery.
  */
 export const SLIM_SURFACE_TOOLS = new Set([
 	"task-bootstrap",
@@ -103,20 +110,22 @@ export const SLIM_SURFACE_TOOLS = new Set([
 ]);
 
 /**
- * Filter `tools` to the slim surface when `MCP_SLIM_MODE=true`.
+ * Filter `tools` to the slim surface by default, with explicit opt-out.
  *
- * When slim mode is active, only `task-bootstrap`, `meta-routing`, and
- * `project-onboard` survive regardless of `HIDDEN_TOOLS` or
- * `DISABLE_ADAPTIVE_ROUTING`.
+ * When `MCP_FULL_SURFACE` is NOT set or is not "true", only `task-bootstrap`,
+ * `meta-routing`, and `project-onboard` survive — slim mode is the default.
+ * Set `MCP_FULL_SURFACE=true` to restore the full surface.
  *
  * @param tools  Full (or already-filtered) list of tool definitions
- * @param env    Optional override (defaults to `process.env.MCP_SLIM_MODE`)
+ * @param env    Optional override object (defaults to `process.env`)
+ * @returns      Filtered list (slim by default, full when MCP_FULL_SURFACE=true)
  */
-export function applySlimMode<T extends HideableToolDefinition>(
+export function filterToSlimSurface<T extends HideableToolDefinition>(
 	tools: T[],
-	env?: string,
+	env?: Record<string, string | undefined>,
 ): T[] {
-	const slimMode = (env ?? process.env.MCP_SLIM_MODE) === "true";
+	const fullSurfaceOverride = (env ?? process.env).MCP_FULL_SURFACE === "true";
+	const slimMode = !fullSurfaceOverride;
 	if (!slimMode) return tools;
 	return tools.filter((t) => SLIM_SURFACE_TOOLS.has(t.name.toLowerCase()));
 }

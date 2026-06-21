@@ -25,6 +25,21 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 INSTRUCTION_SPECS_PATHNAME = "src/instructions/instruction-specs.ts"
 WORKFLOW_SPECS_PATHNAME = "src/workflows/workflow-spec.ts"
 SKILL_SPECS_PATHNAME = "src/skills/skill-specs.ts"
+HIDDEN_SKILLS_PATHNAME = "src/generated/registry/hidden-skills.ts"
+
+
+def load_hidden_skill_ids(repo_root: Path) -> set[str]:
+	"""Extract canonical IDs of skills registered as hidden (research scaffolding).
+
+	Hidden skills are intentionally not exposed on the public routing surface;
+	some are still referenced by public workflows, others (like the deprecated
+	physics-analysis scaffolding) exist as research code only. Verifier callers
+	should allow hidden skills to be orphaned (present in skill-specs.ts but
+	absent from every public workflow) without raising.
+	"""
+	text = (repo_root / HIDDEN_SKILLS_PATHNAME).read_text(encoding="utf-8")
+	pattern = re.compile(r'from\s+"\.\./\.\./skills/[^/]+/([^"]+)\.js"')
+	return set(pattern.findall(text))
 
 PREFIX_LEGEND: dict[str, str] = {
 	"req-": "Requirements Discovery",
@@ -244,6 +259,7 @@ def build_matrix(repo_root: Path | None = None) -> dict[str, Any]:
 		"skill_rename": rename_map,
 		"instruction_matrix": instruction_matrix,
 		"skill_to_instructions": skill_to_instructions,
+		"hidden_skills": load_hidden_skill_ids(root),
 		"_meta": {
 			"total_skills": len(known_skill_ids),
 			"total_instructions": len(instruction_matrix),

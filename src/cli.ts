@@ -67,7 +67,6 @@ const MCP_TOOL_PREFIXES = [
 	"enterprise-strategy",
 	"fault-resilience",
 	"routing-adapt",
-	"physics-analysis",
 	"agent-workspace",
 	"model-discover",
 	"graph-visualize",

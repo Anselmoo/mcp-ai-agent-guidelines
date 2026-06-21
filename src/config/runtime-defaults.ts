@@ -111,7 +111,6 @@ export const SKILL_RETRY_OPTIONS = {
 export const SESSION_COMPRESSION_THRESHOLD_BYTES = 1024;
 
 export const DEFAULT_SESSION_INTEGRITY_OPTIONS_VALUES = {
-	enableMac: true,
 	enableCompression: true,
 	compressionThreshold: SESSION_COMPRESSION_THRESHOLD_BYTES,
 };

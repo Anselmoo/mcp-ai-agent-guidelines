@@ -114,7 +114,8 @@ const evalPromptHandler: SkillHandler = {
 			`Evaluate "${summarizeKeywords(parsed.data).join(", ") || "the requested prompt asset"}" with a ${scoreMode} scoring mode against a ${benchmarkFamily} benchmark family. The evaluation should make it obvious which prompt behavior is being rewarded, penalized, or compared.`,
 		];
 
-		details.push(...matchEvalRules(EVAL_PROMPT_RULES, combined));
+		const matchedRules = matchEvalRules(EVAL_PROMPT_RULES, combined);
+		details.push(...matchedRules);
 
 		if (includeBaselines) {
 			details.push(

@@ -39,6 +39,11 @@ function markdownFileForSpecKey(specKey: string) {
 	);
 }
 
+// Workflow IDs that have been deprecated from the public routing surface but
+// whose doc files are retained as research scaffolding. These are exempt from
+// the public-instruction-module membership check.
+const DEPRECATED_WORKFLOW_IDS = new Set(["physics-analysis"]);
+
 describe("workflow docs contract", () => {
 	it("provides a JSON and Markdown overview for every implemented workflow", () => {
 		const files = readdirSync(WORKFLOW_DOCS_DIR);
@@ -73,7 +78,9 @@ describe("workflow docs contract", () => {
 			const spec = getWorkflowSpecById(workflowId);
 
 			expect(implementedWorkflowIds.has(workflowId)).toBe(true);
-			expect(implementedInstructionIds.has(workflowId)).toBe(true);
+			if (!DEPRECATED_WORKFLOW_IDS.has(workflowId)) {
+				expect(implementedInstructionIds.has(workflowId)).toBe(true);
+			}
 			expect(spec).toBeDefined();
 			expect(document.title.endsWith(" Workflow")).toBe(true);
 			expect(document.title.toLowerCase()).toContain(

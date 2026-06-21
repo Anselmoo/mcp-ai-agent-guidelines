@@ -10,8 +10,25 @@ import { INSTRUCTION_VALIDATORS } from "../generated/validators/instruction-vali
 import { toErrorMessage } from "../infrastructure/object-utilities.js";
 import { createOperationalLogger } from "../infrastructure/observability.js";
 import { INSTRUCTION_SPECS } from "../instructions/instruction-specs.js";
-import { sharedToonMemoryInterface as memoryInterface } from "../memory/shared-memory.js";
 import type { SerenaClient, SerenaQuery } from "../serena/client.js";
+import { METAPHOR_CATALOG } from "../skills/analogy/catalog.js";
+import { HEURISTIC_EXTRACTOR } from "../skills/analogy/clarify.js";
+import type { Ranker } from "../skills/analogy/matcher.js";
+import { runAnalogyWorkflow } from "../skills/analogy/workflow.js";
+import {
+	resolveTransformProfile,
+	toSituationResult,
+} from "../skills/shared/directive-first.js";
+import type {
+	CheckRunner,
+	CheckStatus,
+	MethodologyContext,
+	MethodologyReport,
+} from "../skills/shared/methodology-gate.js";
+import {
+	renderMethodologySection,
+	runMethodologyChecks,
+} from "../skills/shared/methodology-gate.js";
 import {
 	buildContextEvidenceLines,
 	buildContextSourceRefs,
@@ -19,13 +36,18 @@ import {
 } from "../skills/shared/recommendations.js";
 import { skillRequestSchema } from "../validation/core-schemas.js";
 import { createErrorContext, ValidationService } from "../validation/index.js";
-import { formatWorkflowResult } from "./result-formatter.js";
+import {
+	buildWorkflowEnvelopePayload,
+	formatWorkflowResult,
+} from "./result-formatter.js";
+import { buildMcpErrorContent } from "./shared/error-handler.js";
+import { toToolResult } from "./shared/output-envelope.js";
 import {
 	dispatchWorkspaceToolCall,
 	resolveWorkspaceToolName,
 } from "./workspace-tools.js";
 
-type TextToolResult = {
+export type TextToolResult = {
 	content: Array<{
 		type: "text";
 		text: string;
@@ -34,17 +56,6 @@ type TextToolResult = {
 };
 
 const toolCallLogger = createOperationalLogger("warn");
-const SNAPSHOT_LINK_TIMEOUT_MS = 120;
-
-// Per-tool-call local memory artifacts (TOON files under
-// .mcp-ai-agent-guidelines/memory/) are opt-in. The Serena advisory footer
-// emitted at the bottom of every response is the default cross-session memory
-// mechanism — the host model executes the suggested `mcp__serena__write_memory`
-// call, which stores rich context in Serena's per-project memory.
-// Set MCP_LOCAL_MEMORY=true to restore the old TOON write+read enrichment flow.
-function isLocalMemoryEnabled(): boolean {
-	return process.env.MCP_LOCAL_MEMORY === "true";
-}
 
 // Maps instruction tool names to the library packages an agent should fetch
 // via context7 to enrich the saved memory artifact after execution.
@@ -196,6 +207,25 @@ function buildChainToFooter(
 	].join("\n");
 }
 
+// The four engineering workflow tools that carry a methodology gate section.
+const HOST_TOOLS_WITH_METHODOLOGY_GATE = new Set([
+	"issue-debug",
+	"code-review",
+	"system-design",
+	"evidence-research",
+]);
+
+// Deterministic placeholder runner — returns needs-data for all five checks.
+// An LLM-backed runner is a follow-up task; this stub ships with Task 8.
+const defaultRunner: CheckRunner = async (
+	_name: keyof MethodologyReport,
+	_ctx: MethodologyContext,
+): Promise<CheckStatus> => ({
+	status: "needs-data",
+	question:
+		"LLM runner not yet wired (Task 8 ships a deterministic placeholder)",
+});
+
 export async function dispatchToolCall(
 	toolName: string,
 	args: unknown,
@@ -218,6 +248,77 @@ export async function dispatchToolCall(
 		const workspaceToolName = resolveWorkspaceToolName(toolName);
 		if (workspaceToolName) {
 			return await dispatchWorkspaceToolCall(workspaceToolName, args, runtime);
+		}
+
+		// ── analogy-think: direct dispatch (no workflowEngine, no LLM ranker) ──
+		// Bypasses the standard instruction.execute() path so runAnalogyWorkflow
+		// can return an AnalogyEnvelopePayload rather than WorkflowExecutionResult.
+		// Validation still goes through the registered INSTRUCTION_VALIDATORS entry.
+		// The gateOrderRanker is deterministic and requires no LLM call — it returns
+		// gated catalog entries in catalog order with descending scores (1.0, 0.9, …).
+		if (toolName === "analogy-think") {
+			const validator = INSTRUCTION_VALIDATORS.get(toolName);
+			if (!validator) {
+				throw new Error(
+					`No validator registered for instruction: ${toolName}. ` +
+						"Re-run generate:tool-definitions and rebuild.",
+				);
+			}
+			const parseResult = validator.safeParse(args);
+			if (!parseResult.success) {
+				const issues = parseResult.error.issues
+					.map((issue) =>
+						issue.path.length > 0
+							? `"${issue.path.join(".")}" — ${issue.message}`
+							: issue.message,
+					)
+					.join("; ");
+				return buildMcpErrorContent({
+					category: "validation",
+					code: `TOOL_VALIDATION_${crypto.randomUUID().slice(0, 8).toUpperCase()}`,
+					message: `Invalid input for \`${toolName}\`: ${issues}`,
+					recoverable: true,
+					suggestedAction:
+						"Provide a non-empty `request` string describing the problem.",
+					nextTool: "task-bootstrap",
+				});
+			}
+			const analogyInput = parseResult.data as {
+				request: string;
+				context?: string;
+			};
+			// Deterministic gate-order ranker: returns gated candidates in catalog order
+			// with linearly descending scores (1.0 for first, 0.9 for second, …).
+			// No LLM call; the LLM-backed ranker lands in a follow-up.
+			const gateOrderRanker: Ranker = async (
+				_summary: string,
+				candidates: ReadonlyArray<{ id: string }>,
+			) =>
+				candidates.map((c, i) => ({
+					id: c.id,
+					score: Math.max(0, 1 - i * 0.1),
+				}));
+			// Validate catalog presence at startup
+			if (METAPHOR_CATALOG.length === 0) {
+				throw new Error(
+					"METAPHOR_CATALOG is empty; analogy-think cannot dispatch.",
+				);
+			}
+			const result = await runAnalogyWorkflow(
+				{ request: analogyInput.request, context: analogyInput.context },
+				{ extract: HEURISTIC_EXTRACTOR, rank: gateOrderRanker },
+			);
+			return toToolResult({
+				summaryMarkdown: result.summaryMarkdown,
+				// instructionId is required by the tool-coverage-matrix test which checks
+				// that every workflow tool envelope carries instructionId === toolName.
+				payload: { ...result.payload, instructionId: "analogy-think" },
+				meta: {
+					tool: "analogy-think",
+					ts: new Date().toISOString(),
+					version: 1,
+				},
+			});
 		}
 
 		// Phase B: Wait for ambient startup context (memory refresh + session fetch)
@@ -263,28 +364,15 @@ export async function dispatchToolCall(
 				)
 				.join("; ");
 
-			// Format error using new system
-			const standardError = {
+			return buildMcpErrorContent({
+				category: "validation",
 				code: `TOOL_VALIDATION_${crypto.randomUUID().slice(0, 8).toUpperCase()}`,
 				message: `Invalid input for \`${toolName}\`: ${issues}`,
-				context: {
-					...context,
-					instructionId: toolName,
-				},
 				recoverable: true,
 				suggestedAction:
 					"Review the input parameters and ensure all required fields are provided with valid values.",
-			};
-
-			return {
-				isError: true,
-				content: [
-					{
-						type: "text" as const,
-						text: validationService.formatError(standardError),
-					},
-				],
-			};
+				nextTool: "task-bootstrap",
+			});
 		}
 
 		// Parse through the shared instruction/skill input schema so the public
@@ -300,75 +388,21 @@ export async function dispatchToolCall(
 				)
 				.join("; ");
 
-			const standardError = {
+			return buildMcpErrorContent({
+				category: "validation",
 				code: `TOOL_INPUT_${crypto.randomUUID().slice(0, 8).toUpperCase()}`,
 				message: `Invalid input for \`${toolName}\`: ${issues}`,
-				context: {
-					...context,
-					instructionId: toolName,
-				},
 				recoverable: true,
 				suggestedAction:
 					"Review the tool input and ensure the shared request/context contract is satisfied.",
-			};
-
-			return {
-				isError: true,
-				content: [
-					{
-						type: "text" as const,
-						text: validationService.formatError(standardError),
-					},
-				],
-			};
+				nextTool: "task-bootstrap",
+			});
 		}
 		const input: InstructionInput = inputParseResult.data;
 
-		// Gap C — Non-blocking memory injection: prepend top recent artifacts to
-		// input.context so every skill has continuity without explicit memory reads.
-		// Bounded at 150 ms so stale or empty memory never delays tool execution.
-		// Skipped entirely when local-memory artifacts are disabled (default) — the
-		// Serena advisory footer takes over as the cross-session enrichment channel.
-		const MEMORY_INJECT_TIMEOUT_MS = 150;
-		const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
-		const recentArtifacts = isLocalMemoryEnabled()
-			? await Promise.race([
-					memoryInterface.findMemoryArtifacts({
-						minRelevance: 0.5,
-						maxAgeMs: SEVEN_DAYS_MS,
-					}),
-					new Promise<never>((_, reject) =>
-						setTimeout(
-							() => reject(new Error("memory inject timeout")),
-							MEMORY_INJECT_TIMEOUT_MS,
-						),
-					),
-				]).catch(() => [])
-			: [];
-
-		// Only inject artifacts written by the same instruction type (topic tag match).
-		// Cross-tool injection (e.g. review artifacts inside docs-generate) is noise.
-		const topicTag = `topic:${toolName}`;
-		const topicArtifacts = recentArtifacts.filter(
-			(a) => a.meta.tags.includes(topicTag) && a.meta.relevance >= 0.7,
-		);
-		const enrichedInput: InstructionInput =
-			topicArtifacts.length > 0
-				? {
-						...input,
-						context: (() => {
-							const prefix = topicArtifacts
-								.slice(0, 3)
-								.map((a) => `Prior context: ${a.content.summary}`)
-								.join("\n");
-							return input.context ? `${prefix}\n\n${input.context}` : prefix;
-						})(),
-					}
-				: input;
-
 		// Execute instruction with validation boundaries
 		const result = await validationService.executeWithValidation(
-			() => instruction.execute(enrichedInput, runtime),
+			() => instruction.execute(input, runtime),
 			toolName,
 			context,
 			true, // enable retry
@@ -398,122 +432,45 @@ export async function dispatchToolCall(
 			});
 		}
 
-		const formattedText = formatWorkflowResult(result.data);
+		// LLM→LLM transform (single chokepoint): for tools with a transform
+		// profile, replace the keyword-matched template recommendation wall with
+		// ONE situation-specific result — per the profile's output contract
+		// (analysis findings, a build deliverable, a routing decision, …) — the
+		// matched templates seed (via `criteria`) but no longer dictate. Sampled
+		// when the client supports it, a return-a-prompt directive otherwise.
+		// Only the analogy special path resolves to no profile and passes through
+		// untouched — it already gates to a request-anchored metaphor (see
+		// TRANSFORM_PROFILES; 19/20 of the public surface is transformed).
+		// Kill-switch (`MCP_SITUATION_TRANSFORM=0`) for A/B evaluation and ops
+		// rollback: disables the transform so tools emit pre-transform output.
+		const profile =
+			process.env.MCP_SITUATION_TRANSFORM === "0"
+				? undefined
+				: resolveTransformProfile(toolName);
+		const situationData = profile
+			? await toSituationResult(result.data, {
+					domain: profile.domain,
+					outputContract: profile.outputContract,
+					candidateNextTools:
+						profile.candidateNextTools ?? instruction.manifest.chainTo ?? [],
+					sampler: runtime.sampler,
+				})
+			: result.data;
+
+		const formattedText = formatWorkflowResult(situationData, toolName);
 		const contextAppendix = buildContextAppendix(input);
 		const responseText = contextAppendix
 			? `${formattedText}\n\n${contextAppendix}`
 			: formattedText;
-		const relatedMemoryIds = recentArtifacts
-			.slice(0, 5)
-			.map((artifact) => artifact.meta.id)
-			.filter(
-				(artifactId) => artifactId !== `${toolName}-${runtime.sessionId}`,
-			);
-		const sourceSignals = extractRequestSignals(input);
-
-		// Gap E — fire-and-forget session + memory persistence.
-		// Both writes are non-blocking and swallow IO errors so tool execution
-		// is never influenced by persistence failures.
-		// Skipped entirely when local-memory artifacts are disabled (default) — the
-		// Serena advisory footer drives memory persistence via the host model instead.
-		const now = new Date().toISOString();
 		const chainTo = instruction.manifest.chainTo ?? [];
-		if (isLocalMemoryEnabled()) {
-			memoryInterface
-				.saveSessionContext(runtime.sessionId, {
-					context: {
-						requestScope: input.request.slice(0, 200),
-						constraints: [],
-						phase: toolName,
-					},
-					progress: {
-						// Record this tool as completed (not inProgress) at save time —
-						// the result is already produced before saveSessionContext fires.
-						completed: [toolName],
-						inProgress: [],
-						blocked: [],
-						next: chainTo,
-					},
-					memory: {
-						keyInsights: [],
-						decisions: {},
-						patterns: [],
-						warnings: [],
-					},
-				})
-				.catch((err) => {
-					toolCallLogger.log("warn", "Session context persistence failed", {
-						toolName,
-						sessionId: runtime.sessionId,
-						error: err instanceof Error ? err.message : String(err),
-					});
-				});
-
-			Promise.race([
-				memoryInterface.loadFingerprintSnapshot(),
-				new Promise<null>((resolve) =>
-					setTimeout(() => resolve(null), SNAPSHOT_LINK_TIMEOUT_MS),
-				),
-			])
-				.then((snapshot) =>
-					memoryInterface.saveMemoryArtifact({
-						meta: {
-							id: `${toolName}-${runtime.sessionId}`,
-							created: now,
-							updated: now,
-							// Stable topic tag (toolName) + session tag for grouping.
-							// The stable tag enables find(tags:["docs-generate"]) to work
-							// reliably across sessions without knowing the session ID.
-							tags: [toolName, `topic:${toolName}`, runtime.sessionId],
-							relevance: 0.8,
-						},
-						content: {
-							// Prepend an artifact-count note to the summary when the workflow
-							// produced top-level artifacts. This gives memory consumers a
-							// quick signal that structured outputs are available without
-							// parsing the full details text.
-							summary: (() => {
-								const baseSummary =
-									responseText
-										.split("\n")
-										.map((l) => l.replace(/^#+\s*/, "").trim())
-										.find((l) => l.length > 0)
-										?.slice(0, 200) ?? responseText.slice(0, 200);
-								const topArtifacts = result.data.artifacts ?? [];
-								if (topArtifacts.length === 0) return baseSummary;
-								// Prefix must NOT start with "[" — the TOON encoder treats
-								// "[N " as TOON array syntax, producing an undecodable artifact.
-								const artifactNote =
-									topArtifacts.length +
-									" artifact" +
-									(topArtifacts.length === 1 ? "" : "s") +
-									" — ";
-								return (artifactNote + baseSummary).slice(0, 200);
-							})(),
-							details: responseText,
-							context: input.request,
-							actionable: true,
-						},
-						links: {
-							relatedSessions: [runtime.sessionId],
-							relatedMemories: relatedMemoryIds,
-							sources: buildContextSourceRefs(sourceSignals, {
-								includeSnapshotSource: snapshot !== null,
-							}),
-						},
-					}),
-				)
-				.catch((err) => {
-					toolCallLogger.log("warn", "Memory artifact persistence failed", {
-						toolName,
-						sessionId: runtime.sessionId,
-						error: err instanceof Error ? err.message : String(err),
-					});
-				});
-		}
 
 		// Gap F — structured chainTo footer for every instruction that declares
 		// downstream tools. Replaces the old hardcoded adapt-only text paragraph.
+		// Note: on the analysis-transform path the directive ALSO carries a
+		// prose next-action workflow. The two are intentionally distinct: this
+		// footer is the machine-parseable JSON block autonomous agents read to
+		// auto-chain, while the directive's workflow is advisory prose for the
+		// model executing the analysis. Keep both.
 		const chainToFooter = buildChainToFooter(
 			toolName,
 			chainTo,
@@ -537,14 +494,69 @@ export async function dispatchToolCall(
 			.filter(Boolean)
 			.join("\n\n");
 
-		return {
-			content: [{ type: "text" as const, text: appendedText }],
-		};
+		// Wrap every workflow tool in the structured two-block envelope.
+		// content[0] carries the existing prose summary (backwards-compatible).
+		// content[1] carries the machine-parseable WorkflowEnvelopePayload.
+		const rawSummary = appendedText;
+		const rawPayload = buildWorkflowEnvelopePayload(situationData, toolName);
+
+		if (HOST_TOOLS_WITH_METHODOLOGY_GATE.has(toolName)) {
+			const methodologyCtx = {
+				problemSummary: input.request ?? "",
+				toolResult: { summaryMarkdown: rawSummary, payload: rawPayload },
+			};
+			const methodologyReport = await runMethodologyChecks(
+				methodologyCtx,
+				defaultRunner,
+			);
+			const summaryWithGate =
+				rawSummary + "\n\n" + renderMethodologySection(methodologyReport);
+			const payloadWithGate = { ...rawPayload, methodology: methodologyReport };
+			return toToolResult({
+				summaryMarkdown: summaryWithGate,
+				payload: payloadWithGate,
+				meta: {
+					tool: toolName,
+					ts: new Date().toISOString(),
+					version: 1,
+				},
+			});
+		}
+
+		return toToolResult({
+			summaryMarkdown: rawSummary,
+			payload: rawPayload,
+			meta: {
+				tool: toolName,
+				ts: new Date().toISOString(),
+				version: 1,
+			},
+		});
 	} catch (error) {
+		// Detect unknown-instruction / unknown-tool-name errors: these signal that
+		// the agent called a tool name that is not registered, and should route
+		// through meta-routing to get a proper classification before retrying.
+		const errorMessage = toErrorMessage(error);
+		const isUnknownInstruction =
+			errorMessage.startsWith("Unknown instruction tool:") ||
+			errorMessage.startsWith("No validator registered for instruction:");
+
+		if (isUnknownInstruction) {
+			return buildMcpErrorContent({
+				category: "not_found",
+				code: `TOOL_UNKNOWN_${crypto.randomUUID().slice(0, 8).toUpperCase()}`,
+				message: `Tool \`${toolName}\` failed: ${errorMessage}`,
+				recoverable: true,
+				suggestedAction:
+					"Call meta-routing to classify the request and get the correct tool name.",
+				nextTool: "meta-routing",
+			});
+		}
+
 		// Final fallback error handling
 		const standardError = {
 			code: `TOOL_EXECUTION_${crypto.randomUUID().slice(0, 8).toUpperCase()}`,
-			message: `Tool \`${toolName}\` failed: ${toErrorMessage(error)}`,
+			message: `Tool \`${toolName}\` failed: ${errorMessage}`,
 			context: createErrorContext(
 				undefined,
 				toolName,

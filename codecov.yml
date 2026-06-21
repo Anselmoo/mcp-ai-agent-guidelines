@@ -1,0 +1,26 @@
+# Codecov configuration
+#
+# `project` tolerates a small drop so that healthy refactors and deletions —
+# removing well-covered code legitimately lowers the overall ratio — do not fail
+# CI. `patch` stays strict: every changed line in a PR must be covered.
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        # Allow the overall percentage to drop by up to 1% vs. the base. This
+        # absorbs deletions of above-average-covered code without rewarding new
+        # untested code (the patch status below catches that).
+        threshold: 1%
+    patch:
+      default:
+        target: auto
+        threshold: 0%
+
+# Don't fail the run before all coverage uploads have arrived.
+codecov:
+  require_ci_to_pass: true
+
+comment:
+  layout: "reach, diff, flags, files"
+  behavior: default

@@ -108,7 +108,8 @@ const evalDesignHandler: SkillHandler = {
 			`Design the evaluation plan around "${summarizeKeywords(parsed.data).join(", ") || "the requested system behavior"}" using a ${datasetStyle} dataset shape. The plan should explain the dataset slices, the grading oracle, and the release implications of failure.`,
 		];
 
-		details.push(...matchEvalRules(EVAL_DESIGN_RULES, combined));
+		const matchedRules = matchEvalRules(EVAL_DESIGN_RULES, combined);
+		details.push(...matchedRules);
 
 		if (includeAssertions) {
 			details.push(

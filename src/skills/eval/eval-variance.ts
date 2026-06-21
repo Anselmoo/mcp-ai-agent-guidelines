@@ -108,7 +108,8 @@ const evalVarianceHandler: SkillHandler = {
 			`Analyze variance for "${summarizeKeywords(parsed.data).join(", ") || "the requested workflow surface"}" with a focus on ${varianceSource} as the likely source. The report should explain the spread of outcomes, the acceptable tolerance, and the next isolation step.`,
 		];
 
-		details.push(...matchEvalRules(EVAL_VARIANCE_RULES, combined));
+		const matchedRules = matchEvalRules(EVAL_VARIANCE_RULES, combined);
+		details.push(...matchedRules);
 
 		if (runCount !== undefined) {
 			details.push(
