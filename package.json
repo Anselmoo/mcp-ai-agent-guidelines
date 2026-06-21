@@ -102,7 +102,7 @@
     "@types/lodash": "^4.17.24",
     "@types/node": "^25.0.2",
     "@vitest/coverage-v8": "^4.0.0",
-    "astro": "^6.4.3",
+    "astro": "6.4.8",
     "astro-mermaid": "^2.0.1",
     "d3": "^7.9.0",
     "lefthook": "^2.1.5",

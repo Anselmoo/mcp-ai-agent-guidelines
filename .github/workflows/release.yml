@@ -122,12 +122,41 @@ jobs:
           ignore-unfixed: true
           trivyignores: .trivyignore
 
-  # ── 3. Create GitHub Release ──────────────────────────────────────────────────
+  # ── 3. Build .mcpb bundle ─────────────────────────────────────────────────
+  build-mcpb:
+    name: Build .mcpb bundle
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: startsWith(github.ref, 'refs/tags/')
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Build .mcpb bundle
+        id: mcp2mcpb
+        uses: Anselmoo/mcp2mcpb@5e2f399464203530cd84f3e8325fb648de3a6f05 # v0.4.0
+        with:
+          package: mcp-ai-agent-guidelines
+          registry: npm
+          mode: reference
+          no-probe: "true"
+          attach-to-release: "false"
+
+      - name: Upload .mcpb artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mcpb-package
+          path: dist/*.mcpb
+          if-no-files-found: error
+
+  # ── 4. Create GitHub Release ──────────────────────────────────────────────────
   github-release:
     name: Create GitHub Release
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: [publish-npm, build-docker]
+    needs: [publish-npm, build-docker, build-mcpb]
     if: startsWith(github.ref, 'refs/tags/')
     permissions:
       contents: write
@@ -149,6 +178,12 @@ jobs:
 
       - name: Generate SBOM
         run: npm sbom --sbom-format cyclonedx --package-lock-only --omit dev > sbom.json
+
+      - name: Download .mcpb artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: mcpb-package
+          path: dist/
 
       - name: Sign tarball with Sigstore
         uses: sigstore/gh-action-sigstore-python@v3.4.0
@@ -189,4 +224,4 @@ jobs:
       - name: Upload signed tarball to release
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        run: gh release upload '${{ steps.ver.outputs.tag }}' *.tgz *.sigstore.json sbom.json --repo '${{ github.repository }}'
+        run: gh release upload '${{ steps.ver.outputs.tag }}' *.tgz *.sigstore.json sbom.json dist/*.mcpb --repo '${{ github.repository }}'
