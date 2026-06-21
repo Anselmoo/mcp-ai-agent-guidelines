@@ -11,3 +11,17 @@
 # Risk: zero — the vulnerable code path is only reachable via npm CLI internals,
 # never executed by the MCP server at runtime.
 CVE-2026-33671
+
+# CVE-2026-53550 — js-yaml ≤4.1.1 quadratic-complexity DoS via merge key aliases (Moderate, CVSS 5.3)
+# Affected path in Docker image:
+#   /app/node_modules/gray-matter/node_modules/js-yaml@3.14.2
+# gray-matter@4.0.3 bundles its own js-yaml@3.14.2 for YAML front-matter parsing.
+# js-yaml 4.2.0 (fixed) is present at the top-level, but gray-matter uses its own
+# pinned copy and does not share it.
+# Fix is not available in the 3.x branch; upgrading gray-matter would require a
+# breaking major version change (gray-matter@2.0.1) that removes features in use.
+# Risk: negligible — gray-matter is used exclusively to parse the project's own
+# skill/instruction YAML files bundled at build time, never user-supplied YAML input.
+# The DoS vector requires a crafted document with deeply nested merge aliases, which
+# cannot be injected by external callers in this deployment.
+CVE-2026-53550
