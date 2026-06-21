@@ -103,7 +103,7 @@
         "@types/inquirer": "^9.0.9",
         "@types/jsdom": "^28.0.0",
         "@types/lodash": "^4.17.24",
-        "@types/node": "^25.0.2",
+        "@types/node": "^26.0.0",
         "@vitest/coverage-v8": "^4.0.0",
         "astro": "^6.4.3",
         "astro-mermaid": "^2.0.1",
