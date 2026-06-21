@@ -122,7 +122,7 @@
     "dependencies": {
         "@ai-sdk/anthropic": "^3.0.81",
         "@ai-sdk/openai": "^3.0.67",
-        "@inquirer/prompts": "^7.5.2",
+        "@inquirer/prompts": "^8.0.0",
         "@modelcontextprotocol/sdk": "^1.17.1",
         "@noble/hashes": "^2.0.1",
         "@paralleldrive/cuid2": "^2.2.2",
