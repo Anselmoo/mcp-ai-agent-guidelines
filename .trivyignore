@@ -25,3 +25,15 @@ CVE-2026-33671
 # The DoS vector requires a crafted document with deeply nested merge aliases, which
 # cannot be injected by external callers in this deployment.
 CVE-2026-53550
+
+# CVE-2026-12151 — undici <6.27.0 / <7.28.0 / <8.5.0 WebSocket DoS (HIGH, CVSS ~7.5)
+# Affected path (when node_modules present):
+#   node_modules/eventsource/package.json → devDependencies.undici ^6.20.1
+# eventsource@3.0.7 lists undici only as a *devDependency* (for its own test suite).
+# Our project does not request undici — it is absent from package-lock.json and from
+# node_modules (npm ls undici returns empty). The vulnerable WebSocket code path is
+# never imported by the MCP server at runtime.
+# Fixing at the npm level is not possible: npm overrides only apply to packages that
+# are actually resolved in the installation, and undici is never resolved here.
+# Risk: zero — the application has no WebSocket client using undici.
+CVE-2026-12151
