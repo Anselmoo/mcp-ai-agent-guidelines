@@ -163,7 +163,7 @@ jobs:
           path: dist/
       - name: Build .mcpb bundle
         id: mcp2mcpb
-        uses: Anselmoo/mcp2mcpb@v0.5
+        uses: Anselmoo/mcp2mcpb@b040babc466902b721e2367d2e5611908c3603d8
         with:
           package: mcp-ai-agent-guidelines
           registry: npm
