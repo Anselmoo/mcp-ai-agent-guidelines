@@ -117,7 +117,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.17.1",
     "@noble/hashes": "^2.0.1",
-    "@paralleldrive/cuid2": "^2.2.2",
+    "@paralleldrive/cuid2": "^3.0.0",
     "@svgdotjs/svg.js": "^3.2.4",
     "chalk": "^5.4.1",
     "commander": "^13.1.0",
