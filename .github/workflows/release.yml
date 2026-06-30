@@ -138,7 +138,7 @@ jobs:
       - name: Build & pack
         run: npm run build && npm pack --pack-destination dist/
       - name: Upload npm tarball
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: npm-package
           path: dist/*.tgz
@@ -172,7 +172,7 @@ jobs:
           no-probe: 'true'
           attach-to-release: 'false'
       - name: Upload .mcpb artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: mcpb-package
           path: dist/*.mcpb
