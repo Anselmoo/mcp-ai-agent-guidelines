@@ -8,6 +8,6 @@
     "package-skills": "package-skills.js"
   },
   "dependencies": {
-    "archiver": "^6.0.0"
+    "archiver": "^8.0.0"
   }
 }
