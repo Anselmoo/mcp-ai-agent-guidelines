@@ -18,6 +18,7 @@ import {
 	parseSkillInput,
 } from "../shared/input-schema.js";
 import { extractRequestSignals } from "../shared/recommendations.js";
+import { readReferencedFiles } from "../shared/workspace-grounding.js";
 
 const reqScopeInputSchema = baseSkillInputSchema.extend({
 	options: z
@@ -114,14 +115,31 @@ const reqScopeHandler: SkillHandler = {
 			);
 		}
 
+		const groundedFiles = await readReferencedFiles(context);
+		const groundedRecs =
+			groundedFiles.length > 0
+				? [
+						{
+							title: "Grounded scope boundary",
+							detail: `Scope is anchored to the referenced module(s): ${groundedFiles.map((f) => `\`${f.path}\``).join(", ")}. Treat changes outside these files as out-of-scope unless explicitly added.`,
+							modelClass: context.model.modelClass,
+							groundingScope: "workspace" as const,
+							evidenceAnchors: groundedFiles.map((f) => f.path),
+						},
+					]
+				: [];
+
 		return createCapabilityResult(
 			context,
 			`Scope Analysis identified ${details.length} scope-boundary factors (constraints: ${signals.hasConstraints ? "provided" : "missing"}, deliverable: ${signals.hasDeliverable ? "defined" : "undefined"}).`,
-			createFocusRecommendations(
-				"Scope boundary",
-				details,
-				context.model.modelClass,
-			),
+			[
+				...groundedRecs,
+				...createFocusRecommendations(
+					"Scope boundary",
+					details,
+					context.model.modelClass,
+				),
+			],
 			[
 				buildOutputTemplateArtifact(
 					"Scope contract template",
