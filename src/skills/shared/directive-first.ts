@@ -289,12 +289,20 @@ export async function toSituationResult(
 			? `Routing signal (deterministic keyword match): the strongest candidate for this request is \`${routing.ranked[0]}\` — start there unless the analysis below overrides it.\n\n`
 			: "";
 
+	// Real workspace grounding (a skill read the referenced files) makes the
+	// output project-specific even without a sampler — so only label the output
+	// as generic "directive mode" when NEITHER a sampler NOR any grounded finding
+	// produced project-specific content.
+	const grounded = result.recommendations.some(
+		(r) => r.groundingScope === "workspace",
+	);
+
 	// Never present template guidance as tailored analysis: when no sampling
 	// client is available the directive is generic, and the caller must be able
 	// to tell (the historical "generic advice" failure was this fallback running
 	// silently on every non-sampling client).
 	const labeledRecommendation =
-		mode === "directive"
+		mode === "directive" && !grounded
 			? {
 					...recommendation,
 					detail: `⚠️ Directive mode — no MCP sampling client available. What follows is template guidance to execute yourself against the real project, not project-specific analysis.\n\n${routingLead}${recommendation.detail}`,
