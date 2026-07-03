@@ -53,4 +53,4 @@ stateDiagram-v2
 
 ## Success Chains
 
-`design` · `implement` · `research` · `review` · `plan` · `debug` · `refactor` · `testing` · `orchestrate` · `govern` · `enterprise` · `physics-analysis`
+`design` · `implement` · `research` · `review` · `plan` · `debug` · `refactor` · `testing` · `orchestrate` · `govern` · `enterprise`

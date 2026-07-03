@@ -65,12 +65,4 @@ export const TAXONOMY_ENTRIES = [
 		prefix: "gov-",
 		domain: "Safety & Governance",
 	},
-	{
-		prefix: "qm-",
-		domain: "Quantum Mechanics metaphors",
-	},
-	{
-		prefix: "gr-",
-		domain: "General Relativity metaphors",
-	},
 ];

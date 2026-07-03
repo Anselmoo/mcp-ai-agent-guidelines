@@ -1,6 +1,6 @@
 ---
 title: Skills Overview
-description: All 102 skills across 18 domains with the full instruction–skill coverage graph.
+description: All 72 skills across 16 domains with the full instruction–skill coverage graph.
 sidebar:
   label: Skills Overview
   order: 1
@@ -12,7 +12,7 @@ import { Badge, Aside, CardGrid, LinkCard, Icon, Tabs, TabItem } from "@astrojs/
 
 Skills are the internal workflow assets beneath the 20 public instruction tools. Consumers never call skills directly — they invoke an instruction tool which internally orchestrates the right skills.
 
-**102 skills · 18 domains · 0 orphans** (verified by `scripts/verify_matrix.py`)
+**72 skills · 16 domains · 0 orphans** (verified by `scripts/verify_matrix.py`)
 
 <Aside type="note" title="Model class glossary">
   Every skill carries a model-class hint. These describe **task complexity**, not pricing — the class tells the orchestrator what tier of model can handle this task well:
@@ -55,8 +55,6 @@ Skills are the internal workflow assets beneath the 20 public instruction tools.
     </Aside>
     <CardGrid>
       <LinkCard title="Adaptive (5)" href="/mcp-ai-agent-guidelines/skills/adaptive/" description="adapt-* — ACO router, annealing, Hebbian, Physarum, quorum. Requires ENABLE_ADAPTIVE_ROUTING=true" />
-      <LinkCard title="Quantum Mechanics (15)" href="/mcp-ai-agent-guidelines/skills/physics-qm/" description="qm-* — Physics-metaphor code analysis using QM principles. Requires ENABLE_PHYSICS_SKILLS=true" />
-      <LinkCard title="General Relativity (15)" href="/mcp-ai-agent-guidelines/skills/physics-gr/" description="gr-* — Physics-metaphor code analysis using GR principles. Requires ENABLE_PHYSICS_SKILLS=true" />
     </CardGrid>
   </TabItem>
 </Tabs>
@@ -80,7 +78,6 @@ flowchart LR
         implement["implement"]
         meta_routing["meta-routing"]
         orchestrate["orchestrate"]
-        physics_analysis["physics-analysis"]
         plan["plan"]
         prompt_engineering["prompt-engineering"]
         refactor["refactor"]
@@ -152,22 +149,7 @@ flowchart LR
         adapt_quorum["adapt-quorum"]
     end
 
-    subgraph D_qm["Quantum Mechanics (gated)"]
-        qm_super["qm-superposition-generator"]
-        qm_entangle["qm-entanglement-mapper"]
-        qm_collapse["qm-measurement-collapse"]
-        qm_tunnel["qm-tunneling-breakthrough"]
-        qm_wave["qm-wavefunction-coverage"]
-        qm_more["... +10 more qm-* skills"]
-    end
 
-    subgraph D_gr["General Relativity (gated)"]
-        gr_debt["gr-spacetime-debt-metric"]
-        gr_horizon["gr-event-horizon-detector"]
-        gr_geodesic["gr-geodesic-refactor"]
-        gr_lens["gr-gravitational-lensing-tracer"]
-        gr_more["... +11 more gr-* skills"]
-    end
 
     design --> D_req
     design --> D_arch
@@ -180,8 +162,6 @@ flowchart LR
     resilience --> D_resil
     orchestrate --> D_orch
     adapt --> D_adapt
-    physics_analysis --> D_qm
-    physics_analysis --> D_gr
     refactor --> D_qual
     debug --> D_debug
     bootstrap --> D_req
@@ -196,7 +176,6 @@ flowchart LR
 
 Skills are dispatched by tier in `src/tools/skill-handler.ts`:
 
-- **Physics tier** (`qm-*`, `gr-*`): Requires `ENABLE_PHYSICS_SKILLS=true`
 - **Governance tier** (`gov-*`): Optional human-in-the-loop via `ENABLE_GOVERNANCE_STRICT`
 - **Adaptive tier** (`adapt-*`): Requires `ENABLE_ADAPTIVE_ROUTING=true`
 - **Core tier**: Everything else, always available

@@ -60,7 +60,6 @@ export interface EnvironmentConfig {
 	sessionTtlMinutes: number;
 	maxInstructionDepth: number;
 	maxParallelSkills: number;
-	enablePhysicsSkills: boolean;
 	enableAdaptiveRouting: boolean;
 	validationMode: "strict" | "advisory" | "disabled";
 
@@ -188,11 +187,6 @@ export function validateEnvironment(): EnvironmentValidationResult {
 			.default(5)
 			.asIntPositive();
 
-		const enablePhysicsSkills = env
-			.get("ENABLE_PHYSICS_SKILLS")
-			.default("false")
-			.asBool();
-
 		const disableAdaptiveRouting = env
 			.get("DISABLE_ADAPTIVE_ROUTING")
 			.default("false")
@@ -270,12 +264,6 @@ export function validateEnvironment(): EnvironmentValidationResult {
 			if (debugSkillExecution) {
 				warnings.push("DEBUG_SKILL_EXECUTION enabled in production");
 			}
-
-			if (enablePhysicsSkills) {
-				warnings.push(
-					"Physics skills enabled in production - ensure proper authorization",
-				);
-			}
 		}
 
 		// Security warnings
@@ -293,7 +281,6 @@ export function validateEnvironment(): EnvironmentValidationResult {
 			sessionTtlMinutes,
 			maxInstructionDepth,
 			maxParallelSkills,
-			enablePhysicsSkills,
 			enableAdaptiveRouting,
 			validationMode,
 			defaultModelTimeout,
@@ -387,7 +374,6 @@ function getDefaultConfig(): EnvironmentConfig {
 		sessionTtlMinutes: 60,
 		maxInstructionDepth: 10,
 		maxParallelSkills: 5,
-		enablePhysicsSkills: false,
 		enableAdaptiveRouting: true,
 		validationMode: "advisory",
 		defaultModelTimeout: 30000,

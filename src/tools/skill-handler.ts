@@ -1,10 +1,8 @@
 /**
  * Generic skill dispatch: routes calls by skill-name prefix to the
- * appropriate execution tier (physics, governance, advanced/bio-inspired,
- * or core).
+ * appropriate execution tier (governance, advanced/bio-inspired, or core).
  *
  * Prefix → tier mapping (from copilot-instructions.md):
- *   qm-  / gr-  → physics
  *   gov-        → governance
  *   adv-        → advanced / bio-inspired
  *   *           → core
@@ -20,15 +18,12 @@ import type {
 // Tier classification
 // ---------------------------------------------------------------------------
 
-export type SkillTier = "physics" | "governance" | "advanced" | "core";
+export type SkillTier = "governance" | "advanced" | "core";
 
 /**
  * Derive the execution tier from a skill name.
  */
 export function tierForSkill(skillName: string): SkillTier {
-	if (skillName.startsWith("qm-") || skillName.startsWith("gr-")) {
-		return "physics";
-	}
 	if (skillName.startsWith("gov-")) {
 		return "governance";
 	}
@@ -53,9 +48,6 @@ export function tierForSkill(skillName: string): SkillTier {
  * - `gov-*`: strip `context` to prevent unintentional PII propagation into
  *   policy-validation handlers that should only reason about the explicit
  *   request and options.
- * - `qm-*` / `gr-*` (physics): strip `options` to close the side-channel
- *   through which callers could influence deterministic physics metaphor
- *   computations with runtime tuning parameters.
  * - Everything else: full passthrough.
  */
 const TIER_ALLOWED_KEYS: Readonly<
@@ -67,14 +59,6 @@ const TIER_ALLOWED_KEYS: Readonly<
 		"constraints",
 		"successCriteria",
 		"deliverable",
-	],
-	physics: [
-		"request",
-		"context",
-		"constraints",
-		"successCriteria",
-		"deliverable",
-		"physicsAnalysisJustification",
 	],
 	advanced: [
 		"request",
@@ -181,24 +165,6 @@ export class SkillHandler {
 				`No handler registered for skill tier "${tier}" (skill: "${manifest.id}"). ` +
 					"Register a handler via SkillHandler.register() before dispatching.",
 			);
-		}
-
-		// Physics-tier justification gate (A3): callers must supply a justification
-		// string of at least 20 characters in `input.options.justification` before
-		// invoking qm-* or gr-* skills.  This is intentionally checked pre-membrane
-		// because the membrane strips `options` from physics-tier inputs.
-		if (tier === "physics") {
-			const justification = input.physicsAnalysisJustification;
-			if (
-				typeof justification !== "string" ||
-				justification.trim().length < 20
-			) {
-				throw new Error(
-					`Physics-tier skill "${manifest.id}" requires a justification. ` +
-						"Supply input.physicsAnalysisJustification (string, ≥ 20 characters) " +
-						"explaining why physics-metaphor analysis is appropriate for this task.",
-				);
-			}
 		}
 
 		// Apply domain-scoped context membrane before passing input to the handler.

@@ -315,22 +315,8 @@ describe("tool-call-handler", () => {
 	// 75 recs/45KB at every session start). They now collapse into a
 	// request-specific orientation brief — scope + ambiguities + first move,
 	// NOT a solution (the B#2 category error is avoided by the orientation-shaped
-	// output contract, not by passing through).
-	it("collapses project-onboard into a request-anchored orientation brief", async () => {
-		const result = await dispatchToolCall(
-			"project-onboard",
-			{ request: "where should I start hardening this repo" },
-			createRuntime(),
-		);
-		expect(result.isError).toBeUndefined();
-		const text = result.content[0]?.text ?? "";
-		// Anchored to the real request, not echoing title keywords.
-		expect(text).toContain("where should I start hardening this repo");
-		// Orientation contract: scope in/out + ambiguities + first instruction —
-		// explicitly NOT a finished solution.
-		expect(text.toLowerCase()).toMatch(/in and out of scope|ambiguit/);
-		expect(text).toContain("not a finished solution");
-	});
+	// output contract, not by passing through). Project onboarding is folded
+	// into task-bootstrap; the orientation contract is asserted below.
 
 	it("collapses task-bootstrap into a request-anchored orientation brief", async () => {
 		const result = await dispatchToolCall(

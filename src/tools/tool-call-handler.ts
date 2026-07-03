@@ -204,6 +204,10 @@ function buildChainToFooter(
 		"```json",
 		payload,
 		"```",
+		"",
+		"Handoff contract (prompt-chaining): pass this tool's output above as the",
+		"next call's `context` so each stage receives the previous stage's",
+		"independently verifiable artifact instead of restarting from the raw request.",
 	].join("\n");
 }
 

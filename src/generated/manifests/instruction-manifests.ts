@@ -12,9 +12,7 @@ import { instructionManifest as govern_manifest } from "../instructions/govern.j
 import { instructionManifest as implement_manifest } from "../instructions/implement.js";
 import { instructionManifest as initial_instructions_manifest } from "../instructions/initial_instructions.js";
 import { instructionManifest as meta_routing_manifest } from "../instructions/meta-routing.js";
-import { instructionManifest as onboard_project_manifest } from "../instructions/onboard_project.js";
 import { instructionManifest as orchestrate_manifest } from "../instructions/orchestrate.js";
-import { instructionManifest as physics_analysis_manifest } from "../instructions/physics-analysis.js";
 import { instructionManifest as plan_manifest } from "../instructions/plan.js";
 import { instructionManifest as prompt_engineering_manifest } from "../instructions/prompt-engineering.js";
 import { instructionManifest as refactor_manifest } from "../instructions/refactor.js";
@@ -41,9 +39,7 @@ export const INSTRUCTION_MANIFESTS = [
 	analogy_think_manifest,
 	resilience_manifest,
 	adapt_manifest,
-	physics_analysis_manifest,
 	initial_instructions_manifest,
 	bootstrap_manifest,
 	meta_routing_manifest,
-	onboard_project_manifest,
 ];

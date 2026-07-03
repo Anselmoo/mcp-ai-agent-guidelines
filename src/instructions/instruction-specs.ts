@@ -302,20 +302,6 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 		surface: "workflow",
 		sourcePath: "src/instructions/instruction-specs.ts#adapt",
 	},
-	{
-		id: "physics-analysis",
-		toolName: "physics-analysis",
-		displayName: "Physics Analysis: QM and GR Code Metaphors",
-		description:
-			"Use when conventional code analysis tools are insufficient and physics-inspired metaphors are needed: quantum mechanics analogies for coupling, coverage, and style analysis; general relativity analogies for technical debt, module gravitational mass, and refactoring paths. Covers all 30 QM+GR skills with explicit confidence tiers. NOT an entry point — always arrive here from another instruction (refactor, design, review, evaluate, research, debug). Do NOT use as a first-call tool.",
-		mission:
-			"Apply QM/GR analogies with explicit translation, confidence tiers, and conventional fallbacks. Home base for all 30 physics skills.",
-		chainTo: ["code-review", "feature-implement"],
-		preferredModelClass: "strong",
-		public: false,
-		surface: "internal",
-		sourcePath: "src/instructions/instruction-specs.ts#physics-analysis",
-	},
 	// -----------------------------------------------------------------------
 	// INTERNAL + DISCOVERY — not part of the workflow tool surface
 	// -----------------------------------------------------------------------
@@ -337,7 +323,7 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 		toolName: "task-bootstrap",
 		displayName: "Bootstrap: First Contact",
 		description:
-			"Use when starting a new task with unclear scope, before any implementation begins, when requirements are vague or ambiguous, or when the agent needs to orient itself on what the user actually wants. Covers scope clarification, requirements extraction, priority setting, and context loading. Companion tools: use `agent-snapshot-write` (refresh) or `agent-snapshot-compare` to load the codebase baseline, `agent-session-fetch` to inspect session-scoped artifacts, `agent-memory-fetch` / `agent-memory-read` for long-term artifacts, and `agent-workspace` for source-file access.",
+			"Use when starting a new task or work session with unclear scope, before any implementation begins, when requirements are vague or ambiguous, when exploring what a codebase does, or when getting oriented in a project for the first time. Covers scope clarification, requirements extraction, priority setting, project orientation, and context loading. Triggers: 'start a new task', 'onboard', 'what does this project do', 'first session', 'where do I start', 'help me orient'. Example call: {\"request\": \"Onboard me: what does this repo do and where do I start on the flaky coverage gate?\"}. Companion tools (full surface only, MCP_FULL_SURFACE=true): `agent-workspace` for source-file access, `graph-visualize` (skill-graph, chain-graph) to explore the skill topology.",
 		mission:
 			"Orient the agent, load project context, identify scope and unknowns before any implementation starts.",
 		chainTo: [
@@ -364,21 +350,13 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 		// Re-activate periodically in continuous/agent sessions so stale context
 		// is caught before it causes routing errors (P3 / RS3 fix).
 		reactivationPolicy: "periodic",
-		// Snapshot + session + memory inspection should precede scope analysis so
-		// the agent loads the codebase baseline, current session artifacts, and
-		// long-term TOON context before committing to a plan.
-		requiredPreconditions: [
-			"agent-snapshot-fetch",
-			"agent-session-fetch",
-			"agent-memory-fetch",
-		],
 	},
 	{
 		id: "meta-routing",
 		toolName: "meta-routing",
 		displayName: "Meta-Routing: Task Router",
 		description:
-			"Use at session start to classify the problem before any domain tool is called; use when a task spans multiple domains; use when instructions should run serially vs in parallel; use when escalation or cross-instruction chaining is needed. This is the master decision guide — call it when unsure which tool to use. Do NOT use for single-domain tasks where the right tool is obvious (just call the domain tool directly). Anti-patterns: do not call meta-routing for straightforward implement/debug/review requests; do not call it after every single step. Companion tools: use `graph-visualize` (chain-graph) to inspect instruction chains and routing topology. Triggers: 'not sure which tool', 'multi-domain task', 'how should I approach this', 'route this request', 'classify the problem', 'session start', 'orient myself'.",
+			"Use at session start to classify the problem before any domain tool is called; use when a task spans multiple domains; use when instructions should run serially vs in parallel; use when escalation or cross-instruction chaining is needed. This is the master decision guide — call it when unsure which tool to use. Do NOT use for single-domain tasks where the right tool is obvious (just call the domain tool directly). Anti-patterns: do not call meta-routing for straightforward implement/debug/review requests; do not call it after every single step. Companion tools (full surface only): use `graph-visualize` (chain-graph) to inspect instruction chains and routing topology. Triggers: 'not sure which tool', 'multi-domain task', 'how should I approach this', 'route this request', 'classify the problem', 'session start', 'orient myself'. Example call: {\"request\": \"We need to redesign the routing layer, add tests, and document the migration — where do we start?\"}.",
 		mission:
 			"Decide which instruction(s) to invoke, in what order, and how to chain them for compound or ambiguous tasks.",
 		chainTo: [],
@@ -389,20 +367,6 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 		// Fires once at the beginning of every new session so problem-classification
 		// always happens before the first domain tool is invoked (issue #1445 fix).
 		reactivationPolicy: "session-start",
-	},
-	{
-		id: "onboard_project",
-		toolName: "project-onboard",
-		displayName: "Onboard: Project Familiarization",
-		description:
-			"Use when starting a new work session, exploring what this codebase does, understanding the skill taxonomy, or getting oriented in mcp-ai-agent-guidelines for the first time. Covers project structure, skill navigation, instruction index, and verification workflow. Companion tools: use `graph-visualize` (skill-graph, chain-graph) to explore the skill topology and instruction chains; use `agent-workspace` (list) to browse source files, `agent-session-fetch` to inspect session artifacts, and `agent-snapshot-fetch` to confirm the current codebase baseline.",
-		mission: "",
-		chainTo: ["task-bootstrap"],
-		autoChainOnCompletion: true,
-		preferredModelClass: "free",
-		public: true,
-		surface: "discovery",
-		sourcePath: "src/instructions/instruction-specs.ts#onboard_project",
 	},
 ];
 

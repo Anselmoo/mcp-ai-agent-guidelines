@@ -26,7 +26,6 @@ describe("workflow-spec registry bridge", () => {
 			"context",
 			"taskType",
 			"currentPhase",
-			"physicsAnalysisJustification",
 		]);
 		expect(getRequiredWorkflowSpecInputKeys(metaRoutingWorkflow)).toEqual([
 			"request",

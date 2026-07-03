@@ -7,7 +7,6 @@ import {
 
 describe("skill-handler", () => {
 	it("derives execution tiers from skill prefixes", () => {
-		expect(tierForSkill("qm-entanglement-mapper")).toBe("physics");
 		expect(tierForSkill("gov-policy-validation")).toBe("governance");
 		expect(tierForSkill("adv-meta-research")).toBe("advanced");
 		expect(tierForSkill("debug-root-cause")).toBe("core");
@@ -73,13 +72,6 @@ describe("applyContextMembrane", () => {
 		expect(filtered.request).toBe("analyze");
 		expect(filtered.context).toBeUndefined();
 		expect(filtered.options).toEqual({ verbose: true });
-	});
-
-	it("strips options from physics-tier input", () => {
-		const filtered = applyContextMembrane("physics", fullInput);
-		expect(filtered.context).toBe("sensitive data");
-		expect(filtered.options).toBeUndefined();
-		expect(filtered.request).toBe("analyze");
 	});
 
 	it("passes all fields through for core and advanced tiers", () => {
@@ -171,106 +163,5 @@ describe("SkillHandler — Hebbian weights", () => {
 			{ request: "review this" },
 		);
 		expect(handler.getHebbianWeight("core-quality-review")).toBeCloseTo(1.0);
-	});
-});
-
-describe("SkillHandler — physics justification gate (A3)", () => {
-	const physicsManifest = {
-		id: "qm-entanglement-mapper",
-		canonicalId: "qm-entanglement-mapper",
-		domain: "qm",
-		displayName: "Entanglement Mapper",
-		description: "Map entanglement",
-		sourcePath: "",
-		purpose: "",
-		triggerPhrases: [],
-		antiTriggerPhrases: [],
-		usageSteps: [],
-		intakeQuestions: [],
-		relatedSkills: [],
-		outputContract: [],
-		recommendationHints: [],
-		preferredModelClass: "strong" as const,
-	};
-
-	it("rejects a physics skill when no justification is provided", async () => {
-		const handler = new SkillHandler();
-		handler.register("physics", vi.fn());
-		await expect(
-			handler.dispatch(physicsManifest, { request: "map entanglement" }),
-		).rejects.toThrow(/justification/);
-	});
-
-	it("rejects a physics skill when justification is fewer than 20 characters", async () => {
-		const handler = new SkillHandler();
-		handler.register("physics", vi.fn());
-		await expect(
-			handler.dispatch(physicsManifest, {
-				request: "map entanglement",
-				options: { justification: "too short" },
-			}),
-		).rejects.toThrow(/justification/);
-	});
-
-	it("allows a physics skill when a valid justification is provided", async () => {
-		const handler = new SkillHandler();
-		handler.register(
-			"physics",
-			vi.fn().mockResolvedValue({
-				skillId: "qm-entanglement-mapper",
-				displayName: "Entanglement Mapper",
-				summary: "done",
-				detail: "",
-				model: {
-					id: "claude-sonnet-4-6",
-					label: "Claude Sonnet 4.6",
-					provider: "anthropic",
-					costTier: "strong",
-					contextWindow: 200000,
-				},
-				recommendations: [],
-			}),
-		);
-		const result = await handler.dispatch(physicsManifest, {
-			request: "map entanglement between modules",
-			physicsAnalysisJustification:
-				"Standard coupling metrics are insufficient; co-change entropy needed.",
-		});
-		expect(result.tier).toBe("physics");
-		expect(result.skillId).toBe("qm-entanglement-mapper");
-	});
-
-	it("does not apply the justification gate to non-physics tiers", async () => {
-		const handler = new SkillHandler();
-		const coreManifest = {
-			...physicsManifest,
-			id: "core-quality-review",
-			canonicalId: "core-quality-review",
-			domain: "qual",
-			displayName: "Quality Review",
-			preferredModelClass: "free" as const,
-		};
-		handler.register(
-			"core",
-			vi.fn().mockResolvedValue({
-				skillId: "core-quality-review",
-				displayName: "Quality Review",
-				summary: "ok",
-				detail: "",
-				model: {
-					id: "gpt-4.1",
-					label: "GPT-4.1",
-					provider: "openai",
-					costTier: "free",
-					contextWindow: 128000,
-				},
-				recommendations: [],
-			}),
-		);
-		// No justification — should succeed for core tier
-		const result = await handler.dispatch(coreManifest, {
-			request: "review code",
-		});
-		expect(result.tier).toBe("core");
 	});
 });

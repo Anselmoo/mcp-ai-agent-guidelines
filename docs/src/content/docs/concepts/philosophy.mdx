@@ -22,7 +22,7 @@ In modern AI agent architecture, humans are the bottleneck and the carriers of *
 
 Every dependency is a first-class citizen. If an integration requires duct tape, it is rejected. This means:
 
-- Dependencies (Zod, AI SDK, `@toon-format/toon`, xstate) are integrated cleanly or not at all
+- Dependencies (Zod, AI SDK, xstate) are integrated cleanly or not at all
 - No shim layers, no version-pinning workarounds that survive longer than one sprint
 - The `quality` pipeline (`npm run quality`) is mandatory — no merge bypasses
 
@@ -48,7 +48,6 @@ This is not aspirational — it is enforced through:
 
 1. **`gr-spacetime-debt-metric`** skill: computes accumulated technical debt as relativistic spacetime curvature
 2. **`gr-event-horizon-detector`** skill: flags modules past the "point of no return" for refactoring
-3. **`code-refactor`** tool auto-chains to `physics-analysis` when metrics exceed thresholds
 
 <Aside type="note">
 Zero Legacy Debt does not mean big-bang rewrites. It means *continuous, incremental elimination* — each sprint reduces the debt metric by at least one threshold level.

@@ -9,7 +9,7 @@ export const instructionManifest: InstructionManifestEntry = {
 	aliases: [],
 	displayName: "Meta-Routing: Task Router",
 	description:
-		"Use at session start to classify the problem before any domain tool is called; use when a task spans multiple domains; use when instructions should run serially vs in parallel; use when escalation or cross-instruction chaining is needed. This is the master decision guide — call it when unsure which tool to use. Do NOT use for single-domain tasks where the right tool is obvious (just call the domain tool directly). Anti-patterns: do not call meta-routing for straightforward implement/debug/review requests; do not call it after every single step. Companion tools: use `graph-visualize` (chain-graph) to inspect instruction chains and routing topology. Triggers: 'not sure which tool', 'multi-domain task', 'how should I approach this', 'route this request', 'classify the problem', 'session start', 'orient myself'.",
+		"Use at session start to classify the problem before any domain tool is called; use when a task spans multiple domains; use when instructions should run serially vs in parallel; use when escalation or cross-instruction chaining is needed. This is the master decision guide — call it when unsure which tool to use. Do NOT use for single-domain tasks where the right tool is obvious (just call the domain tool directly). Anti-patterns: do not call meta-routing for straightforward implement/debug/review requests; do not call it after every single step. Companion tools (full surface only): use `graph-visualize` (chain-graph) to inspect instruction chains and routing topology. Triggers: 'not sure which tool', 'multi-domain task', 'how should I approach this', 'route this request', 'classify the problem', 'session start', 'orient myself'. Example call: {\"request\": \"We need to redesign the routing layer, add tests, and document the migration — where do we start?\"}.",
 	sourcePath: "src/instructions/instruction-specs.ts#meta-routing",
 	mission:
 		"Decide which instruction(s) to invoke, in what order, and how to chain them for compound or ambiguous tasks.",
@@ -31,11 +31,6 @@ export const instructionManifest: InstructionManifestEntry = {
 			currentPhase: {
 				type: "string",
 				description: "Current phase if routing an in-flight task.",
-			},
-			physicsAnalysisJustification: {
-				type: "string",
-				description:
-					"Why conventional analysis is insufficient and a physics-inspired pass is justified.",
 			},
 		},
 		required: ["request"],
@@ -127,29 +122,6 @@ export const instructionManifest: InstructionManifestEntry = {
 				kind: "invokeSkill",
 				label: "prompt-hierarchy",
 				skillId: "prompt-hierarchy",
-			},
-			{
-				kind: "gate",
-				label: "PHYSICS TOOLS (OPT-IN)",
-				condition: "hasPhysicsJustification",
-				ifTrue: [
-					{
-						kind: "parallel",
-						label: "PHYSICS TOOLS",
-						steps: [
-							{
-								kind: "invokeSkill",
-								label: "qm-superposition-generator",
-								skillId: "qm-superposition-generator",
-							},
-							{
-								kind: "invokeSkill",
-								label: "gr-spacetime-debt-metric",
-								skillId: "gr-spacetime-debt-metric",
-							},
-						],
-					},
-				],
 			},
 			{
 				kind: "finalize",

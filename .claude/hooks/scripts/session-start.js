@@ -15,7 +15,7 @@
 
 console.log(
   "[mcp-ai-agent-guidelines] Session started.\n" +
-  "  → Call `task-bootstrap` first to load project context, TOON memory, and the codebase baseline.\n" +
+  "  → Call `task-bootstrap` first for a request-anchored orientation brief (scope, ambiguities, first tool).\n" +
   "  → If the task spans multiple domains or is ambiguous, call `meta-routing` before any domain tool.\n" +
   "  → See .agent/rules/default.md for the full routing table."
 );

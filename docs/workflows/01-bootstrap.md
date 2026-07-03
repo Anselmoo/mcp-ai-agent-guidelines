@@ -34,7 +34,6 @@ On successful completion, this workflow may chain to:
 - **orchestrate**
 - **govern**
 - **enterprise**
-- **physics-analysis**
 
 ## 6. Mermaid FSM — *Serial cognition with reflective interruption (adapted: scope clarification)*
 ```mermaid

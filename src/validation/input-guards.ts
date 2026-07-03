@@ -1,11 +1,7 @@
 import type { z } from "zod";
 import type { InstructionInput } from "../contracts/runtime.js";
 import { toErrorMessage } from "../infrastructure/object-utilities.js";
-import {
-	physicsSkillSchema,
-	safeValidate,
-	type ValidationResult,
-} from "./core-schemas.js";
+import { safeValidate, type ValidationResult } from "./core-schemas.js";
 import {
 	type ErrorContext,
 	InputSanitizer,
@@ -22,7 +18,6 @@ import {
 export interface ValidationOptions {
 	strict?: boolean;
 	sanitize?: boolean;
-	allowPhysicsSkills?: boolean;
 	maxInputLength?: number;
 	allowFileOperations?: boolean;
 	allowNetworkAccess?: boolean;
@@ -54,7 +49,6 @@ export async function validateSkillInput<T = InstructionInput>(
 	const {
 		strict = false,
 		sanitize = true,
-		allowPhysicsSkills = false,
 		maxInputLength = 10000,
 		allowFileOperations = true,
 		allowNetworkAccess = true,
@@ -136,51 +130,7 @@ export async function validateSkillInput<T = InstructionInput>(
 			}
 		}
 
-		// Step 4: Physics skills gate check
-		if (
-			context.skillId?.startsWith("qm-") ||
-			context.skillId?.startsWith("gr-")
-		) {
-			if (!allowPhysicsSkills) {
-				errors.push(
-					"Physics skills are disabled. Enable with ENABLE_PHYSICS_SKILLS=true or check authorization.",
-				);
-				return {
-					success: false,
-					errors,
-					warnings,
-					sanitized,
-					context: errorContext,
-				};
-			}
-
-			// Physics skills require physicsAnalysisJustification
-			const physicsValidation = safeValidate(
-				physicsSkillSchema,
-				processedInput,
-			);
-			if (!physicsValidation.success) {
-				errors.push(
-					`Physics skill validation failed: ${physicsValidation.error.message}`,
-				);
-
-				if (strict) {
-					return {
-						success: false,
-						errors,
-						warnings,
-						sanitized,
-						context: errorContext,
-					};
-				} else {
-					warnings.push(
-						"Physics skill missing physicsAnalysisJustification — provide ≥ 20 non-whitespace chars explaining why physics-analysis metaphors are appropriate",
-					);
-				}
-			}
-		}
-
-		// Step 5: Schema validation
+		// Step 4: Schema validation
 		const validation = safeValidate(schema, processedInput, errorContext);
 		if (!validation.success) {
 			errors.push(`Schema validation failed: ${validation.error.message}`);
@@ -392,17 +342,6 @@ export async function criticalSkillGuard(
 		}
 	}
 
-	if (skillId.startsWith("qm-") || skillId.startsWith("gr-")) {
-		const physicsValidation = safeValidate(physicsSkillSchema, input);
-		if (!physicsValidation.success) {
-			return {
-				allowed: false,
-				reason:
-					"Physics skills require physicsAnalysisJustification (≥ 20 non-whitespace chars) explaining why physics-analysis metaphors are appropriate.",
-			};
-		}
-	}
-
 	if (skillId.startsWith("adapt-")) {
 		const allowAdaptive = process.env.DISABLE_ADAPTIVE_ROUTING !== "true";
 		if (!allowAdaptive) {
@@ -414,12 +353,7 @@ export async function criticalSkillGuard(
 		}
 	}
 
-	const resourceIntensiveSkills = [
-		"bench-eval-suite",
-		"eval-prompt-bench",
-		"qm-path-integral-historian",
-		"gr-spacetime-debt-metric",
-	];
+	const resourceIntensiveSkills = ["bench-eval-suite", "eval-prompt-bench"];
 
 	if (resourceIntensiveSkills.includes(skillId)) {
 		const allowIntensive = process.env.ALLOW_INTENSIVE_SKILLS === "true";

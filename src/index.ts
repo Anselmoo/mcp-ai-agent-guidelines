@@ -132,11 +132,7 @@ export function createRuntime(
 	const integratedRuntime = createIntegratedRuntime(
 		skillRegistry,
 		{ modelRouter },
-		{
-			validation: {
-				allowPhysicsSkills: true,
-			},
-		},
+		{},
 	);
 	const serena = options.serena ?? resolveSerenaClient();
 	return {

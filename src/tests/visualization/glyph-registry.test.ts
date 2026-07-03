@@ -28,9 +28,9 @@ describe("GlyphRegistry", () => {
 
 	describe("forSkill", () => {
 		it("returns the correct glyph for known domain prefixes", () => {
-			expect(registry.forSkill("qm-entanglement-mapper")).toEqual({
-				glyph: "⚛️",
-				label: "Quantum Mechanics metaphors",
+			expect(registry.forSkill("adapt-aco-router")).toEqual({
+				glyph: "🧬",
+				label: "Bio-inspired Adaptive Routing",
 			});
 			expect(registry.forSkill("gov-data-guardrails").glyph).toBe("🛡️");
 			expect(registry.forSkill("arch-decision-tree").glyph).toBe("🏗️");
@@ -65,8 +65,8 @@ describe("GlyphRegistry", () => {
 	});
 
 	describe("domainPrefixes", () => {
-		it("covers exactly 18 domain prefixes", () => {
-			expect(Object.keys(registry.domainPrefixes())).toHaveLength(18);
+		it("covers exactly 16 domain prefixes", () => {
+			expect(Object.keys(registry.domainPrefixes())).toHaveLength(16);
 		});
 
 		it("every entry has a non-empty glyph and label", () => {
@@ -78,16 +78,14 @@ describe("GlyphRegistry", () => {
 	});
 
 	describe("instructions", () => {
-		it("covers exactly 19 instruction names", () => {
-			expect(Object.keys(registry.instructions())).toHaveLength(19);
+		it("covers exactly 18 instruction names", () => {
+			expect(Object.keys(registry.instructions())).toHaveLength(18);
 		});
 	});
 
 	describe("format", () => {
 		it("prefixes the skill glyph before the skill id", () => {
-			expect(registry.format("qm-entanglement-mapper")).toBe(
-				"⚛️ qm-entanglement-mapper",
-			);
+			expect(registry.format("adapt-aco-router")).toBe("🧬 adapt-aco-router");
 		});
 
 		it("uses the fallback glyph for unknown skills", () => {

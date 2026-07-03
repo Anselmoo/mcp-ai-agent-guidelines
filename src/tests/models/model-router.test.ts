@@ -49,11 +49,14 @@ describe("model-router", () => {
 			}).id,
 		).toBe("strong_primary");
 
+		// Config-driven: the orchestration profile resolves to free_secondary via
+		// the default orchestration config (physical-ID → alias translation now
+		// works; the old "cheap_primary" expectation was the silent fallback).
 		expect(
 			router.chooseSkillModel(orchestrationSkill, {
 				request: "coordinate",
 			}).id,
-		).toBe("cheap_primary");
+		).toBe("free_secondary");
 	});
 
 	it("exposes domain routing metadata from the orchestration config", () => {
@@ -222,11 +225,13 @@ describe("model-router", () => {
 			preferredModelClass: "free",
 		};
 
+		// Config-driven: the debug-* domain profile resolves through the default
+		// orchestration config now that physical model IDs translate to aliases.
 		expect(
 			router.chooseInstructionModel(routedInstruction, {
 				request: "route nested workflow",
 			}).id,
-		).toBe("free_primary");
+		).toBe("free_secondary");
 	});
 
 	it("keeps strong instructions on the synthesis model when configured fan-out is present", () => {

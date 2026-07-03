@@ -12,7 +12,6 @@ import { instructionModule as evaluate_module } from "../instructions/evaluate.j
 import { instructionModule as govern_module } from "../instructions/govern.js";
 import { instructionModule as implement_module } from "../instructions/implement.js";
 import { instructionModule as meta_routing_module } from "../instructions/meta-routing.js";
-import { instructionModule as onboard_project_module } from "../instructions/onboard_project.js";
 import { instructionModule as orchestrate_module } from "../instructions/orchestrate.js";
 import { instructionModule as plan_module } from "../instructions/plan.js";
 import { instructionModule as prompt_engineering_module } from "../instructions/prompt-engineering.js";
@@ -45,7 +44,6 @@ export const WORKFLOW_PUBLIC_INSTRUCTION_MODULES: InstructionModule[] = [
 export const DISCOVERY_PUBLIC_INSTRUCTION_MODULES: InstructionModule[] = [
 	bootstrap_module,
 	meta_routing_module,
-	onboard_project_module,
 ];
 
 export const PUBLIC_INSTRUCTION_MODULES: InstructionModule[] = [

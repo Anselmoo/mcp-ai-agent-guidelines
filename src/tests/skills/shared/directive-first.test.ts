@@ -125,13 +125,6 @@ describe("resolveTransformProfile", () => {
 		expect(p?.outputContract.toLowerCase()).toMatch(/scope|orient|ambigu/);
 	});
 
-	it("gives project-onboard an orientation profile", () => {
-		const p = resolveTransformProfile("project-onboard");
-		expect(p).toBeDefined();
-		expect(p?.domain).not.toMatch(/^[A-Z][a-z]+:/);
-		expect(p?.outputContract.toLowerCase()).toMatch(/scope|orient|ambigu/);
-	});
-
 	it("still excludes only the analogy special path", () => {
 		// analogy-think gates to a request-specific metaphor (or "no analogy opens")
 		// — already situation-anchored, not a template wall. The sole correct

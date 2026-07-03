@@ -22,23 +22,10 @@ import {
 	ANNOTATION_ADVANCED,
 	ANNOTATION_CORE,
 	ANNOTATION_GOVERNANCE,
-	ANNOTATION_PHYSICS,
 	annotationsForTool,
 } from "../tools/shared/annotation-presets.js";
 
 describe("annotation-presets", () => {
-	it("returns ANNOTATION_PHYSICS for qm- prefix", () => {
-		expect(annotationsForTool("qm-entanglement-mapper")).toEqual(
-			ANNOTATION_PHYSICS,
-		);
-	});
-
-	it("returns ANNOTATION_PHYSICS for gr- prefix", () => {
-		expect(annotationsForTool("gr-geodesic-refactor")).toEqual(
-			ANNOTATION_PHYSICS,
-		);
-	});
-
 	it("returns ANNOTATION_GOVERNANCE for gov- prefix", () => {
 		expect(annotationsForTool("gov-data-guardrails")).toEqual(
 			ANNOTATION_GOVERNANCE,
@@ -57,7 +44,6 @@ describe("annotation-presets", () => {
 	it("all annotation presets have readOnlyHint=true and destructiveHint=false", () => {
 		for (const preset of [
 			ANNOTATION_CORE,
-			ANNOTATION_PHYSICS,
 			ANNOTATION_GOVERNANCE,
 			ANNOTATION_ADVANCED,
 		]) {
@@ -256,8 +242,6 @@ import { SkillHandler, tierForSkill } from "../tools/skill-handler.js";
 describe("skill-handler", () => {
 	describe("tierForSkill", () => {
 		const cases: [string, SkillTier][] = [
-			["qm-entanglement-mapper", "physics"],
-			["gr-geodesic-refactor", "physics"],
 			["gov-data-guardrails", "governance"],
 			["adv-aco-router", "advanced"],
 			["req-analysis", "core"],
@@ -297,7 +281,7 @@ describe("skill-handler", () => {
 		it("throws when no handler registered for tier", async () => {
 			const handler = new SkillHandler();
 			await expect(
-				handler.dispatch({ id: "qm-test" } as never, { request: "x" }),
+				handler.dispatch({ id: "req-test" } as never, { request: "x" }),
 			).rejects.toThrow(/No handler registered/);
 		});
 

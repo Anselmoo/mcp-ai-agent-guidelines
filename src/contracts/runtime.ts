@@ -52,12 +52,6 @@ export interface InstructionInput<
 	constraints?: string[];
 	successCriteria?: string;
 	deliverable?: string;
-	/**
-	 * Required by the `hasPhysicsJustification` gate. Must be ≥ 20 non-whitespace
-	 * characters explaining *why* physics-analysis metaphors are appropriate here.
-	 * Without this field the physics-analysis gate will not open.
-	 */
-	physicsAnalysisJustification?: string;
 	options?: TOptions;
 	[key: string]: unknown;
 }
@@ -197,6 +191,13 @@ export interface WorkflowExecutionResult {
 	steps: StepExecutionRecord[];
 	recommendations: RecommendationItem[];
 	artifacts?: SkillArtifact[];
+	/**
+	 * How the situation-transform produced the lead recommendation:
+	 * "sampled" — an LLM analyzed the real project via MCP sampling;
+	 * "directive" — no sampling client was available, so the output is the
+	 * template directive (generic guidance, not project-specific analysis).
+	 */
+	situationMode?: "sampled" | "directive";
 }
 
 export interface ExecutionProgressRecord {

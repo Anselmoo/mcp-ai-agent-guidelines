@@ -142,32 +142,6 @@ describe("runtime/integration", () => {
 		expect(result.result.summary).toBe("Cached result");
 	});
 
-	it("enforces the quorum gate for physics skills on the integrated runtime path", async () => {
-		const skillRun = vi
-			.fn()
-			.mockResolvedValue(createMockResult("should not run"));
-		const runtime = createIntegratedRuntime(
-			{
-				getById: () => ({ run: skillRun }),
-				buildSkillRuntime: (base: SkillExecutionRuntime) => base,
-			} as unknown as SkillRegistry,
-			{} as unknown as SkillExecutionRuntime,
-			{
-				enableOrchestration: false,
-				validation: { allowPhysicsSkills: true },
-			},
-		);
-
-		await expect(
-			runtime.executeSkill("qm-entanglement-mapper", {
-				request: "show me a dashboard",
-				physicsAnalysisJustification:
-					"This explanation is intentionally verbose but avoids the special rationale keywords entirely.",
-			}),
-		).rejects.toThrow(/quorum gate rejected/i);
-		expect(skillRun).not.toHaveBeenCalled();
-	});
-
 	it("executes direct batches sequentially and keeps later successes when failFast is off", async () => {
 		const runtime = createIntegratedRuntime(
 			{

@@ -1,7 +1,7 @@
 # Refactor Workflow
 
 ## 1. Trigger & Intent
-**Triggered by:** `physics-analysis` or a user request to clean up technical debt.
+**Triggered by:** a user request to clean up technical debt.
 **Intent:** Reduces complexity without changing observable functionality. Modifies AST safely.
 
 ## 2. Resource Pooling

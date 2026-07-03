@@ -156,23 +156,6 @@ export const qualityMetricSchema = z.object({
 	trend: z.enum(["improving", "degrading", "stable"]).optional(),
 });
 
-// Physics skill input (gated)
-// Aligns with the `hasPhysicsJustification` gate used throughout the runtime
-// (workflow-engine.ts, skill-handler.ts, workflow-spec.ts, InstructionInput).
-// `physicsAnalysisJustification` is REQUIRED here so that criticalSkillGuard
-// correctly blocks physics skills that lack a valid justification.
-export const physicsSkillSchema = skillRequestSchema.extend({
-	physicsAnalysisJustification: nonEmptyStringSchema
-		.refine(
-			(val) => val.replace(/\s/g, "").length >= 20,
-			"physicsAnalysisJustification must contain at least 20 non-whitespace characters explaining why physics-analysis metaphors are appropriate",
-		)
-		.describe(
-			"Why physics-analysis metaphors are appropriate for this task (≥ 20 non-whitespace chars). Required by the hasPhysicsJustification gate.",
-		),
-	confidenceTier: z.enum(["proven", "experimental", "exploratory"]).optional(),
-});
-
 // Governance and compliance schemas
 export const complianceRequirementSchema = z.object({
 	domain: z.enum([
@@ -280,7 +263,6 @@ export function createValidator<T>(schema: z.ZodType<T>) {
 
 // Common validators ready for use
 export const validateSkillRequest = createValidator(skillRequestSchema);
-export const validatePhysicsSkillRequest = createValidator(physicsSkillSchema);
 export const validateBenchmarkConfig = createValidator(benchmarkConfigSchema);
 export const validateComplianceRequirement = createValidator(
 	complianceRequirementSchema,

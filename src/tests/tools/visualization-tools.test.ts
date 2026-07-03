@@ -103,11 +103,11 @@ describe("dispatchVisualizationToolCall", () => {
 		it("filters skills to the given domain", async () => {
 			const result = await dispatchVisualizationToolCall("graph-visualize", {
 				view: "domain-focus",
-				domain: "qm",
+				domain: "adapt",
 			});
 			expect(result.isError).toBe(false);
 			const text = getFirstText(result);
-			expect(text).toContain("subgraph qm");
+			expect(text).toContain("subgraph adapt");
 		});
 
 		it("returns error for missing domain parameter", async () => {
@@ -130,14 +130,14 @@ describe("dispatchVisualizationToolCall", () => {
 		it("renders SVG output with glyph-labelled skills", async () => {
 			const result = await dispatchVisualizationToolCall("graph-visualize", {
 				view: "domain-focus",
-				domain: "qm",
+				domain: "adapt",
 				format: "svg",
 			});
 			expect(result.isError).toBe(false);
 			const text = getFirstText(result);
 			expect(text).toContain("<svg");
 			expect(text).toContain("Agent topology");
-			expect(text).toContain("qm-");
+			expect(text).toContain("adapt-");
 		});
 	});
 

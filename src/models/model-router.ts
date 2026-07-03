@@ -1,4 +1,5 @@
 import {
+	aliasForPhysicalModelId,
 	resolveForSkill as configResolveForSkill,
 	getDomainRouting,
 	getFanOut,
@@ -165,7 +166,15 @@ function profileForCapabilityOrClass(
 }
 
 function profileForResolvedModelId(modelId: string): ModelProfile | null {
-	return MODEL_PROFILES[modelId] ?? null;
+	const direct = MODEL_PROFILES[modelId];
+	if (direct) {
+		return direct;
+	}
+	// resolveForSkill() returns the *physical* model ID from the orchestration
+	// config (e.g. "gpt-5-mini"), while MODEL_PROFILES is keyed by role alias
+	// (e.g. "free_secondary") — translate before giving up.
+	const alias = aliasForPhysicalModelId(modelId);
+	return alias ? (MODEL_PROFILES[alias] ?? null) : null;
 }
 
 function resolveConfiguredSkillModel(skillId: string): ModelProfile | null {
@@ -352,7 +361,7 @@ export class ModelRouter {
 		return configResolveForSkill(skillId);
 	}
 
-	/** Returns the profile name for a skill ID (e.g. "physics_analysis" for qm-*). */
+	/** Returns the profile name for a skill ID. */
 	public getProfileForSkill(skillId: string): string {
 		return getProfileForSkill(skillId);
 	}

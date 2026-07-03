@@ -77,6 +77,7 @@ const routerHarness = vi.hoisted(() => {
 });
 
 vi.mock("../../config/orchestration-config.js", () => ({
+	aliasForPhysicalModelId: () => null,
 	resolveForSkill: routerHarness.configResolveForSkill,
 	getDomainRouting: routerHarness.getDomainRouting,
 	getFanOut: routerHarness.getFanOut,
