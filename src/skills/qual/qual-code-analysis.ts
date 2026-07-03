@@ -13,6 +13,10 @@ import {
 	createFocusRecommendations,
 } from "../shared/handler-helpers.js";
 import { extractRequestSignals } from "../shared/recommendations.js";
+import {
+	matchProbes,
+	readReferencedFiles,
+} from "../shared/workspace-grounding.js";
 
 const CODE_ANALYSIS_RULES: Array<{ pattern: RegExp; finding: string }> = [
 	{
@@ -135,14 +139,32 @@ const qualCodeAnalysisHandler: SkillHandler = {
 			);
 		}
 
+		const groundedFiles = await readReferencedFiles(context);
+		const contentProbes = CODE_ANALYSIS_RULES.map((rule) => ({
+			pattern: rule.pattern,
+			finding: (path: string) => `\`${path}\`: ${rule.finding}`,
+		}));
+		const groundedRecs = matchProbes(groundedFiles, contentProbes).map(
+			(detail, index) => ({
+				title: `Grounded finding ${index + 1}`,
+				detail,
+				modelClass: context.model.modelClass,
+				groundingScope: "workspace" as const,
+				evidenceAnchors: groundedFiles.map((f) => f.path),
+			}),
+		);
+
 		return createCapabilityResult(
 			context,
-			`Code Analysis identified ${findings.length} structural finding${findings.length === 1 ? "" : "s"} across complexity, coupling, and cohesion dimensions.`,
-			createFocusRecommendations(
-				"Structural finding",
-				findings,
-				context.model.modelClass,
-			),
+			`Code Analysis identified ${findings.length} structural finding${findings.length === 1 ? "" : "s"} across complexity, coupling, and cohesion dimensions${groundedFiles.length > 0 ? `; grounded in ${groundedFiles.length} referenced file(s)` : ""}.`,
+			[
+				...groundedRecs,
+				...createFocusRecommendations(
+					"Structural finding",
+					findings,
+					context.model.modelClass,
+				),
+			],
 			[
 				buildComparisonMatrixArtifact(
 					"Code analysis lens matrix",
