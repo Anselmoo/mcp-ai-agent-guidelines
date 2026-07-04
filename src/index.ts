@@ -35,7 +35,6 @@ import {
 	buildPublicResources,
 	readPublicResource,
 } from "./resources/resource-surface.js";
-import { attachSamplerCapability } from "./runtime/attach-sampler.js";
 import { createIntegratedRuntime } from "./runtime/integration.js";
 import { MemorySessionStore } from "./runtime/memory-session-store.js";
 import {
@@ -338,10 +337,6 @@ export async function main() {
 
 	// Phase C: Anchor state storage to the MCP client's workspace root.
 	await anchorStateToClientRoots(server, runtime);
-
-	// Attach the optional MCP sampling capability so skills can request
-	// real, project-specific analysis when the client supports it.
-	attachSamplerCapability(runtime, server);
 
 	// Best-effort sweep of orphaned temp files left by interrupted atomic writes.
 	if (runtime.workspaceRoot) {

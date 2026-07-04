@@ -6,14 +6,19 @@ import type { SkillExecutionContext } from "../runtime/contracts.js";
 import { extractReferencedPaths } from "./recommendations.js";
 
 /**
- * Workspace grounding — lets a skill produce problem-specific findings WITHOUT
- * an MCP sampling client by reading the actual files a request references and
- * matching catalogs against real file CONTENT instead of the request sentence.
+ * Workspace grounding — reads the files a request explicitly names and matches
+ * skill-specific probe rules against their real CONTENT.
+ *
+ * Its primary value is for headless / eval / non-LLM consumers that can't execute
+ * a directive themselves: it lets those callers get grounded findings without any
+ * model in the loop. For an LLM caller (which already holds the project context)
+ * it acts as a sharper seed — concrete file evidence the caller may not have read
+ * yet — NOT a substitute for the caller reading the project itself.
  *
  * Named-files-only: reads paths the request/context explicitly mention, never
- * guesses. Always additive; never throws. When the workspace is absent or
- * nothing is referenced, returns empty and callers fall back to their existing
- * text-signal behaviour.
+ * guesses; capped at a few small files. Always additive; never throws. When the
+ * workspace is absent or nothing is referenced, returns empty and callers fall
+ * back to their existing text-signal behaviour.
  */
 
 /** A file successfully read from the workspace, with a bounded excerpt. */

@@ -457,7 +457,6 @@ export async function dispatchToolCall(
 					outputContract: profile.outputContract,
 					candidateNextTools:
 						profile.candidateNextTools ?? instruction.manifest.chainTo ?? [],
-					sampler: runtime.sampler,
 				})
 			: result.data;
 

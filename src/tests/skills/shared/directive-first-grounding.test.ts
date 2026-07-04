@@ -33,14 +33,20 @@ const deps = {
 	candidateNextTools: ["issue-debug"],
 };
 
-describe("toSituationResult banner suppression", () => {
-	it("omits the Directive mode banner when a workspace-grounded rec is present", async () => {
+// A sharp directive to an LLM caller is the intended output, not a degraded
+// fallback — so toSituationResult never emits an apology banner, whether or not
+// a skill grounded the result in workspace files. (The old "⚠️ Directive mode"
+// banner and its grounding-based suppression were removed with the sampler.)
+describe("toSituationResult never apologizes", () => {
+	it("emits a clean directive when a workspace-grounded rec is present", async () => {
 		const out = await toSituationResult(resultWith("workspace"), deps);
 		expect(out.recommendations[0].detail).not.toContain("Directive mode");
+		expect(out.recommendations[0].detail).not.toContain("⚠️");
 	});
 
-	it("keeps the Directive mode banner when nothing is grounded", async () => {
+	it("emits a clean directive when nothing is grounded", async () => {
 		const out = await toSituationResult(resultWith("request"), deps);
-		expect(out.recommendations[0].detail).toContain("Directive mode");
+		expect(out.recommendations[0].detail).not.toContain("Directive mode");
+		expect(out.recommendations[0].detail).not.toContain("⚠️");
 	});
 });

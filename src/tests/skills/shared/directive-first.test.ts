@@ -1,8 +1,7 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import type {
 	ModelProfile,
 	RecommendationItem,
-	Sampler,
 	WorkflowExecutionResult,
 } from "../../../contracts/runtime.js";
 import {
@@ -180,17 +179,20 @@ describe("toSituationResult", () => {
 		);
 	});
 
-	it("uses the sampler to produce findings when one is available", async () => {
-		const sampler: Sampler = vi
-			.fn()
-			.mockResolvedValue({ text: "Your golden.jsonl lacks hard negatives." });
+	it("returns a clean directive with no apology banner", async () => {
 		const out = await toSituationResult(
 			workflowResult([rec("Define the dataset slices.")]),
-			{ ...deps, sampler },
+			deps,
 		);
-		expect(out.recommendations[0]?.detail).toContain(
-			"Your golden.jsonl lacks hard negatives.",
-		);
+		const detail = out.recommendations[0]?.detail ?? "";
+		// A sharp directive to an LLM caller is the intended output, not a
+		// degraded fallback — so it must never carry the old "⚠️ Directive mode"
+		// / "template guidance, not project-specific analysis" apology.
+		expect(detail).not.toContain("⚠️");
+		expect(detail).not.toContain("template guidance");
+		expect(detail).not.toContain("not project-specific");
+		// The situation transform no longer emits a mode flag.
+		expect(out).not.toHaveProperty("situationMode");
 	});
 
 	it("preserves steps' labels but trims the artifact wall to the cap", async () => {
