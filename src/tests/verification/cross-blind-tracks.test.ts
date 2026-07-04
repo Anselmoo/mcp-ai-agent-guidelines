@@ -336,17 +336,19 @@ describe("P4: physics adapter deprecation — surface and chainTo", () => {
 		expect(offenders).toEqual([]);
 	});
 
-	it("physics adapter source files remain on disk (research scaffolding)", () => {
-		// Intent: deprecate as PRODUCTION TOOL, not as research code. The
-		// scoping spike documented that future trials with richer telemetry
-		// could revisit; that requires the source to stay.
+	it("physics adapter source files are fully removed", () => {
+		// The 2026-06 research-scaffolding grace period ended: the Track C
+		// trials found zero load-bearing mappings, so the QM/GR source was
+		// deleted outright (analogy-think is the surviving replacement).
 		const sources = [
 			"src/skills/shared/physics-adapter-prototype.ts",
-			"src/skills/qm/qm-physics-helpers.ts",
-			"src/skills/gr/gr-physics-helpers.ts",
+			"src/skills/qm",
+			"src/skills/gr",
 		];
 		for (const rel of sources) {
-			expect(existsSync(resolve(REPO_ROOT, rel)), `missing ${rel}`).toBe(true);
+			expect(existsSync(resolve(REPO_ROOT, rel)), `still present: ${rel}`).toBe(
+				false,
+			);
 		}
 	});
 });

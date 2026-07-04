@@ -203,21 +203,6 @@ describe("Cost hierarchy — free first", () => {
 describe("Skill class routing contract", () => {
 	const router = new ModelRouter();
 
-	it("physics skills (qm-*, gr-*) route to strong", () => {
-		const physicsSkills = [
-			...getSkillsByPrefix("qm-"),
-			...getSkillsByPrefix("gr-"),
-		];
-
-		expect(physicsSkills.length).toBeGreaterThan(0);
-		for (const module of physicsSkills) {
-			expect(module.manifest.preferredModelClass).toBe("strong");
-			expect(
-				router.chooseSkillModel(module.manifest, TEST_INPUT).costTier,
-			).toBe("strong");
-		}
-	});
-
 	it("governance skills (gov-*) route to strong", () => {
 		const governanceSkills = getSkillsByPrefix("gov-");
 

@@ -5,23 +5,19 @@ import {
 	errorContextSchema,
 	executionProgressRecordSchema,
 	modelClassSchema,
-	physicsSkillSchema,
 	safeFilePathSchema,
 	safeValidate,
 	skillRequestSchema,
 	validateBenchmarkConfig,
 	validateComplianceRequirement,
 	validateExecutionProgressRecord,
-	validatePhysicsSkillRequest,
 	validateSkillRequest,
 } from "../../validation/core-schemas.js";
 
 describe("core-schemas", () => {
 	it("returns the first validation issue with path metadata", () => {
-		const result = safeValidate(physicsSkillSchema, {
+		const result = safeValidate(skillRequestSchema, {
 			request: "",
-			physicsAnalysisJustification:
-				"conventional analysis is insufficient because of cross-cutting quantum entanglement patterns",
 		});
 
 		expect(result.success).toBe(false);
@@ -31,31 +27,7 @@ describe("core-schemas", () => {
 		}
 	});
 
-	it("validates physics requests and benchmark defaults", () => {
-		// Valid physics request with the required justification field
-		expect(
-			validatePhysicsSkillRequest({
-				request: "investigate anomaly",
-				physicsAnalysisJustification:
-					"conventional dependency analysis is insufficient for this cross-cutting entanglement",
-			}).success,
-		).toBe(true);
-
-		// Missing justification must fail
-		expect(
-			validatePhysicsSkillRequest({
-				request: "investigate anomaly",
-			}).success,
-		).toBe(false);
-
-		// Justification present but too short (< 20 non-whitespace chars) must fail
-		expect(
-			validatePhysicsSkillRequest({
-				request: "investigate anomaly",
-				physicsAnalysisJustification: "too short",
-			}).success,
-		).toBe(false);
-
+	it("validates benchmark defaults", () => {
 		const benchmark = validateBenchmarkConfig({
 			name: "latency",
 			criteria: [{ metric: "p95", expectedValue: 100 }],

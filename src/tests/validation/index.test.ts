@@ -38,18 +38,15 @@ describe("validation index", () => {
 
 		service.updateConfig({
 			validationMode: "strict",
-			enablePhysicsSkills: true,
 			traceValidation: true,
 		});
 
 		expect(reused).toBe(service);
 		expect(service.isValidationEnabled()).toBe(true);
 		expect(service.isStrictMode()).toBe(true);
-		expect(service.getConfig().enablePhysicsSkills).toBe(true);
 		expect(service.getValidationStats()).toEqual({
 			mode: "strict",
 			enabledFeatures: [
-				"physics-skills",
 				"adaptive-routing",
 				"file-operations",
 				"network-access",
@@ -67,7 +64,6 @@ describe("validation index", () => {
 		});
 		expect(logSpy).toHaveBeenCalledWith("Updated validation config:", {
 			validationMode: "strict",
-			enablePhysicsSkills: true,
 			traceValidation: true,
 		});
 	});
@@ -114,7 +110,7 @@ describe("validation index", () => {
 		}
 	});
 
-	it("covers disabled and physics-specific input validation branches", async () => {
+	it("covers the disabled input validation branch", async () => {
 		process.env.NODE_ENV = "test";
 		const service = ValidationService.initialize();
 
@@ -126,20 +122,6 @@ describe("validation index", () => {
 		expect(disabled.success).toBe(true);
 		expect(disabled.warnings).toEqual(["Validation disabled"]);
 		expect(disabled.sanitized).toBe(false);
-
-		service.updateConfig({
-			validationMode: "advisory",
-			enablePhysicsSkills: false,
-		});
-		const physicsBlocked = await service.validateSkillExecution(
-			"qm-wavefunction-coverage",
-			{ request: "analyze this" },
-		);
-
-		expect(physicsBlocked.success).toBe(false);
-		expect(physicsBlocked.errors).toContain(
-			"Physics skills require physicsAnalysisJustification (≥ 20 non-whitespace chars) explaining why physics-analysis metaphors are appropriate.",
-		);
 	});
 
 	it("wraps validateSkill, executeSkillSafely, and environment status checks", async () => {

@@ -424,17 +424,15 @@ class TestValidateGenerationInvariants(unittest.TestCase):
 # ---------------------------------------------------------------------------
 
 class TestValidateAuthoritativeWorkflowContracts(unittest.TestCase):
-    def test_loads_meta_routing_authoritative_schema_with_physics_gate(self) -> None:
+    def test_meta_routing_authoritative_schema_has_no_physics_gate(self) -> None:
+        # Physics analysis (qm/gr) was removed; the meta-routing schema must no
+        # longer carry the physicsAnalysisJustification gate field.
         contracts = _load_authoritative_workflow_contracts()
         meta_routing = contracts["meta-routing"]
         input_schema = meta_routing["inputSchema"]
 
-        self.assertIn("physicsAnalysisJustification", input_schema["properties"])
-        self.assertEqual(
-            input_schema["properties"]["physicsAnalysisJustification"]["type"],
-            "string",
-        )
-        self.assertNotIn("physicsAnalysisJustification", input_schema["required"])
+        self.assertNotIn("physicsAnalysisJustification", input_schema["properties"])
+        self.assertIn("request", input_schema["properties"])
 
     def test_raises_when_generated_schema_drifts_from_authoritative_spec(self) -> None:
         manifests = [
@@ -465,7 +463,7 @@ class TestValidateAuthoritativeWorkflowContracts(unittest.TestCase):
                         "context": {"type": "string"},
                         "taskType": {"type": "string"},
                         "currentPhase": {"type": "string"},
-                        "physicsAnalysisJustification": {"type": "string"},
+                        "extraDriftField": {"type": "string"},
                     },
                     "required": ["request"],
                 },
@@ -483,7 +481,7 @@ class TestValidateAuthoritativeWorkflowContracts(unittest.TestCase):
             )
 
         self.assertIn("meta-routing", str(ctx.exception))
-        self.assertIn("physicsAnalysisJustification", str(ctx.exception))
+        self.assertIn("extraDriftField", str(ctx.exception))
 
 
 # ---------------------------------------------------------------------------
@@ -518,11 +516,11 @@ class TestSkillDomain(unittest.TestCase):
     def test_arch_prefix(self) -> None:
         self.assertEqual(skill_domain("arch-system"), "arch")
 
-    def test_qm_prefix(self) -> None:
-        self.assertEqual(skill_domain("qm-superposition-generator"), "qm")
+    def test_gov_prefix(self) -> None:
+        self.assertEqual(skill_domain("gov-policy-validation"), "gov")
 
-    def test_gr_prefix_with_long_name(self) -> None:
-        self.assertEqual(skill_domain("gr-gravitational-lensing-tracer"), "gr")
+    def test_orch_prefix_with_long_name(self) -> None:
+        self.assertEqual(skill_domain("orch-agent-orchestrator"), "orch")
 
     def test_adapt_prefix(self) -> None:
         self.assertEqual(skill_domain("adapt-aco-router"), "adapt")
@@ -539,9 +537,11 @@ class TestADR001PhaseOrdering(unittest.TestCase):
         for domain in ("req", "debug", "arch"):
             self.assertEqual(_ADR001_DOMAIN_PHASES[domain], 1, f"{domain} should be Phase 1")
 
-    def test_physics_domains_are_phase_7(self) -> None:
+    def test_physics_domains_removed_from_phase_table(self) -> None:
+        # qm/gr physics domains were deleted; they must no longer appear in the
+        # ADR-001 phase table.
         for domain in ("qm", "gr"):
-            self.assertEqual(_ADR001_DOMAIN_PHASES[domain], 7, f"{domain} should be Phase 7")
+            self.assertNotIn(domain, _ADR001_DOMAIN_PHASES, f"{domain} should be removed")
 
     def test_phase_ordering_is_consistent(self) -> None:
         # Supporting domains (Phase 2) must come after core (Phase 1)

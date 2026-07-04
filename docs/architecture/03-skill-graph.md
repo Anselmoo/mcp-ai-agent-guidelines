@@ -7,8 +7,8 @@
 
 | Metric | Value |
 |--------|-------|
-| Instructions | 20 |
-| Unique skills covered | 100 |
+| Instructions | 19 |
+| Unique skills covered | 72 |
 | Orphan skills (0 instructions) | 0 |
 
 
@@ -24,11 +24,9 @@
 | 📊 | `eval-` | Evaluation & Benchmarking |
 | 🔄 | `flow-` | Workflow |
 | 🛡️ | `gov-` | Safety & Governance |
-| 🌌 | `gr-` | General Relativity metaphors |
 | 👑 | `lead-` | Leadership & Enterprise |
 | 🎭 | `orch-` | Orchestration |
 | 💬 | `prompt-` | Prompting |
-| ⚛️ | `qm-` | Quantum Mechanics metaphors |
 | 🔍 | `qual-` | Code Analysis & Quality |
 | 📋 | `req-` | Requirements Discovery |
 | 💪 | `resil-` | Resilience & Self-repair |
@@ -56,7 +54,6 @@ flowchart LR
         govern["🛡️ govern"]
         implement["🔨 implement"]
         meta_routing["🧭 meta-routing"]
-        onboard_project["📌 onboard_project"]
         orchestrate["🎭 orchestrate"]
         plan["🗺️ plan"]
         prompt_engineering["💬 prompt-engineering"]
@@ -127,23 +124,6 @@ flowchart LR
         gov_workflow_compliance["gov-workflow-compliance"]
     end
 
-    subgraph D_gr["🌌 GR"]
-        gr_dark_energy_forecaster["gr-dark-energy-forecaster"]
-        gr_equivalence_principle_checker["gr-equivalence-principle-checker"]
-        gr_event_horizon_detector["gr-event-horizon-detector"]
-        gr_frame_dragging_detector["gr-frame-dragging-detector"]
-        gr_geodesic_refactor["gr-geodesic-refactor"]
-        gr_gravitational_wave_detector["gr-gravitational-wave-detector"]
-        gr_hawking_entropy_auditor["gr-hawking-entropy-auditor"]
-        gr_inflation_detector["gr-inflation-detector"]
-        gr_neutron_star_compactor["gr-neutron-star-compactor"]
-        gr_penrose_diagram_mapper["gr-penrose-diagram-mapper"]
-        gr_redshift_velocity_mapper["gr-redshift-velocity-mapper"]
-        gr_schwarzschild_classifier["gr-schwarzschild-classifier"]
-        gr_spacetime_debt_metric["gr-spacetime-debt-metric"]
-        gr_tidal_force_analyzer["gr-tidal-force-analyzer"]
-    end
-
     subgraph D_lead["👑 LEAD"]
         lead_capability_mapping["lead-capability-mapping"]
         lead_digital_architect["lead-digital-architect"]
@@ -166,23 +146,6 @@ flowchart LR
         prompt_engineering["prompt-engineering"]
         prompt_hierarchy["prompt-hierarchy"]
         prompt_refinement["prompt-refinement"]
-    end
-
-    subgraph D_qm["⚛️ QM"]
-        qm_bloch_interpolator["qm-bloch-interpolator"]
-        qm_decoherence_sentinel["qm-decoherence-sentinel"]
-        qm_double_slit_interference["qm-double-slit-interference"]
-        qm_entanglement_mapper["qm-entanglement-mapper"]
-        qm_hamiltonian_descent["qm-hamiltonian-descent"]
-        qm_heisenberg_picture["qm-heisenberg-picture"]
-        qm_measurement_collapse["qm-measurement-collapse"]
-        qm_path_integral_historian["qm-path-integral-historian"]
-        qm_phase_kickback_reviewer["qm-phase-kickback-reviewer"]
-        qm_schrodinger_picture["qm-schrodinger-picture"]
-        qm_superposition_generator["qm-superposition-generator"]
-        qm_tunneling_breakthrough["qm-tunneling-breakthrough"]
-        qm_uncertainty_tradeoff["qm-uncertainty-tradeoff"]
-        qm_wavefunction_coverage["qm-wavefunction-coverage"]
     end
 
     subgraph D_qual["🔍 QUAL"]
@@ -254,11 +217,6 @@ flowchart LR
     debug --> eval_output_grading
     debug --> eval_variance
     debug --> flow_mode_switching
-    debug --> gr_frame_dragging_detector
-    debug --> qm_decoherence_sentinel
-    debug --> qm_entanglement_mapper
-    debug --> qm_heisenberg_picture
-    debug --> qm_uncertainty_tradeoff
     debug --> qual_code_analysis
     debug --> qual_performance
 
@@ -300,10 +258,6 @@ flowchart LR
     enterprise --> eval_design
     enterprise --> gov_model_governance
     enterprise --> gov_regulated_workflow_design
-    enterprise --> gr_event_horizon_detector
-    enterprise --> gr_penrose_diagram_mapper
-    enterprise --> gr_schwarzschild_classifier
-    enterprise --> gr_spacetime_debt_metric
     enterprise --> lead_capability_mapping
     enterprise --> lead_digital_architect
     enterprise --> lead_exec_briefing
@@ -324,11 +278,6 @@ flowchart LR
     evaluate --> eval_prompt
     evaluate --> eval_prompt_bench
     evaluate --> eval_variance
-    evaluate --> qm_hamiltonian_descent
-    evaluate --> qm_heisenberg_picture
-    evaluate --> qm_path_integral_historian
-    evaluate --> qm_uncertainty_tradeoff
-    evaluate --> qm_wavefunction_coverage
     evaluate --> qual_code_analysis
     evaluate --> qual_performance
     evaluate --> resil_redundant_voter
@@ -391,23 +340,16 @@ flowchart LR
     meta_routing --> flow_mode_switching
     meta_routing --> flow_orchestrator
     meta_routing --> gov_policy_validation
-    meta_routing --> gr_spacetime_debt_metric
     meta_routing --> lead_l9_engineer
     meta_routing --> orch_agent_orchestrator
     meta_routing --> orch_multi_agent
     meta_routing --> prompt_hierarchy
-    meta_routing --> qm_superposition_generator
     meta_routing --> qual_refactoring_priority
     meta_routing --> req_ambiguity_detection
     meta_routing --> req_scope
     meta_routing --> resil_redundant_voter
     meta_routing --> strat_prioritization
     meta_routing --> strat_tradeoff
-
-    onboard_project --> arch_system
-    onboard_project --> req_ambiguity_detection
-    onboard_project --> req_scope
-    onboard_project --> synth_research
 
     orchestrate --> adapt_aco_router
     orchestrate --> adapt_hebbian_router
@@ -433,8 +375,6 @@ flowchart LR
     plan --> lead_l9_engineer
     plan --> lead_transformation_roadmap
     plan --> orch_delegation
-    plan --> qm_schrodinger_picture
-    plan --> qm_tunneling_breakthrough
     plan --> req_acceptance_criteria
     plan --> req_analysis
     plan --> req_scope
@@ -454,11 +394,6 @@ flowchart LR
     prompt_engineering --> prompt_engineering
     prompt_engineering --> prompt_hierarchy
     prompt_engineering --> prompt_refinement
-    prompt_engineering --> qm_bloch_interpolator
-    prompt_engineering --> qm_double_slit_interference
-    prompt_engineering --> qm_measurement_collapse
-    prompt_engineering --> qm_phase_kickback_reviewer
-    prompt_engineering --> qm_superposition_generator
     prompt_engineering --> synth_comparative
 
     refactor --> arch_reliability
@@ -468,19 +403,6 @@ flowchart LR
     refactor --> doc_generator
     refactor --> eval_design
     refactor --> flow_context_handoff
-    refactor --> gr_dark_energy_forecaster
-    refactor --> gr_event_horizon_detector
-    refactor --> gr_frame_dragging_detector
-    refactor --> gr_geodesic_refactor
-    refactor --> gr_gravitational_wave_detector
-    refactor --> gr_inflation_detector
-    refactor --> gr_neutron_star_compactor
-    refactor --> gr_schwarzschild_classifier
-    refactor --> gr_spacetime_debt_metric
-    refactor --> gr_tidal_force_analyzer
-    refactor --> qm_entanglement_mapper
-    refactor --> qm_hamiltonian_descent
-    refactor --> qm_tunneling_breakthrough
     refactor --> qual_code_analysis
     refactor --> qual_performance
     refactor --> qual_refactoring_priority
@@ -525,15 +447,6 @@ flowchart LR
     review --> gov_model_governance
     review --> gov_policy_validation
     review --> gov_workflow_compliance
-    review --> gr_equivalence_principle_checker
-    review --> gr_gravitational_wave_detector
-    review --> gr_hawking_entropy_auditor
-    review --> gr_redshift_velocity_mapper
-    review --> gr_schwarzschild_classifier
-    review --> qm_decoherence_sentinel
-    review --> qm_entanglement_mapper
-    review --> qm_uncertainty_tradeoff
-    review --> qm_wavefunction_coverage
     review --> qual_code_analysis
     review --> qual_performance
     review --> qual_review
@@ -554,9 +467,6 @@ flowchart LR
     testing --> eval_variance
     testing --> gov_policy_validation
     testing --> gov_workflow_compliance
-    testing --> qm_decoherence_sentinel
-    testing --> qm_uncertainty_tradeoff
-    testing --> qm_wavefunction_coverage
     testing --> qual_code_analysis
     testing --> qual_performance
     testing --> qual_review

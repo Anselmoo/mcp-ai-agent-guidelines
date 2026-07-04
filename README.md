@@ -8,7 +8,7 @@
 > [!CAUTION]
 > **Experimental / Early Stage:** This _research demonstrator_ project references third‑party models, tools, pricing, and docs that evolve quickly. Treat outputs as recommendations and verify against official docs and your own benchmarks before production use.
 
-A TypeScript ESM **MCP server** exposing **20 public instruction tools** and **7 utility tools**, backed by **102 internal skills** across 18 domain families — from requirements discovery and code quality through governance, resilience, and physics-inspired analysis.
+A TypeScript ESM **MCP server** exposing **19 public instruction tools** and **3 utility tools**, backed by **72 internal skills** across 16 domain families — from requirements discovery and code quality through governance and resilience.
 
 📖 **[Full documentation on GitHub Pages](https://anselmoo.github.io/mcp-ai-agent-guidelines/)**
 
@@ -204,10 +204,9 @@ Instruction-tool input schema — the public instruction workflows share this sh
 
 ## Features
 
-- **20 public instruction tools** exposed through the MCP instruction surface
-- **7 public utility tools** for workspace, memory, session, snapshot, orchestration, model-discovery, and visualization operations (before any `HIDDEN_TOOLS` filtering)
-- **102 internal skills** across 18 domain prefixes — see [Skill Taxonomy](#skill-taxonomy)
-- **Physics-inspired analysis**: 15 quantum-mechanics (`qm-*`) + 15 general-relativity (`gr-*`) skills
+- **19 public instruction tools** exposed through the MCP instruction surface
+- **3 public utility tools** for workspace, model-discovery, and visualization operations (before any `HIDDEN_TOOLS` filtering)
+- **72 internal skills** across 16 domain prefixes — see [Skill Taxonomy](#skill-taxonomy)
 - **Bio-inspired adaptive routing**: ACO, Hebbian, Slime-mould, Quorum, Homeostatic, Clone-Mutate, Replay
 - **Governance layer**: prompt-injection hardening, PII guardrails, policy validation, regulated-workflow design
 - **Model orchestration guidance**: 5 multi-model patterns (parallel critique, draft-review, majority vote, cascade, free triple)
@@ -219,15 +218,15 @@ Instruction-tool input schema — the public instruction workflows share this sh
 
 ## Public MCP Surface
 
-`ListTools` currently exposes **27 tools** total:
+`ListTools` exposes **22 tools** on the full surface (`MCP_FULL_SURFACE=true`); the default slim surface exposes only `task-bootstrap` and `meta-routing`:
 
 | Category | Count | Tools |
 |----------|-------|-------|
 | Instruction (workflow) | 17 | `meta-routing`, `bootstrap`, `implement`, `refactor`, `debug`, `testing`, `design`, `review`, `research`, `orchestrate`, `adapt`, `resilience`, `evaluate`, `prompt-engineering`, `plan`, `document`, `govern` |
-| Instruction (discovery) | 3 | `enterprise`, `physics-analysis`, `onboard_project` |
-| Utility | 7 | `agent-workspace`, `agent-memory`, `agent-session`, `agent-snapshot`, `orchestration-config`, `model-discover`, `graph-visualize` |
+| Instruction (discovery) | 2 | `task-bootstrap`, `meta-routing` |
+| Utility | 3 | `agent-workspace`, `model-discover`, `graph-visualize` |
 
-The 102 skill definitions are internal workflow assets — not individually exposed as MCP tools. See [docs](https://anselmoo.github.io/mcp-ai-agent-guidelines/) for full tool reference.
+The 72 skill definitions are internal workflow assets — not individually exposed as MCP tools. See [docs](https://anselmoo.github.io/mcp-ai-agent-guidelines/) for full tool reference.
 
 ---
 
@@ -253,10 +252,6 @@ Skills are organised under 18 domain-specific prefixes:
 | `lead-` | Leadership & Enterprise | 7 |
 | `resil-` | Resilience & Self-repair | 5 |
 | `gov-` | Safety & Governance | 7 |
-| `qm-` | Quantum Mechanics metaphors | 15 |
-| `gr-` | General Relativity metaphors | 15 |
-
-> Physics skills (`qm-*`, `gr-*`) require explicit justification before invocation. Route through the `physics-analysis` instruction first.
 
 Full taxonomy details: [`docs/architecture/03-skill-graph.md`](docs/architecture/03-skill-graph.md).
 
@@ -286,8 +281,6 @@ Full taxonomy details: [`docs/architecture/03-skill-graph.md`](docs/architecture
 | `document` | Generate documentation artifacts |
 | `govern` | Safety, compliance, guardrails |
 | `enterprise` | Leadership and enterprise-scale AI strategy |
-| `physics-analysis` | QM + GR physics-inspired codebase analysis |
-| `onboard_project` | Session-start project orientation |
 
 ---
 
@@ -360,16 +353,15 @@ Published package note: the npm package ships `dist/`, `README.md`, and `LICENSE
 | `LOG_LEVEL` | `"info"` | Observability log level (`debug`, `info`, `warn`, `error`) |
 | `ALLOW_GOVERNANCE_SKILLS` | unset / `"false"` | Must be `true` to allow `gov-*` skills through `criticalSkillGuard` |
 | `DISABLE_ADAPTIVE_ROUTING` | unset / `"false"` | Set to `true` to hide `routing-adapt` and block `adapt-*` skills; enabled by default (opt-out model) |
-| `ALLOW_INTENSIVE_SKILLS` | unset / `"false"` | Must be `true` to allow resource-intensive skills such as `bench-eval-suite`, `eval-prompt-bench`, `qm-path-integral-historian`, and `gr-spacetime-debt-metric` |
-| `ENABLE_PHYSICS_SKILLS` | unset / `"false"` | Required by input validation when physics skills are not otherwise authorized; physics skills also require conventional-evidence schema validation |
+| `ALLOW_INTENSIVE_SKILLS` | unset / `"false"` | Must be `true` to allow resource-intensive skills such as `bench-eval-suite` and `eval-prompt-bench` |
 | `MCP_WORKSPACE_ROOT` | unset | Absolute path to the project directory the server should write state into (`.mcp-ai-agent-guidelines/`). Required when using `npx` via Claude Desktop, Cursor, or Windsurf — these clients do not preserve the terminal's working directory. VS Code supports `${workspaceFolder}`. |
-| `MCP_FULL_SURFACE` | unset / `"false"` | Set to `true` to expose the full surface; default is slim 3-tool routing surface: `task-bootstrap`, `meta-routing`, `project-onboard` |
+| `MCP_FULL_SURFACE` | unset / `"false"` | Set to `true` to expose the full surface; default is the slim 2-tool routing surface: `task-bootstrap`, `meta-routing` |
 
 > **Target-oriented output & the slim surface.** The situation-transform that turns
 > a tool's keyword-matched template into a project-specific deliverable applies to
 > **19 of the 20 public tools** — the domain tools (`code-review`, `issue-debug`,
-> `feature-implement`, …) plus all three slim-surface tools (`meta-routing` →
-> routing decision, `task-bootstrap` / `project-onboard` → orientation brief).
+> `feature-implement`, …) plus both slim-surface tools (`meta-routing` →
+> routing decision, `task-bootstrap` → orientation brief).
 > `analogy-think` is the sole passthrough (it already gates to a request-specific
 > metaphor). The hidden domain tools remain callable by name; set
 > `MCP_FULL_SURFACE=true` to list them for discovery.
@@ -377,7 +369,6 @@ Published package note: the npm package ships `dist/`, `README.md`, and `LICENSE
 | `MCP_SERENA_COMMAND` | unset | Opt-in. When set, the server spawns Serena as a child MCP server over stdio and resolves Serena queries directly. When unset (default), the server emits structured **advisories** that the host model executes via its own Serena connection — recommended when the host (e.g. Claude Code) already runs Serena. |
 | `MCP_SERENA_ARGS` | unset | Space-separated args passed to `MCP_SERENA_COMMAND`. Example: `--from git+https://github.com/oraios/serena serena-mcp-server`. |
 | `MCP_SERENA_CWD` | unset | Working directory for the spawned Serena child. Defaults to the parent process cwd. |
-| `MCP_LOCAL_MEMORY` | unset / `"false"` | Set to `true` to restore the legacy per-tool-call TOON memory artifact write+read flow (writes under `.mcp-ai-agent-guidelines/memory/`). Off by default — the Serena advisory footer is the recommended cross-session memory channel. |
 
 ### Symbol & memory backend (Serena)
 
@@ -390,7 +381,7 @@ Both modes go through the same internal seam (`src/serena/client.ts`), so tool c
 
 ### Skill gates
 
-Skill execution is gated by environment variables above. Physics skills (`qm-*`, `gr-*`) additionally require `ENABLE_PHYSICS_SKILLS=true` and conventional-evidence input. Model availability is derived from `.mcp-ai-agent-guidelines/config/orchestration.toml`; `strict_mode = false` allows warnings-only, `strict_mode = true` blocks on missing models.
+Skill execution is gated by environment variables above. Model availability is derived from `.mcp-ai-agent-guidelines/config/orchestration.toml`; `strict_mode = false` allows warnings-only, `strict_mode = true` blocks on missing models.
 
 ---
 

@@ -97,6 +97,8 @@ export interface WorkflowEnvelopePayload {
 	steps: Array<{ kind: string; label: string; summary: string }>;
 	recommendations: RecommendationItem[];
 	artifacts: SkillArtifact[];
+	/** "sampled" = LLM-grounded analysis; "directive" = template fallback (no sampling client). */
+	situationMode?: "sampled" | "directive";
 	methodology?: MethodologyReport;
 }
 
@@ -129,6 +131,7 @@ export function buildWorkflowEnvelopePayload(
 			...(result.artifacts ?? []),
 			...result.steps.flatMap((s) => s.skillResult?.artifacts ?? []),
 		],
+		...(result.situationMode ? { situationMode: result.situationMode } : {}),
 	};
 }
 

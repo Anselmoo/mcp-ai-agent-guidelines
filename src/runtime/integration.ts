@@ -14,7 +14,6 @@ import type {
 } from "../contracts/runtime.js";
 import { modelAvailabilityService } from "../models/model-availability.js";
 import type { SkillRegistry } from "../skills/skill-registry.js";
-import { assertPhysicsSkillQuorum } from "../tools/quorum-gate.js";
 import { skillRequestSchema } from "../validation/core-schemas.js";
 import { createErrorContext } from "../validation/error-handling.js";
 import {
@@ -212,14 +211,6 @@ export class IntegratedSkillRuntime {
 				"Validated input was not returned by the validation service",
 			);
 		}
-
-		assertPhysicsSkillQuorum(
-			skillId,
-			validatedInput.request,
-			typeof validatedInput.physicsAnalysisJustification === "string"
-				? validatedInput.physicsAnalysisJustification
-				: undefined,
-		);
 
 		const validationWarnings = validationResult.warnings;
 

@@ -86,7 +86,7 @@ For each file in the Codecov table, sorted by missing-line count descending:
 > |---|---|---|
 > | `src/cli.ts` | 80.30% | 12 Missing + 1 partial |
 > | `src/onboarding/wizard.ts` | 83.33% | 0 Missing + 5 partials |
-> | `src/memory/toon-interface.ts` | 76.47% | 3 Missing + 1 partial |
+> | `src/runtime/secure-session-store.ts` | 76.47% | 3 Missing + 1 partial |
 > | `src/cli/script-runner.ts` | 85.71% | 1 Missing + 1 partial |
 > | `src/runtime/session-store-utils.ts` | 94.11% | 0 Missing + 2 partials |
 
@@ -125,7 +125,7 @@ Review feedback addressed:
 
 Coverage gaps closed:
 - src/cli.ts: added tests for <describe branches covered>
-- src/memory/toon-interface.ts: added tests for <describe branches covered>
+- src/runtime/secure-session-store.ts: added tests for <describe branches covered>
 ...
 
 Re-run CI to see updated Codecov report.
@@ -173,7 +173,7 @@ All 12 Copilot review comments from [`#pullrequestreview-4157854720`](https://gi
 | `src/tools/shared/tool-surface-manifest.ts` | 80 | P3 | Slim-mode docblock on wrong function | ✅ Removed misplaced bullet |
 | `src/tests/…/tool-surface-manifest.test.ts` | 119 | P3 | Test name said "opt-in" | ✅ Renamed to "opt-out model" |
 
-Coverage fixes: added tests for `withSpinner`, `withProgressSpinner`, `onboard --force`, and `toon-interface refresh+onProgress`.
+Coverage fixes: added tests for `withSpinner`, `withProgressSpinner`, and `secure-session-store` read/write branches.
 
 ---
 

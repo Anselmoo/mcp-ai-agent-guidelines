@@ -106,12 +106,7 @@ function recordProgress(
 }
 
 function shouldRunGate(
-	condition:
-		| "always"
-		| "hasContext"
-		| "hasConstraints"
-		| "hasDeliverable"
-		| "hasPhysicsJustification",
+	condition: "always" | "hasContext" | "hasConstraints" | "hasDeliverable",
 	input: InstructionInput,
 ): boolean {
 	switch (condition) {
@@ -122,11 +117,6 @@ function shouldRunGate(
 		case "hasDeliverable":
 			return (
 				typeof input.deliverable === "string" && input.deliverable.length > 0
-			);
-		case "hasPhysicsJustification":
-			return (
-				typeof input.physicsAnalysisJustification === "string" &&
-				input.physicsAnalysisJustification.trim().length >= 20
 			);
 		default:
 			throw new Error(`Unknown gate condition: "${condition}"`);

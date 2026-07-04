@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import type { InstructionManifestEntry } from "../../contracts/generated.js";
 import type { StepExecutionRecord } from "../../contracts/runtime.js";
-import { instructionModule as onboardProjectInstruction } from "../../generated/instructions/onboard_project.js";
-import { onboardProjectWorkflow } from "../../workflows/workflow-spec.js";
+import { instructionModule as metaRoutingInstruction } from "../../generated/instructions/meta-routing.js";
+import { metaRoutingWorkflow } from "../../workflows/workflow-spec.js";
 import {
 	assertInstructionManifestMatchesWorkflowSpec,
 	assertWorkflowExecutionMatchesSpec,
@@ -32,16 +32,16 @@ function cloneManifest(
 describe("workflow-state-validator", () => {
 	it("resolves the authoritative runtime for implemented workflows", () => {
 		const resolved = resolveAuthoritativeWorkflowRuntime(
-			onboardProjectInstruction.manifest,
+			metaRoutingInstruction.manifest,
 		);
 
-		expect(resolved?.spec).toBe(onboardProjectWorkflow);
-		expect(resolved?.steps).toBe(onboardProjectWorkflow.runtime?.steps);
+		expect(resolved?.spec).toBe(metaRoutingWorkflow);
+		expect(resolved?.steps).toBe(metaRoutingWorkflow.runtime?.steps);
 		expect(
 			assertInstructionManifestMatchesWorkflowSpec(
-				onboardProjectInstruction.manifest,
+				metaRoutingInstruction.manifest,
 			),
-		).toBe(onboardProjectWorkflow);
+		).toBe(metaRoutingWorkflow);
 	});
 
 	it("returns null when no authoritative workflow spec exists", () => {
@@ -74,7 +74,7 @@ describe("workflow-state-validator", () => {
 	});
 
 	it("rejects authoritative manifest drift in required input keys", () => {
-		const driftedManifest = cloneManifest(onboardProjectInstruction.manifest);
+		const driftedManifest = cloneManifest(metaRoutingInstruction.manifest);
 		driftedManifest.inputSchema.required = [];
 
 		expect(() => resolveAuthoritativeWorkflowRuntime(driftedManifest)).toThrow(
@@ -85,43 +85,23 @@ describe("workflow-state-validator", () => {
 	it("reports authoritative input validation errors with field context", () => {
 		expect(() =>
 			assertWorkflowInputMatchesSpec(
-				onboardProjectWorkflow,
+				metaRoutingWorkflow,
 				{} as Parameters<typeof assertWorkflowInputMatchesSpec>[1],
 			),
 		).toThrow(/request: Required/);
 	});
 
 	it("rejects workflow execution records that drift from the authoritative runtime", () => {
-		const driftedSteps: StepExecutionRecord[] = [
-			{
-				label: "req-scope",
-				kind: "note",
-				summary: "Wrong kind.",
-			},
-			{
-				label: "req-ambiguity-detection",
-				kind: "invokeSkill",
-				summary: "ok",
-			},
-			{
-				label: "synth-research",
-				kind: "invokeSkill",
-				summary: "ok",
-			},
-			{
-				label: "arch-system",
-				kind: "invokeSkill",
-				summary: "ok",
-			},
-			{
-				label: "Finalize",
-				kind: "finalize",
-				summary: "ok",
-			},
-		];
+		const driftedSteps: StepExecutionRecord[] = (
+			metaRoutingWorkflow.runtime?.steps ?? []
+		).map((step, index) => ({
+			label: step.label,
+			kind: index === 0 ? "note" : step.kind,
+			summary: index === 0 ? "Wrong kind." : "ok",
+		}));
 
 		expect(() =>
-			assertWorkflowExecutionMatchesSpec(onboardProjectWorkflow, driftedSteps),
+			assertWorkflowExecutionMatchesSpec(metaRoutingWorkflow, driftedSteps),
 		).toThrow(/expected step kind invokeSkill/i);
 	});
 });

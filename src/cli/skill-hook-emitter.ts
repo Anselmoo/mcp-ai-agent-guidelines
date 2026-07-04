@@ -3,9 +3,8 @@
  *
  * Writes one `SKILL.md` file per public instruction into a client-specific
  * directory so target IDEs (Copilot, Claude Code, Codex) can auto-load them
- * as skills.  Extracted from the old `OnboardingWizard.emitSkillHooks` so the
- * wizard (and the rest of the TOON-based onboarding stack) can be deleted
- * without losing this IDE-integration surface.
+ * as skills.  Extracted from the old `OnboardingWizard.emitSkillHooks` (the
+ * wizard and the TOON-based onboarding stack have since been deleted).
  *
  * Layout:
  *

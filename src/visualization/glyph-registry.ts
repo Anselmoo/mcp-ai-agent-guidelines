@@ -821,11 +821,9 @@ const DOMAIN_PREFIX_MAP: Readonly<Record<string, GlyphEntry>> = {
 	"eval-": { glyph: "📊", label: "Evaluation & Benchmarking" },
 	"flow-": { glyph: "🔄", label: "Workflow" },
 	"gov-": { glyph: "🛡️", label: "Safety & Governance" },
-	"gr-": { glyph: "🌌", label: "General Relativity metaphors" },
 	"lead-": { glyph: "👑", label: "Leadership & Enterprise" },
 	"orch-": { glyph: "🎭", label: "Orchestration" },
 	"prompt-": { glyph: "💬", label: "Prompting" },
-	"qm-": { glyph: "⚛️", label: "Quantum Mechanics metaphors" },
 	"qual-": { glyph: "🔍", label: "Code Analysis & Quality" },
 	"req-": { glyph: "📋", label: "Requirements Discovery" },
 	"resil-": { glyph: "💪", label: "Resilience & Self-repair" },
@@ -849,7 +847,6 @@ const INSTRUCTION_MAP: Readonly<Record<string, GlyphEntry>> = {
 	implement: { glyph: "🔨", label: "Build New Feature or Tool" },
 	"meta-routing": { glyph: "🧭", label: "Task Router" },
 	orchestrate: { glyph: "🎭", label: "Compose Multi-Agent Workflows" },
-	"physics-analysis": { glyph: "⚛️", label: "QM and GR Code Metaphors" },
 	plan: { glyph: "🗺️", label: "Strategy, Roadmap, and Sprint Planning" },
 	"prompt-engineering": {
 		glyph: "💬",
@@ -896,7 +893,7 @@ export class GlyphRegistry {
 	 * Returns the glyph entry for a skill by its domain-prefixed id.
 	 *
 	 * @example
-	 * registry.forSkill("qm-entanglement-mapper") // { glyph: "⚛️", label: "Quantum Mechanics metaphors" }
+	 * registry.forSkill("adapt-aco-router") // { glyph: "🧬", label: "Bio-inspired Adaptive Routing" }
 	 * registry.forSkill("gov-data-guardrails")     // { glyph: "🛡️", label: "Safety & Governance" }
 	 */
 	forSkill(skillId: string): GlyphEntry {
@@ -945,7 +942,7 @@ export class GlyphRegistry {
 	 * Formats a skill id as a prefixed glyph string for terminal/chat output.
 	 *
 	 * @example
-	 * registry.format("qm-bloch-interpolator") // "⚛️ qm-bloch-interpolator"
+	 * registry.format("adapt-aco-router") // "🧬 adapt-aco-router"
 	 */
 	format(skillId: string): string {
 		return `${this.forSkill(skillId).glyph} ${skillId}`;

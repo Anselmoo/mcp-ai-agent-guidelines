@@ -8,7 +8,24 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Removed
+- **QM/GR physics skills deleted outright** (~9k LOC: `src/skills/qm/`, `src/skills/gr/`, `physics-adapter-prototype.ts`, the `physics-analysis` instruction spec/workflow, the quorum gate, `physicsAnalysisJustification` plumbing, `ENABLE_PHYSICS_SKILLS`) — the Track C trials found zero load-bearing mappings; `analogy-think` is the surviving replacement. Skill count 102 → 72, domains 18 → 16
+- **`project-onboard` merged into `task-bootstrap`** — the two tools shared the same orientation output contract and onboard's only chain target was task-bootstrap; its trigger language ("onboard", "what does this project do", "first session") moved into the task-bootstrap description. Slim surface is now `task-bootstrap` + `meta-routing`
+- Unenforced `requiredPreconditions` on task-bootstrap (they referenced `agent-*-fetch` companions that are dispatchable but never advertised via `tools/list`); phantom `MCP_LOCAL_MEMORY` docs; stale TOON references in `.claude/rules/*`, session-start hook, and spec comments
+
 ### Added
+- **Problem-specific output without a sampler (workspace grounding)**: `debug-root-cause`, `qual-code-analysis`, `arch-system`, and `req-scope` now read the actual files a request references (via the already-injected `WorkspaceReader`, bounded by `guardRelativePath`) and match their catalogs against real file *content*, emitting `groundingScope: "workspace"` findings that cite the exact path with `workspace-file` evidence. New shared helper `src/skills/shared/workspace-grounding.ts` (`readReferencedFiles`/`matchProbes`/`buildWorkspaceEvidence`) + `extractReferencedPaths` in `recommendations.ts`. The "⚠️ Directive mode" banner is now suppressed whenever real grounding occurred — closing the root cause of the "generic advice" complaint (previously all analysis was outsourced to the calling LLM per `analysis-directive.ts`; the read plumbing existed but no skill used it).
+
+### Fixed
+- **Model router silently fell back for every config-routed skill**: `resolveForSkill()` returns physical model IDs (e.g. `gpt-5-mini`) but the profile registry is keyed by role alias (`free_secondary`) — added `aliasForPhysicalModelId()` translation so orchestration-config routing actually takes effect
+- **Directive fallback now labeled**: when no MCP sampling client is available, tool output opens with "⚠️ Directive mode — … template guidance, not project-specific analysis" and the envelope carries `situationMode: "sampled" | "directive"` — generic output is never silently presented as tailored analysis
+- **meta-routing names a best match in directive mode** via deterministic keyword ranking of routing candidates, instead of returning an unordered 12-tool menu
+- Workspace listing failures now log a structured warning instead of silently returning an empty context
+- Docs/src drift: physics-analysis and onboard pages removed from README/docs/rules; tool counts corrected (22 full-surface tools: 19 instructions + 3 utilities); phantom `agent-memory`/`agent-session`/`agent-snapshot` companion names replaced with the real `agent-workspace`
+
+### Added
+- End-to-end regression tests for the bootstrap → meta-routing `invokeInstruction` chain and the `## ⚡ Next required tool call` chainTo footer (parseable JSON, registered tool names only)
+- Prompt-technique upgrades (after universal-creator/skills/shared/examples): prompt-chaining handoff contract in the chainTo footer, PAL-style `solve()` rendering contract in the methodology gate, few-shot example calls in the slim-surface tool descriptions
 - `analogy-think` workflow tool with curated 12-entry metaphor catalog (mechanics, oscillators, thermodynamics, stat-mech, fluids, em, general); structural-feature gating; honest `Metaphor, not theorem.` header on every output; available only with `MCP_FULL_SURFACE=true`
 - Methodology gate appended to `issue-debug`, `code-review`, `system-design`, `evidence-research`: prose section `## Methodology checks (not proofs)` + optional `methodology: MethodologyReport` payload field with five checks (`dimensional`, `conservation`, `fermi`, `scaling`, `falsifiability`)
 - Cross-blind verification suite (`src/tests/verification/cross-blind-analogy.test.ts`) — intent-anchored regression for slim-default exclusion, honest header presence, no rigor-laundering strings (`theorem`, `proven`, `QED`) in any envelope payload, methodology gate presence on four host tools

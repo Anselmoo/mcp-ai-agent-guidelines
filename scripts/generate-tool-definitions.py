@@ -98,12 +98,6 @@ DEFAULT_OUTPUT_CONTRACTS_BY_DOMAIN: dict[str, list[str]] = {
         "required controls",
         "audit trail or remediation steps",
     ],
-    "gr": [
-        "physics metaphor output",
-        "plain-language engineering translation",
-        "confidence and limitation notes",
-        "recommended engineering action",
-    ],
     "lead": [
         "executive-ready guidance",
         "capability or roadmap framing",
@@ -121,12 +115,6 @@ DEFAULT_OUTPUT_CONTRACTS_BY_DOMAIN: dict[str, list[str]] = {
         "explicit output contract",
         "failure handling",
         "worked example or usage guidance",
-    ],
-    "qm": [
-        "physics metaphor output",
-        "plain-language engineering translation",
-        "confidence and limitation notes",
-        "recommended engineering action",
     ],
     "qual": [
         "quality findings",
@@ -308,9 +296,6 @@ _ADR001_DOMAIN_PHASES: dict[str, int] = {
     # Phase 6 — advanced adaptive and resilience
     "adapt": 6,
     "resil": 6,
-    # Phase 7 — physics metaphor skills (exploratory; real handlers are optional)
-    "qm": 7,
-    "gr": 7,
 }
 
 
@@ -346,10 +331,9 @@ def infer_instruction_model_class(instruction_id: str) -> str:
         "govern",
         "resilience",
         "adapt",
-        "physics-analysis",
     }:
         return "strong"
-    if instruction_id in {"bootstrap", "onboard_project", "initial_instructions"}:
+    if instruction_id in {"bootstrap", "initial_instructions"}:
         return "free"
     return "cheap"
 
@@ -616,25 +600,6 @@ def schema_fields_for_instruction(instruction_id: str) -> list[dict[str, object]
                 "description": "Current phase if routing an in-flight task.",
             },
         ],
-        "physics-analysis": [
-            {
-                "name": "conventionalEvidence",
-                "type": "string",
-                "description": "Conventional analysis attempted before physics metaphors.",
-            },
-            {
-                "name": "targetQuestion",
-                "type": "string",
-                "description": "Question the physics analysis should answer.",
-            },
-        ],
-        "onboard_project": [
-            {
-                "name": "primaryGoal",
-                "type": "string",
-                "description": "Immediate goal after onboarding.",
-            },
-        ],
         "initial_instructions": [
             {
                 "name": "situation",
@@ -642,17 +607,6 @@ def schema_fields_for_instruction(instruction_id: str) -> list[dict[str, object]
                 "description": "Context for applying the initial project principles.",
             },
         ],
-    }
-    physics_gated_instruction_ids = {
-        "meta-routing",
-        "plan",
-        "review",
-        "testing",
-        "debug",
-        "refactor",
-        "evaluate",
-        "enterprise",
-        "prompt-engineering",
     }
     fields = common + special.get(
         instruction_id,
@@ -665,15 +619,6 @@ def schema_fields_for_instruction(instruction_id: str) -> list[dict[str, object]
             }
         ],
     )
-    if instruction_id in physics_gated_instruction_ids:
-        fields.append(
-            {
-                "name": "physicsAnalysisJustification",
-                "type": "string",
-                "description":
-                    "Why conventional analysis is insufficient and a physics-inspired pass is justified.",
-            }
-        )
     return fields
 
 
@@ -1780,7 +1725,6 @@ def write_capability_handler_slots(skill_manifests: list[dict[str, object]]) -> 
                 " *   Phase 4 — eval, prompt, bench (evaluation)",
                 " *   Phase 5 — lead, gov (enterprise/governance)",
                 " *   Phase 6 — adapt, resil (advanced adaptive)",
-                " *   Phase 7 — qm, gr (physics metaphors, exploratory)",
                 " */",
                 "export interface CapabilityHandlerSlot {",
                 "\t/** Canonical domain prefix, e.g. \"req\" */",

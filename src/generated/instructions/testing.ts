@@ -32,11 +32,6 @@ export const instructionManifest: InstructionManifestEntry = {
 				type: "string",
 				description: "Known regression area or risk class.",
 			},
-			physicsAnalysisJustification: {
-				type: "string",
-				description:
-					"Why conventional analysis is insufficient and a physics-inspired pass is justified.",
-			},
 		},
 		required: ["request"],
 	},
@@ -82,18 +77,6 @@ export const instructionManifest: InstructionManifestEntry = {
 						kind: "invokeSkill",
 						label: "bench-analyzer",
 						skillId: "bench-analyzer",
-					},
-				],
-			},
-			{
-				kind: "gate",
-				label: "COVERAGE PHYSICS (OPT-IN)",
-				condition: "hasPhysicsJustification",
-				ifTrue: [
-					{
-						kind: "invokeSkill",
-						label: "qm-wavefunction-coverage",
-						skillId: "qm-wavefunction-coverage",
 					},
 				],
 			},
@@ -147,23 +130,6 @@ export const instructionManifest: InstructionManifestEntry = {
 						kind: "invokeSkill",
 						label: "resil-redundant-voter",
 						skillId: "resil-redundant-voter",
-					},
-				],
-			},
-			{
-				kind: "gate",
-				label: "PHYSICS DIAGNOSTICS (OPT-IN)",
-				condition: "hasPhysicsJustification",
-				ifTrue: [
-					{
-						kind: "invokeSkill",
-						label: "FLAKINESS",
-						skillId: "qm-decoherence-sentinel",
-					},
-					{
-						kind: "invokeSkill",
-						label: "UNCERTAINTY",
-						skillId: "qm-uncertainty-tradeoff",
 					},
 				],
 			},

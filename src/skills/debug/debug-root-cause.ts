@@ -16,6 +16,11 @@ import {
 	parseSkillInput,
 } from "../shared/input-schema.js";
 import { extractRequestSignals } from "../shared/recommendations.js";
+import {
+	type ContentProbe,
+	matchProbes,
+	readReferencedFiles,
+} from "../shared/workspace-grounding.js";
 
 const debugRootCauseInputSchema = baseSkillInputSchema.extend({
 	options: z
@@ -37,6 +42,34 @@ const CAUSAL_SIGNALS = {
 		/\b(config|configuration|env|environment|variable|setting|flag|feature flag)\b/i,
 	data: /\b(data|input|payload|schema|format|encoding|null|empty|missing field)\b/i,
 };
+
+const FLAKE_PROBES: ContentProbe[] = [
+	{
+		pattern: /useFakeTimers/,
+		finding: (p) =>
+			`\`${p}\` uses fake timers — assert every test restores real timers; an un-restored clock leaks across tests and flakes.`,
+	},
+	{
+		pattern: /Math\.random|Date\.now\(\)|new Date\(\)/,
+		finding: (p) =>
+			`\`${p}\` uses nondeterministic time/randomness (Math.random/Date.now) — seed or inject it; nondeterminism causes order-dependent flakes.`,
+	},
+	{
+		pattern: /setTimeout|setInterval|sleep\(/,
+		finding: (p) =>
+			`\`${p}\` relies on real timers/sleeps — replace with deterministic waits or fake timers to remove timing flakes.`,
+	},
+	{
+		pattern: /Promise\.race|Promise\.any/,
+		finding: (p) =>
+			`\`${p}\` races promises — nondeterministic resolution order is a classic flake source.`,
+	},
+	{
+		pattern: /^\s*(let|var)\s+\w+\s*=|globalThis\.|process\.env\[/m,
+		finding: (p) =>
+			`\`${p}\` holds module-level mutable/global state — shared state leaking across tests causes order-dependent failures.`,
+	},
+];
 
 const debugRootCauseHandler: SkillHandler = {
 	async execute(input, context) {
@@ -110,14 +143,28 @@ const debugRootCauseHandler: SkillHandler = {
 			"Document the causal chain: symptom → intermediate cause(s) → root cause → corrective action → preventive action. Without preventive action, the root cause analysis is incomplete.",
 		);
 
+		const groundedFiles = await readReferencedFiles(context);
+		const groundedRecs = matchProbes(groundedFiles, FLAKE_PROBES).map(
+			(detail, index) => ({
+				title: `Grounded signal ${index + 1}`,
+				detail,
+				modelClass: context.model.modelClass,
+				groundingScope: "workspace" as const,
+				evidenceAnchors: groundedFiles.map((f) => f.path),
+			}),
+		);
+
 		return createCapabilityResult(
 			context,
-			`Root Cause Analysis using ${selectedTechnique} (depth: ${maxDepth}) identified ${causalCandidates.length} causal signal category(s): ${causalCandidates.join(", ") || "none detected"}.`,
-			createFocusRecommendations(
-				`${selectedTechnique} causal analysis`,
-				details,
-				context.model.modelClass,
-			),
+			`Root Cause Analysis using ${selectedTechnique} (depth: ${maxDepth}) identified ${causalCandidates.length} causal signal category(s): ${causalCandidates.join(", ") || "none detected"}${groundedFiles.length > 0 ? `; grounded in ${groundedFiles.length} referenced file(s)` : ""}.`,
+			[
+				...groundedRecs,
+				...createFocusRecommendations(
+					`${selectedTechnique} causal analysis`,
+					details,
+					context.model.modelClass,
+				),
+			],
 			[
 				buildOutputTemplateArtifact(
 					"Root cause analysis report template",

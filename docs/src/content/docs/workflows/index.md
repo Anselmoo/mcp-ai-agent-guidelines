@@ -19,7 +19,6 @@ Each instruction tool maps to a detailed workflow specification describing trigg
 | 03 | [Design](/mcp-ai-agent-guidelines/workflows/design/) | `system-design` | arch-system, arch-security | feature-implement, policy-govern |
 | 04 | [Plan](/mcp-ai-agent-guidelines/workflows/plan/) | `strategy-plan` | strat-roadmap, strat-prioritisation | feature-implement, enterprise-strategy |
 | 05 | [Implement](/mcp-ai-agent-guidelines/workflows/implement/) | `feature-implement` | req-analysis, arch-system | test-verify, code-review |
-| 06 | [Physics Analysis](/mcp-ai-agent-guidelines/workflows/physics-analysis/) | `physics-analysis` | qm-*, gr-* | code-review, feature-implement |
 | 07 | [Evaluate](/mcp-ai-agent-guidelines/workflows/evaluate/) | `quality-evaluate` | eval-output-grading, bench-blind-comparison | prompt-engineering, code-refactor |
 | 08 | [Review](/mcp-ai-agent-guidelines/workflows/review/) | `code-review` | qual-review, qual-security | policy-govern, code-refactor |
 | 09 | [Testing](/mcp-ai-agent-guidelines/workflows/testing/) | `test-verify` | qual-code-analysis, bench-eval-suite | code-review, issue-debug |
@@ -33,7 +32,6 @@ Each instruction tool maps to a detailed workflow specification describing trigg
 | 17 | [Prompt Engineering](/mcp-ai-agent-guidelines/workflows/prompt-engineering/) | `prompt-engineering` | prompt-engineering, prompt-refinement | quality-evaluate, policy-govern |
 | 18 | [Research](/mcp-ai-agent-guidelines/workflows/research/) | `evidence-research` | synth-research, synth-engine | strategy-plan, system-design |
 | 19 | [Resilience](/mcp-ai-agent-guidelines/workflows/resilience/) | `fault-resilience` | resil-homeostatic, resil-redundant-voter | policy-govern, quality-evaluate |
-| 20 | [Onboard Project](/mcp-ai-agent-guidelines/workflows/onboard-project/) | `project-onboard` | — | Terminal node |
 
 ## Routing Architecture
 

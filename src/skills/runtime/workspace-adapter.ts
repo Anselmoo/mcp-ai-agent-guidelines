@@ -4,7 +4,10 @@ import type {
 	WorkspaceEntry,
 	WorkspaceReader,
 } from "../../contracts/runtime.js";
+import { createOperationalLogger } from "../../infrastructure/observability.js";
 import { resolveWorkspaceRoot } from "../../runtime/session-store-utils.js";
+
+const workspaceAdapterLogger = createOperationalLogger("warn");
 
 /**
  * Guard against path traversal.  Throws rather than silently accepting a
@@ -48,8 +51,19 @@ export function createWorkspaceSurface(
 							? ("directory" as const)
 							: ("file" as const),
 					}));
-			} catch {
-				// Directory does not exist or is not readable — degrade gracefully.
+			} catch (error) {
+				// Directory does not exist or is not readable — degrade gracefully,
+				// but never silently: an empty listing here means downstream skills
+				// run with NO workspace context (the historical silent-empty-context
+				// failure), so surface the degradation in the operational log.
+				workspaceAdapterLogger.log(
+					"warn",
+					"Workspace listing unavailable — skills proceed without workspace context",
+					{
+						path: absPath,
+						error: error instanceof Error ? error.message : String(error),
+					},
+				);
 				return [];
 			}
 		},

@@ -98,7 +98,7 @@ describe("clean-room runtime", () => {
 		expect(DISCOVERY_PUBLIC_INSTRUCTION_MODULES.length).toBeGreaterThan(0);
 		expect(tools.some((tool) => tool.name === "feature-implement")).toBe(true);
 		expect(tools.some((tool) => tool.name === "code-review")).toBe(true);
-		expect(tools.some((tool) => tool.name === "project-onboard")).toBe(true);
+		expect(tools.some((tool) => tool.name === "project-onboard")).toBe(false);
 		expect(tools.some((tool) => tool.name === "initial_instructions")).toBe(
 			false,
 		);
@@ -112,10 +112,10 @@ describe("clean-room runtime", () => {
 		).toBe("discovery");
 	});
 
-	it("loads 102 hidden skill modules", () => {
+	it("loads 72 hidden skill modules", () => {
 		const skillRegistry = new SkillRegistry();
 
-		expect(skillRegistry.getAll()).toHaveLength(102);
+		expect(skillRegistry.getAll()).toHaveLength(72);
 		expect(skillRegistry.getById("arch-system")).toBeDefined();
 		expect(skillRegistry.getById("gov-policy-validation")).toBeDefined();
 	});
@@ -281,6 +281,61 @@ describe("clean-room runtime", () => {
 		expect(result.isError).toBeUndefined();
 		expect(result.content[0].text).toContain("# Review:");
 		expect(result.content[0].text).toContain("Recommendations");
+	});
+
+	it("executes the bootstrap → meta-routing chain end-to-end", async () => {
+		const runtime = createRuntime();
+
+		const result = await dispatchToolCall(
+			"task-bootstrap",
+			{
+				request:
+					"our coverage gate keeps flaking on the handler suite; decide refactor vs quarantine",
+			},
+			runtime,
+		);
+
+		expect(result.isError).toBeUndefined();
+		const text = result.content[0].text;
+		// The nested invokeInstruction step to meta-routing must actually run —
+		// this is the chain the historical audit found implemented but unproven.
+		expect(text).toContain("ROUTING");
+		expect(text.toLowerCase()).toContain("meta-routing");
+	});
+
+	it("emits a parseable chainTo footer with only registered tool names", async () => {
+		const runtime = createRuntime();
+		const instructionRegistry = new InstructionRegistry();
+		const registeredNames = new Set(
+			buildPublicToolSurface(instructionRegistry).map((t) => t.name),
+		);
+
+		const result = await dispatchToolCall(
+			"task-bootstrap",
+			{ request: "orient me on this repository" },
+			runtime,
+		);
+
+		const text = result.content[0].text;
+		expect(text).toContain("## ⚡ Next required tool call");
+		const jsonMatch = text.match(
+			/## ⚡ Next required tool call[\s\S]*?```json\n([\s\S]*?)\n```/,
+		);
+		expect(jsonMatch).not.toBeNull();
+		const footer = JSON.parse(jsonMatch?.[1] ?? "{}") as {
+			chainTo: string[];
+			sessionId: string;
+			from: string;
+		};
+		expect(footer.from).toBe("task-bootstrap");
+		expect(footer.sessionId.length).toBeGreaterThan(0);
+		expect(footer.chainTo.length).toBeGreaterThan(0);
+		for (const target of footer.chainTo) {
+			expect(
+				registeredNames.has(target),
+				`unregistered chainTo: ${target}`,
+			).toBe(true);
+		}
 	});
 
 	it("returns an error for an unknown public tool", async () => {

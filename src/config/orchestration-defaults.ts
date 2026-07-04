@@ -144,12 +144,6 @@ const DEFAULT_ORCHESTRATION_CONFIG = {
 			fallback: ["cost_sensitive"],
 			fan_out: 1,
 		},
-		physics_analysis: {
-			requires: ["math_physics", "deep_reasoning"],
-			prefer: "large_context",
-			fallback: [],
-			fan_out: 1,
-		},
 		meta_routing: {
 			requires: ["classification"],
 			prefer: "low_latency",
@@ -234,16 +228,6 @@ const DEFAULT_ORCHESTRATION_CONFIG = {
 				max_retries: 1,
 				require_human_in_loop: true,
 			},
-			"qm-*": {
-				profile: "physics_analysis",
-				max_retries: 1,
-				enforce_schema: true,
-			},
-			"gr-*": {
-				profile: "physics_analysis",
-				max_retries: 1,
-				enforce_schema: true,
-			},
 			"orch-*": {
 				profile: "orchestration",
 				max_retries: 2,
@@ -298,7 +282,6 @@ const DEFAULT_ORCHESTRATION_CONFIG = {
 	cache: {
 		default_ttl_seconds: 300,
 		profile_overrides: {
-			physics_analysis: 3_600,
 			governance: 0,
 			enterprise: 1_800,
 		},

@@ -148,8 +148,7 @@ describe("ChildSerenaClient", () => {
 		sdkTransportMock.close.mockReset();
 		sdkConstructors.Client.mockClear();
 		sdkConstructors.StdioClientTransport.mockClear();
-		// biome-ignore lint/complexity/useArrowFunction: `new` requires a
-		// [[Construct]] slot, which arrow functions don't have.
+		// biome-ignore lint/complexity/useArrowFunction: new requires a [[Construct]] slot, which arrow functions lack
 		sdkConstructors.Client.mockImplementation(function () {
 			return sdkClientMock;
 		});

@@ -53,7 +53,7 @@ describe("visualization-tools-extra", () => {
 	it("domain-focus SVG renders agent topology for the given domain", async () => {
 		const result = await dispatchVisualizationToolCall("graph-visualize", {
 			view: "domain-focus",
-			domain: "qm",
+			domain: "adapt",
 			format: "svg",
 		});
 		expect(result.isError).toBe(false);
@@ -87,11 +87,11 @@ describe("visualization-tools-extra", () => {
 	it("domain-focus mermaid path renders a subgraph for the given domain", async () => {
 		const result = await dispatchVisualizationToolCall("graph-visualize", {
 			view: "domain-focus",
-			domain: "qm",
+			domain: "adapt",
 			format: "mermaid",
 		});
 		expect(result.isError).toBe(false);
-		expect(getFirstText(result)).toContain("subgraph qm");
+		expect(getFirstText(result)).toContain("subgraph adapt");
 	});
 
 	// -------------------------------------------------------------------------

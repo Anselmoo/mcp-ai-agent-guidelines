@@ -35,8 +35,8 @@ function matchesRegistration(
  *
  * MIGRATION STATUS
  * ────────────────
- * Complete domains: adapt, arch, bench, debug, doc, eval, flow, gov, gr,
- * lead, orch, prompt, qm, qual, req, resil, strat, synth
+ * Complete domains: adapt, arch, bench, debug, doc, eval, flow, gov,
+ * lead, orch, prompt, qual, req, resil, strat, synth
  * Complete phases: none
  * Generated-only domains: none
  *

@@ -3,7 +3,6 @@ import {
 	ANNOTATION_ADVANCED,
 	ANNOTATION_CORE,
 	ANNOTATION_GOVERNANCE,
-	ANNOTATION_PHYSICS,
 	ANNOTATION_REVIEWER,
 	annotationsForTool,
 } from "../../../tools/shared/annotation-presets.js";
@@ -28,12 +27,6 @@ describe("annotation preset constants", () => {
 		expect(ANNOTATION_GOVERNANCE.costTier).toBe("strong");
 	});
 
-	it("ANNOTATION_PHYSICS is strong, open-world, and NOT idempotent", () => {
-		expect(ANNOTATION_PHYSICS.costTier).toBe("strong");
-		expect(ANNOTATION_PHYSICS.openWorldHint).toBe(true);
-		expect(ANNOTATION_PHYSICS.idempotentHint).toBe(false);
-	});
-
 	it("ANNOTATION_REVIEWER has costTier 'reviewer'", () => {
 		expect(ANNOTATION_REVIEWER.costTier).toBe("reviewer");
 		expect(ANNOTATION_REVIEWER.readOnlyHint).toBe(true);
@@ -44,7 +37,6 @@ describe("annotation preset constants", () => {
 			ANNOTATION_CORE,
 			ANNOTATION_ADVANCED,
 			ANNOTATION_GOVERNANCE,
-			ANNOTATION_PHYSICS,
 			ANNOTATION_REVIEWER,
 		]) {
 			expect(preset.destructiveHint).toBe(false);
@@ -53,18 +45,6 @@ describe("annotation preset constants", () => {
 });
 
 describe("annotationsForTool", () => {
-	it("qm- prefix maps to ANNOTATION_PHYSICS", () => {
-		expect(annotationsForTool("qm-entanglement-mapper")).toBe(
-			ANNOTATION_PHYSICS,
-		);
-	});
-
-	it("gr- prefix maps to ANNOTATION_PHYSICS", () => {
-		expect(annotationsForTool("gr-spacetime-curvature")).toBe(
-			ANNOTATION_PHYSICS,
-		);
-	});
-
 	it("gov- prefix maps to ANNOTATION_GOVERNANCE", () => {
 		expect(annotationsForTool("gov-policy-validation")).toBe(
 			ANNOTATION_GOVERNANCE,

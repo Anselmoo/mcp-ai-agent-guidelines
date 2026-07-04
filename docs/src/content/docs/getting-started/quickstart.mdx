@@ -79,7 +79,7 @@ Use code-review to audit src/tools/skill-handler.ts for security issues,
 focusing on input validation and prompt injection vectors.
 ```
 
-`code-review` uses `reviewer` model class, chains to `policy-govern` → `physics-analysis`.
+`code-review` uses `reviewer` model class and chains to `policy-govern`.
 
 ### Architecture decision
 
@@ -93,18 +93,6 @@ state machine. Constraints: ESM only, TypeScript strict, no runtime LLM calls.
 ```
 Use policy-govern to audit the session management layer for OWASP Top-10
 compliance. Focus on: injection, broken authentication, insecure design.
-```
-
-### Physics analysis (advanced)
-
-<Aside type="caution">
-Physics skills require `ENABLE_PHYSICS_SKILLS=true` in your environment.
-Only arrive here from `code-refactor`, `code-review`, `quality-evaluate`, or `evidence-research` — never as a first call.
-</Aside>
-
-```
-Use physics-analysis to apply quantum measurement collapse analysis to
-the skill-handler dispatch path. Evaluate coupling as superposition collapse.
 ```
 
 ## Meta-Routing for Complex Tasks

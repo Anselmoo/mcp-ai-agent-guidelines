@@ -19,7 +19,7 @@ import { getWorkflowSpecById } from "../workflows/workflow-spec.js";
  * Skills are grouped by domain prefix for visual organization.
  */
 export interface SkillNode {
-	/** Skill identifier (e.g., "qm-entanglement-mapper") */
+	/** Skill identifier (e.g., "adapt-aco-router") */
 	id: string;
 	/** Domain prefix for grouping (extracted from id) */
 	domain: string;
@@ -54,7 +54,7 @@ export class MermaidExporter {
 	 * ```
 	 * graph TD
 	 *   subgraph qm
-	 *     qm_bloch["qm-bloch-interpolator"]
+	 *     adapt_aco["adapt-aco-router"]
 	 *   end
 	 *   testing([testing])
 	 *   testing --> qm_bloch

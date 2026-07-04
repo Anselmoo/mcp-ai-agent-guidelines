@@ -54,17 +54,6 @@ export const ANNOTATION_GOVERNANCE: ToolAnnotations = {
 };
 
 /**
- * Physics (QM / GR) tools — expensive symbolic reasoning.
- */
-export const ANNOTATION_PHYSICS: ToolAnnotations = {
-	readOnlyHint: true,
-	destructiveHint: false,
-	idempotentHint: false,
-	openWorldHint: true,
-	costTier: "strong",
-};
-
-/**
  * Reviewer / gemini tools — de-biasing and comparative critique.
  */
 export const ANNOTATION_REVIEWER: ToolAnnotations = {
@@ -79,8 +68,6 @@ export const ANNOTATION_REVIEWER: ToolAnnotations = {
 const PREFIX_ANNOTATION_MAP: ReadonlyArray<
 	[prefix: string, annotations: ToolAnnotations]
 > = [
-	["qm-", ANNOTATION_PHYSICS],
-	["gr-", ANNOTATION_PHYSICS],
 	["gov-", ANNOTATION_GOVERNANCE],
 	["adv-", ANNOTATION_ADVANCED],
 ];

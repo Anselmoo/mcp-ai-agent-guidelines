@@ -35,11 +35,6 @@ export const instructionManifest: InstructionManifestEntry = {
 					type: "string",
 				},
 			},
-			physicsAnalysisJustification: {
-				type: "string",
-				description:
-					"Why conventional analysis is insufficient and a physics-inspired pass is justified.",
-			},
 		},
 		required: ["request"],
 	},
@@ -149,29 +144,6 @@ export const instructionManifest: InstructionManifestEntry = {
 				kind: "invokeSkill",
 				label: "ROADMAP",
 				skillId: "strat-roadmap",
-			},
-			{
-				kind: "gate",
-				label: "QM PLANNING (OPT-IN)",
-				condition: "hasPhysicsJustification",
-				ifTrue: [
-					{
-						kind: "parallel",
-						label: "QM PLANNING",
-						steps: [
-							{
-								kind: "invokeSkill",
-								label: "qm-schrodinger-picture",
-								skillId: "qm-schrodinger-picture",
-							},
-							{
-								kind: "invokeSkill",
-								label: "qm-tunneling-breakthrough",
-								skillId: "qm-tunneling-breakthrough",
-							},
-						],
-					},
-				],
 			},
 			{
 				kind: "finalize",

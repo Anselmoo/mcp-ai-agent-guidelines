@@ -32,11 +32,6 @@ export const instructionManifest: InstructionManifestEntry = {
 				type: "string",
 				description: "Reproduction details or minimal failing case.",
 			},
-			physicsAnalysisJustification: {
-				type: "string",
-				description:
-					"Why conventional analysis is insufficient and a physics-inspired pass is justified.",
-			},
 		},
 		required: ["request"],
 	},
@@ -81,44 +76,6 @@ export const instructionManifest: InstructionManifestEntry = {
 						kind: "invokeSkill",
 						label: "eval-variance",
 						skillId: "eval-variance",
-					},
-				],
-			},
-			{
-				kind: "gate",
-				label: "PHYSICS SCAN (OPT-IN)",
-				condition: "hasPhysicsJustification",
-				ifTrue: [
-					{
-						kind: "parallel",
-						label: "PHYSICS SCAN",
-						steps: [
-							{
-								kind: "invokeSkill",
-								label: "qm-decoherence-sentinel",
-								skillId: "qm-decoherence-sentinel",
-							},
-							{
-								kind: "invokeSkill",
-								label: "qm-entanglement-mapper",
-								skillId: "qm-entanglement-mapper",
-							},
-							{
-								kind: "invokeSkill",
-								label: "qm-uncertainty-tradeoff",
-								skillId: "qm-uncertainty-tradeoff",
-							},
-							{
-								kind: "invokeSkill",
-								label: "qm-heisenberg-picture",
-								skillId: "qm-heisenberg-picture",
-							},
-							{
-								kind: "invokeSkill",
-								label: "gr-frame-dragging-detector",
-								skillId: "gr-frame-dragging-detector",
-							},
-						],
 					},
 				],
 			},

@@ -39,11 +39,6 @@ export const instructionManifest: InstructionManifestEntry = {
 				type: "string",
 				description: "Minimum severity level to report.",
 			},
-			physicsAnalysisJustification: {
-				type: "string",
-				description:
-					"Why conventional analysis is insufficient and a physics-inspired pass is justified.",
-			},
 		},
 		required: ["request"],
 	},
@@ -132,64 +127,6 @@ export const instructionManifest: InstructionManifestEntry = {
 				kind: "invokeSkill",
 				label: "RECOMMEND",
 				skillId: "synth-recommendation",
-			},
-			{
-				kind: "gate",
-				label: "PHYSICS AUDIT (OPT-IN)",
-				condition: "hasPhysicsJustification",
-				ifTrue: [
-					{
-						kind: "parallel",
-						label: "PHYSICS AUDIT",
-						steps: [
-							{
-								kind: "invokeSkill",
-								label: "qm-wavefunction-coverage",
-								skillId: "qm-wavefunction-coverage",
-							},
-							{
-								kind: "invokeSkill",
-								label: "qm-entanglement-mapper",
-								skillId: "qm-entanglement-mapper",
-							},
-							{
-								kind: "invokeSkill",
-								label: "qm-decoherence-sentinel",
-								skillId: "qm-decoherence-sentinel",
-							},
-							{
-								kind: "invokeSkill",
-								label: "qm-uncertainty-tradeoff",
-								skillId: "qm-uncertainty-tradeoff",
-							},
-							{
-								kind: "invokeSkill",
-								label: "gr-hawking-entropy-auditor",
-								skillId: "gr-hawking-entropy-auditor",
-							},
-							{
-								kind: "invokeSkill",
-								label: "gr-schwarzschild-classifier",
-								skillId: "gr-schwarzschild-classifier",
-							},
-							{
-								kind: "invokeSkill",
-								label: "gr-gravitational-wave-detector",
-								skillId: "gr-gravitational-wave-detector",
-							},
-							{
-								kind: "invokeSkill",
-								label: "gr-equivalence-principle-checker",
-								skillId: "gr-equivalence-principle-checker",
-							},
-							{
-								kind: "invokeSkill",
-								label: "gr-redshift-velocity-mapper",
-								skillId: "gr-redshift-velocity-mapper",
-							},
-						],
-					},
-				],
 			},
 			{
 				kind: "finalize",
