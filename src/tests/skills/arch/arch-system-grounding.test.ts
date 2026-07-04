@@ -26,4 +26,23 @@ describe("arch-system workspace grounding", () => {
 		);
 		expect(grounded.some((r) => r.detail.includes("src/index.ts"))).toBe(true);
 	});
+
+	it("falls back to a 'were read' note when the referenced file matches no arch rule", async () => {
+		const neutralReader: WorkspaceReader = {
+			async listFiles() {
+				return [];
+			},
+			async readFile() {
+				return "export const x = 1;\n// plain leaf module, nothing architectural";
+			},
+		};
+		const result = await skillModule.run(
+			{ request: "design a small helper; see src/plain.ts" },
+			createMockSkillRuntime({ workspace: neutralReader }),
+		);
+		const grounded = result.recommendations.filter(
+			(r) => r.groundingScope === "workspace",
+		);
+		expect(grounded.some((r) => r.detail.includes("were read"))).toBe(true);
+	});
 });

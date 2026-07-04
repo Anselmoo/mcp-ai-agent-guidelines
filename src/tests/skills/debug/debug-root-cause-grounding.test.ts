@@ -33,6 +33,28 @@ describe("debug-root-cause workspace grounding", () => {
 		).toBe(true);
 	});
 
+	it("cites timer, promise-race, and module-state flake signals from the file", async () => {
+		const multiReader: WorkspaceReader = {
+			async listFiles() {
+				return [];
+			},
+			async readFile() {
+				return "let shared = 0;\nsetTimeout(() => {}, 10);\nawait Promise.race([a, b]);";
+			},
+		};
+		const result = await skillModule.run(
+			{ request: "the test in src/x.test.ts is flaky" },
+			createMockSkillRuntime({ workspace: multiReader }),
+		);
+		const text = result.recommendations
+			.filter((r) => r.groundingScope === "workspace")
+			.map((r) => r.detail)
+			.join("\n");
+		expect(text).toMatch(/real timers\/sleeps/);
+		expect(text).toMatch(/races promises/);
+		expect(text).toMatch(/module-level mutable/);
+	});
+
 	it("degrades to text findings when no workspace is present", async () => {
 		const result = await skillModule.run(
 			{ request: "the job times out after a config change" },
