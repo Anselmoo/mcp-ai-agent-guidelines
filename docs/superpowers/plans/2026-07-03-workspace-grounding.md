@@ -1,10 +1,12 @@
 # Workspace Grounding Implementation Plan
 
+> **Historical record — partly superseded.** The banner-suppression coupling in this plan (Task 7: "⚠️ Directive mode" banner suppressed when grounding occurred) was removed alongside the MCP sampler round-trip. See the ADR `docs/adr/0001-remove-sampler-round-trip.md`. Workspace grounding itself remains, but its purpose is now framed correctly: cheap named-file grounding for **headless / eval / non-LLM consumers** plus a sharper seed for LLM callers — *not* "the fix for generic advice." The apology banner no longer exists; a sharp directive to an LLM caller is the intended output.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax.
 
-**Goal:** Make no-sampler tool output problem-specific by reading the actual files a request references and matching skill catalogs against real file content instead of the request sentence.
+**Goal:** Give headless / eval / non-LLM consumers problem-specific output by reading the actual files a request references and matching skill catalogs against real file content instead of the request sentence — and hand LLM callers a sharper seed.
 
-**Architecture:** A shared, additive `workspace-grounding` helper reads named files via the already-injected `WorkspaceReader` (bounded by the adapter's `guardRelativePath`); four high-value skills (`debug-root-cause`, `qual-code-analysis`, `arch-system`, `req-scope`) emit grounded findings with `groundingScope: "workspace"` citing the exact file; `directive-first` suppresses the "⚠️ Directive mode" banner when grounding occurred. Grounding never throws and degrades to today's behaviour when nothing is named or the workspace is absent.
+**Architecture:** A shared, additive `workspace-grounding` helper reads named files via the already-injected `WorkspaceReader` (bounded by the adapter's `guardRelativePath`); four high-value skills (`debug-root-cause`, `qual-code-analysis`, `arch-system`, `req-scope`) emit grounded findings with `groundingScope: "workspace"` citing the exact file. Grounding never throws and degrades to today's behaviour when nothing is named or the workspace is absent. (The original Task 7 banner-suppression step is obsolete — the banner was removed.)
 
 **Tech Stack:** TypeScript ESM (`.js` imports), vitest, biome.
 

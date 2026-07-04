@@ -278,9 +278,9 @@ describe("tool-call-handler", () => {
 	// Dogfood the original complaint: quality-evaluate used to return a wall of
 	// keyword-matched eval-process templates labelled "advisory only" with zero
 	// project-specific analysis. The instruction-level LLM→LLM transform must now
-	// yield ONE situation-specific result — an analysis task (no sampler in this
-	// runtime → return-a-prompt directive) plus a tailored next-action workflow —
-	// with no advisory-only self-label and no template recommendation wall.
+	// yield ONE situation-specific result — an analysis task (a return-a-prompt
+	// directive) plus a tailored next-action workflow — with no advisory-only
+	// self-label and no template recommendation wall.
 	it("quality-evaluate returns a situation-specific analysis, not a template wall labelled 'advisory only'", async () => {
 		const result = await dispatchToolCall(
 			"quality-evaluate",
@@ -385,31 +385,6 @@ describe("tool-call-handler", () => {
 		expect(text).toContain(
 			"coordinate 3 agents to fix our checkout bugs in parallel",
 		);
-	});
-
-	// Sampling lever: when the connected client advertises `sampling`, the server
-	// has a runtime.sampler, and the transform must return the model's FINDINGS
-	// (not the return-a-prompt directive) through the full dispatch path.
-	it("returns sampled findings for an analysis tool when a sampler is present", async () => {
-		const sampler = vi.fn().mockResolvedValue({
-			text: "SAMPLED-FINDINGS: golden.jsonl lacks negatives.",
-		});
-		const runtime = {
-			...createRuntime(),
-			sampler,
-			clientSupportsSampling: true,
-		};
-		const result = await dispatchToolCall(
-			"quality-evaluate",
-			{ request: "design an eval set with hard negatives" },
-			runtime,
-		);
-		expect(result.isError).toBeUndefined();
-		const text = result.content[0]?.text ?? "";
-		expect(text).toContain("SAMPLED-FINDINGS: golden.jsonl lacks negatives.");
-		// It is the findings, not the directive.
-		expect(text.toLowerCase()).not.toContain("analysis task");
-		expect(sampler).toHaveBeenCalled();
 	});
 
 	// Kill-switch for A/B evaluation and ops rollback: MCP_SITUATION_TRANSFORM=0
