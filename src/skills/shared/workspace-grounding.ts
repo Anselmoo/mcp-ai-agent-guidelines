@@ -1,6 +1,7 @@
 import type {
 	InstructionEvidenceItem,
 	InstructionInput,
+	RecommendationItem,
 } from "../../contracts/runtime.js";
 import type { SkillExecutionContext } from "../runtime/contracts.js";
 import { extractReferencedPaths } from "./recommendations.js";
@@ -107,4 +108,110 @@ export function buildWorkspaceEvidence(
 		excerpt: file.excerpt,
 		authority: "implementation" as const,
 	}));
+}
+
+// ─── Symbol grounding (Serena-backed) ────────────────────────────────────────
+
+const MAX_SYMBOLS = 3;
+
+/**
+ * Extract CamelCase / PascalCase identifiers from the request text that are
+ * plausible symbol seeds (length ≥ 4, contain at least one uppercase letter
+ * not at position 0 only).  Returns up to `limit` unique names in stable order.
+ */
+function extractSymbolSeeds(request: string, limit: number): string[] {
+	// Match PascalCase / camelCase identifiers (≥ 4 chars, mixed-case)
+	const matches = request.match(/\b[A-Za-z][a-z]+(?:[A-Z][a-z]*)+\w*\b/g) ?? [];
+	const seen = new Set<string>();
+	const seeds: string[] = [];
+	for (const m of matches) {
+		if (!seen.has(m)) {
+			seen.add(m);
+			seeds.push(m);
+			if (seeds.length >= limit) break;
+		}
+	}
+	return seeds;
+}
+
+/**
+ * Query Serena for symbols / definitions that the request names but the caller
+ * may not have fully resolved.  Returns `RecommendationItem[]` with
+ * `groundingScope: "workspace"` and symbol refs in `evidenceAnchors`.
+ *
+ * Safety contract:
+ * - Returns `[]` when `context.runtime.serena` is undefined (graceful degrade).
+ * - Caps results at `opts.maxSymbols` (default 3).
+ * - NEVER throws: all Serena interaction is wrapped in try/catch; partial
+ *   results collected before an error are returned as-is.
+ */
+export async function resolveSymbolGrounding(
+	context: SkillExecutionContext,
+	opts?: { maxSymbols?: number },
+): Promise<RecommendationItem[]> {
+	const serena = context.runtime.serena;
+	if (!serena) {
+		return [];
+	}
+
+	const cap = opts?.maxSymbols ?? MAX_SYMBOLS;
+	const seeds = extractSymbolSeeds(context.input.request, cap);
+	// If no CamelCase identifiers are found, issue a single overview query as a
+	// best-effort seed so advisory results can still surface Serena guidance.
+	const queriesToRun =
+		seeds.length > 0
+			? seeds.slice(0, cap)
+			: (["find_symbol_fallback"] as const);
+
+	const items: RecommendationItem[] = [];
+
+	try {
+		for (const seed of queriesToRun) {
+			if (items.length >= cap) break;
+			try {
+				const query =
+					seed === "find_symbol_fallback"
+						? ({
+								kind: "find_symbol",
+								namePath: context.input.request.split(/\s+/)[0] ?? "unknown",
+							} as const)
+						: ({ kind: "find_symbol", namePath: seed } as const);
+
+				const result = await serena.query(query);
+
+				if (result.kind === "data") {
+					// Real resolved symbol data: cite the symbol as an evidence anchor.
+					const data = result.data as Record<string, unknown>;
+					const symbolName = typeof data.name === "string" ? data.name : seed;
+					const symbolPath =
+						typeof data.relativePath === "string"
+							? data.relativePath
+							: result.tool;
+					items.push({
+						title: `Symbol reference: ${symbolName}`,
+						detail: `Serena resolved "${symbolName}" in ${symbolPath}. Review this definition and its call-sites to ground the analysis in the actual codebase.`,
+						modelClass: context.model.modelClass,
+						groundingScope: "workspace",
+						evidenceAnchors: [symbolPath],
+					});
+				} else if (result.kind === "advisory") {
+					// Advisory: emit the Serena hint as a finding so the host can act.
+					items.push({
+						title: `Serena symbol advisory: ${seed === "find_symbol_fallback" ? "find_symbol" : seed}`,
+						detail: result.rationale,
+						modelClass: context.model.modelClass,
+						groundingScope: "workspace",
+						evidenceAnchors: [result.suggestedTool],
+					});
+				}
+				// error variant: contribute nothing for this seed (safe degrade)
+			} catch {
+				// per-seed error — skip and continue collecting
+			}
+		}
+	} catch {
+		// outer guard — return whatever was collected before the unexpected throw
+	}
+
+	return items;
 }

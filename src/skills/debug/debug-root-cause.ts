@@ -20,6 +20,7 @@ import {
 	type ContentProbe,
 	matchProbes,
 	readReferencedFiles,
+	resolveSymbolGrounding,
 } from "../shared/workspace-grounding.js";
 
 const debugRootCauseInputSchema = baseSkillInputSchema.extend({
@@ -154,11 +155,14 @@ const debugRootCauseHandler: SkillHandler = {
 			}),
 		);
 
+		const serenaRecs = await resolveSymbolGrounding(context);
+
 		return createCapabilityResult(
 			context,
-			`Root Cause Analysis using ${selectedTechnique} (depth: ${maxDepth}) identified ${causalCandidates.length} causal signal category(s): ${causalCandidates.join(", ") || "none detected"}${groundedFiles.length > 0 ? `; grounded in ${groundedFiles.length} referenced file(s)` : ""}.`,
+			`Root Cause Analysis using ${selectedTechnique} (depth: ${maxDepth}) identified ${causalCandidates.length} causal signal category(s): ${causalCandidates.join(", ") || "none detected"}${groundedFiles.length > 0 ? `; grounded in ${groundedFiles.length} referenced file(s)` : ""}${serenaRecs.length > 0 ? `; ${serenaRecs.length} Serena symbol grounding hint(s)` : ""}.`,
 			[
 				...groundedRecs,
+				...serenaRecs,
 				...createFocusRecommendations(
 					`${selectedTechnique} causal analysis`,
 					details,
