@@ -84,4 +84,16 @@ describe("technique-selector (refutable triggers)", () => {
 		const b = sel("an agent that calls a tool then observes");
 		expect(a).toEqual(b);
 	});
+
+	it("rationale mentions 'escalating' when primary technique has escalatesTo targets", () => {
+		// react escalates to ["rag", "reflexion"] — a confident match should surface the escalation
+		const r = sel("an agent that calls an API tool then observes the result");
+		expect(r.primary).toBe("react");
+		expect(r.confident).toBe(true);
+		expect(r.rationale.toLowerCase()).toContain("escalating");
+	});
+
+	// NOTE: Every technique in the catalog has at least one escalatesTo target,
+	// so no contrast case (primary with empty escalatesTo) exists. This is
+	// documented here as a deliberate design decision per Stage D specification.
 });

@@ -42,4 +42,30 @@ describe("technique-catalog", () => {
 			].sort(),
 		);
 	});
+
+	it("catalog-only tier contains exactly the expected 5 ids", () => {
+		const catalogOnlyIds = TECHNIQUE_CATALOG.filter(
+			(t) => t.tier === "catalog-only",
+		)
+			.map((t) => t.id)
+			.sort();
+		expect(catalogOnlyIds).toEqual(
+			[
+				"cot",
+				"few-shot",
+				"generate-knowledge",
+				"prompt-chaining",
+				"zero-shot",
+			].sort(),
+		);
+	});
+
+	it("no technique lists its own id in escalatesTo (no self-loops)", () => {
+		for (const t of TECHNIQUE_CATALOG) {
+			expect(
+				t.escalatesTo.includes(t.id),
+				`${t.id} must not escalate to itself`,
+			).toBe(false);
+		}
+	});
 });
