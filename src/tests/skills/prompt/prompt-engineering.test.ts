@@ -67,6 +67,32 @@ describe("prompt-engineering", () => {
 		).toBe(true);
 	});
 
+	it("emits a worked-example artifact for a first-class (react) technique selection", async () => {
+		const result = await expectSkillGuidance(
+			skillModule,
+			{
+				request:
+					"Build a prompt for an agent that calls an API tool then observes the result before acting again",
+			},
+			{ detailIncludes: ["Selected technique"] },
+		);
+
+		const workedExamples = result.artifacts?.filter(
+			(a) => a.kind === "worked-example",
+		);
+		// At minimum the built-in prompt template example + the technique card
+		expect(workedExamples?.length).toBeGreaterThanOrEqual(2);
+
+		const techniqueCard = result.artifacts?.find(
+			(a) => a.kind === "worked-example" && a.title === "react worked example",
+		);
+		expect(techniqueCard).toBeDefined();
+		expect(techniqueCard).toMatchObject({
+			kind: "worked-example",
+			title: "react worked example",
+		});
+	});
+
 	it("returns structured guidance for an empty request", async () => {
 		await expectEmptyRequestHandling(skillModule);
 	});

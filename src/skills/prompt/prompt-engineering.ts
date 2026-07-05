@@ -19,6 +19,7 @@ import {
 	parseSkillInput,
 } from "../shared/input-schema.js";
 import { extractRequestSignals } from "../shared/recommendations.js";
+import { getTechniqueCard } from "./technique-examples.js";
 import { selectTechniques } from "./technique-selector.js";
 
 const promptEngineeringInputSchema = baseSkillInputSchema.extend({
@@ -285,7 +286,7 @@ const promptEngineeringHandler: SkillHandler = {
 			artifacts.push(
 				buildComparisonMatrixArtifact(
 					"Technique selection",
-					["Role", "Technique", "Why"],
+					["Role", "Technique", "Category"],
 					[
 						{
 							label: "primary",
@@ -299,6 +300,20 @@ const promptEngineeringHandler: SkillHandler = {
 					selection.rationale,
 				),
 			);
+
+			if (selection.exampleRef) {
+				const card = getTechniqueCard(selection.exampleRef);
+				if (card) {
+					artifacts.push(
+						buildWorkedExampleArtifact(
+							`${card.id} worked example`,
+							card.input,
+							card.expectedOutput,
+							card.description,
+						),
+					);
+				}
+			}
 		}
 
 		return {

@@ -202,6 +202,7 @@ export const TECHNIQUE_CATALOG: readonly TechniqueEntry[] = [
 			"Require the model to output a revised or improved prompt before answering.",
 			"Specify the criteria used to judge whether the new prompt is better.",
 			"Separate the prompt-critique step from the task-execution step.",
+			"Define the stop condition: keep the original prompt if the regenerated one does not beat it on the eval.",
 		],
 		useCase:
 			"Situations where the initial prompt is under-specified or ambiguous; the model rewrites the prompt before executing the task.",

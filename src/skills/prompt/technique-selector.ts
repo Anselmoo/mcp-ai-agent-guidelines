@@ -14,6 +14,8 @@ export interface TechniqueSelection {
 	structureRequirements: string[];
 	rationale: string;
 	confident: boolean;
+	/** Pointer to a worked card in technique-examples.ts; null for catalog-only or unclassified. */
+	exampleRef: string | null;
 }
 
 /** Stable keyword scorer over the catalog (mirrors rankCandidateTools). */
@@ -45,6 +47,7 @@ export function selectTechniques(input: InstructionInput): TechniqueSelection {
 			rationale:
 				"No technique keyword matched the request; defaulting to unclassified. Provide the task's reasoning/retrieval/tool-use shape to select a technique.",
 			confident: false,
+			exampleRef: null,
 		};
 	}
 
@@ -76,5 +79,6 @@ export function selectTechniques(input: InstructionInput): TechniqueSelection {
 		structureRequirements: [...primary.structureSignals],
 		rationale,
 		confident: true,
+		exampleRef: primary.exampleRef ?? null,
 	};
 }
