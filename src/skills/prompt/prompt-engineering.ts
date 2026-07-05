@@ -19,6 +19,7 @@ import {
 	parseSkillInput,
 } from "../shared/input-schema.js";
 import { extractRequestSignals } from "../shared/recommendations.js";
+import { selectTechniques } from "./technique-selector.js";
 
 const promptEngineeringInputSchema = baseSkillInputSchema.extend({
 	options: z
@@ -140,6 +141,13 @@ const promptEngineeringHandler: SkillHandler = {
 		if (signals.hasConstraints) {
 			details.push(
 				`Treat the stated constraints as prompt contract clauses, not optional reminders: ${signals.constraintList.slice(0, 3).join("; ")}. Constraints that live outside the prompt are regularly violated in production use.`,
+			);
+		}
+
+		const selection = selectTechniques(parsed.data);
+		if (selection.confident && selection.primary) {
+			details.push(
+				`Selected technique: ${selection.primary} (${selection.category}). ${selection.rationale} Structural requirements: ${selection.structureRequirements.join(" ")}`,
 			);
 		}
 
@@ -269,6 +277,26 @@ const promptEngineeringHandler: SkillHandler = {
 						`The prompt satisfies: ${parsed.data.successCriteria}`,
 					],
 					"Criteria for prompt asset acceptance.",
+				),
+			);
+		}
+
+		if (selection.confident && selection.primary) {
+			artifacts.push(
+				buildComparisonMatrixArtifact(
+					"Technique selection",
+					["Role", "Technique", "Why"],
+					[
+						{
+							label: "primary",
+							values: [selection.primary, selection.category],
+						},
+						...selection.supplementary.map((id) => ({
+							label: "supplementary",
+							values: [id, "same-category support"],
+						})),
+					],
+					selection.rationale,
 				),
 			);
 		}

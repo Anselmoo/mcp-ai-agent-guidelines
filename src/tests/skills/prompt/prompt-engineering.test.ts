@@ -42,11 +42,29 @@ describe("prompt-engineering", () => {
 			"worked-example",
 			"tool-chain",
 			"eval-criteria",
+			"comparison-matrix",
 		]);
 		expect(result.artifacts?.[1]).toMatchObject({
 			kind: "output-template",
 			title: "system prompt template",
 		});
+	});
+
+	it("names a selected technique for a tool-use request", async () => {
+		const result = await expectSkillGuidance(
+			skillModule,
+			{
+				request:
+					"prompt for an agent that calls a tool then observes the result",
+			},
+			{ detailIncludes: ["Selected technique"] },
+		);
+		expect(
+			result.artifacts?.some(
+				(a) =>
+					a.kind === "comparison-matrix" && a.title === "Technique selection",
+			),
+		).toBe(true);
 	});
 
 	it("returns structured guidance for an empty request", async () => {
