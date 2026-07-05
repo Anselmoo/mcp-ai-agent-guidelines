@@ -1,5 +1,4 @@
 import type { InstructionInput } from "../../contracts/runtime.js";
-import { extractRequestSignals } from "../shared/recommendations.js";
 import {
 	getTechnique,
 	TECHNIQUE_CATALOG,
@@ -33,12 +32,14 @@ function scoreTechniques(
 }
 
 export function selectTechniques(input: InstructionInput): TechniqueSelection {
-	const signals = extractRequestSignals(input);
 	const combined = `${input.request ?? ""} ${input.context ?? ""}`;
 	const ranked = scoreTechniques(combined);
 	const top = ranked[0];
 
-	if (!top || top.score === 0 || signals.keywords.length === 0) {
+	// Gate solely on whether any technique keyword matched. (Previously this also
+	// checked `extractRequestSignals().keywords.length`, but that could suppress a
+	// valid selection on a short input whose only signal is a technique keyword.)
+	if (!top || top.score === 0) {
 		return {
 			category: "unclassified",
 			primary: null,

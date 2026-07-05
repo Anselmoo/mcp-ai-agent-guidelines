@@ -80,8 +80,8 @@ describe("prompt-engineering", () => {
 		const workedExamples = result.artifacts?.filter(
 			(a) => a.kind === "worked-example",
 		);
-		// At minimum the built-in prompt template example + the technique card
-		expect(workedExamples?.length).toBeGreaterThanOrEqual(2);
+		// Exactly two: the built-in prompt template example + the react technique card
+		expect(workedExamples?.length).toBe(2);
 
 		const techniqueCard = result.artifacts?.find(
 			(a) => a.kind === "worked-example" && a.title === "react worked example",
