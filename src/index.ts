@@ -128,12 +128,12 @@ export function createRuntime(
 	const instructionRegistry = new InstructionRegistry();
 	const skillRegistry = new SkillRegistry();
 	const modelRouter = new ModelRouter();
+	const serena = options.serena ?? resolveSerenaClient();
 	const integratedRuntime = createIntegratedRuntime(
 		skillRegistry,
-		{ modelRouter },
+		{ modelRouter, serena },
 		{},
 	);
-	const serena = options.serena ?? resolveSerenaClient();
 	return {
 		sessionId: createSessionId(),
 		workspaceRoot: resolveWorkspaceRoot(),
