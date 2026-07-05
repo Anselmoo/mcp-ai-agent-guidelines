@@ -221,4 +221,71 @@ describe("resolveSymbolGrounding", () => {
 		expect(result.length).toBeGreaterThan(0);
 		expect(queryCallCount).toBe(1); // serena.query was called once for the fallback
 	});
+
+	it("uses sourceRefs (not evidenceAnchors) for an advisory tool hint", async () => {
+		const advisoryClient: SerenaClient = {
+			async query(): Promise<SerenaResult> {
+				return {
+					kind: "advisory",
+					suggestedTool: "mcp__serena__find_symbol",
+					suggestedArgs: {},
+					rationale: "advisory rationale",
+				};
+			},
+			async close(): Promise<void> {
+				// no-op
+			},
+		};
+		const context = createMockSkillExecutionContext({
+			input: { request: "inspect ParseSkillInput usage" },
+			runtime: createMockSkillRuntime({ serena: advisoryClient }),
+		});
+		const [item] = await resolveSymbolGrounding(context);
+		// The suggested tool is an action reference, not a workspace artifact.
+		expect(item.sourceRefs).toEqual(["mcp__serena__find_symbol"]);
+		expect(item.evidenceAnchors).toBeUndefined();
+	});
+
+	it("degrades to a tool hint (no fabricated path) when DATA lacks a relativePath", async () => {
+		// ChildSerenaClient returns the raw MCP callTool result, e.g. { content: [...] }
+		// with no relativePath — we must NOT fabricate an evidence anchor from the tool.
+		const rawDataClient: SerenaClient = {
+			async query(): Promise<SerenaResult> {
+				return {
+					kind: "data",
+					tool: "find_symbol",
+					data: { content: [{ type: "text", text: "..." }] },
+				};
+			},
+			async close(): Promise<void> {
+				// no-op
+			},
+		};
+		const context = createMockSkillExecutionContext({
+			input: { request: "resolve ScheduleWakeup definition" },
+			runtime: createMockSkillRuntime({ serena: rawDataClient }),
+		});
+		const [item] = await resolveSymbolGrounding(context);
+		expect(item.evidenceAnchors).toBeUndefined();
+		expect(item.sourceRefs).toEqual(["find_symbol"]);
+		// name falls back to the seed since data.name is absent
+		expect(item.title).toContain("ScheduleWakeup");
+		expect(item.detail).toContain("inspect via find_symbol");
+	});
+
+	it("contributes nothing for the error variant", async () => {
+		const errorClient: SerenaClient = {
+			async query(): Promise<SerenaResult> {
+				return { kind: "error", tool: "find_symbol", error: "not found" };
+			},
+			async close(): Promise<void> {
+				// no-op
+			},
+		};
+		const context = createMockSkillExecutionContext({
+			input: { request: "resolve MissingSymbol here" },
+			runtime: createMockSkillRuntime({ serena: errorClient }),
+		});
+		expect(await resolveSymbolGrounding(context)).toEqual([]);
+	});
 });

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
 	getTechnique,
 	TECHNIQUE_CATALOG,
+	techniquesByCategory,
 } from "../../../skills/prompt/technique-catalog.js";
 
 describe("technique-catalog", () => {
@@ -67,5 +68,20 @@ describe("technique-catalog", () => {
 				`${t.id} must not escalate to itself`,
 			).toBe(false);
 		}
+	});
+
+	it("techniquesByCategory returns exactly the entries of a category", () => {
+		const reasoning = techniquesByCategory("reasoning");
+		expect(reasoning.length).toBeGreaterThan(0);
+		expect(reasoning.every((t) => t.category === "reasoning")).toBe(true);
+		expect(reasoning.map((t) => t.id).sort()).toEqual(
+			TECHNIQUE_CATALOG.filter((t) => t.category === "reasoning")
+				.map((t) => t.id)
+				.sort(),
+		);
+		// a distinct category returns a disjoint, non-empty set
+		const agentic = techniquesByCategory("agentic");
+		expect(agentic.every((t) => t.category === "agentic")).toBe(true);
+		expect(agentic.some((t) => reasoning.includes(t))).toBe(false);
 	});
 });

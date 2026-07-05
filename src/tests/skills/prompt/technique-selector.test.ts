@@ -96,4 +96,21 @@ describe("technique-selector (refutable triggers)", () => {
 	// NOTE: Every technique in the catalog has at least one escalatesTo target,
 	// so no contrast case (primary with empty escalatesTo) exists. This is
 	// documented here as a deliberate design decision per Stage D specification.
+
+	it("scores keywords from the context field, not only the request", () => {
+		// The request alone carries no technique signal; the classification must
+		// come from the context text.
+		const r = selectTechniques({
+			request: "help me here",
+			context: "an agent that calls a tool then observes the result via an api",
+		});
+		expect(r.primary).toBe("react");
+		expect(r.confident).toBe(true);
+	});
+
+	it("uses a singular 'signal' in the rationale when exactly one keyword matches", () => {
+		const r = sel("retrieve it");
+		expect(r.primary).toBe("rag");
+		expect(r.rationale).toContain("(1 signal)");
+	});
 });

@@ -193,59 +193,68 @@ export async function resolveSymbolGrounding(
 
 	const cap = opts?.maxSymbols ?? MAX_SYMBOLS;
 	const seeds = extractSymbolSeeds(context.input.request, cap);
-	// If no CamelCase identifiers are found, check if the first token is a
-	// plausible symbol seed before issuing a fallback query. Skip if it's a
-	// stopword or too short to reduce wasted round-trips.
-	let queriesToRun: readonly (string | "find_symbol_fallback")[] = [];
+	// Build the concrete symbol seeds to query. Prefer CamelCase identifiers
+	// named in the request; if none are present, fall back to the first token
+	// only when it is a plausible symbol seed (skips stopwords / short tokens).
+	let seedQueries: string[];
 	if (seeds.length > 0) {
-		queriesToRun = seeds.slice(0, cap);
+		seedQueries = seeds.slice(0, cap);
 	} else {
 		const firstToken = context.input.request.split(/\s+/)[0];
-		if (firstToken && isPlausibleSymbolSeed(firstToken)) {
-			queriesToRun = ["find_symbol_fallback"] as const;
-		}
-		// else: no CamelCase seeds + first token not plausible → skip fallback entirely
+		seedQueries =
+			firstToken && isPlausibleSymbolSeed(firstToken) ? [firstToken] : [];
 	}
 
 	const items: RecommendationItem[] = [];
 
 	try {
-		for (const seed of queriesToRun) {
+		for (const seed of seedQueries) {
 			if (items.length >= cap) break;
 			try {
-				const query =
-					seed === "find_symbol_fallback"
-						? ({
-								kind: "find_symbol",
-								namePath: context.input.request.split(/\s+/)[0] ?? "unknown",
-							} as const)
-						: ({ kind: "find_symbol", namePath: seed } as const);
-
-				const result = await serena.query(query);
+				const result = await serena.query({
+					kind: "find_symbol",
+					namePath: seed,
+				});
 
 				if (result.kind === "data") {
-					// Real resolved symbol data: cite the symbol as an evidence anchor.
+					// Real resolved symbol data. Only a genuine file path is a
+					// workspace artifact worth an evidence anchor; when Serena
+					// returns a raw payload without `relativePath` (e.g. the child
+					// client's `{ content: [...] }`), degrade to a tool hint under
+					// `sourceRefs` rather than fabricating a path.
 					const data = result.data as Record<string, unknown>;
 					const symbolName = typeof data.name === "string" ? data.name : seed;
 					const symbolPath =
 						typeof data.relativePath === "string"
 							? data.relativePath
-							: result.tool;
-					items.push({
-						title: `Symbol reference: ${symbolName}`,
-						detail: `Serena resolved "${symbolName}" in ${symbolPath}. Review this definition and its call-sites to ground the analysis in the actual codebase.`,
-						modelClass: context.model.modelClass,
-						groundingScope: "workspace",
-						evidenceAnchors: [symbolPath],
-					});
+							: undefined;
+					items.push(
+						symbolPath
+							? {
+									title: `Symbol reference: ${symbolName}`,
+									detail: `Serena resolved "${symbolName}" in ${symbolPath}. Review this definition and its call-sites to ground the analysis in the actual codebase.`,
+									modelClass: context.model.modelClass,
+									groundingScope: "workspace",
+									evidenceAnchors: [symbolPath],
+								}
+							: {
+									title: `Symbol reference: ${symbolName}`,
+									detail: `Serena resolved "${symbolName}" — inspect via ${result.tool} to locate the definition and its call-sites.`,
+									modelClass: context.model.modelClass,
+									groundingScope: "workspace",
+									sourceRefs: [result.tool],
+								},
+					);
 				} else if (result.kind === "advisory") {
-					// Advisory: emit the Serena hint as a finding so the host can act.
+					// Advisory: emit the Serena hint as a finding. The suggested tool
+					// is an action reference (sourceRefs), not a workspace artifact,
+					// so it must not populate evidenceAnchors.
 					items.push({
-						title: `Serena symbol advisory: ${seed === "find_symbol_fallback" ? "find_symbol" : seed}`,
+						title: `Serena symbol advisory: ${seed}`,
 						detail: result.rationale,
 						modelClass: context.model.modelClass,
 						groundingScope: "workspace",
-						evidenceAnchors: [result.suggestedTool],
+						sourceRefs: [result.suggestedTool],
 					});
 				}
 				// error variant: contribute nothing for this seed (safe degrade)
