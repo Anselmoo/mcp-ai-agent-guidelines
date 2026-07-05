@@ -9,7 +9,7 @@ export const instructionManifest: InstructionManifestEntry = {
 	aliases: ["review"],
 	displayName: "Review: Code, Quality, and Security Review",
 	description:
-		"Use when reviewing existing code for quality, security vulnerabilities, correctness, maintainability, API surface hygiene, compliance adherence, or evaluation output grading. This is the primary tool for code review and quality assessment — use this instead of adapt or orchestrate for review tasks. Triggers: 'review this code', 'code review', 'check for security issues', 'quality review', 'audit this', 'grade this output', 'inspect this PR'.",
+		"Use when reviewing existing code for quality, security vulnerabilities, correctness, maintainability, API surface hygiene, compliance adherence, or evaluation output grading. This is the primary tool for code review and quality assessment — use this instead of adapt or orchestrate for review tasks. Do NOT use for making the changes themselves (use code-refactor or feature-implement) or for compliance and policy enforcement (use policy-govern). Triggers: 'review this code', 'code review', 'check for security issues', 'quality review', 'audit this', 'grade this output', 'inspect this PR'.",
 	sourcePath: "src/instructions/instruction-specs.ts#review",
 	mission:
 		"Inspect → grade → recommend → close the loop. Every review produces actionable findings.",

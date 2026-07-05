@@ -9,7 +9,7 @@ export const instructionManifest: InstructionManifestEntry = {
 	aliases: [],
 	displayName: "Testing: Write, Run, and Verify Tests",
 	description:
-		"Use when writing unit tests, integration tests, or eval test cases; measuring test coverage; closing coverage gaps; verifying correctness of AI outputs; preventing regressions; or setting up testing infrastructure. Triggers: 'write tests', 'add tests', 'test coverage', 'regression tests', 'eval test cases', 'test this', 'verify this works'.",
+		"Use when writing unit tests, integration tests, or eval test cases; measuring test coverage; closing coverage gaps; verifying correctness of AI outputs; preventing regressions; or setting up testing infrastructure. Do NOT use for debugging why a test fails (use issue-debug) or for benchmarking AI output quality (use quality-evaluate). Triggers: 'write tests', 'add tests', 'test coverage', 'regression tests', 'eval test cases', 'test this', 'verify this works'.",
 	sourcePath: "src/instructions/instruction-specs.ts#testing",
 	mission:
 		"Write, run, and verify tests: define what to prove → choose strategy → implement → measure coverage → close gaps → prevent regression.",

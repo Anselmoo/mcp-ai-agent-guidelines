@@ -59,7 +59,7 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 		toolName: "system-design",
 		displayName: "Design: Architecture and System Design",
 		description:
-			"Use when designing a new system, service, agent architecture, data pipeline, or infrastructure component; evaluating architectural options; making build-vs-buy decisions; or establishing constraints and tradeoffs before coding begins. This is the primary tool for architecture work — use this instead of adapt or orchestrate for system design tasks. Companion tools: use `graph-visualize` (chain-graph, skill-graph) to inspect the instruction chain and skill topology. Triggers: 'design this system', 'architecture for', 'how should we structure', 'system design', 'greenfield', 'architectural decision'.",
+			"Use when designing a new system, service, agent architecture, data pipeline, or infrastructure component; evaluating architectural options; making build-vs-buy decisions; or establishing constraints and tradeoffs before coding begins. This is the primary tool for architecture work — use this instead of adapt or orchestrate for system design tasks. Do NOT use for implementing the design (use feature-implement) or for comparing tool options without a design decision (use evidence-research). Companion tools: use `graph-visualize` (chain-graph, skill-graph) to inspect the instruction chain and skill topology. Triggers: 'design this system', 'architecture for', 'how should we structure', 'system design', 'greenfield', 'architectural decision'.",
 		mission:
 			"Understand constraints → explore options → decide → document. Produces a decision-backed architecture.",
 		chainTo: ["feature-implement", "policy-govern"],
@@ -74,7 +74,7 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 		aliases: ["implement"],
 		displayName: "Implement: Build New Feature or Tool",
 		description:
-			"Use when building a new tool, feature, endpoint, agent, workflow component, or capability from scratch. Covers the full lifecycle: requirements gathering, design decisions, code structure, tests, governance checks, and documentation. Triggers: 'build this', 'add a new', 'create a tool', 'implement feature', 'new functionality'.",
+			"Use when building a new tool, feature, endpoint, agent, workflow component, or capability from scratch. Covers the full lifecycle: requirements gathering, design decisions, code structure, tests, governance checks, and documentation. Do NOT use for fixing a broken existing feature (use issue-debug) or for pure design decisions before coding begins (use system-design). Triggers: 'build this', 'add a new', 'create a tool', 'implement feature', 'new functionality'.",
 		mission:
 			"Build new tools or features end-to-end: requirements → design → code → tests → docs.",
 		chainTo: ["test-verify", "code-review"],
@@ -103,7 +103,7 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 		aliases: ["review"],
 		displayName: "Review: Code, Quality, and Security Review",
 		description:
-			"Use when reviewing existing code for quality, security vulnerabilities, correctness, maintainability, API surface hygiene, compliance adherence, or evaluation output grading. This is the primary tool for code review and quality assessment — use this instead of adapt or orchestrate for review tasks. Triggers: 'review this code', 'code review', 'check for security issues', 'quality review', 'audit this', 'grade this output', 'inspect this PR'.",
+			"Use when reviewing existing code for quality, security vulnerabilities, correctness, maintainability, API surface hygiene, compliance adherence, or evaluation output grading. This is the primary tool for code review and quality assessment — use this instead of adapt or orchestrate for review tasks. Do NOT use for making the changes themselves (use code-refactor or feature-implement) or for compliance and policy enforcement (use policy-govern). Triggers: 'review this code', 'code review', 'check for security issues', 'quality review', 'audit this', 'grade this output', 'inspect this PR'.",
 		mission:
 			"Inspect → grade → recommend → close the loop. Every review produces actionable findings.",
 		chainTo: ["policy-govern", "code-refactor", "test-verify"],
@@ -131,7 +131,7 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 		toolName: "issue-debug",
 		displayName: "Debug: Diagnose and Fix Problems",
 		description:
-			"Use when something is broken, producing wrong output, crashing, behaving unexpectedly, or when you need to trace a failure to its root cause. Triggers: 'something is broken', 'this is failing', 'why does this crash', 'unexpected output', 'trace this error', 'find the bug'.",
+			"Use when something is broken, producing wrong output, crashing, behaving unexpectedly, or when you need to trace a failure to its root cause. Do NOT use for adding new functionality (use feature-implement) or for broad code-quality improvement (use code-refactor). Triggers: 'something is broken', 'this is failing', 'why does this crash', 'unexpected output', 'trace this error', 'find the bug'.",
 		mission:
 			"Diagnose and fix problems: reproduce → locate → understand → fix → prevent recurrence.",
 		chainTo: ["test-verify", "code-refactor", "policy-govern"],
@@ -145,7 +145,7 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 		toolName: "code-refactor",
 		displayName: "Refactor: Improve Existing Code Safely",
 		description:
-			"Use when improving existing code quality, reducing technical debt, eliminating coupling, splitting oversized modules, improving performance, or hardening security of existing code. Triggers: 'refactor this', 'reduce tech debt', 'clean up', 'improve code quality', 'split this module', 'too complex'.",
+			"Use when improving existing code quality, reducing technical debt, eliminating coupling, splitting oversized modules, improving performance, or hardening security of existing code. Do NOT use for adding new functionality (use feature-implement) or for diagnosing why code is broken (use issue-debug). Triggers: 'refactor this', 'reduce tech debt', 'clean up', 'improve code quality', 'split this module', 'too complex'.",
 		mission:
 			"Improve existing code: measure → prioritize → transform → verify. Never break working behavior.",
 		chainTo: ["test-verify", "code-review"],
@@ -159,7 +159,7 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 		toolName: "test-verify",
 		displayName: "Testing: Write, Run, and Verify Tests",
 		description:
-			"Use when writing unit tests, integration tests, or eval test cases; measuring test coverage; closing coverage gaps; verifying correctness of AI outputs; preventing regressions; or setting up testing infrastructure. Triggers: 'write tests', 'add tests', 'test coverage', 'regression tests', 'eval test cases', 'test this', 'verify this works'.",
+			"Use when writing unit tests, integration tests, or eval test cases; measuring test coverage; closing coverage gaps; verifying correctness of AI outputs; preventing regressions; or setting up testing infrastructure. Do NOT use for debugging why a test fails (use issue-debug) or for benchmarking AI output quality (use quality-evaluate). Triggers: 'write tests', 'add tests', 'test coverage', 'regression tests', 'eval test cases', 'test this', 'verify this works'.",
 		mission:
 			"Write, run, and verify tests: define what to prove → choose strategy → implement → measure coverage → close gaps → prevent regression.",
 		chainTo: ["code-review", "issue-debug", "quality-evaluate"],
@@ -173,7 +173,7 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 		toolName: "docs-generate",
 		displayName: "Document: Generate Documentation Artifacts",
 		description:
-			"Use when generating API reference documentation, README files, operational runbooks, postmortems, technical guides, or any other documentation artifact. Triggers: 'write documentation', 'generate docs', 'create a README', 'document this API', 'write a runbook', 'document this module', 'postmortem for', 'technical guide'.",
+			"Use when generating API reference documentation, README files, operational runbooks, postmortems, technical guides, or any other documentation artifact. Do NOT use for reviewing code or checking its quality (use code-review) or for writing code that happens to be documented (use feature-implement). Triggers: 'write documentation', 'generate docs', 'create a README', 'document this API', 'write a runbook', 'document this module', 'postmortem for', 'technical guide'.",
 		mission:
 			"Identify audience → choose format → generate content → publish. Every doc is audience-targeted.",
 		chainTo: ["code-review", "enterprise-strategy"],
@@ -187,7 +187,7 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 		toolName: "quality-evaluate",
 		displayName: "Evaluate: Benchmark and Assess Quality",
 		description:
-			"Use when benchmarking AI system quality, measuring output consistency, running eval suites, comparing model versions, detecting quality regressions, grading outputs against rubrics, or generating evaluation reports. Triggers: 'benchmark this', 'run evals', 'measure quality', 'compare model outputs', 'quality gate', 'detect regression', 'grade these outputs', 'eval suite'.",
+			"Use when benchmarking AI system quality, measuring output consistency, running eval suites, comparing model versions, detecting quality regressions, grading outputs against rubrics, or generating evaluation reports. Do NOT use for reviewing code quality (use code-review) or for writing the tests themselves (use test-verify). Triggers: 'benchmark this', 'run evals', 'measure quality', 'compare model outputs', 'quality gate', 'detect regression', 'grade these outputs', 'eval suite'.",
 		mission:
 			"Define metrics → measure → compare → report → act. Every evaluation produces a decision or action.",
 		chainTo: ["prompt-engineering", "code-refactor", "policy-govern"],
@@ -201,7 +201,7 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 		toolName: "prompt-engineering",
 		displayName: "Prompt Engineering: Build, Evaluate, and Optimize Prompts",
 		description:
-			"Use when writing a new system prompt, building a prompt template, improving an existing prompt that is failing or hallucinating, versioning prompts, chaining prompts into pipelines, calibrating agent autonomy levels, or evaluating prompt quality against benchmarks. Triggers: 'write a system prompt', 'improve this prompt', 'prompt is hallucinating', 'prompt template', 'chain these prompts', 'calibrate autonomy', 'prompt version'.",
+			"Use when writing a new system prompt, building a prompt template, improving an existing prompt that is failing or hallucinating, versioning prompts, chaining prompts into pipelines, calibrating agent autonomy levels, or evaluating prompt quality against benchmarks. Do NOT use for measuring output quality at scale (use quality-evaluate) or for implementing the agent or tool being prompted (use feature-implement). Triggers: 'write a system prompt', 'improve this prompt', 'prompt is hallucinating', 'prompt template', 'chain these prompts', 'calibrate autonomy', 'prompt version'.",
 		mission:
 			"Structure → test → refine → version. Every prompt is a versioned, tested artifact.",
 		chainTo: ["quality-evaluate", "policy-govern"],

@@ -9,7 +9,7 @@ export const instructionManifest: InstructionManifestEntry = {
 	aliases: [],
 	displayName: "Refactor: Improve Existing Code Safely",
 	description:
-		"Use when improving existing code quality, reducing technical debt, eliminating coupling, splitting oversized modules, improving performance, or hardening security of existing code. Triggers: 'refactor this', 'reduce tech debt', 'clean up', 'improve code quality', 'split this module', 'too complex'.",
+		"Use when improving existing code quality, reducing technical debt, eliminating coupling, splitting oversized modules, improving performance, or hardening security of existing code. Do NOT use for adding new functionality (use feature-implement) or for diagnosing why code is broken (use issue-debug). Triggers: 'refactor this', 'reduce tech debt', 'clean up', 'improve code quality', 'split this module', 'too complex'.",
 	sourcePath: "src/instructions/instruction-specs.ts#refactor",
 	mission:
 		"Improve existing code: measure → prioritize → transform → verify. Never break working behavior.",
