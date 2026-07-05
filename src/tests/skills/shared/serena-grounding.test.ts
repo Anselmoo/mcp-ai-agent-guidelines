@@ -163,4 +163,62 @@ describe("resolveSymbolGrounding", () => {
 		const result = await resolveSymbolGrounding(context);
 		expect(result.length).toBeLessThanOrEqual(3);
 	});
+
+	it("skips fallback when first token is a stopword or too short (no CamelCase identifiers)", async () => {
+		let queryCallCount = 0;
+		const spyingClient: SerenaClient = {
+			async query(): Promise<SerenaResult> {
+				queryCallCount++;
+				return {
+					kind: "data",
+					tool: "find_symbol",
+					data: {
+						name: "MockSymbol",
+						relativePath: "src/mock.ts",
+					},
+				};
+			},
+			async close(): Promise<void> {
+				// no-op
+			},
+		};
+		// Request starts with stopword "why" and has no CamelCase identifiers
+		// → fallback should be skipped, serena.query should NOT be called
+		const context = createMockSkillExecutionContext({
+			input: { request: "why is this failing?" },
+			runtime: createMockSkillRuntime({ serena: spyingClient }),
+		});
+		const result = await resolveSymbolGrounding(context);
+		expect(result).toEqual([]);
+		expect(queryCallCount).toBe(0); // serena.query was never called
+	});
+
+	it("includes fallback when first token is plausible (length >= 4, not a stopword)", async () => {
+		let queryCallCount = 0;
+		const spyingClient: SerenaClient = {
+			async query(): Promise<SerenaResult> {
+				queryCallCount++;
+				return {
+					kind: "data",
+					tool: "find_symbol",
+					data: {
+						name: "DebugInfo",
+						relativePath: "src/debug.ts",
+					},
+				};
+			},
+			async close(): Promise<void> {
+				// no-op
+			},
+		};
+		// Request starts with "debug" (length 5, not a stopword) and has no CamelCase identifiers
+		// → fallback should run, serena.query should be called once
+		const context = createMockSkillExecutionContext({
+			input: { request: "debug the timeout in the scheduler module" },
+			runtime: createMockSkillRuntime({ serena: spyingClient }),
+		});
+		const result = await resolveSymbolGrounding(context);
+		expect(result.length).toBeGreaterThan(0);
+		expect(queryCallCount).toBe(1); // serena.query was called once for the fallback
+	});
 });

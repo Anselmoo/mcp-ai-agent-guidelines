@@ -115,6 +115,32 @@ export function buildWorkspaceEvidence(
 const MAX_SYMBOLS = 3;
 
 /**
+ * Stopword set for filtering implausible symbol fallback seeds.
+ * These are common English words/question words that should not trigger
+ * a Serena query when no CamelCase identifiers are found in the request.
+ */
+const FALLBACK_STOPWORDS = new Set([
+	"why",
+	"how",
+	"what",
+	"when",
+	"where",
+	"which",
+	"that",
+	"this",
+	"the",
+	"and",
+	"for",
+	"with",
+	"from",
+	"into",
+	"does",
+	"should",
+	"could",
+	"would",
+]);
+
+/**
  * Extract CamelCase / PascalCase identifiers from the request text that are
  * plausible symbol seeds (length ≥ 4, contain at least one uppercase letter
  * not at position 0 only).  Returns up to `limit` unique names in stable order.
@@ -132,6 +158,17 @@ function extractSymbolSeeds(request: string, limit: number): string[] {
 		}
 	}
 	return seeds;
+}
+
+/**
+ * Check if a token is a plausible symbol seed for fallback queries.
+ * A token is plausible if its length ≥ 4 AND it is not a stopword.
+ */
+function isPlausibleSymbolSeed(token: string): boolean {
+	if (token.length < 4) {
+		return false;
+	}
+	return !FALLBACK_STOPWORDS.has(token.toLowerCase());
 }
 
 /**
@@ -156,12 +193,19 @@ export async function resolveSymbolGrounding(
 
 	const cap = opts?.maxSymbols ?? MAX_SYMBOLS;
 	const seeds = extractSymbolSeeds(context.input.request, cap);
-	// If no CamelCase identifiers are found, issue a single overview query as a
-	// best-effort seed so advisory results can still surface Serena guidance.
-	const queriesToRun =
-		seeds.length > 0
-			? seeds.slice(0, cap)
-			: (["find_symbol_fallback"] as const);
+	// If no CamelCase identifiers are found, check if the first token is a
+	// plausible symbol seed before issuing a fallback query. Skip if it's a
+	// stopword or too short to reduce wasted round-trips.
+	let queriesToRun: readonly (string | "find_symbol_fallback")[] = [];
+	if (seeds.length > 0) {
+		queriesToRun = seeds.slice(0, cap);
+	} else {
+		const firstToken = context.input.request.split(/\s+/)[0];
+		if (firstToken && isPlausibleSymbolSeed(firstToken)) {
+			queriesToRun = ["find_symbol_fallback"] as const;
+		}
+		// else: no CamelCase seeds + first token not plausible → skip fallback entirely
+	}
 
 	const items: RecommendationItem[] = [];
 
