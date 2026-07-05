@@ -10,7 +10,7 @@ import { err, ok, type Result } from "neverthrow";
 import { match } from "ts-pattern";
 import type { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
-import { toToolResult } from "./output-envelope.js";
+import { buildEnvelopeMeta, toToolResult } from "./output-envelope.js";
 
 // ---------------------------------------------------------------------------
 // Error categories
@@ -107,7 +107,7 @@ export function buildMcpErrorContent(error: McpErrorPayload): {
 	const env = toToolResult({
 		summaryMarkdown: formatMcpError(error),
 		payload: error,
-		meta: { tool: "mcp", ts: new Date().toISOString(), version: 1 },
+		meta: buildEnvelopeMeta("mcp"),
 	});
 	return { isError: true as const, content: env.content };
 }
