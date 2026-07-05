@@ -105,15 +105,16 @@ These techniques are documented here for completeness but are **not** in the cat
 
 | ID | Name | Prerequisite |
 |----|------|--------------|
-| `ape` / `active-prompt` | Automatic Prompt Engineer | Requires a prompt/example pool + evaluator pipeline |
+| `ape` | Automatic Prompt Engineer | Requires a prompt/example pool + evaluator to score candidate prompts at classify time |
+| `active-prompt` | Active-Prompt | Requires an example pool + uncertainty-based selection (no pool available at classify time) |
 | `multimodal-cot` | Multimodal Chain-of-Thought | Requires image input in `baseSkillInputSchema` |
 | `graph-prompting` | Graph Prompting | Requires knowledge-graph / triple-store input |
-| `dsp` | Decomposed Structured Prompting | Requires RAG composition layer (≈ decompose + RAG) |
-| `art` | Automatic Reasoning and Tool-use | Functionally overlaps ReAct; deferred until differentiation is clear |
+| `dsp` | Decomposed Structured Prompting | Requires RAG composition (decompose from orch-* skills + retrieve from RAG) |
+| `art` | Automatic Reasoning and Tool-use | Functionally overlaps ReAct; deferred until a differentiating trigger exists |
 
 ### Deterministic Selector
 
-The selector (`src/skills/prompt/technique-selector.ts`) is **fully deterministic** — it uses keyword and signal scoring, consistent with [ADR 0001: Remove Sampler Round-Trip](../../../../docs/adr/0001-remove-sampler-round-trip.md). There is no LLM sampler involved.
+The selector (`src/skills/prompt/technique-selector.ts`) is **fully deterministic** — it uses keyword and signal scoring, consistent with [ADR 0001: Remove Sampler Round-Trip](../../../../adr/0001-remove-sampler-round-trip.md). There is no LLM sampler involved.
 
 Selection algorithm:
 
