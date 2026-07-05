@@ -247,6 +247,12 @@ export interface SkillExecutionRuntime {
 	 * when undefined or when any call throws.
 	 */
 	workspace?: WorkspaceReader;
+	/**
+	 * Optional Serena client seam.  Skill handlers should access this via
+	 * `context.runtime.serena?.query(...)` and must degrade gracefully when
+	 * undefined.  Populated from `WorkflowExecutionRuntime.serena` when present.
+	 */
+	serena?: import("../serena/client.js").SerenaClient;
 }
 
 export interface WorkflowExecutionRuntime {

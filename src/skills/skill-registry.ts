@@ -86,6 +86,7 @@ export class SkillRegistry {
 			modelRouter: runtime.modelRouter,
 			resolveSkillHandler: this.resolver.resolve.bind(this.resolver),
 			workspace: this.workspace,
+			...(runtime.serena === undefined ? {} : { serena: runtime.serena }),
 		};
 
 		return skill.run(input, skillRuntime);

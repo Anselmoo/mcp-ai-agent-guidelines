@@ -9,6 +9,7 @@ import type {
 	WorkflowExecutionRuntime,
 	WorkspaceReader,
 } from "../../contracts/runtime.js";
+import type { SerenaClient } from "../../serena/client.js";
 import type { SkillExecutionContext } from "../../skills/runtime/contracts.js";
 
 export const mockModelProfile: ModelProfile = {
@@ -71,6 +72,23 @@ export function createMockSkillRuntime(
 		...(overrides.workspace === undefined
 			? {}
 			: { workspace: overrides.workspace }),
+		...(overrides.serena === undefined ? {} : { serena: overrides.serena }),
+	};
+}
+
+export function createMockSerenaClient(): SerenaClient {
+	return {
+		async query() {
+			return {
+				kind: "advisory" as const,
+				suggestedTool: "mcp__serena__find_symbol",
+				suggestedArgs: {},
+				rationale: "mock serena advisory",
+			};
+		},
+		async close() {
+			// no-op
+		},
 	};
 }
 
