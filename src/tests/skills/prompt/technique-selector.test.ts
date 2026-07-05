@@ -33,6 +33,9 @@ describe("technique-selector (refutable triggers)", () => {
 			sel("sample multiple answers and take the majority vote for reliability")
 				.primary,
 		).toBe("self-consistency");
+		expect(sel("design the system architecture").primary).not.toBe(
+			"self-consistency",
+		);
 	});
 
 	it("selects tree-of-thoughts for branch/backtrack exploration", () => {
@@ -40,6 +43,9 @@ describe("technique-selector (refutable triggers)", () => {
 			sel("explore alternative branches and backtrack to search options")
 				.primary,
 		).toBe("tree-of-thoughts");
+		expect(sel("write a short poem about autumn").primary).not.toBe(
+			"tree-of-thoughts",
+		);
 	});
 
 	it("selects reflexion for self-critique/iterate loops", () => {
@@ -47,12 +53,16 @@ describe("technique-selector (refutable triggers)", () => {
 			sel("reflect on the failure, self-critique, and iterate with feedback")
 				.primary,
 		).toBe("reflexion");
+		expect(sel("calculate the sum of 1 to 100").primary).not.toBe("reflexion");
 	});
 
 	it("selects meta-prompting for regenerating the prompt itself", () => {
 		expect(
 			sel("critique the prompt and regenerate a refined prompt").primary,
 		).toBe("meta-prompting");
+		expect(sel("retrieve documents from the knowledge base").primary).not.toBe(
+			"meta-prompting",
+		);
 	});
 
 	it("emits ≤2 supplementary techniques and a rationale string", () => {
