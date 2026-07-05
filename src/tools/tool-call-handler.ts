@@ -41,7 +41,7 @@ import {
 	formatWorkflowResult,
 } from "./result-formatter.js";
 import { buildMcpErrorContent } from "./shared/error-handler.js";
-import { toToolResult } from "./shared/output-envelope.js";
+import { buildEnvelopeMeta, toToolResult } from "./shared/output-envelope.js";
 import {
 	dispatchWorkspaceToolCall,
 	resolveWorkspaceToolName,
@@ -317,11 +317,7 @@ export async function dispatchToolCall(
 				// instructionId is required by the tool-coverage-matrix test which checks
 				// that every workflow tool envelope carries instructionId === toolName.
 				payload: { ...result.payload, instructionId: "analogy-think" },
-				meta: {
-					tool: "analogy-think",
-					ts: new Date().toISOString(),
-					version: 1,
-				},
+				meta: buildEnvelopeMeta("analogy-think"),
 			});
 		}
 
@@ -518,22 +514,14 @@ export async function dispatchToolCall(
 			return toToolResult({
 				summaryMarkdown: summaryWithGate,
 				payload: payloadWithGate,
-				meta: {
-					tool: toolName,
-					ts: new Date().toISOString(),
-					version: 1,
-				},
+				meta: buildEnvelopeMeta(toolName),
 			});
 		}
 
 		return toToolResult({
 			summaryMarkdown: rawSummary,
 			payload: rawPayload,
-			meta: {
-				tool: toolName,
-				ts: new Date().toISOString(),
-				version: 1,
-			},
+			meta: buildEnvelopeMeta(toolName),
 		});
 	} catch (error) {
 		// Detect unknown-instruction / unknown-tool-name errors: these signal that

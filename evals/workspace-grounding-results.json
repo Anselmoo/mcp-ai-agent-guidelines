@@ -1,0 +1,16 @@
+{
+  "question": "Does a non-LLM consumer get workspace-grounded findings that cite real files?",
+  "method": "Real createWorkspaceSurface() over evals/fixtures; qual-code-analysis skill; no sampler, no model.",
+  "skill": "qual-code-analysis",
+  "referencedFile": "src/payments/charge.ts",
+  "groundedFindingCount": 1,
+  "findings": [
+    {
+      "detail": "`src/payments/charge.ts`: Audit type coverage: `any` types, missing return types, and untyped function parameters are defect entry points — strengthen the type boundary before adding features.",
+      "citedPath": "src/payments/charge.ts",
+      "existsOnDisk": true
+    }
+  ],
+  "citingRealFileCount": 1,
+  "pass": true
+}
