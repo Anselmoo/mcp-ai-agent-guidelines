@@ -129,6 +129,70 @@ describe("IncrementalScanner", () => {
 		const symbols = scanner.getFileSymbols("h.ts");
 		expect(symbols.some((s) => s.name === "Baz")).toBe(true);
 	});
+
+	it("getFileSymbols returns an empty array for an unknown file", async () => {
+		await scanner.scan();
+		expect(scanner.getFileSymbols("does-not-exist.ts")).toEqual([]);
+	});
+
+	it("getSnapshots returns the in-memory snapshot map", async () => {
+		await writeTs(repoDir, "i.ts", "export function inMemory() {}");
+		await scanner.scan();
+		const snapshots = scanner.getSnapshots();
+		expect(snapshots.has("i.ts")).toBe(true);
+	});
+
+	it("applies default include/ignore patterns when none are provided", async () => {
+		const defaultScanner = new IncrementalScanner({
+			repositoryRoot: repoDir,
+			cacheDir,
+		});
+		await writeTs(repoDir, "j.ts", "export function usesDefaults() {}");
+
+		const result = await defaultScanner.scan();
+		expect(result.allPaths).toContain("j.ts");
+	});
+
+	it("does not record a symbolMap entry for files with no exported symbols", async () => {
+		// Unexported-only file: exercises the false branch of the
+		// `if (exportedNames.length > 0)` guard for newly scanned files.
+		await writeTs(repoDir, "k.ts", "function privateOnly() {}\n");
+
+		const result = await scanner.scan();
+		expect(result.symbolMap["k.ts"]).toBeUndefined();
+	});
+
+	it("does not carry forward a symbolMap entry for unchanged files with no exports", async () => {
+		// First scan captures the snapshot; second scan hits the "carry
+		// forward unchanged snapshots" loop, exercising its false branch.
+		await writeTs(repoDir, "l.ts", "function alsoPrivate() {}\n");
+		await scanner.scan();
+
+		const second = await scanner.scan();
+		expect(second.skippedPaths).toContain("l.ts");
+		expect(second.symbolMap["l.ts"]).toBeUndefined();
+	});
+
+	it("getSymbolMap omits files with no exported symbols", async () => {
+		await writeTs(repoDir, "m.ts", "function noExports() {}\n");
+		await scanner.scan();
+		const map = scanner.getSymbolMap();
+		expect(map["m.ts"]).toBeUndefined();
+	});
+
+	it("treats a malformed cache file as absent and performs a full scan", async () => {
+		await writeFile(
+			join(cacheDir, "incremental-file-hashes.json"),
+			JSON.stringify({ notAValidCache: true }),
+			"utf8",
+		);
+		await writeTs(repoDir, "n.ts", "export function afterBadCache() {}");
+
+		const result = await scanner.scan();
+		// Invalid cache shape → isValidHashCache() returns false → falls
+		// through to `return null`, so the file is treated as new.
+		expect(result.newPaths).toContain("n.ts");
+	});
 });
 
 // ─── diffIncrementalResults ───────────────────────────────────────────────────

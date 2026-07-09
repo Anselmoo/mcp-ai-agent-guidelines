@@ -338,4 +338,147 @@ describe("input-guards", () => {
 		expect((result.items as number[])[1]).toBe(42);
 		expect((result.items as string[])[2]).toBe("plain");
 	});
+
+	it("traces sanitized input with a fallback skill label when skillId is absent", async () => {
+		const debugSpy = vi.spyOn(console, "debug").mockImplementation(() => {});
+		const result = await validateSkillInput(
+			{ request: "investigate the anomaly with more detail please" },
+			z.object({ request: z.string() }),
+			{},
+			{ traceValidation: true },
+		);
+
+		expect(result.success).toBe(true);
+		expect(debugSpy).toHaveBeenCalledWith("Input sanitized for unknown skill");
+		expect(debugSpy).toHaveBeenCalledWith(
+			expect.stringContaining("Validation passed for unknown skill"),
+		);
+	});
+
+	it("fails schema validation and reports the offending field path", async () => {
+		const result = await validateSkillInput(
+			{ request: "a well formed request describing the task" },
+			z.object({ request: z.string(), count: z.number() }),
+			{ skillId: "debug-root-cause" },
+		);
+
+		expect(result.success).toBe(false);
+		expect(result.errors[0]).toContain("Schema validation failed");
+		expect(result.errors[1]).toBe("Field path: count");
+	});
+
+	it("fails schema validation without a field path when no issue is reported", async () => {
+		const pathlessFailureSchema = {
+			safeParse: () => ({
+				success: false,
+				error: { issues: [] },
+			}),
+		} as unknown as z.ZodType<{ request: string }>;
+
+		const result = await validateSkillInput(
+			{ request: "a well formed request describing the task" },
+			pathlessFailureSchema,
+			{ skillId: "debug-root-cause" },
+		);
+
+		expect(result.success).toBe(false);
+		expect(result.errors).toEqual([
+			"Schema validation failed: Validation failed",
+		]);
+	});
+
+	it("wraps unexpected non-ValidationError exceptions from schema parsing", async () => {
+		const throwingSchema = {
+			safeParse: () => {
+				throw new Error("schema exploded");
+			},
+		} as unknown as z.ZodType<{ request: string }>;
+
+		const result = await validateSkillInput(
+			{ request: "a well formed request describing the task" },
+			throwingSchema,
+			{ skillId: "debug-root-cause" },
+		);
+
+		expect(result.success).toBe(false);
+		expect(result.errors[0]).toContain("Validation guard error");
+		expect(result.errors[0]).toContain("schema exploded");
+		expect(result.context?.stackTrace).toBeDefined();
+	});
+
+	it("wraps unexpected non-Error throws from schema parsing without a stack trace", async () => {
+		const throwingSchema = {
+			safeParse: () => {
+				// biome-ignore lint/style/useThrowOnlyError: exercising the non-Error catch branch
+				throw "schema exploded as a string";
+			},
+		} as unknown as z.ZodType<{ request: string }>;
+
+		const result = await validateSkillInput(
+			{ request: "a well formed request describing the task" },
+			throwingSchema,
+			{ skillId: "debug-root-cause" },
+		);
+
+		expect(result.success).toBe(false);
+		expect(result.errors[0]).toContain("Validation guard error");
+		expect(result.context?.stackTrace).toBeUndefined();
+	});
+
+	it("warns when the request is very short", async () => {
+		const result = await validateSkillInput(
+			{ request: "hi" },
+			z.object({ request: z.string() }),
+			{ skillId: "debug-root-cause" },
+			{ sanitize: false },
+		);
+
+		expect(result.success).toBe(true);
+		expect(result.warnings).toContain(
+			"Request is very short - consider providing more detail for better results",
+		);
+	});
+
+	it("warns when the request is very long", async () => {
+		const longRequest = "a".repeat(5001);
+		const result = await validateSkillInput(
+			{ request: longRequest },
+			z.object({ request: z.string() }),
+			{ skillId: "debug-root-cause" },
+			{ sanitize: false },
+		);
+
+		expect(result.success).toBe(true);
+		expect(result.warnings).toContain(
+			"Request is very long - consider breaking into smaller, focused requests",
+		);
+	});
+
+	it("does not warn about vague terms when two or fewer are present", async () => {
+		const result = await validateSkillInput(
+			{ request: "please fix and improve this specific module carefully" },
+			z.object({ request: z.string() }),
+			{ skillId: "debug-root-cause" },
+			{ sanitize: false },
+		);
+
+		expect(result.success).toBe(true);
+		expect(
+			result.warnings.some((w) => w.includes("contains vague terms")),
+		).toBe(false);
+	});
+
+	it("warns when more than two vague terms are present", async () => {
+		const result = await validateSkillInput(
+			{ request: "please fix and improve some bad stuff, thanks" },
+			z.object({ request: z.string() }),
+			{ skillId: "debug-root-cause" },
+			{ sanitize: false },
+		);
+
+		expect(result.success).toBe(true);
+		expect(
+			result.warnings.some((w) => w.includes("contains vague terms")),
+		).toBe(true);
+	});
 });

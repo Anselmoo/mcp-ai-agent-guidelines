@@ -9,6 +9,7 @@ import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
+	aliasForPhysicalModelId,
 	createDefaultOrchestrationConfig,
 	getAvailableModelsForTier,
 	getDomainRouting,
@@ -27,6 +28,7 @@ import {
 } from "../../config/orchestration-config.js";
 import { renderOrchestrationToml } from "../../config/orchestration-config-service.js";
 import { ObservabilityOrchestrator } from "../../infrastructure/observability.js";
+import { WORKSPACE_ROOT_ENV_VAR } from "../../runtime/session-store-utils.js";
 
 describe("orchestration-config: capability-driven resolver", () => {
 	afterEach(() => {
@@ -712,6 +714,148 @@ describe("orchestration-config: capability-driven resolver", () => {
 			resetConfigCache();
 			rmSync(workspaceRoot, { recursive: true, force: true });
 			logSpy.mockRestore();
+		}
+	});
+
+	// ── Branch-coverage closers (issue #1521) ───────────────────────────────
+
+	it("aliasForPhysicalModelId resolves a known physical model ID back to its alias", () => {
+		// aliasForPhysicalModelId reads the live (workspace) config via
+		// loadOrchestrationConfig(), not the builtin defaults (which ship with
+		// an empty `models: {}` map) — use a known committed workspace model.
+		expect(aliasForPhysicalModelId("gpt-5-mini")).toBe("free_secondary");
+	});
+
+	it("aliasForPhysicalModelId returns null for an unknown physical model ID", () => {
+		expect(aliasForPhysicalModelId("no-such-physical-model-id")).toBeNull();
+	});
+
+	it("resolveLastResortModelId treats a missing cost_sensitive capability key as empty (nullish coalescing)", async () => {
+		const workspaceRoot = mkdtempSync(`${tmpdir()}/orch-missing-cost-key-`);
+		const configPath = resolve(
+			workspaceRoot,
+			ORCHESTRATION_CONFIG_RELATIVE_PATH,
+		);
+		const config = createDefaultOrchestrationConfig();
+		config.environment.strict_mode = false;
+		config.models.only_model = {
+			id: "only-model-id",
+			provider: "openai",
+			available: true,
+			context_window: 8000,
+		};
+		// No capability satisfies `requires`, `fallback` is empty, and the
+		// `cost_sensitive` key itself is absent (not just an empty array) so
+		// `config.capabilities.cost_sensitive ?? []` must take the `?? []` arm.
+		delete config.capabilities.cost_sensitive;
+		config.profiles.no_cost_sensitive_key = {
+			requires: ["nonexistent_cap_for_missing_key"],
+			fallback: [],
+			fan_out: 1,
+		};
+
+		try {
+			mkdirSync(resolve(workspaceRoot, ".mcp-ai-agent-guidelines/config"), {
+				recursive: true,
+			});
+			writeFileSync(configPath, renderOrchestrationToml(config), "utf8");
+			const { loadOrchestrationConfig } = await import(
+				"../../config/orchestration-config.js"
+			);
+			resetConfigCache();
+			loadOrchestrationConfig(configPath);
+
+			// cost_sensitive key missing → firstAvailableModelId sees [] → falls
+			// through to configuredAvailableModel (first available model in the
+			// workspace config), i.e. "only-model-id".
+			expect(resolveProfile("no_cost_sensitive_key")).toBe("only-model-id");
+		} finally {
+			resetConfigCache();
+			rmSync(workspaceRoot, { recursive: true, force: true });
+		}
+	});
+
+	it("resolveCapability treats a completely unknown tag as empty (nullish coalescing)", () => {
+		// "totally_unknown_tag_xyz" is not a key in the live capabilities map at
+		// all (as opposed to being present with an empty array), exercising the
+		// `config.capabilities[tag] ?? []` nullish-coalescing arm.
+		expect(resolveCapability("totally_unknown_tag_xyz")).toEqual([]);
+	});
+
+	it("throws with 'no override path' guidance when a non-ENOENT load failure occurs and no override path was given", async () => {
+		const workspaceRoot = mkdtempSync(`${tmpdir()}/orch-strict-parse-error-`);
+		const configPath = resolve(
+			workspaceRoot,
+			ORCHESTRATION_CONFIG_RELATIVE_PATH,
+		);
+		const previousWorkspaceRoot = process.env[WORKSPACE_ROOT_ENV_VAR];
+		process.env[WORKSPACE_ROOT_ENV_VAR] = workspaceRoot;
+
+		try {
+			mkdirSync(resolve(workspaceRoot, ".mcp-ai-agent-guidelines/config"), {
+				recursive: true,
+			});
+			// Syntactically valid TOML that fails schema validation (invalid
+			// provider enum) — a non-ENOENT error. `environment.strict_mode` in
+			// the builtin defaults used for this decision is always `true`, so
+			// this always throws; the point of this test is exercising the
+			// `overridePath === undefined` branch of the guidance message.
+			writeFileSync(
+				configPath,
+				[
+					"[environment]",
+					"strict_mode = true",
+					"default_max_context = 128000",
+					"enable_cost_tracking = true",
+					"",
+					"[models.model_a]",
+					'id = "gpt-5.1-mini"',
+					'provider = "not-a-real-provider"',
+					"available = true",
+					"context_window = 128000",
+					"",
+					"[capabilities]",
+					'cost_sensitive = ["model_a"]',
+					"",
+					"[profiles.default]",
+					"requires = []",
+					'fallback = ["cost_sensitive"]',
+					"fan_out = 1",
+					"",
+					"[routing.domains]",
+					"",
+					"[orchestration.patterns]",
+					"",
+					"[resilience]",
+					"rate_limit_backoff_ms = 100",
+					"auto_escalate_on_consecutive_failures = 2",
+					"max_escalation_depth = 2",
+					"",
+					"[cache]",
+					"default_ttl_seconds = 60",
+					"",
+					"[cache.profile_overrides]",
+				].join("\n"),
+				"utf8",
+			);
+
+			const { loadOrchestrationConfig } = await import(
+				"../../config/orchestration-config.js"
+			);
+			resetConfigCache();
+			// No overridePath argument passed → resolves via resolveWorkspaceRoot(),
+			// which honours MCP_WORKSPACE_ROOT above.
+			expect(() => loadOrchestrationConfig()).toThrowError(
+				/mcp-cli onboard init/,
+			);
+		} finally {
+			resetConfigCache();
+			if (previousWorkspaceRoot === undefined) {
+				delete process.env[WORKSPACE_ROOT_ENV_VAR];
+			} else {
+				process.env[WORKSPACE_ROOT_ENV_VAR] = previousWorkspaceRoot;
+			}
+			rmSync(workspaceRoot, { recursive: true, force: true });
 		}
 	});
 });

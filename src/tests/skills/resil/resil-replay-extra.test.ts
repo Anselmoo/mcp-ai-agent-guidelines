@@ -1,6 +1,7 @@
-import { describe, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { skillModule } from "../../../skills/resil/resil-replay.js";
 import {
+	createMockSkillRuntime,
 	expectInsufficientSignalHandling,
 	expectSkillGuidance,
 } from "../test-helpers.js";
@@ -214,5 +215,234 @@ describe("resil-replay extra branch coverage", () => {
 				recommendationCountAtLeast: 2,
 			},
 		);
+	});
+
+	it("asks for more detail when request is simple and has no replay domain signal", async () => {
+		const result = await skillModule.run(
+			{ request: "help me improve this workflow" },
+			createMockSkillRuntime(),
+		);
+		expect(result.summary).toContain("Replay Consolidator targets");
+		expect(result.recommendations[0]).toMatchObject({
+			title: "Provide more detail",
+		});
+		const detailText = result.recommendations
+			.map((recommendation) => recommendation.detail)
+			.join("\n");
+		expect(detailText).toContain("Mention the trace buffer contents");
+	});
+
+	it("appends a constraints guideline when the input includes constraints", async () => {
+		await expectSkillGuidance(
+			skillModule,
+			{
+				request:
+					"replay execution traces with quality weighted buffer full consolidation",
+				constraints: [
+					"buffer capacity must stay under 25 traces",
+					"only manual triggers are allowed",
+				],
+				options: {
+					evictionPolicy: "quality-weighted",
+					successFraction: 0.35,
+					consolidationTrigger: "buffer-full",
+					injectionMode: "prepend",
+					bufferCapacity: 25,
+				},
+			},
+			{
+				detailIncludes: [
+					"Apply the replay consolidation under the following constraints",
+					"buffer capacity must stay under 25 traces",
+				],
+				recommendationCountAtLeast: 4,
+			},
+		);
+	});
+
+	it("ignores options that fail schema validation and falls back to keyword rules only", async () => {
+		const result = await skillModule.run(
+			{
+				request:
+					"replay execution traces with quality weighted buffer full consolidation",
+				options: {
+					// out of the [0, 1] range accepted by the schema — parseSkillInput
+					// reports ok: false and the handler must treat opts as undefined.
+					successFraction: 5,
+				},
+			},
+			createMockSkillRuntime(),
+		);
+		expect(result.summary).toContain("Replay Consolidator produced");
+		const detailText = result.recommendations
+			.map((recommendation) => recommendation.detail)
+			.join("\n");
+		expect(detailText).not.toContain("Advisory buffer state");
+		expect(detailText).not.toContain("Buffer mix is");
+	});
+
+	it("adequate buffer fill ratio skips the sparse-buffer guidance", async () => {
+		await expectSkillGuidance(
+			skillModule,
+			{
+				request:
+					"replay execution traces with quality weighted buffer full consolidation and replace injection",
+				options: {
+					evictionPolicy: "quality-weighted",
+					successFraction: 0.5,
+					consolidationTrigger: "buffer-full",
+					injectionMode: "replace",
+					bufferCapacity: 20,
+					bufferSize: 12,
+				},
+			},
+			{
+				detailIncludes: ["Advisory buffer state"],
+				recommendationCountAtLeast: 3,
+			},
+		);
+	});
+
+	it("omits the success/failure mix note when successFraction is not provided", async () => {
+		const result = await skillModule.run(
+			{
+				request:
+					"replay execution traces with quality weighted buffer full consolidation",
+				options: {
+					evictionPolicy: "quality-weighted",
+					consolidationTrigger: "buffer-full",
+					injectionMode: "replace",
+					bufferCapacity: 20,
+				},
+			},
+			createMockSkillRuntime(),
+		);
+		const detailText = result.recommendations
+			.map((recommendation) => recommendation.detail)
+			.join("\n");
+		expect(detailText).not.toContain("Buffer mix is");
+	});
+
+	it("omits eviction-policy guidance when evictionPolicy is not provided", async () => {
+		const result = await skillModule.run(
+			{
+				request:
+					"replay execution traces with buffer full consolidation and replace injection",
+				options: {
+					successFraction: 0.5,
+					consolidationTrigger: "buffer-full",
+					injectionMode: "replace",
+					bufferCapacity: 20,
+				},
+			},
+			createMockSkillRuntime(),
+		);
+		const detailText = result.recommendations
+			.map((recommendation) => recommendation.detail)
+			.join("\n");
+		expect(detailText).not.toContain("FIFO eviction");
+		expect(detailText).not.toContain("Quality-weighted eviction");
+		expect(detailText).not.toContain("Recency-quality eviction");
+	});
+
+	it("omits consolidation-trigger guidance when consolidationTrigger is not provided", async () => {
+		const result = await skillModule.run(
+			{
+				request:
+					"replay execution traces with quality weighted buffer full consolidation and replace injection",
+				options: {
+					evictionPolicy: "quality-weighted",
+					successFraction: 0.5,
+					injectionMode: "replace",
+					bufferCapacity: 20,
+				},
+			},
+			createMockSkillRuntime(),
+		);
+		const detailText = result.recommendations
+			.map((recommendation) => recommendation.detail)
+			.join("\n");
+		expect(detailText).not.toContain("Scheduled trigger:");
+		expect(detailText).not.toContain("Quality-degradation trigger:");
+		expect(detailText).not.toContain("Manual trigger:");
+		expect(detailText).not.toContain("Buffer-full trigger:");
+	});
+
+	it("omits injection-mode guidance when injectionMode is not provided", async () => {
+		const result = await skillModule.run(
+			{
+				request:
+					"replay execution traces with quality weighted buffer full consolidation",
+				options: {
+					evictionPolicy: "quality-weighted",
+					successFraction: 0.5,
+					consolidationTrigger: "buffer-full",
+					bufferCapacity: 20,
+				},
+			},
+			createMockSkillRuntime(),
+		);
+		const detailText = result.recommendations
+			.map((recommendation) => recommendation.detail)
+			.join("\n");
+		expect(detailText).not.toContain("Prepend injection:");
+		expect(detailText).not.toContain("Replace injection:");
+		expect(detailText).not.toContain("Append injection:");
+	});
+
+	it("omits the token-estimate note when bufferCapacity is not provided", async () => {
+		const result = await skillModule.run(
+			{
+				request:
+					"replay execution traces with quality weighted buffer full consolidation and replace injection",
+				options: {
+					evictionPolicy: "quality-weighted",
+					successFraction: 0.5,
+					consolidationTrigger: "buffer-full",
+					injectionMode: "replace",
+				},
+			},
+			createMockSkillRuntime(),
+		);
+		const detailText = result.recommendations
+			.map((recommendation) => recommendation.detail)
+			.join("\n");
+		expect(detailText).not.toContain(
+			"Estimated per-consolidation context window",
+		);
+	});
+
+	it("produces no numeric advisory parts when options carry only non-numeric fields", async () => {
+		const result = await skillModule.run(
+			{
+				request:
+					"replay execution traces with quality weighted buffer full consolidation",
+				options: {
+					evictionPolicy: "quality-weighted",
+				},
+			},
+			createMockSkillRuntime(),
+		);
+		const detailText = result.recommendations
+			.map((recommendation) => recommendation.detail)
+			.join("\n");
+		expect(detailText).not.toContain("Advisory buffer state");
+		expect(detailText).not.toContain("Estimated per-consolidation");
+		expect(detailText).toContain("Quality-weighted eviction");
+	});
+
+	it("uses singular guideline phrasing when exactly one rule matches and no options are supplied", async () => {
+		const result = await skillModule.run(
+			{
+				request:
+					"we need to revert to the previous strategy after a bad rollout this agent should get smarter over time",
+			},
+			createMockSkillRuntime(),
+		);
+		expect(result.summary).toContain("Replay Consolidator produced 1 ");
+		expect(result.summary).toContain(
+			"trace-buffer and consolidation guideline for hippocampal-style",
+		);
+		expect(result.summary).not.toContain("guidelines for hippocampal-style");
 	});
 });

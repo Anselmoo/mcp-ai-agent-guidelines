@@ -82,6 +82,97 @@ describe("NamePathMatcher", () => {
 				.matchesPath("MyClass/GetValue").matched,
 		).toBe(true);
 	});
+
+	it("keeps explicit regex flags when case-insensitive is already satisfied", () => {
+		expect(
+			NamePathMatcher.for("MyClass//^get/i")
+				.withRegexSegments()
+				.withCaseInsensitive()
+				.build()
+				.matchesPath("MyClass/getValue").matched,
+		).toBe(true);
+	});
+
+	it("adds the case-insensitive flag to a regex segment missing it", () => {
+		expect(
+			NamePathMatcher.for("MyClass//^GET/x/getValue")
+				.withRegexSegments()
+				.withCaseInsensitive()
+				.build()
+				.matchesPath("MyClass/getMethod/x/getValue").matched,
+		).toBe(true);
+	});
+
+	it("ignores a non-numeric bracket suffix in a pattern segment", () => {
+		expect(
+			new NamePathMatcher("MyClass/getValue[abc]").matchesPath(
+				"MyClass/getValue[abc]",
+			).matched,
+		).toBe(true);
+	});
+
+	it("fails substring matching when the substring is absent", () => {
+		expect(
+			NamePathMatcher.for("MyClass/zzz")
+				.withSubstringMatching()
+				.build()
+				.matchesPath("MyClass/getValue").matched,
+		).toBe(false);
+	});
+
+	it("supports a regex segment with no trailing flags followed by more segments", () => {
+		expect(
+			NamePathMatcher.for("MyClass//^get/x/getValue")
+				.withRegexSegments()
+				.build()
+				.matchesPath("MyClass/getValue/x/getValue").matched,
+		).toBe(true);
+	});
+
+	it("treats consecutive separators in a pattern as a single boundary", () => {
+		expect(
+			new NamePathMatcher("MyClass//getValue").matchesPath("MyClass/getValue")
+				.matched,
+		).toBe(true);
+	});
+
+	it("throws when the pattern is an empty string", () => {
+		expect(() => new NamePathMatcher("")).toThrow(
+			"namePathPattern must not be empty",
+		);
+	});
+
+	it("fails to match when the symbol path is shorter than the pattern", () => {
+		const result = new NamePathMatcher("Outer/MyClass/getValue").matchesPath(
+			"getValue",
+		);
+		expect(result.matched).toBe(false);
+		expect(result.reason).toContain("symbol path is shorter");
+	});
+
+	it("parses an overload index suffix on the matched path itself", () => {
+		expect(
+			new NamePathMatcher("MyClass/getValue[1]").matchesPath(
+				"MyClass/getValue[1]",
+			).matched,
+		).toBe(true);
+	});
+
+	it("treats a non-numeric bracket suffix on the matched path as a literal name", () => {
+		expect(
+			new NamePathMatcher("MyClass/getValue[abc]").matchesPath(
+				"MyClass/getValue[abc]",
+			).matched,
+		).toBe(true);
+	});
+
+	it("exposes expression, isAbsolute, segmentCount, and toString", () => {
+		const matcher = new NamePathMatcher("/MyClass/getValue");
+		expect(matcher.expression).toBe("/MyClass/getValue");
+		expect(matcher.isAbsolute).toBe(true);
+		expect(matcher.segmentCount).toBe(2);
+		expect(matcher.toString()).toBe("NamePathMatcher(/MyClass/getValue)");
+	});
 });
 
 describe("DocumentSymbols.findByNamePath", () => {

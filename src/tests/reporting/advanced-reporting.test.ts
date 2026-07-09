@@ -345,4 +345,238 @@ describe("reporting/advanced-reporting", () => {
 			timestamp: expect.any(String),
 		});
 	});
+
+	it("skips performance visualizations when includeVisualization is disabled", async () => {
+		const outputDirectory = mkdtempSync(join(tmpdir(), "advanced-reporting-"));
+		const engine = new AdvancedReportingEngine({
+			outputDirectory,
+			includeVisualization: false,
+		});
+
+		const reportPath = await engine.generatePerformanceReport([
+			{
+				entityId: "workflow-a",
+				metricName: "latency",
+				name: "latency",
+				value: 10,
+				unit: "ms",
+				timestamp: Date.now(),
+			},
+		]);
+
+		const report = readFileSync(reportPath, "utf8");
+		expect(report).toContain("Performance Analysis Report");
+		expect(report).not.toContain("<h2>Visualizations</h2>");
+		expect(report).not.toContain("Metric snapshot");
+	});
+
+	it("skips the orchestration flow diagram when includeVisualization is disabled", async () => {
+		const outputDirectory = mkdtempSync(
+			join(tmpdir(), "orchestration-report-"),
+		);
+		const engine = new AdvancedReportingEngine({
+			outputDirectory,
+			includeVisualization: false,
+		});
+
+		const reportPath = await engine.generateOrchestrationReport(
+			{
+				routes: new Map(),
+				agents: [],
+				skills: [],
+				metrics: [],
+			},
+			{
+				agentTopology: {
+					componentCount: 0,
+					centralityScores: {},
+					nodeCount: 0,
+					edgeCount: 0,
+				},
+				skillDependencies: {
+					componentCount: 0,
+					hasCycles: false,
+					cycles: [],
+					nodeCount: 0,
+					edgeCount: 0,
+				},
+				bottlenecks: [],
+				recommendations: [],
+			},
+		);
+
+		const report = readFileSync(reportPath, "utf8");
+		expect(report).toContain("Orchestration Flow Report");
+		expect(report).not.toContain("<h2>Visualizations</h2>");
+		expect(report).not.toContain("Topology");
+	});
+
+	it("generates an analytics dashboard report with visualizations", async () => {
+		const outputDirectory = mkdtempSync(join(tmpdir(), "analytics-dashboard-"));
+		const engine = new AdvancedReportingEngine({
+			outputDirectory,
+			includeVisualization: true,
+		});
+
+		const reportPath = await engine.generateAnalyticsDashboard();
+
+		const report = readFileSync(reportPath, "utf8");
+		expect(existsSync(reportPath)).toBe(true);
+		expect(report).toContain("Analytics Dashboard");
+		expect(report).toContain("<h2>Visualizations</h2>");
+		expect(report).toContain("System Overview");
+		expect(report).toContain("Total Workflows");
+	});
+
+	it("skips analytics dashboard visualizations when includeVisualization is disabled", async () => {
+		const outputDirectory = mkdtempSync(join(tmpdir(), "analytics-dashboard-"));
+		const engine = new AdvancedReportingEngine({
+			outputDirectory,
+			includeVisualization: false,
+		});
+
+		const reportPath = await engine.generateAnalyticsDashboard();
+
+		const report = readFileSync(reportPath, "utf8");
+		expect(report).toContain("Analytics Dashboard");
+		expect(report).not.toContain("<h2>Visualizations</h2>");
+		expect(report).not.toContain("System Overview");
+	});
+
+	it("reports zero failover rate when there are no routing decisions", async () => {
+		const outputDirectory = mkdtempSync(
+			join(tmpdir(), "model-routing-report-"),
+		);
+		const engine = new AdvancedReportingEngine({
+			outputDirectory,
+		});
+
+		const reportPath = await engine.generateModelRoutingReport({
+			availableModels: ["model-a"],
+			routingDecisions: [],
+			failoverEvents: [],
+		});
+
+		const report = readFileSync(reportPath, "utf8");
+		const data = extractDetailedData(report) as {
+			analytics: { failoverRate: number };
+		};
+
+		expect(data.analytics.failoverRate).toBe(0);
+	});
+
+	it("renders dark theme styles when configured", async () => {
+		const outputDirectory = mkdtempSync(join(tmpdir(), "advanced-reporting-"));
+		const engine = new AdvancedReportingEngine({
+			outputDirectory,
+			theme: "dark",
+		});
+
+		const reportPath = await engine.generatePerformanceReport([]);
+		const report = readFileSync(reportPath, "utf8");
+
+		expect(report).toContain("--bg-color: #1a1a1a");
+		expect(report).toContain("--text-color: #ffffff");
+	});
+
+	it("saves non-html formatted reports with a txt extension", async () => {
+		const outputDirectory = mkdtempSync(join(tmpdir(), "advanced-reporting-"));
+		const engine = new AdvancedReportingEngine({
+			outputDirectory,
+			format: "markdown",
+		});
+
+		const reportPath = await engine.generatePerformanceReport([]);
+
+		expect(reportPath.endsWith(".txt")).toBe(true);
+		expect(existsSync(reportPath)).toBe(true);
+	});
+
+	it("formats non-integer metric values with two decimal places", async () => {
+		const outputDirectory = mkdtempSync(join(tmpdir(), "advanced-reporting-"));
+		const engine = new AdvancedReportingEngine({
+			outputDirectory,
+			includeVisualization: true,
+		});
+
+		const reportPath = await engine.generatePerformanceReport([
+			{
+				entityId: "workflow-fractional",
+				metricName: "latency",
+				name: "latency",
+				value: 12.3456,
+				unit: "ms",
+				timestamp: Date.now(),
+			},
+		]);
+
+		const report = readFileSync(reportPath, "utf8");
+		expect(report).toContain("12.35");
+	});
+
+	it("renders a non-number overview value (object) via formatValue's toString branch", async () => {
+		const outputDirectory = mkdtempSync(join(tmpdir(), "advanced-reporting-"));
+		const engine = new AdvancedReportingEngine({
+			outputDirectory,
+		});
+
+		const reportPath = await engine.generatePerformanceReport([]);
+		const report = readFileSync(reportPath, "utf8");
+
+		// The empty-metrics overview's timeRange is a non-number object, which
+		// exercises the `value?.toString()` branch in formatValue via
+		// renderDataSection (renders as "[object Object]").
+		expect(report).toContain("Time Range");
+		expect(report).toContain("[object Object]");
+	});
+
+	it("falls back to a default edge count when computing predicted improvements", async () => {
+		const outputDirectory = mkdtempSync(
+			join(tmpdir(), "orchestration-report-"),
+		);
+		const engine = new AdvancedReportingEngine({
+			outputDirectory,
+			includeVisualization: true,
+		});
+
+		const reportPath = await engine.generateOrchestrationReport(
+			{
+				routes: new Map(),
+				agents: [],
+				skills: [],
+				metrics: [],
+			},
+			{
+				agentTopology: {
+					componentCount: 0,
+					centralityScores: {},
+					nodeCount: 0,
+					edgeCount: 0,
+				},
+				skillDependencies: {
+					componentCount: 0,
+					hasCycles: false,
+					cycles: [],
+					nodeCount: 0,
+					edgeCount: 0,
+				},
+				bottlenecks: [],
+				recommendations: ["Add more capacity."],
+			},
+		);
+
+		const report = readFileSync(reportPath, "utf8");
+		const data = extractDetailedData(report) as {
+			insights: {
+				optimization: { predictedImprovements: Record<string, number> };
+			};
+		};
+
+		// With edgeCount 0 on both topologies, the `|| 1` fallbacks in
+		// calculatePredictedImprovements and calculateRoutingEfficiency apply.
+		expect(data.insights.optimization.predictedImprovements).toMatchObject({
+			routingEfficiency: 0.35,
+		});
+		expect(report).toContain("Routing efficiency");
+	});
 });

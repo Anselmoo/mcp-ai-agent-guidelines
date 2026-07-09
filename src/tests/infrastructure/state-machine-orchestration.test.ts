@@ -949,4 +949,64 @@ describe("state-machine-orchestration", () => {
 			orchestrator.getWorkflowState(wf)?.context.metadata.transitionCount,
 		).toBe(0);
 	});
+
+	it("skill workflow error handling early-returns when both event and fallback skill ids are falsy", () => {
+		// createSkillWorkflow("") → fallbackSkillId is "" (falsy); SKILL_ERROR event omits
+		// skillId → event.skillId is undefined too → covers the true branch of
+		// `if (!skillId) return;` in updateWorkflowErrorResult (line 80).
+		const orchestrator = new StateMachineOrchestrator({
+			enableWorkflowPersistence: false,
+			defaultTimeout: 1000,
+		});
+		const wf = orchestrator.createSkillWorkflow("", {
+			workflowId: "wf-empty-skill-id",
+			skills: [],
+			results: {},
+			startTime: Date.now(),
+			metadata: {},
+		});
+
+		orchestrator.sendEvent(wf, { type: "START" });
+		orchestrator.sendEvent(wf, { type: "SKILL_ERROR" } as never);
+
+		const state = orchestrator.getWorkflowState(wf);
+		expect(state?.status).toBe("failed");
+		expect(state?.context.results).toEqual({});
+	});
+
+	it("getWorkflowHealthMetrics counts a non-completed, non-failed, non-running workflow as neither active nor terminal", () => {
+		// Inject a fake actor whose snapshot reports a "paused" state with done=true.
+		// "paused" maps to WORKFLOW_STATUS_MAP["paused"] = "paused" (neither "completed"
+		// nor "failed"), and isRunning = !done = false → covers the false branch of
+		// `else if (workflow.isRunning)` in getWorkflowHealthMetrics (line 643).
+		const orchestrator = new StateMachineOrchestrator({
+			enableWorkflowPersistence: false,
+			defaultTimeout: 1000,
+		});
+		const internals =
+			orchestrator as unknown as StateMachineOrchestratorInternals;
+
+		internals.workflowInstances.set("wf-paused-done", {
+			getSnapshot: () => ({
+				value: "paused",
+				context: {
+					workflowId: "wf-paused-done",
+					skills: [],
+					results: {},
+					metadata: {},
+					startTime: Date.now(),
+					currentState: "paused",
+				},
+				done: true,
+				error: undefined,
+			}),
+			stop: () => undefined,
+		});
+
+		const metrics = orchestrator.getWorkflowHealthMetrics();
+		expect(metrics.totalWorkflows).toBeGreaterThanOrEqual(1);
+		expect(metrics.activeWorkflows).toBe(0);
+		expect(metrics.completedWorkflows).toBe(0);
+		expect(metrics.failedWorkflows).toBe(0);
+	});
 });

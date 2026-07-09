@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { skillModule } from "../../../skills/gov/gov-model-governance.js";
 import {
+	createMockSkillRuntime,
 	expectInsufficientSignalHandling,
 	expectSkillGuidance,
 } from "../test-helpers.js";
@@ -112,5 +113,98 @@ describe("gov-model-governance", () => {
 
 		// Advisory disclaimer is always last with a fixed label
 		expect(titles.at(-1)).toBe("Advisory scope");
+	});
+
+	it("asks for more detail when the request has context but no governance signal and simple complexity", async () => {
+		const result = await skillModule.run(
+			{
+				request: "help me plan something quickly",
+				context: "general planning notes",
+			},
+			createMockSkillRuntime(),
+		);
+
+		expect(result.executionMode).toBe("capability");
+		expect(result.recommendations[0]).toMatchObject({
+			title: "Provide more detail",
+		});
+		expect(result.summary).toContain("Model Governance targets version");
+	});
+
+	it("falls back to generic guidance when no rule pattern matches", async () => {
+		const result = await expectSkillGuidance(
+			skillModule,
+			{
+				request: "pin the model version before the next rollout",
+			},
+			{
+				summaryIncludes: ["Model Governance produced"],
+				detailIncludes: [
+					"To establish model governance",
+					"Model governance scales with organisational size",
+				],
+			},
+		);
+
+		expect(result.summary).toContain("2 governance guidelines");
+		const titles = result.recommendations.map((r) => r.title);
+		expect(titles).toContain("Getting started");
+		expect(titles).toContain("Governance scaling");
+	});
+
+	it("uses singular guideline wording when exactly one rule matches", async () => {
+		const result = await expectSkillGuidance(
+			skillModule,
+			{
+				request: "pin model version and maintain a model registry",
+			},
+			{
+				summaryIncludes: ["1 governance guideline"],
+				detailIncludes: ["Model registry design"],
+			},
+		);
+
+		expect(result.summary).not.toContain("1 governance guidelines");
+	});
+
+	it("handles a schema parse failure when the request is empty but context carries signal", async () => {
+		// request fails baseSkillInputSchema's `min(1)` because it is empty, but
+		// context is non-empty so the request still clears the first insufficient
+		// signal guard — this exercises the `parsed.ok === false` branch, leaving
+		// `opts` undefined so lifecycle/environment/version-strategy notes are skipped.
+		const result = await skillModule.run(
+			{
+				request: "",
+				context: "maintain a model registry of approved models",
+			},
+			createMockSkillRuntime(),
+		);
+
+		expect(result.executionMode).toBe("capability");
+		expect(result.recommendations.map((r) => r.detail).join("\n")).toContain(
+			"Model registry design",
+		);
+	});
+
+	it("appends constraint-specific guidance when constraints are provided", async () => {
+		const result = await expectSkillGuidance(
+			skillModule,
+			{
+				request: "pin model version and maintain a model registry",
+				constraints: [
+					"Complete rollout within 2 weeks",
+					"Use only approved tooling",
+				],
+			},
+			{
+				detailIncludes: [
+					"Apply model governance under the following constraints",
+					"Complete rollout within 2 weeks",
+				],
+			},
+		);
+
+		const titles = result.recommendations.map((r) => r.title);
+		expect(titles).toContain("Constraint-specific guidance");
 	});
 });

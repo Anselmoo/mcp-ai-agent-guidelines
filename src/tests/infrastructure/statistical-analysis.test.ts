@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import type { PerformanceMetric } from "../../contracts/graph-types.js";
-import { StatisticalAnalyzer } from "../../infrastructure/statistical-analysis.js";
+import {
+	StatisticalAnalyzer,
+	StatisticalAnalyzerFactory,
+} from "../../infrastructure/statistical-analysis.js";
 
 function createMetric(
 	entityId: string,
@@ -145,5 +148,116 @@ describe("statistical-analysis", () => {
 		expect(correlation).not.toBeNull();
 		expect(correlation?.direction).toBe("positive");
 		expect(correlation?.strength).toMatch(/strong|moderate|weak/);
+	});
+
+	it("reports no significant difference when effect size is small", () => {
+		const analyzer = new StatisticalAnalyzer();
+		const baseTime = Date.now();
+		const valuesA = [80, 120, 90, 110, 101];
+		const valuesB = [82, 118, 88, 112, 99];
+
+		for (let index = 0; index < valuesA.length; index += 1) {
+			analyzer.recordMetric(
+				"entity-a",
+				createMetric("entity-a", valuesA[index], baseTime + index),
+			);
+			analyzer.recordMetric(
+				"entity-b",
+				createMetric("entity-b", valuesB[index], baseTime + index),
+			);
+		}
+
+		const comparison = analyzer.comparePerformance("entity-a", "entity-b");
+
+		expect(comparison).not.toBeNull();
+		expect(comparison?.significantDifference).toBe(false);
+		expect(comparison?.recommendation).toBe(
+			"No significant performance difference detected",
+		);
+	});
+
+	it("reports entity1 as the better performer when its mean is higher", () => {
+		const analyzer = new StatisticalAnalyzer();
+		const baseTime = Date.now();
+
+		for (let index = 0; index < 5; index += 1) {
+			analyzer.recordMetric(
+				"leading-agent",
+				createMetric("leading-agent", 120 + index * 5, baseTime + index),
+			);
+			analyzer.recordMetric(
+				"trailing-agent",
+				createMetric("trailing-agent", 20 + index, baseTime + index),
+			);
+		}
+
+		const comparison = analyzer.comparePerformance(
+			"leading-agent",
+			"trailing-agent",
+		);
+
+		expect(comparison).not.toBeNull();
+		expect(comparison?.significantDifference).toBe(true);
+		expect(comparison?.recommendation).toContain("leading-agent performs");
+	});
+
+	it("creates a StatisticalAnalyzer instance via the factory", () => {
+		const analyzer = StatisticalAnalyzerFactory.create();
+
+		expect(analyzer).toBeInstanceOf(StatisticalAnalyzer);
+		expect(analyzer.analyze([1, 2, 3]).mean).toBe(2);
+	});
+
+	it("returns null trend when the time window filters below two recent metrics", () => {
+		const analyzer = new StatisticalAnalyzer();
+		const baseTime = Date.now();
+
+		// Two metrics recorded, but only one falls inside the requested time window.
+		analyzer.recordMetric(
+			"stale-agent",
+			createMetric("stale-agent", 10, baseTime - 100_000),
+		);
+		analyzer.recordMetric(
+			"stale-agent",
+			createMetric("stale-agent", 20, baseTime),
+		);
+
+		expect(analyzer.analyzeTrends("stale-agent", 5_000)).toBeNull();
+	});
+
+	it("excludes entities without enough metrics from global performer rankings", () => {
+		const analyzer = new StatisticalAnalyzer();
+		const baseTime = Date.now();
+
+		// "sparse-agent" has fewer than the minimum sample size, so its score is null.
+		analyzer.recordMetric(
+			"sparse-agent",
+			createMetric("sparse-agent", 10, baseTime),
+		);
+
+		for (let index = 0; index < 5; index += 1) {
+			analyzer.recordMetric(
+				"full-agent",
+				createMetric("full-agent", 20 + index, baseTime + index),
+			);
+		}
+
+		const global = analyzer.getGlobalStatistics();
+
+		expect(global.totalEntities).toBe(2);
+		expect(
+			global.topPerformers.some((p) => p.entityId === "sparse-agent"),
+		).toBe(false);
+		expect(global.topPerformers.some((p) => p.entityId === "full-agent")).toBe(
+			true,
+		);
+	});
+
+	it("treats a never-recorded entity as having zero recent metrics", () => {
+		const analyzer = new StatisticalAnalyzer();
+
+		expect(analyzer.calculatePerformanceScore("unknown-entity")).toBeNull();
+		expect(analyzer.comparePerformance("unknown-a", "unknown-b")).toBeNull();
+		expect(analyzer.analyzeCorrelation("unknown-a", "unknown-b")).toBeNull();
 	});
 });

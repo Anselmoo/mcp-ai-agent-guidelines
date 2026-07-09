@@ -4,6 +4,7 @@ import {
 	buildContextEvidenceLines,
 	buildContextSourceRefs,
 	buildSkillRecommendations,
+	extractReferencedPaths,
 	extractRequestSignals,
 	getGroundingScopeLabel,
 	inferRecommendationGroundingScope,
@@ -698,5 +699,271 @@ describe("recommendations", () => {
 				{ title: "A", detail: "d", modelClass: "cheap" as const }, // no groundingScope
 			]),
 		).toBeNull();
+	});
+
+	it("extractStructuredEvidence returns no evidence when schema validation fails", () => {
+		// toolName must be a non-empty string; an empty one fails safeParse,
+		// so extractStructuredEvidence() falls back to an empty evidence list.
+		const signals = extractRequestSignals({
+			request: "analyze the API",
+			options: {
+				evidence: [
+					{
+						sourceType: "webpage",
+						toolName: "",
+						locator: "https://example.com/docs",
+					},
+				],
+			},
+		});
+		expect(signals.hasEvidence).toBe(false);
+		expect(signals.evidenceItems).toHaveLength(0);
+	});
+
+	it("extractStructuredEvidence defaults to an empty list when options.evidence is absent", () => {
+		// options is a valid object but has no `evidence` key, so parsed.data.evidence
+		// is undefined and the `?? []` fallback is used.
+		const signals = extractRequestSignals({
+			request: "analyze the API",
+			options: {},
+		});
+		expect(signals.hasEvidence).toBe(false);
+		expect(signals.evidenceItems).toHaveLength(0);
+	});
+
+	it("formatEvidenceAnchor omits authority prefix when authority is absent", () => {
+		const signals = extractRequestSignals({
+			request: "ground this",
+			options: {
+				evidence: [
+					{
+						sourceType: "webpage",
+						toolName: "fetch_webpage",
+						locator: "https://example.com/docs",
+						// no authority, no title -> exercises the falsy branches of
+						// `item.authority ? ... : ""` and `item.title ? ... : item.locator`
+					},
+				],
+			},
+		});
+		const lines = buildContextEvidenceLines(signals);
+		expect(lines.join(" ")).toContain("web documentation");
+		expect(lines.join(" ")).not.toMatch(
+			/^official|^implementation|^ecosystem|^user/,
+		);
+	});
+
+	it("formatEvidenceAnchor uses the title when present", () => {
+		const signals = extractRequestSignals({
+			request: "ground this",
+			options: {
+				evidence: [
+					{
+						sourceType: "webpage",
+						toolName: "fetch_webpage",
+						locator: "https://example.com/docs",
+						title: "MCP architecture guide",
+					},
+				],
+			},
+		});
+		const lines = buildContextEvidenceLines(signals);
+		expect(lines.join(" ")).toContain(
+			"MCP architecture guide (https://example.com/docs)",
+		);
+	});
+
+	it("listEvidenceAnchors falls back to the locator when title is missing", () => {
+		const manifest = createMockManifest();
+		const result = buildSkillRecommendations(manifest, {
+			request: "review the docs",
+			context: "background notes",
+			options: {
+				evidence: [
+					{
+						sourceType: "webpage",
+						toolName: "fetch_webpage",
+						locator: "https://example.com/untitled-doc",
+					},
+				],
+			},
+		});
+		const evidenceItem = result.find(
+			(r) => r.title === "Use available evidence as the answer boundary",
+		);
+		expect(evidenceItem?.evidenceAnchors).toContain(
+			"https://example.com/untitled-doc",
+		);
+	});
+
+	it("buildRequestOutcomeDetail keeps focus-term sentence only when keywords exist", () => {
+		// buildSkillRecommendations only calls buildRequestOutcomeDetail() when
+		// signals.keywords.length > 0, so the focusTerms branch is always taken;
+		// this asserts that expected behavior directly.
+		const manifest = createMockManifest();
+		const result = buildSkillRecommendations(manifest, {
+			request: "investigate the latency regression",
+		});
+		const requestItem = result.find(
+			(r) => r.title === "Address the requested outcome",
+		);
+		expect(requestItem?.detail).toContain("Keep the response tight around");
+	});
+
+	it("buildSkillRecommendations with a keyword-free request and context still resolves cleanly", () => {
+		// A request made only of stop words yields zero keywords, so
+		// pickPrimaryProblem() (called unconditionally inside
+		// buildSkillRecommendations) skips the keyword branch and falls into
+		// the hasContext || hasEvidence branch instead. Neither the
+		// keyword-based nor the context-evidence item gets pushed here (the
+		// context text doesn't match any evidence-line trigger), so the
+		// manifest-translation item is the only one returned.
+		const manifest = createMockManifest();
+		const result = buildSkillRecommendations(manifest, {
+			request: "it is",
+			context: "some background context is already available",
+		});
+		expect(
+			result.some((r) => r.title === "Address the requested outcome"),
+		).toBe(false);
+		expect(result.some((r) => r.title.startsWith("Translate"))).toBe(true);
+	});
+
+	it("extractReferencedPaths extracts workspace paths from the request and context", () => {
+		const paths = extractReferencedPaths({
+			request: "the test in src/foo.test.ts is flaky",
+			context: "also check docs/guide.md for details",
+		});
+		expect(paths).toContain("src/foo.test.ts");
+		expect(paths).toContain("docs/guide.md");
+	});
+
+	it("extractReferencedPaths handles missing context and non-string context gracefully", () => {
+		const paths = extractReferencedPaths({
+			request: "no workspace paths here",
+		});
+		expect(paths).toEqual([]);
+	});
+
+	it("buildContextEvidenceLines prefers official source set via sourceTier when authority is not official", () => {
+		const signals = extractRequestSignals({
+			request: "ground the platform claim",
+			options: {
+				evidence: [
+					{
+						sourceType: "webpage",
+						toolName: "fetch_webpage",
+						locator: "https://modelcontextprotocol.io/docs/spec",
+						authority: "ecosystem",
+						sourceTier: 1,
+					},
+				],
+			},
+		});
+		const lines = buildContextEvidenceLines(signals);
+		expect(lines.join(" ")).toContain("Prefer the official source set");
+	});
+
+	it("buildContextEvidenceLines includes only the issue anchor when there are no repo refs", () => {
+		const signals = extractRequestSignals({
+			request: "track this regression",
+			context: "This is related to #789 only, no repo mentioned.",
+		});
+		expect(signals.contextRepoRefs).toHaveLength(0);
+		const lines = buildContextEvidenceLines(signals);
+		expect(lines.join(" ")).toContain("issue/PR anchors");
+		expect(lines.join(" ")).not.toContain("repo/package anchors");
+	});
+
+	it("summarizeContextEvidence returns null when buildContextEvidenceLines produces no lines", () => {
+		// hasContext true (non-empty context) but the context text matches none
+		// of the evidence-line triggers (no tools/files/urls/refs), so
+		// buildContextEvidenceLines still returns an empty array.
+		const signals = extractRequestSignals({
+			request: "plan the next step",
+			context: "just some plain background prose with nothing special",
+		});
+		expect(summarizeContextEvidence(signals)).toBeNull();
+	});
+
+	it("summarizeContextEvidence joins the produced lines when evidence lines exist", () => {
+		const signals = extractRequestSignals({
+			request: "check the workspace file",
+			context: "See src/index.ts for the entry point.",
+		});
+		const result = summarizeContextEvidence(signals);
+		expect(result).not.toBeNull();
+		expect(result).toContain("src/index.ts");
+	});
+
+	it("sortRecommendationsByGrounding treats a missing groundingScope as 'manifest' regardless of comparator order", () => {
+		const recs = [
+			{
+				title: "no-scope-a",
+				detail: "",
+				modelClass: "cheap" as const,
+			},
+			{
+				title: "no-scope-b",
+				detail: "",
+				modelClass: "cheap" as const,
+			},
+			{
+				title: "evidence",
+				detail: "",
+				modelClass: "cheap" as const,
+				groundingScope: "evidence" as const,
+			},
+		];
+		const sorted = sortRecommendationsByGrounding(recs);
+		expect(sorted[0]?.title).toBe("evidence");
+		expect(sorted.map((r) => r.title)).toContain("no-scope-a");
+		expect(sorted.map((r) => r.title)).toContain("no-scope-b");
+	});
+
+	it("buildSkillRecommendations falls back to the documented-skill-scope item when nothing else applies", () => {
+		// Zero keywords, no context, no evidence, no constraints/deliverable/
+		// successCriteria, and an empty manifest -> every earlier branch in
+		// buildSkillRecommendations is skipped, forcing the final items.length
+		// === 0 fallback.
+		const manifest = createMockManifest({
+			purpose: "",
+			usageSteps: [],
+			recommendationHints: [],
+		});
+		const result = buildSkillRecommendations(manifest, { request: "it is" });
+		expect(result).toHaveLength(1);
+		expect(result[0]?.title).toBe("Start with the documented skill scope");
+		expect(result[0]?.groundingScope).toBe("manifest");
+	});
+
+	it("buildManifestScaffoldingDetail appends a period to a manifest purpose without trailing punctuation", () => {
+		// toSentence() appends "." when the trimmed value doesn't already end
+		// in [.!?]; the default mock manifest purpose already ends in ".",
+		// so this exercises the untested append-punctuation branch.
+		const manifest = createMockManifest({
+			purpose: "Help with a scoped engineering task",
+		});
+		const result = buildSkillRecommendations(manifest, { request: "it is" });
+		const manifestItem = result.find((r) => r.title.startsWith("Translate"));
+		expect(manifestItem?.detail).toContain(
+			"Help with a scoped engineering task.",
+		);
+	});
+
+	it.each([
+		["req", "free"],
+		["doc", "free"],
+		["flow", "free"],
+		["arch", "strong"],
+		["gov", "strong"],
+		["lead", "strong"],
+		["qm", "strong"],
+		["gr", "strong"],
+		["orch", "strong"],
+		["strat", "strong"],
+		["unknown-prefix", "cheap"],
+	] as const)("mapPreferredModelClass('%s') resolves to '%s'", (prefix, expected) => {
+		expect(mapPreferredModelClass(prefix)).toBe(expected);
 	});
 });

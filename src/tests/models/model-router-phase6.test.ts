@@ -73,11 +73,12 @@ const routerHarness = vi.hoisted(() => {
 			(modelClass: ModelClass) =>
 				state.orderedModelIdsByClass[modelClass] ?? [],
 		),
+		aliasForPhysicalModelId: vi.fn((_modelId: string) => null as string | null),
 	};
 });
 
 vi.mock("../../config/orchestration-config.js", () => ({
-	aliasForPhysicalModelId: () => null,
+	aliasForPhysicalModelId: routerHarness.aliasForPhysicalModelId,
 	resolveForSkill: routerHarness.configResolveForSkill,
 	getDomainRouting: routerHarness.getDomainRouting,
 	getFanOut: routerHarness.getFanOut,
@@ -134,6 +135,8 @@ function resetHarnessState(): void {
 	routerHarness.checkAvailability.mockClear();
 	routerHarness.getMode.mockClear();
 	routerHarness.orderedModelIdsForClass.mockClear();
+	routerHarness.aliasForPhysicalModelId.mockReset();
+	routerHarness.aliasForPhysicalModelId.mockReturnValue(null);
 }
 
 function makeInstruction(
@@ -328,5 +331,190 @@ describe("model-router phase 6 coverage", () => {
 				expect.objectContaining({ error: "background load failed" }),
 			);
 		});
+	});
+
+	it("logs config-load failures with a stringified non-Error rejection", async () => {
+		routerHarness.loadConfig.mockRejectedValueOnce("background load failed");
+
+		const router = new ModelRouter();
+		router.chooseInstructionModel(makeInstruction(), {
+			request: "background init non-error",
+		});
+
+		await vi.waitFor(() => {
+			expect(routerHarness.log).toHaveBeenCalledWith(
+				"warn",
+				"Failed to load model configuration",
+				expect.objectContaining({ error: "background load failed" }),
+			);
+		});
+	});
+
+	it("falls back to the strong-class profile for the reviewer class when ordering yields nothing", () => {
+		routerHarness.state.orderedModelIdsByClass.reviewer = [];
+
+		const router = new ModelRouter();
+		const profile = router.chooseReviewerModel();
+
+		expect(profile.modelClass).toBe("strong");
+	});
+
+	it("falls back to the matching class profile when ordering yields nothing for a non-reviewer class", () => {
+		routerHarness.state.orderedModelIdsByClass.cheap = [];
+
+		const router = new ModelRouter();
+		const decision = router.routeSkillDecisionById("unrouted-skill", "cheap");
+
+		expect(decision.selectedProfile.modelClass).toBe("cheap");
+	});
+
+	it("falls back when a resolved alias for a physical model ID has no matching profile", () => {
+		routerHarness.state.domainProfilesBySkill = {
+			"aliased-unknown-skill": "aliased-profile",
+		};
+		routerHarness.state.configuredModelsBySkill = {
+			"aliased-unknown-skill": "physical-model-id",
+		};
+		routerHarness.aliasForPhysicalModelId.mockReturnValue(
+			"alias-with-no-profile",
+		);
+
+		const router = new ModelRouter();
+		const decision = router.routeSkillDecisionById(
+			"aliased-unknown-skill",
+			"cheap",
+		);
+
+		expect(routerHarness.aliasForPhysicalModelId).toHaveBeenCalledWith(
+			"physical-model-id",
+		);
+		expect(routerHarness.log).toHaveBeenCalledWith(
+			"warn",
+			"Model router falling back for skill",
+			expect.objectContaining({
+				skillId: "aliased-unknown-skill",
+				error: expect.stringContaining("unknown model physical-model-id"),
+			}),
+		);
+		expect(decision.selectedModelId).toBe(cheapPrimary.id);
+	});
+
+	it("falls back to the free-tier rationale when routing fails and no preferred class is given", () => {
+		routerHarness.state.domainProfilesBySkill = {
+			"broken-skill-no-class": "broken-profile",
+		};
+		routerHarness.state.configuredModelsBySkill = {
+			"broken-skill-no-class": "missing-profile",
+		};
+
+		const router = new ModelRouter();
+		const decision = router.routeSkillDecisionById("broken-skill-no-class");
+
+		expect(decision.selectedModelId).toBe(freePrimary.id);
+		expect(decision.fallbackModelId).toBe(freePrimary.id);
+		expect(decision.rationale).toBe(
+			`Routing failure for broken-skill-no-class fell back to free-tier profile ${freePrimary.id}.`,
+		);
+	});
+
+	it("handles a non-Error thrown value when configured routing fails", () => {
+		routerHarness.state.domainProfilesBySkill = {
+			"throws-string-skill": "throws-string-profile",
+		};
+		routerHarness.configResolveForSkill.mockImplementationOnce(() => {
+			throw "raw string failure";
+		});
+
+		const router = new ModelRouter();
+		const decision = router.routeSkillDecisionById(
+			"throws-string-skill",
+			"cheap",
+		);
+
+		expect(routerHarness.log).toHaveBeenCalledWith(
+			"warn",
+			"Model router falling back for skill",
+			expect.objectContaining({
+				skillId: "throws-string-skill",
+				error: "unknown routing failure",
+			}),
+		);
+		expect(decision.selectedModelId).toBe(cheapPrimary.id);
+	});
+
+	it("catches and logs when a workflow skill's configured routing resolves to an unknown model", () => {
+		routerHarness.state.domainProfilesBySkill = {
+			"broken-workflow-skill": "broken-profile",
+		};
+		routerHarness.state.configuredModelsBySkill = {
+			"broken-workflow-skill": "missing-profile",
+		};
+
+		const router = new ModelRouter();
+		const instruction = makeInstruction({
+			preferredModelClass: "free",
+			workflow: {
+				instructionId: "broken-workflow",
+				steps: [
+					{
+						kind: "invokeSkill",
+						label: "broken",
+						skillId: "broken-workflow-skill",
+					},
+				],
+			},
+		});
+
+		const profile = router.chooseInstructionModel(instruction, {
+			request: "broken workflow skill",
+		});
+
+		expect(routerHarness.log).toHaveBeenCalledWith(
+			"warn",
+			"Configured routing fallback triggered",
+			expect.objectContaining({
+				skillId: "broken-workflow-skill",
+				error: expect.stringContaining("unknown model missing-profile"),
+			}),
+		);
+		expect(profile.id).toBe(freePrimary.id);
+	});
+
+	it("handles a non-Error thrown value when a workflow skill's configured routing fails", () => {
+		routerHarness.state.domainProfilesBySkill = {
+			"throws-string-workflow-skill": "throws-string-profile",
+		};
+		routerHarness.configResolveForSkill.mockImplementationOnce(() => {
+			throw "raw workflow routing failure";
+		});
+
+		const router = new ModelRouter();
+		const instruction = makeInstruction({
+			preferredModelClass: "free",
+			workflow: {
+				instructionId: "throws-string-workflow",
+				steps: [
+					{
+						kind: "invokeSkill",
+						label: "throws-string",
+						skillId: "throws-string-workflow-skill",
+					},
+				],
+			},
+		});
+
+		const profile = router.chooseInstructionModel(instruction, {
+			request: "throws string workflow skill",
+		});
+
+		expect(routerHarness.log).toHaveBeenCalledWith(
+			"warn",
+			"Configured routing fallback triggered",
+			expect.objectContaining({
+				skillId: "throws-string-workflow-skill",
+				error: "unknown routing failure",
+			}),
+		);
+		expect(profile.id).toBe(freePrimary.id);
 	});
 });

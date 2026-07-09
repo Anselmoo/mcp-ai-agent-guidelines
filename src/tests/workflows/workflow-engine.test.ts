@@ -19,6 +19,7 @@ import { ModelRouter } from "../../models/model-router.js";
 import { createSkillModule } from "../../skills/create-skill-module.js";
 import { SkillRegistry } from "../../skills/skill-registry.js";
 import { WorkflowEngine } from "../../workflows/workflow-engine.js";
+import { bootstrapWorkflow } from "../../workflows/workflow-spec.js";
 
 const modelProfile: ModelProfile = {
 	id: "test-model",
@@ -808,5 +809,368 @@ describe("workflow-engine", () => {
 		// Without the fix, this would be 0 (artifacts silently dropped).
 		expect(result.artifacts).toHaveLength(1);
 		expect(result.artifacts?.[0]).toEqual(artifact);
+	});
+
+	it("runs the ifTrue branch for a hasConstraints gate when constraints are present", async () => {
+		const instruction = createInstructionModule({
+			id: "constraints-gate-true",
+			steps: [
+				{
+					kind: "gate",
+					label: "check-constraints",
+					condition: "hasConstraints",
+					ifTrue: [
+						{
+							kind: "note",
+							label: "constraints-present",
+							note: "Constraints were supplied.",
+						},
+					],
+					ifFalse: [
+						{
+							kind: "note",
+							label: "constraints-missing",
+							note: "No constraints supplied.",
+						},
+					],
+				},
+				{ kind: "finalize", label: "Finalize" },
+			],
+		});
+		const { runtime } = createRuntime();
+
+		const result = await runtime.workflowEngine.executeInstruction(
+			instruction,
+			{ request: "gate on constraints", constraints: ["must be secure"] },
+			runtime,
+		);
+
+		expect(result.steps[0]?.children?.[0]).toEqual({
+			label: "constraints-present",
+			kind: "note",
+			summary: "Constraints were supplied.",
+		});
+	});
+
+	it("runs the ifFalse branch for a hasConstraints gate when constraints are empty", async () => {
+		const instruction = createInstructionModule({
+			id: "constraints-gate-false",
+			steps: [
+				{
+					kind: "gate",
+					label: "check-constraints",
+					condition: "hasConstraints",
+					ifTrue: [
+						{
+							kind: "note",
+							label: "constraints-present",
+							note: "Constraints were supplied.",
+						},
+					],
+					ifFalse: [
+						{
+							kind: "note",
+							label: "constraints-missing",
+							note: "No constraints supplied.",
+						},
+					],
+				},
+				{ kind: "finalize", label: "Finalize" },
+			],
+		});
+		const { runtime } = createRuntime();
+
+		const result = await runtime.workflowEngine.executeInstruction(
+			instruction,
+			{ request: "gate on constraints", constraints: [] },
+			runtime,
+		);
+
+		expect(result.steps[0]?.children?.[0]).toEqual({
+			label: "constraints-missing",
+			kind: "note",
+			summary: "No constraints supplied.",
+		});
+	});
+
+	it("runs the ifTrue branch for a hasDeliverable gate when a non-empty deliverable is present", async () => {
+		const instruction = createInstructionModule({
+			id: "deliverable-gate-true",
+			steps: [
+				{
+					kind: "gate",
+					label: "check-deliverable-present",
+					condition: "hasDeliverable",
+					ifTrue: [
+						{
+							kind: "note",
+							label: "deliverable-present",
+							note: "Deliverable was supplied.",
+						},
+					],
+					ifFalse: [
+						{
+							kind: "note",
+							label: "deliverable-missing",
+							note: "No deliverable supplied.",
+						},
+					],
+				},
+				{ kind: "finalize", label: "Finalize" },
+			],
+		});
+		const { runtime } = createRuntime();
+
+		const result = await runtime.workflowEngine.executeInstruction(
+			instruction,
+			{ request: "gate on deliverable", deliverable: "a signed PR" },
+			runtime,
+		);
+
+		expect(result.steps[0]?.children?.[0]).toEqual({
+			label: "deliverable-present",
+			kind: "note",
+			summary: "Deliverable was supplied.",
+		});
+	});
+
+	it("runs the ifFalse branch for a hasDeliverable gate when deliverable is missing", async () => {
+		const instruction = createInstructionModule({
+			id: "deliverable-gate-false",
+			steps: [
+				{
+					kind: "gate",
+					label: "check-deliverable-missing",
+					condition: "hasDeliverable",
+					ifTrue: [
+						{
+							kind: "note",
+							label: "deliverable-present",
+							note: "Deliverable was supplied.",
+						},
+					],
+					// No ifFalse provided — exercises the `step.ifFalse ?? []` fallback.
+				},
+				{ kind: "finalize", label: "Finalize" },
+			],
+		});
+		const { runtime } = createRuntime();
+
+		const result = await runtime.workflowEngine.executeInstruction(
+			instruction,
+			{ request: "gate on deliverable, none provided" },
+			runtime,
+		);
+
+		expect(result.steps[0]).toEqual({
+			label: "check-deliverable-missing",
+			kind: "gate",
+			summary: "0 serial step(s) executed.",
+			children: [],
+		});
+	});
+
+	it("throws for an unhandled gate condition (e.g. the unimplemented 'always' case)", async () => {
+		const instruction = createInstructionModule({
+			id: "unknown-gate-condition",
+			steps: [
+				{
+					kind: "gate",
+					label: "always-gate",
+					// "always" is a type-valid WorkflowStep gate condition, but
+					// shouldRunGate() has no explicit case for it and falls through
+					// to the default branch, which throws.
+					condition: "always",
+					ifTrue: [],
+					ifFalse: [],
+				},
+			],
+		});
+		const { runtime } = createRuntime();
+
+		await expect(
+			runtime.workflowEngine.executeInstruction(
+				instruction,
+				{ request: "unhandled gate condition" },
+				runtime,
+			),
+		).rejects.toThrow(/Unknown gate condition: "always"/);
+	});
+
+	it("executes a top-level serial step", async () => {
+		const instruction = createInstructionModule({
+			id: "top-level-serial",
+			steps: [
+				{
+					kind: "serial",
+					label: "serial-group",
+					steps: [
+						{
+							kind: "invokeSkill",
+							label: "serial-skill-a",
+							skillId: "serial-skill-a",
+						},
+						{
+							kind: "invokeSkill",
+							label: "serial-skill-b",
+							skillId: "serial-skill-b",
+						},
+					],
+				},
+				{ kind: "finalize", label: "Finalize" },
+			],
+		});
+		const { runtime } = createRuntime({
+			skillResults: {
+				"serial-skill-a": createSkillResult("serial-skill-a", "Ran A."),
+				"serial-skill-b": createSkillResult("serial-skill-b", "Ran B."),
+			},
+		});
+
+		const result = await runtime.workflowEngine.executeInstruction(
+			instruction,
+			{ request: "run steps serially" },
+			runtime,
+		);
+
+		expect(result.steps[0]).toEqual({
+			label: "serial-group",
+			kind: "serial",
+			summary: "2 serial step(s) executed.",
+			children: [
+				{
+					label: "serial-skill-a",
+					kind: "invokeSkill",
+					summary: "Ran A.",
+					skillResult: createSkillResult("serial-skill-a", "Ran A."),
+				},
+				{
+					label: "serial-skill-b",
+					kind: "invokeSkill",
+					summary: "Ran B.",
+					skillResult: createSkillResult("serial-skill-b", "Ran B."),
+				},
+			],
+		});
+	});
+
+	it("skips falsy/sparse entries in the workflow step list", async () => {
+		const instruction = createInstructionModule({
+			id: "sparse-steps",
+			// The middle slot is intentionally absent (a hole), exercising the
+			// `if (!step) continue` guard when iterating workflowSteps.
+			steps: [
+				{ kind: "note", label: "first", note: "first note" },
+				undefined as unknown as WorkflowStep,
+				{ kind: "finalize", label: "Finalize" },
+			],
+		});
+		const { runtime } = createRuntime();
+
+		const result = await runtime.workflowEngine.executeInstruction(
+			instruction,
+			{ request: "sparse workflow steps" },
+			runtime,
+		);
+
+		expect(result.steps).toHaveLength(2);
+		expect(result.steps[0]).toEqual({
+			label: "first",
+			kind: "note",
+			summary: "first note",
+		});
+		expect(result.steps[1]).toEqual({
+			label: "Finalize",
+			kind: "finalize",
+			summary: "Workflow finalized.",
+		});
+	});
+
+	it("validates input and execution against the authoritative workflow spec when the manifest id matches a registered spec", async () => {
+		// Using the real "bootstrap" instruction id causes
+		// resolveAuthoritativeWorkflowRuntime() to find a match in WORKFLOW_SPECS,
+		// exercising the authoritative-spec branches for both input validation
+		// (assertWorkflowInputMatchesSpec) and execution validation
+		// (assertWorkflowExecutionMatchesSpec).
+		const instruction = createInstructionModule({
+			id: bootstrapWorkflow.key,
+			steps: bootstrapWorkflow.runtime?.steps ?? [],
+			inputSchema: {
+				type: "object",
+				properties: {
+					request: { type: "string" },
+					context: { type: "string" },
+					scope: { type: "string" },
+					constraints: { type: "array", items: { type: "string" } },
+				},
+				required: ["request"],
+			},
+		});
+		const skillIds = [
+			"flow-context-handoff",
+			"req-scope",
+			"req-ambiguity-detection",
+			"req-analysis",
+			"strat-prioritization",
+			"synth-research",
+			"flow-mode-switching",
+		];
+		const skillResults = Object.fromEntries(
+			skillIds.map((skillId) => [skillId, createSkillResult(skillId)]),
+		);
+		const { runtime } = createRuntime({
+			skillResults,
+			instructionResults: {
+				"meta-routing": {
+					instructionId: "meta-routing",
+					displayName: "Meta Routing",
+					model: modelProfile,
+					steps: [],
+					recommendations: [],
+				},
+			},
+		});
+
+		const result = await runtime.workflowEngine.executeInstruction(
+			instruction,
+			{ request: "bootstrap a new task" },
+			runtime,
+		);
+
+		expect(result.instructionId).toBe("bootstrap");
+		expect(result.steps).toHaveLength(9);
+		expect(result.steps.at(-1)).toEqual({
+			label: "Finalize",
+			kind: "finalize",
+			summary: "Workflow finalized.",
+		});
+	});
+
+	it("rejects input that fails the authoritative workflow spec's schema", async () => {
+		const instruction = createInstructionModule({
+			id: bootstrapWorkflow.key,
+			steps: bootstrapWorkflow.runtime?.steps ?? [],
+			inputSchema: {
+				type: "object",
+				properties: {
+					request: { type: "string" },
+					context: { type: "string" },
+					scope: { type: "string" },
+					constraints: { type: "array", items: { type: "string" } },
+				},
+				required: ["request"],
+			},
+		});
+		const { runtime } = createRuntime();
+
+		await expect(
+			runtime.workflowEngine.executeInstruction(
+				// Missing the required "request" field — should fail
+				// assertWorkflowInputMatchesSpec's zod validation.
+				instruction,
+				{} as unknown as InstructionInput,
+				runtime,
+			),
+		).rejects.toThrow(/authoritative spec validation/);
 	});
 });

@@ -75,6 +75,11 @@ describe("buildLinePath (d3-shape + d3-path)", () => {
 		expect(typeof result).toBe("string");
 	});
 
+	it("falls back to an empty string when d3 yields no path for zero points", () => {
+		const result = buildLinePath([]);
+		expect(result).toBe("");
+	});
+
 	it("handles three collinear points", () => {
 		const result = buildLinePath([
 			[0, 0],
@@ -214,6 +219,27 @@ describe("generateSvgFromElement (satori)", () => {
 			"Unable to render SVG element with satori: font registry unavailable",
 		);
 	});
+
+	it("wraps non-Error satori failures by stringifying the thrown value", async () => {
+		vi.resetModules();
+		vi.doMock("roughjs", () => ({
+			default: {
+				generator: () => ({ line: () => ({ sets: [] }), opsToPath: () => "" }),
+			},
+		}));
+		vi.doMock("satori", () => ({
+			default: vi.fn(async () => {
+				throw "satori exploded";
+			}),
+		}));
+		const { generateSvgFromElement: generateSvgFromMockedModule } =
+			await import("../../visualization/svg-export.js");
+		await expect(
+			generateSvgFromMockedModule({ type: "div", props: {} }),
+		).rejects.toThrow(
+			"Unable to render SVG element with satori: satori exploded",
+		);
+	});
 });
 
 describe("SvgExporter class", () => {
@@ -314,6 +340,33 @@ describe("SvgExportEngine class", () => {
 		expect(result).toContain("No skills supplied");
 		expect(result).toContain(">0</text>");
 	});
+
+	it("uses the polyline builder (not the line builder) for a single agent", async () => {
+		const result = await engine.generateAgentTopologyDiagram(["solo-agent"]);
+		expect(result.toLowerCase()).toContain("svg");
+		expect(result).toContain("solo-agent");
+	});
+
+	it("truncates long agent labels in the topology diagram", async () => {
+		const longName = "a-very-long-agent-name-that-should-be-truncated";
+		const result = await engine.generateAgentTopologyDiagram([longName]);
+		expect(result).toContain("…");
+		expect(result).not.toContain(longName);
+	});
+
+	it("truncates long step labels in the orchestration flow diagram", async () => {
+		const longStep = "a-very-long-workflow-step-name-that-gets-truncated";
+		const result = await engine.generateOrchestrationFlowDiagram([longStep]);
+		expect(result).toContain("…");
+		expect(result).not.toContain(longStep);
+	});
+
+	it("truncates long skill labels in the skill coverage diagram", async () => {
+		const longSkill = "a-very-long-skill-name-that-should-be-truncated-here";
+		const result = await engine.generateSkillCoverageDiagram([longSkill]);
+		expect(result).toContain("…");
+		expect(result).not.toContain(longSkill);
+	});
 });
 
 describe("NoopSvgExportEngine class", () => {
@@ -360,5 +413,130 @@ describe("mocked svg-export edge cases", () => {
 				roughLineError: new Error("rough generator failed"),
 			});
 		expect(createRoughLineFromMockedModule(0, 0, 10, 10)).toBe("");
+	});
+
+	it("falls back to the d3-path polyline for agent topology connections when roughjs yields no path", async () => {
+		const { SvgExportEngine: MockedSvgExportEngine } =
+			await importSvgExportWithMocks({
+				roughLineSets: [{ type: "fillSketch", ops: [] }],
+			});
+		const engine = new MockedSvgExportEngine();
+		const result = await engine.generateAgentTopologyDiagram([
+			"agent-a",
+			"agent-b",
+		]);
+		expect(result).toContain("agent-a");
+		expect(result).toContain("agent-b");
+		// The connection path should still be a valid, non-empty `d` attribute
+		// built by buildD3PathPolyline rather than roughjs.
+		expect(result).toMatch(/<path d="M[\d.,-]+L[\d.,-]+"/);
+	});
+
+	it("falls back to a straight line for orchestration flow arrows when roughjs yields no path", async () => {
+		const { SvgExportEngine: MockedSvgExportEngine } =
+			await importSvgExportWithMocks({
+				roughLineSets: [{ type: "fillSketch", ops: [] }],
+			});
+		const engine = new MockedSvgExportEngine();
+		const result = await engine.generateOrchestrationFlowDiagram([
+			"step-1",
+			"step-2",
+		]);
+		expect(result).toContain("step-1");
+		expect(result).toContain("step-2");
+		expect(result).toMatch(/<path d="M[\d.]+,64L[\d.]+,64"/);
+	});
+});
+
+describe("mocked d3-shape arc edge cases", () => {
+	it("falls back to an empty string when d3-shape's arc generator yields no path", async () => {
+		vi.resetModules();
+		vi.doMock("d3-shape", async () => {
+			const actual =
+				await vi.importActual<typeof import("d3-shape")>("d3-shape");
+			return {
+				...actual,
+				arc: () => {
+					const nullArcGen = () => null;
+					nullArcGen.innerRadius = () => nullArcGen;
+					nullArcGen.outerRadius = () => nullArcGen;
+					nullArcGen.startAngle = () => nullArcGen;
+					nullArcGen.endAngle = () => nullArcGen;
+					return nullArcGen;
+				},
+			};
+		});
+		const { buildArcPath: buildArcPathFromMockedModule } = await import(
+			"../../visualization/svg-export.js"
+		);
+		const result = buildArcPathFromMockedModule(0, 50, 0, Math.PI);
+		expect(result).toBe("");
+	});
+
+	it("omits the arc path element in the skill coverage diagram when the arc generator yields no path", async () => {
+		vi.resetModules();
+		vi.doMock("d3-shape", async () => {
+			const actual =
+				await vi.importActual<typeof import("d3-shape")>("d3-shape");
+			return {
+				...actual,
+				arc: () => {
+					const nullArcGen = () => null;
+					nullArcGen.innerRadius = () => nullArcGen;
+					nullArcGen.outerRadius = () => nullArcGen;
+					nullArcGen.startAngle = () => nullArcGen;
+					nullArcGen.endAngle = () => nullArcGen;
+					return nullArcGen;
+				},
+			};
+		});
+		const { SvgExportEngine: MockedSvgExportEngine } = await import(
+			"../../visualization/svg-export.js"
+		);
+		const engine = new MockedSvgExportEngine();
+		const result = await engine.generateSkillCoverageDiagram([
+			"skill-a",
+			"skill-b",
+		]);
+		expect(result).toContain("Skill coverage");
+		expect(result).not.toContain('<path d="M');
+	});
+});
+
+describe("mocked d3-path guide-path edge cases", () => {
+	it("omits the orchestration flow guide path when buildD3PathPolyline yields an empty string", async () => {
+		vi.resetModules();
+		vi.doMock("d3-path", () => ({
+			path: () => ({
+				moveTo: () => {},
+				lineTo: () => {},
+				toString: () => "",
+			}),
+		}));
+		const { SvgExportEngine: MockedSvgExportEngine } = await import(
+			"../../visualization/svg-export.js"
+		);
+		const engine = new MockedSvgExportEngine();
+		const result = await engine.generateOrchestrationFlowDiagram(["step-1"]);
+		expect(result).toContain("step-1");
+		expect(result).not.toContain('opacity="0.4"');
+	});
+
+	it("omits the agent topology guide path when the single-point polyline yields an empty string", async () => {
+		vi.resetModules();
+		vi.doMock("d3-path", () => ({
+			path: () => ({
+				moveTo: () => {},
+				lineTo: () => {},
+				toString: () => "",
+			}),
+		}));
+		const { SvgExportEngine: MockedSvgExportEngine } = await import(
+			"../../visualization/svg-export.js"
+		);
+		const engine = new MockedSvgExportEngine();
+		const result = await engine.generateAgentTopologyDiagram(["solo-agent"]);
+		expect(result).toContain("solo-agent");
+		expect(result).not.toContain('opacity="0.35"');
 	});
 });

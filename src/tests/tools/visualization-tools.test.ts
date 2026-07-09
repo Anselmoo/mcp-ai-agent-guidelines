@@ -1,6 +1,7 @@
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { describe, expect, it } from "vitest";
 import {
+	buildVisualizationToolSurface,
 	dispatchVisualizationToolCall,
 	VISUALIZATION_TOOL_DEFINITIONS,
 	VISUALIZATION_TOOL_VALIDATORS,
@@ -20,6 +21,12 @@ describe("visualization tool definitions", () => {
 	it("has a validator for the graph-visualize tool", () => {
 		expect(VISUALIZATION_TOOL_VALIDATORS.has("graph-visualize")).toBe(true);
 	});
+
+	it("buildVisualizationToolSurface returns the tool definitions", () => {
+		expect(buildVisualizationToolSurface()).toBe(
+			VISUALIZATION_TOOL_DEFINITIONS,
+		);
+	});
 });
 
 describe("dispatchVisualizationToolCall", () => {
@@ -27,6 +34,12 @@ describe("dispatchVisualizationToolCall", () => {
 		const result = await dispatchVisualizationToolCall("unknown", {});
 		expect(result.isError).toBe(true);
 		expect(getFirstText(result)).toContain("Unknown visualization tool");
+	});
+
+	it("returns a validation error when required arguments are missing", async () => {
+		const result = await dispatchVisualizationToolCall("graph-visualize", {});
+		expect(result.isError).toBe(true);
+		expect(getFirstText(result)).toContain("Invalid input");
 	});
 
 	describe("chain-graph view", () => {

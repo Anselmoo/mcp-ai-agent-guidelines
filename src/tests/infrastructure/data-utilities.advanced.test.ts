@@ -218,4 +218,71 @@ describe("data-utilities advanced", () => {
 			{ name: "alphabet", count: 3, enabled: true },
 		]);
 	});
+
+	it("skips picking keys that are absent from the source object", () => {
+		const picked = DataUtilities.pick(
+			{ id: "skill" } as { id: string; missing?: string },
+			["id", "missing"] as const,
+		);
+
+		expect(picked).toEqual({ id: "skill" });
+	});
+
+	it("falls back to default messages when validation rules omit one", () => {
+		const rules: ValidationRule[] = [
+			{
+				name: "no-message-warning",
+				validator: () => ({ isValid: false }),
+				severity: "warning",
+			},
+			{
+				name: "no-message-error",
+				validator: () => ({ isValid: false }),
+				severity: "error",
+			},
+		];
+
+		expect(DataUtilities.validateData({}, rules)).toEqual({
+			isValid: false,
+			errors: ["Validation failed"],
+			warnings: ["Validation warning"],
+		});
+	});
+
+	it("logs a labeled entry when measureExecution is called with a label", async () => {
+		// The operational logger writes via pino directly to a file descriptor,
+		// so it cannot be intercepted with vi.spyOn(console, ...); this test
+		// only exercises the `if (label)` branch and asserts the return value.
+		const measured = await DataUtilities.measureExecution(
+			() => "labeled-result",
+			"my-operation",
+		);
+
+		expect(measured.result).toBe("labeled-result");
+		expect(measured.executionTimeMs).toBeGreaterThanOrEqual(0);
+	});
+
+	it("ignores null/undefined override values when merging configurations", () => {
+		type Config = {
+			retries: number;
+			mode?: string | null;
+		};
+		const baseConfig: Config = { retries: 1, mode: "safe" };
+
+		const merged = DataUtilities.mergeConfigurations<Config>(baseConfig, {
+			mode: null,
+		});
+
+		expect(merged).toEqual({ retries: 1, mode: "safe" });
+	});
+
+	it("treats non-object array items as having no groupable field value", () => {
+		const grouped = DataUtilities.groupByMultipleCriteria(
+			["primitive-item", { domain: "debug" }] as unknown[],
+			["domain"],
+		);
+
+		expect(grouped.undefined).toEqual(["primitive-item"]);
+		expect(grouped.debug).toEqual([{ domain: "debug" }]);
+	});
 });

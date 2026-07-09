@@ -74,6 +74,23 @@ describe("getPublicPrompt", () => {
 		expect(result.messages[0]?.content.text).toContain("none provided");
 	});
 
+	it("bootstrap-session defaults request to an empty string when args are absent", () => {
+		const result = getPublicPrompt("bootstrap-session");
+		const text = result.messages[0]?.content.text ?? "";
+		expect(text).toContain("Request: \n");
+		expect(text).toContain("none provided");
+	});
+
+	it("bootstrap-session treats a question-shaped request as a question", () => {
+		const result = getPublicPrompt("bootstrap-session", {
+			request: "How should I structure this module?",
+		});
+		const text = result.messages[0]?.content.text ?? "";
+		expect(text).toContain(
+			"answer the direct question first, then justify it with repository-specific evidence",
+		);
+	});
+
 	it("review-runtime injects artifact into the message text", () => {
 		const result = getPublicPrompt("review-runtime", {
 			artifact: "src/runtime.ts",

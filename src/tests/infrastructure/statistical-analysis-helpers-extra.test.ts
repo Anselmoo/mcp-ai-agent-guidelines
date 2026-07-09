@@ -232,4 +232,61 @@ describe("statistical-analysis-helpers-extra", () => {
 		expect(result?.strength).toBe("strong");
 		expect(result?.direction).toBe("positive");
 	});
+
+	// -------------------------------------------------------------------------
+	// analyzeCorrelationMetrics – "moderate" strength band (line 309)
+	// correlationModerate = 0.3, correlationStrong = 0.7 → 0.3 <= |r| < 0.7
+	// -------------------------------------------------------------------------
+	it("analyzeCorrelationMetrics returns 'moderate' strength for a mid-range correlation", () => {
+		const spacing = 120_000;
+		const xVals = Array.from({ length: 15 }, (_, i) => i + 1);
+		// Hand-tuned series whose Pearson correlation with xVals is exactly 0.45.
+		const moderateVals = [
+			35, 29, 19, 15, 53, 23, 50, 28, 44, 45, 57, 24, 37, 51, 45,
+		];
+		const m1 = xVals.map((value, i) => makeMetric(value, i * spacing));
+		const m2 = moderateVals.map((value, i) => makeMetric(value, i * spacing));
+
+		const result = analyzeCorrelationMetrics(m1, m2);
+		expect(result).not.toBeNull();
+		expect(result?.strength).toBe("moderate");
+	});
+
+	// -------------------------------------------------------------------------
+	// analyzeCorrelationMetrics – "weak" strength band (line 311)
+	// correlationWeak = 0.1, correlationModerate = 0.3 → 0.1 <= |r| < 0.3
+	// -------------------------------------------------------------------------
+	it("analyzeCorrelationMetrics returns 'weak' strength for a low-range correlation", () => {
+		const spacing = 120_000;
+		const xVals = Array.from({ length: 15 }, (_, i) => i + 1);
+		// Hand-tuned series whose Pearson correlation with xVals is ≈ 0.18.
+		const weakVals = [
+			50, 39, 38, 24, 47, 22, 39, 47, 55, 29, 38, 57, 43, 57, 30,
+		];
+		const m1 = xVals.map((value, i) => makeMetric(value, i * spacing));
+		const m2 = weakVals.map((value, i) => makeMetric(value, i * spacing));
+
+		const result = analyzeCorrelationMetrics(m1, m2);
+		expect(result).not.toBeNull();
+		expect(result?.strength).toBe("weak");
+	});
+
+	// -------------------------------------------------------------------------
+	// analyzeCorrelationMetrics – "none" strength band (line 312-313)
+	// |r| < correlationWeak (0.1)
+	// -------------------------------------------------------------------------
+	it("analyzeCorrelationMetrics returns 'none' strength for an uncorrelated series", () => {
+		const spacing = 120_000;
+		const xVals = Array.from({ length: 15 }, (_, i) => i + 1);
+		// Hand-tuned series whose Pearson correlation with xVals is exactly 0.
+		const noneVals = [
+			41, 44, 35, 43, 47, 25, 21, 19, 58, 38, 43, 27, 34, 26, 59,
+		];
+		const m1 = xVals.map((value, i) => makeMetric(value, i * spacing));
+		const m2 = noneVals.map((value, i) => makeMetric(value, i * spacing));
+
+		const result = analyzeCorrelationMetrics(m1, m2);
+		expect(result).not.toBeNull();
+		expect(result?.strength).toBe("none");
+	});
 });
