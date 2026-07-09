@@ -121,7 +121,7 @@ export interface OrchestrationConfig {
 		default_ttl_seconds: number;
 		profile_overrides: Record<string, number>;
 	};
-	/** P4/P6: session continuity config for TOON pre-load. */
+	/** P4/P6: session continuity config (session-store pre-load). */
 	session_continuity?: SessionContinuityConfig;
 	/** P3/P6: agent mode re-activation config. */
 	agent_mode?: AgentModeConfig;
@@ -581,6 +581,23 @@ export function resolveProfile(profileName: string): string {
 
 	const chosenAlias = candidates[0];
 	return config.models[chosenAlias]?.id ?? resolveLastResortModelId(config);
+}
+
+/**
+ * Reverse-map a physical model ID (e.g. "gpt-5-mini") back to its role alias
+ * (e.g. "free_secondary"). resolveProfile()/resolveForSkill() return physical
+ * IDs, but the builtin MODEL_PROFILES registry is keyed by role alias — without
+ * this translation every config-routed skill silently fell back (see the
+ * "Configured routing resolved <skill> to unknown model" warnings).
+ */
+export function aliasForPhysicalModelId(modelId: string): string | null {
+	const config = loadOrchestrationConfig();
+	for (const [alias, model] of Object.entries(config.models)) {
+		if (model?.id === modelId) {
+			return alias;
+		}
+	}
+	return null;
 }
 
 // ─── Skill routing helpers ────────────────────────────────────────────────────

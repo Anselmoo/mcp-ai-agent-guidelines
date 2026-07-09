@@ -58,8 +58,6 @@ PREFIX_LEGEND: dict[str, str] = {
 	"lead-": "Leadership & Enterprise",
 	"resil-": "Resilience & Self-repair",
 	"gov-": "Safety & Governance",
-	"qm-": "Quantum Mechanics metaphors",
-	"gr-": "General Relativity metaphors",
 }
 
 

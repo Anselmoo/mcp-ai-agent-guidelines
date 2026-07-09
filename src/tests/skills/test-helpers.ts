@@ -71,6 +71,7 @@ export function createMockSkillRuntime(
 		...(overrides.workspace === undefined
 			? {}
 			: { workspace: overrides.workspace }),
+		...(overrides.serena === undefined ? {} : { serena: overrides.serena }),
 	};
 }
 

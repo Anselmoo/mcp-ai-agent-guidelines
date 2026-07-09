@@ -140,8 +140,6 @@ export default defineConfig({
 								{ slug: "skills/resilience" },
 								{ slug: "skills/adaptive" },
 								{ slug: "skills/leadership" },
-								{ slug: "skills/physics-qm" },
-								{ slug: "skills/physics-gr" },
 							],
 						},
 					],
@@ -169,7 +167,6 @@ export default defineConfig({
 								{ slug: "tools/policy-govern" },
 								{ slug: "tools/fault-resilience" },
 								{ slug: "tools/routing-adapt" },
-								{ slug: "tools/physics-analysis" },
 							],
 						},
 						{

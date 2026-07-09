@@ -278,9 +278,9 @@ describe("tool-call-handler", () => {
 	// Dogfood the original complaint: quality-evaluate used to return a wall of
 	// keyword-matched eval-process templates labelled "advisory only" with zero
 	// project-specific analysis. The instruction-level LLM→LLM transform must now
-	// yield ONE situation-specific result — an analysis task (no sampler in this
-	// runtime → return-a-prompt directive) plus a tailored next-action workflow —
-	// with no advisory-only self-label and no template recommendation wall.
+	// yield ONE situation-specific result — an analysis task (a return-a-prompt
+	// directive) plus a tailored next-action workflow — with no advisory-only
+	// self-label and no template recommendation wall.
 	it("quality-evaluate returns a situation-specific analysis, not a template wall labelled 'advisory only'", async () => {
 		const result = await dispatchToolCall(
 			"quality-evaluate",
@@ -315,22 +315,8 @@ describe("tool-call-handler", () => {
 	// 75 recs/45KB at every session start). They now collapse into a
 	// request-specific orientation brief — scope + ambiguities + first move,
 	// NOT a solution (the B#2 category error is avoided by the orientation-shaped
-	// output contract, not by passing through).
-	it("collapses project-onboard into a request-anchored orientation brief", async () => {
-		const result = await dispatchToolCall(
-			"project-onboard",
-			{ request: "where should I start hardening this repo" },
-			createRuntime(),
-		);
-		expect(result.isError).toBeUndefined();
-		const text = result.content[0]?.text ?? "";
-		// Anchored to the real request, not echoing title keywords.
-		expect(text).toContain("where should I start hardening this repo");
-		// Orientation contract: scope in/out + ambiguities + first instruction —
-		// explicitly NOT a finished solution.
-		expect(text.toLowerCase()).toMatch(/in and out of scope|ambiguit/);
-		expect(text).toContain("not a finished solution");
-	});
+	// output contract, not by passing through). Project onboarding is folded
+	// into task-bootstrap; the orientation contract is asserted below.
 
 	it("collapses task-bootstrap into a request-anchored orientation brief", async () => {
 		const result = await dispatchToolCall(
@@ -399,31 +385,6 @@ describe("tool-call-handler", () => {
 		expect(text).toContain(
 			"coordinate 3 agents to fix our checkout bugs in parallel",
 		);
-	});
-
-	// Sampling lever: when the connected client advertises `sampling`, the server
-	// has a runtime.sampler, and the transform must return the model's FINDINGS
-	// (not the return-a-prompt directive) through the full dispatch path.
-	it("returns sampled findings for an analysis tool when a sampler is present", async () => {
-		const sampler = vi.fn().mockResolvedValue({
-			text: "SAMPLED-FINDINGS: golden.jsonl lacks negatives.",
-		});
-		const runtime = {
-			...createRuntime(),
-			sampler,
-			clientSupportsSampling: true,
-		};
-		const result = await dispatchToolCall(
-			"quality-evaluate",
-			{ request: "design an eval set with hard negatives" },
-			runtime,
-		);
-		expect(result.isError).toBeUndefined();
-		const text = result.content[0]?.text ?? "";
-		expect(text).toContain("SAMPLED-FINDINGS: golden.jsonl lacks negatives.");
-		// It is the findings, not the directive.
-		expect(text.toLowerCase()).not.toContain("analysis task");
-		expect(sampler).toHaveBeenCalled();
 	});
 
 	// Kill-switch for A/B evaluation and ops rollback: MCP_SITUATION_TRANSFORM=0

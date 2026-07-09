@@ -59,7 +59,7 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 		toolName: "system-design",
 		displayName: "Design: Architecture and System Design",
 		description:
-			"Use when designing a new system, service, agent architecture, data pipeline, or infrastructure component; evaluating architectural options; making build-vs-buy decisions; or establishing constraints and tradeoffs before coding begins. This is the primary tool for architecture work — use this instead of adapt or orchestrate for system design tasks. Companion tools: use `graph-visualize` (chain-graph, skill-graph) to inspect the instruction chain and skill topology. Triggers: 'design this system', 'architecture for', 'how should we structure', 'system design', 'greenfield', 'architectural decision'.",
+			"Use when designing a new system, service, agent architecture, data pipeline, or infrastructure component; evaluating architectural options; making build-vs-buy decisions; or establishing constraints and tradeoffs before coding begins. This is the primary tool for architecture work — use this instead of adapt or orchestrate for system design tasks. Do NOT use for implementing the design (use feature-implement) or for comparing tool options without a design decision (use evidence-research). Companion tools: use `graph-visualize` (chain-graph, skill-graph) to inspect the instruction chain and skill topology. Triggers: 'design this system', 'architecture for', 'how should we structure', 'system design', 'greenfield', 'architectural decision'.",
 		mission:
 			"Understand constraints → explore options → decide → document. Produces a decision-backed architecture.",
 		chainTo: ["feature-implement", "policy-govern"],
@@ -74,7 +74,7 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 		aliases: ["implement"],
 		displayName: "Implement: Build New Feature or Tool",
 		description:
-			"Use when building a new tool, feature, endpoint, agent, workflow component, or capability from scratch. Covers the full lifecycle: requirements gathering, design decisions, code structure, tests, governance checks, and documentation. Triggers: 'build this', 'add a new', 'create a tool', 'implement feature', 'new functionality'.",
+			"Use when building a new tool, feature, endpoint, agent, workflow component, or capability from scratch. Covers the full lifecycle: requirements gathering, design decisions, code structure, tests, governance checks, and documentation. Do NOT use for fixing a broken existing feature (use issue-debug) or for pure design decisions before coding begins (use system-design). Triggers: 'build this', 'add a new', 'create a tool', 'implement feature', 'new functionality'.",
 		mission:
 			"Build new tools or features end-to-end: requirements → design → code → tests → docs.",
 		chainTo: ["test-verify", "code-review"],
@@ -103,7 +103,7 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 		aliases: ["review"],
 		displayName: "Review: Code, Quality, and Security Review",
 		description:
-			"Use when reviewing existing code for quality, security vulnerabilities, correctness, maintainability, API surface hygiene, compliance adherence, or evaluation output grading. This is the primary tool for code review and quality assessment — use this instead of adapt or orchestrate for review tasks. Triggers: 'review this code', 'code review', 'check for security issues', 'quality review', 'audit this', 'grade this output', 'inspect this PR'.",
+			"Use when reviewing existing code for quality, security vulnerabilities, correctness, maintainability, API surface hygiene, compliance adherence, or evaluation output grading. This is the primary tool for code review and quality assessment — use this instead of adapt or orchestrate for review tasks. Do NOT use for making the changes themselves (use code-refactor or feature-implement) or for compliance and policy enforcement (use policy-govern). Triggers: 'review this code', 'code review', 'check for security issues', 'quality review', 'audit this', 'grade this output', 'inspect this PR'.",
 		mission:
 			"Inspect → grade → recommend → close the loop. Every review produces actionable findings.",
 		chainTo: ["policy-govern", "code-refactor", "test-verify"],
@@ -131,7 +131,7 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 		toolName: "issue-debug",
 		displayName: "Debug: Diagnose and Fix Problems",
 		description:
-			"Use when something is broken, producing wrong output, crashing, behaving unexpectedly, or when you need to trace a failure to its root cause. Triggers: 'something is broken', 'this is failing', 'why does this crash', 'unexpected output', 'trace this error', 'find the bug'.",
+			"Use when something is broken, producing wrong output, crashing, behaving unexpectedly, or when you need to trace a failure to its root cause. Do NOT use for adding new functionality (use feature-implement) or for broad code-quality improvement (use code-refactor). Triggers: 'something is broken', 'this is failing', 'why does this crash', 'unexpected output', 'trace this error', 'find the bug'.",
 		mission:
 			"Diagnose and fix problems: reproduce → locate → understand → fix → prevent recurrence.",
 		chainTo: ["test-verify", "code-refactor", "policy-govern"],
@@ -145,7 +145,7 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 		toolName: "code-refactor",
 		displayName: "Refactor: Improve Existing Code Safely",
 		description:
-			"Use when improving existing code quality, reducing technical debt, eliminating coupling, splitting oversized modules, improving performance, or hardening security of existing code. Triggers: 'refactor this', 'reduce tech debt', 'clean up', 'improve code quality', 'split this module', 'too complex'.",
+			"Use when improving existing code quality, reducing technical debt, eliminating coupling, splitting oversized modules, improving performance, or hardening security of existing code. Do NOT use for adding new functionality (use feature-implement) or for diagnosing why code is broken (use issue-debug). Triggers: 'refactor this', 'reduce tech debt', 'clean up', 'improve code quality', 'split this module', 'too complex'.",
 		mission:
 			"Improve existing code: measure → prioritize → transform → verify. Never break working behavior.",
 		chainTo: ["test-verify", "code-review"],
@@ -159,7 +159,7 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 		toolName: "test-verify",
 		displayName: "Testing: Write, Run, and Verify Tests",
 		description:
-			"Use when writing unit tests, integration tests, or eval test cases; measuring test coverage; closing coverage gaps; verifying correctness of AI outputs; preventing regressions; or setting up testing infrastructure. Triggers: 'write tests', 'add tests', 'test coverage', 'regression tests', 'eval test cases', 'test this', 'verify this works'.",
+			"Use when writing unit tests, integration tests, or eval test cases; measuring test coverage; closing coverage gaps; verifying correctness of AI outputs; preventing regressions; or setting up testing infrastructure. Do NOT use for debugging why a test fails (use issue-debug) or for benchmarking AI output quality (use quality-evaluate). Triggers: 'write tests', 'add tests', 'test coverage', 'regression tests', 'eval test cases', 'test this', 'verify this works'.",
 		mission:
 			"Write, run, and verify tests: define what to prove → choose strategy → implement → measure coverage → close gaps → prevent regression.",
 		chainTo: ["code-review", "issue-debug", "quality-evaluate"],
@@ -173,7 +173,7 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 		toolName: "docs-generate",
 		displayName: "Document: Generate Documentation Artifacts",
 		description:
-			"Use when generating API reference documentation, README files, operational runbooks, postmortems, technical guides, or any other documentation artifact. Triggers: 'write documentation', 'generate docs', 'create a README', 'document this API', 'write a runbook', 'document this module', 'postmortem for', 'technical guide'.",
+			"Use when generating API reference documentation, README files, operational runbooks, postmortems, technical guides, or any other documentation artifact. Do NOT use for reviewing code or checking its quality (use code-review) or for writing code that happens to be documented (use feature-implement). Triggers: 'write documentation', 'generate docs', 'create a README', 'document this API', 'write a runbook', 'document this module', 'postmortem for', 'technical guide'.",
 		mission:
 			"Identify audience → choose format → generate content → publish. Every doc is audience-targeted.",
 		chainTo: ["code-review", "enterprise-strategy"],
@@ -187,7 +187,7 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 		toolName: "quality-evaluate",
 		displayName: "Evaluate: Benchmark and Assess Quality",
 		description:
-			"Use when benchmarking AI system quality, measuring output consistency, running eval suites, comparing model versions, detecting quality regressions, grading outputs against rubrics, or generating evaluation reports. Triggers: 'benchmark this', 'run evals', 'measure quality', 'compare model outputs', 'quality gate', 'detect regression', 'grade these outputs', 'eval suite'.",
+			"Use when benchmarking AI system quality, measuring output consistency, running eval suites, comparing model versions, detecting quality regressions, grading outputs against rubrics, or generating evaluation reports. Do NOT use for reviewing code quality (use code-review) or for writing the tests themselves (use test-verify). Triggers: 'benchmark this', 'run evals', 'measure quality', 'compare model outputs', 'quality gate', 'detect regression', 'grade these outputs', 'eval suite'.",
 		mission:
 			"Define metrics → measure → compare → report → act. Every evaluation produces a decision or action.",
 		chainTo: ["prompt-engineering", "code-refactor", "policy-govern"],
@@ -201,7 +201,7 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 		toolName: "prompt-engineering",
 		displayName: "Prompt Engineering: Build, Evaluate, and Optimize Prompts",
 		description:
-			"Use when writing a new system prompt, building a prompt template, improving an existing prompt that is failing or hallucinating, versioning prompts, chaining prompts into pipelines, calibrating agent autonomy levels, or evaluating prompt quality against benchmarks. Triggers: 'write a system prompt', 'improve this prompt', 'prompt is hallucinating', 'prompt template', 'chain these prompts', 'calibrate autonomy', 'prompt version'.",
+			"Use when writing a new system prompt, building a prompt template, improving an existing prompt that is failing or hallucinating, versioning prompts, chaining prompts into pipelines, calibrating agent autonomy levels, or evaluating prompt quality against benchmarks. Do NOT use for measuring output quality at scale (use quality-evaluate) or for implementing the agent or tool being prompted (use feature-implement). Triggers: 'write a system prompt', 'improve this prompt', 'prompt is hallucinating', 'prompt template', 'chain these prompts', 'calibrate autonomy', 'prompt version'.",
 		mission:
 			"Structure → test → refine → version. Every prompt is a versioned, tested artifact.",
 		chainTo: ["quality-evaluate", "policy-govern"],
@@ -302,20 +302,6 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 		surface: "workflow",
 		sourcePath: "src/instructions/instruction-specs.ts#adapt",
 	},
-	{
-		id: "physics-analysis",
-		toolName: "physics-analysis",
-		displayName: "Physics Analysis: QM and GR Code Metaphors",
-		description:
-			"Use when conventional code analysis tools are insufficient and physics-inspired metaphors are needed: quantum mechanics analogies for coupling, coverage, and style analysis; general relativity analogies for technical debt, module gravitational mass, and refactoring paths. Covers all 30 QM+GR skills with explicit confidence tiers. NOT an entry point — always arrive here from another instruction (refactor, design, review, evaluate, research, debug). Do NOT use as a first-call tool.",
-		mission:
-			"Apply QM/GR analogies with explicit translation, confidence tiers, and conventional fallbacks. Home base for all 30 physics skills.",
-		chainTo: ["code-review", "feature-implement"],
-		preferredModelClass: "strong",
-		public: false,
-		surface: "internal",
-		sourcePath: "src/instructions/instruction-specs.ts#physics-analysis",
-	},
 	// -----------------------------------------------------------------------
 	// INTERNAL + DISCOVERY — not part of the workflow tool surface
 	// -----------------------------------------------------------------------
@@ -337,7 +323,7 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 		toolName: "task-bootstrap",
 		displayName: "Bootstrap: First Contact",
 		description:
-			"Use when starting a new task with unclear scope, before any implementation begins, when requirements are vague or ambiguous, or when the agent needs to orient itself on what the user actually wants. Covers scope clarification, requirements extraction, priority setting, and context loading. Companion tools: use `agent-snapshot-write` (refresh) or `agent-snapshot-compare` to load the codebase baseline, `agent-session-fetch` to inspect session-scoped artifacts, `agent-memory-fetch` / `agent-memory-read` for long-term artifacts, and `agent-workspace` for source-file access.",
+			"Use when starting a new task or work session with unclear scope, before any implementation begins, when requirements are vague or ambiguous, when exploring what a codebase does, or when getting oriented in a project for the first time. Covers scope clarification, requirements extraction, priority setting, project orientation, and context loading. Triggers: 'start a new task', 'onboard', 'what does this project do', 'first session', 'where do I start', 'help me orient'. Example call: {\"request\": \"Onboard me: what does this repo do and where do I start on the flaky coverage gate?\"}. Companion tools (full surface only, MCP_FULL_SURFACE=true): `agent-workspace` for source-file access, `graph-visualize` (skill-graph, chain-graph) to explore the skill topology.",
 		mission:
 			"Orient the agent, load project context, identify scope and unknowns before any implementation starts.",
 		chainTo: [
@@ -364,21 +350,13 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 		// Re-activate periodically in continuous/agent sessions so stale context
 		// is caught before it causes routing errors (P3 / RS3 fix).
 		reactivationPolicy: "periodic",
-		// Snapshot + session + memory inspection should precede scope analysis so
-		// the agent loads the codebase baseline, current session artifacts, and
-		// long-term TOON context before committing to a plan.
-		requiredPreconditions: [
-			"agent-snapshot-fetch",
-			"agent-session-fetch",
-			"agent-memory-fetch",
-		],
 	},
 	{
 		id: "meta-routing",
 		toolName: "meta-routing",
 		displayName: "Meta-Routing: Task Router",
 		description:
-			"Use at session start to classify the problem before any domain tool is called; use when a task spans multiple domains; use when instructions should run serially vs in parallel; use when escalation or cross-instruction chaining is needed. This is the master decision guide — call it when unsure which tool to use. Do NOT use for single-domain tasks where the right tool is obvious (just call the domain tool directly). Anti-patterns: do not call meta-routing for straightforward implement/debug/review requests; do not call it after every single step. Companion tools: use `graph-visualize` (chain-graph) to inspect instruction chains and routing topology. Triggers: 'not sure which tool', 'multi-domain task', 'how should I approach this', 'route this request', 'classify the problem', 'session start', 'orient myself'.",
+			"Use at session start to classify the problem before any domain tool is called; use when a task spans multiple domains; use when instructions should run serially vs in parallel; use when escalation or cross-instruction chaining is needed. This is the master decision guide — call it when unsure which tool to use. Do NOT use for single-domain tasks where the right tool is obvious (just call the domain tool directly). Anti-patterns: do not call meta-routing for straightforward implement/debug/review requests; do not call it after every single step. Companion tools (full surface only): use `graph-visualize` (chain-graph) to inspect instruction chains and routing topology. Triggers: 'not sure which tool', 'multi-domain task', 'how should I approach this', 'route this request', 'classify the problem', 'session start', 'orient myself'. Example call: {\"request\": \"We need to redesign the routing layer, add tests, and document the migration — where do we start?\"}.",
 		mission:
 			"Decide which instruction(s) to invoke, in what order, and how to chain them for compound or ambiguous tasks.",
 		chainTo: [],
@@ -389,20 +367,6 @@ export const INSTRUCTION_SPECS: InstructionSpecDefinition[] = [
 		// Fires once at the beginning of every new session so problem-classification
 		// always happens before the first domain tool is invoked (issue #1445 fix).
 		reactivationPolicy: "session-start",
-	},
-	{
-		id: "onboard_project",
-		toolName: "project-onboard",
-		displayName: "Onboard: Project Familiarization",
-		description:
-			"Use when starting a new work session, exploring what this codebase does, understanding the skill taxonomy, or getting oriented in mcp-ai-agent-guidelines for the first time. Covers project structure, skill navigation, instruction index, and verification workflow. Companion tools: use `graph-visualize` (skill-graph, chain-graph) to explore the skill topology and instruction chains; use `agent-workspace` (list) to browse source files, `agent-session-fetch` to inspect session artifacts, and `agent-snapshot-fetch` to confirm the current codebase baseline.",
-		mission: "",
-		chainTo: ["task-bootstrap"],
-		autoChainOnCompletion: true,
-		preferredModelClass: "free",
-		public: true,
-		surface: "discovery",
-		sourcePath: "src/instructions/instruction-specs.ts#onboard_project",
 	},
 ];
 

@@ -344,7 +344,7 @@ export async function sweepStaleTempFiles(dir: string): Promise<number> {
 /**
  * Returns `true` when `config/orchestration.toml` exists inside the given
  * state directory.  A `false` result means the workspace has never been
- * bootstrapped via `mcp-cli onboard init` (or `project-onboard`).
+ * bootstrapped via `mcp-cli onboard init` (or `task-bootstrap`).
  *
  * Callers that perform filesystem mutations can use this to gate writes and
  * surface an actionable onboarding error when it returns `false`.

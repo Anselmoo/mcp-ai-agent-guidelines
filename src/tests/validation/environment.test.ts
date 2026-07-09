@@ -39,7 +39,6 @@ describe("environment", () => {
 		const config = initializeEnvironment();
 
 		expect(config.validationMode).toBe("advisory");
-		expect(config.enablePhysicsSkills).toBe(false);
 		expect(config.maxSessions).toBe(100);
 		expect(config.orchestrationConfigPath).toBe(
 			ORCHESTRATION_CONFIG_RELATIVE_PATH,
@@ -84,7 +83,6 @@ describe("environment", () => {
 		process.env.VALIDATION_MODE = "disabled";
 		process.env.MCP_ORCHESTRATION_PATH = ORCHESTRATION_CONFIG_RELATIVE_PATH;
 		process.env.DEBUG_SKILL_EXECUTION = "true";
-		process.env.ENABLE_PHYSICS_SKILLS = "true";
 		process.env.ALLOW_FILE_OPERATIONS = "true";
 		process.env.ENABLE_METRICS = "true";
 		process.env.METRICS_PORT = "99999";
@@ -99,7 +97,6 @@ describe("environment", () => {
 			validationMode: "disabled",
 			enableMetrics: true,
 			metricsPort: 3000,
-			enablePhysicsSkills: true,
 			debugSkillExecution: true,
 			allowFileOperations: true,
 		});
@@ -107,7 +104,6 @@ describe("environment", () => {
 			expect.arrayContaining([
 				"No API keys configured - models may not work",
 				"DEBUG_SKILL_EXECUTION enabled in production",
-				"Physics skills enabled in production - ensure proper authorization",
 				"File operations enabled in production - review security implications",
 			]),
 		);

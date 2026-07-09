@@ -36,21 +36,6 @@ import { skillModule as gov_policy_validation_module } from "../../skills/gov/go
 import { skillModule as gov_prompt_injection_hardening_module } from "../../skills/gov/gov-prompt-injection-hardening.js";
 import { skillModule as gov_regulated_workflow_design_module } from "../../skills/gov/gov-regulated-workflow-design.js";
 import { skillModule as gov_workflow_compliance_module } from "../../skills/gov/gov-workflow-compliance.js";
-import { skillModule as gr_dark_energy_forecaster_module } from "../../skills/gr/gr-dark-energy-forecaster.js";
-import { skillModule as gr_equivalence_principle_checker_module } from "../../skills/gr/gr-equivalence-principle-checker.js";
-import { skillModule as gr_event_horizon_detector_module } from "../../skills/gr/gr-event-horizon-detector.js";
-import { skillModule as gr_frame_dragging_detector_module } from "../../skills/gr/gr-frame-dragging-detector.js";
-import { skillModule as gr_geodesic_refactor_module } from "../../skills/gr/gr-geodesic-refactor.js";
-import { skillModule as gr_gravitational_lensing_tracer_module } from "../../skills/gr/gr-gravitational-lensing-tracer.js";
-import { skillModule as gr_gravitational_wave_detector_module } from "../../skills/gr/gr-gravitational-wave-detector.js";
-import { skillModule as gr_hawking_entropy_auditor_module } from "../../skills/gr/gr-hawking-entropy-auditor.js";
-import { skillModule as gr_inflation_detector_module } from "../../skills/gr/gr-inflation-detector.js";
-import { skillModule as gr_neutron_star_compactor_module } from "../../skills/gr/gr-neutron-star-compactor.js";
-import { skillModule as gr_penrose_diagram_mapper_module } from "../../skills/gr/gr-penrose-diagram-mapper.js";
-import { skillModule as gr_redshift_velocity_mapper_module } from "../../skills/gr/gr-redshift-velocity-mapper.js";
-import { skillModule as gr_schwarzschild_classifier_module } from "../../skills/gr/gr-schwarzschild-classifier.js";
-import { skillModule as gr_spacetime_debt_metric_module } from "../../skills/gr/gr-spacetime-debt-metric.js";
-import { skillModule as gr_tidal_force_analyzer_module } from "../../skills/gr/gr-tidal-force-analyzer.js";
 import { skillModule as lead_capability_mapping_module } from "../../skills/lead/lead-capability-mapping.js";
 import { skillModule as lead_digital_architect_module } from "../../skills/lead/lead-digital-architect.js";
 import { skillModule as lead_exec_briefing_module } from "../../skills/lead/lead-exec-briefing.js";
@@ -66,21 +51,6 @@ import { skillModule as prompt_chaining_module } from "../../skills/prompt/promp
 import { skillModule as prompt_engineering_module } from "../../skills/prompt/prompt-engineering.js";
 import { skillModule as prompt_hierarchy_module } from "../../skills/prompt/prompt-hierarchy.js";
 import { skillModule as prompt_refinement_module } from "../../skills/prompt/prompt-refinement.js";
-import { skillModule as qm_bloch_interpolator_module } from "../../skills/qm/qm-bloch-interpolator.js";
-import { skillModule as qm_decoherence_sentinel_module } from "../../skills/qm/qm-decoherence-sentinel.js";
-import { skillModule as qm_dirac_notation_mapper_module } from "../../skills/qm/qm-dirac-notation-mapper.js";
-import { skillModule as qm_double_slit_interference_module } from "../../skills/qm/qm-double-slit-interference.js";
-import { skillModule as qm_entanglement_mapper_module } from "../../skills/qm/qm-entanglement-mapper.js";
-import { skillModule as qm_hamiltonian_descent_module } from "../../skills/qm/qm-hamiltonian-descent.js";
-import { skillModule as qm_heisenberg_picture_module } from "../../skills/qm/qm-heisenberg-picture.js";
-import { skillModule as qm_measurement_collapse_module } from "../../skills/qm/qm-measurement-collapse.js";
-import { skillModule as qm_path_integral_historian_module } from "../../skills/qm/qm-path-integral-historian.js";
-import { skillModule as qm_phase_kickback_reviewer_module } from "../../skills/qm/qm-phase-kickback-reviewer.js";
-import { skillModule as qm_schrodinger_picture_module } from "../../skills/qm/qm-schrodinger-picture.js";
-import { skillModule as qm_superposition_generator_module } from "../../skills/qm/qm-superposition-generator.js";
-import { skillModule as qm_tunneling_breakthrough_module } from "../../skills/qm/qm-tunneling-breakthrough.js";
-import { skillModule as qm_uncertainty_tradeoff_module } from "../../skills/qm/qm-uncertainty-tradeoff.js";
-import { skillModule as qm_wavefunction_coverage_module } from "../../skills/qm/qm-wavefunction-coverage.js";
 import { skillModule as qual_code_analysis_module } from "../../skills/qual/qual-code-analysis.js";
 import { skillModule as qual_performance_module } from "../../skills/qual/qual-performance.js";
 import { skillModule as qual_refactoring_priority_module } from "../../skills/qual/qual-refactoring-priority.js";
@@ -176,35 +146,5 @@ export const HIDDEN_SKILL_MODULES: SkillModule[] = [
 	gov_prompt_injection_hardening_module,
 	gov_regulated_workflow_design_module,
 	gov_workflow_compliance_module,
-	gr_dark_energy_forecaster_module,
-	gr_equivalence_principle_checker_module,
-	gr_event_horizon_detector_module,
-	gr_frame_dragging_detector_module,
-	gr_geodesic_refactor_module,
-	gr_gravitational_lensing_tracer_module,
-	gr_gravitational_wave_detector_module,
-	gr_hawking_entropy_auditor_module,
-	gr_inflation_detector_module,
-	gr_neutron_star_compactor_module,
-	gr_penrose_diagram_mapper_module,
-	gr_redshift_velocity_mapper_module,
-	gr_schwarzschild_classifier_module,
-	gr_spacetime_debt_metric_module,
-	gr_tidal_force_analyzer_module,
 	lead_software_evangelist_module,
-	qm_bloch_interpolator_module,
-	qm_decoherence_sentinel_module,
-	qm_dirac_notation_mapper_module,
-	qm_double_slit_interference_module,
-	qm_entanglement_mapper_module,
-	qm_hamiltonian_descent_module,
-	qm_heisenberg_picture_module,
-	qm_measurement_collapse_module,
-	qm_path_integral_historian_module,
-	qm_phase_kickback_reviewer_module,
-	qm_schrodinger_picture_module,
-	qm_superposition_generator_module,
-	qm_tunneling_breakthrough_module,
-	qm_uncertainty_tradeoff_module,
-	qm_wavefunction_coverage_module,
 ];

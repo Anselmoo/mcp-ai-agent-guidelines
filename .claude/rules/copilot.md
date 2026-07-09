@@ -26,13 +26,13 @@ Applies to GitHub Copilot in VS Code and Copilot CLI.  For universal rules, see
 | "coordinate multiple agents", "multi-agent workflow" | `agent-orchestrate` |
 | "enterprise AI strategy", "executive briefing" | `enterprise-strategy` |
 | "fault tolerance", "retry strategy", "self-healing" | `fault-resilience` |
-| "onboard", "what does this project do", "first session" | `project-onboard` |
+| "onboard", "what does this project do", "first session" | `task-bootstrap` |
 
 ---
 
 ## Session-start checklist
 
-1. Call `task-bootstrap` (loads TOON context + codebase baseline + session state).
+1. Call `task-bootstrap` (request-anchored orientation brief + Serena memory advisory).
 2. If the request is ambiguous or compound, call `meta-routing` to get routing.
 3. Proceed with the recommended domain tool.
 

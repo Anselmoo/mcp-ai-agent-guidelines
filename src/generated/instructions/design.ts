@@ -9,7 +9,7 @@ export const instructionManifest: InstructionManifestEntry = {
 	aliases: [],
 	displayName: "Design: Architecture and System Design",
 	description:
-		"Use when designing a new system, service, agent architecture, data pipeline, or infrastructure component; evaluating architectural options; making build-vs-buy decisions; or establishing constraints and tradeoffs before coding begins. This is the primary tool for architecture work — use this instead of adapt or orchestrate for system design tasks. Companion tools: use `graph-visualize` (chain-graph, skill-graph) to inspect the instruction chain and skill topology. Triggers: 'design this system', 'architecture for', 'how should we structure', 'system design', 'greenfield', 'architectural decision'.",
+		"Use when designing a new system, service, agent architecture, data pipeline, or infrastructure component; evaluating architectural options; making build-vs-buy decisions; or establishing constraints and tradeoffs before coding begins. This is the primary tool for architecture work — use this instead of adapt or orchestrate for system design tasks. Do NOT use for implementing the design (use feature-implement) or for comparing tool options without a design decision (use evidence-research). Companion tools: use `graph-visualize` (chain-graph, skill-graph) to inspect the instruction chain and skill topology. Triggers: 'design this system', 'architecture for', 'how should we structure', 'system design', 'greenfield', 'architectural decision'.",
 	sourcePath: "src/instructions/instruction-specs.ts#design",
 	mission:
 		"Understand constraints → explore options → decide → document. Produces a decision-backed architecture.",

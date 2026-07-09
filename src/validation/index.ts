@@ -146,7 +146,6 @@ export class ValidationService {
 		const options: ValidationOptions = {
 			strict: this.config.validationMode === "strict",
 			sanitize: true,
-			allowPhysicsSkills: this.config.enablePhysicsSkills,
 			maxInputLength: this.config.maxFileSize,
 			allowFileOperations: this.config.allowFileOperations,
 			allowNetworkAccess: this.config.allowNetworkAccess,
@@ -273,7 +272,6 @@ export class ValidationService {
 		return {
 			mode: this.config.validationMode,
 			enabledFeatures: [
-				this.config.enablePhysicsSkills && "physics-skills",
 				this.config.enableAdaptiveRouting && "adaptive-routing",
 				this.config.allowFileOperations && "file-operations",
 				this.config.allowNetworkAccess && "network-access",
@@ -301,7 +299,6 @@ export class ValidationService {
 			Pick<
 				EnvironmentConfig,
 				| "validationMode"
-				| "enablePhysicsSkills"
 				| "enableAdaptiveRouting"
 				| "debugSkillExecution"
 				| "traceValidation"

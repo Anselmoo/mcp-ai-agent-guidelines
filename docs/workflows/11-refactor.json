@@ -1,7 +1,7 @@
 {
   "id": "11-refactor",
   "title": "Refactor Workflow",
-  "triggeredBy": "physics-analysis or a user request to clean up technical debt",
+  "triggeredBy": "a user request to clean up technical debt",
   "intent": "Reduce complexity without breaking existing contracts using GR-guided geodesic paths",
   "resourcePool": [
     "refactor"

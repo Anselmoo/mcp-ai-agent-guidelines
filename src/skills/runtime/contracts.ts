@@ -29,8 +29,11 @@ export interface SkillExecutionContext {
  * 1.  Derive output from context.input — not from context.manifest text fields.
  *     Use extractRequestSignals(context.input) from shared/recommendations.ts.
  *
- * 2.  Be deterministic: no model API calls, no file I/O.  The host LLM uses
- *     the structured recommendations to do its own reasoning.
+ * 2.  Be deterministic: no model API calls. Read-only workspace access via the
+ *     injected `context.runtime.workspace` (WorkspaceReader) is the sanctioned
+ *     substrate channel for grounding output in real files — use it (see
+ *     shared/workspace-grounding.ts), but treat it as optional and degrade
+ *     gracefully when absent or when a read throws.
  *
  * 3.  Return an "insufficient signal" item (do not throw) when input.request
  *     is too short to generate specific findings:

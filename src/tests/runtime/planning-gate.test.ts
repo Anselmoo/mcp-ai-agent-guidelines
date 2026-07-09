@@ -16,7 +16,7 @@ describe("planning-gate", () => {
 			advisoryFallback: true,
 		});
 
-		const plan = await service.createExecutionPlan("qm-wavefunction-coverage", {
+		const plan = await service.createExecutionPlan("doc-generator", {
 			request:
 				"compare req-analysis with debug-root-cause in real-time for user-agent flows",
 		});

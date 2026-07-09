@@ -19,7 +19,6 @@
     "design",
     "plan",
     "implement",
-    "physics-analysis",
     "evaluate",
     "review",
     "testing",
@@ -32,8 +31,7 @@
     "orchestrate",
     "prompt-engineering",
     "research",
-    "resilience",
-    "onboard_project"
+    "resilience"
   ],
   "skillTree": {
     "root": "scope-classification",

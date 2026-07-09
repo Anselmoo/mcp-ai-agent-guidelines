@@ -14,7 +14,6 @@
  *   Phase 4 — eval, prompt, bench (evaluation)
  *   Phase 5 — lead, gov (enterprise/governance)
  *   Phase 6 — adapt, resil (advanced adaptive)
- *   Phase 7 — qm, gr (physics metaphors, exploratory)
  */
 export interface CapabilityHandlerSlot {
 	/** Canonical domain prefix, e.g. "req" */
@@ -202,49 +201,5 @@ export const CAPABILITY_HANDLER_SLOTS: readonly CapabilityHandlerSlot[] = [
 			"resil-replay",
 		],
 		modelClass: "cheap",
-	},
-	{
-		domain: "gr",
-		phase: 7,
-		skillIds: [
-			"gr-dark-energy-forecaster",
-			"gr-equivalence-principle-checker",
-			"gr-event-horizon-detector",
-			"gr-frame-dragging-detector",
-			"gr-geodesic-refactor",
-			"gr-gravitational-lensing-tracer",
-			"gr-gravitational-wave-detector",
-			"gr-hawking-entropy-auditor",
-			"gr-inflation-detector",
-			"gr-neutron-star-compactor",
-			"gr-penrose-diagram-mapper",
-			"gr-redshift-velocity-mapper",
-			"gr-schwarzschild-classifier",
-			"gr-spacetime-debt-metric",
-			"gr-tidal-force-analyzer",
-		],
-		modelClass: "strong",
-	},
-	{
-		domain: "qm",
-		phase: 7,
-		skillIds: [
-			"qm-bloch-interpolator",
-			"qm-decoherence-sentinel",
-			"qm-dirac-notation-mapper",
-			"qm-double-slit-interference",
-			"qm-entanglement-mapper",
-			"qm-hamiltonian-descent",
-			"qm-heisenberg-picture",
-			"qm-measurement-collapse",
-			"qm-path-integral-historian",
-			"qm-phase-kickback-reviewer",
-			"qm-schrodinger-picture",
-			"qm-superposition-generator",
-			"qm-tunneling-breakthrough",
-			"qm-uncertainty-tradeoff",
-			"qm-wavefunction-coverage",
-		],
-		modelClass: "strong",
 	},
 ];

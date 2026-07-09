@@ -12,7 +12,6 @@ import {
 	implementWorkflow,
 	metaRoutingWorkflow,
 	orchestrateWorkflow,
-	physicsAnalysisWorkflow,
 	promptEngineeringWorkflow,
 	resilienceWorkflow,
 	reviewWorkflow,
@@ -156,24 +155,6 @@ describe("workflowSpecToMermaid", () => {
 			from: "HomeostaticLoop",
 			to: "StaticAnalysis",
 			label: "retry: iteration < 3",
-		});
-	});
-
-	it("renders quantum-to-gravity bridge transition (physics-analysis)", () => {
-		const mermaid = workflowSpecToMermaid(physicsAnalysisWorkflow);
-		const transitions = extractMermaidTransitions(mermaid);
-
-		expect(transitions).toContainEqual({
-			from: "EventHorizonScan",
-			to: "EntanglementMap",
-		});
-		expect(transitions).toContainEqual({
-			from: "UncertaintyCoupling",
-			to: "SpacetimeDebt",
-		});
-		expect(transitions).toContainEqual({
-			from: "RedshiftAbstraction",
-			to: "GeodesicPath",
 		});
 	});
 

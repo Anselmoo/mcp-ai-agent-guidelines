@@ -7,7 +7,6 @@ import type {
 	WorkspaceReader,
 } from "../contracts/runtime.js";
 import { HIDDEN_SKILL_MODULES } from "../generated/registry/hidden-skills.js";
-import { assertPhysicsSkillQuorum } from "../tools/quorum-gate.js";
 import type { SkillResolver } from "./runtime/contracts.js";
 import { defaultSkillResolver } from "./runtime/default-skill-resolver.js";
 import { createWorkspaceSurface } from "./runtime/workspace-adapter.js";
@@ -87,13 +86,8 @@ export class SkillRegistry {
 			modelRouter: runtime.modelRouter,
 			resolveSkillHandler: this.resolver.resolve.bind(this.resolver),
 			workspace: this.workspace,
+			...(runtime.serena === undefined ? {} : { serena: runtime.serena }),
 		};
-
-		assertPhysicsSkillQuorum(
-			skillId,
-			input.request,
-			input.physicsAnalysisJustification,
-		);
 
 		return skill.run(input, skillRuntime);
 	}

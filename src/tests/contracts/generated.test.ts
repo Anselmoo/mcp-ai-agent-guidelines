@@ -69,15 +69,14 @@ describe("generated — contract shapes", () => {
 		}
 	});
 
-	it("WorkflowGateStep condition covers all five variants", () => {
+	it("WorkflowGateStep condition covers all four variants", () => {
 		const conditions: WorkflowGateStep["condition"][] = [
 			"always",
 			"hasContext",
 			"hasConstraints",
 			"hasDeliverable",
-			"hasPhysicsJustification",
 		];
-		expect(conditions).toHaveLength(5);
+		expect(conditions).toHaveLength(4);
 	});
 
 	it("WorkflowDefinition links instructionId to steps array", () => {

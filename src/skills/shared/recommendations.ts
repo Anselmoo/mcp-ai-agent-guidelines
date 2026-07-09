@@ -424,6 +424,21 @@ function extractContextFiles(text: string): string[] {
 	);
 }
 
+/**
+ * Extract workspace-relative file paths named in the request or context.
+ *
+ * Unlike the private `extractContextFiles` (context-only), this scans the raw
+ * request text too — so a request like "the test in src/foo.test.ts is flaky"
+ * surfaces the path for `workspace-grounding` to read. Deduped and capped.
+ */
+export function extractReferencedPaths(input: InstructionInput): string[] {
+	const request = input.request ?? "";
+	const context = typeof input.context === "string" ? input.context : "";
+	return unique(
+		cap([...extractContextFiles(request), ...extractContextFiles(context)]),
+	);
+}
+
 function extractContextRepoRefs(text: string): string[] {
 	const plainRefs = Array.from(
 		text.matchAll(/\b[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+\b/g),

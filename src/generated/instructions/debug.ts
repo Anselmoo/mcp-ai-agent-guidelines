@@ -9,7 +9,7 @@ export const instructionManifest: InstructionManifestEntry = {
 	aliases: [],
 	displayName: "Debug: Diagnose and Fix Problems",
 	description:
-		"Use when something is broken, producing wrong output, crashing, behaving unexpectedly, or when you need to trace a failure to its root cause. Triggers: 'something is broken', 'this is failing', 'why does this crash', 'unexpected output', 'trace this error', 'find the bug'.",
+		"Use when something is broken, producing wrong output, crashing, behaving unexpectedly, or when you need to trace a failure to its root cause. Do NOT use for adding new functionality (use feature-implement) or for broad code-quality improvement (use code-refactor). Triggers: 'something is broken', 'this is failing', 'why does this crash', 'unexpected output', 'trace this error', 'find the bug'.",
 	sourcePath: "src/instructions/instruction-specs.ts#debug",
 	mission:
 		"Diagnose and fix problems: reproduce → locate → understand → fix → prevent recurrence.",
@@ -31,11 +31,6 @@ export const instructionManifest: InstructionManifestEntry = {
 			reproduction: {
 				type: "string",
 				description: "Reproduction details or minimal failing case.",
-			},
-			physicsAnalysisJustification: {
-				type: "string",
-				description:
-					"Why conventional analysis is insufficient and a physics-inspired pass is justified.",
 			},
 		},
 		required: ["request"],
@@ -81,44 +76,6 @@ export const instructionManifest: InstructionManifestEntry = {
 						kind: "invokeSkill",
 						label: "eval-variance",
 						skillId: "eval-variance",
-					},
-				],
-			},
-			{
-				kind: "gate",
-				label: "PHYSICS SCAN (OPT-IN)",
-				condition: "hasPhysicsJustification",
-				ifTrue: [
-					{
-						kind: "parallel",
-						label: "PHYSICS SCAN",
-						steps: [
-							{
-								kind: "invokeSkill",
-								label: "qm-decoherence-sentinel",
-								skillId: "qm-decoherence-sentinel",
-							},
-							{
-								kind: "invokeSkill",
-								label: "qm-entanglement-mapper",
-								skillId: "qm-entanglement-mapper",
-							},
-							{
-								kind: "invokeSkill",
-								label: "qm-uncertainty-tradeoff",
-								skillId: "qm-uncertainty-tradeoff",
-							},
-							{
-								kind: "invokeSkill",
-								label: "qm-heisenberg-picture",
-								skillId: "qm-heisenberg-picture",
-							},
-							{
-								kind: "invokeSkill",
-								label: "gr-frame-dragging-detector",
-								skillId: "gr-frame-dragging-detector",
-							},
-						],
 					},
 				],
 			},

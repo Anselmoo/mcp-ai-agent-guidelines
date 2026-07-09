@@ -75,7 +75,7 @@ Removes specific tools from the `tools/list` response. Useful for restricting th
 
 ```bash
 # Hide physics and governance tools from the tool surface
-HIDDEN_TOOLS="physics-analysis,enterprise,govern" node dist/index.js
+HIDDEN_TOOLS="enterprise-strategy,policy-govern" node dist/index.js
 ```
 
 <Aside type="note">
@@ -145,16 +145,6 @@ Pin `--project <path>` explicitly: Serena keeps a global registry and otherwise 
 | parent cwd | absolute path |
 
 Working directory for the spawned Serena child.
-
-### `MCP_LOCAL_MEMORY`
-
-| Default | Values |
-|---------|--------|
-| `false` | `true` / `false` |
-
-Opt-in switch for the legacy per-tool-call TOON memory artifacts under `.mcp-ai-agent-guidelines/memory/`. Off by default — Serena memory (advertised via the 🧭 enrichment footer) is the recommended cross-session channel.
-
----
 
 ## Model Router
 

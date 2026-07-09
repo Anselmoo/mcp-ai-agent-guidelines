@@ -55,7 +55,7 @@ const WORKFLOW_IDS = new Set([
 
 const SPECIALIST_IDS = new Set(["orchestrate", "enterprise", "govern"]);
 
-const GATED_IDS = new Set(["resilience", "adapt", "physics-analysis"]);
+const GATED_IDS = new Set(["resilience", "adapt"]);
 
 function classifyInstruction(
 	id: string,

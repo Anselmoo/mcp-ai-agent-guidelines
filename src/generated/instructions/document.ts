@@ -9,7 +9,7 @@ export const instructionManifest: InstructionManifestEntry = {
 	aliases: [],
 	displayName: "Document: Generate Documentation Artifacts",
 	description:
-		"Use when generating API reference documentation, README files, operational runbooks, postmortems, technical guides, or any other documentation artifact. Triggers: 'write documentation', 'generate docs', 'create a README', 'document this API', 'write a runbook', 'document this module', 'postmortem for', 'technical guide'.",
+		"Use when generating API reference documentation, README files, operational runbooks, postmortems, technical guides, or any other documentation artifact. Do NOT use for reviewing code or checking its quality (use code-review) or for writing code that happens to be documented (use feature-implement). Triggers: 'write documentation', 'generate docs', 'create a README', 'document this API', 'write a runbook', 'document this module', 'postmortem for', 'technical guide'.",
 	sourcePath: "src/instructions/instruction-specs.ts#document",
 	mission:
 		"Identify audience → choose format → generate content → publish. Every doc is audience-targeted.",

@@ -43,13 +43,14 @@ directive; size = tool output bytes.)
    analysis citing real files/evidence. The original complaint is closed through
    the real MCP path, not just in unit tests.
 
-2. **"Problem-oriented" only partly.** Without an MCP sampler, B is the
-   *return-a-prompt directive* ("do this yourself against the real code, cite
-   files"), not finished solutions. The judge rated B genuinely problem-oriented
-   on 3/5 but "neither" on code-review and issue-debug — a directive to analyze,
-   not a solution list. To get actual findings rather than a directive, the
-   client must advertise MCP **sampling** (or the calling LLM must execute the
-   directive — which a real agent does).
+2. **"Problem-oriented" only partly.** B is the *return-a-prompt directive* ("do
+   this yourself against the real code, cite files"), not finished solutions. The
+   judge rated B genuinely problem-oriented on 3/5 but "neither" on code-review
+   and issue-debug — a directive to analyze, not a solution list. The calling LLM
+   (which holds the project context) executes the directive — which a real agent
+   does. **(Superseded: the MCP sampling round-trip mentioned in earlier updates
+   was removed — see `docs/adr/0001-remove-sampler-round-trip.md`. The directive
+   to an LLM caller IS the intended output, not a degraded fallback.)**
 
 3. **Volume was the remaining problem — now addressed.** In the first run every
    response was 58–229KB: the transform collapsed the recommendation wall but the
@@ -70,11 +71,12 @@ executed (4 implementation tasks, each reviewed clean).
   dropped from **B=58KB to B=29KB** (~50%).
 - **Still wins.** The 1-case end-to-end A/B re-run kept **winner = B** (A is the
   69KB advisory-only template wall; B is the 29KB request-anchored directive).
-- **Sampling path now proven.** Without a client sampler B remains a directive
-  ("neither" problem-oriented on this case) — but the directive→findings path is
-  now covered end-to-end by an integration test (`tool-call-handler.test.ts`,
-  "returns sampled findings … when a sampler is present"). A client that
-  advertises MCP `sampling` gets findings, not a directive.
+- **Sampling path (removed 2026-07-04).** This update originally reported a
+  directive→findings path gated on MCP `sampling`. That round-trip was removed —
+  it inverted the server's role by calling back to the client to analyze a
+  project the client already holds context for. B is now always the directive,
+  which is the intended output for an LLM caller. See
+  `docs/adr/0001-remove-sampler-round-trip.md`.
 
 ## Update — target-orientation coverage expansion (2026-06-20)
 

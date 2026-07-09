@@ -1,9 +1,6 @@
-import type {
-	Sampler,
-	WorkflowExecutionResult,
-} from "../../contracts/runtime.js";
+import type { WorkflowExecutionResult } from "../../contracts/runtime.js";
 import { ADVISORY_PREFIX } from "./advisory.js";
-import { analyzeOrDirective } from "./analyze-or-directive.js";
+import { buildAnalysisDirective } from "./analysis-directive.js";
 
 /**
  * Cap on artifacts a transformed (collapsed) analysis result renders. The
@@ -52,9 +49,9 @@ export const ADAPTIVE_ROUTING_OUTPUT_CONTRACT =
 	"the concrete adaptive routing policy for this request — which bio-inspired strategy fits, the signals that reinforce or prune each route, and the convergence criteria to stop tuning, followed by an ordered next-action sequence";
 
 /**
- * Output contract for orientation tools — a request-specific scope brief, NOT a
- * solution. Orientation tools (task-bootstrap, project-onboard) run before
- * implementation; asking them to "solve THIS request" is the B#2 category error,
+ * Output contract for the orientation tool — a request-specific scope brief,
+ * NOT a solution. The orientation tool (task-bootstrap) runs before
+ * implementation; asking it to "solve THIS request" is the B#2 category error,
  * so the contract orients (scope + unknowns + first move) instead of solving.
  */
 export const ORIENTATION_OUTPUT_CONTRACT =
@@ -82,14 +79,59 @@ const ROUTABLE_DOMAIN_TOOLS: readonly string[] = [
 ];
 
 /**
+ * Trigger keywords per routable tool, mirroring the routing table in
+ * `.claude/rules/default.md`. Used to rank candidates deterministically so the
+ * router names a best match even in directive mode (no sampling client) —
+ * without this the live meta-routing output handed the caller a 12-tool menu
+ * and delegated the decision it exists to make.
+ */
+const ROUTING_KEYWORDS: Readonly<Record<string, readonly string[]>> = {
+	"feature-implement": ["build", "add", "create", "implement", "feature"],
+	"issue-debug": ["bug", "error", "crash", "fail", "broken", "debug"],
+	"system-design": ["design", "architecture", "structure", "redesign"],
+	"code-review": ["review", "audit", "inspect", "security"],
+	"code-refactor": ["refactor", "clean up", "tech debt", "simplify"],
+	"test-verify": ["test", "coverage", "regression", "flaky"],
+	"evidence-research": ["research", "compare", "investigate", "which"],
+	"strategy-plan": ["plan", "roadmap", "sprint", "prioritize", "milestone"],
+	"docs-generate": ["document", "docs", "readme", "changelog"],
+	"quality-evaluate": ["benchmark", "eval", "measure", "metric"],
+	"policy-govern": ["compliance", "safety", "policy", "guardrail"],
+	"fault-resilience": ["resilience", "retry", "fault", "self-healing"],
+};
+
+/**
+ * Rank candidate tools by keyword hits against the request (stable: original
+ * order breaks ties). Returns the reordered list and the top score so callers
+ * can tell whether any signal was found at all.
+ */
+export function rankCandidateTools(
+	request: string,
+	candidates: readonly string[],
+): { ranked: string[]; topScore: number } {
+	const lower = request.toLowerCase();
+	const scored = candidates.map((tool, index) => ({
+		tool,
+		index,
+		score: (ROUTING_KEYWORDS[tool] ?? []).filter((kw) => lower.includes(kw))
+			.length,
+	}));
+	scored.sort((a, b) => b.score - a.score || a.index - b.index);
+	return {
+		ranked: scored.map((s) => s.tool),
+		topScore: scored[0]?.score ?? 0,
+	};
+}
+
+/**
  * Per-tool transform profiles. Presence is the allow-list; absence means
  * "pass through untouched". Analysis tools produce findings against a rubric;
  * build tools produce concrete deliverables; the router (meta-routing) produces
  * a request-anchored decision naming the instructions to invoke; orchestration
  * (agent-orchestrate) produces a tailored coordination plan; prompt tools
  * (prompt-engineering) produce a tailored prompt artifact; adaptive routing
- * (routing-adapt) produces a bio-inspired routing policy; orientation tools
- * (task-bootstrap, project-onboard) produce a request-specific scope brief.
+ * (routing-adapt) produces a bio-inspired routing policy; the orientation tool
+ * (task-bootstrap) produces a request-specific scope brief.
  * Only the analogy special path is absent — it already gates to a
  * request-anchored metaphor (or "no analogy opens") rather than a template wall.
  */
@@ -105,10 +147,6 @@ export const TRANSFORM_PROFILES: Readonly<Record<string, TransformProfile>> = {
 	},
 	"task-bootstrap": {
 		domain: "task scope and unknowns",
-		outputContract: ORIENTATION_OUTPUT_CONTRACT,
-	},
-	"project-onboard": {
-		domain: "project scope and entry points",
 		outputContract: ORIENTATION_OUTPUT_CONTRACT,
 	},
 	"agent-orchestrate": {
@@ -187,8 +225,6 @@ export interface SituationTransformDeps {
 	outputContract: string;
 	/** `instruction.chainTo` → candidate next tools that seed the workflow. */
 	candidateNextTools: readonly string[];
-	/** Optional server-driven sampling (MCP `sampling/createMessage`). */
-	sampler?: Sampler;
 }
 
 /**
@@ -226,16 +262,33 @@ export async function toSituationResult(
 		return result;
 	}
 
-	const { recommendation } = await analyzeOrDirective(
-		{ modelClass: result.model.modelClass, sampler: deps.sampler },
-		{
-			domain: deps.domain,
-			criteria: seedCriteria,
-			input: { request },
-			outputContract: deps.outputContract,
-			candidateNextTools: deps.candidateNextTools,
-		},
-	);
+	// Rank routing candidates against the request so even the directive
+	// fallback names a concrete best match instead of an unordered menu.
+	const routing = deps.candidateNextTools
+		? rankCandidateTools(request, deps.candidateNextTools)
+		: undefined;
+
+	const recommendation = buildAnalysisDirective({
+		domain: deps.domain,
+		criteria: seedCriteria,
+		input: { request },
+		outputContract: deps.outputContract,
+		candidateNextTools: routing?.ranked ?? deps.candidateNextTools,
+		modelClass: result.model.modelClass,
+	});
+
+	const routingLead =
+		routing && routing.topScore > 0
+			? `Routing signal (deterministic keyword match): the strongest candidate for this request is \`${routing.ranked[0]}\` — start there unless the analysis below overrides it.\n\n`
+			: "";
+
+	// A sharp directive to an LLM caller (which holds the project context) is the
+	// intended output, not a degraded fallback — so prepend the routing lead but
+	// never an apology banner. Workspace grounding, when a skill read the
+	// referenced files, already rides along in the recommendations below.
+	const labeledRecommendation = routingLead
+		? { ...recommendation, detail: `${routingLead}${recommendation.detail}` }
+		: recommendation;
 
 	const evidenceAnchors = [
 		...new Set(result.recommendations.flatMap((r) => r.evidenceAnchors ?? [])),
@@ -260,7 +313,7 @@ export async function toSituationResult(
 		artifacts: mergedArtifacts,
 		recommendations: [
 			{
-				...recommendation,
+				...labeledRecommendation,
 				...(evidenceAnchors.length > 0 ? { evidenceAnchors } : {}),
 				...(sourceRefs.length > 0 ? { sourceRefs } : {}),
 			},

@@ -9,7 +9,7 @@ export const instructionManifest: InstructionManifestEntry = {
 	aliases: ["implement"],
 	displayName: "Implement: Build New Feature or Tool",
 	description:
-		"Use when building a new tool, feature, endpoint, agent, workflow component, or capability from scratch. Covers the full lifecycle: requirements gathering, design decisions, code structure, tests, governance checks, and documentation. Triggers: 'build this', 'add a new', 'create a tool', 'implement feature', 'new functionality'.",
+		"Use when building a new tool, feature, endpoint, agent, workflow component, or capability from scratch. Covers the full lifecycle: requirements gathering, design decisions, code structure, tests, governance checks, and documentation. Do NOT use for fixing a broken existing feature (use issue-debug) or for pure design decisions before coding begins (use system-design). Triggers: 'build this', 'add a new', 'create a tool', 'implement feature', 'new functionality'.",
 	sourcePath: "src/instructions/instruction-specs.ts#implement",
 	mission:
 		"Build new tools or features end-to-end: requirements → design → code → tests → docs.",

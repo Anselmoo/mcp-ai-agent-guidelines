@@ -12,9 +12,7 @@ import {
 	governWorkflow,
 	implementWorkflow,
 	metaRoutingWorkflow,
-	onboardProjectWorkflow,
 	orchestrateWorkflow,
-	physicsAnalysisWorkflow,
 	planWorkflow,
 	promptEngineeringWorkflow,
 	refactorWorkflow,
@@ -46,12 +44,11 @@ function labeledTransition(
 // ── cross-spec structural invariants ──────────────────────────────────────────
 
 describe("WORKFLOW_SPECS registry", () => {
-	it("exports all 20 workflow specs", () => {
+	it("exports all 18 workflow specs", () => {
 		const keys = WORKFLOW_SPECS.map((w) => w.key);
 		const expected = [
 			"meta-routing",
 			"bootstrap",
-			"onboard_project",
 			"design",
 			"plan",
 			"implement",
@@ -62,7 +59,6 @@ describe("WORKFLOW_SPECS registry", () => {
 			"document",
 			"research",
 			"evaluate",
-			"physics-analysis",
 			"adapt",
 			"enterprise",
 			"govern",
@@ -73,7 +69,7 @@ describe("WORKFLOW_SPECS registry", () => {
 		for (const key of expected) {
 			expect(keys, `missing workflow key: ${key}`).toContain(key);
 		}
-		expect(keys).toHaveLength(20);
+		expect(keys).toHaveLength(18);
 	});
 
 	it("every spec has a unique key", () => {
@@ -147,15 +143,6 @@ describe("bootstrap workflow", () => {
 			bootstrapWorkflow.inputSchema.safeParse({
 				request: "bootstrap this task",
 			}).success,
-		).toBe(true);
-	});
-});
-
-describe("onboard_project workflow", () => {
-	it("input schema accepts request string", () => {
-		expect(
-			onboardProjectWorkflow.inputSchema.safeParse({ request: "orient me" })
-				.success,
 		).toBe(true);
 	});
 });
@@ -527,69 +514,6 @@ describe("evaluate workflow", () => {
 	});
 });
 
-// ── physics-analysis ──────────────────────────────────────────────────────────
-
-describe("physics-analysis workflow", () => {
-	it("has 30 states covering quantum and gravitational layers", () => {
-		expect(physicsAnalysisWorkflow.states).toHaveLength(30);
-		expect(physicsAnalysisWorkflow.states).toContain("EventHorizonScan");
-		expect(physicsAnalysisWorkflow.states).toContain("GeodesicPath");
-	});
-
-	it("EventHorizonScan branches to both quantum and gravitational entry points", () => {
-		expect(
-			hasTransition(
-				physicsAnalysisWorkflow,
-				"EventHorizonScan",
-				"EntanglementMap",
-			),
-		).toBe(true);
-		expect(
-			hasTransition(
-				physicsAnalysisWorkflow,
-				"EventHorizonScan",
-				"SpacetimeDebt",
-			),
-		).toBe(true);
-	});
-
-	it("UncertaintyCoupling bridges quantum to gravity via SpacetimeDebt", () => {
-		expect(
-			hasTransition(
-				physicsAnalysisWorkflow,
-				"UncertaintyCoupling",
-				"SpacetimeDebt",
-			),
-		).toBe(true);
-	});
-
-	it("GeodesicPath is the terminal state", () => {
-		expect(
-			physicsAnalysisWorkflow.transitions.filter(
-				(t) => t.from === "GeodesicPath",
-			),
-		).toHaveLength(0);
-	});
-
-	it("request is required; conventionalEvidence and targetQuestion are optional", () => {
-		expect(
-			physicsAnalysisWorkflow.inputSchema.safeParse({
-				request: "analyze the coupling structure",
-				conventionalEvidence: "grep shows high co-change",
-				targetQuestion: "which modules are entangled?",
-			}).success,
-		).toBe(true);
-		expect(
-			physicsAnalysisWorkflow.inputSchema.safeParse({
-				request: "run physics analysis",
-			}).success,
-		).toBe(true);
-		expect(physicsAnalysisWorkflow.inputSchema.safeParse({}).success).toBe(
-			false,
-		);
-	});
-});
-
 // ── adapt ─────────────────────────────────────────────────────────────────────
 
 describe("adapt workflow", () => {
@@ -924,125 +848,5 @@ describe("resilience workflow", () => {
 			}).success,
 		).toBe(true);
 		expect(resilienceWorkflow.inputSchema.safeParse({}).success).toBe(false);
-	});
-});
-
-// ── physicsAnalysisJustification gate ─────────────────────────────────────────
-
-describe("physicsAnalysisJustification opt-in gate", () => {
-	const physicsGatedWorkflows = [
-		{
-			name: "meta-routing",
-			spec: metaRoutingWorkflow,
-			gateLabel: "PHYSICS TOOLS (OPT-IN)",
-		},
-		{ name: "plan", spec: planWorkflow, gateLabel: "QM PLANNING (OPT-IN)" },
-		{
-			name: "review",
-			spec: reviewWorkflow,
-			gateLabel: "PHYSICS AUDIT (OPT-IN)",
-		},
-		{
-			name: "testing (coverage)",
-			spec: testingWorkflow,
-			gateLabel: "COVERAGE PHYSICS (OPT-IN)",
-		},
-		{
-			name: "testing (diagnostics)",
-			spec: testingWorkflow,
-			gateLabel: "PHYSICS DIAGNOSTICS (OPT-IN)",
-		},
-		{ name: "debug", spec: debugWorkflow, gateLabel: "PHYSICS SCAN (OPT-IN)" },
-		{
-			name: "refactor",
-			spec: refactorWorkflow,
-			gateLabel: "PHYSICS SCAN (OPT-IN)",
-		},
-		{
-			name: "evaluate",
-			spec: evaluateWorkflow,
-			gateLabel: "PHYSICS METRICS (OPT-IN)",
-		},
-		{
-			name: "enterprise",
-			spec: enterpriseWorkflow,
-			gateLabel: "PHYSICS DEBT (OPT-IN)",
-		},
-		{
-			name: "prompt-engineering",
-			spec: promptEngineeringWorkflow,
-			gateLabel: "QM TOOLS (OPT-IN)",
-		},
-	];
-
-	it("every physics-gated workflow accepts physicsAnalysisJustification as an optional field", () => {
-		for (const { name, spec } of physicsGatedWorkflows) {
-			expect(
-				spec.inputSchema.safeParse({
-					request: "run the workflow",
-					physicsAnalysisJustification:
-						"coupling analysis is insufficient for this module",
-				}).success,
-				`${name} should accept physicsAnalysisJustification`,
-			).toBe(true);
-		}
-	});
-
-	it("every physics-gated workflow also passes without physicsAnalysisJustification", () => {
-		for (const { name, spec } of physicsGatedWorkflows) {
-			expect(
-				spec.inputSchema.safeParse({ request: "run the workflow" }).success,
-				`${name} should not require physicsAnalysisJustification`,
-			).toBe(true);
-		}
-	});
-
-	it("each physics-gated workflow has at least one gate step with hasPhysicsJustification condition", () => {
-		const seen = new Set<string>();
-		for (const { name, spec, gateLabel } of physicsGatedWorkflows) {
-			const key = `${name}::${gateLabel}`;
-			if (seen.has(key)) continue;
-			seen.add(key);
-			const runtimeSteps = spec.runtime?.steps ?? [];
-			const gateStep = runtimeSteps.find(
-				(step) =>
-					step.kind === "gate" &&
-					step.label === gateLabel &&
-					step.condition === "hasPhysicsJustification",
-			);
-			expect(
-				gateStep,
-				`${name} should have a gate step labeled "${gateLabel}" with condition "hasPhysicsJustification"`,
-			).toBeDefined();
-		}
-	});
-
-	it("gate ifTrue branches in physics-gated workflows contain at least one qm-* or gr-* skill", () => {
-		for (const { name, spec, gateLabel } of physicsGatedWorkflows) {
-			const runtimeSteps = spec.runtime?.steps ?? [];
-			const gateStep = runtimeSteps.find(
-				(step) => step.kind === "gate" && step.label === gateLabel,
-			);
-			if (!gateStep || gateStep.kind !== "gate") continue;
-			const allSkillIds: string[] = [];
-			for (const step of gateStep.ifTrue) {
-				if (step.kind === "invokeSkill") {
-					allSkillIds.push(step.skillId);
-				} else if (step.kind === "parallel") {
-					for (const sub of step.steps) {
-						if (sub.kind === "invokeSkill") {
-							allSkillIds.push(sub.skillId);
-						}
-					}
-				}
-			}
-			const hasPhysicsSkill = allSkillIds.some(
-				(id) => id.startsWith("qm-") || id.startsWith("gr-"),
-			);
-			expect(
-				hasPhysicsSkill,
-				`${name} gate "${gateLabel}" ifTrue branch must contain at least one qm-* or gr-* skill. Found: ${allSkillIds.join(", ")}`,
-			).toBe(true);
-		}
 	});
 });

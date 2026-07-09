@@ -9,7 +9,7 @@ export const instructionManifest: InstructionManifestEntry = {
 	aliases: [],
 	displayName: "Testing: Write, Run, and Verify Tests",
 	description:
-		"Use when writing unit tests, integration tests, or eval test cases; measuring test coverage; closing coverage gaps; verifying correctness of AI outputs; preventing regressions; or setting up testing infrastructure. Triggers: 'write tests', 'add tests', 'test coverage', 'regression tests', 'eval test cases', 'test this', 'verify this works'.",
+		"Use when writing unit tests, integration tests, or eval test cases; measuring test coverage; closing coverage gaps; verifying correctness of AI outputs; preventing regressions; or setting up testing infrastructure. Do NOT use for debugging why a test fails (use issue-debug) or for benchmarking AI output quality (use quality-evaluate). Triggers: 'write tests', 'add tests', 'test coverage', 'regression tests', 'eval test cases', 'test this', 'verify this works'.",
 	sourcePath: "src/instructions/instruction-specs.ts#testing",
 	mission:
 		"Write, run, and verify tests: define what to prove → choose strategy → implement → measure coverage → close gaps → prevent regression.",
@@ -31,11 +31,6 @@ export const instructionManifest: InstructionManifestEntry = {
 			regressionRisk: {
 				type: "string",
 				description: "Known regression area or risk class.",
-			},
-			physicsAnalysisJustification: {
-				type: "string",
-				description:
-					"Why conventional analysis is insufficient and a physics-inspired pass is justified.",
 			},
 		},
 		required: ["request"],
@@ -82,18 +77,6 @@ export const instructionManifest: InstructionManifestEntry = {
 						kind: "invokeSkill",
 						label: "bench-analyzer",
 						skillId: "bench-analyzer",
-					},
-				],
-			},
-			{
-				kind: "gate",
-				label: "COVERAGE PHYSICS (OPT-IN)",
-				condition: "hasPhysicsJustification",
-				ifTrue: [
-					{
-						kind: "invokeSkill",
-						label: "qm-wavefunction-coverage",
-						skillId: "qm-wavefunction-coverage",
 					},
 				],
 			},
@@ -147,23 +130,6 @@ export const instructionManifest: InstructionManifestEntry = {
 						kind: "invokeSkill",
 						label: "resil-redundant-voter",
 						skillId: "resil-redundant-voter",
-					},
-				],
-			},
-			{
-				kind: "gate",
-				label: "PHYSICS DIAGNOSTICS (OPT-IN)",
-				condition: "hasPhysicsJustification",
-				ifTrue: [
-					{
-						kind: "invokeSkill",
-						label: "FLAKINESS",
-						skillId: "qm-decoherence-sentinel",
-					},
-					{
-						kind: "invokeSkill",
-						label: "UNCERTAINTY",
-						skillId: "qm-uncertainty-tradeoff",
 					},
 				],
 			},

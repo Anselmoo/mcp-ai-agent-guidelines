@@ -12,8 +12,6 @@ export const CACHE_SKILL_TTL_SECONDS = {
 	"adapt-": 120,
 	"qual-": 3600,
 	"doc-": 1800,
-	"qm-": 600,
-	"gr-": 600,
 	"gov-": 180,
 } as const satisfies Record<string, number>;
 
@@ -34,7 +32,7 @@ export const PLANNING_GATE_STRICT_AVAILABILITY_PREFIXES = [
 	"debug-",
 ];
 
-export const PLANNING_GATE_ADVISORY_ONLY_PREFIXES = ["qm-", "gr-", "doc-"];
+export const PLANNING_GATE_ADVISORY_ONLY_PREFIXES = ["doc-"];
 
 export const DEFAULT_PLANNING_GATE_CONFIG_VALUES = {
 	enabled: true,
@@ -78,7 +76,6 @@ export const DEFAULT_INTEGRATED_RUNTIME_CONFIG_VALUES = {
 	validation: {
 		strict: false,
 		sanitize: true,
-		allowPhysicsSkills: false,
 	},
 	enableOrchestration: true,
 	fallbackToDirectExecution: true,

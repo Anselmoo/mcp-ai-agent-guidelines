@@ -9,7 +9,7 @@ export const instructionManifest: InstructionManifestEntry = {
 	aliases: [],
 	displayName: "Prompt Engineering: Build, Evaluate, and Optimize Prompts",
 	description:
-		"Use when writing a new system prompt, building a prompt template, improving an existing prompt that is failing or hallucinating, versioning prompts, chaining prompts into pipelines, calibrating agent autonomy levels, or evaluating prompt quality against benchmarks. Triggers: 'write a system prompt', 'improve this prompt', 'prompt is hallucinating', 'prompt template', 'chain these prompts', 'calibrate autonomy', 'prompt version'.",
+		"Use when writing a new system prompt, building a prompt template, improving an existing prompt that is failing or hallucinating, versioning prompts, chaining prompts into pipelines, calibrating agent autonomy levels, or evaluating prompt quality against benchmarks. Do NOT use for measuring output quality at scale (use quality-evaluate) or for implementing the agent or tool being prompted (use feature-implement). Triggers: 'write a system prompt', 'improve this prompt', 'prompt is hallucinating', 'prompt template', 'chain these prompts', 'calibrate autonomy', 'prompt version'.",
 	sourcePath: "src/instructions/instruction-specs.ts#prompt-engineering",
 	mission:
 		"Structure → test → refine → version. Every prompt is a versioned, tested artifact.",
@@ -31,11 +31,6 @@ export const instructionManifest: InstructionManifestEntry = {
 			benchmarkGoal: {
 				type: "string",
 				description: "Desired prompt benchmark objective.",
-			},
-			physicsAnalysisJustification: {
-				type: "string",
-				description:
-					"Why conventional analysis is insufficient and a physics-inspired pass is justified.",
 			},
 		},
 		required: ["request"],
@@ -98,44 +93,6 @@ export const instructionManifest: InstructionManifestEntry = {
 				kind: "invokeSkill",
 				label: "REFINE",
 				skillId: "prompt-refinement",
-			},
-			{
-				kind: "gate",
-				label: "QM TOOLS (OPT-IN)",
-				condition: "hasPhysicsJustification",
-				ifTrue: [
-					{
-						kind: "parallel",
-						label: "QM TOOLS",
-						steps: [
-							{
-								kind: "invokeSkill",
-								label: "qm-superposition-generator",
-								skillId: "qm-superposition-generator",
-							},
-							{
-								kind: "invokeSkill",
-								label: "qm-bloch-interpolator",
-								skillId: "qm-bloch-interpolator",
-							},
-							{
-								kind: "invokeSkill",
-								label: "qm-double-slit-interference",
-								skillId: "qm-double-slit-interference",
-							},
-							{
-								kind: "invokeSkill",
-								label: "qm-phase-kickback-reviewer",
-								skillId: "qm-phase-kickback-reviewer",
-							},
-							{
-								kind: "invokeSkill",
-								label: "qm-measurement-collapse",
-								skillId: "qm-measurement-collapse",
-							},
-						],
-					},
-				],
 			},
 			{
 				kind: "finalize",

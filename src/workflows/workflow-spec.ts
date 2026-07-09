@@ -88,7 +88,6 @@ export const metaRoutingWorkflow: WorkflowSpec = {
 		context: z.string().optional(),
 		taskType: z.string().optional(),
 		currentPhase: z.string().optional(),
-		physicsAnalysisJustification: z.string().optional(),
 	}),
 	runtime: {
 		steps: [
@@ -176,29 +175,6 @@ export const metaRoutingWorkflow: WorkflowSpec = {
 				kind: "invokeSkill",
 				label: "prompt-hierarchy",
 				skillId: "prompt-hierarchy",
-			},
-			{
-				kind: "gate",
-				label: "PHYSICS TOOLS (OPT-IN)",
-				condition: "hasPhysicsJustification",
-				ifTrue: [
-					{
-						kind: "parallel",
-						label: "PHYSICS TOOLS",
-						steps: [
-							{
-								kind: "invokeSkill",
-								label: "qm-superposition-generator",
-								skillId: "qm-superposition-generator",
-							},
-							{
-								kind: "invokeSkill",
-								label: "gr-spacetime-debt-metric",
-								skillId: "gr-spacetime-debt-metric",
-							},
-						],
-					},
-				],
 			},
 			{
 				kind: "finalize",
@@ -298,75 +274,6 @@ export const bootstrapWorkflow: WorkflowSpec = {
 				kind: "invokeInstruction",
 				label: "ROUTING",
 				instructionId: "meta-routing",
-			},
-			{
-				kind: "finalize",
-				label: "Finalize",
-			},
-		],
-	},
-};
-
-// Onboard Project Workflow
-export const onboardProjectWorkflow: WorkflowSpec = {
-	key: "onboard_project",
-	label: "Onboard Project",
-	states: [
-		"NewSession",
-		"CodebaseObservation",
-		"MentalModelFormation",
-		"AssumptionTest",
-		"CodebaseShift",
-		"ReObservation",
-		"ObserverFrameRevision",
-		"OrientationStabilization",
-	],
-	transitions: [
-		{ from: "NewSession", to: "CodebaseObservation" },
-		{ from: "CodebaseObservation", to: "MentalModelFormation" },
-		{ from: "MentalModelFormation", to: "AssumptionTest" },
-		{ from: "AssumptionTest", to: "CodebaseShift" },
-		{ from: "CodebaseShift", to: "ReObservation" },
-		{ from: "ReObservation", to: "MentalModelFormation" },
-		{
-			from: "MentalModelFormation",
-			to: "ObserverFrameRevision",
-			label: "observer model is updated by codebase",
-		},
-		{ from: "ObserverFrameRevision", to: "CodebaseObservation" },
-		{ from: "CodebaseShift", to: "OrientationStabilization" },
-		{
-			from: "OrientationStabilization",
-			to: "NewSession",
-			label: "provisional project model established",
-		},
-	],
-	inputSchema: z.object({
-		request: z.string(),
-		context: z.string().optional(),
-		primaryGoal: z.string().optional(),
-	}),
-	runtime: {
-		steps: [
-			{
-				kind: "invokeSkill",
-				label: "req-scope",
-				skillId: "req-scope",
-			},
-			{
-				kind: "invokeSkill",
-				label: "req-ambiguity-detection",
-				skillId: "req-ambiguity-detection",
-			},
-			{
-				kind: "invokeSkill",
-				label: "synth-research",
-				skillId: "synth-research",
-			},
-			{
-				kind: "invokeSkill",
-				label: "arch-system",
-				skillId: "arch-system",
 			},
 			{
 				kind: "finalize",
@@ -553,7 +460,6 @@ export const planWorkflow: WorkflowSpec = {
 		context: z.string().optional(),
 		horizon: z.string().optional(),
 		dependencies: z.array(z.string()).optional(),
-		physicsAnalysisJustification: z.string().optional(),
 	}),
 	runtime: {
 		steps: [
@@ -660,29 +566,6 @@ export const planWorkflow: WorkflowSpec = {
 				kind: "invokeSkill",
 				label: "ROADMAP",
 				skillId: "strat-roadmap",
-			},
-			{
-				kind: "gate",
-				label: "QM PLANNING (OPT-IN)",
-				condition: "hasPhysicsJustification",
-				ifTrue: [
-					{
-						kind: "parallel",
-						label: "QM PLANNING",
-						steps: [
-							{
-								kind: "invokeSkill",
-								label: "qm-schrodinger-picture",
-								skillId: "qm-schrodinger-picture",
-							},
-							{
-								kind: "invokeSkill",
-								label: "qm-tunneling-breakthrough",
-								skillId: "qm-tunneling-breakthrough",
-							},
-						],
-					},
-				],
 			},
 			{
 				kind: "finalize",
@@ -980,7 +863,6 @@ export const reviewWorkflow: WorkflowSpec = {
 		artifact: z.string().optional(),
 		focusAreas: z.array(z.string()).optional(),
 		severityThreshold: z.string().optional(),
-		physicsAnalysisJustification: z.string().optional(),
 	}),
 	runtime: {
 		steps: [
@@ -1068,64 +950,6 @@ export const reviewWorkflow: WorkflowSpec = {
 				skillId: "synth-recommendation",
 			},
 			{
-				kind: "gate",
-				label: "PHYSICS AUDIT (OPT-IN)",
-				condition: "hasPhysicsJustification",
-				ifTrue: [
-					{
-						kind: "parallel",
-						label: "PHYSICS AUDIT",
-						steps: [
-							{
-								kind: "invokeSkill",
-								label: "qm-wavefunction-coverage",
-								skillId: "qm-wavefunction-coverage",
-							},
-							{
-								kind: "invokeSkill",
-								label: "qm-entanglement-mapper",
-								skillId: "qm-entanglement-mapper",
-							},
-							{
-								kind: "invokeSkill",
-								label: "qm-decoherence-sentinel",
-								skillId: "qm-decoherence-sentinel",
-							},
-							{
-								kind: "invokeSkill",
-								label: "qm-uncertainty-tradeoff",
-								skillId: "qm-uncertainty-tradeoff",
-							},
-							{
-								kind: "invokeSkill",
-								label: "gr-hawking-entropy-auditor",
-								skillId: "gr-hawking-entropy-auditor",
-							},
-							{
-								kind: "invokeSkill",
-								label: "gr-schwarzschild-classifier",
-								skillId: "gr-schwarzschild-classifier",
-							},
-							{
-								kind: "invokeSkill",
-								label: "gr-gravitational-wave-detector",
-								skillId: "gr-gravitational-wave-detector",
-							},
-							{
-								kind: "invokeSkill",
-								label: "gr-equivalence-principle-checker",
-								skillId: "gr-equivalence-principle-checker",
-							},
-							{
-								kind: "invokeSkill",
-								label: "gr-redshift-velocity-mapper",
-								skillId: "gr-redshift-velocity-mapper",
-							},
-						],
-					},
-				],
-			},
-			{
 				kind: "finalize",
 				label: "Finalize",
 			},
@@ -1163,7 +987,6 @@ export const testingWorkflow: WorkflowSpec = {
 		context: z.string().optional(),
 		coverageGoal: z.string().optional(),
 		regressionRisk: z.string().optional(),
-		physicsAnalysisJustification: z.string().optional(),
 	}),
 	runtime: {
 		steps: [
@@ -1206,18 +1029,6 @@ export const testingWorkflow: WorkflowSpec = {
 						kind: "invokeSkill",
 						label: "bench-analyzer",
 						skillId: "bench-analyzer",
-					},
-				],
-			},
-			{
-				kind: "gate",
-				label: "COVERAGE PHYSICS (OPT-IN)",
-				condition: "hasPhysicsJustification",
-				ifTrue: [
-					{
-						kind: "invokeSkill",
-						label: "qm-wavefunction-coverage",
-						skillId: "qm-wavefunction-coverage",
 					},
 				],
 			},
@@ -1271,23 +1082,6 @@ export const testingWorkflow: WorkflowSpec = {
 						kind: "invokeSkill",
 						label: "resil-redundant-voter",
 						skillId: "resil-redundant-voter",
-					},
-				],
-			},
-			{
-				kind: "gate",
-				label: "PHYSICS DIAGNOSTICS (OPT-IN)",
-				condition: "hasPhysicsJustification",
-				ifTrue: [
-					{
-						kind: "invokeSkill",
-						label: "FLAKINESS",
-						skillId: "qm-decoherence-sentinel",
-					},
-					{
-						kind: "invokeSkill",
-						label: "UNCERTAINTY",
-						skillId: "qm-uncertainty-tradeoff",
 					},
 				],
 			},
@@ -1382,7 +1176,6 @@ export const debugWorkflow: WorkflowSpec = {
 		context: z.string().optional(),
 		failureMode: z.string().optional(),
 		reproduction: z.string().optional(),
-		physicsAnalysisJustification: z.string().optional(),
 	}),
 	runtime: {
 		steps: [
@@ -1424,44 +1217,6 @@ export const debugWorkflow: WorkflowSpec = {
 						kind: "invokeSkill",
 						label: "eval-variance",
 						skillId: "eval-variance",
-					},
-				],
-			},
-			{
-				kind: "gate",
-				label: "PHYSICS SCAN (OPT-IN)",
-				condition: "hasPhysicsJustification",
-				ifTrue: [
-					{
-						kind: "parallel",
-						label: "PHYSICS SCAN",
-						steps: [
-							{
-								kind: "invokeSkill",
-								label: "qm-decoherence-sentinel",
-								skillId: "qm-decoherence-sentinel",
-							},
-							{
-								kind: "invokeSkill",
-								label: "qm-entanglement-mapper",
-								skillId: "qm-entanglement-mapper",
-							},
-							{
-								kind: "invokeSkill",
-								label: "qm-uncertainty-tradeoff",
-								skillId: "qm-uncertainty-tradeoff",
-							},
-							{
-								kind: "invokeSkill",
-								label: "qm-heisenberg-picture",
-								skillId: "qm-heisenberg-picture",
-							},
-							{
-								kind: "invokeSkill",
-								label: "gr-frame-dragging-detector",
-								skillId: "gr-frame-dragging-detector",
-							},
-						],
 					},
 				],
 			},
@@ -1528,7 +1283,6 @@ export const refactorWorkflow: WorkflowSpec = {
 		context: z.string().optional(),
 		targetArea: z.string().optional(),
 		riskTolerance: z.string().optional(),
-		physicsAnalysisJustification: z.string().optional(),
 	}),
 	runtime: {
 		steps: [
@@ -1587,84 +1341,6 @@ export const refactorWorkflow: WorkflowSpec = {
 						kind: "invokeSkill",
 						label: "debug-assistant",
 						skillId: "debug-assistant",
-					},
-				],
-			},
-			{
-				kind: "gate",
-				label: "PHYSICS SCAN (OPT-IN)",
-				condition: "hasPhysicsJustification",
-				ifTrue: [
-					{
-						kind: "parallel",
-						label: "PHYSICS SCAN",
-						steps: [
-							{
-								kind: "invokeSkill",
-								label: "gr-geodesic-refactor",
-								skillId: "gr-geodesic-refactor",
-							},
-							{
-								kind: "invokeSkill",
-								label: "gr-neutron-star-compactor",
-								skillId: "gr-neutron-star-compactor",
-							},
-							{
-								kind: "invokeSkill",
-								label: "gr-tidal-force-analyzer",
-								skillId: "gr-tidal-force-analyzer",
-							},
-							{
-								kind: "invokeSkill",
-								label: "gr-schwarzschild-classifier",
-								skillId: "gr-schwarzschild-classifier",
-							},
-							{
-								kind: "invokeSkill",
-								label: "gr-event-horizon-detector",
-								skillId: "gr-event-horizon-detector",
-							},
-							{
-								kind: "invokeSkill",
-								label: "gr-spacetime-debt-metric",
-								skillId: "gr-spacetime-debt-metric",
-							},
-							{
-								kind: "invokeSkill",
-								label: "gr-dark-energy-forecaster",
-								skillId: "gr-dark-energy-forecaster",
-							},
-							{
-								kind: "invokeSkill",
-								label: "gr-frame-dragging-detector",
-								skillId: "gr-frame-dragging-detector",
-							},
-							{
-								kind: "invokeSkill",
-								label: "gr-gravitational-wave-detector",
-								skillId: "gr-gravitational-wave-detector",
-							},
-							{
-								kind: "invokeSkill",
-								label: "gr-inflation-detector",
-								skillId: "gr-inflation-detector",
-							},
-							{
-								kind: "invokeSkill",
-								label: "qm-entanglement-mapper",
-								skillId: "qm-entanglement-mapper",
-							},
-							{
-								kind: "invokeSkill",
-								label: "qm-hamiltonian-descent",
-								skillId: "qm-hamiltonian-descent",
-							},
-							{
-								kind: "invokeSkill",
-								label: "qm-tunneling-breakthrough",
-								skillId: "qm-tunneling-breakthrough",
-							},
-						],
 					},
 				],
 			},
@@ -1996,7 +1672,6 @@ export const evaluateWorkflow: WorkflowSpec = {
 		context: z.string().optional(),
 		metricGoal: z.string().optional(),
 		baseline: z.string().optional(),
-		physicsAnalysisJustification: z.string().optional(),
 	}),
 	runtime: {
 		steps: [
@@ -2043,44 +1718,6 @@ export const evaluateWorkflow: WorkflowSpec = {
 						kind: "invokeSkill",
 						label: "eval-prompt",
 						skillId: "eval-prompt",
-					},
-				],
-			},
-			{
-				kind: "gate",
-				label: "PHYSICS METRICS (OPT-IN)",
-				condition: "hasPhysicsJustification",
-				ifTrue: [
-					{
-						kind: "invokeSkill",
-						label: "COVERAGE",
-						skillId: "qm-wavefunction-coverage",
-					},
-					{
-						kind: "parallel",
-						label: "QM METRICS",
-						steps: [
-							{
-								kind: "invokeSkill",
-								label: "qm-hamiltonian-descent",
-								skillId: "qm-hamiltonian-descent",
-							},
-							{
-								kind: "invokeSkill",
-								label: "qm-heisenberg-picture",
-								skillId: "qm-heisenberg-picture",
-							},
-							{
-								kind: "invokeSkill",
-								label: "qm-uncertainty-tradeoff",
-								skillId: "qm-uncertainty-tradeoff",
-							},
-							{
-								kind: "invokeSkill",
-								label: "qm-path-integral-historian",
-								skillId: "qm-path-integral-historian",
-							},
-						],
 					},
 				],
 			},
@@ -2134,276 +1771,6 @@ export const evaluateWorkflow: WorkflowSpec = {
 						kind: "invokeSkill",
 						label: "qual-performance",
 						skillId: "qual-performance",
-					},
-				],
-			},
-			{
-				kind: "finalize",
-				label: "Finalize",
-			},
-		],
-	},
-};
-
-// Physics Analysis Workflow
-export const physicsAnalysisWorkflow: WorkflowSpec = {
-	key: "physics-analysis",
-	label: "Physics Analysis",
-	states: [
-		"EventHorizonScan",
-		"EntanglementMap",
-		"HeisenbergDrift",
-		"HamiltonianRank",
-		"WavefunctionCoverage",
-		"DecoherenceFlakiness",
-		"BlochStyleInterpolation",
-		"SuperpositionSelection",
-		"DoubleSlitInterference",
-		"MeasurementCollapseReview",
-		"DiracOverlapMatrix",
-		"SchrodingerForecast",
-		"PathIntegralHistory",
-		"PhaseKickbackDominant",
-		"TunnelingViability",
-		"UncertaintyCoupling",
-		"SpacetimeDebt",
-		"SchwarzschildGravity",
-		"TidalSplitAnalysis",
-		"NeutronStarDensity",
-		"GravitationalLensing",
-		"FrameDragging",
-		"HawkingApiEntropy",
-		"DarkEnergyExpansion",
-		"InflationGrowth",
-		"EquivalencePrinciple",
-		"GravitationalWaves",
-		"PenroseCausalMap",
-		"RedshiftAbstraction",
-		"GeodesicPath",
-	],
-	transitions: [
-		{ from: "EventHorizonScan", to: "EntanglementMap" },
-		{ from: "EventHorizonScan", to: "SpacetimeDebt" },
-		{ from: "EntanglementMap", to: "HeisenbergDrift" },
-		{ from: "HeisenbergDrift", to: "HamiltonianRank" },
-		{ from: "HamiltonianRank", to: "WavefunctionCoverage" },
-		{ from: "WavefunctionCoverage", to: "DecoherenceFlakiness" },
-		{ from: "DecoherenceFlakiness", to: "BlochStyleInterpolation" },
-		{ from: "BlochStyleInterpolation", to: "SuperpositionSelection" },
-		{ from: "SuperpositionSelection", to: "DoubleSlitInterference" },
-		{ from: "DoubleSlitInterference", to: "MeasurementCollapseReview" },
-		{ from: "MeasurementCollapseReview", to: "DiracOverlapMatrix" },
-		{ from: "DiracOverlapMatrix", to: "SchrodingerForecast" },
-		{ from: "SchrodingerForecast", to: "PathIntegralHistory" },
-		{ from: "PathIntegralHistory", to: "PhaseKickbackDominant" },
-		{ from: "PhaseKickbackDominant", to: "TunnelingViability" },
-		{ from: "TunnelingViability", to: "UncertaintyCoupling" },
-		{ from: "UncertaintyCoupling", to: "SpacetimeDebt" },
-		{ from: "SpacetimeDebt", to: "SchwarzschildGravity" },
-		{ from: "SchwarzschildGravity", to: "TidalSplitAnalysis" },
-		{ from: "TidalSplitAnalysis", to: "NeutronStarDensity" },
-		{ from: "NeutronStarDensity", to: "GravitationalLensing" },
-		{ from: "GravitationalLensing", to: "FrameDragging" },
-		{ from: "FrameDragging", to: "HawkingApiEntropy" },
-		{ from: "HawkingApiEntropy", to: "DarkEnergyExpansion" },
-		{ from: "DarkEnergyExpansion", to: "InflationGrowth" },
-		{ from: "InflationGrowth", to: "EquivalencePrinciple" },
-		{ from: "EquivalencePrinciple", to: "GravitationalWaves" },
-		{ from: "GravitationalWaves", to: "PenroseCausalMap" },
-		{ from: "PenroseCausalMap", to: "RedshiftAbstraction" },
-		{ from: "RedshiftAbstraction", to: "GeodesicPath" },
-	],
-	inputSchema: z.object({
-		request: z.string(),
-		context: z.string().optional(),
-		conventionalEvidence: z.string().optional(),
-		targetQuestion: z.string().optional(),
-	}),
-	runtime: {
-		steps: [
-			{
-				kind: "parallel",
-				label: "QM FOUNDATIONS",
-				steps: [
-					{
-						kind: "invokeSkill",
-						label: "qm-entanglement-mapper",
-						skillId: "qm-entanglement-mapper",
-					},
-					{
-						kind: "invokeSkill",
-						label: "qm-heisenberg-picture",
-						skillId: "qm-heisenberg-picture",
-					},
-					{
-						kind: "invokeSkill",
-						label: "qm-hamiltonian-descent",
-						skillId: "qm-hamiltonian-descent",
-					},
-					{
-						kind: "invokeSkill",
-						label: "qm-wavefunction-coverage",
-						skillId: "qm-wavefunction-coverage",
-					},
-					{
-						kind: "invokeSkill",
-						label: "qm-decoherence-sentinel",
-						skillId: "qm-decoherence-sentinel",
-					},
-				],
-			},
-			{
-				kind: "parallel",
-				label: "QM DECISION SURFACE",
-				steps: [
-					{
-						kind: "invokeSkill",
-						label: "qm-bloch-interpolator",
-						skillId: "qm-bloch-interpolator",
-					},
-					{
-						kind: "invokeSkill",
-						label: "qm-superposition-generator",
-						skillId: "qm-superposition-generator",
-					},
-					{
-						kind: "invokeSkill",
-						label: "qm-double-slit-interference",
-						skillId: "qm-double-slit-interference",
-					},
-					{
-						kind: "invokeSkill",
-						label: "qm-measurement-collapse",
-						skillId: "qm-measurement-collapse",
-					},
-					{
-						kind: "invokeSkill",
-						label: "qm-dirac-notation-mapper",
-						skillId: "qm-dirac-notation-mapper",
-					},
-				],
-			},
-			{
-				kind: "parallel",
-				label: "QM EVOLUTION",
-				steps: [
-					{
-						kind: "invokeSkill",
-						label: "qm-schrodinger-picture",
-						skillId: "qm-schrodinger-picture",
-					},
-					{
-						kind: "invokeSkill",
-						label: "qm-path-integral-historian",
-						skillId: "qm-path-integral-historian",
-					},
-					{
-						kind: "invokeSkill",
-						label: "qm-phase-kickback-reviewer",
-						skillId: "qm-phase-kickback-reviewer",
-					},
-					{
-						kind: "invokeSkill",
-						label: "qm-tunneling-breakthrough",
-						skillId: "qm-tunneling-breakthrough",
-					},
-					{
-						kind: "invokeSkill",
-						label: "qm-uncertainty-tradeoff",
-						skillId: "qm-uncertainty-tradeoff",
-					},
-				],
-			},
-			{
-				kind: "parallel",
-				label: "GR STRUCTURE",
-				steps: [
-					{
-						kind: "invokeSkill",
-						label: "gr-event-horizon-detector",
-						skillId: "gr-event-horizon-detector",
-					},
-					{
-						kind: "invokeSkill",
-						label: "gr-spacetime-debt-metric",
-						skillId: "gr-spacetime-debt-metric",
-					},
-					{
-						kind: "invokeSkill",
-						label: "gr-schwarzschild-classifier",
-						skillId: "gr-schwarzschild-classifier",
-					},
-					{
-						kind: "invokeSkill",
-						label: "gr-tidal-force-analyzer",
-						skillId: "gr-tidal-force-analyzer",
-					},
-					{
-						kind: "invokeSkill",
-						label: "gr-neutron-star-compactor",
-						skillId: "gr-neutron-star-compactor",
-					},
-				],
-			},
-			{
-				kind: "parallel",
-				label: "GR PROPAGATION",
-				steps: [
-					{
-						kind: "invokeSkill",
-						label: "gr-gravitational-lensing-tracer",
-						skillId: "gr-gravitational-lensing-tracer",
-					},
-					{
-						kind: "invokeSkill",
-						label: "gr-frame-dragging-detector",
-						skillId: "gr-frame-dragging-detector",
-					},
-					{
-						kind: "invokeSkill",
-						label: "gr-hawking-entropy-auditor",
-						skillId: "gr-hawking-entropy-auditor",
-					},
-					{
-						kind: "invokeSkill",
-						label: "gr-dark-energy-forecaster",
-						skillId: "gr-dark-energy-forecaster",
-					},
-					{
-						kind: "invokeSkill",
-						label: "gr-inflation-detector",
-						skillId: "gr-inflation-detector",
-					},
-				],
-			},
-			{
-				kind: "parallel",
-				label: "GR TRAJECTORY",
-				steps: [
-					{
-						kind: "invokeSkill",
-						label: "gr-equivalence-principle-checker",
-						skillId: "gr-equivalence-principle-checker",
-					},
-					{
-						kind: "invokeSkill",
-						label: "gr-gravitational-wave-detector",
-						skillId: "gr-gravitational-wave-detector",
-					},
-					{
-						kind: "invokeSkill",
-						label: "gr-penrose-diagram-mapper",
-						skillId: "gr-penrose-diagram-mapper",
-					},
-					{
-						kind: "invokeSkill",
-						label: "gr-redshift-velocity-mapper",
-						skillId: "gr-redshift-velocity-mapper",
-					},
-					{
-						kind: "invokeSkill",
-						label: "gr-geodesic-refactor",
-						skillId: "gr-geodesic-refactor",
 					},
 				],
 			},
@@ -2605,7 +1972,6 @@ export const enterpriseWorkflow: WorkflowSpec = {
 		context: z.string().optional(),
 		audience: z.string().optional(),
 		horizon: z.string().optional(),
-		physicsAnalysisJustification: z.string().optional(),
 	}),
 	runtime: {
 		steps: [
@@ -2733,39 +2099,6 @@ export const enterpriseWorkflow: WorkflowSpec = {
 				kind: "invokeSkill",
 				label: "RESEARCH",
 				skillId: "synth-research",
-			},
-			{
-				kind: "gate",
-				label: "PHYSICS DEBT (OPT-IN)",
-				condition: "hasPhysicsJustification",
-				ifTrue: [
-					{
-						kind: "parallel",
-						label: "PHYSICS DEBT",
-						steps: [
-							{
-								kind: "invokeSkill",
-								label: "gr-spacetime-debt-metric",
-								skillId: "gr-spacetime-debt-metric",
-							},
-							{
-								kind: "invokeSkill",
-								label: "gr-schwarzschild-classifier",
-								skillId: "gr-schwarzschild-classifier",
-							},
-							{
-								kind: "invokeSkill",
-								label: "gr-event-horizon-detector",
-								skillId: "gr-event-horizon-detector",
-							},
-							{
-								kind: "invokeSkill",
-								label: "gr-penrose-diagram-mapper",
-								skillId: "gr-penrose-diagram-mapper",
-							},
-						],
-					},
-				],
 			},
 			{
 				kind: "finalize",
@@ -3103,7 +2436,6 @@ export const promptEngineeringWorkflow: WorkflowSpec = {
 		context: z.string().optional(),
 		promptTarget: z.string().optional(),
 		benchmarkGoal: z.string().optional(),
-		physicsAnalysisJustification: z.string().optional(),
 	}),
 	runtime: {
 		steps: [
@@ -3162,44 +2494,6 @@ export const promptEngineeringWorkflow: WorkflowSpec = {
 				kind: "invokeSkill",
 				label: "REFINE",
 				skillId: "prompt-refinement",
-			},
-			{
-				kind: "gate",
-				label: "QM TOOLS (OPT-IN)",
-				condition: "hasPhysicsJustification",
-				ifTrue: [
-					{
-						kind: "parallel",
-						label: "QM TOOLS",
-						steps: [
-							{
-								kind: "invokeSkill",
-								label: "qm-superposition-generator",
-								skillId: "qm-superposition-generator",
-							},
-							{
-								kind: "invokeSkill",
-								label: "qm-bloch-interpolator",
-								skillId: "qm-bloch-interpolator",
-							},
-							{
-								kind: "invokeSkill",
-								label: "qm-double-slit-interference",
-								skillId: "qm-double-slit-interference",
-							},
-							{
-								kind: "invokeSkill",
-								label: "qm-phase-kickback-reviewer",
-								skillId: "qm-phase-kickback-reviewer",
-							},
-							{
-								kind: "invokeSkill",
-								label: "qm-measurement-collapse",
-								skillId: "qm-measurement-collapse",
-							},
-						],
-					},
-				],
 			},
 			{
 				kind: "finalize",
@@ -3346,7 +2640,6 @@ export const resilienceWorkflow: WorkflowSpec = {
 export const WORKFLOW_SPECS = [
 	metaRoutingWorkflow,
 	bootstrapWorkflow,
-	onboardProjectWorkflow,
 	designWorkflow,
 	planWorkflow,
 	implementWorkflow,
@@ -3357,7 +2650,6 @@ export const WORKFLOW_SPECS = [
 	documentWorkflow,
 	researchWorkflow,
 	evaluateWorkflow,
-	physicsAnalysisWorkflow,
 	adaptWorkflow,
 	enterpriseWorkflow,
 	governWorkflow,

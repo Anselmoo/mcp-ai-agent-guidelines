@@ -12,6 +12,10 @@ import {
 	createFocusRecommendations,
 } from "../shared/handler-helpers.js";
 import { extractRequestSignals } from "../shared/recommendations.js";
+import {
+	matchProbes,
+	readReferencedFiles,
+} from "../shared/workspace-grounding.js";
 
 const ARCH_CONCERN_RULES: Array<{ pattern: RegExp; finding: string }> = [
 	{
@@ -98,14 +102,36 @@ const archSystemHandler: SkillHandler = {
 			);
 		}
 
+		const groundedFiles = await readReferencedFiles(context);
+		const contentProbes = ARCH_CONCERN_RULES.map((rule) => ({
+			pattern: rule.pattern,
+			finding: (path: string) => `\`${path}\`: ${rule.finding}`,
+		}));
+		const groundedFindings = matchProbes(groundedFiles, contentProbes);
+		if (groundedFiles.length > 0 && groundedFindings.length === 0) {
+			groundedFindings.push(
+				`Referenced file(s) ${groundedFiles.map((f) => `\`${f.path}\``).join(", ")} were read — align the proposed architecture to what they actually contain.`,
+			);
+		}
+		const groundedRecs = groundedFindings.map((detail, index) => ({
+			title: `Grounded concern ${index + 1}`,
+			detail,
+			modelClass: context.model.modelClass,
+			groundingScope: "workspace" as const,
+			evidenceAnchors: groundedFiles.map((f) => f.path),
+		}));
+
 		return createCapabilityResult(
 			context,
-			`System Design identified ${findings.length} architectural concern${findings.length === 1 ? "" : "s"} for the described system.`,
-			createFocusRecommendations(
-				"Architecture concern",
-				findings,
-				context.model.modelClass,
-			),
+			`System Design identified ${findings.length} architectural concern${findings.length === 1 ? "" : "s"} for the described system${groundedFiles.length > 0 ? `; grounded in ${groundedFiles.length} referenced file(s)` : ""}.`,
+			[
+				...groundedRecs,
+				...createFocusRecommendations(
+					"Architecture concern",
+					findings,
+					context.model.modelClass,
+				),
+			],
 			[
 				buildComparisonMatrixArtifact(
 					"AI system layer matrix",

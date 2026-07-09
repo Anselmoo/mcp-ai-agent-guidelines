@@ -32,11 +32,6 @@ export const instructionManifest: InstructionManifestEntry = {
 				type: "string",
 				description: "Transformation horizon or maturity target.",
 			},
-			physicsAnalysisJustification: {
-				type: "string",
-				description:
-					"Why conventional analysis is insufficient and a physics-inspired pass is justified.",
-			},
 		},
 		required: ["request"],
 	},
@@ -167,39 +162,6 @@ export const instructionManifest: InstructionManifestEntry = {
 				kind: "invokeSkill",
 				label: "RESEARCH",
 				skillId: "synth-research",
-			},
-			{
-				kind: "gate",
-				label: "PHYSICS DEBT (OPT-IN)",
-				condition: "hasPhysicsJustification",
-				ifTrue: [
-					{
-						kind: "parallel",
-						label: "PHYSICS DEBT",
-						steps: [
-							{
-								kind: "invokeSkill",
-								label: "gr-spacetime-debt-metric",
-								skillId: "gr-spacetime-debt-metric",
-							},
-							{
-								kind: "invokeSkill",
-								label: "gr-schwarzschild-classifier",
-								skillId: "gr-schwarzschild-classifier",
-							},
-							{
-								kind: "invokeSkill",
-								label: "gr-event-horizon-detector",
-								skillId: "gr-event-horizon-detector",
-							},
-							{
-								kind: "invokeSkill",
-								label: "gr-penrose-diagram-mapper",
-								skillId: "gr-penrose-diagram-mapper",
-							},
-						],
-					},
-				],
 			},
 			{
 				kind: "finalize",

@@ -16,9 +16,7 @@ import { instructionModule as evaluateInstruction } from "../../generated/instru
 import { instructionModule as governInstruction } from "../../generated/instructions/govern.js";
 import { instructionModule as implementInstruction } from "../../generated/instructions/implement.js";
 import { instructionModule as metaRoutingInstruction } from "../../generated/instructions/meta-routing.js";
-import { instructionModule as onboardProjectInstruction } from "../../generated/instructions/onboard_project.js";
 import { instructionModule as orchestrateInstruction } from "../../generated/instructions/orchestrate.js";
-import { instructionModule as physicsAnalysisInstruction } from "../../generated/instructions/physics-analysis.js";
 import { instructionModule as planInstruction } from "../../generated/instructions/plan.js";
 import { instructionModule as promptEngineeringInstruction } from "../../generated/instructions/prompt-engineering.js";
 import { instructionModule as refactorInstruction } from "../../generated/instructions/refactor.js";
@@ -27,7 +25,7 @@ import { instructionModule as resilienceInstruction } from "../../generated/inst
 import { instructionModule as reviewInstruction } from "../../generated/instructions/review.js";
 import { instructionModule as testingInstruction } from "../../generated/instructions/testing.js";
 import { WorkflowEngine } from "../../workflows/workflow-engine.js";
-import { onboardProjectWorkflow } from "../../workflows/workflow-spec.js";
+import { metaRoutingWorkflow } from "../../workflows/workflow-spec.js";
 import { assertInstructionManifestMatchesWorkflowSpec } from "../../workflows/workflow-state-validator.js";
 
 const modelProfile: ModelProfile = {
@@ -118,7 +116,6 @@ describe("workflow runtime bridge", () => {
 		const allImplementedInstructions = [
 			bootstrapInstruction,
 			metaRoutingInstruction,
-			onboardProjectInstruction,
 			designInstruction,
 			planInstruction,
 			implementInstruction,
@@ -129,7 +126,6 @@ describe("workflow runtime bridge", () => {
 			documentInstruction,
 			researchInstruction,
 			evaluateInstruction,
-			physicsAnalysisInstruction,
 			adaptInstruction,
 			enterpriseInstruction,
 			governInstruction,
@@ -155,33 +151,29 @@ describe("workflow runtime bridge", () => {
 		const executeStepSpy = vi.spyOn(workflowEngineForSpy, "executeStep");
 
 		const result = await runtime.workflowEngine.executeInstruction(
-			onboardProjectInstruction,
+			metaRoutingInstruction,
 			{
-				request: "get me oriented",
+				request: "route this multi-domain request",
 			},
 			runtime,
 		);
 		const executeStepCalls = executeStepSpy.mock.calls as unknown[][];
 
-		expect(result.instructionId).toBe("onboard_project");
-		expect(result.steps.map((step) => step.label)).toEqual([
-			"req-scope",
-			"req-ambiguity-detection",
-			"synth-research",
-			"arch-system",
-			"Finalize",
-		]);
+		expect(result.instructionId).toBe("meta-routing");
+		expect(result.steps.map((step) => step.label)).toEqual(
+			(metaRoutingWorkflow.runtime?.steps ?? []).map((step) => step.label),
+		);
 		expect(executeStepCalls[0]?.[0]).toBe(
-			onboardProjectWorkflow.runtime?.steps[0],
+			metaRoutingWorkflow.runtime?.steps[0],
 		);
 		expect(executeStepCalls[0]?.[0]).not.toBe(
-			onboardProjectInstruction.manifest.workflow.steps[0],
+			metaRoutingInstruction.manifest.workflow.steps[0],
 		);
 	});
 
 	it("rejects authoritative workflow drift before executing any steps", async () => {
 		const { runtime, getSkillCalls } = buildRuntime();
-		const driftedManifest = cloneManifest(onboardProjectInstruction.manifest);
+		const driftedManifest = cloneManifest(metaRoutingInstruction.manifest);
 		driftedManifest.workflow.steps[0] = {
 			kind: "invokeSkill",
 			label: "scope-has-drifted",
@@ -205,7 +197,7 @@ describe("workflow runtime bridge", () => {
 		await expect(
 			runtime.workflowEngine.executeInstruction(
 				driftedInstruction,
-				{ request: "get me oriented" },
+				{ request: "route this multi-domain request" },
 				runtime,
 			),
 		).rejects.toThrow(/Workflow spec drift/);
@@ -217,7 +209,7 @@ describe("workflow runtime bridge", () => {
 
 		await expect(
 			runtime.workflowEngine.executeInstruction(
-				onboardProjectInstruction,
+				metaRoutingInstruction,
 				{ context: "missing request" } as unknown as InstructionInput,
 				runtime,
 			),

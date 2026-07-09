@@ -85,12 +85,7 @@ export interface WorkflowInvokeInstructionStep {
 export interface WorkflowGateStep {
 	kind: "gate";
 	label: string;
-	condition:
-		| "always"
-		| "hasContext"
-		| "hasConstraints"
-		| "hasDeliverable"
-		| "hasPhysicsJustification";
+	condition: "always" | "hasContext" | "hasConstraints" | "hasDeliverable";
 	ifTrue: WorkflowStep[];
 	ifFalse?: WorkflowStep[];
 }

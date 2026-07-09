@@ -36,19 +36,6 @@ describe("input-guards", () => {
 	});
 
 	it("blocks gated skill categories and invalid output structures", async () => {
-		const physics = await validateSkillInput(
-			{
-				request: "investigate anomaly in detail",
-				conventionalEvidence: "baseline logs",
-				targetQuestion: "what changed?",
-			},
-			z.object({
-				request: z.string(),
-				conventionalEvidence: z.string(),
-				targetQuestion: z.string(),
-			}),
-			{ skillId: "qm-entanglement-mapper" },
-		);
 		const governanceGuard = await criticalSkillGuard(
 			"gov-policy-validation",
 			{ request: "audit policy" },
@@ -56,13 +43,11 @@ describe("input-guards", () => {
 		);
 		const output = validateSkillOutput({ detail: "missing summary" }, "review");
 
-		expect(physics.success).toBe(false);
-		expect(physics.errors[0]).toContain("Physics skills are disabled");
 		expect(governanceGuard.allowed).toBe(false);
 		expect(output.success).toBe(false);
 	});
 
-	it("warns for permissive physics validation and traces sanitized input when requested", async () => {
+	it("traces sanitized input when requested", async () => {
 		const debugSpy = vi.spyOn(console, "debug").mockImplementation(() => {});
 		const result = await validateSkillInput(
 			{
@@ -73,17 +58,13 @@ describe("input-guards", () => {
 				request: z.string(),
 				context: z.string().optional(),
 			}),
-			{ skillId: "qm-wavefunction-coverage" },
+			{ skillId: "debug-root-cause" },
 			{
-				allowPhysicsSkills: true,
 				traceValidation: true,
 			},
 		);
 
 		expect(result.success).toBe(true);
-		expect(result.warnings).toContain(
-			"Physics skill missing physicsAnalysisJustification — provide ≥ 20 non-whitespace chars explaining why physics-analysis metaphors are appropriate",
-		);
 		expect(debugSpy).toHaveBeenCalled();
 	});
 
@@ -295,43 +276,6 @@ describe("input-guards", () => {
 		expect(
 			result.warnings.some((w) => w.includes("Sanitization warning")),
 		).toBe(true);
-	});
-
-	it("physics skill in strict mode fails on missing justification", async () => {
-		const result = await validateSkillInput(
-			{ request: "investigate anomaly" },
-			z.object({ request: z.string() }),
-			{ skillId: "qm-entanglement-mapper" },
-			{ allowPhysicsSkills: true, strict: true },
-		);
-		expect(result.success).toBe(false);
-		expect(
-			result.errors.some((e) => e.includes("Physics skill validation failed")),
-		).toBe(true);
-	});
-
-	it("physics skill in non-strict mode warns and continues on missing justification", async () => {
-		const result = await validateSkillInput(
-			{ request: "investigate anomaly in detail now" },
-			z.object({ request: z.string() }),
-			{ skillId: "qm-entanglement-mapper" },
-			{ allowPhysicsSkills: true, strict: false },
-		);
-		// Non-strict: physics warning added but not failing
-		expect(
-			result.warnings.some((w) => w.includes("Physics skill missing")),
-		).toBe(true);
-	});
-
-	it("gr- prefixed skill is also gated by allowPhysicsSkills", async () => {
-		const result = await validateSkillInput(
-			{ request: "analyze spacetime curvature patterns" },
-			z.object({ request: z.string() }),
-			{ skillId: "gr-spacetime-debt-metric" },
-			{ allowPhysicsSkills: false },
-		);
-		expect(result.success).toBe(false);
-		expect(result.errors[0]).toContain("Physics skills are disabled");
 	});
 
 	it("governance skill is allowed when env var is set", async () => {
