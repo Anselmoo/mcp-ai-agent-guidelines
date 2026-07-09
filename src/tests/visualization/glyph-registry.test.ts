@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
 	AnalysisGlyphs,
 	ArrowGlyphs,
@@ -325,6 +325,12 @@ describe("StatusEmojis / FileEmojis / DevEmojis", () => {
 		const out = dev.conventionalCommit("fix", "", "null pointer");
 		expect(out).toBe("🐛 fix: null pointer");
 	});
+
+	it("DevEmojis.conventionalCommit falls back to chore emoji for unknown kind", () => {
+		const dev = new DevEmojis();
+		const out = dev.conventionalCommit("unknown-kind", "", "misc change");
+		expect(out).toBe("🔧 unknown-kind: misc change");
+	});
 });
 
 describe("GlyphRegistry groups", () => {
@@ -580,6 +586,14 @@ describe("AnalysisGlyphs extended", () => {
 		const out = analysis.delta(0, 5);
 		expect(out).toContain("+5.00");
 		expect(out).toContain("0.0%");
+	});
+
+	it("sparkline() falls back to the mid-block glyph when the computed index is out of range", () => {
+		// Extreme-magnitude values push rng to Infinity, making (v - mn) / rng
+		// evaluate to NaN for at least one entry, so SPARK[NaN] is undefined
+		// and the `?? "▄"` fallback fires.
+		const out = analysis.sparkline([1e308, -1e308]);
+		expect(out).toContain("▄");
 	});
 });
 

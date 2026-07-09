@@ -268,6 +268,137 @@ describe("observability", () => {
 		);
 	});
 
+	it("defaults the logger level to info when logLevel is falsy", () => {
+		const manager = new ObservabilityOrchestrator({
+			// biome-ignore lint/suspicious/noExplicitAny: exercising the `|| "info"` fallback branch
+			logLevel: "" as any,
+			enableMetrics: false,
+			enableTracing: false,
+		});
+
+		expect(manager.getLogger().level).toBe("info");
+	});
+
+	it("configures the pino-pretty transport when NODE_ENV is not test", () => {
+		vi.stubEnv("NODE_ENV", "production");
+
+		const manager = new ObservabilityOrchestrator({
+			logLevel: "info",
+			enableMetrics: false,
+			enableTracing: false,
+		});
+
+		expect(manager.getLogger().level).toBe("info");
+
+		vi.unstubAllEnvs();
+	});
+
+	it("records traceId and spanId on log entries when context provides string values", () => {
+		const manager = new ObservabilityOrchestrator({
+			logLevel: "debug",
+			enableMetrics: false,
+			enableTracing: false,
+		});
+
+		manager.log("info", "with context", {
+			traceId: "trace-1",
+			spanId: "span-1",
+			extra: "value",
+		});
+
+		const [entry] = getInternals(manager).logEntries as unknown as Array<{
+			message: string;
+			context?: Record<string, unknown>;
+			traceId?: string;
+			spanId?: string;
+		}>;
+
+		expect(entry.message).toBe("with context");
+		expect(entry.traceId).toBe("trace-1");
+		expect(entry.spanId).toBe("span-1");
+		expect(entry.context).toEqual({
+			traceId: "trace-1",
+			spanId: "span-1",
+			extra: "value",
+		});
+	});
+
+	it("omits traceId and spanId on log entries when context values are not strings", () => {
+		const manager = new ObservabilityOrchestrator({
+			logLevel: "debug",
+			enableMetrics: false,
+			enableTracing: false,
+		});
+
+		manager.log("warn", "non-string ids", {
+			traceId: 123,
+			spanId: false,
+		});
+
+		const [entry] = getInternals(manager).logEntries as unknown as Array<{
+			message: string;
+			traceId?: string;
+			spanId?: string;
+		}>;
+
+		expect(entry.traceId).toBeUndefined();
+		expect(entry.spanId).toBeUndefined();
+	});
+
+	it("accumulates multiple spans into the same trace and keeps the latest endTime", () => {
+		vi.useFakeTimers();
+		vi.setSystemTime(new Date("2024-01-01T00:00:00.000Z"));
+
+		const manager = new ObservabilityOrchestrator({
+			logLevel: "debug",
+			enableMetrics: false,
+			enableTracing: true,
+		});
+
+		const parentSpan = manager.createSpan("parent-operation");
+
+		vi.setSystemTime(new Date("2024-01-01T00:00:01.000Z"));
+		const childSpan = manager.createSpan("child-operation", parentSpan);
+
+		vi.setSystemTime(new Date("2024-01-01T00:00:02.000Z"));
+		manager.finishSpan(childSpan);
+
+		vi.setSystemTime(new Date("2024-01-01T00:00:05.000Z"));
+		manager.finishSpan(parentSpan);
+
+		const trace = getInternals(manager).traces.get(parentSpan.traceId);
+
+		expect(childSpan.traceId).toBe(parentSpan.traceId);
+		expect(trace?.spans).toEqual([childSpan, parentSpan]);
+		expect(trace?.endTime).toBe(parentSpan.endTime);
+		// The trace record is created on the first finishSpan() call (the child,
+		// at 00:00:02), so its startTime is the child's startTime (00:00:01), not
+		// the parent's. totalDuration reflects that: 5s (parent end) - 1s (trace
+		// start) = 4s.
+		expect(trace?.totalDuration).toBe(4000);
+	});
+
+	it("monitorExecution normalizes non-Error throwables to 'Unknown error'", async () => {
+		const manager = new ObservabilityOrchestrator({
+			logLevel: "debug",
+			enableMetrics: true,
+			enableTracing: true,
+		});
+		const finishSpanSpy = vi.spyOn(manager, "finishSpan");
+
+		await expect(
+			manager.monitorExecution("non-error-failure", async () => {
+				// biome-ignore lint/suspicious/noExplicitAny: intentionally throwing a non-Error value
+				throw "just a string" as any;
+			}),
+		).rejects.toBe("just a string");
+
+		expect(finishSpanSpy).toHaveBeenCalledWith(
+			expect.objectContaining({ operationName: "non-error-failure" }),
+			{ success: false, error: "Unknown error" },
+		);
+	});
+
 	it("creates orchestrators through both factories and operational logger helper", () => {
 		const config = {
 			logLevel: "warn" as const,

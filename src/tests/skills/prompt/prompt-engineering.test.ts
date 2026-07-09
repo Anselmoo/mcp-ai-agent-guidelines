@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { skillModule } from "../../../skills/prompt/prompt-engineering.js";
 import {
+	createMockSkillRuntime,
 	expectEmptyRequestHandling,
 	expectSkillGuidance,
 	expectSkillModuleContract,
@@ -118,5 +119,65 @@ describe("prompt-engineering", () => {
 
 	it("returns structured guidance for an empty request", async () => {
 		await expectEmptyRequestHandling(skillModule);
+	});
+
+	it("returns insufficient-signal guidance for a non-empty request with no keywords, context, or deliverable", async () => {
+		// "the it is" passes schema validation (non-empty) but every token is a
+		// stop word, so extractRequestSignals().keywords is empty; combined with
+		// no context/deliverable this hits the in-handler insufficient-signal
+		// branch (distinct from the schema-level empty-string rejection).
+		const result = await skillModule.run(
+			{ request: "the it is" },
+			createMockSkillRuntime(),
+		);
+		expect(result.recommendations[0]).toMatchObject({
+			title: "Provide more detail",
+		});
+	});
+
+	it("proceeds past the signal check when a keyword-less request still carries context", async () => {
+		// Same all-stop-word request, but hasContext is true, so the combined
+		// `keywords.length === 0 && !hasContext && !hasDeliverable` guard is
+		// false and the handler produces full guidance instead of bailing out.
+		const result = await expectSkillGuidance(
+			skillModule,
+			{
+				request: "the it is",
+				context: "the it is also background",
+			},
+			{ summaryIncludes: ["Prompt Engineering produced"] },
+		);
+		expect(result.summary).not.toContain("Provide more detail");
+	});
+
+	it("falls back to 'the requested task' label and uses singular/omitted phrasing when nothing else applies", async () => {
+		// Request has real keywords (so it clears the insufficient-signal gate)
+		// but matches none of the PROMPT_ENGINEERING_RULES, and every optional
+		// signal (context, deliverable, successCriteria, constraints, technique
+		// selection) is absent, with variables/versioning both disabled. This
+		// exercises: the summarizeKeywords() `||` fallback, the includeVersioning
+		// false branches (template placeholder + summary "omitted"), the
+		// includeVariables "omitted" branch, and the singular "guardrail" suffix.
+		const result = await expectSkillGuidance(
+			skillModule,
+			{
+				request: "Summarize quarterly sales results for the leadership team",
+				options: { includeVariables: false, includeVersioning: false },
+			},
+			{
+				summaryIncludes: [
+					"Prompt Engineering produced 1 asset-design guardrail",
+					"variables: omitted",
+					"versioning: omitted",
+				],
+			},
+		);
+		const template = result.artifacts?.find(
+			(artifact) => artifact.kind === "output-template",
+		);
+		expect(template).toMatchObject({
+			kind: "output-template",
+			template: expect.stringContaining("version: <set-version>"),
+		});
 	});
 });

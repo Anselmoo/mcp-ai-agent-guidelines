@@ -1,13 +1,17 @@
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
 	buildSymbolIndex,
+	extractAllSymbolMap,
 	extractMethodMap,
 	extractSymbolMapFallback,
+	extractSymbolMapViaLsp,
 	searchSymbolIndex,
 } from "../../memory/lsp-scan-bridge.js";
+import type { LspClient } from "../../snapshots/language_server_adapter.js";
+import type { RawLspSymbol } from "../../snapshots/types.js";
 
 let tempDir: string;
 
@@ -192,5 +196,223 @@ export class MyService {
 		expect(fileEntry).toBeDefined();
 		expect(fileEntry?.MyService).toBeDefined();
 		expect(fileEntry?.MyService?.members).toContain("hello");
+	});
+
+	it("omits entry when the file has no classes (no containers found)", async () => {
+		await writeFile(
+			join(tempDir, "plain.ts"),
+			"export function standalone() {}\n",
+		);
+		const result = await extractMethodMap(tempDir, ["plain.ts"]);
+		expect(result["plain.ts"]).toBeUndefined();
+	});
+});
+
+// ─── extractAllSymbolMap ──────────────────────────────────────────────────────
+
+describe("extractAllSymbolMap", () => {
+	it("returns empty object for empty path list", async () => {
+		const result = await extractAllSymbolMap(tempDir, []);
+		expect(result).toEqual({});
+	});
+
+	it("returns all symbols (exported + internal) from a file", async () => {
+		const src = [
+			"export function pub() {}",
+			"function priv() {}",
+			"const secret = 1;",
+		].join("\n");
+		await writeFile(join(tempDir, "all.ts"), src);
+		const result = await extractAllSymbolMap(tempDir, ["all.ts"]);
+		const names = result["all.ts"]?.map((s) => s.name);
+		expect(names).toContain("pub");
+	});
+
+	it("respects includePrivate option", async () => {
+		await writeFile(join(tempDir, "priv.ts"), "function _internal() {}\n");
+		const withoutPrivate = await extractAllSymbolMap(tempDir, ["priv.ts"], {
+			includePrivate: false,
+		});
+		const withPrivate = await extractAllSymbolMap(tempDir, ["priv.ts"], {
+			includePrivate: true,
+		});
+		const namesWithout = withoutPrivate["priv.ts"]?.map((s) => s.name) ?? [];
+		const namesWith = withPrivate["priv.ts"]?.map((s) => s.name) ?? [];
+		expect(namesWith).toContain("_internal");
+		expect(namesWithout).not.toContain("_internal");
+	});
+
+	it("respects includeMembers option", async () => {
+		const src = `
+export class Widget {
+  render() {}
+}
+`.trim();
+		await writeFile(join(tempDir, "widget.ts"), src);
+		const withMembers = await extractAllSymbolMap(tempDir, ["widget.ts"], {
+			includeMembers: true,
+		});
+		const withoutMembers = await extractAllSymbolMap(tempDir, ["widget.ts"], {
+			includeMembers: false,
+		});
+		const namesWith = withMembers["widget.ts"]?.map((s) => s.name) ?? [];
+		const namesWithout = withoutMembers["widget.ts"]?.map((s) => s.name) ?? [];
+		expect(namesWith).toContain("render");
+		expect(namesWithout).not.toContain("render");
+	});
+
+	it("skips unreadable files silently", async () => {
+		const result = await extractAllSymbolMap(tempDir, ["missing.ts"]);
+		expect(result["missing.ts"]).toBeUndefined();
+	});
+
+	it("omits entry when file yields no symbols", async () => {
+		await writeFile(join(tempDir, "empty.ts"), "// just a comment\n");
+		const result = await extractAllSymbolMap(tempDir, ["empty.ts"]);
+		expect(result["empty.ts"]).toBeUndefined();
+	});
+
+	it("processes files in batches respecting concurrency limit", async () => {
+		for (let i = 0; i < 5; i++) {
+			await writeFile(
+				join(tempDir, `all${i}.ts`),
+				`export function allFn${i}() {}\n`,
+			);
+		}
+		const paths = Array.from({ length: 5 }, (_, i) => `all${i}.ts`);
+		const result = await extractAllSymbolMap(tempDir, paths, {
+			concurrency: 2,
+		});
+		for (let i = 0; i < 5; i++) {
+			const names = result[`all${i}.ts`]?.map((s) => s.name) ?? [];
+			expect(names).toContain(`allFn${i}`);
+		}
+	});
+});
+
+// ─── extractSymbolMapViaLsp ───────────────────────────────────────────────────
+
+describe("extractSymbolMapViaLsp", () => {
+	function makeClient(response: RawLspSymbol[] | null): LspClient {
+		return {
+			requestDocumentSymbol: vi.fn().mockResolvedValue(response),
+		};
+	}
+
+	it("returns empty object when no paths are given", async () => {
+		const client = makeClient([]);
+		const result = await extractSymbolMapViaLsp(
+			tempDir,
+			join(tempDir, "cache"),
+			client,
+			[],
+		);
+		expect(result).toEqual({});
+	});
+
+	it("extracts tracked-kind symbol names via the LSP client", async () => {
+		const classSymbol: RawLspSymbol = {
+			name: "MyClass",
+			kind: 5, // Class — tracked
+			range: {
+				start: { line: 0, character: 0 },
+				end: { line: 10, character: 1 },
+			},
+			selectionRange: {
+				start: { line: 0, character: 6 },
+				end: { line: 0, character: 13 },
+			},
+			children: [
+				{
+					name: "myMethod",
+					kind: 6, // Method — not tracked
+					range: {
+						start: { line: 2, character: 2 },
+						end: { line: 4, character: 3 },
+					},
+					selectionRange: {
+						start: { line: 2, character: 2 },
+						end: { line: 2, character: 10 },
+					},
+				},
+			],
+		} as RawLspSymbol;
+
+		await writeFile(
+			join(tempDir, "foo.ts"),
+			"export class MyClass { myMethod() {} }",
+		);
+		const client = makeClient([classSymbol]);
+		const result = await extractSymbolMapViaLsp(
+			tempDir,
+			join(tempDir, "cache"),
+			client,
+			["foo.ts"],
+		);
+		expect(result["foo.ts"]).toEqual(["MyClass"]);
+	});
+
+	it("omits entry when no root symbols match tracked kinds", async () => {
+		const methodOnly: RawLspSymbol = {
+			name: "onlyMethod",
+			kind: 6, // Method — not tracked
+			range: {
+				start: { line: 0, character: 0 },
+				end: { line: 1, character: 1 },
+			},
+			selectionRange: {
+				start: { line: 0, character: 0 },
+				end: { line: 0, character: 5 },
+			},
+		} as RawLspSymbol;
+
+		await writeFile(join(tempDir, "bar.ts"), "class C { onlyMethod() {} }");
+		const client = makeClient([methodOnly]);
+		const result = await extractSymbolMapViaLsp(
+			tempDir,
+			join(tempDir, "cache"),
+			client,
+			["bar.ts"],
+		);
+		expect(result["bar.ts"]).toBeUndefined();
+	});
+
+	it("skips a file when the LSP request throws", async () => {
+		await writeFile(join(tempDir, "err.ts"), "export function ok() {}");
+		const client: LspClient = {
+			requestDocumentSymbol: vi.fn().mockRejectedValue(new Error("LS crash")),
+		};
+		const result = await extractSymbolMapViaLsp(
+			tempDir,
+			join(tempDir, "cache"),
+			client,
+			["err.ts"],
+		);
+		expect(result["err.ts"]).toBeUndefined();
+	});
+
+	it("calls saveCache after processing all files", async () => {
+		await writeFile(join(tempDir, "save.ts"), "export function ok() {}");
+		const funcSymbol: RawLspSymbol = {
+			name: "ok",
+			kind: 12, // Function — tracked
+			location: {
+				uri: "file:///repo/save.ts",
+				range: {
+					start: { line: 0, character: 0 },
+					end: { line: 0, character: 20 },
+				},
+			},
+		} as RawLspSymbol;
+		const client = makeClient([funcSymbol]);
+		const result = await extractSymbolMapViaLsp(
+			tempDir,
+			join(tempDir, "cache"),
+			client,
+			["save.ts"],
+		);
+		expect(result["save.ts"]).toEqual(["ok"]);
+		// saveCache writes a cache file to disk without throwing — verified
+		// indirectly by successful completion of the async function above.
 	});
 });

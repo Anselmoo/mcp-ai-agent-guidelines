@@ -671,9 +671,12 @@ describe("model-router", () => {
 		}
 	});
 
-	it("hasParallelWorkload and collectWorkflowSkillIds assertNever on unknown step kind", () => {
+	it("collectWorkflowSkillIds assertNever on unknown step kind", () => {
 		// Passing a step with an invalid kind via type cast triggers the default switch case
-		// (assertNever), covering switch[7] at lines 220 and 249
+		// (assertNever) inside collectWorkflowSkillIds, which chooseInstructionModel always
+		// runs first via summarizeInstructionRouting — so it throws here before
+		// shouldUseStrongParallelSynthesisModel ever gets a chance to call hasParallelWorkload
+		// on the same steps array (that default case is therefore unreachable in practice).
 		const router = new ModelRouter();
 		const badStep = { kind: "unknown-step-kind", label: "bad" } as never;
 		const instructionWithBadStep: InstructionManifestEntry = {
@@ -688,8 +691,6 @@ describe("model-router", () => {
 			chainTo: [],
 			preferredModelClass: "free",
 		};
-		// chooseInstructionModel calls hasParallelWorkload (line 220) and collectWorkflowSkillIds (line 249)
-		// both of which hit the default assertNever case for the unknown kind
 		expect(() =>
 			router.chooseInstructionModel(instructionWithBadStep, {
 				request: "test",

@@ -355,4 +355,61 @@ describe("orchestration-config-service", () => {
 		expect(rendered).toContain("strict_mode = false");
 		expect(rendered).toContain("[environment]");
 	});
+
+	it("skips patch keys whose value is explicitly undefined when merging record objects", () => {
+		const config = createDefaultOrchestrationConfig();
+		const firstProfileKey = Object.keys(config.profiles)[0];
+		expect(firstProfileKey).toBeDefined();
+		const profileKey = firstProfileKey as string;
+		const originalProfile = config.profiles[profileKey];
+
+		// Bypass patch-schema parsing so we can exercise the raw
+		// `patchValue === undefined` guard inside mergeRecordObjects directly.
+		const merged = mergeOrchestrationConfig(config, {
+			profiles: {
+				[profileKey]: undefined,
+			},
+		} as unknown as Parameters<typeof mergeOrchestrationConfig>[1]);
+
+		expect(merged.profiles[profileKey]).toEqual(originalProfile);
+	});
+
+	it("classifies strong_ and reviewer_ prefixed aliases via the role-name fast path", () => {
+		const config = createDefaultOrchestrationConfig();
+		config.models.strong_primary = {
+			id: "strong-role-model",
+			provider: "anthropic",
+			available: true,
+			context_window: 200_000,
+		};
+		config.models.reviewer_primary = {
+			id: "reviewer-role-model",
+			provider: "anthropic",
+			available: true,
+			context_window: 200_000,
+		};
+
+		const derived = deriveModelAvailabilityConfig(config);
+
+		expect(derived.models["strong-role-model"]?.modelClass).toBe("strong");
+		expect(derived.models["reviewer-role-model"]?.modelClass).toBe("reviewer");
+		expect(derived.classes?.strong).toContain("strong-role-model");
+		expect(derived.classes?.reviewer).toContain("reviewer-role-model");
+	});
+
+	it("falls back to empty capability arrays when classifying aliases with no capabilities configured", () => {
+		const config = createDefaultOrchestrationConfig();
+		config.capabilities = {};
+		config.models.alias_without_hint = {
+			id: "vendor-uncategorized",
+			provider: "openai",
+			available: true,
+			context_window: 32_000,
+		};
+
+		const derived = deriveModelAvailabilityConfig(config);
+
+		expect(derived.models["vendor-uncategorized"]?.modelClass).toBe("free");
+		expect(derived.classes?.free).toContain("vendor-uncategorized");
+	});
 });

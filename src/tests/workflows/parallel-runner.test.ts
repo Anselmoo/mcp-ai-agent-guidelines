@@ -176,4 +176,131 @@ describe("parallel-runner", () => {
 		expect(executeStep).toHaveBeenCalledTimes(2);
 		expect(result.summary).toBe("1 parallel step(s) completed.");
 	});
+
+	it("drops a fulfilled result whose value is undefined", async () => {
+		const steps: WorkflowStep[] = [
+			{ kind: "invokeSkill", label: "undefined-step", skillId: "undefined" },
+		];
+		// executeStep resolves but yields no record — exercises the branch where
+		// settled[i] is fulfilled yet result.value is undefined, so neither the
+		// success nor the failure path pushes a child record.
+		const executeStep = vi.fn(
+			async () => undefined as unknown as StepExecutionRecord,
+		);
+
+		const result = await runParallelSteps(
+			"undefined-value-batch",
+			steps,
+			input,
+			executeStep,
+			runtime,
+		);
+
+		expect(result).toEqual({
+			label: "undefined-value-batch",
+			kind: "parallel",
+			summary: "0 parallel step(s) completed.",
+			children: [],
+		});
+	});
+
+	it("falls back to synthetic label/kind when the step entry itself is missing", async () => {
+		// Use a sparse-like steps array where the entry at the failing index is
+		// undefined, forcing the `steps[i]?.label ?? ...` / `steps[i]?.kind ?? ...`
+		// fallback branches to be exercised.
+		const steps = [undefined] as unknown as WorkflowStep[];
+		const executeStep = vi.fn(async () => {
+			throw new Error("missing step boom");
+		});
+
+		const result = await runParallelSteps(
+			"missing-step-batch",
+			steps,
+			input,
+			executeStep,
+			runtime,
+		);
+
+		expect(result.summary).toContain("step[0]");
+		expect(result.children).toEqual([
+			{
+				label: "step[0]",
+				kind: "invokeSkill",
+				summary: "[FAILED] missing step boom",
+			},
+		]);
+	});
+
+	it("respects a custom isRetryable predicate that forbids retrying", async () => {
+		vi.spyOn(console, "warn").mockImplementation(() => {});
+		const step: WorkflowStep = {
+			kind: "invokeSkill",
+			label: "non-retryable-step",
+			skillId: "non-retryable",
+		};
+		const executeStep = vi.fn(async () => {
+			throw new Error("permanent failure");
+		});
+
+		const result = await runParallelSteps(
+			"custom-not-retryable-batch",
+			[step],
+			input,
+			executeStep,
+			runtime,
+			{
+				retryConfig: {
+					maxAttempts: 3,
+					initialDelayMs: 0,
+					jitterFraction: 0,
+					isRetryable: () => false,
+				},
+			},
+		);
+
+		// Custom predicate rejects the error, so no retry should occur.
+		expect(executeStep).toHaveBeenCalledTimes(1);
+		expect(result.summary).toContain("Failures:");
+		expect(result.summary).toContain("non-retryable-step");
+	});
+
+	it("respects a custom isRetryable predicate that allows retrying", async () => {
+		vi.spyOn(console, "warn").mockImplementation(() => {});
+		let attempts = 0;
+		const step: WorkflowStep = {
+			kind: "invokeSkill",
+			label: "custom-retryable-step",
+			skillId: "custom-retryable",
+		};
+		const executeStep = vi.fn(async () => {
+			attempts += 1;
+			if (attempts === 1) {
+				throw new Error("recoverable failure");
+			}
+			return {
+				label: "custom-retryable-step",
+				kind: "invokeSkill" as const,
+				summary: "recovered",
+			};
+		});
+
+		const result = await runParallelSteps(
+			"custom-retryable-batch",
+			[step],
+			input,
+			executeStep,
+			runtime,
+			{
+				retryConfig: {
+					maxAttempts: 2,
+					initialDelayMs: 0,
+					jitterFraction: 0,
+					isRetryable: () => true,
+				},
+			},
+		);
+
+		expect(executeStep).toHaveBeenCalledTimes(2);
+		expect(result.summary).toBe("1 parallel step(s) completed.");
+	});
 });

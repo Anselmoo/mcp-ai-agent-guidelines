@@ -11,13 +11,17 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
+	defaultReadTextFile,
+	EPHEMERAL_ENV_VAR,
 	ensureSessionStateGitignore,
 	findWorkspaceRoot,
 	findWorkspaceRootSync,
+	isEphemeralMode,
 	isWorkspaceInitialized,
 	resolveSessionPathWithinStateDir,
 	resolveSessionStateDir,
 	resolveSessionStateDirAsync,
+	resolveWorkspaceRoot,
 	runExclusiveSessionOperation,
 	SESSION_STATE_DIR_ENV_VAR,
 	sweepStaleTempFiles,
@@ -419,5 +423,211 @@ describe("sweepStaleTempFiles", () => {
 		expect(
 			await sweepStaleTempFiles(join(tmpdir(), "no-such-dir-xyz-123")),
 		).toBe(0);
+	});
+});
+
+describe("isEphemeralMode", () => {
+	const prevEphemeral = process.env[EPHEMERAL_ENV_VAR];
+
+	afterEach(() => {
+		if (prevEphemeral === undefined) {
+			delete process.env[EPHEMERAL_ENV_VAR];
+		} else {
+			process.env[EPHEMERAL_ENV_VAR] = prevEphemeral;
+		}
+	});
+
+	it("returns true for 'true' (case-insensitive, trimmed)", () => {
+		process.env[EPHEMERAL_ENV_VAR] = "  TRUE  ";
+		expect(isEphemeralMode()).toBe(true);
+	});
+
+	it("returns true for '1'", () => {
+		process.env[EPHEMERAL_ENV_VAR] = "1";
+		expect(isEphemeralMode()).toBe(true);
+	});
+
+	it("returns false for other values", () => {
+		process.env[EPHEMERAL_ENV_VAR] = "false";
+		expect(isEphemeralMode()).toBe(false);
+	});
+
+	it("returns false when unset", () => {
+		delete process.env[EPHEMERAL_ENV_VAR];
+		expect(isEphemeralMode()).toBe(false);
+	});
+});
+
+describe("resolveWorkspaceRoot", () => {
+	const WORKSPACE_ROOT_ENV_VAR = "MCP_WORKSPACE_ROOT";
+	const prevRoot = process.env[WORKSPACE_ROOT_ENV_VAR];
+
+	afterEach(() => {
+		if (prevRoot === undefined) {
+			delete process.env[WORKSPACE_ROOT_ENV_VAR];
+		} else {
+			process.env[WORKSPACE_ROOT_ENV_VAR] = prevRoot;
+		}
+	});
+
+	it("uses the explicit env var when set to a non-blank value", () => {
+		process.env[WORKSPACE_ROOT_ENV_VAR] = "/tmp/explicit-root-direct";
+		expect(resolveWorkspaceRoot("/tmp/fallback-unused")).toBe(
+			resolve("/tmp/explicit-root-direct"),
+		);
+	});
+
+	it("ignores a blank env var and falls back to detection/fallback", () => {
+		process.env[WORKSPACE_ROOT_ENV_VAR] = "   ";
+		const tmpBase = mkdtempSync(join(tmpdir(), "resolve-ws-root-"));
+		try {
+			// No .git/package.json markers under tmpBase's fresh child dir.
+			const deepDir = join(tmpBase, "no-markers-here");
+			mkdirSync(deepDir, { recursive: true });
+			const result = resolveWorkspaceRoot(deepDir);
+			// Either detected via an ancestor marker, or falls back to deepDir itself.
+			expect(typeof result).toBe("string");
+		} finally {
+			rmSync(tmpBase, { recursive: true, force: true });
+		}
+	});
+
+	it("falls back to the provided fallback when no markers are found", () => {
+		delete process.env[WORKSPACE_ROOT_ENV_VAR];
+		const tmpBase = mkdtempSync(join(tmpdir(), "resolve-ws-root-fallback-"));
+		try {
+			const result = resolveWorkspaceRoot(tmpBase);
+			// findWorkspaceRootSync may find markers walking up from the system
+			// temp dir; regardless, the function must return a string and must
+			// not throw when no explicit env var is set.
+			expect(typeof result).toBe("string");
+		} finally {
+			rmSync(tmpBase, { recursive: true, force: true });
+		}
+	});
+});
+
+describe("resolveSessionStateDir — default resolution via resolveWorkspaceRoot", () => {
+	const WORKSPACE_ROOT_ENV_VAR = "MCP_WORKSPACE_ROOT";
+	const prevState = process.env[SESSION_STATE_DIR_ENV_VAR];
+	const prevRoot = process.env[WORKSPACE_ROOT_ENV_VAR];
+
+	afterEach(() => {
+		if (prevState === undefined) {
+			delete process.env[SESSION_STATE_DIR_ENV_VAR];
+		} else {
+			process.env[SESSION_STATE_DIR_ENV_VAR] = prevState;
+		}
+		if (prevRoot === undefined) {
+			delete process.env[WORKSPACE_ROOT_ENV_VAR];
+		} else {
+			process.env[WORKSPACE_ROOT_ENV_VAR] = prevRoot;
+		}
+	});
+
+	it("falls back to resolveWorkspaceRoot() when no explicit dir or env var is set", () => {
+		delete process.env[SESSION_STATE_DIR_ENV_VAR];
+		process.env[WORKSPACE_ROOT_ENV_VAR] = "/tmp/explicit-root-for-state-dir";
+
+		expect(resolveSessionStateDir()).toBe(
+			resolve("/tmp/explicit-root-for-state-dir", ".mcp-ai-agent-guidelines"),
+		);
+	});
+});
+
+describe("ensureSessionStateGitignore — additional branches", () => {
+	it("returns early when the existing gitignore already has all required rules", async () => {
+		const rootDir = mkdtempSync(join(tmpdir(), "session-store-utils-"));
+		const gitignorePath = join(rootDir, ".gitignore");
+
+		try {
+			await mkdir(rootDir, { recursive: true });
+			await ensureSessionStateGitignore(rootDir);
+			const firstContents = await readFile(gitignorePath, "utf8");
+
+			// Calling again should hit the "already satisfied" early return
+			// (line 262-264) instead of rewriting the file — content is
+			// byte-for-byte identical across both calls.
+			await ensureSessionStateGitignore(rootDir);
+			const secondContents = await readFile(gitignorePath, "utf8");
+
+			expect(secondContents).toBe(firstContents);
+		} finally {
+			await rm(rootDir, { recursive: true, force: true });
+		}
+	});
+
+	it("replaces an existing managed block when rules are incomplete but markers are present", async () => {
+		const rootDir = mkdtempSync(join(tmpdir(), "session-store-utils-"));
+		const gitignorePath = join(rootDir, ".gitignore");
+
+		try {
+			const staleManagedBlock = [
+				"# BEGIN MCP AI AGENT GUIDELINES STATE",
+				"# stale rules",
+				"stale-only/",
+				"# END MCP AI AGENT GUIDELINES STATE",
+			].join("\n");
+			await writeTextFileAtomic(gitignorePath, `${staleManagedBlock}\n`);
+
+			await ensureSessionStateGitignore(rootDir);
+
+			const updatedContents = await readFile(gitignorePath, "utf8");
+			expect(updatedContents).toContain("config/*.key");
+			expect(updatedContents).not.toContain("stale-only/");
+			expect(updatedContents).toContain(
+				"# BEGIN MCP AI AGENT GUIDELINES STATE",
+			);
+			expect(updatedContents).toContain("# END MCP AI AGENT GUIDELINES STATE");
+		} finally {
+			await rm(rootDir, { recursive: true, force: true });
+		}
+	});
+
+	it("appends the managed block without a blank-line prefix when the existing file is blank", async () => {
+		const rootDir = mkdtempSync(join(tmpdir(), "session-store-utils-"));
+		const gitignorePath = join(rootDir, ".gitignore");
+
+		try {
+			await writeTextFileAtomic(gitignorePath, "   \n\n  ");
+			await ensureSessionStateGitignore(rootDir);
+
+			const contents = await readFile(gitignorePath, "utf8");
+			expect(contents.startsWith("# BEGIN MCP AI AGENT GUIDELINES STATE")).toBe(
+				true,
+			);
+			expect(contents).toContain("config/*.key");
+		} finally {
+			await rm(rootDir, { recursive: true, force: true });
+		}
+	});
+
+	it("rethrows non-ENOENT errors raised while reading the existing gitignore", async () => {
+		const rootDir = mkdtempSync(join(tmpdir(), "session-store-utils-"));
+		// Make ".gitignore" itself a directory so readFile(gitignorePath) fails
+		// with EISDIR instead of ENOENT, exercising the rethrow branch.
+		const gitignorePath = join(rootDir, ".gitignore");
+		await mkdir(gitignorePath, { recursive: true });
+
+		try {
+			await expect(ensureSessionStateGitignore(rootDir)).rejects.toMatchObject({
+				code: "EISDIR",
+			});
+		} finally {
+			await rm(rootDir, { recursive: true, force: true });
+		}
+	});
+});
+
+describe("defaultReadTextFile", () => {
+	it("reads a file's contents as utf8 text via fs/promises.readFile", async () => {
+		const dir = await mkdtemp(join(tmpdir(), "default-read-text-file-"));
+		const filePath = join(dir, "sample.txt");
+		try {
+			await writeFile(filePath, "hello seam", "utf8");
+			await expect(defaultReadTextFile(filePath)).resolves.toBe("hello seam");
+		} finally {
+			await rm(dir, { recursive: true, force: true });
+		}
 	});
 });

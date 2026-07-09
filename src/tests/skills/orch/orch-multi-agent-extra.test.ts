@@ -181,4 +181,115 @@ describe("orch-multi-agent extra branch coverage", () => {
 	it("asks for more detail when request is empty", async () => {
 		await expectInsufficientSignalHandling(skillModule);
 	});
+
+	it("asks for more detail when request has no keywords and no context", async () => {
+		// Non-empty request but only stop words, so extractRequestSignals yields
+		// zero keywords; with no context this must hit the insufficient-signal
+		// branch guarded by (signals.keywords.length === 0 && !signals.hasContext).
+		const result = await skillModule.run(
+			{ request: "the and or" },
+			createMockSkillRuntime(),
+		);
+		expect(result.recommendations[0]).toMatchObject({
+			title: "Provide more detail",
+		});
+	});
+
+	it("encodes success criteria as system-level acceptance tests when provided", async () => {
+		await expectSkillGuidance(
+			skillModule,
+			{
+				request:
+					"design a hierarchical multi-agent system for report synthesis",
+				successCriteria:
+					"the assembled report matches the source data with no omissions",
+				options: {
+					agentArchitecture: "hierarchical",
+				},
+			},
+			{
+				summaryIncludes: ["topology: hierarchical"],
+				detailIncludes: [
+					"Encode the success criteria as system-level acceptance tests",
+					"the assembled report matches the source data with no omissions",
+				],
+				recommendationCountAtLeast: 3,
+			},
+		);
+	});
+
+	it("bootstraps the topology from provided context when context is present", async () => {
+		await expectSkillGuidance(
+			skillModule,
+			{
+				request: "design a pipeline of agents to process incoming documents",
+				context:
+					"prior run produced a partial document index that should be reused",
+				options: {
+					agentArchitecture: "pipeline",
+				},
+			},
+			{
+				summaryIncludes: ["topology: pipeline"],
+				detailIncludes: [
+					"Bootstrap the agent topology from the provided context",
+				],
+				recommendationCountAtLeast: 3,
+			},
+		);
+	});
+
+	it("infers event-driven communication from keywords when no option is set", async () => {
+		// No options.communicationPattern is provided, so the handler must infer
+		// it from the request text via the /event|publish|subscribe|async/ regex
+		// rather than defaulting to message-passing.
+		await expectSkillGuidance(
+			skillModule,
+			{
+				request:
+					"agents publish and subscribe to events across the coordination bus",
+			},
+			{
+				summaryIncludes: ["communication: event-driven"],
+				recommendationCountAtLeast: 3,
+			},
+		);
+	});
+
+	it("infers shared-state communication from keywords when no option is set", async () => {
+		// No options.communicationPattern is provided; the request mentions
+		// "shared" / "state" / "store" but not event keywords, so inference
+		// must fall through to the shared-state branch.
+		await expectSkillGuidance(
+			skillModule,
+			{
+				request: "agents read and write a shared state store for coordination",
+			},
+			{
+				summaryIncludes: ["communication: shared-state"],
+				recommendationCountAtLeast: 3,
+			},
+		);
+	});
+
+	it("falls back to 'the requested goal' when the request has no keywords but context carries signal", async () => {
+		// summarizeKeywords() only looks at the request text, not context. A
+		// request made entirely of stop words yields zero keywords, so the
+		// `.join(", ") || "the requested goal"` fallback must fire — while a
+		// non-empty context still satisfies the insufficient-signal gate.
+		await expectSkillGuidance(
+			skillModule,
+			{
+				request: "the and or",
+				context:
+					"the system must coordinate several agents across a shared pipeline",
+			},
+			{
+				detailIncludes: [
+					'Design the multi-agent system for "the requested goal"',
+				],
+				recommendationCountAtLeast: 3,
+			},
+		);
+	});
 });

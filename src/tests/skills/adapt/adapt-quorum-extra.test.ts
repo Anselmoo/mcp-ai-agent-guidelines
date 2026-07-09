@@ -286,4 +286,75 @@ describe("adapt-quorum-extra", () => {
 		// When no domain rules match, baseline orientation fallback details are added
 		expect(detailText).toContain("Establish three foundational components");
 	});
+
+	it("returns stage-1 insufficient signal when request has zero extractable keywords and no context", async () => {
+		// "is are the" is a non-empty string (passes zod min(1)) but every word is
+		// a stop word / too short, so extractRequestSignals yields keywords.length === 0.
+		// With no context field, this hits the completely-vague Stage 1 branch
+		// distinct from the invalid-input path exercised by an empty request string.
+		const result = await skillModule.run(
+			{ request: "is are the" },
+			createMockSkillRuntime(),
+		);
+		expect(result.executionMode).toBe("capability");
+		expect(result.summary).toContain(
+			"Quorum Coordinator needs a description of the agent fleet",
+		);
+		expect(result.recommendations[0]?.title).toBe("Provide more detail");
+	});
+
+	it("detects quorum domain signal via Cluster B (availability/load co-occurring with agent/task vocabulary)", async () => {
+		// Avoids Cluster A vocabulary (quorum, signal_sum, decentralis*, etc.) and
+		// Cluster C vocabulary (threshold, broadcast, consensus, etc.) so only
+		// Cluster B's availability+agent-context pairing can classify the request.
+		const result = await skillModule.run(
+			{
+				request: "idle agents waiting for task pickup",
+			},
+			createMockSkillRuntime(),
+		);
+		expect(result.executionMode).toBe("capability");
+		expect(result.summary).not.toContain("Provide more detail");
+		expect(result.summary).toContain("Quorum Coordinator produced");
+	});
+
+	it("detects quorum domain signal via Cluster C (threshold/broadcast in a coordination context)", async () => {
+		// Avoids Cluster A vocabulary (no "quorum") and Cluster B vocabulary (no
+		// availability/load terms), so only Cluster C's threshold/broadcast +
+		// agent/task pairing can classify the request.
+		const result = await skillModule.run(
+			{
+				request: "broadcast this work item and assign it to the team",
+			},
+			createMockSkillRuntime(),
+		);
+		expect(result.executionMode).toBe("capability");
+		expect(result.summary).not.toContain("Provide more detail");
+		expect(result.summary).toContain("Quorum Coordinator produced");
+	});
+
+	it("infers escalate fallback behaviour from request text without an explicit option", async () => {
+		// "escalat" as a bare stem never matches real English words (escalate,
+		// escalating) due to the \b word boundary, so inference relies on the
+		// regex's other alternatives: "central" / "hand off" / "backup scheduler".
+		const result = await skillModule.run(
+			{
+				request:
+					"hand off unclaimed tasks to a central backup scheduler when quorum does not form",
+			},
+			createMockSkillRuntime(),
+		);
+		expect(result.summary).toContain("fallback: escalate");
+	});
+
+	it("infers retry fallback behaviour from request text without an explicit option", async () => {
+		const result = await skillModule.run(
+			{
+				request:
+					"re-emit the quorum signal after an interval when no agents respond",
+			},
+			createMockSkillRuntime(),
+		);
+		expect(result.summary).toContain("fallback: retry");
+	});
 });

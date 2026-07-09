@@ -510,6 +510,28 @@ describe("OrchestrationRuntime", () => {
 		expect(result.summary).toContain("Test execution");
 	});
 
+	it("enqueues work without priority options when priority scheduling is disabled", async () => {
+		const runtime = new OrchestrationRuntime(mockRegistry, mockRuntime, {
+			maxConcurrency: 1,
+			defaultTimeout: 5000,
+			enableCaching: false,
+			enablePlanning: false,
+			enablePriority: false,
+		});
+		const runtimeInternals =
+			runtime as unknown as OrchestrationRuntimeInternals;
+		const addSpy = vi.spyOn(runtimeInternals.queue, "add");
+
+		const result = await runtime.executeSkill("test-skill", {
+			request: "no priority scheduling",
+		});
+
+		expect(result.summary).toContain("no priority scheduling");
+		expect(addSpy).toHaveBeenCalledWith(expect.any(Function), undefined);
+
+		await runtime.shutdown();
+	});
+
 	it("should handle execution priorities", async () => {
 		const promises = [
 			orchestrationRuntime.executeSkill("test-skill", {
@@ -1191,6 +1213,26 @@ describe("OrchestrationRuntime", () => {
 		]);
 	});
 
+	// NOTE: three branches in executeSkillBatch's dependency-resolution loop are
+	// intentionally not covered here because they are unreachable through the
+	// public API, guarded by the algorithm's own invariants:
+	//   - line 392 `(skill.dependencies ?? []).some(...)` fallback ([] path):
+	//     `buildDependencyGraph` normalizes `dependencies || []` up front, so any
+	//     skill with omitted/undefined `dependencies` is trivially "ready" (all
+	//     zero dependencies are satisfied) and gets executed in the very first
+	//     batch — it can never still be sitting in `remaining` with undefined
+	//     `dependencies` when this filter runs.
+	//   - line 398 (same `?? []` fallback): only skills that pass the line-392
+	//     `.some(...)` check reach this line, which requires a non-empty,
+	//     non-nullish `dependencies` array containing a failed dependency id —
+	//     so `dependencies` can never be nullish here either.
+	//   - line 433 `if (remaining.length > 0)` false path: this code only runs
+	//     when `blockedByFailedDependencies.length === 0` (line 396's `continue`
+	//     wasn't taken), and the enclosing `while` loop's own condition
+	//     guarantees `completedSkills.size + failedSkills.size < skills.length`
+	//     whenever `readySkills.length === 0`, so `remaining` (skills excluding
+	//     completed/failed) is always non-empty at this point.
+
 	it("wraps non-failFast batch failures in domain errors", async () => {
 		const registry = new SkillRegistry({
 			modules: [],
@@ -1336,6 +1378,46 @@ describe("OrchestrationRuntime", () => {
 		await runtime.shutdown();
 	});
 
+	it("swallows an unexpected batch-loop error when failFast is disabled", async () => {
+		// The per-skill catch handler only rethrows when `failFast` is true, but
+		// a failure inside that handler itself (here, the observability log call)
+		// still propagates to `Promise.all`'s rejection and reaches the outer
+		// try/catch around the batch loop. With failFast disabled, that outer
+		// catch must swallow the error instead of rethrowing it.
+		const registry = new SkillRegistry({
+			modules: [],
+			workspace: null,
+		});
+		const runtime = new OrchestrationRuntime(registry, mockRuntime, {
+			maxConcurrency: 1,
+			defaultTimeout: 5000,
+			enableCaching: false,
+			enablePlanning: false,
+			retry: { attempts: 0 },
+		});
+		const runtimeInternals =
+			runtime as unknown as OrchestrationRuntimeInternals;
+		vi.spyOn(runtimeInternals.observabilityManager, "log").mockImplementation(
+			(level) => {
+				if (level === "warn") {
+					throw new Error("logging failed unexpectedly");
+				}
+			},
+		);
+
+		// The batch resolves normally (the outer catch swallowed the unexpected
+		// logging error) rather than rejecting, even though the individual skill
+		// failed and the log call inside its handler threw.
+		await expect(
+			runtime.executeSkillBatch([
+				{ skillId: "missing-skill", input: { request: "no failfast" } },
+			]),
+		).resolves.toBeInstanceOf(Map);
+
+		vi.spyOn(runtimeInternals.observabilityManager, "log").mockRestore();
+		await runtime.shutdown();
+	});
+
 	it("converts non-Error retry failures into Error instances", async () => {
 		const runtime = new OrchestrationRuntime(mockRegistry, mockRuntime, {
 			maxConcurrency: 1,
@@ -1364,6 +1446,38 @@ describe("OrchestrationRuntime", () => {
 				dependencies: [],
 			}),
 		).rejects.toThrow("plain failure");
+		await runtime.shutdown();
+	});
+
+	it("falls back to a generic error when the retry loop runs zero attempts", async () => {
+		// retry.attempts of -1 makes the `attempt <= this.config.retry.attempts`
+		// loop condition false on the very first check, so the loop body never
+		// runs and `lastError` is never assigned — exercising the
+		// `lastError || new Error(...)` fallback.
+		const runtime = new OrchestrationRuntime(mockRegistry, mockRuntime, {
+			maxConcurrency: 1,
+			defaultTimeout: 500,
+			enableCaching: false,
+			enablePlanning: false,
+			retry: {
+				attempts: -1,
+				backoffMs: 0,
+				maxBackoffMs: 0,
+			},
+		});
+		const runtimeInternals =
+			runtime as unknown as OrchestrationRuntimeInternals;
+
+		await expect(
+			runtimeInternals.executeWithRetry("zero-attempt-execution", {
+				skillId: "test-skill",
+				input: { request: "zero attempts" },
+				timeout: 10,
+				retryCount: 0,
+				startTime: Date.now(),
+				dependencies: [],
+			}),
+		).rejects.toThrow("Execution failed after all retries");
 		await runtime.shutdown();
 	});
 

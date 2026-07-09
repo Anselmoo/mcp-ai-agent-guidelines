@@ -8,9 +8,29 @@ import {
 	validateEnvironment,
 } from "../../validation/environment.js";
 
+// Controllable existsSync failure switch used to exercise the outer
+// catch-block in validateEnvironment(), which only triggers on genuinely
+// unexpected exceptions (not validation failures). node:fs is an ESM
+// namespace object that vi.spyOn cannot redefine directly, so it is mocked
+// here with a toggle that individual tests can flip on/off.
+const existsSyncFailure = { active: false };
+vi.mock("node:fs", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("node:fs")>();
+	return {
+		...actual,
+		existsSync: (...args: Parameters<typeof actual.existsSync>) => {
+			if (existsSyncFailure.active) {
+				throw new Error("boom: filesystem unavailable");
+			}
+			return actual.existsSync(...args);
+		},
+	};
+});
+
 const ORIGINAL_ENV = { ...process.env };
 afterEach(() => {
 	process.env = { ...ORIGINAL_ENV };
+	existsSyncFailure.active = false;
 	vi.restoreAllMocks();
 });
 
@@ -180,5 +200,143 @@ describe("environment", () => {
 			"Environment validation failed in strict mode. Exiting...",
 		);
 		expect(exitSpy).toHaveBeenCalledWith(1);
+	});
+
+	it("falls back to the default orchestration config path when unset", () => {
+		process.env.VALIDATION_MODE = "advisory";
+		delete process.env.MCP_ORCHESTRATION_PATH;
+
+		const result = validateEnvironment();
+
+		expect(result.config?.orchestrationConfigPath).toBe(
+			ORCHESTRATION_CONFIG_RELATIVE_PATH,
+		);
+	});
+
+	it("defaults NODE_ENV to development when loading dotenv files with it unset", () => {
+		delete process.env.NODE_ENV;
+		process.env.VALIDATION_MODE = "advisory";
+		process.env.MCP_ORCHESTRATION_PATH = ORCHESTRATION_CONFIG_RELATIVE_PATH;
+
+		const result = validateEnvironment();
+
+		expect(result.success).toBe(true);
+		expect(result.config?.nodeEnv).toBe("development");
+	});
+
+	it("flags an orchestration config with no declared models", () => {
+		const tempDir = mkdtempSync(join(tmpdir(), "environment-validation-"));
+		const configPath = join(tempDir, "orchestration.toml");
+		process.env.NODE_ENV = "development";
+		process.env.VALIDATION_MODE = "strict";
+		process.env.MCP_ORCHESTRATION_PATH = configPath;
+
+		try {
+			writeFileSync(
+				configPath,
+				[
+					"[environment]",
+					"strict_mode = false",
+					"default_max_context = 128000",
+					"enable_cost_tracking = true",
+					"",
+					"[models]",
+					"",
+					"[capabilities]",
+					"",
+					"[profiles]",
+					"",
+					"[routing.domains]",
+					"",
+					"[orchestration.patterns]",
+					"",
+					"[resilience]",
+					"rate_limit_backoff_ms = 2000",
+					"auto_escalate_on_consecutive_failures = 2",
+					"max_escalation_depth = 3",
+					"",
+					"[cache]",
+					"default_ttl_seconds = 300",
+					"",
+					"[cache.profile_overrides]",
+				].join("\n"),
+				"utf8",
+			);
+
+			const result = validateEnvironment();
+
+			expect(result.success).toBe(false);
+			expect(
+				result.errors.some((error) =>
+					error.includes("Orchestration config missing model declarations"),
+				),
+			).toBe(true);
+		} finally {
+			rmSync(tempDir, { recursive: true, force: true });
+		}
+	});
+
+	it("surfaces production warnings only for the conditions that are actually true", () => {
+		process.env.NODE_ENV = "production";
+		process.env.VALIDATION_MODE = "disabled";
+		process.env.MCP_ORCHESTRATION_PATH = ORCHESTRATION_CONFIG_RELATIVE_PATH;
+		process.env.ANTHROPIC_API_KEY = "test-key";
+		process.env.DEBUG_SKILL_EXECUTION = "false";
+		process.env.ALLOW_FILE_OPERATIONS = "false";
+
+		const result = validateEnvironment();
+
+		expect(result.success).toBe(true);
+		expect(result.warnings).not.toContain(
+			"No API keys configured - models may not work",
+		);
+		expect(result.warnings).not.toContain(
+			"DEBUG_SKILL_EXECUTION enabled in production",
+		);
+		expect(result.warnings).not.toContain(
+			"File operations enabled in production - review security implications",
+		);
+	});
+
+	it("wraps unexpected exceptions from environment loading as a validation error", () => {
+		process.env.VALIDATION_MODE = "advisory";
+		process.env.MCP_ORCHESTRATION_PATH = ORCHESTRATION_CONFIG_RELATIVE_PATH;
+		existsSyncFailure.active = true;
+
+		const result = validateEnvironment();
+
+		expect(result.success).toBe(false);
+		expect(
+			result.errors.some((error) =>
+				error.includes(
+					"Environment validation failed: boom: filesystem unavailable",
+				),
+			),
+		).toBe(true);
+		expect(result.config).toBeUndefined();
+	});
+
+	it("recovers to the default config when an unexpected exception occurs but advisory mode is requested via env", () => {
+		process.env.NODE_ENV = "development";
+		process.env.VALIDATION_MODE = "advisory";
+		process.env.MCP_ORCHESTRATION_PATH = ORCHESTRATION_CONFIG_RELATIVE_PATH;
+		delete process.env.VITEST;
+		existsSyncFailure.active = true;
+		const consoleErrorSpy = vi
+			.spyOn(console, "error")
+			.mockImplementation(() => {});
+
+		const config = initializeEnvironment();
+
+		expect(config).toMatchObject({
+			nodeEnv: "development",
+			validationMode: "advisory",
+		});
+		expect(consoleErrorSpy).toHaveBeenCalledWith(
+			expect.stringContaining("Environment validation failed:"),
+		);
+		expect(consoleErrorSpy).toHaveBeenCalledWith(
+			"Continuing in advisory mode with default configuration...",
+		);
 	});
 });

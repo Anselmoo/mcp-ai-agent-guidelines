@@ -4,8 +4,11 @@ import {
 	anchorStateToClientRoots,
 	createRequestHandlers,
 	createRuntime,
+	createServer,
 	isDirectExecutionEntry,
 } from "../index.js";
+import { MemorySessionStore } from "../runtime/memory-session-store.js";
+import { EPHEMERAL_ENV_VAR } from "../runtime/session-store-utils.js";
 import * as modelDiscoveryTools from "../tools/model-discovery.js";
 import { MODEL_DISCOVERY_TOOL_NAME } from "../tools/model-discovery.js";
 import * as visualizationTools from "../tools/visualization-tools.js";
@@ -121,6 +124,57 @@ describe("index request handlers", () => {
 		expect(getFirstText(result)).toContain(`formatted Tool \`${name}\` failed`);
 	});
 
+	it.each([
+		{
+			name: MODEL_DISCOVERY_TOOL_NAME,
+			setup: () =>
+				vi
+					.spyOn(modelDiscoveryTools, "dispatchModelDiscoveryToolCall")
+					.mockResolvedValue({ content: [] } as never),
+			getSpy: () => modelDiscoveryTools.dispatchModelDiscoveryToolCall,
+		},
+		{
+			name: "graph-visualize",
+			setup: () =>
+				vi
+					.spyOn(visualizationTools, "dispatchVisualizationToolCall")
+					.mockResolvedValue({ content: [] } as never),
+			getSpy: () => visualizationTools.dispatchVisualizationToolCall,
+		},
+		{
+			name: "agent-workspace",
+			setup: () =>
+				vi
+					.spyOn(workspaceTools, "dispatchWorkspaceToolCall")
+					.mockResolvedValue({ content: [] } as never),
+			getSpy: () => workspaceTools.dispatchWorkspaceToolCall,
+		},
+	])("defaults missing call arguments to {} for %s (?? fallback)", async ({
+		name,
+		setup,
+		getSpy,
+	}) => {
+		setup();
+		const handlers = createRequestHandlers(createRuntime());
+
+		await handlers.callTool({ params: { name } });
+
+		const spy = vi.mocked(getSpy());
+		expect(spy).toHaveBeenCalled();
+		// arguments is omitted from the request, so the `args ?? {}` fallback
+		// inside callTool must supply an empty object to the dispatcher.
+		const callArgs = spy.mock.calls.at(-1);
+		expect(callArgs?.[1]).toEqual({});
+	});
+
+	it("createServer defaults to a freshly created runtime when none is supplied", () => {
+		const { server, runtime } = createServer();
+
+		expect(server).toBeDefined();
+		expect(runtime).toBeDefined();
+		expect(runtime.sessionId).toEqual(expect.any(String));
+	});
+
 	it("detects direct execution when the entry path matches the module URL", () => {
 		expect(
 			isDirectExecutionEntry(fileURLToPath(import.meta.url), import.meta.url),
@@ -140,6 +194,18 @@ describe("index request handlers", () => {
 		expect(isDirectExecutionEntry(missing, "file:///other/path.js")).toBe(
 			false,
 		);
+	});
+
+	it("createRuntime uses the in-memory session store in ephemeral mode", () => {
+		const saved = process.env[EPHEMERAL_ENV_VAR];
+		process.env[EPHEMERAL_ENV_VAR] = "true";
+		try {
+			const runtime = createRuntime();
+			expect(runtime.sessionStore).toBeInstanceOf(MemorySessionStore);
+		} finally {
+			if (saved === undefined) delete process.env[EPHEMERAL_ENV_VAR];
+			else process.env[EPHEMERAL_ENV_VAR] = saved;
+		}
 	});
 
 	it("createRuntime honors an injected serena client (?? short-circuit)", async () => {
