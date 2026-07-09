@@ -59,6 +59,7 @@ jobs:
       contents: read
       packages: write
       id-token: write  # Cosign keyless signing
+      issues: write    # File an issue instead of blocking the release on Trivy findings
 
     steps:
       - uses: actions/checkout@v6
@@ -113,6 +114,8 @@ jobs:
           cosign sign --yes ${images}
 
       - name: Scan image for vulnerabilities (Trivy)
+        id: trivy-scan
+        continue-on-error: true
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           image-ref: ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
@@ -121,6 +124,19 @@ jobs:
           severity: HIGH,CRITICAL
           ignore-unfixed: true
           trivyignores: .trivyignore
+
+      - name: File an issue for Trivy findings
+        if: steps.trivy-scan.outcome == 'failure'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create \
+            --repo '${{ github.repository }}' \
+            --title 'Trivy found HIGH/CRITICAL vulnerabilities in release image ${{ fromJSON(steps.meta.outputs.json).tags[0] }}' \
+            --label security \
+            --body "Trivy's scan of the release Docker image reported HIGH or CRITICAL findings during [this run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}).
+
+          The release proceeded (Trivy is non-blocking for releases; see the job log above for details). Review the findings and either patch the affected package or add a documented entry to \`.trivyignore\` if the finding doesn't apply."
 
   # ── 2b. Build & pack npm tarball ─────────────────────────────────────────
   build-npm:
