@@ -29,7 +29,7 @@ jobs:
       id-token: write  # OIDC trusted publishing — no token needed
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-node@v6
         with:
@@ -61,7 +61,7 @@ jobs:
       id-token: write  # Cosign keyless signing
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Extract Docker metadata
         id: meta
@@ -129,7 +129,7 @@ jobs:
     timeout-minutes: 15
     if: startsWith(github.ref, 'refs/tags/')
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -155,7 +155,7 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Download npm package
         uses: actions/download-artifact@v4
         with:
@@ -190,7 +190,7 @@ jobs:
       id-token: write  # Sigstore artifact signing
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-node@v6
         with:
