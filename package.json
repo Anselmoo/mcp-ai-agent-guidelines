@@ -110,7 +110,7 @@
     "mermaid": "^11.14.0",
     "rehype-mathjax": "^7.1.0",
     "remark-math": "^6.0.0",
-    "sharp": "^0.34.0",
+    "sharp": "^0.35.0",
     "typescript": "^6.0.0",
     "vitest": "^4.0.0"
   },
