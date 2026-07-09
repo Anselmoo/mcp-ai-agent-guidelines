@@ -1397,13 +1397,13 @@ describe("OrchestrationRuntime", () => {
 		});
 		const runtimeInternals =
 			runtime as unknown as OrchestrationRuntimeInternals;
-		vi.spyOn(runtimeInternals.observabilityManager, "log").mockImplementation(
-			(level) => {
+		const logSpy = vi
+			.spyOn(runtimeInternals.observabilityManager, "log")
+			.mockImplementation((level) => {
 				if (level === "warn") {
 					throw new Error("logging failed unexpectedly");
 				}
-			},
-		);
+			});
 
 		// The batch resolves normally (the outer catch swallowed the unexpected
 		// logging error) rather than rejecting, even though the individual skill
@@ -1414,7 +1414,7 @@ describe("OrchestrationRuntime", () => {
 			]),
 		).resolves.toBeInstanceOf(Map);
 
-		vi.spyOn(runtimeInternals.observabilityManager, "log").mockRestore();
+		logSpy.mockRestore();
 		await runtime.shutdown();
 	});
 

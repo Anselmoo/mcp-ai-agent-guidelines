@@ -127,6 +127,7 @@ jobs:
 
       - name: File an issue for Trivy findings
         if: steps.trivy-scan.outcome == 'failure'
+        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
