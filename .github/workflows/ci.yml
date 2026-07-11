@@ -77,7 +77,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Policy checks
-        uses: Anselmoo/repo-release-tools@0f0e201185368db1a59aa96113686836a85b8e18 # v1.10.1
+        uses: Anselmoo/repo-release-tools@97b9ec7cb866903831cc9739167f531887bcdddc # v1.11.2
         with:
           check-dirty-tree: "false"
           changelog-strategy: "unreleased"
