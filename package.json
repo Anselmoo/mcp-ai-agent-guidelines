@@ -94,8 +94,8 @@
     "picomatch": "^4.0.4"
   },
   "devDependencies": {
-    "@astrojs/starlight": "^0.40.0",
-    "@biomejs/biome": "2.5.2",
+    "@astrojs/starlight": "^0.41.0",
+    "@biomejs/biome": "2.5.5",
     "@modelcontextprotocol/inspector": "^1.0.0",
     "@types/d3": "^7.4.3",
     "@types/jsdom": "^28.0.0",
@@ -110,7 +110,7 @@
     "mermaid": "^11.14.0",
     "rehype-mathjax": "^7.1.0",
     "remark-math": "^6.0.0",
-    "sharp": "^0.34.0",
+    "sharp": "^0.35.0",
     "typescript": "^7.0.0",
     "vitest": "^4.0.0"
   },
