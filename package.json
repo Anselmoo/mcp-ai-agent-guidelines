@@ -104,7 +104,7 @@
     "@vitest/coverage-v8": "^4.0.0",
     "astro": "6.4.8",
     "astro-mermaid": "^2.0.1",
-    "d3": "^7.9.0",
+    "d3": "^7.9.1",
     "lefthook": "^2.1.5",
     "lucide-astro": "^0.556.0",
     "mermaid": "^11.14.0",
