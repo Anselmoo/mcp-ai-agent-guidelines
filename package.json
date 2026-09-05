@@ -94,8 +94,8 @@
     "picomatch": "^4.0.4"
   },
   "devDependencies": {
-    "@astrojs/starlight": "^0.40.0",
-    "@biomejs/biome": "2.5.2",
+    "@astrojs/starlight": "^0.42.0",
+    "@biomejs/biome": "2.5.12",
     "@modelcontextprotocol/inspector": "^2.0.0",
     "@types/d3": "^7.4.3",
     "@types/jsdom": "^30.0.0",
