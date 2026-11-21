@@ -1,7 +1,7 @@
 # Simplified Docker build for MCP AI Agent Guidelines Server
 # Based on modelcontextprotocol/servers filesystem example
 
-FROM node:24-alpine AS builder
+FROM node:26-alpine AS builder
 
 WORKDIR /app
 
@@ -15,7 +15,7 @@ COPY scripts/ ./scripts/
 RUN npm ci
 RUN npm run build
 
-FROM node:24-alpine AS release
+FROM node:26-alpine AS release
 
 WORKDIR /app
 
